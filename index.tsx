@@ -3,6 +3,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import RetroLoader from './components/RetroLoader';
 import SEOHead from './components/SEOHead';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Lazy Load components for performance optimization (Code Splitting)
 const NewsSection = React.lazy(() => import('./components/NewsSection'));
@@ -89,14 +90,16 @@ const App = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 pt-4 md:pt-0">
-        <Suspense fallback={<RetroLoader />}>
-            {activeTab === 'news' && <NewsSection />}
-            {activeTab === 'gotw' && <GameOfTheWeek />}
-            {activeTab === 'timeline' && <Timeline />}
-            {activeTab === 'reviews' && <ReviewSection />}
-            {activeTab === 'compare' && <ConsoleComparer />}
-            {activeTab === 'sage' && <RetroSage />}
-        </Suspense>
+        <ErrorBoundary>
+          <Suspense fallback={<RetroLoader />}>
+              {activeTab === 'news' && <NewsSection />}
+              {activeTab === 'gotw' && <GameOfTheWeek />}
+              {activeTab === 'timeline' && <Timeline />}
+              {activeTab === 'reviews' && <ReviewSection />}
+              {activeTab === 'compare' && <ConsoleComparer />}
+              {activeTab === 'sage' && <RetroSage />}
+          </Suspense>
+        </ErrorBoundary>
       </main>
 
       {/* Mobile Navigation (Bottom Sticky) */}
