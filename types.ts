@@ -25,3 +25,28 @@ export interface ChatMessage {
   text: string;
   timestamp: number;
 }
+
+export interface GameOfTheWeekData {
+  title: string;
+  developer: string;
+  year: string;
+  genre: string;
+  content: string;
+  whyItMatters: string;
+}
+
+export interface TimelineEvent {
+  year: string;
+  name: string;
+  manufacturer: string;
+  description: string;
+}
+
+export interface Review {
+  id: string;
+  author: string;
+  rating: number; // 1-5
+  text: string;
+  date: string;
+  verified: boolean;
+}

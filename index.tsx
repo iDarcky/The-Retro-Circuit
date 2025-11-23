@@ -3,9 +3,21 @@ import { createRoot } from 'react-dom/client';
 import NewsSection from './components/NewsSection';
 import ConsoleComparer from './components/ConsoleComparer';
 import RetroSage from './components/RetroSage';
+import GameOfTheWeek from './components/GameOfTheWeek';
+import Timeline from './components/Timeline';
+import ReviewSection from './components/ReviewSection';
 
 const App = () => {
-  const [activeTab, setActiveTab] = useState<'news' | 'compare' | 'sage'>('news');
+  const [activeTab, setActiveTab] = useState<'news' | 'gotw' | 'compare' | 'timeline' | 'reviews' | 'sage'>('news');
+
+  const navItems = [
+    { id: 'news', label: 'NEWS FEED', color: 'retro-neon' },
+    { id: 'gotw', label: 'FEATURED', color: 'yellow-400' },
+    { id: 'timeline', label: 'TIMELINE', color: 'retro-pink' },
+    { id: 'reviews', label: 'REVIEWS', color: 'retro-blue' },
+    { id: 'compare', label: 'VS MODE', color: 'retro-blue' },
+    { id: 'sage', label: 'SAGE', color: 'retro-pink' },
+  ];
 
   return (
     <div className="min-h-screen pb-20">
@@ -19,42 +31,32 @@ const App = () => {
       </header>
 
       <nav className="sticky top-0 z-30 bg-retro-dark/95 backdrop-blur border-b border-retro-grid mb-8">
-        <div className="max-w-6xl mx-auto flex justify-center md:justify-start overflow-x-auto">
-          <button
-            onClick={() => setActiveTab('news')}
-            className={`flex-1 md:flex-none px-8 py-4 font-pixel text-xs md:text-sm transition-all border-r border-retro-grid ${
-              activeTab === 'news' 
-                ? 'bg-retro-neon text-retro-dark shadow-[inset_0_-4px_0_rgba(0,0,0,0.5)]' 
-                : 'text-retro-neon hover:bg-retro-grid/30'
-            }`}
-          >
-            NEWS FEED
-          </button>
-          <button
-            onClick={() => setActiveTab('compare')}
-            className={`flex-1 md:flex-none px-8 py-4 font-pixel text-xs md:text-sm transition-all border-r border-retro-grid ${
-              activeTab === 'compare' 
-                ? 'bg-retro-blue text-retro-dark shadow-[inset_0_-4px_0_rgba(0,0,0,0.5)]' 
-                : 'text-retro-blue hover:bg-retro-grid/30'
-            }`}
-          >
-            VS. MODE
-          </button>
-          <button
-            onClick={() => setActiveTab('sage')}
-            className={`flex-1 md:flex-none px-8 py-4 font-pixel text-xs md:text-sm transition-all border-r border-retro-grid ${
-              activeTab === 'sage' 
-                ? 'bg-retro-pink text-retro-dark shadow-[inset_0_-4px_0_rgba(0,0,0,0.5)]' 
-                : 'text-retro-pink hover:bg-retro-grid/30'
-            }`}
-          >
-            RETRO SAGE
-          </button>
+        <div className="max-w-6xl mx-auto flex justify-start md:justify-center overflow-x-auto no-scrollbar">
+          {navItems.map((item) => (
+             <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id as any)}
+                className={`flex-none px-6 py-4 font-pixel text-[10px] md:text-xs transition-all border-r border-retro-grid whitespace-nowrap ${
+                  activeTab === item.id
+                    ? `bg-${item.color} text-retro-dark shadow-[inset_0_-4px_0_rgba(0,0,0,0.5)]` 
+                    : `text-${item.color} hover:bg-retro-grid/30`
+                }`}
+                style={{
+                    backgroundColor: activeTab === item.id ? (item.color === 'yellow-400' ? '#facc15' : undefined) : undefined,
+                    color: activeTab !== item.id && item.color === 'yellow-400' ? '#facc15' : undefined
+                }}
+              >
+                {item.label}
+              </button>
+          ))}
         </div>
       </nav>
 
       <main className="container mx-auto px-4">
         {activeTab === 'news' && <NewsSection />}
+        {activeTab === 'gotw' && <GameOfTheWeek />}
+        {activeTab === 'timeline' && <Timeline />}
+        {activeTab === 'reviews' && <ReviewSection />}
         {activeTab === 'compare' && <ConsoleComparer />}
         {activeTab === 'sage' && <RetroSage />}
       </main>
