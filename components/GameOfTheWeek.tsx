@@ -24,7 +24,8 @@ const GameOfTheWeek: React.FC = () => {
         <div className="animate-pulse border-4 border-retro-grid p-12 bg-retro-dark">
             <h2 className="text-2xl font-pixel text-retro-neon mb-4">LOADING CARTRIDGE...</h2>
             <div className="h-4 bg-retro-grid w-3/4 mx-auto mb-2"></div>
-            <div className="h-4 bg-retro-grid w-1/2 mx-auto"></div>
+            <div className="h-4 bg-retro-grid w-1/2 mx-auto mb-6"></div>
+            <div className="w-32 h-32 bg-retro-grid/20 mx-auto border border-retro-grid animate-bounce"></div>
         </div>
       </div>
     );
@@ -41,7 +42,7 @@ const GameOfTheWeek: React.FC = () => {
   return (
     <div className="w-full max-w-5xl mx-auto p-4">
         <div className="border-4 border-retro-neon bg-retro-dark relative shadow-[0_0_30px_rgba(0,255,157,0.2)]">
-            <div className="absolute top-0 left-0 bg-retro-neon text-retro-dark font-pixel text-xs px-3 py-1">
+            <div className="absolute top-0 left-0 bg-retro-neon text-retro-dark font-pixel text-xs px-3 py-1 z-10">
                 GAME OF THE WEEK
             </div>
             
@@ -59,10 +60,28 @@ const GameOfTheWeek: React.FC = () => {
                             <span>{game.genre}</span>
                         </div>
                     </div>
-                    <div className="mt-4 md:mt-0 font-pixel text-4xl text-retro-grid opacity-20 select-none">
+                    <div className="mt-4 md:mt-0 font-pixel text-4xl text-retro-grid opacity-20 select-none hidden md:block">
                         INSERT COIN
                     </div>
                 </div>
+
+                {/* AI Generated Image Section */}
+                {game.imageUrl && (
+                  <div className="mb-8 flex justify-center">
+                    <div className="relative border-4 border-gray-700 bg-black p-2 shadow-2xl transform hover:scale-[1.02] transition-transform duration-300 rounded-sm">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none z-10"></div>
+                      <img 
+                        src={game.imageUrl} 
+                        alt={`${game.title} 16-bit art`} 
+                        className="max-h-[400px] w-auto object-contain pixelated"
+                        style={{ imageRendering: 'pixelated' }}
+                      />
+                      <div className="absolute bottom-2 right-2 text-[10px] font-pixel text-white/50 z-20">
+                        AI GENERATED ART
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="md:col-span-2 font-mono text-gray-300 leading-relaxed text-lg whitespace-pre-line">

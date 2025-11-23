@@ -1,3 +1,4 @@
+
 export interface NewsItem {
   headline: string;
   date: string;

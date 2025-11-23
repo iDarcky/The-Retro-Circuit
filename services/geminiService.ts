@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, Review } from "../types";
 
@@ -160,10 +161,19 @@ export const sendChatMessage = async (history: any[], newMessage: string): Promi
  * Returns Game of the Week (Mock/Static fallback preferred for consistency, but can be AI).
  */
 export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData> => {
-    // Keep this static or use AI to rotate. Let's use AI for variety if available.
+    let gameData: GameOfTheWeekData = {
+        title: "Chrono Trigger",
+        developer: "Square",
+        year: "1995",
+        genre: "JRPG",
+        content: "Chrono Trigger is widely regarded as one of the greatest video games of all time. Developed by a 'Dream Team' consisting of Hironobu Sakaguchi (Final Fantasy), Yuji Horii (Dragon Quest), and Akira Toriyama (Dragon Ball), it redefined the RPG genre.\n\nThe game follows Crono and his friends as they travel through time to prevent a global catastrophe caused by Lavos.",
+        whyItMatters: "Introduced New Game+, multiple endings, and seamless battles without random encounters on a separate screen."
+    };
+
     if (isAiAvailable) {
         try {
-            const response = await ai.models.generateContent({
+            // 1. Fetch Text Info
+            const textResponse = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
                 contents: "Pick a random classic video game (8-bit to 32-bit era) as Game of the Week. Provide detailed info.",
                 config: {
@@ -182,20 +192,17 @@ export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData> => {
                     }
                 }
             });
-            if (response.text) return JSON.parse(response.text);
+
+            if (textResponse.text) {
+                gameData = JSON.parse(textResponse.text);
+            }
+
         } catch (e) {
-            console.warn("AI GOTW failed, using fallback.");
+            console.warn("AI GOTW failed, using fallback.", e);
         }
     }
 
-    return {
-        title: "Chrono Trigger",
-        developer: "Square",
-        year: "1995",
-        genre: "JRPG",
-        content: "Chrono Trigger is widely regarded as one of the greatest video games of all time. Developed by a 'Dream Team' consisting of Hironobu Sakaguchi (Final Fantasy), Yuji Horii (Dragon Quest), and Akira Toriyama (Dragon Ball), it redefined the RPG genre.\n\nThe game follows Crono and his friends as they travel through time to prevent a global catastrophe caused by Lavos.",
-        whyItMatters: "Introduced New Game+, multiple endings, and seamless battles without random encounters on a separate screen."
-    };
+    return gameData;
 };
 
 /**
@@ -209,47 +216,4 @@ export const fetchTimelineData = async (): Promise<TimelineEvent[]> => {
         { year: "1985", name: "NES (North America)", manufacturer: "Nintendo", description: "Single-handedly revitalized the US video game market with the release of Super Mario Bros." },
         { year: "1989", name: "Game Boy", manufacturer: "Nintendo", description: "Defined portable gaming for a decade, proving battery life and library matter more than color screens." },
         { year: "1994", name: "PlayStation", manufacturer: "Sony", description: "Marked Sony's dominance in the market and the transition from cartridges to CD-ROMs as the standard." },
-        { year: "1996", name: "Nintendo 64", manufacturer: "Nintendo", description: "Pioneered true 3D gaming with the analog stick, though it stuck to cartridges." }
-    ];
-};
-
-/**
- * Returns reviews (Mock).
- */
-export const fetchInitialReviews = async (topic: string): Promise<Review[]> => {
-    return [
-        { id: "1", author: "RetroGamer99", rating: 5, text: "An absolute masterpiece that defines the genre. The controls are tight and the music is unforgettable.", date: "1998", verified: true },
-        { id: "2", author: "BitCruncher", rating: 4, text: "Graphics are amazing for the time, though the framerate dips occasionally.", date: "1999", verified: false },
-        { id: "3", author: "CartridgeBlower", rating: 5, text: "I spent my entire summer vacation playing this. Best money I ever spent.", date: "1997", verified: true }
-    ];
-};
-
-/**
- * Content Moderation using Gemini.
- */
-export const moderateContent = async (text: string): Promise<boolean> => {
-    if (!isAiAvailable) return true;
-    
-    try {
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: `Evaluate if the following text contains hate speech, explicit content, or severe toxicity. Text: "${text}"`,
-            config: {
-                responseMimeType: 'application/json',
-                responseSchema: {
-                    type: Type.OBJECT,
-                    properties: { isSafe: { type: Type.BOOLEAN } },
-                    required: ['isSafe']
-                }
-            }
-        });
-        
-        if (response.text) {
-            const result = JSON.parse(response.text);
-            return result.isSafe;
-        }
-    } catch (e) {
-        console.error("Moderation check failed", e);
-    }
-    return true; // Default to allow if check fails
-};
+        { year: "1996", name: "Nintendo 64", manufacturer: "Nintendo", description: "Pioneered true 3D gaming with the analog stick, though it stuck to cartridges
