@@ -1,251 +1,170 @@
-import { GoogleGenAI, Type, Schema } from "@google/genai";
 import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, Review } from "../types";
 
-// Initialize the client. API_KEY is guaranteed to be in process.env
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
-const modelName = 'gemini-2.5-flash';
+// Static Data Service (Replacing Gemini AI)
 
 /**
- * Generates retro gaming news summaries.
+ * Returns static retro gaming news.
  */
 export const fetchRetroNews = async (): Promise<NewsItem[]> => {
-  const schema: Schema = {
-    type: Type.ARRAY,
-    items: {
-      type: Type.OBJECT,
-      properties: {
-        headline: { type: Type.STRING },
-        date: { type: Type.STRING, description: "A date relevant to the event (e.g., 'Nov 1990')" },
-        summary: { type: Type.STRING },
-        category: { type: Type.STRING, enum: ['Hardware', 'Software', 'Industry', 'Rumor'] }
-      },
-      required: ['headline', 'date', 'summary', 'category']
+  // Simulating network delay for realism
+  await new Promise(resolve => setTimeout(resolve, 800));
+
+  return [
+    {
+      headline: "Nintendo PlayStation Prototype Discovered",
+      date: "Aug 2015",
+      summary: "A rare prototype of the SNES-CD add-on, developed in partnership with Sony, has reportedly been found in a box of old junk. Implications for the industry could be massive.",
+      category: "Hardware"
+    },
+    {
+      headline: "Sega Announces 'Project Mars' (32X)",
+      date: "Jan 1994",
+      summary: "In a bid to extend the Genesis lifecycle, Sega has unveiled the 32X add-on. Critics question if this stop-gap measure can compete with upcoming dedicated 32-bit consoles.",
+      category: "Hardware"
+    },
+    {
+      headline: "Square Soft to Abandon Nintendo for Sony?",
+      date: "Jan 1996",
+      summary: "Rumors are swirling that RPG giant Square may be moving development of Final Fantasy VII to Sony's PlayStation, citing cartridge storage limitations on the N64.",
+      category: "Industry"
+    },
+    {
+      headline: "Mortal Kombat Senate Hearings",
+      date: "Dec 1993",
+      summary: "The US Senate has launched hearings on video game violence, with Mortal Kombat and Night Trap taking center stage. A ratings board creation seems imminent.",
+      category: "Industry"
     }
-  };
-
-  try {
-    const response = await ai.models.generateContent({
-      model: modelName,
-      contents: "Generate 4 distinct, interesting, and historically accurate news snippets about retro gaming (1970s-2000s). Treat them as if they are fresh reports from that era or retrospective facts.",
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: schema,
-        temperature: 0.7,
-      }
-    });
-
-    const text = response.text;
-    if (!text) return [];
-    return JSON.parse(text) as NewsItem[];
-  } catch (error) {
-    console.error("Failed to fetch news:", error);
-    return [];
-  }
+  ];
 };
 
 /**
- * Compares two consoles.
+ * Compares two consoles using a simple lookup table.
  */
 export const compareConsoles = async (consoleA: string, consoleB: string): Promise<ComparisonResult | null> => {
-  const schema: Schema = {
-    type: Type.OBJECT,
-    properties: {
-      consoleA: { type: Type.STRING },
-      consoleB: { type: Type.STRING },
-      summary: { type: Type.STRING, description: "A brief 2-sentence summary of the rivalry." },
-      points: {
-        type: Type.ARRAY,
-        items: {
-          type: Type.OBJECT,
-          properties: {
-            feature: { type: Type.STRING, description: "The technical spec or category being compared (e.g. CPU, Audio, Best Game)" },
-            consoleAValue: { type: Type.STRING },
-            consoleBValue: { type: Type.STRING },
-            winner: { type: Type.STRING, enum: ['A', 'B', 'Tie'] }
-          },
-          required: ['feature', 'consoleAValue', 'consoleBValue', 'winner']
-        }
-      }
-    },
-    required: ['consoleA', 'consoleB', 'summary', 'points']
-  };
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  
+  const cA = consoleA.toLowerCase();
+  const cB = consoleB.toLowerCase();
+  
+  const isSega = (s: string) => s.includes('genesis') || s.includes('mega drive');
+  const isSnes = (s: string) => s.includes('snes') || s.includes('super nintendo');
+  const isPs1 = (s: string) => s.includes('ps1') || s.includes('playstation') || s.includes('psx');
+  const isN64 = (s: string) => s.includes('n64') || s.includes('nintendo 64');
 
-  try {
-    const response = await ai.models.generateContent({
-      model: modelName,
-      contents: `Compare the ${consoleA} and the ${consoleB}. Focus on technical specs, library quality, and historical impact.`,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: schema,
-        temperature: 0.4, 
-      }
-    });
-
-    const text = response.text;
-    if (!text) return null;
-    return JSON.parse(text) as ComparisonResult;
-  } catch (error) {
-    console.error("Failed to compare consoles:", error);
-    return null;
-  }
-};
-
-/**
- * Chat with the Retro Sage.
- */
-export const sendChatMessage = async (history: { role: string, parts: { text: string }[] }[], newMessage: string): Promise<string> => {
-  try {
-    const chat = ai.chats.create({
-      model: modelName,
-      messages: history,
-      config: {
-        systemInstruction: "You are the 'Retro Sage', a wise, nostalgic, and slightly 80s-cyberpunk style AI entity living inside the Retro Circuit mainframe. You know everything about video game history from 1970 to 2005. Keep answers concise, fun, and use occasional retro-slang (like 'rad', 'tubular', 'blast processing')."
-      }
-    });
-
-    const result = await chat.sendMessage({ message: newMessage });
-    return result.text || "Connection to the mainframe interrupted...";
-  } catch (error) {
-    console.error("Chat error:", error);
-    return "The mainframe is experiencing heavy traffic. Try again.";
-  }
-};
-
-/**
- * Generates a 'Game of the Week' article.
- */
-export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData | null> => {
-    const schema: Schema = {
-      type: Type.OBJECT,
-      properties: {
-        title: { type: Type.STRING },
-        developer: { type: Type.STRING },
-        year: { type: Type.STRING },
-        genre: { type: Type.STRING },
-        content: { type: Type.STRING, description: "A 300-word engaging article about the game's mechanics and history." },
-        whyItMatters: { type: Type.STRING, description: "A concise bullet point explanation of why this game is significant." }
-      },
-      required: ['title', 'developer', 'year', 'genre', 'content', 'whyItMatters']
+  // Genesis vs SNES
+  if ((isSega(cA) && isSnes(cB)) || (isSnes(cA) && isSega(cB))) {
+    const isGenesisA = isSega(cA);
+    return {
+      consoleA: isGenesisA ? "Sega Genesis" : "Super Nintendo",
+      consoleB: isGenesisA ? "Super Nintendo" : "Sega Genesis",
+      summary: "The ultimate 16-bit console war. Sega focused on speed and attitude ('Blast Processing'), while Nintendo delivered superior colors and sound chips.",
+      points: [
+        { feature: "CPU Speed", consoleAValue: isGenesisA ? "7.6 MHz" : "3.58 MHz", consoleBValue: isGenesisA ? "3.58 MHz" : "7.6 MHz", winner: isGenesisA ? "A" : "B" },
+        { feature: "Colors", consoleAValue: isGenesisA ? "61" : "256", consoleBValue: isGenesisA ? "256" : "61", winner: isGenesisA ? "B" : "A" },
+        { feature: "Sound", consoleAValue: isGenesisA ? "FM Synth" : "Sample-based", consoleBValue: isGenesisA ? "Sample-based" : "FM Synth", winner: "Tie" },
+        { feature: "Best Sonic Game", consoleAValue: isGenesisA ? "Sonic 3 & Knuckles" : "N/A", consoleBValue: isGenesisA ? "N/A" : "Sonic 3 & Knuckles", winner: isGenesisA ? "A" : "B" }
+      ]
     };
-  
-    try {
-      const response = await ai.models.generateContent({
-        model: modelName,
-        contents: "Choose a highly influential retro video game from the 1980s or 1990s. Write a 'Game of the Week' feature for it.",
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: schema,
-          temperature: 0.9,
-        }
-      });
-  
-      const text = response.text;
-      if (!text) return null;
-      return JSON.parse(text) as GameOfTheWeekData;
-    } catch (error) {
-      console.error("Failed to fetch Game of the Week:", error);
-      return null;
-    }
+  }
+
+  // PS1 vs N64
+  if ((isPs1(cA) && isN64(cB)) || (isN64(cA) && isPs1(cB))) {
+    const isPs1A = isPs1(cA);
+    return {
+      consoleA: isPs1A ? "PlayStation" : "Nintendo 64",
+      consoleB: isPs1A ? "Nintendo 64" : "PlayStation",
+      summary: "The battle of 3D. Sony leveraged CD storage for cinematics and audio, while Nintendo stuck to cartridges for loading speed but sacrificed capacity.",
+      points: [
+        { feature: "Media", consoleAValue: isPs1A ? "CD-ROM" : "Cartridge", consoleBValue: isPs1A ? "Cartridge" : "CD-ROM", winner: isPs1A ? "A" : "B" },
+        { feature: "Load Times", consoleAValue: isPs1A ? "Slow" : "Instant", consoleBValue: isPs1A ? "Instant" : "Slow", winner: isPs1A ? "B" : "A" },
+        { feature: "Texture Filtering", consoleAValue: isPs1A ? "Affine" : "Bilinear", consoleBValue: isPs1A ? "Bilinear" : "Affine", winner: isPs1A ? "B" : "A" },
+        { feature: "Library Size", consoleAValue: isPs1A ? "Huge" : "Small", consoleBValue: isPs1A ? "Small" : "Huge", winner: isPs1A ? "A" : "B" }
+      ]
+    };
+  }
+
+  // Fallback for unknown
+  return {
+    consoleA: consoleA,
+    consoleB: consoleB,
+    summary: "Historical data for this specific match-up is fragmented. Both systems have their loyal following.",
+    points: [
+      { feature: "Nostalgia Factor", consoleAValue: "High", consoleBValue: "High", winner: "Tie" },
+      { feature: "Availability", consoleAValue: "Rare", consoleBValue: "Rare", winner: "Tie" },
+      { feature: "Bit Rating", consoleAValue: "Unknown", consoleBValue: "Unknown", winner: "Tie" }
+    ]
+  };
 };
 
 /**
- * Generates timeline events for consoles.
+ * Returns a random retro quote.
+ */
+export const sendChatMessage = async (history: any[], newMessage: string): Promise<string> => {
+  await new Promise(resolve => setTimeout(resolve, 600));
+  
+  const quotes = [
+    "It's dangerous to go alone! Take this.",
+    "Thank you Mario! But our princess is in another castle!",
+    "All your base are belong to us.",
+    "Do a barrel roll!",
+    "War. War never changes.",
+    "A winner is you!",
+    "Hey! Listen!",
+    "Rise and shine, Mr. Freeman. Rise and... shine.",
+    "You were almost a Jill sandwich!",
+    "Snake? Snake? SNAKEEEEEE!",
+    "It's a secret to everybody.",
+    "I am Error."
+  ];
+  return quotes[Math.floor(Math.random() * quotes.length)];
+};
+
+/**
+ * Returns static Game of the Week.
+ */
+export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData> => {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return {
+        title: "Chrono Trigger",
+        developer: "Square",
+        year: "1995",
+        genre: "JRPG",
+        content: "Chrono Trigger is widely regarded as one of the greatest video games of all time. Developed by a 'Dream Team' consisting of Hironobu Sakaguchi (Final Fantasy), Yuji Horii (Dragon Quest), and Akira Toriyama (Dragon Ball), it redefined the RPG genre.\n\nThe game follows Crono and his friends as they travel through time to prevent a global catastrophe caused by Lavos. With its revolutionary active time battle system, multiple endings, and intricate plot, it pushed the SNES to its absolute limits.",
+        whyItMatters: "Introduced New Game+, multiple endings, and seamless battles without random encounters on a separate screen. A masterclass in pacing and sprite art."
+    };
+};
+
+/**
+ * Returns static timeline events.
  */
 export const fetchTimelineData = async (): Promise<TimelineEvent[]> => {
-    const schema: Schema = {
-      type: Type.ARRAY,
-      items: {
-        type: Type.OBJECT,
-        properties: {
-            year: { type: Type.STRING },
-            name: { type: Type.STRING },
-            manufacturer: { type: Type.STRING },
-            description: { type: Type.STRING, description: "A very brief 15-20 word description." }
-        },
-        required: ['year', 'name', 'manufacturer', 'description']
-      }
-    };
-  
-    try {
-      const response = await ai.models.generateContent({
-        model: modelName,
-        contents: "List 12 major home video game consoles released between 1972 and 2001. Sort them chronologically.",
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: schema,
-          temperature: 0.2,
-        }
-      });
-  
-      const text = response.text;
-      if (!text) return [];
-      return JSON.parse(text) as TimelineEvent[];
-    } catch (error) {
-      console.error("Timeline error:", error);
-      return [];
-    }
+    return [
+        { year: "1972", name: "Magnavox Odyssey", manufacturer: "Magnavox", description: "The first commercial home video game console. It was analog, battery-powered, and used overlays on the TV screen." },
+        { year: "1977", name: "Atari 2600", manufacturer: "Atari", description: "Popularized the use of microprocessor-based hardware and ROM cartridges containing game code." },
+        { year: "1983", name: "The Video Game Crash", manufacturer: "Industry Wide", description: "Oversaturation of the market with low-quality games led to a massive recession in the video game industry." },
+        { year: "1985", name: "NES (North America)", manufacturer: "Nintendo", description: "Single-handedly revitalized the US video game market with the release of Super Mario Bros." },
+        { year: "1989", name: "Game Boy", manufacturer: "Nintendo", description: "Defined portable gaming for a decade, proving battery life and library matter more than color screens." },
+        { year: "1994", name: "PlayStation", manufacturer: "Sony", description: "Marked Sony's dominance in the market and the transition from cartridges to CD-ROMs as the standard." },
+        { year: "1996", name: "Nintendo 64", manufacturer: "Nintendo", description: "Pioneered true 3D gaming with the analog stick, though it stuck to cartridges." }
+    ];
 };
 
 /**
- * Generates fake reviews for a given topic to populate the UI.
+ * Returns static reviews.
  */
 export const fetchInitialReviews = async (topic: string): Promise<Review[]> => {
-    const schema: Schema = {
-        type: Type.ARRAY,
-        items: {
-            type: Type.OBJECT,
-            properties: {
-                id: { type: Type.STRING },
-                author: { type: Type.STRING },
-                rating: { type: Type.INTEGER },
-                text: { type: Type.STRING },
-                date: { type: Type.STRING },
-                verified: { type: Type.BOOLEAN }
-            },
-            required: ['id', 'author', 'rating', 'text', 'date', 'verified']
-        }
-    };
-
-    try {
-        const response = await ai.models.generateContent({
-            model: modelName,
-            contents: `Generate 3 diverse, short user reviews for ${topic || "Retro Gaming"}. Ratings should vary.`,
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: schema,
-                temperature: 0.8,
-            }
-        });
-        const text = response.text;
-        if(!text) return [];
-        return JSON.parse(text) as Review[];
-    } catch (e) {
-        return [];
-    }
-}
+    await new Promise(resolve => setTimeout(resolve, 400));
+    return [
+        { id: "1", author: "RetroGamer99", rating: 5, text: "An absolute masterpiece that defines the genre. The controls are tight and the music is unforgettable.", date: "1998", verified: true },
+        { id: "2", author: "BitCruncher", rating: 4, text: "Graphics are amazing for the time, though the framerate dips occasionally.", date: "1999", verified: false },
+        { id: "3", author: "CartridgeBlower", rating: 5, text: "I spent my entire summer vacation playing this. Best money I ever spent.", date: "1997", verified: true }
+    ];
+};
 
 /**
- * Checks if content is safe. Returns true if safe, false if not.
+ * Mock moderation (always returns true or checks simple bad words).
  */
 export const moderateContent = async (text: string): Promise<boolean> => {
-    try {
-        const response = await ai.models.generateContent({
-            model: modelName,
-            contents: `Is the following review text appropriate for a general audience gaming website? It should not contain hate speech, excessive profanity, or spam. Text: "${text}". Answer strict JSON boolean { "safe": true/false }`,
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: {
-                    type: Type.OBJECT,
-                    properties: { safe: { type: Type.BOOLEAN } },
-                    required: ['safe']
-                }
-            }
-        });
-        const res = JSON.parse(response.text || "{}");
-        return res.safe === true;
-    } catch (e) {
-        console.error("Moderation error", e);
-        return false; // Fail safe
-    }
-}
+    const badWords = ['badword', 'spam', 'virus'];
+    return !badWords.some(word => text.toLowerCase().includes(word));
+};
