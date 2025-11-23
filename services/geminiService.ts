@@ -1,15 +1,35 @@
+
 import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, Review } from "../types";
 
-// Static Data Service (Replacing Gemini AI)
+// Configuration for Future CMS Integration
+const API_BASE_URL = ''; // e.g., 'https://api.retro-circuit.com'
+const USE_MOCK_DATA = true; // Toggle this to false when backend is ready
 
 /**
- * Returns static retro gaming news.
+ * Helper to simulate fetching from a real API with fallback.
+ */
+async function fetchWithFallback<T>(endpoint: string, fallbackData: T): Promise<T> {
+  if (USE_MOCK_DATA || !API_BASE_URL) {
+    // Simulate network latency for realism
+    await new Promise(resolve => setTimeout(resolve, Math.random() * 500 + 300));
+    return fallbackData;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`);
+    if (!response.ok) throw new Error('Network response was not ok');
+    return await response.json();
+  } catch (error) {
+    console.warn(`Failed to fetch from ${endpoint}, falling back to local data.`);
+    return fallbackData;
+  }
+}
+
+/**
+ * Returns retro gaming news.
  */
 export const fetchRetroNews = async (): Promise<NewsItem[]> => {
-  // Simulating network delay for realism
-  await new Promise(resolve => setTimeout(resolve, 800));
-
-  return [
+  const fallback: NewsItem[] = [
     {
       headline: "Nintendo PlayStation Prototype Discovered",
       date: "Aug 2015",
@@ -35,12 +55,15 @@ export const fetchRetroNews = async (): Promise<NewsItem[]> => {
       category: "Industry"
     }
   ];
+
+  return fetchWithFallback('/news', fallback);
 };
 
 /**
- * Compares two consoles using a simple lookup table.
+ * Compares two consoles.
  */
 export const compareConsoles = async (consoleA: string, consoleB: string): Promise<ComparisonResult | null> => {
+  // Logic remains client-side for now as it's a calculator, not just data retrieval
   await new Promise(resolve => setTimeout(resolve, 1500));
   
   const cA = consoleA.toLowerCase();
@@ -120,11 +143,10 @@ export const sendChatMessage = async (history: any[], newMessage: string): Promi
 };
 
 /**
- * Returns static Game of the Week.
+ * Returns Game of the Week.
  */
 export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData> => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return {
+    const fallback: GameOfTheWeekData = {
         title: "Chrono Trigger",
         developer: "Square",
         year: "1995",
@@ -132,13 +154,14 @@ export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData> => {
         content: "Chrono Trigger is widely regarded as one of the greatest video games of all time. Developed by a 'Dream Team' consisting of Hironobu Sakaguchi (Final Fantasy), Yuji Horii (Dragon Quest), and Akira Toriyama (Dragon Ball), it redefined the RPG genre.\n\nThe game follows Crono and his friends as they travel through time to prevent a global catastrophe caused by Lavos. With its revolutionary active time battle system, multiple endings, and intricate plot, it pushed the SNES to its absolute limits.",
         whyItMatters: "Introduced New Game+, multiple endings, and seamless battles without random encounters on a separate screen. A masterclass in pacing and sprite art."
     };
+    return fetchWithFallback('/gotw', fallback);
 };
 
 /**
- * Returns static timeline events.
+ * Returns timeline events.
  */
 export const fetchTimelineData = async (): Promise<TimelineEvent[]> => {
-    return [
+    const fallback: TimelineEvent[] = [
         { year: "1972", name: "Magnavox Odyssey", manufacturer: "Magnavox", description: "The first commercial home video game console. It was analog, battery-powered, and used overlays on the TV screen." },
         { year: "1977", name: "Atari 2600", manufacturer: "Atari", description: "Popularized the use of microprocessor-based hardware and ROM cartridges containing game code." },
         { year: "1983", name: "The Video Game Crash", manufacturer: "Industry Wide", description: "Oversaturation of the market with low-quality games led to a massive recession in the video game industry." },
@@ -147,24 +170,27 @@ export const fetchTimelineData = async (): Promise<TimelineEvent[]> => {
         { year: "1994", name: "PlayStation", manufacturer: "Sony", description: "Marked Sony's dominance in the market and the transition from cartridges to CD-ROMs as the standard." },
         { year: "1996", name: "Nintendo 64", manufacturer: "Nintendo", description: "Pioneered true 3D gaming with the analog stick, though it stuck to cartridges." }
     ];
+    return fetchWithFallback('/timeline', fallback);
 };
 
 /**
- * Returns static reviews.
+ * Returns reviews.
  */
 export const fetchInitialReviews = async (topic: string): Promise<Review[]> => {
-    await new Promise(resolve => setTimeout(resolve, 400));
-    return [
+    const fallback: Review[] = [
         { id: "1", author: "RetroGamer99", rating: 5, text: "An absolute masterpiece that defines the genre. The controls are tight and the music is unforgettable.", date: "1998", verified: true },
         { id: "2", author: "BitCruncher", rating: 4, text: "Graphics are amazing for the time, though the framerate dips occasionally.", date: "1999", verified: false },
         { id: "3", author: "CartridgeBlower", rating: 5, text: "I spent my entire summer vacation playing this. Best money I ever spent.", date: "1997", verified: true }
     ];
+    return fetchWithFallback(`/reviews?topic=${topic}`, fallback);
 };
 
 /**
- * Mock moderation (always returns true or checks simple bad words).
+ * Mock moderation.
  */
 export const moderateContent = async (text: string): Promise<boolean> => {
+    // In a real app, this would be: await fetchWithFallback('/moderate', { text })
+    await new Promise(resolve => setTimeout(resolve, 200));
     const badWords = ['badword', 'spam', 'virus'];
     return !badWords.some(word => text.toLowerCase().includes(word));
 };

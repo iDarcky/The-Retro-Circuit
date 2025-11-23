@@ -1,15 +1,29 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
-import NewsSection from './components/NewsSection';
-import ConsoleComparer from './components/ConsoleComparer';
-import RetroSage from './components/RetroSage';
-import GameOfTheWeek from './components/GameOfTheWeek';
-import Timeline from './components/Timeline';
-import ReviewSection from './components/ReviewSection';
+import RetroLoader from './components/RetroLoader';
+import SEOHead from './components/SEOHead';
+
+// Lazy Load components for performance optimization (Code Splitting)
+const NewsSection = React.lazy(() => import('./components/NewsSection'));
+const ConsoleComparer = React.lazy(() => import('./components/ConsoleComparer'));
+const RetroSage = React.lazy(() => import('./components/RetroSage'));
+const GameOfTheWeek = React.lazy(() => import('./components/GameOfTheWeek'));
+const Timeline = React.lazy(() => import('./components/Timeline'));
+const ReviewSection = React.lazy(() => import('./components/ReviewSection'));
 
 const App = () => {
   const [activeTab, setActiveTab] = useState<'news' | 'gotw' | 'compare' | 'timeline' | 'reviews' | 'sage'>('news');
   const [cleanMode, setCleanMode] = useState(false);
+
+  const navItems = [
+    { id: 'news', label: 'NEWS', icon: '📰', color: 'retro-neon', desc: 'Latest updates from the 8-bit and 16-bit era.' },
+    { id: 'gotw', label: 'GOTW', icon: '⭐', color: 'yellow-400', desc: 'Our curated pick for the Game of the Week.' },
+    { id: 'reviews', label: 'REVIEWS', icon: '📝', color: 'retro-blue', desc: 'User-submitted reviews and ratings.' },
+    { id: 'compare', label: 'VS', icon: '⚔️', color: 'retro-blue', desc: 'Compare console specs: Genesis vs SNES and more.' },
+    { id: 'timeline', label: 'TIME', icon: '⏳', color: 'retro-pink', desc: 'Interactive history of video game consoles.' },
+    { id: 'sage', label: 'SAGE', icon: '🔮', color: 'retro-pink', desc: 'Ask the AI Retro Sage about gaming history.' },
+  ];
 
   // Effect to toggle clean mode classes on the body
   useEffect(() => {
@@ -20,7 +34,7 @@ const App = () => {
     if (cleanMode) {
       if (scanlineDiv) scanlineDiv.classList.add('hidden');
       if (flickerDiv) flickerDiv.classList.add('hidden');
-      body.classList.add('font-sans'); // Fallback to cleaner font if needed, or just remove pixel noise
+      body.classList.add('font-sans'); 
       body.style.textShadow = 'none';
     } else {
       if (scanlineDiv) scanlineDiv.classList.remove('hidden');
@@ -30,17 +44,16 @@ const App = () => {
     }
   }, [cleanMode]);
 
-  const navItems = [
-    { id: 'news', label: 'NEWS', icon: '📰', color: 'retro-neon' },
-    { id: 'gotw', label: 'GOTW', icon: '⭐', color: 'yellow-400' },
-    { id: 'reviews', label: 'REVIEWS', icon: '📝', color: 'retro-blue' },
-    { id: 'compare', label: 'VS', icon: '⚔️', color: 'retro-blue' },
-    { id: 'timeline', label: 'TIME', icon: '⏳', color: 'retro-pink' },
-    { id: 'sage', label: 'SAGE', icon: '🔮', color: 'retro-pink' },
-  ];
+  const activeItem = navItems.find(i => i.id === activeTab);
 
   return (
     <div className={`min-h-screen ${cleanMode ? 'bg-gray-900' : ''} pb-24 md:pb-20 transition-colors duration-300`}>
+      {/* Dynamic SEO Tags */}
+      <SEOHead 
+        title={activeItem?.label || 'HOME'} 
+        description={activeItem?.desc || 'Welcome to The Retro Circuit.'} 
+      />
+
       {/* Header */}
       <header className={`pt-8 pb-6 px-4 text-center border-b-4 border-retro-grid bg-retro-dark z-40 relative ${cleanMode ? 'border-gray-700' : ''}`}>
         <h1 className={`text-3xl md:text-6xl font-pixel text-transparent bg-clip-text bg-gradient-to-r from-retro-pink via-retro-neon to-retro-blue mb-4 ${cleanMode ? 'drop-shadow-none' : 'drop-shadow-[4px_4px_0_rgba(255,255,255,0.2)]'}`}>
@@ -76,12 +89,14 @@ const App = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 pt-4 md:pt-0">
-        {activeTab === 'news' && <NewsSection />}
-        {activeTab === 'gotw' && <GameOfTheWeek />}
-        {activeTab === 'timeline' && <Timeline />}
-        {activeTab === 'reviews' && <ReviewSection />}
-        {activeTab === 'compare' && <ConsoleComparer />}
-        {activeTab === 'sage' && <RetroSage />}
+        <Suspense fallback={<RetroLoader />}>
+            {activeTab === 'news' && <NewsSection />}
+            {activeTab === 'gotw' && <GameOfTheWeek />}
+            {activeTab === 'timeline' && <Timeline />}
+            {activeTab === 'reviews' && <ReviewSection />}
+            {activeTab === 'compare' && <ConsoleComparer />}
+            {activeTab === 'sage' && <RetroSage />}
+        </Suspense>
       </main>
 
       {/* Mobile Navigation (Bottom Sticky) */}
