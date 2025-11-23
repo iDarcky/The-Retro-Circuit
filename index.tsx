@@ -1,6 +1,6 @@
-
 import React, { useState, useEffect, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
+import { HashRouter as Router, Routes, Route, NavLink, useLocation, Navigate } from 'react-router-dom';
 import RetroLoader from './components/RetroLoader';
 import SEOHead from './components/SEOHead';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -13,18 +13,26 @@ const GameOfTheWeek = React.lazy(() => import('./components/GameOfTheWeek'));
 const Timeline = React.lazy(() => import('./components/Timeline'));
 const ReviewSection = React.lazy(() => import('./components/ReviewSection'));
 
-const App = () => {
-  const [activeTab, setActiveTab] = useState<'news' | 'gotw' | 'compare' | 'timeline' | 'reviews' | 'sage'>('news');
-  const [cleanMode, setCleanMode] = useState(false);
+const navItems = [
+  { id: 'news', path: '/news', label: 'NEWS', icon: '📰', color: 'retro-neon', desc: 'Latest updates from the 8-bit and 16-bit era.' },
+  { id: 'gotw', path: '/game-of-the-week', label: 'GOTW', icon: '⭐', color: 'yellow-400', desc: 'Our curated pick for the Game of the Week.' },
+  { id: 'reviews', path: '/reviews', label: 'REVIEWS', icon: '📝', color: 'retro-blue', desc: 'User-submitted reviews and ratings.' },
+  { id: 'compare', path: '/compare', label: 'VS', icon: '⚔️', color: 'retro-blue', desc: 'Compare console specs: Genesis vs SNES and more.' },
+  { id: 'timeline', path: '/timeline', label: 'TIME', icon: '⏳', color: 'retro-pink', desc: 'Interactive history of video game consoles.' },
+  { id: 'sage', path: '/sage', label: 'SAGE', icon: '🔮', color: 'retro-pink', desc: 'Ask the AI Retro Sage about gaming history.' },
+];
 
-  const navItems = [
-    { id: 'news', label: 'NEWS', icon: '📰', color: 'retro-neon', desc: 'Latest updates from the 8-bit and 16-bit era.' },
-    { id: 'gotw', label: 'GOTW', icon: '⭐', color: 'yellow-400', desc: 'Our curated pick for the Game of the Week.' },
-    { id: 'reviews', label: 'REVIEWS', icon: '📝', color: 'retro-blue', desc: 'User-submitted reviews and ratings.' },
-    { id: 'compare', label: 'VS', icon: '⚔️', color: 'retro-blue', desc: 'Compare console specs: Genesis vs SNES and more.' },
-    { id: 'timeline', label: 'TIME', icon: '⏳', color: 'retro-pink', desc: 'Interactive history of video game consoles.' },
-    { id: 'sage', label: 'SAGE', icon: '🔮', color: 'retro-pink', desc: 'Ask the AI Retro Sage about gaming history.' },
-  ];
+const AppContent = () => {
+  const [cleanMode, setCleanMode] = useState(false);
+  const location = useLocation();
+
+  // Determine current metadata based on route
+  const currentNav = navItems.find(item => item.path === location.pathname) || navItems[0];
+
+  // SCROLL RESTORATION: Scroll to top on route change to simulate "New Page" behavior
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   // Effect to toggle clean mode classes on the body
   useEffect(() => {
@@ -45,14 +53,12 @@ const App = () => {
     }
   }, [cleanMode]);
 
-  const activeItem = navItems.find(i => i.id === activeTab);
-
   return (
     <div className={`min-h-screen ${cleanMode ? 'bg-gray-900' : ''} pb-24 md:pb-20 transition-colors duration-300`}>
       {/* Dynamic SEO Tags */}
       <SEOHead 
-        title={activeItem?.label || 'HOME'} 
-        description={activeItem?.desc || 'Welcome to The Retro Circuit.'} 
+        title={currentNav.label} 
+        description={currentNav.desc} 
       />
 
       {/* Header */}
@@ -69,21 +75,21 @@ const App = () => {
       <nav className="hidden md:block sticky top-0 z-30 bg-retro-dark/95 backdrop-blur border-b border-retro-grid mb-8">
         <div className="max-w-6xl mx-auto flex justify-center">
           {navItems.map((item) => (
-             <button
+             <NavLink
                 key={item.id}
-                onClick={() => setActiveTab(item.id as any)}
-                className={`px-6 py-4 font-pixel text-xs transition-all border-r border-retro-grid whitespace-nowrap hover:bg-retro-grid/30 ${
-                  activeTab === item.id
+                to={item.path}
+                className={({ isActive }) => `px-6 py-4 font-pixel text-xs transition-all border-r border-retro-grid whitespace-nowrap hover:bg-retro-grid/30 ${
+                  isActive
                     ? `bg-${item.color} text-retro-dark shadow-[inset_0_-4px_0_rgba(0,0,0,0.5)]` 
                     : `text-${item.color}`
                 }`}
-                style={{
-                    backgroundColor: activeTab === item.id ? (item.color === 'yellow-400' ? '#facc15' : undefined) : undefined,
-                    color: activeTab !== item.id && item.color === 'yellow-400' ? '#facc15' : undefined
-                }}
+                style={({ isActive }) => ({
+                    backgroundColor: isActive ? (item.color === 'yellow-400' ? '#facc15' : undefined) : undefined,
+                    color: !isActive && item.color === 'yellow-400' ? '#facc15' : undefined
+                })}
               >
                 {item.label}
-              </button>
+              </NavLink>
           ))}
         </div>
       </nav>
@@ -92,12 +98,16 @@ const App = () => {
       <main className="container mx-auto px-4 pt-4 md:pt-0">
         <ErrorBoundary>
           <Suspense fallback={<RetroLoader />}>
-              {activeTab === 'news' && <NewsSection />}
-              {activeTab === 'gotw' && <GameOfTheWeek />}
-              {activeTab === 'timeline' && <Timeline />}
-              {activeTab === 'reviews' && <ReviewSection />}
-              {activeTab === 'compare' && <ConsoleComparer />}
-              {activeTab === 'sage' && <RetroSage />}
+            <Routes>
+              <Route path="/" element={<Navigate to="/news" replace />} />
+              <Route path="/news" element={<NewsSection />} />
+              <Route path="/game-of-the-week" element={<GameOfTheWeek />} />
+              <Route path="/timeline" element={<Timeline />} />
+              <Route path="/reviews" element={<ReviewSection />} />
+              <Route path="/compare" element={<ConsoleComparer />} />
+              <Route path="/sage" element={<RetroSage />} />
+              <Route path="*" element={<Navigate to="/news" replace />} />
+            </Routes>
           </Suspense>
         </ErrorBoundary>
       </main>
@@ -106,22 +116,26 @@ const App = () => {
       <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 bg-retro-dark border-t border-retro-grid shadow-[0_-5px_10px_rgba(0,0,0,0.5)]">
         <div className="grid grid-cols-6 h-16">
           {navItems.map((item) => (
-            <button
+            <NavLink
               key={item.id}
-              onClick={() => setActiveTab(item.id as any)}
-              className={`flex flex-col items-center justify-center space-y-1 transition-colors ${
-                 activeTab === item.id ? `bg-retro-grid/50` : ''
+              to={item.path}
+              className={({ isActive }) => `flex flex-col items-center justify-center space-y-1 transition-colors ${
+                 isActive ? `bg-retro-grid/50` : ''
               }`}
             >
-              <span className="text-lg">{item.icon}</span>
-              <span className={`text-[8px] font-pixel ${
-                activeTab === item.id ? `text-${item.color}` : 'text-gray-500'
-              }`}
-              style={{ color: activeTab === item.id && item.color === 'yellow-400' ? '#facc15' : undefined }}
-              >
-                {item.label}
-              </span>
-            </button>
+              {({ isActive }) => (
+                <>
+                  <span className="text-lg">{item.icon}</span>
+                  <span className={`text-[8px] font-pixel ${
+                    isActive ? `text-${item.color}` : 'text-gray-500'
+                  }`}
+                  style={{ color: isActive && item.color === 'yellow-400' ? '#facc15' : undefined }}
+                  >
+                    {item.label}
+                  </span>
+                </>
+              )}
+            </NavLink>
           ))}
         </div>
       </nav>
@@ -147,6 +161,12 @@ const App = () => {
     </div>
   );
 };
+
+const App = () => (
+  <Router>
+    <AppContent />
+  </Router>
+);
 
 const root = createRoot(document.getElementById('root')!);
 root.render(<App />);
