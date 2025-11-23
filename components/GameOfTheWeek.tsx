@@ -65,24 +65,6 @@ const GameOfTheWeek: React.FC = () => {
                     </div>
                 </div>
 
-                {/* AI Generated Image Section */}
-                {game.imageUrl && (
-                  <div className="mb-8 flex justify-center">
-                    <div className="relative border-4 border-gray-700 bg-black p-2 shadow-2xl transform hover:scale-[1.02] transition-transform duration-300 rounded-sm">
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none z-10"></div>
-                      <img 
-                        src={game.imageUrl} 
-                        alt={`${game.title} 16-bit art`} 
-                        className="max-h-[400px] w-auto object-contain pixelated"
-                        style={{ imageRendering: 'pixelated' }}
-                      />
-                      <div className="absolute bottom-2 right-2 text-[10px] font-pixel text-white/50 z-20">
-                        AI GENERATED ART
-                      </div>
-                    </div>
-                  </div>
-                )}
-
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="md:col-span-2 font-mono text-gray-300 leading-relaxed text-lg whitespace-pre-line">
                         {game.content}
@@ -90,7 +72,7 @@ const GameOfTheWeek: React.FC = () => {
                     
                     <div className="bg-retro-grid/20 border border-retro-grid p-6 h-fit">
                         <h3 className="font-pixel text-sm text-retro-neon mb-4">WHY IT MATTERS</h3>
-                        <p className="font-mono text-sm text-retro-blue leading-relaxed">
+                        <p className="font-mono text-retro-blue text-sm leading-relaxed">
                             {game.whyItMatters}
                         </p>
                         <div className="mt-6 pt-6 border-t border-retro-grid text-center">

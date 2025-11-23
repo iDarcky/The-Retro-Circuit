@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, Review } from "../types";
 
@@ -216,4 +215,84 @@ export const fetchTimelineData = async (): Promise<TimelineEvent[]> => {
         { year: "1985", name: "NES (North America)", manufacturer: "Nintendo", description: "Single-handedly revitalized the US video game market with the release of Super Mario Bros." },
         { year: "1989", name: "Game Boy", manufacturer: "Nintendo", description: "Defined portable gaming for a decade, proving battery life and library matter more than color screens." },
         { year: "1994", name: "PlayStation", manufacturer: "Sony", description: "Marked Sony's dominance in the market and the transition from cartridges to CD-ROMs as the standard." },
-        { year: "1996", name: "Nintendo 64", manufacturer: "Nintendo", description: "Pioneered true 3D gaming with the analog stick, though it stuck to cartridges
+        { year: "1996", name: "Nintendo 64", manufacturer: "Nintendo", description: "Pioneered true 3D gaming with the analog stick, though it stuck to cartridges." },
+        { year: "2000", name: "PlayStation 2", manufacturer: "Sony", description: "The best-selling console of all time, doubling as a DVD player." },
+        { year: "2001", name: "Xbox", manufacturer: "Microsoft", description: "Microsoft's entry into the console market, featuring a built-in hard drive and Halo." }
+    ];
+};
+
+/**
+ * Fetches initial reviews for a given topic.
+ */
+export const fetchInitialReviews = async (topic: string): Promise<Review[]> => {
+  if (!isAiAvailable || !topic) {
+     return [
+       { id: '1', author: 'RetroGamer88', rating: 5, text: `I remember playing ${topic} when it first came out. A true classic!`, date: '199X', verified: true },
+       { id: '2', author: 'BitMaster', rating: 4, text: "Gameplay holds up well, but the graphics are a bit dated now.", date: '200X', verified: false }
+     ];
+  }
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: `Generate 3 short, authentic-sounding user reviews for the video game "${topic}" from a 90s/early 2000s perspective.`,
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              id: { type: Type.STRING },
+              author: { type: Type.STRING },
+              rating: { type: Type.INTEGER },
+              text: { type: Type.STRING },
+              date: { type: Type.STRING },
+              verified: { type: Type.BOOLEAN }
+            },
+            required: ['id', 'author', 'rating', 'text', 'date', 'verified']
+          }
+        }
+      }
+    });
+
+    if (response.text) {
+      return JSON.parse(response.text) as Review[];
+    }
+  } catch (error) {
+    console.error("Failed to fetch reviews:", error);
+  }
+  return [];
+};
+
+/**
+ * Moderates content using AI to check for appropriateness.
+ */
+export const moderateContent = async (text: string): Promise<boolean> => {
+  if (!isAiAvailable) return true; // Fail open if AI is down, or strictly implement bad word filter
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: `Analyze the following text for offensive, toxic, or inappropriate content. Return a JSON object with a boolean property "safe". Text: "${text}"`,
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+                safe: { type: Type.BOOLEAN }
+            },
+            required: ['safe']
+        }
+      }
+    });
+
+    if (response.text) {
+        const result = JSON.parse(response.text);
+        return result.safe;
+    }
+  } catch (error) {
+    console.error("Moderation failed:", error);
+  }
+  return true; // Default to safe if AI fails
+};
