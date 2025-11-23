@@ -23,7 +23,7 @@ const App = () => {
     <div className="min-h-screen pb-20">
       <header className="pt-10 pb-6 px-4 text-center border-b-4 border-retro-grid bg-retro-dark z-40 relative">
         <h1 className="text-4xl md:text-6xl font-pixel text-transparent bg-clip-text bg-gradient-to-r from-retro-pink via-retro-neon to-retro-blue drop-shadow-[4px_4px_0_rgba(255,255,255,0.2)] mb-4">
-          RETRO CIRCUIT
+          THE RETRO CIRCUIT
         </h1>
         <p className="font-mono text-retro-blue text-sm md:text-base tracking-widest uppercase">
           Your Gateway to the Golden Age
@@ -63,7 +63,7 @@ const App = () => {
 
       <footer className="fixed bottom-0 w-full bg-retro-dark border-t border-retro-grid py-2 px-4 text-center z-50">
         <div className="flex justify-between items-center max-w-6xl mx-auto font-mono text-[10px] text-gray-500 uppercase">
-          <span>© 199X-202X Retro Circuit</span>
+          <span>© 199X-202X The Retro Circuit</span>
           <span className="animate-pulse text-retro-neon">SYSTEM ONLINE</span>
         </div>
       </footer>
