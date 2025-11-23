@@ -22,23 +22,61 @@ const navItems = [
   { id: 'sage', path: '/sage', label: 'SAGE', icon: '🔮', color: 'retro-pink', desc: 'Ask the AI Retro Sage about gaming history.' },
 ];
 
+const KONAMI_CODE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+
 const AppContent = () => {
-  const [cleanMode, setCleanMode] = useState(false);
+  // Initialize Clean Mode from LocalStorage if available
+  const [cleanMode, setCleanMode] = useState(() => {
+    const saved = localStorage.getItem('retro_clean_mode');
+    return saved === 'true';
+  });
+  
+  const [godMode, setGodMode] = useState(false);
   const location = useLocation();
+  const [konamiIndex, setKonamiIndex] = useState(0);
 
   // Determine current metadata based on route
   const currentNav = navItems.find(item => item.path === location.pathname) || navItems[0];
 
-  // SCROLL RESTORATION: Scroll to top on route change to simulate "New Page" behavior
+  // SCROLL RESTORATION
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
+
+  // KONAMI CODE LISTENER
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === KONAMI_CODE[konamiIndex].toLowerCase()) {
+        const nextIndex = konamiIndex + 1;
+        if (nextIndex === KONAMI_CODE.length) {
+          activateGodMode();
+          setKonamiIndex(0);
+        } else {
+          setKonamiIndex(nextIndex);
+        }
+      } else {
+        setKonamiIndex(0);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [konamiIndex]);
+
+  const activateGodMode = () => {
+    setGodMode(true);
+    const audio = new Audio('https://upload.wikimedia.org/wikipedia/commons/4/4e/Coin_sound.wav'); // Public domain coin sound or similar
+    audio.play().catch(() => {}); // Ignore interaction errors
+    setTimeout(() => setGodMode(false), 5000); // Reset after 5 seconds
+  };
 
   // Effect to toggle clean mode classes on the body
   useEffect(() => {
     const scanlineDiv = document.querySelector('.scanlines');
     const flickerDiv = document.querySelector('.crt-flicker');
     const body = document.body;
+
+    localStorage.setItem('retro_clean_mode', cleanMode.toString());
 
     if (cleanMode) {
       if (scanlineDiv) scanlineDiv.classList.add('hidden');
@@ -54,12 +92,26 @@ const AppContent = () => {
   }, [cleanMode]);
 
   return (
-    <div className={`min-h-screen ${cleanMode ? 'bg-gray-900' : ''} pb-24 md:pb-20 transition-colors duration-300`}>
+    <div className={`min-h-screen pb-24 md:pb-20 transition-colors duration-300 ${cleanMode ? 'bg-gray-900' : ''} ${godMode ? 'invert' : ''}`}>
       {/* Dynamic SEO Tags */}
       <SEOHead 
         title={currentNav.label} 
         description={currentNav.desc} 
       />
+
+      {/* Skip to content for A11y */}
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:bg-retro-neon focus:text-black focus:p-4 focus:z-50 font-bold font-mono">
+        SKIP TO CONTENT
+      </a>
+
+      {/* God Mode Notification */}
+      {godMode && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none">
+          <h1 className="text-6xl md:text-9xl font-pixel text-retro-neon animate-bounce drop-shadow-[0_0_20px_rgba(0,0,0,1)]">
+            GOD MODE
+          </h1>
+        </div>
+      )}
 
       {/* Header */}
       <header className={`pt-8 pb-6 px-4 text-center border-b-4 border-retro-grid bg-retro-dark z-40 relative ${cleanMode ? 'border-gray-700' : ''}`}>
@@ -95,7 +147,7 @@ const AppContent = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 pt-4 md:pt-0">
+      <main id="main-content" className="container mx-auto px-4 pt-4 md:pt-0">
         <ErrorBoundary>
           <Suspense fallback={<RetroLoader />}>
             <Routes>

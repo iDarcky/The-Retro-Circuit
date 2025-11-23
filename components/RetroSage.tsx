@@ -4,19 +4,31 @@ import { ChatMessage } from '../types';
 import Button from './Button';
 
 const RetroSage: React.FC = () => {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
+  // Initialize from LocalStorage or Default
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    try {
+      const saved = localStorage.getItem('retro_sage_history');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (e) {
+      console.warn("Failed to load chat history", e);
+    }
+    return [{
       id: 'init',
       role: 'model',
       text: "GREETINGS, USER. I AM THE RETRO SAGE. ASK ME ANYTHING ABOUT THE 8-BIT, 16-BIT, OR 32-BIT ERAS.",
       timestamp: Date.now()
-    }
-  ]);
+    }];
+  });
+
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  // Persist messages whenever they change
   useEffect(() => {
+    localStorage.setItem('retro_sage_history', JSON.stringify(messages));
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
@@ -53,8 +65,24 @@ const RetroSage: React.FC = () => {
     setLoading(false);
   };
 
+  const clearMemory = () => {
+    setMessages([{
+      id: Date.now().toString(),
+      role: 'model',
+      text: "MEMORY CORE PURGED. READY FOR NEW INPUT.",
+      timestamp: Date.now()
+    }]);
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto p-4 h-[600px] flex flex-col">
+      <div className="flex justify-between items-center mb-2">
+         <h2 className="text-xl font-pixel text-retro-pink">THE ORACLE</h2>
+         <button onClick={clearMemory} className="text-[10px] font-mono text-retro-grid hover:text-retro-pink uppercase border border-retro-grid px-2 py-1">
+           Purge Memory
+         </button>
+      </div>
+
       <div className="flex-1 border-2 border-retro-neon bg-black/50 p-4 overflow-y-auto mb-4 custom-scrollbar rounded-lg shadow-[inset_0_0_20px_rgba(0,255,157,0.2)]">
         {messages.map((msg) => (
           <div key={msg.id} className={`mb-6 flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
