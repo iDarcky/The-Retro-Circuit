@@ -1,15 +1,8 @@
-import { GoogleGenAI, Type } from "@google/genai";
 import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, Review } from "../types";
 
-// Initialize the Google GenAI client
-// The API key is obtained from the environment variable process.env.API_KEY
-const apiKey = process.env.API_KEY || '';
-const ai = new GoogleGenAI({ apiKey });
+// MOCK DATA STORES
 
-const isAiAvailable = !!apiKey;
-
-// Fallback Data
-const FALLBACK_NEWS: NewsItem[] = [
+const MOCK_NEWS: NewsItem[] = [
     {
       headline: "Nintendo PlayStation Prototype Discovered",
       date: "Aug 2015",
@@ -36,263 +29,111 @@ const FALLBACK_NEWS: NewsItem[] = [
     }
 ];
 
+const MOCK_GAME_OF_THE_WEEK: GameOfTheWeekData = {
+    title: "Chrono Trigger",
+    developer: "Square",
+    year: "1995",
+    genre: "JRPG",
+    content: "Chrono Trigger is widely regarded as one of the greatest video games of all time. Developed by a 'Dream Team' consisting of Hironobu Sakaguchi (Final Fantasy), Yuji Horii (Dragon Quest), and Akira Toriyama (Dragon Ball), it redefined the RPG genre.\n\nThe game follows Crono and his friends as they travel through time to prevent a global catastrophe caused by Lavos.",
+    whyItMatters: "Introduced New Game+, multiple endings, and seamless battles without random encounters on a separate screen."
+};
+
+const MOCK_REVIEWS: Review[] = [
+    { id: '1', author: 'RetroGamer88', rating: 5, text: `I remember playing this when it first came out. A true classic! The soundtrack is unforgettable.`, date: '199X', verified: true },
+    { id: '2', author: 'BitMaster', rating: 4, text: "Gameplay holds up well, but the graphics are a bit dated now. Still worth a playthrough.", date: '200X', verified: false },
+    { id: '3', author: 'PolygonPolygon', rating: 5, text: "Best game of the 16-bit era. No contest.", date: 'Yesterday', verified: true }
+];
+
+const MOCK_TIMELINE: TimelineEvent[] = [
+    { year: "1972", name: "Magnavox Odyssey", manufacturer: "Magnavox", description: "The first commercial home video game console. It was analog, battery-powered, and used overlays on the TV screen." },
+    { year: "1977", name: "Atari 2600", manufacturer: "Atari", description: "Popularized the use of microprocessor-based hardware and ROM cartridges containing game code." },
+    { year: "1983", name: "The Video Game Crash", manufacturer: "Industry Wide", description: "Oversaturation of the market with low-quality games led to a massive recession in the video game industry." },
+    { year: "1985", name: "NES (North America)", manufacturer: "Nintendo", description: "Single-handedly revitalized the US video game market with the release of Super Mario Bros." },
+    { year: "1989", name: "Game Boy", manufacturer: "Nintendo", description: "Defined portable gaming for a decade, proving battery life and library matter more than color screens." },
+    { year: "1994", name: "PlayStation", manufacturer: "Sony", description: "Marked Sony's dominance in the market and the transition from cartridges to CD-ROMs as the standard." },
+    { year: "1996", name: "Nintendo 64", manufacturer: "Nintendo", description: "Pioneered true 3D gaming with the analog stick, though it stuck to cartridges." },
+    { year: "2000", name: "PlayStation 2", manufacturer: "Sony", description: "The best-selling console of all time, doubling as a DVD player." },
+    { year: "2001", name: "Xbox", manufacturer: "Microsoft", description: "Microsoft's entry into the console market, featuring a built-in hard drive and Halo." }
+];
+
 /**
- * Returns retro gaming news using Gemini to generate dynamic content.
+ * Returns retro gaming news (Mock Data).
  */
 export const fetchRetroNews = async (): Promise<NewsItem[]> => {
-  if (!isAiAvailable) return FALLBACK_NEWS;
-
-  try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: "Generate 4 interesting retro gaming news headlines from the 80s and 90s. Include a mix of Hardware, Software, Industry, and Rumor categories.",
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              headline: { type: Type.STRING },
-              date: { type: Type.STRING },
-              summary: { type: Type.STRING },
-              category: { type: Type.STRING }
-            },
-            required: ['headline', 'date', 'summary', 'category']
-          }
-        }
-      }
-    });
-
-    if (response.text) {
-        return JSON.parse(response.text) as NewsItem[];
-    }
-  } catch (error) {
-    console.error("Failed to fetch news from AI:", error);
-  }
-  return FALLBACK_NEWS;
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 800));
+  return MOCK_NEWS;
 };
 
 /**
- * Compares two consoles using Gemini Pro for reasoning.
+ * Compares two consoles (Mock Data for Visualization).
  */
 export const compareConsoles = async (consoleA: string, consoleB: string): Promise<ComparisonResult | null> => {
-  if (!isAiAvailable) {
-    // Basic fallback logic for demo purposes if AI is missing
-    return {
-        consoleA: consoleA,
-        consoleB: consoleB,
-        summary: "Offline Mode: AI analysis unavailable. Please check API Key configuration.",
-        points: []
-    };
-  }
-
-  try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-pro-preview',
-      contents: `Compare the video game consoles "${consoleA}" and "${consoleB}". Provide a technical and historical comparison.`,
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            consoleA: { type: Type.STRING },
-            consoleB: { type: Type.STRING },
-            summary: { type: Type.STRING },
-            points: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  feature: { type: Type.STRING },
-                  consoleAValue: { type: Type.STRING },
-                  consoleBValue: { type: Type.STRING },
-                  winner: { type: Type.STRING, description: "Must be 'A', 'B', or 'Tie'" }
-                },
-                required: ['feature', 'consoleAValue', 'consoleBValue', 'winner']
-              }
-            }
-          },
-          required: ['consoleA', 'consoleB', 'summary', 'points']
-        }
-      }
-    });
-
-    if (response.text) {
-        return JSON.parse(response.text) as ComparisonResult;
-    }
-  } catch (error) {
-    console.error("Comparison failed:", error);
-  }
-  return null;
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  
+  // Return a static comparison regardless of input for visualization purposes
+  return {
+    consoleA: consoleA || "Sega Genesis",
+    consoleB: consoleB || "Super Nintendo",
+    summary: "The 16-bit console war was a defining moment in gaming history. Sega marketed 'Blast Processing' and edgy attitude, while Nintendo focused on color palette, sound quality, and exclusive IP.",
+    points: [
+      { feature: "CPU Speed", consoleAValue: "7.6 MHz (68000)", consoleBValue: "3.58 MHz (65816)", winner: "A" },
+      { feature: "Colors on Screen", consoleAValue: "61 Colors", consoleBValue: "256 Colors", winner: "B" },
+      { feature: "Sound Chip", consoleAValue: "Yamaha YM2612 (FM)", consoleBValue: "Sony SPC700 (Sample)", winner: "B" },
+      { feature: "Resolution", consoleAValue: "320 x 224", consoleBValue: "256 x 224", winner: "A" },
+      { feature: "Best Selling Game", consoleAValue: "Sonic the Hedgehog", consoleBValue: "Super Mario World", winner: "Tie" }
+    ]
+  };
 };
 
 /**
- * Chat with Retro Sage (Gemini Flash).
+ * Chat with Retro Sage (Mock Response).
  */
 export const sendChatMessage = async (history: any[], newMessage: string): Promise<string> => {
-  if (!isAiAvailable) return "COMMUNICATION ERROR: SYSTEM OFFLINE.";
-
-  try {
-    // Ensure history is in the correct format for Gemini
-    // RetroSage history: { role: string, parts: [{ text: string }] }[]
-    const contents = [
-      ...history,
-      { role: 'user', parts: [{ text: newMessage }] }
-    ];
-
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: contents,
-      config: {
-        systemInstruction: "You are the Retro Sage, a wise AI knowledgeable about 8-bit, 16-bit, and 32-bit video game history. Speak in a slightly robotic but helpful retro manner. Keep answers concise."
-      }
-    });
-
-    return response.text || "I am unable to process that query.";
-  } catch (error) {
-    console.error("Chat failed:", error);
-    return "SIGNAL LOST.";
-  }
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  
+  const responses = [
+      "I AM ACCESSING MY DATA BANKS... YES, THE KONAMI CODE IS UP, UP, DOWN, DOWN, LEFT, RIGHT, LEFT, RIGHT, B, A.",
+      "IN 1983, ATARI BURIED THOUSANDS OF E.T. CARTRIDGES IN A LANDFILL IN ALAMOGORDO, NEW MEXICO.",
+      "THE SEGA DREAMCAST WAS AHEAD OF ITS TIME, FEATURING BUILT-IN ONLINE PLAY CAPABILITIES.",
+      "PLEASE INSERT COIN TO CONTINUE THIS QUERY."
+  ];
+  
+  // Return a random retro fact
+  return responses[Math.floor(Math.random() * responses.length)];
 };
 
 /**
- * Returns Game of the Week (Mock/Static fallback preferred for consistency, but can be AI).
+ * Returns Game of the Week (Mock Data).
  */
 export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData> => {
-    let gameData: GameOfTheWeekData = {
-        title: "Chrono Trigger",
-        developer: "Square",
-        year: "1995",
-        genre: "JRPG",
-        content: "Chrono Trigger is widely regarded as one of the greatest video games of all time. Developed by a 'Dream Team' consisting of Hironobu Sakaguchi (Final Fantasy), Yuji Horii (Dragon Quest), and Akira Toriyama (Dragon Ball), it redefined the RPG genre.\n\nThe game follows Crono and his friends as they travel through time to prevent a global catastrophe caused by Lavos.",
-        whyItMatters: "Introduced New Game+, multiple endings, and seamless battles without random encounters on a separate screen."
-    };
-
-    if (isAiAvailable) {
-        try {
-            // 1. Fetch Text Info
-            const textResponse = await ai.models.generateContent({
-                model: 'gemini-2.5-flash',
-                contents: "Pick a random classic video game (8-bit to 32-bit era) as Game of the Week. Provide detailed info.",
-                config: {
-                    responseMimeType: 'application/json',
-                    responseSchema: {
-                        type: Type.OBJECT,
-                        properties: {
-                            title: { type: Type.STRING },
-                            developer: { type: Type.STRING },
-                            year: { type: Type.STRING },
-                            genre: { type: Type.STRING },
-                            content: { type: Type.STRING },
-                            whyItMatters: { type: Type.STRING }
-                        },
-                        required: ['title', 'developer', 'year', 'genre', 'content', 'whyItMatters']
-                    }
-                }
-            });
-
-            if (textResponse.text) {
-                gameData = JSON.parse(textResponse.text);
-            }
-
-        } catch (e) {
-            console.warn("AI GOTW failed, using fallback.", e);
-        }
-    }
-
-    return gameData;
+    await new Promise(resolve => setTimeout(resolve, 600));
+    return MOCK_GAME_OF_THE_WEEK;
 };
 
 /**
- * Returns timeline events (Mock data is better for strict historical timeline consistency).
+ * Returns timeline events (Mock Data).
  */
 export const fetchTimelineData = async (): Promise<TimelineEvent[]> => {
-    return [
-        { year: "1972", name: "Magnavox Odyssey", manufacturer: "Magnavox", description: "The first commercial home video game console. It was analog, battery-powered, and used overlays on the TV screen." },
-        { year: "1977", name: "Atari 2600", manufacturer: "Atari", description: "Popularized the use of microprocessor-based hardware and ROM cartridges containing game code." },
-        { year: "1983", name: "The Video Game Crash", manufacturer: "Industry Wide", description: "Oversaturation of the market with low-quality games led to a massive recession in the video game industry." },
-        { year: "1985", name: "NES (North America)", manufacturer: "Nintendo", description: "Single-handedly revitalized the US video game market with the release of Super Mario Bros." },
-        { year: "1989", name: "Game Boy", manufacturer: "Nintendo", description: "Defined portable gaming for a decade, proving battery life and library matter more than color screens." },
-        { year: "1994", name: "PlayStation", manufacturer: "Sony", description: "Marked Sony's dominance in the market and the transition from cartridges to CD-ROMs as the standard." },
-        { year: "1996", name: "Nintendo 64", manufacturer: "Nintendo", description: "Pioneered true 3D gaming with the analog stick, though it stuck to cartridges." },
-        { year: "2000", name: "PlayStation 2", manufacturer: "Sony", description: "The best-selling console of all time, doubling as a DVD player." },
-        { year: "2001", name: "Xbox", manufacturer: "Microsoft", description: "Microsoft's entry into the console market, featuring a built-in hard drive and Halo." }
-    ];
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return MOCK_TIMELINE;
 };
 
 /**
- * Fetches initial reviews for a given topic.
+ * Fetches initial reviews for a given topic (Mock Data).
  */
 export const fetchInitialReviews = async (topic: string): Promise<Review[]> => {
-  if (!isAiAvailable || !topic) {
-     return [
-       { id: '1', author: 'RetroGamer88', rating: 5, text: `I remember playing ${topic} when it first came out. A true classic!`, date: '199X', verified: true },
-       { id: '2', author: 'BitMaster', rating: 4, text: "Gameplay holds up well, but the graphics are a bit dated now.", date: '200X', verified: false }
-     ];
-  }
-
-  try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: `Generate 3 short, authentic-sounding user reviews for the video game "${topic}" from a 90s/early 2000s perspective.`,
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              id: { type: Type.STRING },
-              author: { type: Type.STRING },
-              rating: { type: Type.INTEGER },
-              text: { type: Type.STRING },
-              date: { type: Type.STRING },
-              verified: { type: Type.BOOLEAN }
-            },
-            required: ['id', 'author', 'rating', 'text', 'date', 'verified']
-          }
-        }
-      }
-    });
-
-    if (response.text) {
-      return JSON.parse(response.text) as Review[];
-    }
-  } catch (error) {
-    console.error("Failed to fetch reviews:", error);
-  }
-  return [];
+  await new Promise(resolve => setTimeout(resolve, 800));
+  return MOCK_REVIEWS;
 };
 
 /**
- * Moderates content using AI to check for appropriateness.
+ * Moderates content (Mock Logic - Always True).
  */
 export const moderateContent = async (text: string): Promise<boolean> => {
-  if (!isAiAvailable) return true; // Fail open if AI is down, or strictly implement bad word filter
-
-  try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: `Analyze the following text for offensive, toxic, or inappropriate content. Return a JSON object with a boolean property "safe". Text: "${text}"`,
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-                safe: { type: Type.BOOLEAN }
-            },
-            required: ['safe']
-        }
-      }
-    });
-
-    if (response.text) {
-        const result = JSON.parse(response.text);
-        return result.safe;
-    }
-  } catch (error) {
-    console.error("Moderation failed:", error);
-  }
-  return true; // Default to safe if AI fails
+  // Simple bad word filter simulation
+  const badWords = ['badword', 'spam', 'virus'];
+  const hasBadWord = badWords.some(word => text.toLowerCase().includes(word));
+  
+  return !hasBadWord;
 };
