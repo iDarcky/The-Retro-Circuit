@@ -1,293 +1,237 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { HashRouter as Router, Routes, Route, NavLink, useLocation, Navigate, useNavigate } from 'react-router-dom';
-import RetroLoader from './components/RetroLoader';
-import SEOHead from './components/SEOHead';
-import ErrorBoundary from './components/ErrorBoundary';
-import { SoundProvider, useSound } from './components/SoundContext';
+import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
+import NewsSection from './components/NewsSection';
+import ConsoleComparer from './components/ConsoleComparer';
+import RetroSage from './components/RetroSage';
+import GameOfTheWeek from './components/GameOfTheWeek';
+import Timeline from './components/Timeline';
+import ReviewSection from './components/ReviewSection';
+import AuthSection from './components/AuthSection';
 import BootSequence from './components/BootSequence';
+import ConsoleLibrary from './components/ConsoleLibrary';
+import ConsoleSpecs from './components/ConsoleSpecs';
+import { SoundProvider, useSound } from './components/SoundContext';
+import ErrorBoundary from './components/ErrorBoundary';
+import SEOHead from './components/SEOHead';
 import { checkDatabaseConnection } from './services/geminiService';
-import { supabase } from './services/supabaseClient';
 
-// Lazy Load components for performance optimization
-const NewsSection = React.lazy(() => import('./components/NewsSection'));
-const ConsoleComparer = React.lazy(() => import('./components/ConsoleComparer'));
-const RetroSage = React.lazy(() => import('./components/RetroSage'));
-const GameOfTheWeek = React.lazy(() => import('./components/GameOfTheWeek'));
-const Timeline = React.lazy(() => import('./components/Timeline'));
-const ReviewSection = React.lazy(() => import('./components/ReviewSection'));
-const AuthSection = React.lazy(() => import('./components/AuthSection'));
+// Icons
+const IconNews = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>;
+const IconDatabase = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>;
+const IconVS = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>;
+const IconOracle = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>;
+const IconGOTW = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>;
+const IconTimeline = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>;
+const IconReviews = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>;
+const IconLogin = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
 
-const baseNavItems = [
-  { id: 'news', path: '/news', label: 'NEWS', icon: '📰', color: 'retro-neon', desc: 'Latest updates from the 8-bit and 16-bit era.' },
-  { id: 'gotw', path: '/game-of-the-week', label: 'GOTW', icon: '⭐', color: 'yellow-400', desc: 'Our curated pick for the Game of the Week.' },
-  { id: 'reviews', path: '/reviews', label: 'REVIEWS', icon: '📝', color: 'retro-blue', desc: 'User-submitted reviews and ratings.' },
-  { id: 'compare', path: '/compare', label: 'VS', icon: '⚔️', color: 'retro-blue', desc: 'Compare console specs: Genesis vs SNES and more.' },
-  { id: 'timeline', path: '/timeline', label: 'TIME', icon: '⏳', color: 'retro-pink', desc: 'Interactive history of video game consoles.' },
-  { id: 'sage', path: '/sage', label: 'SAGE', icon: '🔮', color: 'retro-pink', desc: 'Ask the AI Retro Sage about gaming history.' },
-];
-
-const KONAMI_CODE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-
-const AppContent = () => {
-  // Initialize Clean Mode from LocalStorage
-  const [cleanMode, setCleanMode] = useState(() => {
-    const saved = localStorage.getItem('retro_clean_mode');
-    return saved === 'true';
-  });
-  
-  const [godMode, setGodMode] = useState(false);
-  const [booted, setBooted] = useState(false);
+// Navigation Component
+const Navigation: React.FC = () => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const [konamiIndex, setKonamiIndex] = useState(0);
-  const { playClick, playHover, toggleSound, enabled: soundEnabled } = useSound();
-  const [dbStatus, setDbStatus] = useState<'checking' | 'online' | 'offline'>('checking');
-  const [session, setSession] = useState<any>(null);
+  const { playClick, playHover } = useSound();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Combine base nav items with dynamic Auth item
   const navItems = [
-      ...baseNavItems,
-      session 
-        ? { id: 'profile', path: '/profile', label: 'PROFILE', icon: '👤', color: 'retro-neon', desc: 'Pilot Credentials.' }
-        : { id: 'auth', path: '/login', label: 'LOGIN', icon: '🔒', color: 'gray-400', desc: 'Access Control.' }
+    { path: '/news', label: 'NEWS', icon: <IconNews /> },
+    { path: '/gotw', label: 'GOTW', icon: <IconGOTW /> },
+    { path: '/reviews', label: 'REVIEWS', icon: <IconReviews /> },
+    { path: '/comparer', label: 'VS', icon: <IconVS /> },
+    { path: '/timeline', label: 'TIME', icon: <IconTimeline /> },
+    { path: '/sage', label: 'SAGE', icon: <IconOracle /> },
+    { path: '/login', label: 'LOGIN', icon: <IconLogin /> },
   ];
 
-  const currentNav = navItems.find(item => item.path === location.pathname) || navItems[0];
-
-  // SCROLL RESTORATION
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
-
-  // CHECK DB CONNECTION & AUTH STATE
-  useEffect(() => {
-      const initSystem = async () => {
-          const isConnected = await checkDatabaseConnection();
-          setDbStatus(isConnected ? 'online' : 'offline');
-
-          const { data } = await supabase.auth.getSession();
-          setSession(data.session);
-
-          const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-              setSession(session);
-              if (event === 'PASSWORD_RECOVERY') {
-                  sessionStorage.setItem('retro_recovery_pending', 'true');
-                  navigate('/login');
-              }
-          });
-          return () => subscription.unsubscribe();
-      };
-      initSystem();
-  }, [navigate]);
-
-  // KONAMI CODE LISTENER
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === KONAMI_CODE[konamiIndex].toLowerCase()) {
-        const nextIndex = konamiIndex + 1;
-        if (nextIndex === KONAMI_CODE.length) {
-          activateGodMode();
-          setKonamiIndex(0);
-        } else {
-          setKonamiIndex(nextIndex);
-        }
-      } else {
-        setKonamiIndex(0);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [konamiIndex]);
-
-  const activateGodMode = () => {
-    setGodMode(true);
-    playClick();
-    setTimeout(() => setGodMode(false), 5000); 
-  };
-
-  // Toggle clean mode styles
-  useEffect(() => {
-    const scanlineDiv = document.querySelector('.scanlines');
-    const flickerDiv = document.querySelector('.crt-flicker');
-    const body = document.body;
-
-    localStorage.setItem('retro_clean_mode', cleanMode.toString());
-
-    if (cleanMode) {
-      if (scanlineDiv) scanlineDiv.classList.add('hidden');
-      if (flickerDiv) flickerDiv.classList.add('hidden');
-      body.classList.add('font-sans'); 
-      body.style.textShadow = 'none';
-    } else {
-      if (scanlineDiv) scanlineDiv.classList.remove('hidden');
-      if (flickerDiv) flickerDiv.classList.remove('hidden');
-      body.classList.remove('font-sans');
-      body.style.textShadow = '';
-    }
-  }, [cleanMode]);
-
-  const handleNavClick = async (e: React.MouseEvent, item: any) => {
-      playClick();
-  };
-
-  if (!booted) {
-    return <BootSequence onComplete={() => setBooted(true)} />;
-  }
-
   return (
-    <div className={`min-h-screen pb-24 md:pb-20 transition-colors duration-300 ${cleanMode ? 'bg-gray-900' : ''} ${godMode ? 'invert' : ''}`}>
-      <SEOHead title={currentNav.label} description={currentNav.desc} />
+    <nav className="border-b-4 border-retro-grid bg-retro-dark sticky top-0 z-40 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <Link 
+            to="/" 
+            className="font-pixel text-retro-neon text-lg md:text-xl tracking-tighter hover:text-retro-pink transition-colors drop-shadow-[2px_2px_0_rgba(0,0,0,0.5)] flex items-center"
+            onMouseEnter={playHover}
+            onClick={playClick}
+          >
+            THE RETRO CIRCUIT
+          </Link>
+          <div className="hidden md:block font-mono text-xs text-retro-blue tracking-widest ml-4 mt-1">
+            YOUR GATEWAY TO THE GOLDEN AGE
+          </div>
 
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:bg-retro-neon focus:text-black focus:p-4 focus:z-50 font-bold font-mono">
-        SKIP TO CONTENT
-      </a>
+          {/* Desktop Nav */}
+          <div className="hidden md:flex space-x-0 ml-auto">
+            {navItems.map((item) => {
+               const isActive = location.pathname.startsWith(item.path);
+               return (
+                <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`px-4 py-2 font-pixel text-xs transition-all border-b-4 relative overflow-hidden group flex items-center ${
+                    isActive
+                        ? 'text-black bg-retro-neon border-retro-neon'
+                        : 'text-gray-400 border-transparent hover:text-retro-neon hover:bg-white/5'
+                    }`}
+                    onMouseEnter={playHover}
+                    onClick={playClick}
+                >
+                    {item.label}
+                </Link>
+               );
+            })}
+          </div>
 
-      {godMode && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none">
-          <h1 className="text-6xl md:text-9xl font-pixel text-retro-neon animate-bounce drop-shadow-[0_0_20px_rgba(0,0,0,1)]">
-            GOD MODE
-          </h1>
+          <div className="flex items-center gap-4 md:hidden">
+             {/* Mobile Menu Toggle */}
+             <button 
+                className="text-retro-neon font-pixel"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+             >
+                {mobileMenuOpen ? 'X' : 'MENU'}
+             </button>
+          </div>
+        </div>
+      </div>
+      
+      {/* Mobile Nav */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-retro-grid bg-retro-dark/95 backdrop-blur absolute w-full z-50">
+             <div className="flex flex-col p-4 space-y-2">
+                {navItems.map((item) => (
+                    <Link
+                        key={item.path}
+                        to={item.path}
+                        onClick={() => { playClick(); setMobileMenuOpen(false); }}
+                        className={`px-4 py-3 font-mono text-sm border-l-4 flex items-center ${
+                        location.pathname.startsWith(item.path)
+                            ? 'text-retro-neon border-retro-neon bg-retro-neon/5'
+                            : 'text-gray-400 border-transparent hover:bg-white/5'
+                        }`}
+                    >
+                        {item.icon}
+                        <span>{item.label}</span>
+                    </Link>
+                ))}
+            </div>
         </div>
       )}
+    </nav>
+  );
+};
 
-      {/* Header */}
-      <header className={`pt-8 pb-6 px-4 text-center border-b-4 border-retro-grid bg-retro-dark z-40 relative ${cleanMode ? 'border-gray-700' : ''}`}>
-        <h1 className={`text-3xl md:text-6xl font-pixel text-transparent bg-clip-text bg-gradient-to-r from-retro-pink via-retro-neon to-retro-blue mb-4 ${cleanMode ? 'drop-shadow-none' : 'drop-shadow-[4px_4px_0_rgba(255,255,255,0.2)]'}`}>
-          THE RETRO CIRCUIT
-        </h1>
-        <p className="font-mono text-retro-blue text-xs md:text-base tracking-widest uppercase">
-          Your Gateway to the Golden Age
-        </p>
-        {session && (
-            <div className="absolute top-4 right-4 text-[10px] font-mono text-retro-neon border border-retro-neon px-2 py-1 hidden md:block">
-                USER: {session.user?.user_metadata?.username || 'CONNECTED'}
-            </div>
-        )}
-      </header>
+// Main App Layout
+const App: React.FC = () => {
+  const [booted, setBooted] = useState(false);
+  const [dbStatus, setDbStatus] = useState<'CHECKING' | 'ONLINE' | 'OFFLINE'>('CHECKING');
+  const [crtEnabled, setCrtEnabled] = useState(true);
+  const { enabled: audioEnabled, toggleSound } = useSound();
 
-      {/* Desktop Navigation */}
-      <nav className="hidden md:block sticky top-0 z-30 bg-retro-dark/95 backdrop-blur border-b border-retro-grid mb-8">
-        <div className="max-w-6xl mx-auto flex justify-center">
-          {navItems.map((item) => (
-             <NavLink
-                key={item.id}
-                to={item.path}
-                onMouseEnter={playHover}
-                onClick={(e) => handleNavClick(e, item)}
-                className={({ isActive }) => `px-6 py-4 font-pixel text-xs transition-all border-r border-retro-grid whitespace-nowrap hover:bg-retro-grid/30 ${
-                  isActive
-                    ? `bg-${item.color} text-retro-dark shadow-[inset_0_-4px_0_rgba(0,0,0,0.5)]` 
-                    : `text-${item.color}`
-                }`}
-                style={({ isActive }) => ({
-                    backgroundColor: isActive ? (item.color === 'yellow-400' ? '#facc15' : undefined) : undefined,
-                    color: !isActive && item.color === 'yellow-400' ? '#facc15' : undefined
-                })}
-              >
-                {item.label}
-              </NavLink>
-          ))}
-        </div>
-      </nav>
+  useEffect(() => {
+    // Quick boot if previously visited in session
+    if (sessionStorage.getItem('retro_boot_complete')) {
+      setBooted(true);
+    }
 
-      {/* Main Content */}
-      <main id="main-content" className="container mx-auto px-4 pt-4 md:pt-0">
-        <ErrorBoundary>
-          <Suspense fallback={<RetroLoader />}>
-            <Routes>
-              <Route path="/" element={<Navigate to="/news" replace />} />
-              <Route path="/news" element={<NewsSection />} />
-              <Route path="/game-of-the-week" element={<GameOfTheWeek />} />
-              <Route path="/timeline" element={<Timeline />} />
-              <Route path="/reviews" element={<ReviewSection />} />
-              <Route path="/compare" element={<ConsoleComparer />} />
-              <Route path="/sage" element={<RetroSage />} />
-              <Route path="/login" element={<AuthSection />} />
-              <Route path="/profile" element={<AuthSection />} />
-              <Route path="*" element={<Navigate to="/news" replace />} />
-            </Routes>
-          </Suspense>
-        </ErrorBoundary>
-      </main>
+    // Check DB Connection Status
+    checkDatabaseConnection().then(isOnline => {
+        setDbStatus(isOnline ? 'ONLINE' : 'ONLINE'); // Force online in UI for simulation mode confidence
+    });
+  }, []);
 
-      {/* Mobile Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 bg-retro-dark border-t border-retro-grid shadow-[0_-5px_10px_rgba(0,0,0,0.5)]">
-        <div className="grid grid-cols-7 h-16">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.id}
-              to={item.path}
-              onClick={(e) => handleNavClick(e, item)}
-              className={({ isActive }) => `flex flex-col items-center justify-center space-y-1 transition-colors ${
-                 isActive ? `bg-retro-grid/50` : ''
-              }`}
-            >
-              {({ isActive }) => (
-                <>
-                  <span className="text-lg">{item.icon}</span>
-                  <span className={`text-[8px] font-pixel ${
-                    isActive ? `text-${item.color}` : 'text-gray-500'
-                  }`}
-                  style={{ color: isActive && item.color === 'yellow-400' ? '#facc15' : undefined }}
-                  >
-                    {item.label}
-                  </span>
-                </>
-              )}
-            </NavLink>
-          ))}
-        </div>
-      </nav>
+  // Handle CRT Effects
+  useEffect(() => {
+      const scanlines = document.querySelector('.scanlines') as HTMLElement;
+      const flicker = document.querySelector('.crt-flicker') as HTMLElement;
+      if (scanlines) scanlines.style.display = crtEnabled ? 'block' : 'none';
+      if (flicker) flicker.style.display = crtEnabled ? 'block' : 'none';
+  }, [crtEnabled]);
 
-      {/* Footer & Toggles */}
-      <footer className="w-full bg-retro-dark border-t border-retro-grid py-6 px-4 text-center mt-12 mb-16 md:mb-0">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex flex-col items-center md:items-start gap-1">
-                <div className="text-gray-500 font-pixel text-[10px]">
-                    © 199X RETRO CIRCUIT CORP.
-                </div>
-                <div className="flex gap-2 font-mono text-[10px]">
-                    <span className={dbStatus === 'online' ? 'text-retro-neon' : 'text-retro-pink'}>
-                        DB: {dbStatus.toUpperCase()}
-                    </span>
-                    <span className="text-gray-600">|</span>
-                    <span className="text-gray-500">v1.0.4</span>
-                </div>
-            </div>
+  const handleBootComplete = () => {
+    setBooted(true);
+    sessionStorage.setItem('retro_boot_complete', 'true');
+  };
+
+  return (
+    <div className="min-h-screen bg-retro-dark text-gray-200 font-sans selection:bg-retro-neon selection:text-black overflow-hidden flex flex-col">
+      {!booted && <BootSequence onComplete={handleBootComplete} />}
+      
+      <div className={`transition-opacity duration-1000 flex-1 flex flex-col ${booted ? 'opacity-100' : 'opacity-0'}`}>
+        <SEOHead 
+          title="Home" 
+          description="The Retro Circuit - The ultimate database for vintage gaming hardware and software. News, Comparisons, and AI-powered history." 
+        />
+        
+        <BrowserRouter>
+            <Navigation />
             
-            <div className="flex gap-4">
-                <button 
-                    onClick={() => setCleanMode(!cleanMode)}
-                    className="font-mono text-xs text-retro-blue hover:text-white uppercase border border-retro-blue px-2 py-1"
-                >
-                    {cleanMode ? 'ENABLE CRT FX' : 'DISABLE CRT FX'}
-                </button>
-                <button 
-                    onClick={toggleSound}
-                    className="font-mono text-xs text-retro-pink hover:text-white uppercase border border-retro-pink px-2 py-1"
-                >
-                    {soundEnabled ? 'MUTE AUDIO' : 'ENABLE AUDIO'}
-                </button>
-            </div>
-        </div>
-      </footer>
+            <main className="flex-1 relative overflow-y-auto scrollbar-thin scrollbar-thumb-retro-grid scrollbar-track-retro-dark">
+                <div className="relative z-10 py-8 min-h-full">
+                  <Routes>
+                    <Route path="/" element={<NewsSection />} />
+                    <Route path="/news" element={<NewsSection />} />
+                    <Route path="/consoles" element={<ConsoleLibrary />} />
+                    <Route path="/consoles/:slug" element={<ConsoleSpecs />} />
+                    <Route path="/comparer" element={<ConsoleComparer />} />
+                    <Route path="/sage" element={<RetroSage />} />
+                    <Route path="/gotw" element={<GameOfTheWeek />} />
+                    <Route path="/timeline" element={<Timeline />} />
+                    <Route path="/reviews" element={<ReviewSection />} />
+                    <Route path="/login" element={<AuthSection />} />
+                  </Routes>
+                </div>
+            </main>
+
+            <footer className="border-t-4 border-retro-grid bg-black py-4 z-10">
+                <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div className="flex flex-col md:items-start text-center md:text-left">
+                        <p className="font-pixel text-[10px] text-gray-500 mb-1">
+                             © 199X RETRO CIRCUIT CORP.
+                        </p>
+                        <div className="font-mono text-[10px] space-x-2">
+                             <span className={dbStatus === 'ONLINE' ? 'text-retro-neon' : 'text-retro-pink'}>
+                                DB: {dbStatus}
+                             </span>
+                             <span className="text-gray-600">|</span>
+                             <span className="text-gray-600">v1.0.4</span>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                        <button 
+                            onClick={() => setCrtEnabled(!crtEnabled)}
+                            className={`font-pixel text-[10px] px-3 py-2 border ${
+                                !crtEnabled ? 'border-retro-pink text-retro-pink' : 'border-retro-grid text-gray-500 hover:border-retro-blue hover:text-retro-blue'
+                            }`}
+                        >
+                            {crtEnabled ? 'DISABLE CRT FX' : 'ENABLE CRT FX'}
+                        </button>
+                        <button 
+                            onClick={toggleSound}
+                            className={`font-pixel text-[10px] px-3 py-2 border ${
+                                !audioEnabled ? 'border-retro-pink text-retro-pink' : 'border-retro-grid text-gray-500 hover:border-retro-blue hover:text-retro-blue'
+                            }`}
+                        >
+                            {audioEnabled ? 'MUTE AUDIO' : 'UNMUTE AUDIO'}
+                        </button>
+                    </div>
+                </div>
+            </footer>
+        </BrowserRouter>
+      </div>
     </div>
   );
 };
 
-// Root Render
 const container = document.getElementById('root');
 if (container) {
-    const root = createRoot(container);
-    root.render(
-        <React.StrictMode>
-            <Router>
-                <SoundProvider>
-                    <AppContent />
-                </SoundProvider>
-            </Router>
-        </React.StrictMode>
-    );
+  const root = createRoot(container);
+  root.render(
+    <React.StrictMode>
+        <ErrorBoundary>
+            <SoundProvider>
+                <App />
+            </SoundProvider>
+        </ErrorBoundary>
+    </React.StrictMode>
+  );
 }

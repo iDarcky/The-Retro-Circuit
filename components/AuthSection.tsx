@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { retroAuth } from '../services/geminiService';
 import { supabase } from '../services/supabaseClient';
@@ -102,8 +103,9 @@ const AuthSection: React.FC = () => {
                     PILOT CREDENTIALS
                 </div>
                 
-                <div className="w-24 h-24 mx-auto bg-retro-grid/50 border-2 border-retro-blue rounded-full flex items-center justify-center mb-6 overflow-hidden">
-                    <span className="text-4xl">👤</span>
+                <div className="w-24 h-24 mx-auto bg-retro-grid/50 border-2 border-retro-blue rounded-full flex items-center justify-center mb-6 overflow-hidden relative group">
+                    <svg className="w-12 h-12 text-retro-neon group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <div className="absolute inset-0 border-2 border-retro-blue rounded-full animate-pulse-fast"></div>
                 </div>
 
                 <div className="space-y-4 mb-8 text-left px-8 font-mono text-retro-blue">

@@ -51,3 +51,30 @@ export interface Review {
   date: string;
   verified: boolean;
 }
+
+// Phase 1: New Data Architecture for Consoles
+export interface ConsoleDetails {
+  id: string;
+  name: string;
+  slug: string;
+  manufacturer: string;
+  release_year: number;
+  release_date?: string;
+  type: string; // 'Home', 'Handheld'
+  generation: number;
+  intro_text: string;
+  image_url?: string;
+  
+  // Specs
+  cpu: string;
+  gpu: string;
+  ram: string;
+  media: string;
+  audio: string;
+  resolution: string;
+  
+  // Market
+  units_sold: string;
+  launch_price: string;
+  best_selling_game: string;
+}
