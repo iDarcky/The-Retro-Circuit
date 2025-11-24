@@ -134,7 +134,7 @@ const App: React.FC = () => {
 
     // Check DB Connection Status
     checkDatabaseConnection().then(isOnline => {
-        setDbStatus(isOnline ? 'ONLINE' : 'ONLINE'); // Force online in UI for simulation mode confidence
+        setDbStatus(isOnline ? 'ONLINE' : 'OFFLINE');
     });
   }, []);
 

@@ -1,4 +1,5 @@
 
+
 import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, Review, ConsoleDetails } from "../types";
 import { supabase } from "./supabaseClient";
 
@@ -92,6 +93,25 @@ const MOCK_REVIEWS: Review[] = [
     { id: "3", author: "SonyPony", rating: 5, text: "PS2 library is unmatched. Best DVD player ever too.", date: "12/15/2023", verified: true }
 ];
 
+// HELPER: Parse memory strings roughly (e.g. "64KB" vs "2MB") for comparison
+const parseMemory = (memStr: string): number => {
+    if (!memStr) return 0;
+    const normalized = memStr.toUpperCase();
+    const match = normalized.match(/(\d+(\.\d+)?)\s*(GB|MB|KB|B)/);
+    if (!match) return 0;
+    
+    const val = parseFloat(match[1]);
+    const unit = match[3];
+    
+    switch(unit) {
+        case 'GB': return val * 1024 * 1024;
+        case 'MB': return val * 1024;
+        case 'KB': return val;
+        case 'B': return val / 1024;
+        default: return 0;
+    }
+};
+
 // HELPER: Fallback Fetcher
 // Tries to execute the DB promise, but returns fallback data if it fails, times out (1500ms), or returns empty data when expected.
 async function fetchWithFallback<T>(dbPromise: Promise<{ data: any, error: any }>, fallback: T): Promise<T> {
@@ -120,12 +140,11 @@ async function fetchWithFallback<T>(dbPromise: Promise<{ data: any, error: any }
 }
 
 /**
- * Checks if the connection to Supabase is working
+ * Checks if the connection to Supabase is working by querying the consoles table
  */
 export const checkDatabaseConnection = async (): Promise<boolean> => {
     try {
-        // Simple check to a publicly accessible table or just checking if client throws
-        const { error } = await supabase.from('news').select('count', { count: 'exact', head: true });
+        const { error } = await supabase.from('consoles').select('count', { count: 'exact', head: true });
         return !error;
     } catch (e) {
         return false;
@@ -323,6 +342,14 @@ export const compareConsoles = async (consoleA: string, consoleB: string): Promi
     }
 
     if (c1 && c2) {
+        // Helper to determine string based winners (rough approximation for demo)
+        const parseNum = (str: string) => parseFloat(str?.replace(/[^0-9.]/g, '') || '0') || 0;
+        
+        // RAM Comparison
+        const ram1 = parseMemory(c1.ram);
+        const ram2 = parseMemory(c2.ram);
+        const ramWinner = ram1 === ram2 ? 'Tie' : (ram1 > ram2 ? 'A' : 'B');
+
          return {
             consoleA: c1.name,
             consoleB: c2.name,
@@ -330,9 +357,13 @@ export const compareConsoles = async (consoleA: string, consoleB: string): Promi
             points: [
                 { feature: "Release Year", consoleAValue: c1.release_year.toString(), consoleBValue: c2.release_year.toString(), winner: c1.release_year < c2.release_year ? 'A' : 'B' }, 
                 { feature: "CPU", consoleAValue: c1.cpu, consoleBValue: c2.cpu, winner: "Tie" },
+                { feature: "GPU", consoleAValue: c1.gpu, consoleBValue: c2.gpu, winner: "Tie" },
+                { feature: "RAM", consoleAValue: c1.ram, consoleBValue: c2.ram, winner: ramWinner },
                 { feature: "Resolution", consoleAValue: c1.resolution, consoleBValue: c2.resolution, winner: "Tie" },
                 { feature: "Media", consoleAValue: c1.media, consoleBValue: c2.media, winner: "Tie" },
-                { feature: "Units Sold", consoleAValue: c1.units_sold, consoleBValue: c2.units_sold, winner: parseInt(c1.units_sold) > parseInt(c2.units_sold) ? 'A' : 'B' }
+                { feature: "Audio", consoleAValue: c1.audio, consoleBValue: c2.audio, winner: "Tie" },
+                { feature: "Units Sold", consoleAValue: c1.units_sold, consoleBValue: c2.units_sold, winner: parseNum(c1.units_sold) > parseNum(c2.units_sold) ? 'A' : 'B' },
+                { feature: "Launch Price", consoleAValue: c1.launch_price, consoleBValue: c2.launch_price, winner: parseNum(c1.launch_price) < parseNum(c2.launch_price) ? 'A' : 'B' }
             ]
         };
     }
