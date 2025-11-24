@@ -4,6 +4,8 @@ import { HashRouter as Router, Routes, Route, NavLink, useLocation, Navigate } f
 import RetroLoader from './components/RetroLoader';
 import SEOHead from './components/SEOHead';
 import ErrorBoundary from './components/ErrorBoundary';
+import { SoundProvider, useSound } from './components/SoundContext';
+import BootSequence from './components/BootSequence';
 
 // Lazy Load components for performance optimization (Code Splitting)
 const NewsSection = React.lazy(() => import('./components/NewsSection'));
@@ -34,6 +36,7 @@ const AppContent = () => {
   const [godMode, setGodMode] = useState(false);
   const location = useLocation();
   const [konamiIndex, setKonamiIndex] = useState(0);
+  const { playClick, playHover, toggleSound, enabled: soundEnabled } = useSound();
 
   // Determine current metadata based on route
   const currentNav = navItems.find(item => item.path === location.pathname) || navItems[0];
@@ -65,9 +68,8 @@ const AppContent = () => {
 
   const activateGodMode = () => {
     setGodMode(true);
-    const audio = new Audio('https://upload.wikimedia.org/wikipedia/commons/4/4e/Coin_sound.wav'); // Public domain coin sound or similar
-    audio.play().catch(() => {}); // Ignore interaction errors
-    setTimeout(() => setGodMode(false), 5000); // Reset after 5 seconds
+    playClick(); // Use synth click instead of external file for reliability
+    setTimeout(() => setGodMode(false), 5000); 
   };
 
   // Effect to toggle clean mode classes on the body
@@ -130,6 +132,8 @@ const AppContent = () => {
              <NavLink
                 key={item.id}
                 to={item.path}
+                onMouseEnter={playHover}
+                onClick={playClick}
                 className={({ isActive }) => `px-6 py-4 font-pixel text-xs transition-all border-r border-retro-grid whitespace-nowrap hover:bg-retro-grid/30 ${
                   isActive
                     ? `bg-${item.color} text-retro-dark shadow-[inset_0_-4px_0_rgba(0,0,0,0.5)]` 
@@ -171,6 +175,7 @@ const AppContent = () => {
             <NavLink
               key={item.id}
               to={item.path}
+              onClick={playClick}
               className={({ isActive }) => `flex flex-col items-center justify-center space-y-1 transition-colors ${
                  isActive ? `bg-retro-grid/50` : ''
               }`}
@@ -201,12 +206,20 @@ const AppContent = () => {
              <span className={`animate-pulse text-retro-neon ${cleanMode ? 'hidden' : ''}`}>SYSTEM ONLINE</span>
           </div>
 
-          <button 
-            onClick={() => setCleanMode(!cleanMode)}
-            className={`px-3 py-1 border ${cleanMode ? 'bg-white text-black border-white' : 'border-retro-grid text-gray-500'} transition-all hover:bg-retro-grid hover:text-white`}
-          >
-            {cleanMode ? '⦿ CLEAN MODE: ON' : '◎ CLEAN MODE: OFF'}
-          </button>
+          <div className="flex gap-4">
+            <button 
+                onClick={() => { toggleSound(); playClick(); }}
+                className={`px-3 py-1 border ${soundEnabled ? 'text-retro-neon border-retro-neon' : 'text-gray-500 border-gray-700'} transition-all`}
+            >
+                {soundEnabled ? '🔊 SOUND: ON' : '🔇 SOUND: OFF'}
+            </button>
+            <button 
+                onClick={() => { setCleanMode(!cleanMode); playClick(); }}
+                className={`px-3 py-1 border ${cleanMode ? 'bg-white text-black border-white' : 'border-retro-grid text-gray-500'} transition-all hover:bg-retro-grid hover:text-white`}
+            >
+                {cleanMode ? '⦿ CLEAN MODE: ON' : '◎ CLEAN MODE: OFF'}
+            </button>
+          </div>
 
         </div>
       </footer>
@@ -214,11 +227,28 @@ const AppContent = () => {
   );
 };
 
-const App = () => (
-  <Router>
-    <AppContent />
-  </Router>
-);
+const App = () => {
+    // Determine if we need to show boot sequence
+    const [booting, setBooting] = useState(() => {
+        const hasBooted = sessionStorage.getItem('retro_booted');
+        return !hasBooted;
+    });
+
+    const handleBootComplete = () => {
+        setBooting(false);
+        sessionStorage.setItem('retro_booted', 'true');
+    };
+
+    return (
+        <SoundProvider>
+            {booting ? <BootSequence onComplete={handleBootComplete} /> : (
+                <Router>
+                    <AppContent />
+                </Router>
+            )}
+        </SoundProvider>
+    );
+};
 
 const root = createRoot(document.getElementById('root')!);
 root.render(<App />);

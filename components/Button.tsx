@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSound } from './SoundContext';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger';
@@ -11,8 +12,12 @@ const Button: React.FC<ButtonProps> = ({
   isLoading = false, 
   className = '', 
   disabled,
+  onMouseEnter,
+  onClick,
   ...props 
 }) => {
+  const { playHover, playClick } = useSound();
+  
   const baseStyles = "font-mono font-bold py-2 px-6 uppercase tracking-wider transition-all duration-200 transform border-2 relative overflow-hidden group focus:outline-none";
   
   const variants = {
@@ -21,10 +26,22 @@ const Button: React.FC<ButtonProps> = ({
     danger: "border-retro-pink text-retro-pink hover:bg-retro-pink hover:text-retro-dark shadow-[0_0_10px_rgba(255,0,255,0.5)]",
   };
 
+  const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!disabled && !isLoading) playHover();
+    if (onMouseEnter) onMouseEnter(e);
+  };
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!disabled && !isLoading) playClick();
+    if (onClick) onClick(e);
+  };
+
   return (
     <button
       className={`${baseStyles} ${variants[variant]} ${isLoading || disabled ? 'opacity-50 cursor-not-allowed' : 'active:scale-95'} ${className}`}
       disabled={disabled || isLoading}
+      onMouseEnter={handleMouseEnter}
+      onClick={handleClick}
       {...props}
     >
       <span className="relative z-10 flex items-center justify-center gap-2">
