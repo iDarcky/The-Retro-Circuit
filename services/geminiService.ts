@@ -6,12 +6,7 @@ import { supabase } from "./supabaseClient";
  */
 export const checkDatabaseConnection = async (): Promise<boolean> => {
     try {
-        // We try to fetch a single row from 'news' or just check the health
-        // Since we might not have data, we just check if the query executes without network error
         const { error } = await supabase.from('news').select('count', { count: 'exact', head: true });
-        
-        // If error is related to table not existing (404/42P01), we still consider 'connection' to DB valid, just schema missing.
-        // But if it's a network error or auth error, we return false.
         if (error && (error.code === 'PGRST301' || error.message.includes('fetch'))) {
             console.error("DB Connection Check Failed:", error);
             return false;
@@ -20,6 +15,25 @@ export const checkDatabaseConnection = async (): Promise<boolean> => {
     } catch (e) {
         console.error("DB Connection Exception:", e);
         return false;
+    }
+};
+
+/**
+ * AUTHENTICATION SERVICE
+ */
+export const retroAuth = {
+    signIn: async (email: string, password: string) => {
+        return await supabase.auth.signInWithPassword({ email, password });
+    },
+    signUp: async (email: string, password: string) => {
+        return await supabase.auth.signUp({ email, password });
+    },
+    signOut: async () => {
+        return await supabase.auth.signOut();
+    },
+    getUser: async () => {
+        const { data } = await supabase.auth.getUser();
+        return data.user;
     }
 };
 
@@ -37,7 +51,7 @@ export const fetchRetroNews = async (): Promise<NewsItem[]> => {
     return (data as NewsItem[]) || [];
   } catch (err) {
     console.error("Error fetching news:", err);
-    throw err; // Propagate error to UI so we don't show fake data
+    throw err; 
   }
 };
 
@@ -168,17 +182,10 @@ export const submitReviewToDB = async (review: Review): Promise<boolean> => {
 
 /**
  * Compares two consoles (Placeholder for now)
- * To make this real, you would need a 'consoles' table in Supabase 
- * or integration with the actual Gemini API using an API Key.
  */
 export const compareConsoles = async (consoleA: string, consoleB: string): Promise<ComparisonResult | null> => {
-  // Simulating delay for effect
   await new Promise(resolve => setTimeout(resolve, 1500));
   
-  // Return null to indicate "Not Implemented with Real Data yet" 
-  // unless we have an API key or DB table. 
-  // For now, keeping the static return to demonstrate UI, 
-  // but strictly speaking this isn't "Supabase" data.
   return {
     consoleA: consoleA || "Sega Genesis",
     consoleB: consoleB || "Super Nintendo",
@@ -205,7 +212,6 @@ export const sendChatMessage = async (history: any[], newMessage: string): Promi
  * Moderates content
  */
 export const moderateContent = async (text: string): Promise<boolean> => {
-  // Simple local check
   const badWords = ['badword', 'spam', 'virus'];
   const hasBadWord = badWords.some(word => text.toLowerCase().includes(word));
   return !hasBadWord;

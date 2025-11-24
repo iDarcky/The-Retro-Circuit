@@ -1,12 +1,13 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
-import { HashRouter as Router, Routes, Route, NavLink, useLocation, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, NavLink, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import RetroLoader from './components/RetroLoader';
 import SEOHead from './components/SEOHead';
 import ErrorBoundary from './components/ErrorBoundary';
 import { SoundProvider, useSound } from './components/SoundContext';
 import BootSequence from './components/BootSequence';
-import { checkDatabaseConnection } from './services/geminiService';
+import { checkDatabaseConnection, retroAuth } from './services/geminiService';
+import { supabase } from './services/supabaseClient';
 
 // Lazy Load components for performance optimization (Code Splitting)
 const NewsSection = React.lazy(() => import('./components/NewsSection'));
@@ -15,8 +16,9 @@ const RetroSage = React.lazy(() => import('./components/RetroSage'));
 const GameOfTheWeek = React.lazy(() => import('./components/GameOfTheWeek'));
 const Timeline = React.lazy(() => import('./components/Timeline'));
 const ReviewSection = React.lazy(() => import('./components/ReviewSection'));
+const AuthSection = React.lazy(() => import('./components/AuthSection'));
 
-const navItems = [
+const baseNavItems = [
   { id: 'news', path: '/news', label: 'NEWS', icon: '📰', color: 'retro-neon', desc: 'Latest updates from the 8-bit and 16-bit era.' },
   { id: 'gotw', path: '/game-of-the-week', label: 'GOTW', icon: '⭐', color: 'yellow-400', desc: 'Our curated pick for the Game of the Week.' },
   { id: 'reviews', path: '/reviews', label: 'REVIEWS', icon: '📝', color: 'retro-blue', desc: 'User-submitted reviews and ratings.' },
@@ -36,11 +38,20 @@ const AppContent = () => {
   
   const [godMode, setGodMode] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const [konamiIndex, setKonamiIndex] = useState(0);
   const { playClick, playHover, toggleSound, enabled: soundEnabled } = useSound();
   const [dbStatus, setDbStatus] = useState<'checking' | 'online' | 'offline'>('checking');
+  const [session, setSession] = useState<any>(null);
 
-  // Determine current metadata based on route
+  // Combine base nav items with dynamic Auth item
+  const navItems = [
+      ...baseNavItems,
+      session 
+        ? { id: 'auth', path: '/login', label: 'LOGOUT', icon: '🔓', color: 'gray-400', desc: 'Terminate session.' }
+        : { id: 'auth', path: '/login', label: 'LOGIN', icon: '🔒', color: 'gray-400', desc: 'Access Control.' }
+  ];
+
   const currentNav = navItems.find(item => item.path === location.pathname) || navItems[0];
 
   // SCROLL RESTORATION
@@ -48,13 +59,23 @@ const AppContent = () => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  // CHECK DB CONNECTION
+  // CHECK DB CONNECTION & AUTH STATE
   useEffect(() => {
-      const checkDB = async () => {
+      const initSystem = async () => {
           const isConnected = await checkDatabaseConnection();
           setDbStatus(isConnected ? 'online' : 'offline');
+
+          // Check current session
+          const { data } = await supabase.auth.getSession();
+          setSession(data.session);
+
+          // Listen for auth changes
+          const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+              setSession(session);
+          });
+          return () => subscription.unsubscribe();
       };
-      checkDB();
+      initSystem();
   }, []);
 
   // KONAMI CODE LISTENER
@@ -104,6 +125,15 @@ const AppContent = () => {
     }
   }, [cleanMode]);
 
+  const handleNavClick = async (e: React.MouseEvent, item: any) => {
+      playClick();
+      if (item.id === 'auth' && session) {
+          e.preventDefault(); // Prevent navigation to /login if logging out
+          await retroAuth.signOut();
+          navigate('/news');
+      }
+  };
+
   return (
     <div className={`min-h-screen pb-24 md:pb-20 transition-colors duration-300 ${cleanMode ? 'bg-gray-900' : ''} ${godMode ? 'invert' : ''}`}>
       {/* Dynamic SEO Tags */}
@@ -134,6 +164,11 @@ const AppContent = () => {
         <p className="font-mono text-retro-blue text-xs md:text-base tracking-widest uppercase">
           Your Gateway to the Golden Age
         </p>
+        {session && (
+            <div className="absolute top-4 right-4 text-[10px] font-mono text-retro-neon border border-retro-neon px-2 py-1">
+                USER: CONNECTED
+            </div>
+        )}
       </header>
 
       {/* Desktop Navigation (Top) */}
@@ -144,15 +179,15 @@ const AppContent = () => {
                 key={item.id}
                 to={item.path}
                 onMouseEnter={playHover}
-                onClick={playClick}
+                onClick={(e) => handleNavClick(e, item)}
                 className={({ isActive }) => `px-6 py-4 font-pixel text-xs transition-all border-r border-retro-grid whitespace-nowrap hover:bg-retro-grid/30 ${
-                  isActive
+                  isActive && item.id !== 'auth'
                     ? `bg-${item.color} text-retro-dark shadow-[inset_0_-4px_0_rgba(0,0,0,0.5)]` 
                     : `text-${item.color}`
                 }`}
                 style={({ isActive }) => ({
-                    backgroundColor: isActive ? (item.color === 'yellow-400' ? '#facc15' : undefined) : undefined,
-                    color: !isActive && item.color === 'yellow-400' ? '#facc15' : undefined
+                    backgroundColor: isActive && item.id !== 'auth' ? (item.color === 'yellow-400' ? '#facc15' : undefined) : undefined,
+                    color: (!isActive || item.id === 'auth') && item.color === 'yellow-400' ? '#facc15' : undefined
                 })}
               >
                 {item.label}
@@ -173,6 +208,7 @@ const AppContent = () => {
               <Route path="/reviews" element={<ReviewSection />} />
               <Route path="/compare" element={<ConsoleComparer />} />
               <Route path="/sage" element={<RetroSage />} />
+              <Route path="/login" element={<AuthSection />} />
               <Route path="*" element={<Navigate to="/news" replace />} />
             </Routes>
           </Suspense>
@@ -181,25 +217,25 @@ const AppContent = () => {
 
       {/* Mobile Navigation (Bottom Sticky) */}
       <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 bg-retro-dark border-t border-retro-grid shadow-[0_-5px_10px_rgba(0,0,0,0.5)]">
-        <div className="grid grid-cols-6 h-16">
+        <div className="grid grid-cols-7 h-16">
           {navItems.map((item) => (
             <NavLink
               key={item.id}
               to={item.path}
-              onClick={playClick}
+              onClick={(e) => handleNavClick(e, item)}
               className={({ isActive }) => `flex flex-col items-center justify-center space-y-1 transition-colors ${
-                 isActive ? `bg-retro-grid/50` : ''
+                 isActive && item.id !== 'auth' ? `bg-retro-grid/50` : ''
               }`}
             >
               {({ isActive }) => (
                 <>
                   <span className="text-lg">{item.icon}</span>
                   <span className={`text-[8px] font-pixel ${
-                    isActive ? `text-${item.color}` : 'text-gray-500'
+                    isActive && item.id !== 'auth' ? `text-${item.color}` : 'text-gray-500'
                   }`}
-                  style={{ color: isActive && item.color === 'yellow-400' ? '#facc15' : undefined }}
+                  style={{ color: isActive && item.id !== 'auth' && item.color === 'yellow-400' ? '#facc15' : undefined }}
                   >
-                    {item.label}
+                    {item.id === 'auth' ? (session ? 'LOGOUT' : 'LOGIN') : item.label}
                   </span>
                 </>
               )}
