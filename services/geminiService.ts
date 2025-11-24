@@ -36,6 +36,12 @@ export const retroAuth = {
             }
         });
     },
+    resetPassword: async (email: string) => {
+        const redirectTo = window.location.origin;
+        return await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: redirectTo
+        });
+    },
     signOut: async () => {
         return await supabase.auth.signOut();
     },

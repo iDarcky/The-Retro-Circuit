@@ -3,9 +3,11 @@ import { retroAuth } from '../services/geminiService';
 import Button from './Button';
 import { useNavigate } from 'react-router-dom';
 
+type AuthMode = 'LOGIN' | 'SIGNUP' | 'RECOVERY';
+
 const AuthSection: React.FC = () => {
     const navigate = useNavigate();
-    const [isSignUp, setIsSignUp] = useState(false);
+    const [mode, setMode] = useState<AuthMode>('LOGIN');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -17,15 +19,19 @@ const AuthSection: React.FC = () => {
         setMessage(null);
 
         try {
-            if (isSignUp) {
+            if (mode === 'SIGNUP') {
                 const { error } = await retroAuth.signUp(email, password);
                 if (error) throw error;
-                setMessage({ type: 'success', text: 'REGISTRATION SUCCESSFUL. VERIFY EMAIL TO CONTINUE.' });
-            } else {
+                setMessage({ type: 'success', text: 'SIGNAL SENT. CHECK YOUR INBOX TO VERIFY UPLINK.' });
+            } else if (mode === 'LOGIN') {
                 const { error } = await retroAuth.signIn(email, password);
                 if (error) throw error;
                 // Redirect on success
                 navigate('/news');
+            } else if (mode === 'RECOVERY') {
+                const { error } = await retroAuth.resetPassword(email);
+                if (error) throw error;
+                setMessage({ type: 'success', text: 'RECOVERY KEY TRANSMITTED. CHECK EMAIL TERMINAL.' });
             }
         } catch (err: any) {
             setMessage({ type: 'error', text: err.message.toUpperCase() || 'ACCESS DENIED' });
@@ -45,10 +51,10 @@ const AuthSection: React.FC = () => {
 
                 <div className="text-center mb-8 border-b-2 border-retro-grid pb-4">
                     <h2 className="text-3xl font-pixel text-retro-neon mb-2 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
-                        ACCESS CONTROL
+                        {mode === 'RECOVERY' ? 'SYSTEM RECOVERY' : 'ACCESS CONTROL'}
                     </h2>
                     <p className="font-mono text-retro-blue text-xs uppercase tracking-widest">
-                        SECURE MAINFRAME ENTRY
+                        {mode === 'RECOVERY' ? 'RESTORE LOST CREDENTIALS' : 'SECURE MAINFRAME ENTRY'}
                     </p>
                 </div>
 
@@ -65,17 +71,19 @@ const AuthSection: React.FC = () => {
                         />
                     </div>
 
-                    <div>
-                        <label className="block font-mono text-xs text-retro-pink mb-1 uppercase">Passcode</label>
-                        <input 
-                            type="password"
-                            required
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full bg-black/50 border-2 border-retro-grid p-3 text-white font-mono focus:border-retro-neon focus:shadow-[0_0_10px_rgba(0,255,157,0.3)] outline-none transition-all"
-                            placeholder="••••••••"
-                        />
-                    </div>
+                    {mode !== 'RECOVERY' && (
+                        <div>
+                            <label className="block font-mono text-xs text-retro-pink mb-1 uppercase">Passcode</label>
+                            <input 
+                                type="password"
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full bg-black/50 border-2 border-retro-grid p-3 text-white font-mono focus:border-retro-neon focus:shadow-[0_0_10px_rgba(0,255,157,0.3)] outline-none transition-all"
+                                placeholder="••••••••"
+                            />
+                        </div>
+                    )}
 
                     {message && (
                         <div className={`p-3 border font-mono text-xs text-center ${
@@ -88,24 +96,37 @@ const AuthSection: React.FC = () => {
                     )}
 
                     <div className="pt-4">
-                        <Button type="submit" isLoading={loading} variant={isSignUp ? "secondary" : "primary"} className="w-full">
-                            {isSignUp ? "INITIATE REGISTRATION" : "AUTHENTICATE"}
+                        <Button type="submit" isLoading={loading} variant={mode === 'SIGNUP' ? "secondary" : "primary"} className="w-full">
+                            {mode === 'SIGNUP' ? "INITIATE REGISTRATION" : mode === 'RECOVERY' ? "TRANSMIT RECOVERY KEY" : "AUTHENTICATE"}
                         </Button>
                     </div>
                 </form>
 
-                <div className="mt-6 text-center">
-                    <button 
-                        onClick={() => {
-                            setIsSignUp(!isSignUp);
-                            setMessage(null);
-                        }}
-                        className="font-mono text-xs text-gray-500 hover:text-retro-blue underline decoration-dotted uppercase"
-                    >
-                        {isSignUp 
-                            ? "ALREADY HAVE CLEARANCE? LOGIN HERE" 
-                            : "REQUEST NEW ACCESS ID (SIGN UP)"}
-                    </button>
+                <div className="mt-6 flex flex-col gap-2 text-center">
+                    {mode === 'LOGIN' && (
+                        <>
+                            <button 
+                                onClick={() => { setMode('SIGNUP'); setMessage(null); }}
+                                className="font-mono text-xs text-gray-500 hover:text-retro-blue underline decoration-dotted uppercase"
+                            >
+                                REQUEST NEW ACCESS ID (SIGN UP)
+                            </button>
+                            <button 
+                                onClick={() => { setMode('RECOVERY'); setMessage(null); }}
+                                className="font-mono text-xs text-gray-500 hover:text-retro-pink underline decoration-dotted uppercase"
+                            >
+                                LOST PASSCODE?
+                            </button>
+                        </>
+                    )}
+                    {(mode === 'SIGNUP' || mode === 'RECOVERY') && (
+                        <button 
+                            onClick={() => { setMode('LOGIN'); setMessage(null); }}
+                            className="font-mono text-xs text-gray-500 hover:text-retro-blue underline decoration-dotted uppercase"
+                        >
+                            RETURN TO LOGIN
+                        </button>
+                    )}
                 </div>
             </div>
 
