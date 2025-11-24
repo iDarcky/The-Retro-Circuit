@@ -70,13 +70,21 @@ const AppContent = () => {
           setSession(data.session);
 
           // Listen for auth changes
-          const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+          const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
               setSession(session);
+              
+              // CRITICAL: Handle Password Recovery Event Globally
+              // If the user clicks a reset link, Supabase fires this event.
+              // We must redirect them to the Auth screen immediately.
+              if (event === 'PASSWORD_RECOVERY') {
+                  sessionStorage.setItem('retro_recovery_pending', 'true');
+                  navigate('/login');
+              }
           });
           return () => subscription.unsubscribe();
       };
       initSystem();
-  }, []);
+  }, [navigate]);
 
   // KONAMI CODE LISTENER
   useEffect(() => {

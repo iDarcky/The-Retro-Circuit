@@ -14,8 +14,16 @@ const AuthSection: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'error' | 'success', text: string } | null>(null);
 
-    // Listen for Password Recovery event
+    // Initial check for recovery mode
     useEffect(() => {
+        // Check if index.tsx set the recovery flag
+        if (sessionStorage.getItem('retro_recovery_pending') === 'true') {
+            setMode('UPDATE_PASSWORD');
+            setMessage({ type: 'success', text: 'IDENTITY VERIFIED. ENTER NEW PASSCODE.' });
+            sessionStorage.removeItem('retro_recovery_pending');
+        }
+
+        // Also listen for real-time events in case we are already mounted
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (event === "PASSWORD_RECOVERY") {
                 setMode('UPDATE_PASSWORD');
@@ -47,7 +55,9 @@ const AuthSection: React.FC = () => {
                 const { error } = await retroAuth.updateUserPassword(password);
                 if (error) throw error;
                 setMessage({ type: 'success', text: 'PASSCODE REWRITTEN. SYSTEM SECURE.' });
-                setTimeout(() => navigate('/news'), 2000);
+                setTimeout(() => {
+                    navigate('/news');
+                }, 2000);
             }
         } catch (err: any) {
             setMessage({ type: 'error', text: err.message.toUpperCase() || 'ACCESS DENIED' });
