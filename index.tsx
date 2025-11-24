@@ -6,10 +6,10 @@ import SEOHead from './components/SEOHead';
 import ErrorBoundary from './components/ErrorBoundary';
 import { SoundProvider, useSound } from './components/SoundContext';
 import BootSequence from './components/BootSequence';
-import { checkDatabaseConnection, retroAuth } from './services/geminiService';
+import { checkDatabaseConnection } from './services/geminiService';
 import { supabase } from './services/supabaseClient';
 
-// Lazy Load components for performance optimization (Code Splitting)
+// Lazy Load components for performance optimization
 const NewsSection = React.lazy(() => import('./components/NewsSection'));
 const ConsoleComparer = React.lazy(() => import('./components/ConsoleComparer'));
 const RetroSage = React.lazy(() => import('./components/RetroSage'));
@@ -30,13 +30,14 @@ const baseNavItems = [
 const KONAMI_CODE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
 
 const AppContent = () => {
-  // Initialize Clean Mode from LocalStorage if available
+  // Initialize Clean Mode from LocalStorage
   const [cleanMode, setCleanMode] = useState(() => {
     const saved = localStorage.getItem('retro_clean_mode');
     return saved === 'true';
   });
   
   const [godMode, setGodMode] = useState(false);
+  const [booted, setBooted] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const [konamiIndex, setKonamiIndex] = useState(0);
@@ -48,7 +49,7 @@ const AppContent = () => {
   const navItems = [
       ...baseNavItems,
       session 
-        ? { id: 'auth', path: '/login', label: 'LOGOUT', icon: '🔓', color: 'gray-400', desc: 'Terminate session.' }
+        ? { id: 'profile', path: '/profile', label: 'PROFILE', icon: '👤', color: 'retro-neon', desc: 'Pilot Credentials.' }
         : { id: 'auth', path: '/login', label: 'LOGIN', icon: '🔒', color: 'gray-400', desc: 'Access Control.' }
   ];
 
@@ -65,17 +66,11 @@ const AppContent = () => {
           const isConnected = await checkDatabaseConnection();
           setDbStatus(isConnected ? 'online' : 'offline');
 
-          // Check current session
           const { data } = await supabase.auth.getSession();
           setSession(data.session);
 
-          // Listen for auth changes
           const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
               setSession(session);
-              
-              // CRITICAL: Handle Password Recovery Event Globally
-              // If the user clicks a reset link, Supabase fires this event.
-              // We must redirect them to the Auth screen immediately.
               if (event === 'PASSWORD_RECOVERY') {
                   sessionStorage.setItem('retro_recovery_pending', 'true');
                   navigate('/login');
@@ -108,11 +103,11 @@ const AppContent = () => {
 
   const activateGodMode = () => {
     setGodMode(true);
-    playClick(); // Use synth click instead of external file for reliability
+    playClick();
     setTimeout(() => setGodMode(false), 5000); 
   };
 
-  // Effect to toggle clean mode classes on the body
+  // Toggle clean mode styles
   useEffect(() => {
     const scanlineDiv = document.querySelector('.scanlines');
     const flickerDiv = document.querySelector('.crt-flicker');
@@ -135,27 +130,20 @@ const AppContent = () => {
 
   const handleNavClick = async (e: React.MouseEvent, item: any) => {
       playClick();
-      if (item.id === 'auth' && session) {
-          e.preventDefault(); // Prevent navigation to /login if logging out
-          await retroAuth.signOut();
-          navigate('/news');
-      }
   };
+
+  if (!booted) {
+    return <BootSequence onComplete={() => setBooted(true)} />;
+  }
 
   return (
     <div className={`min-h-screen pb-24 md:pb-20 transition-colors duration-300 ${cleanMode ? 'bg-gray-900' : ''} ${godMode ? 'invert' : ''}`}>
-      {/* Dynamic SEO Tags */}
-      <SEOHead 
-        title={currentNav.label} 
-        description={currentNav.desc} 
-      />
+      <SEOHead title={currentNav.label} description={currentNav.desc} />
 
-      {/* Skip to content for A11y */}
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:bg-retro-neon focus:text-black focus:p-4 focus:z-50 font-bold font-mono">
         SKIP TO CONTENT
       </a>
 
-      {/* God Mode Notification */}
       {godMode && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none">
           <h1 className="text-6xl md:text-9xl font-pixel text-retro-neon animate-bounce drop-shadow-[0_0_20px_rgba(0,0,0,1)]">
@@ -173,13 +161,13 @@ const AppContent = () => {
           Your Gateway to the Golden Age
         </p>
         {session && (
-            <div className="absolute top-4 right-4 text-[10px] font-mono text-retro-neon border border-retro-neon px-2 py-1">
-                USER: CONNECTED
+            <div className="absolute top-4 right-4 text-[10px] font-mono text-retro-neon border border-retro-neon px-2 py-1 hidden md:block">
+                USER: {session.user?.user_metadata?.username || 'CONNECTED'}
             </div>
         )}
       </header>
 
-      {/* Desktop Navigation (Top) */}
+      {/* Desktop Navigation */}
       <nav className="hidden md:block sticky top-0 z-30 bg-retro-dark/95 backdrop-blur border-b border-retro-grid mb-8">
         <div className="max-w-6xl mx-auto flex justify-center">
           {navItems.map((item) => (
@@ -189,13 +177,13 @@ const AppContent = () => {
                 onMouseEnter={playHover}
                 onClick={(e) => handleNavClick(e, item)}
                 className={({ isActive }) => `px-6 py-4 font-pixel text-xs transition-all border-r border-retro-grid whitespace-nowrap hover:bg-retro-grid/30 ${
-                  isActive && item.id !== 'auth'
+                  isActive
                     ? `bg-${item.color} text-retro-dark shadow-[inset_0_-4px_0_rgba(0,0,0,0.5)]` 
                     : `text-${item.color}`
                 }`}
                 style={({ isActive }) => ({
-                    backgroundColor: isActive && item.id !== 'auth' ? (item.color === 'yellow-400' ? '#facc15' : undefined) : undefined,
-                    color: (!isActive || item.id === 'auth') && item.color === 'yellow-400' ? '#facc15' : undefined
+                    backgroundColor: isActive ? (item.color === 'yellow-400' ? '#facc15' : undefined) : undefined,
+                    color: !isActive && item.color === 'yellow-400' ? '#facc15' : undefined
                 })}
               >
                 {item.label}
@@ -217,13 +205,14 @@ const AppContent = () => {
               <Route path="/compare" element={<ConsoleComparer />} />
               <Route path="/sage" element={<RetroSage />} />
               <Route path="/login" element={<AuthSection />} />
+              <Route path="/profile" element={<AuthSection />} />
               <Route path="*" element={<Navigate to="/news" replace />} />
             </Routes>
           </Suspense>
         </ErrorBoundary>
       </main>
 
-      {/* Mobile Navigation (Bottom Sticky) */}
+      {/* Mobile Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 bg-retro-dark border-t border-retro-grid shadow-[0_-5px_10px_rgba(0,0,0,0.5)]">
         <div className="grid grid-cols-7 h-16">
           {navItems.map((item) => (
@@ -232,18 +221,18 @@ const AppContent = () => {
               to={item.path}
               onClick={(e) => handleNavClick(e, item)}
               className={({ isActive }) => `flex flex-col items-center justify-center space-y-1 transition-colors ${
-                 isActive && item.id !== 'auth' ? `bg-retro-grid/50` : ''
+                 isActive ? `bg-retro-grid/50` : ''
               }`}
             >
               {({ isActive }) => (
                 <>
                   <span className="text-lg">{item.icon}</span>
                   <span className={`text-[8px] font-pixel ${
-                    isActive && item.id !== 'auth' ? `text-${item.color}` : 'text-gray-500'
+                    isActive ? `text-${item.color}` : 'text-gray-500'
                   }`}
-                  style={{ color: isActive && item.id !== 'auth' && item.color === 'yellow-400' ? '#facc15' : undefined }}
+                  style={{ color: isActive && item.color === 'yellow-400' ? '#facc15' : undefined }}
                   >
-                    {item.id === 'auth' ? (session ? 'LOGOUT' : 'LOGIN') : item.label}
+                    {item.label}
                   </span>
                 </>
               )}
@@ -254,61 +243,51 @@ const AppContent = () => {
 
       {/* Footer & Toggles */}
       <footer className="w-full bg-retro-dark border-t border-retro-grid py-6 px-4 text-center mt-12 mb-16 md:mb-0">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 font-mono text-[10px] text-gray-500 uppercase">
-          
-          <div className="flex flex-col md:flex-row items-center gap-4">
-             <span>© 199X-202X The Retro Circuit</span>
-             <div className="flex items-center gap-2 border border-gray-700 px-2 py-1 bg-black/50">
-                <span>DB STATUS:</span>
-                {dbStatus === 'checking' && <span className="text-yellow-500 animate-pulse">CHECKING...</span>}
-                {dbStatus === 'online' && <span className="text-green-400 font-bold">ONLINE ●</span>}
-                {dbStatus === 'offline' && <span className="text-red-500 font-bold animate-pulse">OFFLINE ●</span>}
-             </div>
-          </div>
-
-          <div className="flex gap-4">
-            <button 
-                onClick={() => { toggleSound(); playClick(); }}
-                className={`px-3 py-1 border ${soundEnabled ? 'text-retro-neon border-retro-neon' : 'text-gray-500 border-gray-700'} transition-all`}
-            >
-                {soundEnabled ? '🔊 SOUND: ON' : '🔇 SOUND: OFF'}
-            </button>
-            <button 
-                onClick={() => { setCleanMode(!cleanMode); playClick(); }}
-                className={`px-3 py-1 border ${cleanMode ? 'bg-white text-black border-white' : 'border-retro-grid text-gray-500'} transition-all hover:bg-retro-grid hover:text-white`}
-            >
-                {cleanMode ? '⦿ CLEAN MODE: ON' : '◎ CLEAN MODE: OFF'}
-            </button>
-          </div>
-
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex flex-col items-center md:items-start gap-1">
+                <div className="text-gray-500 font-pixel text-[10px]">
+                    © 199X RETRO CIRCUIT CORP.
+                </div>
+                <div className="flex gap-2 font-mono text-[10px]">
+                    <span className={dbStatus === 'online' ? 'text-retro-neon' : 'text-retro-pink'}>
+                        DB: {dbStatus.toUpperCase()}
+                    </span>
+                    <span className="text-gray-600">|</span>
+                    <span className="text-gray-500">v1.0.4</span>
+                </div>
+            </div>
+            
+            <div className="flex gap-4">
+                <button 
+                    onClick={() => setCleanMode(!cleanMode)}
+                    className="font-mono text-xs text-retro-blue hover:text-white uppercase border border-retro-blue px-2 py-1"
+                >
+                    {cleanMode ? 'ENABLE CRT FX' : 'DISABLE CRT FX'}
+                </button>
+                <button 
+                    onClick={toggleSound}
+                    className="font-mono text-xs text-retro-pink hover:text-white uppercase border border-retro-pink px-2 py-1"
+                >
+                    {soundEnabled ? 'MUTE AUDIO' : 'ENABLE AUDIO'}
+                </button>
+            </div>
         </div>
       </footer>
     </div>
   );
 };
 
-const App = () => {
-    // Determine if we need to show boot sequence
-    const [booting, setBooting] = useState(() => {
-        const hasBooted = sessionStorage.getItem('retro_booted');
-        return !hasBooted;
-    });
-
-    const handleBootComplete = () => {
-        setBooting(false);
-        sessionStorage.setItem('retro_booted', 'true');
-    };
-
-    return (
-        <SoundProvider>
-            {booting ? <BootSequence onComplete={handleBootComplete} /> : (
-                <Router>
+// Root Render
+const container = document.getElementById('root');
+if (container) {
+    const root = createRoot(container);
+    root.render(
+        <React.StrictMode>
+            <Router>
+                <SoundProvider>
                     <AppContent />
-                </Router>
-            )}
-        </SoundProvider>
+                </SoundProvider>
+            </Router>
+        </React.StrictMode>
     );
-};
-
-const root = createRoot(document.getElementById('root')!);
-root.render(<App />);
+}

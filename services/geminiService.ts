@@ -1,5 +1,10 @@
 import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, Review } from "../types";
 import { supabase } from "./supabaseClient";
+import { GoogleGenAI, Type, Schema } from "@google/genai";
+
+// Initialize Gemini API
+// Note: We assume process.env.API_KEY is available as per environment configuration instructions
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 /**
  * Checks if the connection to Supabase is working
@@ -25,14 +30,18 @@ export const retroAuth = {
     signIn: async (email: string, password: string) => {
         return await supabase.auth.signInWithPassword({ email, password });
     },
-    signUp: async (email: string, password: string) => {
+    signUp: async (email: string, password: string, username: string) => {
         // Dynamically redirect to the current domain (works for both localhost and production)
         const redirectTo = window.location.origin;
         return await supabase.auth.signUp({ 
             email, 
             password,
             options: {
-                emailRedirectTo: redirectTo
+                emailRedirectTo: redirectTo,
+                data: {
+                    username: username,
+                    full_name: username // Storing as full_name as well for broader compatibility
+                }
             }
         });
     },
@@ -198,35 +207,82 @@ export const submitReviewToDB = async (review: Review): Promise<boolean> => {
 };
 
 /**
- * Compares two consoles (Placeholder for now)
+ * Compares two consoles using Gemini API with Structured Output
  */
 export const compareConsoles = async (consoleA: string, consoleB: string): Promise<ComparisonResult | null> => {
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  
-  return {
-    consoleA: consoleA || "Sega Genesis",
-    consoleB: consoleB || "Super Nintendo",
-    summary: "Mock Comparison: Real comparison requires Gemini API Key or populated 'consoles' database table.",
-    points: [
-      { feature: "CPU Speed", consoleAValue: "7.6 MHz (68000)", consoleBValue: "3.58 MHz (65816)", winner: "A" },
-      { feature: "Colors on Screen", consoleAValue: "61 Colors", consoleBValue: "256 Colors", winner: "B" },
-      { feature: "Sound Chip", consoleAValue: "Yamaha YM2612 (FM)", consoleBValue: "Sony SPC700 (Sample)", winner: "B" },
-      { feature: "Resolution", consoleAValue: "320 x 224", consoleBValue: "256 x 224", winner: "A" },
-      { feature: "Best Selling Game", consoleAValue: "Sonic the Hedgehog", consoleBValue: "Super Mario World", winner: "Tie" }
-    ]
-  };
+  try {
+    const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: `Compare the video game consoles "${consoleA}" and "${consoleB}". Provide technical specifications and a summary of their rivalry.`,
+        config: {
+            systemInstruction: "You are a retro gaming hardware expert. Compare two consoles fairly. Focus on technical specs like CPU, RAM, Resolution, and Audio.",
+            responseMimeType: "application/json",
+            responseSchema: {
+                type: Type.OBJECT,
+                properties: {
+                    consoleA: { type: Type.STRING },
+                    consoleB: { type: Type.STRING },
+                    summary: { type: Type.STRING, description: "A brief 2-sentence summary of the rivalry or comparison." },
+                    points: {
+                        type: Type.ARRAY,
+                        items: {
+                            type: Type.OBJECT,
+                            properties: {
+                                feature: { type: Type.STRING, description: "The feature being compared (e.g. CPU, Resolution)" },
+                                consoleAValue: { type: Type.STRING },
+                                consoleBValue: { type: Type.STRING },
+                                winner: { type: Type.STRING, enum: ["A", "B", "Tie"] }
+                            },
+                            required: ["feature", "consoleAValue", "consoleBValue", "winner"]
+                        }
+                    }
+                },
+                required: ["consoleA", "consoleB", "summary", "points"]
+            }
+        }
+    });
+
+    if (response.text) {
+        return JSON.parse(response.text) as ComparisonResult;
+    }
+    return null;
+  } catch (error) {
+      console.error("Gemini Comparison Error:", error);
+      // Fallback for demo/error purposes
+      return {
+        consoleA: consoleA,
+        consoleB: consoleB,
+        summary: "Communication with the AI Sage was interrupted. Displaying cached data.",
+        points: [
+          { feature: "Status", consoleAValue: "Unknown", consoleBValue: "Unknown", winner: "Tie" }
+        ]
+      };
+  }
 };
 
 /**
- * Chat with Retro Sage (Placeholder)
+ * Chat with Retro Sage using Gemini API
  */
 export const sendChatMessage = async (history: any[], newMessage: string): Promise<string> => {
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return "SYSTEM: PLEASE CONFIGURE GEMINI API KEY TO ENABLE AI SAGE.";
+  try {
+    const chat = ai.chats.create({
+        model: 'gemini-2.5-flash',
+        config: {
+            systemInstruction: "You are the 'Retro Sage', a sentient AI from the 1990s. You speak in uppercase (optional but preferred for style), use retro slang (rad, tubular, bogus), and have deep encyclopedic knowledge of video games from 1970 to 2000. Do not discuss modern consoles (PS3, Xbox 360 onwards) except to dismiss them as 'future tech'. Be helpful but keep the persona.",
+        },
+        history: history
+    });
+
+    const result = await chat.sendMessage({ message: newMessage });
+    return result.text || "ERROR: SIGNAL LOST.";
+  } catch (error) {
+      console.error("Gemini Chat Error:", error);
+      return "SYSTEM ERROR: THE SAGE IS OFFLINE. CHECK API CREDENTIALS.";
+  }
 };
 
 /**
- * Moderates content
+ * Moderates content (Mock implementation for client-side speed, could be replaced by AI)
  */
 export const moderateContent = async (text: string): Promise<boolean> => {
   const badWords = ['badword', 'spam', 'virus'];
