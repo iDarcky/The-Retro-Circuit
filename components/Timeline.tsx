@@ -60,7 +60,7 @@ const Timeline: React.FC = () => {
                 {/* Detail View */}
                 <div className="md:w-2/3">
                     {selectedEvent && (
-                        <div className="sticky top-4 border-2 border-retro-blue bg-retro-dark p-8 shadow-[0_0_20px_rgba(0,255,255,0.1)] transition-all duration-500 animate-scanline">
+                        <div className="sticky top-4 border-2 border-retro-blue bg-retro-dark p-8 shadow-[0_0_20px_rgba(0,255,255,0.1)] transition-all duration-500">
                             <div className="flex justify-between items-center mb-6 border-b border-retro-grid pb-4">
                                 <h3 className="text-4xl font-pixel text-white">{selectedEvent.year}</h3>
                                 <span className="font-mono text-retro-pink border border-retro-pink px-2 py-1 text-xs">

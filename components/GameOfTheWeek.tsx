@@ -6,12 +6,14 @@ import Button from './Button';
 const GameOfTheWeek: React.FC = () => {
   const [game, setGame] = useState<GameOfTheWeekData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [attempted, setAttempted] = useState(false);
 
   const loadGame = async () => {
     setLoading(true);
     const data = await fetchGameOfTheWeek();
     setGame(data);
     setLoading(false);
+    setAttempted(true);
   };
 
   useEffect(() => {
@@ -33,8 +35,14 @@ const GameOfTheWeek: React.FC = () => {
 
   if (!game) {
     return (
-        <div className="w-full max-w-4xl mx-auto p-4 flex justify-center">
-            <Button onClick={loadGame}>LOAD FEATURED GAME</Button>
+        <div className="w-full max-w-4xl mx-auto p-4 flex flex-col items-center justify-center py-20 border-2 border-retro-grid bg-retro-dark/50">
+            <h3 className="font-pixel text-retro-pink mb-4">NO GAME CARTRIDGE DETECTED</h3>
+            <p className="font-mono text-gray-500 mb-8 text-center max-w-md">
+                {attempted 
+                    ? "Could not retrieve Game of the Week from the database. Please check if the 'game_of_the_week' table exists and has data." 
+                    : "Initialize system to load game."}
+            </p>
+            <Button onClick={loadGame} variant="secondary">RETRY LOAD</Button>
         </div>
     )
   }
@@ -81,12 +89,6 @@ const GameOfTheWeek: React.FC = () => {
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <div className="bg-retro-grid p-2 text-center">
-                <Button onClick={loadGame} variant="secondary" className="text-xs py-1">
-                    LOAD ANOTHER CLASSIC
-                </Button>
             </div>
         </div>
     </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchInitialReviews, moderateContent } from '../services/geminiService';
+import { fetchInitialReviews, moderateContent, submitReviewToDB } from '../services/geminiService';
 import { validateReview, sanitizeInput } from '../utils/security';
 import { Review } from '../types';
 import Button from './Button';
@@ -16,35 +16,25 @@ const ReviewSection: React.FC = () => {
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Load user's local reviews on mount to append them to the list
-    const [localReviews, setLocalReviews] = useState<Review[]>([]);
-
+    // Initial load of all reviews (or top 10)
     useEffect(() => {
-        const saved = localStorage.getItem('retro_user_reviews');
-        if (saved) {
-            try {
-                setLocalReviews(JSON.parse(saved));
-            } catch (e) { console.error("Failed to parse local reviews"); }
-        }
+        const loadInitial = async () => {
+            setLoading(true);
+            const data = await fetchInitialReviews('');
+            setReviews(data);
+            setLoading(false);
+        };
+        loadInitial();
     }, []);
 
     const handleSearch = async () => {
-        if (!searchTerm) return;
         setLoading(true);
-        setActiveTopic(searchTerm);
+        setActiveTopic(searchTerm || 'ALL REVIEWS');
         
         // Fetch server reviews
         const serverData = await fetchInitialReviews(searchTerm);
         
-        // Filter local reviews that match the search term (simple check)
-        // In a real app, this filtering would happen on the backend
-        const relevantLocalReviews = localReviews.filter(r => 
-            // If topic matches roughly or if user just wants to see their own reviews on "all"
-            true 
-        );
-
-        // Combine (Local reviews first for immediate gratification)
-        setReviews([...relevantLocalReviews, ...serverData]);
+        setReviews(serverData);
         setLoading(false);
     };
 
@@ -70,7 +60,7 @@ const ReviewSection: React.FC = () => {
 
         setSubmitting(true);
 
-        // 1. Client-side Validation (Immediate feedback)
+        // 1. Client-side Validation
         const validation = validateReview(reviewText);
         if (!validation.isValid) {
             setError(validation.error || "Invalid input");
@@ -78,32 +68,35 @@ const ReviewSection: React.FC = () => {
             return;
         }
 
-        // 2. Sanitation (Protect against XSS)
+        // 2. Sanitation
         const cleanText = sanitizeInput(reviewText);
 
-        // 3. Mock Server-side Check
+        // 3. Mock Moderate
         const isSafe = await moderateContent(cleanText);
 
         if (isSafe) {
             const newReview: Review = {
-                id: Date.now().toString(),
+                id: '', // DB will assign UUID, but for local state we can temp assign
                 author: "Player 1",
                 rating: rating,
                 text: cleanText,
-                date: "Just Now",
+                date: new Date().toLocaleDateString(),
                 verified: true
             };
-            
-            // Updates State
-            setReviews(prev => [newReview, ...prev]);
-            
-            // Save to LocalStorage
-            const updatedLocalReviews = [newReview, ...localReviews];
-            setLocalReviews(updatedLocalReviews);
-            localStorage.setItem('retro_user_reviews', JSON.stringify(updatedLocalReviews));
-            localStorage.setItem('retro_last_review_ts', Date.now().toString());
 
-            setReviewText('');
+            // 4. Send to Supabase
+            const success = await submitReviewToDB(newReview);
+            
+            if (success) {
+                // Refresh list
+                const updatedList = await fetchInitialReviews('');
+                setReviews(updatedList);
+                
+                localStorage.setItem('retro_last_review_ts', Date.now().toString());
+                setReviewText('');
+            } else {
+                 setError("NETWORK ERROR: Could not upload to mainframe.");
+            }
         } else {
             setError("SYSTEM ALERT: Review contains corrupted or prohibited data sectors.");
         }
@@ -132,48 +125,46 @@ const ReviewSection: React.FC = () => {
                     type="text" 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Enter Game Title (try 'Sonic')..."
+                    placeholder="Search Reviews..."
                     aria-label="Search for game reviews"
                     className="flex-1 bg-retro-dark border-2 border-retro-grid text-retro-neon p-4 font-mono focus:border-retro-neon focus:outline-none"
                 />
-                <Button onClick={handleSearch} isLoading={loading} disabled={!searchTerm}>
+                <Button onClick={handleSearch} isLoading={loading}>
                     SEARCH
                 </Button>
             </div>
 
             {/* Results */}
-            {activeTopic && (
-                <div className="mb-12" aria-live="polite">
-                     <div className="flex justify-between items-end border-b border-retro-grid pb-2 mb-6">
-                        <h3 className="text-xl font-pixel text-white">{activeTopic.toUpperCase()}</h3>
-                        <span className="font-mono text-retro-blue text-sm">AVG RATING: {getAverageRating()}/5</span>
-                     </div>
+            <div className="mb-12" aria-live="polite">
+                    <div className="flex justify-between items-end border-b border-retro-grid pb-2 mb-6">
+                    <h3 className="text-xl font-pixel text-white">{activeTopic ? activeTopic.toUpperCase() : 'RECENT UPLOADS'}</h3>
+                    <span className="font-mono text-retro-blue text-sm">AVG RATING: {getAverageRating()}/5</span>
+                    </div>
 
-                     <div className="grid gap-6">
-                        {reviews.length === 0 ? (
-                             <div className="text-center font-mono text-gray-500 py-8">NO DATA FOUND ON THIS TAPE. BE THE FIRST TO WRITE TO IT.</div>
-                        ) : (
-                            reviews.map(review => (
-                                <div key={review.id} className="bg-retro-grid/10 border border-retro-grid p-6 relative animate-scanline">
-                                    <div className="flex justify-between mb-4">
-                                        <span className={`font-pixel text-xs ${review.author === 'Player 1' ? 'text-retro-neon' : 'text-retro-pink'}`}>
-                                            {review.author} {review.author === 'Player 1' ? '(YOU)' : ''}
-                                        </span>
-                                        <div className="text-yellow-400 tracking-widest" aria-label={`Rating: ${review.rating} out of 5 stars`}>
-                                            {'★'.repeat(review.rating)}<span className="text-gray-600">{'★'.repeat(5-review.rating)}</span>
-                                        </div>
-                                    </div>
-                                    <p className="font-mono text-gray-300 text-sm leading-relaxed">{review.text}</p>
-                                    <div className="mt-4 flex justify-between items-center">
-                                        <span className="text-[10px] font-mono text-gray-500">{review.date}</span>
-                                        {review.verified && <span className="text-[10px] font-pixel text-retro-neon border border-retro-neon px-1" title="Verified Purchase">VERIFIED</span>}
+                    <div className="grid gap-6">
+                    {reviews.length === 0 ? (
+                            <div className="text-center font-mono text-gray-500 py-8">NO DATA FOUND ON THIS TAPE.</div>
+                    ) : (
+                        reviews.map((review, idx) => (
+                            <div key={review.id || idx} className="bg-retro-grid/10 border border-retro-grid p-6 relative">
+                                <div className="flex justify-between mb-4">
+                                    <span className={`font-pixel text-xs ${review.author === 'Player 1' ? 'text-retro-neon' : 'text-retro-pink'}`}>
+                                        {review.author} {review.author === 'Player 1' ? '(YOU)' : ''}
+                                    </span>
+                                    <div className="text-yellow-400 tracking-widest" aria-label={`Rating: ${review.rating} out of 5 stars`}>
+                                        {'★'.repeat(review.rating)}<span className="text-gray-600">{'★'.repeat(5-review.rating)}</span>
                                     </div>
                                 </div>
-                            ))
-                        )}
-                     </div>
-                </div>
-            )}
+                                <p className="font-mono text-gray-300 text-sm leading-relaxed">{review.text}</p>
+                                <div className="mt-4 flex justify-between items-center">
+                                    <span className="text-[10px] font-mono text-gray-500">{review.date}</span>
+                                    {review.verified && <span className="text-[10px] font-pixel text-retro-neon border border-retro-neon px-1" title="Verified Purchase">VERIFIED</span>}
+                                </div>
+                            </div>
+                        ))
+                    )}
+                    </div>
+            </div>
 
             {/* Submission Form */}
             <div className="border-t-4 border-retro-grid pt-10 mt-10">

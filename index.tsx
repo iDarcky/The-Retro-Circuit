@@ -6,6 +6,7 @@ import SEOHead from './components/SEOHead';
 import ErrorBoundary from './components/ErrorBoundary';
 import { SoundProvider, useSound } from './components/SoundContext';
 import BootSequence from './components/BootSequence';
+import { checkDatabaseConnection } from './services/geminiService';
 
 // Lazy Load components for performance optimization (Code Splitting)
 const NewsSection = React.lazy(() => import('./components/NewsSection'));
@@ -37,6 +38,7 @@ const AppContent = () => {
   const location = useLocation();
   const [konamiIndex, setKonamiIndex] = useState(0);
   const { playClick, playHover, toggleSound, enabled: soundEnabled } = useSound();
+  const [dbStatus, setDbStatus] = useState<'checking' | 'online' | 'offline'>('checking');
 
   // Determine current metadata based on route
   const currentNav = navItems.find(item => item.path === location.pathname) || navItems[0];
@@ -45,6 +47,15 @@ const AppContent = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
+
+  // CHECK DB CONNECTION
+  useEffect(() => {
+      const checkDB = async () => {
+          const isConnected = await checkDatabaseConnection();
+          setDbStatus(isConnected ? 'online' : 'offline');
+      };
+      checkDB();
+  }, []);
 
   // KONAMI CODE LISTENER
   useEffect(() => {
@@ -201,9 +212,14 @@ const AppContent = () => {
       <footer className="w-full bg-retro-dark border-t border-retro-grid py-6 px-4 text-center mt-12 mb-16 md:mb-0">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 font-mono text-[10px] text-gray-500 uppercase">
           
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col md:flex-row items-center gap-4">
              <span>© 199X-202X The Retro Circuit</span>
-             <span className={`animate-pulse text-retro-neon ${cleanMode ? 'hidden' : ''}`}>SYSTEM ONLINE</span>
+             <div className="flex items-center gap-2 border border-gray-700 px-2 py-1 bg-black/50">
+                <span>DB STATUS:</span>
+                {dbStatus === 'checking' && <span className="text-yellow-500 animate-pulse">CHECKING...</span>}
+                {dbStatus === 'online' && <span className="text-green-400 font-bold">ONLINE ●</span>}
+                {dbStatus === 'offline' && <span className="text-red-500 font-bold animate-pulse">OFFLINE ●</span>}
+             </div>
           </div>
 
           <div className="flex gap-4">

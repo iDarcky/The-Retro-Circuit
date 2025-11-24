@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchRetroNews } from '../services/geminiService';
+import { fetchRetroNews, addNewsItem } from '../services/geminiService';
 import { NewsItem } from '../types';
 import Button from './Button';
 
@@ -8,6 +8,13 @@ const NewsSection: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Form State
+  const [showTransmitter, setShowTransmitter] = useState(false);
+  const [newHeadline, setNewHeadline] = useState('');
+  const [newSummary, setNewSummary] = useState('');
+  const [newCategory, setNewCategory] = useState<'Hardware' | 'Software' | 'Industry' | 'Rumor'>('Hardware');
+  const [submitting, setSubmitting] = useState(false);
+
   const loadNews = async () => {
     setLoading(true);
     setError(null);
@@ -15,7 +22,7 @@ const NewsSection: React.FC = () => {
       const items = await fetchRetroNews();
       setNews(items);
     } catch (e) {
-      setError("Failed to decode the signal from the past.");
+      setError("NO CONNECTION TO MAINFRAME. CHECK SUPABASE CONFIG.");
     } finally {
       setLoading(false);
     }
@@ -23,8 +30,33 @@ const NewsSection: React.FC = () => {
 
   useEffect(() => {
     loadNews();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleTransmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!newHeadline || !newSummary) return;
+
+      setSubmitting(true);
+      const newItem: NewsItem = {
+          headline: newHeadline,
+          summary: newSummary,
+          category: newCategory,
+          date: new Date().toISOString()
+      };
+
+      const success = await addNewsItem(newItem);
+      
+      if (success) {
+          // Reset and Reload
+          setNewHeadline('');
+          setNewSummary('');
+          setShowTransmitter(false);
+          await loadNews();
+      } else {
+          alert("TRANSMISSION FAILED: CHECK DATABASE PERMISSIONS (RLS)");
+      }
+      setSubmitting(false);
+  };
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4">
@@ -35,18 +67,71 @@ const NewsSection: React.FC = () => {
           </h2>
           <p className="font-mono text-gray-400">Latest signals from the golden age.</p>
         </div>
-        <Button onClick={loadNews} isLoading={loading} variant="primary">
-          REFRESH SIGNAL
-        </Button>
+        <div className="flex gap-2">
+            <Button onClick={() => setShowTransmitter(!showTransmitter)} variant="secondary">
+               {showTransmitter ? 'CLOSE UPLINK' : 'BROADCAST SIGNAL'}
+            </Button>
+            <Button onClick={loadNews} isLoading={loading} variant="primary">
+            REFRESH
+            </Button>
+        </div>
       </div>
 
+      {showTransmitter && (
+          <div className="mb-10 p-6 border-2 border-dashed border-retro-neon bg-retro-neon/5">
+              <h3 className="font-pixel text-sm text-retro-neon mb-4">INITIATING UPLINK SEQUENCE...</h3>
+              <form onSubmit={handleTransmit} className="space-y-4">
+                  <div>
+                      <label className="block font-mono text-xs text-retro-blue mb-1">HEADLINE</label>
+                      <input 
+                        value={newHeadline}
+                        onChange={e => setNewHeadline(e.target.value)}
+                        className="w-full bg-black/50 border border-retro-grid p-2 text-white font-mono focus:border-retro-neon outline-none"
+                        placeholder="ENTER HEADLINE..."
+                      />
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="w-1/3">
+                        <label className="block font-mono text-xs text-retro-blue mb-1">CATEGORY</label>
+                        <select 
+                            value={newCategory}
+                            onChange={(e) => setNewCategory(e.target.value as any)}
+                            className="w-full bg-black/50 border border-retro-grid p-2 text-white font-mono focus:border-retro-neon outline-none"
+                        >
+                            <option value="Hardware">HARDWARE</option>
+                            <option value="Software">SOFTWARE</option>
+                            <option value="Industry">INDUSTRY</option>
+                            <option value="Rumor">RUMOR</option>
+                        </select>
+                    </div>
+                  </div>
+                  <div>
+                      <label className="block font-mono text-xs text-retro-blue mb-1">SUMMARY</label>
+                      <textarea 
+                        value={newSummary}
+                        onChange={e => setNewSummary(e.target.value)}
+                        rows={3}
+                        className="w-full bg-black/50 border border-retro-grid p-2 text-white font-mono focus:border-retro-neon outline-none"
+                        placeholder="ENTER SIGNAL DATA..."
+                      />
+                  </div>
+                  <div className="flex justify-end">
+                      <Button type="submit" isLoading={submitting} variant="danger">
+                          TRANSMIT DATA
+                      </Button>
+                  </div>
+              </form>
+          </div>
+      )}
+
       {error && (
-        <div className="p-4 border border-retro-pink text-retro-pink font-mono mb-6 bg-retro-pink/10">
-          ERROR: {error}
+        <div className="p-8 border-2 border-retro-pink text-retro-pink font-mono mb-6 bg-retro-pink/10 text-center">
+          <h3 className="text-xl font-bold mb-2">ERROR: {error}</h3>
+          <p className="text-sm opacity-75">Ensure your Supabase project is active and the 'news' table exists.</p>
         </div>
       )}
 
-      {loading && news.length === 0 ? (
+      {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="h-48 border border-retro-grid bg-retro-grid/20 animate-pulse rounded p-4">
@@ -56,12 +141,17 @@ const NewsSection: React.FC = () => {
             </div>
           ))}
         </div>
+      ) : news.length === 0 && !error ? (
+         <div className="text-center py-12 border border-retro-grid border-dashed text-gray-500 font-mono">
+             <div className="mb-4">NO NEWS DATA FOUND IN DATABASE.</div>
+             <p className="text-xs">Use "BROADCAST SIGNAL" to add test data.</p>
+         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {news.map((item, index) => (
             <article key={index} className="group relative border-2 border-retro-grid bg-retro-dark hover:border-retro-neon transition-colors duration-300 p-6 overflow-hidden">
               <div className="absolute top-0 right-0 bg-retro-grid text-retro-neon text-xs font-mono px-2 py-1">
-                {item.date}
+                {new Date(item.date).toLocaleDateString()}
               </div>
               <div className="mb-4">
                 <span className={`inline-block px-2 py-0.5 text-xs font-bold font-mono mb-2 ${

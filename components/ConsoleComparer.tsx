@@ -62,7 +62,7 @@ const ConsoleComparer: React.FC = () => {
       )}
 
       {result && (
-        <div className="animate-scanline border-2 border-retro-blue bg-retro-dark relative overflow-hidden">
+        <div className="border-2 border-retro-blue bg-retro-dark relative overflow-hidden">
           <div className="bg-retro-blue/10 p-6 border-b border-retro-blue">
             <h3 className="font-pixel text-xl text-center text-white mb-4">
               {result.consoleA} vs {result.consoleB}
