@@ -2,8 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { fetchRetroNews, addNewsItem } from '../services/geminiService';
 import { NewsItem } from '../types';
 import Button from './Button';
+import { Link } from 'react-router-dom';
 
-const NewsSection: React.FC = () => {
+interface NewsSectionProps {
+  limit?: number;
+  showAddForm?: boolean;
+  compact?: boolean;
+}
+
+const NewsSection: React.FC<NewsSectionProps> = ({ 
+  limit, 
+  showAddForm = true, 
+  compact = false 
+}) => {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -58,26 +69,39 @@ const NewsSection: React.FC = () => {
       setSubmitting(false);
   };
 
+  const displayNews = limit ? news.slice(0, limit) : news;
+
   return (
-    <div className="w-full max-w-6xl mx-auto p-4">
+    <div className={`w-full ${compact ? '' : 'max-w-6xl mx-auto p-4'}`}>
       <div className="flex justify-between items-end mb-8 border-b-2 border-retro-grid pb-4">
         <div>
-          <h2 className="text-3xl font-pixel text-retro-neon mb-2 drop-shadow-[2px_2px_0_rgba(255,0,255,0.5)]">
-            CIRCUIT FEED
+          <h2 className={`${compact ? 'text-xl' : 'text-3xl'} font-pixel text-retro-neon mb-2 drop-shadow-[2px_2px_0_rgba(255,0,255,0.5)]`}>
+            {compact ? 'LATEST SIGNALS' : 'CIRCUIT FEED'}
           </h2>
-          <p className="font-mono text-gray-400">Latest signals from the golden age.</p>
+          {!compact && <p className="font-mono text-gray-400">Latest signals from the golden age.</p>}
         </div>
         <div className="flex gap-2">
-            <Button onClick={() => setShowTransmitter(!showTransmitter)} variant="secondary">
-               {showTransmitter ? 'CLOSE UPLINK' : 'BROADCAST SIGNAL'}
-            </Button>
-            <Button onClick={loadNews} isLoading={loading} variant="primary">
-            REFRESH
-            </Button>
+            {showAddForm && (
+              <Button onClick={() => setShowTransmitter(!showTransmitter)} variant="secondary">
+                 {showTransmitter ? 'CLOSE UPLINK' : 'BROADCAST SIGNAL'}
+              </Button>
+            )}
+            {!compact && (
+              <Button onClick={loadNews} isLoading={loading} variant="primary">
+                REFRESH
+              </Button>
+            )}
+            {compact && (
+               <Link to="/news">
+                 <button className="font-mono text-xs text-retro-blue hover:text-retro-neon border border-retro-blue hover:border-retro-neon px-3 py-2 transition-colors">
+                   VIEW ARCHIVE
+                 </button>
+               </Link>
+            )}
         </div>
       </div>
 
-      {showTransmitter && (
+      {showAddForm && showTransmitter && (
           <div className="mb-10 p-6 border-2 border-dashed border-retro-neon bg-retro-neon/5">
               <h3 className="font-pixel text-sm text-retro-neon mb-4">INITIATING UPLINK SEQUENCE...</h3>
               <form onSubmit={handleTransmit} className="space-y-4">
@@ -132,11 +156,10 @@ const NewsSection: React.FC = () => {
       )}
 
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-48 border border-retro-grid bg-retro-grid/20 animate-pulse rounded p-4">
+        <div className={`grid grid-cols-1 ${compact ? '' : 'md:grid-cols-2'} gap-6`}>
+          {[1, 2].map((i) => (
+            <div key={i} className="h-32 border border-retro-grid bg-retro-grid/20 animate-pulse rounded p-4">
               <div className="h-4 bg-retro-grid/50 w-3/4 mb-4"></div>
-              <div className="h-4 bg-retro-grid/50 w-1/2 mb-2"></div>
               <div className="h-24 bg-retro-grid/30 w-full"></div>
             </div>
           ))}
@@ -144,17 +167,16 @@ const NewsSection: React.FC = () => {
       ) : news.length === 0 && !error ? (
          <div className="text-center py-12 border border-retro-grid border-dashed text-gray-500 font-mono">
              <div className="mb-4">NO NEWS DATA FOUND IN DATABASE.</div>
-             <p className="text-xs">Use "BROADCAST SIGNAL" to add test data.</p>
          </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {news.map((item, index) => (
-            <article key={index} className="group relative border-2 border-retro-grid bg-retro-dark hover:border-retro-neon transition-colors duration-300 p-6 overflow-hidden">
+        <div className={`grid grid-cols-1 ${compact ? '' : 'md:grid-cols-2'} gap-6`}>
+          {displayNews.map((item, index) => (
+            <article key={index} className={`group relative border-2 border-retro-grid bg-retro-dark hover:border-retro-neon transition-colors duration-300 ${compact ? 'p-4' : 'p-6'} overflow-hidden`}>
               <div className="absolute top-0 right-0 bg-retro-grid text-retro-neon text-xs font-mono px-2 py-1">
                 {new Date(item.date).toLocaleDateString()}
               </div>
-              <div className="mb-4">
-                <span className={`inline-block px-2 py-0.5 text-xs font-bold font-mono mb-2 ${
+              <div className="mb-3">
+                <span className={`inline-block px-2 py-0.5 text-[10px] font-bold font-mono mb-2 ${
                   item.category === 'Hardware' ? 'bg-retro-blue text-retro-dark' :
                   item.category === 'Software' ? 'bg-retro-pink text-retro-dark' :
                   item.category === 'Rumor' ? 'bg-yellow-400 text-retro-dark' :
@@ -162,11 +184,11 @@ const NewsSection: React.FC = () => {
                 }`}>
                   {item.category.toUpperCase()}
                 </span>
-                <h3 className="text-xl font-bold font-mono text-retro-blue group-hover:text-retro-neon transition-colors">
+                <h3 className={`${compact ? 'text-lg' : 'text-xl'} font-bold font-mono text-retro-blue group-hover:text-retro-neon transition-colors leading-tight`}>
                   {item.headline}
                 </h3>
               </div>
-              <p className="text-gray-400 font-mono text-sm leading-relaxed border-l-2 border-retro-grid pl-4">
+              <p className={`text-gray-400 font-mono text-sm leading-relaxed border-l-2 border-retro-grid pl-4 ${compact ? 'line-clamp-3' : ''}`}>
                 {item.summary}
               </p>
               <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-retro-pink via-retro-neon to-retro-blue opacity-0 group-hover:opacity-100 transition-opacity"></div>
