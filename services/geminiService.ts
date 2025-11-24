@@ -26,7 +26,15 @@ export const retroAuth = {
         return await supabase.auth.signInWithPassword({ email, password });
     },
     signUp: async (email: string, password: string) => {
-        return await supabase.auth.signUp({ email, password });
+        // Dynamically redirect to the current domain (works for both localhost and production)
+        const redirectTo = window.location.origin;
+        return await supabase.auth.signUp({ 
+            email, 
+            password,
+            options: {
+                emailRedirectTo: redirectTo
+            }
+        });
     },
     signOut: async () => {
         return await supabase.auth.signOut();
