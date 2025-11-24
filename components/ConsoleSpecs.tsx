@@ -91,6 +91,12 @@ const ConsoleSpecs: React.FC = () => {
                         <span className="text-gray-500">LAUNCH PRICE</span>
                         <span className="text-retro-neon">{consoleData.launch_price}</span>
                     </div>
+                    {consoleData.inflation_price && (
+                        <div className="flex justify-between">
+                            <span className="text-gray-500 text-xs italic">INFLATION ADJ.</span>
+                            <span className="text-gray-400 text-xs italic">{consoleData.inflation_price}</span>
+                        </div>
+                    )}
                     <div>
                         <span className="text-gray-500 block mb-1">BEST SELLING TITLE</span>
                         <span className="text-retro-pink block truncate">{consoleData.best_selling_game}</span>
@@ -108,6 +114,7 @@ const ConsoleSpecs: React.FC = () => {
                 </p>
             </div>
 
+            {/* Core Tech */}
             <div>
                 <h3 className="font-pixel text-xl text-white mb-6 flex items-center gap-4">
                     TECHNICAL SPECS
@@ -122,13 +129,75 @@ const ConsoleSpecs: React.FC = () => {
                         { label: 'MEDIA FORMAT', value: consoleData.media },
                         { label: 'AUDIO CHIP', value: consoleData.audio },
                         { label: 'RESOLUTION', value: consoleData.resolution },
+                        { label: 'DISPLAY TYPE', value: consoleData.display_type },
+                        { label: 'STORAGE', value: consoleData.storage },
                     ].map((spec, i) => (
-                        <div key={i} className="bg-retro-dark border border-retro-grid p-4 hover:border-retro-blue transition-colors group">
-                            <label className="block font-mono text-[10px] text-gray-500 mb-1 group-hover:text-retro-blue transition-colors">{spec.label}</label>
-                            <div className="font-mono text-sm text-retro-neon">{spec.value}</div>
-                        </div>
+                        spec.value ? (
+                            <div key={i} className="bg-retro-dark border border-retro-grid p-4 hover:border-retro-blue transition-colors group">
+                                <label className="block font-mono text-[10px] text-gray-500 mb-1 group-hover:text-retro-blue transition-colors">{spec.label}</label>
+                                <div className="font-mono text-sm text-retro-neon">{spec.value}</div>
+                            </div>
+                        ) : null
                     ))}
                 </div>
+            </div>
+
+            {/* Physical & IO */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                 {/* Physical */}
+                 <div className="bg-retro-dark border border-retro-grid p-6">
+                    <h3 className="font-pixel text-xs text-retro-pink mb-4 border-b border-retro-grid pb-2">PHYSICAL CHASSIS</h3>
+                    <div className="space-y-4 font-mono text-sm">
+                        {consoleData.dimensions && (
+                            <div className="flex justify-between">
+                                <span className="text-gray-500">DIMENSIONS</span>
+                                <span className="text-white text-right">{consoleData.dimensions}</span>
+                            </div>
+                        )}
+                        {consoleData.weight && (
+                            <div className="flex justify-between">
+                                <span className="text-gray-500">WEIGHT</span>
+                                <span className="text-white text-right">{consoleData.weight}</span>
+                            </div>
+                        )}
+                        {consoleData.casing && (
+                            <div className="flex justify-between">
+                                <span className="text-gray-500">MATERIAL</span>
+                                <span className="text-white text-right">{consoleData.casing}</span>
+                            </div>
+                        )}
+                         {consoleData.power_supply && (
+                            <div className="flex justify-between border-t border-retro-grid/30 pt-4 mt-4">
+                                <span className="text-gray-500">POWER</span>
+                                <span className="text-white text-right">{consoleData.power_supply}</span>
+                            </div>
+                        )}
+                        {consoleData.battery_life && (
+                            <div className="flex justify-between">
+                                <span className="text-gray-500">BATTERY</span>
+                                <span className="text-retro-neon text-right">{consoleData.battery_life}</span>
+                            </div>
+                        )}
+                    </div>
+                 </div>
+
+                 {/* I/O */}
+                 <div className="bg-retro-dark border border-retro-grid p-6">
+                    <h3 className="font-pixel text-xs text-retro-blue mb-4 border-b border-retro-grid pb-2">I/O PORTS</h3>
+                    {consoleData.ports && consoleData.ports.length > 0 ? (
+                        <ul className="list-disc list-inside font-mono text-sm text-retro-neon space-y-1">
+                            {consoleData.ports.map((p, i) => <li key={i}>{p}</li>)}
+                        </ul>
+                    ) : (
+                        <span className="font-mono text-xs text-gray-500">NO PORT DATA AVAILABLE</span>
+                    )}
+                     {consoleData.connectivity && (
+                        <div className="mt-4 pt-4 border-t border-retro-grid/50">
+                             <span className="text-gray-500 text-xs block mb-1">NETWORK/EXPANSION</span>
+                             <span className="text-white font-mono text-sm">{consoleData.connectivity}</span>
+                        </div>
+                    )}
+                 </div>
             </div>
          </div>
       </div>

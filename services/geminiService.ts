@@ -1,3 +1,4 @@
+
 import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, Review, ConsoleDetails } from "../types";
 import { supabase } from "./supabaseClient";
 
@@ -20,37 +21,49 @@ const MOCK_CONSOLES: ConsoleDetails[] = [
         id: "1", name: "Sega Genesis", slug: "sega-genesis", manufacturer: "Sega", release_year: 1989, type: "Home", generation: 4,
         intro_text: "The Sega Genesis (known as Mega Drive outside NA) defined the 16-bit era with 'Blast Processing' and an edgy attitude that challenged Nintendo's dominance.",
         cpu: "Motorola 68000 @ 7.6MHz", gpu: "VDP @ 13MHz", ram: "64KB Main, 64KB VRAM", media: "ROM Cartridge", audio: "Yamaha YM2612 FM", resolution: "320x224",
-        units_sold: "30.75 Million", launch_price: "$189", best_selling_game: "Sonic the Hedgehog"
+        units_sold: "30.75 Million", launch_price: "$189", best_selling_game: "Sonic the Hedgehog",
+        dimensions: "279 x 203 x 64 mm", weight: "2.1 kg", ports: ["2x Controller (DE-9)", "1x A/V Out", "1x RF Out", "1x Exp. Port"],
+        power_supply: "External AC Adapter (9V)", connectivity: "Sega Channel (Adapter required)"
     },
     {
         id: "2", name: "Super Nintendo", slug: "snes", manufacturer: "Nintendo", release_year: 1991, type: "Home", generation: 4,
         intro_text: "The SNES brought arcade-quality graphics and sound home with Mode 7 scaling and rotation, hosting some of the greatest RPGs of all time.",
         cpu: "Ricoh 5A22 @ 3.58MHz", gpu: "PPU (Picture Processing Unit)", ram: "128KB Main, 64KB VRAM", media: "ROM Cartridge", audio: "Sony SPC700", resolution: "512x448",
-        units_sold: "49.1 Million", launch_price: "$199", best_selling_game: "Super Mario World"
+        units_sold: "49.1 Million", launch_price: "$199", best_selling_game: "Super Mario World",
+        dimensions: "200 x 242 x 72 mm", weight: "1.2 kg", ports: ["2x Controller", "1x Multi-Out (AV)", "1x RF Out", "1x EXT"],
+        power_supply: "External AC Adapter (10V)"
     },
     {
         id: "3", name: "PlayStation", slug: "playstation", manufacturer: "Sony", release_year: 1994, type: "Home", generation: 5,
         intro_text: "Sony's debut console revolutionized gaming with real-time 3D graphics and CD-quality audio, bringing gaming to the mass market.",
         cpu: "R3000A @ 33.86MHz", gpu: "GTE (Geometry Transformation Engine)", ram: "2MB Main, 1MB VRAM", media: "CD-ROM", audio: "16-bit 24-channel ADPCM", resolution: "640x480",
-        units_sold: "102.49 Million", launch_price: "$299", best_selling_game: "Gran Turismo"
+        units_sold: "102.49 Million", launch_price: "$299", best_selling_game: "Gran Turismo",
+        dimensions: "270 x 188 x 60 mm", weight: "1.5 kg", ports: ["2x Controller", "2x Memory Card", "1x Multi-Out", "1x Serial I/O", "1x Parallel I/O"],
+        power_supply: "Internal AC"
     },
     {
         id: "4", name: "Nintendo 64", slug: "n64", manufacturer: "Nintendo", release_year: 1996, type: "Home", generation: 5,
         intro_text: "The world's first true 64-bit home system, pioneering analog control and 4-player local multiplayer.",
         cpu: "NEC VR4300 @ 93.75MHz", gpu: "SGI Reality Coprocessor", ram: "4MB RDRAM (Exp. to 8MB)", media: "ROM Cartridge", audio: "16-bit 64-channel PCM", resolution: "640x480",
-        units_sold: "32.93 Million", launch_price: "$199", best_selling_game: "Super Mario 64"
+        units_sold: "32.93 Million", launch_price: "$199", best_selling_game: "Super Mario 64",
+        dimensions: "260 x 190 x 73 mm", weight: "1.1 kg", ports: ["4x Controller", "1x Multi-Out", "1x Memory Expansion"],
+        power_supply: "External AC Adapter (3.3V/12V)"
     },
     {
         id: "5", name: "Sega Dreamcast", slug: "dreamcast", manufacturer: "Sega", release_year: 1999, type: "Home", generation: 6,
         intro_text: "The Dreamcast was ahead of its time, featuring built-in internet capabilities and arcade-perfect ports.",
         cpu: "Hitachi SH-4 @ 200MHz", gpu: "NEC PowerVR2", ram: "16MB Main, 8MB VRAM", media: "GD-ROM", audio: "Yamaha AICA", resolution: "640x480",
-        units_sold: "9.13 Million", launch_price: "$199", best_selling_game: "Sonic Adventure"
+        units_sold: "9.13 Million", launch_price: "$199", best_selling_game: "Sonic Adventure",
+        dimensions: "190 x 195.8 x 75.5 mm", weight: "1.5 kg", ports: ["4x Controller", "1x A/V Out", "1x Serial", "1x Modem Port"],
+        power_supply: "Internal AC", connectivity: "56k Modem (Built-in)"
     },
     {
         id: "6", name: "Game Boy", slug: "gameboy", manufacturer: "Nintendo", release_year: 1989, type: "Handheld", generation: 4,
         intro_text: "The Game Boy proved that gameplay mattered more than graphics, dominating the handheld market for a decade.",
         cpu: "Sharp LR35902 @ 4.19MHz", gpu: "Integrated", ram: "8KB Main, 8KB VRAM", media: "ROM Cartridge", audio: "4-channel Stereo", resolution: "160x144",
-        units_sold: "118.69 Million", launch_price: "$89", best_selling_game: "Tetris"
+        units_sold: "118.69 Million", launch_price: "$89", best_selling_game: "Tetris",
+        dimensions: "90 x 148 x 32 mm", weight: "220g", display_type: "STN Dot Matrix LCD (Green/Black)",
+        power_supply: "4x AA Batteries", battery_life: "15-30 Hours", ports: ["1x Link Cable", "1x Headphone Jack", "1x DC In"]
     }
 ];
 
@@ -249,7 +262,8 @@ export const submitReviewToDB = async (review: Review): Promise<boolean> => {
             rating: review.rating,
             text: review.text,
             date: review.date,
-            verified: review.verified
+            verified: review.verified,
+            console_id: review.consoleId
         }]);
         return !error;
     } catch (err) {
@@ -286,24 +300,49 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
 };
 
 /**
- * Compares two consoles using Mock Data (Offline Mode)
+ * Compares two consoles using Supabase Data with fallback to Mock
  */
 export const compareConsoles = async (consoleA: string, consoleB: string): Promise<ComparisonResult | null> => {
   try {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 800));
+    // Attempt to fetch from DB
+    // We use ilike for case-insensitive matching on name or exact on slug
+    const fetchC1 = supabase.from('consoles').select('*').or(`name.ilike.%${consoleA}%,slug.eq.${consoleA.toLowerCase()}`).limit(1).single();
+    const fetchC2 = supabase.from('consoles').select('*').or(`name.ilike.%${consoleB}%,slug.eq.${consoleB.toLowerCase()}`).limit(1).single();
 
-    // Simple mock response
+    const [res1, res2] = await Promise.all([fetchC1, fetchC2]);
+
+    let c1: ConsoleDetails | undefined = res1.data;
+    let c2: ConsoleDetails | undefined = res2.data;
+
+    // Fallback to MOCK if DB misses
+    if (!c1) {
+        c1 = MOCK_CONSOLES.find(c => c.name.toLowerCase().includes(consoleA.toLowerCase()) || c.slug === consoleA.toLowerCase());
+    }
+    if (!c2) {
+        c2 = MOCK_CONSOLES.find(c => c.name.toLowerCase().includes(consoleB.toLowerCase()) || c.slug === consoleB.toLowerCase());
+    }
+
+    if (c1 && c2) {
+         return {
+            consoleA: c1.name,
+            consoleB: c2.name,
+            summary: `Comparison generated for ${c1.name} and ${c2.name}.`,
+            points: [
+                { feature: "Release Year", consoleAValue: c1.release_year.toString(), consoleBValue: c2.release_year.toString(), winner: c1.release_year < c2.release_year ? 'A' : 'B' }, 
+                { feature: "CPU", consoleAValue: c1.cpu, consoleBValue: c2.cpu, winner: "Tie" },
+                { feature: "Resolution", consoleAValue: c1.resolution, consoleBValue: c2.resolution, winner: "Tie" },
+                { feature: "Media", consoleAValue: c1.media, consoleBValue: c2.media, winner: "Tie" },
+                { feature: "Units Sold", consoleAValue: c1.units_sold, consoleBValue: c2.units_sold, winner: parseInt(c1.units_sold) > parseInt(c2.units_sold) ? 'A' : 'B' }
+            ]
+        };
+    }
+
+    // Fallback if names don't match anything
     return {
         consoleA: consoleA,
         consoleB: consoleB,
-        summary: `SIMULATION MODE: ${consoleA} and ${consoleB} are iconic systems. Connect to AI Mainframe for deeper analysis.`,
-        points: [
-            { feature: "Processor", consoleAValue: "8/16-bit CPU", consoleBValue: "16/32-bit CPU", winner: "Tie" },
-            { feature: "Resolution", consoleAValue: "256x224", consoleBValue: "512x448", winner: "B" },
-            { feature: "Sound", consoleAValue: "FM Synth", consoleBValue: "PCM Samples", winner: "Tie" },
-            { feature: "Media", consoleAValue: "Cartridge", consoleBValue: "CD-ROM", winner: "Tie" }
-        ]
+        summary: `DATA MISSING: COULD NOT LOCATE FULL SCHEMATICS FOR ${consoleA} OR ${consoleB}.`,
+        points: []
     };
   } catch (error) {
       console.error("Comparison Error:", error);
