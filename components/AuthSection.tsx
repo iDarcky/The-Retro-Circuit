@@ -115,10 +115,6 @@ const AuthSection: React.FC = () => {
                         <label className="text-xs text-gray-500 block mb-1">EMAIL FREQUENCY</label>
                         <div className="border-b border-retro-grid pb-1">{user.email}</div>
                     </div>
-                    <div>
-                        <label className="text-xs text-gray-500 block mb-1">ID TAG</label>
-                        <div className="text-xs text-gray-600 font-mono">{user.id}</div>
-                    </div>
                 </div>
 
                 <Button onClick={handleLogout} variant="danger" isLoading={loading}>
