@@ -37,10 +37,13 @@ export const retroAuth = {
         });
     },
     resetPassword: async (email: string) => {
-        const redirectTo = window.location.origin;
+        const redirectTo = window.location.origin; // Redirects back to homepage, AuthSection handles the event
         return await supabase.auth.resetPasswordForEmail(email, {
             redirectTo: redirectTo
         });
+    },
+    updateUserPassword: async (newPassword: string) => {
+        return await supabase.auth.updateUser({ password: newPassword });
     },
     signOut: async () => {
         return await supabase.auth.signOut();

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { retroAuth } from '../services/geminiService';
+import { supabase } from '../services/supabaseClient';
 import Button from './Button';
 import { useNavigate } from 'react-router-dom';
 
-type AuthMode = 'LOGIN' | 'SIGNUP' | 'RECOVERY';
+type AuthMode = 'LOGIN' | 'SIGNUP' | 'RECOVERY' | 'UPDATE_PASSWORD';
 
 const AuthSection: React.FC = () => {
     const navigate = useNavigate();
@@ -12,6 +13,17 @@ const AuthSection: React.FC = () => {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'error' | 'success', text: string } | null>(null);
+
+    // Listen for Password Recovery event
+    useEffect(() => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === "PASSWORD_RECOVERY") {
+                setMode('UPDATE_PASSWORD');
+                setMessage({ type: 'success', text: 'IDENTITY VERIFIED. ENTER NEW PASSCODE.' });
+            }
+        });
+        return () => subscription.unsubscribe();
+    }, []);
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -26,12 +38,16 @@ const AuthSection: React.FC = () => {
             } else if (mode === 'LOGIN') {
                 const { error } = await retroAuth.signIn(email, password);
                 if (error) throw error;
-                // Redirect on success
                 navigate('/news');
             } else if (mode === 'RECOVERY') {
                 const { error } = await retroAuth.resetPassword(email);
                 if (error) throw error;
                 setMessage({ type: 'success', text: 'RECOVERY KEY TRANSMITTED. CHECK EMAIL TERMINAL.' });
+            } else if (mode === 'UPDATE_PASSWORD') {
+                const { error } = await retroAuth.updateUserPassword(password);
+                if (error) throw error;
+                setMessage({ type: 'success', text: 'PASSCODE REWRITTEN. SYSTEM SECURE.' });
+                setTimeout(() => navigate('/news'), 2000);
             }
         } catch (err: any) {
             setMessage({ type: 'error', text: err.message.toUpperCase() || 'ACCESS DENIED' });
@@ -51,29 +67,33 @@ const AuthSection: React.FC = () => {
 
                 <div className="text-center mb-8 border-b-2 border-retro-grid pb-4">
                     <h2 className="text-3xl font-pixel text-retro-neon mb-2 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
-                        {mode === 'RECOVERY' ? 'SYSTEM RECOVERY' : 'ACCESS CONTROL'}
+                        {mode === 'RECOVERY' ? 'SYSTEM RECOVERY' : mode === 'UPDATE_PASSWORD' ? 'RESET CREDENTIALS' : 'ACCESS CONTROL'}
                     </h2>
                     <p className="font-mono text-retro-blue text-xs uppercase tracking-widest">
-                        {mode === 'RECOVERY' ? 'RESTORE LOST CREDENTIALS' : 'SECURE MAINFRAME ENTRY'}
+                        {mode === 'RECOVERY' ? 'RESTORE LOST CREDENTIALS' : mode === 'UPDATE_PASSWORD' ? 'OVERWRITE SECURITY PROTOCOLS' : 'SECURE MAINFRAME ENTRY'}
                     </p>
                 </div>
 
                 <form onSubmit={handleAuth} className="space-y-6">
-                    <div>
-                        <label className="block font-mono text-xs text-retro-pink mb-1 uppercase">User ID (Email)</label>
-                        <input 
-                            type="email"
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full bg-black/50 border-2 border-retro-grid p-3 text-white font-mono focus:border-retro-neon focus:shadow-[0_0_10px_rgba(0,255,157,0.3)] outline-none transition-all"
-                            placeholder="USER@RETRO.NET"
-                        />
-                    </div>
+                    {mode !== 'UPDATE_PASSWORD' && (
+                        <div>
+                            <label className="block font-mono text-xs text-retro-pink mb-1 uppercase">User ID (Email)</label>
+                            <input 
+                                type="email"
+                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="w-full bg-black/50 border-2 border-retro-grid p-3 text-white font-mono focus:border-retro-neon focus:shadow-[0_0_10px_rgba(0,255,157,0.3)] outline-none transition-all"
+                                placeholder="USER@RETRO.NET"
+                            />
+                        </div>
+                    )}
 
                     {mode !== 'RECOVERY' && (
                         <div>
-                            <label className="block font-mono text-xs text-retro-pink mb-1 uppercase">Passcode</label>
+                            <label className="block font-mono text-xs text-retro-pink mb-1 uppercase">
+                                {mode === 'UPDATE_PASSWORD' ? 'New Passcode' : 'Passcode'}
+                            </label>
                             <input 
                                 type="password"
                                 required
@@ -97,7 +117,7 @@ const AuthSection: React.FC = () => {
 
                     <div className="pt-4">
                         <Button type="submit" isLoading={loading} variant={mode === 'SIGNUP' ? "secondary" : "primary"} className="w-full">
-                            {mode === 'SIGNUP' ? "INITIATE REGISTRATION" : mode === 'RECOVERY' ? "TRANSMIT RECOVERY KEY" : "AUTHENTICATE"}
+                            {mode === 'SIGNUP' ? "INITIATE REGISTRATION" : mode === 'RECOVERY' ? "TRANSMIT RECOVERY KEY" : mode === 'UPDATE_PASSWORD' ? "OVERWRITE PASSCODE" : "AUTHENTICATE"}
                         </Button>
                     </div>
                 </form>
