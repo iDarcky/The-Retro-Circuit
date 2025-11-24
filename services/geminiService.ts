@@ -1,7 +1,6 @@
 
-import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails, ChatMessage, Review } from "../types";
+import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails } from "../types";
 import { supabase } from "./supabaseClient";
-import { GoogleGenAI, Type } from "@google/genai";
 
 /**
  * MOCK DATA STORE (FALLBACK MODE)
@@ -85,11 +84,6 @@ const MOCK_TIMELINE: TimelineEvent[] = [
     { year: "1989", name: "Game Boy", manufacturer: "Nintendo", description: "Portable gaming is revolutionized with interchangeable cartridges." },
     { year: "1991", name: "Street Fighter II", manufacturer: "Capcom", description: "Revolutionizes the fighting game genre in arcades." },
     { year: "1994", name: "PlayStation Launch", manufacturer: "Sony", description: "Sony enters the market and dominates with CD-based gaming." }
-];
-
-const MOCK_REVIEWS: Review[] = [
-    { id: '1', author: 'RetroGamer88', rating: 5, text: 'The Sega Genesis does what Nintendon\'t!', date: '1991-08-14', verified: true },
-    { id: '2', author: 'MarioFan', rating: 4, text: 'SNES has better sound chip, hands down.', date: '1992-02-01', verified: false }
 ];
 
 // HELPER: Parse memory strings roughly (e.g. "64KB" vs "2MB") for comparison
@@ -335,98 +329,4 @@ export const compareConsoles = async (consoleA: string, consoleB: string): Promi
       console.error("Comparison Error:", error);
       return null;
   }
-};
-
-/**
- * Sends a chat message to the Gemini API via @google/genai
- */
-export const sendChatMessage = async (history: { role: string; parts: { text: string }[] }[], newMessage: string): Promise<string> => {
-    try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        
-        // The component passes history including the new user message. 
-        // We need to use the history leading up to it, and send the new message as the trigger.
-        // If history is just the new message (first turn), previousHistory is empty.
-        const previousHistory = history.length > 1 ? history.slice(0, -1) : [];
-
-        const chat = ai.chats.create({
-            model: 'gemini-2.5-flash',
-            history: previousHistory,
-            config: {
-                systemInstruction: "You are the Retro Sage, a wise AI knowledgeable about 8-bit, 16-bit, and 32-bit video game eras. Speak in a slightly robotic but helpful tone.",
-            }
-        });
-
-        const result = await chat.sendMessage({ message: newMessage });
-        return result.text || "";
-    } catch (e) {
-        console.error("Chat Error", e);
-        return "ERROR: SIGNAL LOST. MAINFRAME UNREACHABLE.";
-    }
-};
-
-/**
- * Uses Gemini to moderate content before submission
- */
-export const moderateContent = async (text: string): Promise<boolean> => {
-    try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        const response = await ai.models.generateContent({
-             model: "gemini-2.5-flash",
-             contents: `Analyze this text for inappropriate content (hate speech, spam, violence, explicit). Return JSON with "isSafe" boolean. Text: "${text}"`,
-             config: {
-                 responseMimeType: "application/json",
-                 responseSchema: {
-                    type: Type.OBJECT,
-                    properties: {
-                        isSafe: { type: Type.BOOLEAN }
-                    }
-                 }
-             }
-        });
-        
-        // Safely parse
-        const jsonText = response.text || "{}";
-        const json = JSON.parse(jsonText);
-        return json.isSafe === true;
-    } catch (e) {
-        console.error("Moderation Error", e);
-        // Default to safe in offline/mock mode to allow demo to work, or false to be strict.
-        // Given this is a demo app:
-        return true; 
-    }
-};
-
-/**
- * Fetches reviews from Supabase with search support
- */
-export const fetchInitialReviews = async (searchTerm: string): Promise<Review[]> => {
-    let query = supabase.from('reviews').select('*').order('created_at', { ascending: false });
-    
-    if (searchTerm) {
-        query = query.ilike('text', `%${searchTerm}%`);
-    } else {
-        query = query.limit(10);
-    }
-
-    return fetchWithFallback(query, MOCK_REVIEWS);
-};
-
-/**
- * Submits a new review to Supabase
- */
-export const submitReviewToDB = async (review: Review): Promise<boolean> => {
-    try {
-        const { error } = await supabase.from('reviews').insert([{
-            author: review.author,
-            rating: review.rating,
-            text: review.text,
-            verified: review.verified,
-            // created_at is handled by DB default
-        }]);
-        return !error;
-    } catch (e) {
-        console.error("Submission Error", e);
-        return false;
-    }
 };

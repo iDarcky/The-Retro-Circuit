@@ -1,4 +1,5 @@
 
+
 export interface NewsItem {
   headline: string;
   date: string;
@@ -82,20 +83,4 @@ export interface ConsoleDetails {
   launch_price: string;
   inflation_price?: string; // Calculated price today
   best_selling_game: string;
-}
-
-export interface ChatMessage {
-  id: string;
-  role: 'user' | 'model';
-  text: string;
-  timestamp: number;
-}
-
-export interface Review {
-  id: string;
-  author: string;
-  rating: number;
-  text: string;
-  date: string;
-  verified: boolean;
 }
