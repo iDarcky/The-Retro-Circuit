@@ -4,10 +4,8 @@ import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-do
 import LandingPage from './components/LandingPage';
 import NewsSection from './components/NewsSection';
 import ConsoleComparer from './components/ConsoleComparer';
-import RetroSage from './components/RetroSage';
 import GameOfTheWeek from './components/GameOfTheWeek';
 import Timeline from './components/Timeline';
-import ReviewSection from './components/ReviewSection';
 import AuthSection from './components/AuthSection';
 import BootSequence from './components/BootSequence';
 import ConsoleLibrary from './components/ConsoleLibrary';
@@ -21,10 +19,8 @@ import { checkDatabaseConnection } from './services/geminiService';
 const IconNews = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>;
 const IconDatabase = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>;
 const IconVS = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>;
-const IconOracle = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>;
 const IconGOTW = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>;
 const IconTimeline = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>;
-const IconReviews = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>;
 const IconLogin = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>;
 const IconHome = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>;
 
@@ -83,7 +79,7 @@ const FooterStatus = () => {
                 </span>
             </div>
             <div className="text-gray-600">
-                RETRO CIRCUIT v1.0.4 // MEM: 64KB OK
+                RETRO CIRCUIT v1.0.5 // MEM: 64KB OK
             </div>
         </footer>
     );
@@ -101,7 +97,7 @@ const AppContent = () => {
     <div className="min-h-screen bg-retro-dark pb-10">
       <SEOHead 
         title="Home" 
-        description="The ultimate retro gaming terminal. Compare consoles, read news, and consult the oracle." 
+        description="The ultimate retro gaming terminal. Compare consoles and read news." 
       />
       
       {/* Mobile Header */}
@@ -130,10 +126,8 @@ const AppContent = () => {
                 <SidebarItem to="/news" icon={IconNews} label="NEWS WIRE" />
                 <SidebarItem to="/consoles" icon={IconDatabase} label="HARDWARE DB" />
                 <SidebarItem to="/comparer" icon={IconVS} label="VS. MODE" />
-                <SidebarItem to="/sage" icon={IconOracle} label="THE ORACLE" />
                 <SidebarItem to="/gotw" icon={IconGOTW} label="GAME OF WEEK" />
                 <SidebarItem to="/timeline" icon={IconTimeline} label="TIMELINE" />
-                <SidebarItem to="/reviews" icon={IconReviews} label="USER REVIEWS" />
             </div>
 
             <div className="p-4 border-t border-retro-grid">
@@ -159,10 +153,8 @@ const AppContent = () => {
                 <Route path="/consoles" element={<ConsoleLibrary />} />
                 <Route path="/consoles/:slug" element={<ConsoleSpecs />} />
                 <Route path="/comparer" element={<ConsoleComparer />} />
-                <Route path="/sage" element={<RetroSage />} />
                 <Route path="/gotw" element={<GameOfTheWeek />} />
                 <Route path="/timeline" element={<Timeline />} />
-                <Route path="/reviews" element={<ReviewSection />} />
                 <Route path="/login" element={<AuthSection />} />
             </Routes>
 

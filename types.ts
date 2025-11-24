@@ -20,13 +20,6 @@ export interface ComparisonResult {
   points: ComparisonPoint[];
 }
 
-export interface ChatMessage {
-  id: string;
-  role: 'user' | 'model';
-  text: string;
-  timestamp: number;
-}
-
 export interface GameOfTheWeekData {
   title: string;
   developer: string;
@@ -41,16 +34,6 @@ export interface TimelineEvent {
   name: string;
   manufacturer: string;
   description: string;
-}
-
-export interface Review {
-  id: string;
-  author: string;
-  rating: number; // 1-5
-  text: string;
-  date: string;
-  verified: boolean;
-  consoleId?: string; // Optional linkage to specific console
 }
 
 // Phase 2: GSMArena-style Deep Specs
@@ -99,4 +82,20 @@ export interface ConsoleDetails {
   launch_price: string;
   inflation_price?: string; // Calculated price today
   best_selling_game: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'model';
+  text: string;
+  timestamp: number;
+}
+
+export interface Review {
+  id: string;
+  author: string;
+  rating: number;
+  text: string;
+  date: string;
+  verified: boolean;
 }
