@@ -130,7 +130,7 @@ const AdminPortal: React.FC = () => {
 
             {message && (
                 <div className="bg-retro-grid border border-retro-neon text-retro-neon p-4 mb-6 animate-pulse">
-                    > {message}
+                    &gt; {message}
                 </div>
             )}
 
