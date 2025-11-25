@@ -17,7 +17,7 @@ import { SoundProvider, useSound } from './components/SoundContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import SEOHead from './components/SEOHead';
 import { checkDatabaseConnection, retroAuth } from './services/geminiService';
-import { supabase } from './services/supabaseClient';
+import { supabase, isSupabaseConfigured } from './services/supabaseClient';
 import GlobalSearch from './components/GlobalSearch';
 
 // --- ICONS ---
@@ -63,6 +63,10 @@ const FooterStatus = () => {
 
     useEffect(() => {
         const check = async () => {
+            if (!isSupabaseConfigured) {
+                setDbStatus('OFFLINE');
+                return;
+            }
             const isConnected = await checkDatabaseConnection();
             setDbStatus(isConnected ? 'ONLINE' : 'OFFLINE');
         };
@@ -81,28 +85,35 @@ const FooterStatus = () => {
     };
 
     return (
-        <footer className="fixed bottom-0 left-0 right-0 h-8 bg-retro-dark border-t border-retro-grid flex items-center justify-between px-4 z-50 text-[10px] font-mono">
-            <div className="flex items-center space-x-4">
-                <span className="text-gray-500">SYSTEM STATUS:</span>
-                <span className={`flex items-center ${
-                    dbStatus === 'ONLINE' ? 'text-retro-neon' : 
-                    dbStatus === 'OFFLINE' ? 'text-retro-pink animate-pulse' : 'text-yellow-400'
-                }`}>
-                    <span className={`w-2 h-2 rounded-full mr-2 ${
-                        dbStatus === 'ONLINE' ? 'bg-retro-neon' : 
-                        dbStatus === 'OFFLINE' ? 'bg-retro-pink' : 'bg-yellow-400'
-                    }`}></span>
-                    {dbStatus === 'CHECKING' ? 'ESTABLISHING UPLINK...' : `DATABASE ${dbStatus}`}
-                </span>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-                 <button onClick={toggleCrt} className="text-retro-blue hover:text-white border border-retro-blue px-2 transition-colors">
-                     {crtEnabled ? 'DISABLE CRT FX' : 'ENABLE CRT FX'}
-                 </button>
-                 <button onClick={toggleSound} className="text-retro-pink hover:text-white border border-retro-pink px-2 transition-colors">
-                     {enabled ? 'MUTE AUDIO' : 'ENABLE AUDIO'}
-                 </button>
+        <footer className={`fixed bottom-0 left-0 right-0 ${!isSupabaseConfigured ? 'h-auto pb-1' : 'h-8'} bg-retro-dark border-t border-retro-grid flex flex-col justify-end z-50 font-mono`}>
+            {!isSupabaseConfigured && (
+                <div className="w-full bg-retro-pink text-black text-center text-[10px] py-1 font-bold animate-pulse mb-1">
+                    ⚠ SYSTEM ALERT: DATABASE DISCONNECTED (MISSING .ENV CONFIG)
+                </div>
+            )}
+            <div className="flex items-center justify-between px-4 h-8 text-[10px]">
+                <div className="flex items-center space-x-4">
+                    <span className="text-gray-500">SYSTEM STATUS:</span>
+                    <span className={`flex items-center ${
+                        dbStatus === 'ONLINE' ? 'text-retro-neon' : 
+                        dbStatus === 'OFFLINE' ? 'text-retro-pink animate-pulse' : 'text-yellow-400'
+                    }`}>
+                        <span className={`w-2 h-2 rounded-full mr-2 ${
+                            dbStatus === 'ONLINE' ? 'bg-retro-neon' : 
+                            dbStatus === 'OFFLINE' ? 'bg-retro-pink' : 'bg-yellow-400'
+                        }`}></span>
+                        {dbStatus === 'CHECKING' ? 'ESTABLISHING UPLINK...' : `DATABASE ${dbStatus}`}
+                    </span>
+                </div>
+                
+                <div className="flex items-center space-x-4">
+                    <button onClick={toggleCrt} className="text-retro-blue hover:text-white border border-retro-blue px-2 transition-colors">
+                        {crtEnabled ? 'DISABLE CRT FX' : 'ENABLE CRT FX'}
+                    </button>
+                    <button onClick={toggleSound} className="text-retro-pink hover:text-white border border-retro-pink px-2 transition-colors">
+                        {enabled ? 'MUTE AUDIO' : 'ENABLE AUDIO'}
+                    </button>
+                </div>
             </div>
         </footer>
     );
@@ -122,6 +133,8 @@ const AppContent = () => {
   }, [location]);
 
   useEffect(() => {
+      if (!isSupabaseConfigured) return;
+
       const checkAdmin = async () => {
           const isA = await retroAuth.isAdmin();
           setIsAdmin(isA);

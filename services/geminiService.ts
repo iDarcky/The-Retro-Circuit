@@ -1,4 +1,3 @@
-
 import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails, UserCollectionItem, SearchResult, ConsoleFilterState } from "../types";
 import { supabase } from "./supabaseClient";
 
@@ -18,7 +17,7 @@ const parseMemory = (memStr: string | undefined): number => {
     }
 };
 
-async function fetchWithFallback<T>(dbPromise: Promise<{ data: any, error: any }>, fallback: T): Promise<T> {
+async function fetchWithFallback<T>(dbPromise: PromiseLike<{ data: any, error: any }>, fallback: T): Promise<T> {
     try {
         const timeoutPromise = new Promise<{ data: any, error: any }>((_, reject) => 
             setTimeout(() => reject(new Error("Request Timed Out")), 2500)
