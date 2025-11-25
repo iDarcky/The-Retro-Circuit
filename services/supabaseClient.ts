@@ -6,19 +6,15 @@ const getEnvVar = (key: string): string => {
   // @ts-ignore
   const val = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env[key] : undefined;
   if (!val) {
-    // We return an empty string initially to prevent crash on import, 
-    // but the createClient call will likely fail or we can log a critical error.
-    console.error(`CRITICAL: Missing environment variable ${key}`);
+    console.warn(`WARNING: Missing environment variable ${key}. App will run in SIMULATION MODE.`);
     return '';
   }
   return val;
 };
 
-const SUPABASE_URL = getEnvVar('VITE_SUPABASE_URL');
-const SUPABASE_ANON_KEY = getEnvVar('VITE_SUPABASE_ANON_KEY');
-
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  throw new Error("Application Configuration Error: Missing Supabase Environment Variables. Please check your .env file.");
-}
+// Use placeholders if env vars are missing to prevent crash during createClient initialization.
+// The service layer (geminiService.ts) detects connection failures and falls back to mock data automatically.
+const SUPABASE_URL = getEnvVar('VITE_SUPABASE_URL') || 'https://placeholder.supabase.co';
+const SUPABASE_ANON_KEY = getEnvVar('VITE_SUPABASE_ANON_KEY') || 'placeholder-key';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
