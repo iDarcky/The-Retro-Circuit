@@ -16,7 +16,8 @@ import AdminPortal from './components/AdminPortal';
 import { SoundProvider, useSound } from './components/SoundContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import SEOHead from './components/SEOHead';
-import { checkDatabaseConnection } from './services/geminiService';
+import { checkDatabaseConnection, retroAuth } from './services/geminiService';
+import { supabase } from './services/supabaseClient';
 
 // --- ICONS ---
 const IconNews = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>;
@@ -26,6 +27,7 @@ const IconGames = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="
 const IconTimeline = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>;
 const IconLogin = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>;
 const IconHome = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>;
+const IconLock = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
 
 // --- SIDEBAR NAVIGATION ---
 const SidebarItem = ({ to, icon: Icon, label, exact = false }: { to: string, icon: any, label: string, exact?: boolean }) => {
@@ -107,129 +109,109 @@ const FooterStatus = () => {
 
 const AppContent = () => {
   const [bootComplete, setBootComplete] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
 
-  // Handle password reset
-  // FIX: Moved useEffect to top level, before any return statements
+  // Handle password reset - Corrected hook order
   useEffect(() => {
-    // Check URL for recovery link from Supabase
     if (location.hash.includes('type=recovery')) {
         sessionStorage.setItem('retro_recovery_pending', 'true');
     }
   }, [location]);
+
+  // Handle Admin Check - Corrected hook order
+  useEffect(() => {
+    const checkAdmin = async () => {
+        const isA = await retroAuth.isAdmin();
+        setIsAdmin(isA);
+    };
+    checkAdmin();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => checkAdmin());
+    return () => subscription.unsubscribe();
+  }, []);
 
   if (!bootComplete) {
     return <BootSequence onComplete={() => setBootComplete(true)} />;
   }
 
   return (
-    <div className="min-h-screen bg-retro-dark pb-10">
-      <SEOHead 
-        title="Home" 
-        description="The ultimate retro gaming terminal. Compare consoles and read news." 
-      />
-      
-      {/* Mobile Header */}
-      <div className="md:hidden p-4 border-b border-retro-grid flex justify-between items-center sticky top-0 bg-retro-dark z-40">
-        <h1 className="font-pixel text-retro-neon text-sm">THE RETRO CIRCUIT</h1>
-        <div className="flex gap-2">
-            <Link to="/login" className="p-2 border border-retro-grid text-retro-blue">
-                <IconLogin />
-            </Link>
+    <div className="flex flex-col md:flex-row min-h-screen pt-0 md:pt-0 pb-12">
+      <SEOHead title="Gateway to the Golden Age" description="Comparing retro consoles and games." />
+
+      {/* MOBILE HEADER */}
+      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-retro-dark border-b border-retro-grid z-40 flex items-center justify-between px-4">
+        <div className="font-pixel text-retro-neon text-sm">THE RETRO CIRCUIT</div>
+        <div className="flex gap-4">
+            {isAdmin && <Link to="/admin" className="p-2 text-retro-pink"><IconLock /></Link>}
+            <Link to="/login"><IconLogin /></Link>
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row min-h-screen pt-0 md:pt-0">
+      {/* SIDEBAR (DESKTOP) */}
+      <aside className="hidden md:flex flex-col w-64 bg-retro-dark border-r border-retro-grid fixed h-full z-40">
+        <div className="p-6 border-b border-retro-grid text-center">
+            <h1 className="font-pixel text-retro-neon text-xl leading-relaxed drop-shadow-[2px_2px_0_rgba(255,0,255,0.5)]">
+                THE RETRO<br/>CIRCUIT
+            </h1>
+        </div>
         
-        {/* Sidebar (Desktop) */}
-        <nav className="hidden md:flex flex-col w-64 border-r border-retro-grid bg-retro-dark/95 fixed h-full top-0 left-0 z-40 overflow-y-auto">
-            <div className="p-6 border-b border-retro-grid mb-4">
-                <h1 className="font-pixel text-xl text-retro-neon leading-relaxed drop-shadow-[2px_2px_0_rgba(255,0,255,0.5)]">
-                    THE RETRO<br/>CIRCUIT
-                </h1>
-                <div className="text-[10px] font-mono text-gray-500 mt-2">TERMINAL ID: 8X-99</div>
-            </div>
-
-            <div className="flex-1 py-4">
-                <SidebarItem to="/" icon={IconHome} label="MAIN MENU" exact />
-                <SidebarItem to="/news" icon={IconNews} label="NEWS WIRE" />
-                <SidebarItem to="/consoles" icon={IconDatabase} label="HARDWARE DB" />
-                <SidebarItem to="/comparer" icon={IconVS} label="VS. MODE" />
-                <SidebarItem to="/games" icon={IconGames} label="GAMES" />
-                <SidebarItem to="/timeline" icon={IconTimeline} label="TIMELINE" />
-            </div>
-
-            <div className="p-4 border-t border-retro-grid">
-                <SidebarItem to="/login" icon={IconLogin} label="LOGIN / PROFILE" />
-            </div>
+        <nav className="flex-1 overflow-y-auto py-4">
+            <SidebarItem to="/" icon={IconHome} label="DASHBOARD" exact />
+            <SidebarItem to="/news" icon={IconNews} label="NEWS FEED" />
+            <SidebarItem to="/games" icon={IconGames} label="GAMES" />
+            <SidebarItem to="/consoles" icon={IconDatabase} label="HARDWARE DB" />
+            <SidebarItem to="/comparer" icon={IconVS} label="VS. MODE" />
+            <SidebarItem to="/timeline" icon={IconTimeline} label="TIMELINE" />
         </nav>
 
-        {/* Mobile Navigation Bar (Bottom) */}
-        <nav className="md:hidden fixed bottom-8 left-0 right-0 bg-retro-dark border-t border-retro-grid flex justify-around p-2 z-40">
-            <Link to="/" className="p-2 text-retro-neon"><IconHome /></Link>
-            <Link to="/news" className="p-2 text-gray-400"><IconNews /></Link>
-            <Link to="/consoles" className="p-2 text-gray-400"><IconDatabase /></Link>
-            <Link to="/games" className="p-2 text-gray-400"><IconGames /></Link>
-        </nav>
+        <div className="p-4 border-t border-retro-grid">
+            {isAdmin && <SidebarItem to="/admin" icon={IconLock} label="ROOT ACCESS" />}
+            <SidebarItem to="/login" icon={IconLogin} label="LOGIN / PROFILE" />
+        </div>
+      </aside>
 
-        {/* Main Content Area */}
-        <main className="flex-1 md:ml-64 p-4 md:p-8 overflow-x-hidden relative">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-retro-pink via-retro-neon to-retro-blue opacity-50"></div>
-            
-            <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/news" element={<NewsSection />} />
-                <Route path="/consoles" element={<ConsoleLibrary />} />
-                <Route path="/consoles/:slug" element={<ConsoleSpecs />} />
-                <Route path="/comparer" element={<ConsoleComparer />} />
-                <Route path="/games" element={<GamesList />} />
-                <Route path="/games/:slug" element={<GameDetails />} />
-                <Route path="/timeline" element={<Timeline />} />
-                <Route path="/login" element={<AuthSection />} />
-                <Route path="/admin" element={<AdminPortal />} />
-            </Routes>
+      {/* MOBILE BOTTOM NAV */}
+      <nav className="md:hidden fixed bottom-8 left-0 right-0 bg-retro-dark border-t border-retro-grid flex justify-around p-2 z-40">
+        <Link to="/" className="p-2 text-gray-400 hover:text-retro-neon"><IconHome /></Link>
+        <Link to="/news" className="p-2 text-gray-400 hover:text-retro-neon"><IconNews /></Link>
+        <Link to="/games" className="p-2 text-gray-400 hover:text-retro-neon"><IconGames /></Link>
+        <Link to="/consoles" className="p-2 text-gray-400 hover:text-retro-neon"><IconDatabase /></Link>
+        <Link to="/comparer" className="p-2 text-gray-400 hover:text-retro-neon"><IconVS /></Link>
+      </nav>
 
-            {/* Content Footer */}
-            <div className="mt-20 pt-10 border-t border-retro-grid border-dashed text-center font-mono text-xs text-gray-600">
-                &copy; 199X-2024 THE RETRO CIRCUIT // DESIGNED FOR NETSCAPE NAVIGATOR 4.0
-            </div>
-        </main>
-      </div>
+      {/* MAIN CONTENT AREA */}
+      <main className="flex-1 md:ml-64 p-4 md:p-8 pt-20 md:pt-8 min-h-screen">
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/news" element={<NewsSection />} />
+          <Route path="/games" element={<GamesList />} />
+          <Route path="/games/:slug" element={<GameDetails />} />
+          <Route path="/consoles" element={<ConsoleLibrary />} />
+          <Route path="/consoles/:slug" element={<ConsoleSpecs />} />
+          <Route path="/comparer" element={<ConsoleComparer />} />
+          <Route path="/timeline" element={<Timeline />} />
+          <Route path="/login" element={<AuthSection />} />
+          <Route path="/admin" element={<AdminPortal />} />
+        </Routes>
+      </main>
 
       <FooterStatus />
     </div>
   );
 };
 
-const App: React.FC = () => {
-  useEffect(() => {
-    // Check for Konami Code: Up, Up, Down, Down, Left, Right, Left, Right, B, A
-    let keys: string[] = [];
-    const konami = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-    
-    const listener = (e: KeyboardEvent) => {
-        keys.push(e.key);
-        keys = keys.slice(-10);
-        if (JSON.stringify(keys) === JSON.stringify(konami)) {
-            document.body.style.filter = 'invert(1)';
-            alert("GOD MODE ENABLED");
-            setTimeout(() => document.body.style.filter = 'none', 5000);
-        }
-    };
-    window.addEventListener('keydown', listener);
-    return () => window.removeEventListener('keydown', listener);
-  }, []);
-
+const App = () => {
   return (
     <ErrorBoundary>
-      <SoundProvider>
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
-      </SoundProvider>
+        <SoundProvider>
+            <BrowserRouter>
+                <AppContent />
+            </BrowserRouter>
+        </SoundProvider>
     </ErrorBoundary>
   );
 };
 
-const root = createRoot(document.getElementById('root')!);
+const container = document.getElementById('root');
+const root = createRoot(container!);
 root.render(<App />);
