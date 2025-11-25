@@ -1,13 +1,23 @@
-import React, { useState } from 'react';
-import { compareConsoles } from '../services/geminiService';
+
+import React, { useState, useEffect } from 'react';
+import { compareConsoles, fetchConsoleList } from '../services/geminiService';
 import { ComparisonResult } from '../types';
 import Button from './Button';
 
 const ConsoleComparer: React.FC = () => {
   const [consoleA, setConsoleA] = useState('');
   const [consoleB, setConsoleB] = useState('');
+  const [consoleList, setConsoleList] = useState<{name: string, slug: string}[]>([]);
   const [result, setResult] = useState<ComparisonResult | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const loadList = async () => {
+        const list = await fetchConsoleList();
+        setConsoleList(list);
+    };
+    loadList();
+  }, []);
 
   const handleCompare = async () => {
     if (!consoleA || !consoleB) return;
@@ -23,30 +33,36 @@ const ConsoleComparer: React.FC = () => {
         <h2 className="text-3xl font-pixel text-retro-blue mb-4 drop-shadow-[0_0_10px_rgba(0,255,255,0.5)]">
           VS. MODE
         </h2>
-        <p className="font-mono text-gray-400">Enter two challengers to analyze specs.</p>
+        <p className="font-mono text-gray-400">Select two challengers to analyze specs.</p>
       </div>
 
       <div className="flex flex-col md:flex-row gap-4 items-end justify-center mb-12 bg-retro-grid/20 p-6 rounded-lg border border-retro-grid">
         <div className="w-full">
           <label className="block font-pixel text-xs text-retro-neon mb-2">CHALLENGER 1</label>
-          <input
-            type="text"
+          <select
             value={consoleA}
             onChange={(e) => setConsoleA(e.target.value)}
-            className="w-full bg-retro-dark border-2 border-retro-grid text-retro-blue p-3 font-mono focus:border-retro-neon focus:outline-none focus:shadow-[0_0_15px_rgba(0,255,157,0.3)]"
-            placeholder="e.g. Sega Genesis"
-          />
+            className="w-full bg-retro-dark border-2 border-retro-grid text-retro-blue p-3 font-mono focus:border-retro-neon focus:outline-none focus:shadow-[0_0_15px_rgba(0,255,157,0.3)] appearance-none cursor-pointer"
+          >
+            <option value="">SELECT SYSTEM...</option>
+            {consoleList.map(c => (
+                <option key={c.slug} value={c.slug}>{c.name}</option>
+            ))}
+          </select>
         </div>
         <div className="pb-4 text-retro-pink font-pixel text-2xl">VS</div>
         <div className="w-full">
           <label className="block font-pixel text-xs text-retro-pink mb-2">CHALLENGER 2</label>
-          <input
-            type="text"
+          <select
             value={consoleB}
             onChange={(e) => setConsoleB(e.target.value)}
-            className="w-full bg-retro-dark border-2 border-retro-grid text-retro-blue p-3 font-mono focus:border-retro-pink focus:outline-none focus:shadow-[0_0_15px_rgba(255,0,255,0.3)]"
-            placeholder="e.g. SNES"
-          />
+            className="w-full bg-retro-dark border-2 border-retro-grid text-retro-blue p-3 font-mono focus:border-retro-pink focus:outline-none focus:shadow-[0_0_15px_rgba(255,0,255,0.3)] appearance-none cursor-pointer"
+          >
+            <option value="">SELECT SYSTEM...</option>
+            {consoleList.map(c => (
+                <option key={c.slug} value={c.slug}>{c.name}</option>
+            ))}
+          </select>
         </div>
         <div className="w-full md:w-auto">
           <Button onClick={handleCompare} isLoading={loading} disabled={!consoleA || !consoleB}>

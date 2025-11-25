@@ -3,7 +3,8 @@ import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDe
 import { supabase } from "./supabaseClient";
 
 /**
- * MOCK DATA STORE (FALLBACK MODE)
+ * MOCK DATA STORE (FALLBACK MODE ONLY FOR NEWS/TIMELINE/CONSOLES IF DB FAILS)
+ * NOTE: Mock Games removed to force DB usage.
  */
 
 const MOCK_NEWS: NewsItem[] = [
@@ -66,64 +67,6 @@ const MOCK_CONSOLES: ConsoleDetails[] = [
     }
 ];
 
-const MOCK_GAMES_ARCHIVE: GameOfTheWeekData[] = [
-    {
-        id: "1",
-        slug: "chrono-trigger",
-        title: "Chrono Trigger",
-        developer: "Square",
-        year: "1995",
-        genre: "RPG",
-        content: "A dream team of creators—Hironobu Sakaguchi (Final Fantasy), Yuji Horii (Dragon Quest), and Akira Toriyama (Dragon Ball)—joined forces to create what many consider the perfect RPG. With its unique time-travel mechanic, seamless battle transitions, and multiple endings, Chrono Trigger pushed the SNES to its absolute limits.",
-        whyItMatters: "Introduced New Game+ and multiple endings to the mainstream. The 'Active Time Battle' version 2.0 refined turn-based combat.",
-        rating: 5
-    },
-    {
-        id: "2",
-        slug: "super-metroid",
-        title: "Super Metroid",
-        developer: "Nintendo R&D1",
-        year: "1994",
-        genre: "Action-Adventure",
-        content: "Samus Aran returns in this atmospheric masterpiece. With its non-linear exploration, environmental storytelling, and perfect pacing, Super Metroid defined the 'Metroidvania' genre. The isolated atmosphere of Planet Zebes remains unmatched.",
-        whyItMatters: "Set the standard for map design and environmental storytelling in 2D platformers. A masterclass in 'show, don't tell'.",
-        rating: 5
-    },
-    {
-        id: "3",
-        slug: "castlevania-sotn",
-        title: "Castlevania: SOTN",
-        developer: "Konami",
-        year: "1997",
-        genre: "Action-RPG",
-        content: "Symphony of the Night ditched the level-based structure of its predecessors for a massive, interconnected castle. Alucard's smooth movement and the deep RPG systems made this a PlayStation essential.",
-        whyItMatters: "Solidified the 'Metroidvania' genre and proved 2D gaming was still vital in the 3D era.",
-        rating: 5
-    },
-    {
-        id: "4",
-        slug: "metal-gear-solid",
-        title: "Metal Gear Solid",
-        developer: "Konami",
-        year: "1998",
-        genre: "Stealth Action",
-        content: "Tactical Espionage Action. Hideo Kojima's cinematic direction blurred the line between movies and games. The voice acting, complex story, and innovative stealth mechanics were revolutionary.",
-        whyItMatters: "Popularized the stealth genre and demonstrated the potential for cinematic storytelling in video games.",
-        rating: 5
-    },
-    {
-        id: "5",
-        slug: "street-fighter-ii",
-        title: "Street Fighter II",
-        developer: "Capcom",
-        year: "1991",
-        genre: "Fighting",
-        content: "The game that created the fighting game community. With its 6-button layout, unique character roster, and combo system (originally a bug!), SFII became a global phenomenon in arcades and homes.",
-        whyItMatters: "Invented the combo system and defined the template for every 2D fighter that followed.",
-        rating: 5
-    }
-];
-
 const MOCK_TIMELINE: TimelineEvent[] = [
     { year: "1972", name: "Magnavox Odyssey", manufacturer: "Magnavox", description: "The first commercial home video game console is released." },
     { year: "1977", name: "Atari 2600", manufacturer: "Atari", description: "Popularized the use of microprocessor-based hardware and ROM cartridges." },
@@ -157,7 +100,7 @@ const parseMemory = (memStr: string | undefined): number => {
 async function fetchWithFallback<T>(dbPromise: Promise<{ data: any, error: any }>, fallback: T): Promise<T> {
     try {
         const timeoutPromise = new Promise<{ data: any, error: any }>((_, reject) => 
-            setTimeout(() => reject(new Error("Request Timed Out")), 1500)
+            setTimeout(() => reject(new Error("Request Timed Out")), 2500) // Increased timeout slightly
         );
 
         // We race the DB call against a timeout
@@ -254,24 +197,29 @@ export const addNewsItem = async (item: NewsItem): Promise<boolean> => {
 
 /**
  * Returns All Games (Replaces single GOTW)
+ * STRICTLY DATABASE - NO MOCK FALLBACK FOR GAMES
  */
 export const fetchAllGames = async (): Promise<GameOfTheWeekData[]> => {
-    return fetchWithFallback(
-        supabase.from('game_of_the_week').select('*').order('year', { ascending: false }),
-        MOCK_GAMES_ARCHIVE
-    );
+    try {
+        const { data, error } = await supabase.from('games').select('*').order('year', { ascending: false });
+        if (error) throw error;
+        return data || [];
+    } catch (e) {
+        console.error("Failed to fetch games:", e);
+        return [];
+    }
 };
 
 /**
  * Returns a specific game by slug
+ * STRICTLY DATABASE
  */
 export const fetchGameBySlug = async (slug: string): Promise<GameOfTheWeekData | null> => {
     try {
-        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject("Timeout"), 1500));
-        const dbPromise = supabase.from('game_of_the_week').select('*').eq('slug', slug).single();
-        const { data, error } = await Promise.race([dbPromise, timeoutPromise]) as any;
-
-        if (error || !data) throw new Error("Game Not Found");
+        const { data, error } = await supabase.from('games').select('*').eq('slug', slug).single();
+        if (error) throw error;
+        if (!data) return null;
+        
         return {
             id: data.id,
             slug: data.slug,
@@ -281,24 +229,26 @@ export const fetchGameBySlug = async (slug: string): Promise<GameOfTheWeekData |
             genre: data.genre,
             content: data.content,
             whyItMatters: data.why_it_matters,
-            rating: data.rating
+            rating: data.rating,
+            image: data.image
         };
     } catch (e) {
-        return MOCK_GAMES_ARCHIVE.find(g => g.slug === slug) || null;
+        console.error("Game fetch error:", e);
+        return null;
     }
 };
 
 /**
- * Returns Game of the Week (Latest) from Supabase (with Fallback)
+ * Returns Game of the Week (Latest) from Supabase
+ * STRICTLY DATABASE
  */
 export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData | null> => {
   try {
-      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject("Timeout"), 1500));
-      const dbPromise = supabase.from('game_of_the_week').select('*').order('year', { ascending: false }).limit(1).single();
+      const { data, error } = await supabase.from('games').select('*').order('year', { ascending: false }).limit(1).single();
       
-      const { data, error } = await Promise.race([dbPromise, timeoutPromise]) as any;
+      if (error) throw error;
+      if (!data) return null;
 
-      if (error || !data) throw new Error("GOTW Not Found");
       return {
           id: data.id,
           slug: data.slug,
@@ -308,11 +258,12 @@ export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData | null> =>
           genre: data.genre,
           content: data.content,
           whyItMatters: data.why_it_matters,
-          rating: data.rating
+          rating: data.rating,
+          image: data.image
       };
   } catch (e) {
-      console.warn("Using Mock GOTW");
-      return MOCK_GAMES_ARCHIVE[0]; // Return the first game from archive
+      console.warn("Failed to fetch GOTW from DB");
+      return null;
   }
 };
 
@@ -339,6 +290,25 @@ export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
 
 /**
  * CONSOLE DATA API
+ * Fetches a list of consoles (ID, Name, Slug) for Dropdowns
+ */
+export const fetchConsoleList = async (): Promise<{name: string, slug: string}[]> => {
+    try {
+        const { data, error } = await supabase
+            .from('consoles')
+            .select('name, slug')
+            .order('name');
+        
+        if (error) throw error;
+        return data || [];
+    } catch (e) {
+        // Fallback to mock slugs if DB fails
+        return MOCK_CONSOLES.map(c => ({ name: c.name, slug: c.slug }));
+    }
+}
+
+/**
+ * CONSOLE DATA API
  * Fetches a single console by its URL slug (with Fallback)
  */
 export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails | null> => {
@@ -355,26 +325,22 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
 };
 
 /**
- * Compares two consoles using Supabase Data with fallback to Mock
+ * Compares two consoles using Supabase Data (Dropdown Slugs)
  */
-export const compareConsoles = async (consoleA: string, consoleB: string): Promise<ComparisonResult | null> => {
+export const compareConsoles = async (slugA: string, slugB: string): Promise<ComparisonResult | null> => {
   try {
-    // Attempt to fetch from DB
-    const fetchC1 = supabase.from('consoles').select('*').or(`name.ilike.%${consoleA}%,slug.eq.${consoleA.toLowerCase()}`).limit(1).single();
-    const fetchC2 = supabase.from('consoles').select('*').or(`name.ilike.%${consoleB}%,slug.eq.${consoleB.toLowerCase()}`).limit(1).single();
+    // Attempt to fetch from DB using precise slugs
+    const fetchC1 = supabase.from('consoles').select('*').eq('slug', slugA).single();
+    const fetchC2 = supabase.from('consoles').select('*').eq('slug', slugB).single();
 
     const [res1, res2] = await Promise.all([fetchC1, fetchC2]);
 
     let c1: ConsoleDetails | undefined = res1.data;
     let c2: ConsoleDetails | undefined = res2.data;
 
-    // Fallback to MOCK if DB misses
-    if (!c1) {
-        c1 = MOCK_CONSOLES.find(c => c.name.toLowerCase().includes(consoleA.toLowerCase()) || c.slug === consoleA.toLowerCase());
-    }
-    if (!c2) {
-        c2 = MOCK_CONSOLES.find(c => c.name.toLowerCase().includes(consoleB.toLowerCase()) || c.slug === consoleB.toLowerCase());
-    }
+    // Fallback to MOCK if DB misses (should match slug)
+    if (!c1) c1 = MOCK_CONSOLES.find(c => c.slug === slugA);
+    if (!c2) c2 = MOCK_CONSOLES.find(c => c.slug === slugB);
 
     if (c1 && c2) {
         const parseNum = (str?: string) => parseFloat(str?.replace(/[^0-9.]/g, '') || '0') || 0;
@@ -401,12 +367,7 @@ export const compareConsoles = async (consoleA: string, consoleB: string): Promi
         };
     }
 
-    return {
-        consoleA: consoleA,
-        consoleB: consoleB,
-        summary: `DATA MISSING: COULD NOT LOCATE FULL SCHEMATICS FOR ${consoleA} OR ${consoleB}.`,
-        points: []
-    };
+    return null;
   } catch (error) {
       console.error("Comparison Error:", error);
       return null;
