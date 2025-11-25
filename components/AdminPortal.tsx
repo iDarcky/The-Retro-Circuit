@@ -15,7 +15,7 @@ const AdminPortal: React.FC = () => {
     // News Form State
     const [newsHeadline, setNewsHeadline] = useState('');
     const [newsSummary, setNewsSummary] = useState('');
-    const [newsCategory, setNewsCategory] = useState<'Hardware' | 'Software'>('Hardware');
+    const [newsCategory, setNewsCategory] = useState<NewsItem['category']>('Hardware');
 
     // Game Form State
     const [gameTitle, setGameTitle] = useState('');

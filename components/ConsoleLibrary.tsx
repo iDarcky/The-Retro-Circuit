@@ -66,8 +66,8 @@ const ConsoleLibrary: React.FC = () => {
       });
   };
 
-  // Get unique brands for the main menu
-  const uniqueBrands: string[] = Array.from(new Set(consoles.map(c => c.manufacturer))).sort() as string[];
+  // Get unique brands for the main menu - explicitly typed as string array for robustness
+  const uniqueBrands: string[] = (Array.from(new Set(consoles.map(c => c.manufacturer))) as string[]).sort();
 
   const getBrandColor = (brand: string) => {
     switch(brand.toLowerCase()) {

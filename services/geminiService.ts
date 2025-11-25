@@ -271,13 +271,49 @@ export const addNewsItem = async (item: NewsItem): Promise<boolean> => {
     }
 };
 
-export const fetchAllGames = async (): Promise<GameOfTheWeekData[]> => {
+// Updated to support pagination and field mapping
+export const fetchGamesPaginated = async (page: number = 1, limit: number = 9): Promise<{ data: GameOfTheWeekData[], count: number }> => {
     try {
-        const { data, error } = await supabase.from('games').select('*').order('year', { ascending: false });
+        const from = (page - 1) * limit;
+        const to = from + limit - 1;
+        
+        const { data, count, error } = await supabase
+            .from('games')
+            .select('*', { count: 'exact' })
+            .order('year', { ascending: false })
+            .range(from, to);
+            
         if (error) throw error;
-        return data || [];
+        
+        const mappedData = (data || []).map((g: any) => ({
+            id: g.id,
+            slug: g.slug,
+            title: g.title,
+            developer: g.developer,
+            year: g.year,
+            genre: g.genre,
+            content: g.content,
+            whyItMatters: g.why_it_matters, // Map from snake_case
+            rating: g.rating,
+            image: g.image
+        }));
+
+        return { 
+            data: mappedData, 
+            count: count || 0 
+        };
     } catch (e) {
         console.error("Failed to fetch games:", e);
+        return { data: [], count: 0 };
+    }
+};
+
+// Deprecated in favor of fetchGamesPaginated, kept for backward compatibility if needed
+export const fetchAllGames = async (): Promise<GameOfTheWeekData[]> => {
+    try {
+        const { data } = await fetchGamesPaginated(1, 100);
+        return data;
+    } catch (e) {
         return [];
     }
 };
