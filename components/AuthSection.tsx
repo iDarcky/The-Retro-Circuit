@@ -203,7 +203,6 @@ const AuthSection: React.FC = () => {
         );
     }
 
-    // [KEEPING EXISTING LOGIN/SIGNUP FORMS UNCHANGED BELOW...]
     return (
         <div className="w-full max-w-md mx-auto p-4">
              <div className="border-4 border-retro-grid bg-retro-dark p-8 relative overflow-hidden">

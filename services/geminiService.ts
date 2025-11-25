@@ -2,76 +2,13 @@
 import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails, UserCollectionItem } from "../types";
 import { supabase } from "./supabaseClient";
 
-// ... [Existing MOCK_NEWS, MOCK_TIMELINE, MOCK_CONSOLES etc. preserved but omitted for brevity in this output, adding new functions below] ...
-
 const MOCK_NEWS: NewsItem[] = [
     { headline: "Test", date: "2025-11-24", summary: "Test", category: "Hardware" },
-    { headline: "Nintendo PlayStation Prototype Found", date: "2015-08-01", summary: "A rare prototype of the SNES-CD add-on found in a box of junk.", category: "Hardware" },
-    { headline: "Sega Announces Project Mars", date: "1994-01-01", summary: "Sega unveils the 32X add-on to extend Genesis lifecycle.", category: "Hardware" },
-    { headline: "Final Fantasy VII Moves to PlayStation", date: "1996-01-12", summary: "Square breaks tradition with Nintendo, moving their flagship RPG to Sony's new CD-based console.", category: "Industry" },
-    { headline: "Dreamcast Launch Date Set", date: "1999-09-09", summary: "Sega confirms 9/9/99 launch for their powerful new 128-bit system.", category: "Hardware" },
-    { headline: "Rareware Acquired by Microsoft", date: "2002-09-24", summary: "The house of Donkey Kong Country and GoldenEye 007 leaves the Nintendo family.", category: "Industry" }
-];
-
-const MOCK_CONSOLES: ConsoleDetails[] = [
-    {
-        id: "1", name: "Sega Genesis", slug: "sega-genesis", manufacturer: "Sega", release_year: 1989, type: "Home", generation: 4,
-        intro_text: "The Sega Genesis (known as Mega Drive outside NA) defined the 16-bit era with 'Blast Processing' and an edgy attitude that challenged Nintendo's dominance.",
-        cpu: "Motorola 68000 @ 7.6MHz", gpu: "VDP @ 13MHz", ram: "64KB Main, 64KB VRAM", media: "ROM Cartridge", audio: "Yamaha YM2612 FM", resolution: "320x224",
-        units_sold: "30.75 Million", launch_price: "$189", best_selling_game: "Sonic the Hedgehog",
-        dimensions: "279 x 203 x 64 mm", weight: "2.1 kg", ports: ["2x Controller (DE-9)", "1x A/V Out", "1x RF Out", "1x Exp. Port"],
-        power_supply: "External AC Adapter (9V)", connectivity: "Sega Channel (Adapter required)"
-    },
-    {
-        id: "2", name: "Super Nintendo", slug: "snes", manufacturer: "Nintendo", release_year: 1991, type: "Home", generation: 4,
-        intro_text: "The SNES brought arcade-quality graphics and sound home with Mode 7 scaling and rotation, hosting some of the greatest RPGs of all time.",
-        cpu: "Ricoh 5A22 @ 3.58MHz", gpu: "PPU (Picture Processing Unit)", ram: "128KB Main, 64KB VRAM", media: "ROM Cartridge", audio: "Sony SPC700", resolution: "512x448",
-        units_sold: "49.1 Million", launch_price: "$199", best_selling_game: "Super Mario World",
-        dimensions: "200 x 242 x 72 mm", weight: "1.2 kg", ports: ["2x Controller", "1x Multi-Out (AV)", "1x RF Out", "1x EXT"],
-        power_supply: "External AC Adapter (10V)"
-    },
-    {
-        id: "3", name: "PlayStation", slug: "playstation", manufacturer: "Sony", release_year: 1994, type: "Home", generation: 5,
-        intro_text: "Sony's debut console revolutionized gaming with real-time 3D graphics and CD-quality audio, bringing gaming to the mass market.",
-        cpu: "R3000A @ 33.86MHz", gpu: "GTE (Geometry Transformation Engine)", ram: "2MB Main, 1MB VRAM", media: "CD-ROM", audio: "16-bit 24-channel ADPCM", resolution: "640x480",
-        units_sold: "102.49 Million", launch_price: "$299", best_selling_game: "Gran Turismo",
-        dimensions: "270 x 188 x 60 mm", weight: "1.5 kg", ports: ["2x Controller", "2x Memory Card", "1x Multi-Out", "1x Serial I/O", "1x Parallel I/O"],
-        power_supply: "Internal AC"
-    },
-    {
-        id: "4", name: "Nintendo 64", slug: "n64", manufacturer: "Nintendo", release_year: 1996, type: "Home", generation: 5,
-        intro_text: "The world's first true 64-bit home system, pioneering analog control and 4-player local multiplayer.",
-        cpu: "NEC VR4300 @ 93.75MHz", gpu: "SGI Reality Coprocessor", ram: "4MB RDRAM (Exp. to 8MB)", media: "ROM Cartridge", audio: "16-bit 64-channel PCM", resolution: "640x480",
-        units_sold: "32.93 Million", launch_price: "$199", best_selling_game: "Super Mario 64",
-        dimensions: "260 x 190 x 73 mm", weight: "1.1 kg", ports: ["4x Controller", "1x Multi-Out", "1x Memory Expansion"],
-        power_supply: "External AC Adapter (3.3V/12V)"
-    },
-    {
-        id: "5", name: "Sega Dreamcast", slug: "dreamcast", manufacturer: "Sega", release_year: 1999, type: "Home", generation: 6,
-        intro_text: "The Dreamcast was ahead of its time, featuring built-in internet capabilities and arcade-perfect ports.",
-        cpu: "Hitachi SH-4 @ 200MHz", gpu: "NEC PowerVR2", ram: "16MB Main, 8MB VRAM", media: "GD-ROM", audio: "Yamaha AICA", resolution: "640x480",
-        units_sold: "9.13 Million", launch_price: "$199", best_selling_game: "Sonic Adventure",
-        dimensions: "190 x 195.8 x 75.5 mm", weight: "1.5 kg", ports: ["4x Controller", "1x A/V Out", "1x Serial", "1x Modem Port"],
-        power_supply: "Internal AC", connectivity: "56k Modem (Built-in)"
-    },
-    {
-        id: "6", name: "Game Boy", slug: "gameboy", manufacturer: "Nintendo", release_year: 1989, type: "Handheld", generation: 4,
-        intro_text: "The Game Boy proved that gameplay mattered more than graphics, dominating the handheld market for a decade.",
-        cpu: "Sharp LR35902 @ 4.19MHz", gpu: "Integrated", ram: "8KB Main, 8KB VRAM", media: "ROM Cartridge", audio: "4-channel Stereo", resolution: "160x144",
-        units_sold: "118.69 Million", launch_price: "$89", best_selling_game: "Tetris",
-        dimensions: "90 x 148 x 32 mm", weight: "220g", display_type: "STN Dot Matrix LCD (Green/Black)",
-        power_supply: "4x AA Batteries", battery_life: "15-30 Hours", ports: ["1x Link Cable", "1x Headphone Jack", "1x DC In"]
-    }
+    { headline: "Nintendo PlayStation Prototype Found", date: "2015-08-01", summary: "A rare prototype of the SNES-CD add-on found in a box of junk.", category: "Hardware" }
 ];
 
 const MOCK_TIMELINE: TimelineEvent[] = [
-    { year: "1972", name: "Magnavox Odyssey", manufacturer: "Magnavox", description: "The first commercial home video game console is released." },
-    { year: "1977", name: "Atari 2600", manufacturer: "Atari", description: "Popularized the use of microprocessor-based hardware and ROM cartridges." },
-    { year: "1983", name: "The Video Game Crash", manufacturer: "Industry", description: "Market saturation and low-quality games lead to a massive recession in the North American video game market." },
-    { year: "1985", name: "NES Launch (NA)", manufacturer: "Nintendo", description: "The Nintendo Entertainment System revitalizes the US market." },
-    { year: "1989", name: "Game Boy", manufacturer: "Nintendo", description: "Portable gaming is revolutionized with interchangeable cartridges." },
-    { year: "1991", name: "Street Fighter II", manufacturer: "Capcom", description: "Revolutionizes the fighting game genre in arcades." },
-    { year: "1994", name: "PlayStation Launch", manufacturer: "Sony", description: "Sony enters the market and dominates with CD-based gaming." }
+    { year: "1972", name: "Magnavox Odyssey", manufacturer: "Magnavox", description: "The first commercial home video game console is released." }
 ];
 
 const parseMemory = (memStr: string | undefined): number => {
@@ -279,7 +216,7 @@ export const fetchTimelineData = async (): Promise<TimelineEvent[]> => {
 export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
     return fetchWithFallback(
         supabase.from('consoles').select('*').order('release_year', { ascending: true }),
-        MOCK_CONSOLES
+        []
     );
 };
 
@@ -289,7 +226,7 @@ export const fetchConsoleList = async (): Promise<{name: string, slug: string}[]
         if (error) throw error;
         return data || [];
     } catch (e) {
-        return MOCK_CONSOLES.map(c => ({ name: c.name, slug: c.slug }));
+        return [];
     }
 }
 
@@ -301,7 +238,7 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
         if (error || !data) throw new Error("Console Not Found");
         return (data as ConsoleDetails);
     } catch (err) {
-        return MOCK_CONSOLES.find(c => c.slug === slug) || null;
+        return null;
     }
 };
 
@@ -313,9 +250,6 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
 
     let c1: ConsoleDetails | undefined = res1.data;
     let c2: ConsoleDetails | undefined = res2.data;
-
-    if (!c1) c1 = MOCK_CONSOLES.find(c => c.slug === slugA);
-    if (!c2) c2 = MOCK_CONSOLES.find(c => c.slug === slugB);
 
     if (c1 && c2) {
         const parseNum = (str?: string) => parseFloat(str?.replace(/[^0-9.]/g, '') || '0') || 0;
