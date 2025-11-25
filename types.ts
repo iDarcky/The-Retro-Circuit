@@ -1,3 +1,4 @@
+
 export interface NewsItem {
   headline: string;
   date: string;
@@ -21,6 +22,7 @@ export interface ComparisonResult {
 
 export interface GameOfTheWeekData {
   id?: string;
+  slug?: string;
   title: string;
   developer: string;
   year: string;
@@ -28,6 +30,7 @@ export interface GameOfTheWeekData {
   content: string;
   whyItMatters: string;
   image?: string;
+  rating?: number;
 }
 
 export interface TimelineEvent {

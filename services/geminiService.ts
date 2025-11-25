@@ -1,3 +1,4 @@
+
 import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails } from "../types";
 import { supabase } from "./supabaseClient";
 
@@ -67,44 +68,59 @@ const MOCK_CONSOLES: ConsoleDetails[] = [
 
 const MOCK_GAMES_ARCHIVE: GameOfTheWeekData[] = [
     {
+        id: "1",
+        slug: "chrono-trigger",
         title: "Chrono Trigger",
         developer: "Square",
         year: "1995",
         genre: "RPG",
         content: "A dream team of creators—Hironobu Sakaguchi (Final Fantasy), Yuji Horii (Dragon Quest), and Akira Toriyama (Dragon Ball)—joined forces to create what many consider the perfect RPG. With its unique time-travel mechanic, seamless battle transitions, and multiple endings, Chrono Trigger pushed the SNES to its absolute limits.",
-        whyItMatters: "Introduced New Game+ and multiple endings to the mainstream. The 'Active Time Battle' version 2.0 refined turn-based combat."
+        whyItMatters: "Introduced New Game+ and multiple endings to the mainstream. The 'Active Time Battle' version 2.0 refined turn-based combat.",
+        rating: 5
     },
     {
+        id: "2",
+        slug: "super-metroid",
         title: "Super Metroid",
         developer: "Nintendo R&D1",
         year: "1994",
         genre: "Action-Adventure",
         content: "Samus Aran returns in this atmospheric masterpiece. With its non-linear exploration, environmental storytelling, and perfect pacing, Super Metroid defined the 'Metroidvania' genre. The isolated atmosphere of Planet Zebes remains unmatched.",
-        whyItMatters: "Set the standard for map design and environmental storytelling in 2D platformers. A masterclass in 'show, don't tell'."
+        whyItMatters: "Set the standard for map design and environmental storytelling in 2D platformers. A masterclass in 'show, don't tell'.",
+        rating: 5
     },
     {
+        id: "3",
+        slug: "castlevania-sotn",
         title: "Castlevania: SOTN",
         developer: "Konami",
         year: "1997",
         genre: "Action-RPG",
         content: "Symphony of the Night ditched the level-based structure of its predecessors for a massive, interconnected castle. Alucard's smooth movement and the deep RPG systems made this a PlayStation essential.",
-        whyItMatters: "Solidified the 'Metroidvania' genre and proved 2D gaming was still vital in the 3D era."
+        whyItMatters: "Solidified the 'Metroidvania' genre and proved 2D gaming was still vital in the 3D era.",
+        rating: 5
     },
     {
+        id: "4",
+        slug: "metal-gear-solid",
         title: "Metal Gear Solid",
         developer: "Konami",
         year: "1998",
         genre: "Stealth Action",
         content: "Tactical Espionage Action. Hideo Kojima's cinematic direction blurred the line between movies and games. The voice acting, complex story, and innovative stealth mechanics were revolutionary.",
-        whyItMatters: "Popularized the stealth genre and demonstrated the potential for cinematic storytelling in video games."
+        whyItMatters: "Popularized the stealth genre and demonstrated the potential for cinematic storytelling in video games.",
+        rating: 5
     },
     {
+        id: "5",
+        slug: "street-fighter-ii",
         title: "Street Fighter II",
         developer: "Capcom",
         year: "1991",
         genre: "Fighting",
         content: "The game that created the fighting game community. With its 6-button layout, unique character roster, and combo system (originally a bug!), SFII became a global phenomenon in arcades and homes.",
-        whyItMatters: "Invented the combo system and defined the template for every 2D fighter that followed."
+        whyItMatters: "Invented the combo system and defined the template for every 2D fighter that followed.",
+        rating: 5
     }
 ];
 
@@ -247,6 +263,32 @@ export const fetchAllGames = async (): Promise<GameOfTheWeekData[]> => {
 };
 
 /**
+ * Returns a specific game by slug
+ */
+export const fetchGameBySlug = async (slug: string): Promise<GameOfTheWeekData | null> => {
+    try {
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject("Timeout"), 1500));
+        const dbPromise = supabase.from('game_of_the_week').select('*').eq('slug', slug).single();
+        const { data, error } = await Promise.race([dbPromise, timeoutPromise]) as any;
+
+        if (error || !data) throw new Error("Game Not Found");
+        return {
+            id: data.id,
+            slug: data.slug,
+            title: data.title,
+            developer: data.developer,
+            year: data.year,
+            genre: data.genre,
+            content: data.content,
+            whyItMatters: data.why_it_matters,
+            rating: data.rating
+        };
+    } catch (e) {
+        return MOCK_GAMES_ARCHIVE.find(g => g.slug === slug) || null;
+    }
+};
+
+/**
  * Returns Game of the Week (Latest) from Supabase (with Fallback)
  */
 export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData | null> => {
@@ -258,12 +300,15 @@ export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData | null> =>
 
       if (error || !data) throw new Error("GOTW Not Found");
       return {
+          id: data.id,
+          slug: data.slug,
           title: data.title,
           developer: data.developer,
           year: data.year,
           genre: data.genre,
           content: data.content,
-          whyItMatters: data.why_it_matters
+          whyItMatters: data.why_it_matters,
+          rating: data.rating
       };
   } catch (e) {
       console.warn("Using Mock GOTW");

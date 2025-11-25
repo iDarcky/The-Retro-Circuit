@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
@@ -5,6 +6,7 @@ import LandingPage from './components/LandingPage';
 import NewsSection from './components/NewsSection';
 import ConsoleComparer from './components/ConsoleComparer';
 import GamesList from './components/GamesList';
+import GameDetails from './components/GameDetails';
 import Timeline from './components/Timeline';
 import AuthSection from './components/AuthSection';
 import BootSequence from './components/BootSequence';
@@ -154,6 +156,7 @@ const AppContent = () => {
                 <Route path="/consoles/:slug" element={<ConsoleSpecs />} />
                 <Route path="/comparer" element={<ConsoleComparer />} />
                 <Route path="/games" element={<GamesList />} />
+                <Route path="/games/:slug" element={<GameDetails />} />
                 <Route path="/timeline" element={<Timeline />} />
                 <Route path="/login" element={<AuthSection />} />
             </Routes>

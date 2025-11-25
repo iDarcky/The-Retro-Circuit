@@ -1,7 +1,9 @@
+
 import React, { useEffect, useState } from 'react';
 import { fetchGameOfTheWeek } from '../services/geminiService';
 import { GameOfTheWeekData } from '../types';
 import Button from './Button';
+import { Link } from 'react-router-dom';
 
 const GameOfTheWeek: React.FC = () => {
   const [game, setGame] = useState<GameOfTheWeekData | null>(null);
@@ -57,9 +59,11 @@ const GameOfTheWeek: React.FC = () => {
             <div className="p-8 md:p-12">
                 <div className="flex flex-col md:flex-row justify-between items-start border-b-2 border-retro-grid pb-6 mb-6">
                     <div>
-                        <h1 className="text-4xl md:text-5xl font-pixel text-retro-blue mb-2 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">
-                            {game.title}
-                        </h1>
+                        <Link to={`/games/${game.slug || game.id}`} className="block hover:opacity-80 transition-opacity">
+                            <h1 className="text-4xl md:text-5xl font-pixel text-retro-blue mb-2 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] hover:text-retro-neon transition-colors">
+                                {game.title}
+                            </h1>
+                        </Link>
                         <div className="flex gap-4 font-mono text-retro-pink">
                             <span>{game.developer}</span>
                             <span>//</span>
@@ -74,18 +78,19 @@ const GameOfTheWeek: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="md:col-span-2 font-mono text-gray-300 leading-relaxed text-lg whitespace-pre-line">
+                    <div className="md:col-span-2 font-mono text-gray-300 leading-relaxed text-lg whitespace-pre-line line-clamp-6">
                         {game.content}
                     </div>
                     
                     <div className="bg-retro-grid/20 border border-retro-grid p-6 h-fit">
                         <h3 className="font-pixel text-sm text-retro-neon mb-4">WHY IT MATTERS</h3>
-                        <p className="font-mono text-retro-blue text-sm leading-relaxed">
+                        <p className="font-mono text-retro-blue text-sm leading-relaxed line-clamp-4">
                             {game.whyItMatters}
                         </p>
                         <div className="mt-6 pt-6 border-t border-retro-grid text-center">
-                            <span className="font-pixel text-xs text-retro-pink block mb-2">RATING</span>
-                            <div className="text-yellow-400 text-xl tracking-widest">★★★★★</div>
+                             <Link to={`/games/${game.slug || game.id}`}>
+                                <Button className="w-full">READ FULL REPORT</Button>
+                             </Link>
                         </div>
                     </div>
                 </div>

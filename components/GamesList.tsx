@@ -1,8 +1,10 @@
+
 import React, { useEffect, useState } from 'react';
 import { fetchAllGames } from '../services/geminiService';
 import { GameOfTheWeekData } from '../types';
 import Button from './Button';
 import RetroLoader from './RetroLoader';
+import { Link } from 'react-router-dom';
 
 const GamesList: React.FC = () => {
   const [games, setGames] = useState<GameOfTheWeekData[]>([]);
@@ -32,7 +34,11 @@ const GamesList: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {games.map((game, idx) => (
-            <div key={idx} className="group border-4 border-retro-grid bg-retro-dark relative overflow-hidden hover:border-retro-pink transition-all duration-300">
+            <Link 
+              to={`/games/${game.slug || game.id}`} 
+              key={idx} 
+              className="group border-4 border-retro-grid bg-retro-dark relative overflow-hidden hover:border-retro-pink transition-all duration-300 block"
+            >
               
               {/* Header / Title */}
               <div className="bg-retro-grid/30 p-4 border-b-2 border-retro-grid group-hover:bg-retro-pink/10 transition-colors">
@@ -71,7 +77,7 @@ const GamesList: React.FC = () => {
 
                  <div className="mt-4 pt-4 border-t border-retro-grid/50">
                      <span className="font-pixel text-[10px] text-retro-blue block mb-2">WHY IT MATTERS</span>
-                     <p className="font-mono text-xs text-gray-300 leading-snug">
+                     <p className="font-mono text-xs text-gray-300 leading-snug line-clamp-2">
                          {game.whyItMatters}
                      </p>
                  </div>
@@ -79,7 +85,7 @@ const GamesList: React.FC = () => {
 
               {/* Decorative corners */}
               <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-retro-grid group-hover:border-retro-pink transition-colors"></div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
