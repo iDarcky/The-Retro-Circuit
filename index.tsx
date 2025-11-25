@@ -122,6 +122,7 @@ const FooterStatus = () => {
 const AppContent = () => {
   const [bootComplete, setBootComplete] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const location = useLocation();
 
   // FIX: Hooks must be at the top level, before any conditional returns
@@ -130,6 +131,11 @@ const AppContent = () => {
     if (location.hash.includes('type=recovery')) {
         sessionStorage.setItem('retro_recovery_pending', 'true');
     }
+  }, [location]);
+
+  useEffect(() => {
+      // Close mobile search when route changes
+      setMobileSearchOpen(false);
   }, [location]);
 
   useEffect(() => {
@@ -160,11 +166,26 @@ const AppContent = () => {
       {/* MOBILE HEADER */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-retro-dark border-b border-retro-grid z-40 flex items-center justify-between px-4">
         <div className="font-pixel text-retro-neon text-sm">THE RETRO CIRCUIT</div>
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-center">
+            <button 
+                onClick={() => setMobileSearchOpen(!mobileSearchOpen)} 
+                className={`p-2 transition-colors ${mobileSearchOpen ? 'text-retro-neon' : 'text-gray-400'}`}
+            >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </button>
             {isAdmin && <Link to="/admin" className="p-2 text-retro-pink"><IconLock /></Link>}
             <Link to="/login"><IconLogin /></Link>
         </div>
       </div>
+
+      {/* MOBILE SEARCH OVERLAY */}
+      {mobileSearchOpen && (
+        <div className="md:hidden fixed top-16 left-0 right-0 z-50 bg-retro-dark border-b border-retro-grid shadow-lg animate-[slideDown_0.2s_ease-out]">
+            <GlobalSearch />
+        </div>
+      )}
 
       {/* SIDEBAR (DESKTOP) */}
       <aside className="hidden md:flex flex-col w-64 bg-retro-dark border-r border-retro-grid fixed h-full z-40">
