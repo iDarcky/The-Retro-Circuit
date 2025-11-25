@@ -12,18 +12,12 @@ const getEnvVar = (key: string): string | undefined => {
 const envUrl = getEnvVar('VITE_SUPABASE_URL');
 const envKey = getEnvVar('VITE_SUPABASE_ANON_KEY');
 
-// Export configuration status for UI components to display warnings
+// Check configuration status
 export const isSupabaseConfigured = !!(envUrl && envKey);
 
-if (!isSupabaseConfigured) {
-  console.error(`CRITICAL CONFIG ERROR: Missing Supabase environment variables. 
-  The app is running in OFFLINE/DEMO mode. 
-  Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file.`);
-}
-
 // Initialize Supabase client
-// We use placeholder values if config is missing to prevent the app from crashing at boot.
-// Real requests will fail gracefully and be handled by the service layer fallbacks.
+// If variables are missing (local dev without .env), use placeholders to prevent crash.
+// Vercel will inject the correct values during build/runtime.
 export const supabase = createClient(
   envUrl || 'https://placeholder.supabase.co',
   envKey || 'placeholder-key'
