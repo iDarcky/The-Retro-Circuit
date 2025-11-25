@@ -27,7 +27,7 @@ const AdminPortal: React.FC = () => {
     const [gameMatter, setGameMatter] = useState('');
     const [gameImage, setGameImage] = useState('');
 
-    // Console Form State (Simplified)
+    // Console Form State
     const [consoleName, setConsoleName] = useState('');
     const [consoleSlug, setConsoleSlug] = useState('');
     const [consoleManu, setConsoleManu] = useState('');
@@ -99,7 +99,10 @@ const AdminPortal: React.FC = () => {
                 ...specs
             };
             const success = await addConsole(cons);
-            if (success) setMessage("HARDWARE REGISTERED");
+            if (success) {
+                setMessage("HARDWARE REGISTERED");
+                setConsoleName('');
+            }
             else setMessage("REGISTRATION FAILED");
         } catch (err) {
             setMessage("INVALID JSON IN SPECS FIELD");

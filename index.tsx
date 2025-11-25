@@ -109,17 +109,18 @@ const AppContent = () => {
   const [bootComplete, setBootComplete] = useState(false);
   const location = useLocation();
 
-  if (!bootComplete) {
-    return <BootSequence onComplete={() => setBootComplete(true)} />;
-  }
-
   // Handle password reset
+  // FIX: Moved useEffect to top level, before any return statements
   useEffect(() => {
     // Check URL for recovery link from Supabase
     if (location.hash.includes('type=recovery')) {
         sessionStorage.setItem('retro_recovery_pending', 'true');
     }
   }, [location]);
+
+  if (!bootComplete) {
+    return <BootSequence onComplete={() => setBootComplete(true)} />;
+  }
 
   return (
     <div className="min-h-screen bg-retro-dark pb-10">

@@ -110,7 +110,9 @@ export const addGame = async (game: GameOfTheWeekData): Promise<boolean> => {
 
 export const addConsole = async (consoleData: ConsoleDetails): Promise<boolean> => {
     try {
-        const { error } = await supabase.from('consoles').insert([consoleData]);
+        // Remove ID if present to allow DB generation
+        const { id, ...data } = consoleData;
+        const { error } = await supabase.from('consoles').insert([data]);
         if (error) throw error;
         return true;
     } catch (e) {
