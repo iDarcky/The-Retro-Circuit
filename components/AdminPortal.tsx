@@ -50,7 +50,7 @@ const AdminPortal: React.FC = () => {
     const handleSubmitNews = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        const item: NewsItem = { headline: newsHeadline, summary: newsSummary, category: newsCategory as any, date: new Date().toISOString() };
+        const item: NewsItem = { headline: newsHeadline, summary: newsSummary, category: newsCategory, date: new Date().toISOString() };
         const success = await addNewsItem(item);
         if (success) {
             setMessage("NEWS UPLINK SUCCESSFUL");
@@ -150,9 +150,11 @@ const AdminPortal: React.FC = () => {
                 {activeTab === 'NEWS' && (
                     <form onSubmit={handleSubmitNews} className="space-y-4">
                         <input className="w-full bg-black border border-gray-700 p-2" placeholder="Headline" value={newsHeadline} onChange={e => setNewsHeadline(e.target.value)} />
-                        <select className="w-full bg-black border border-gray-700 p-2" value={newsCategory} onChange={e => setNewsCategory(e.target.value as any)}>
+                        <select className="w-full bg-black border border-gray-700 p-2" value={newsCategory} onChange={e => setNewsCategory(e.target.value as NewsItem['category'])}>
                             <option value="Hardware">Hardware</option>
                             <option value="Software">Software</option>
+                            <option value="Industry">Industry</option>
+                            <option value="Rumor">Rumor</option>
                         </select>
                         <textarea className="w-full bg-black border border-gray-700 p-2 h-32" placeholder="Summary" value={newsSummary} onChange={e => setNewsSummary(e.target.value)} />
                         <Button type="submit">TRANSMIT</Button>
