@@ -91,3 +91,21 @@ export interface ConsoleDetails {
   battery_life?: string;
   connectivity?: string;
 }
+
+// Search & Filter Types
+export interface SearchResult {
+  type: 'GAME' | 'CONSOLE';
+  id: string;
+  slug: string;
+  title: string;
+  subtitle?: string; // Dev or Manu
+  image?: string;
+}
+
+export interface ConsoleFilterState {
+  minYear: number;
+  maxYear: number;
+  generations: number[];
+  types: string[]; // Home, Handheld
+  manufacturer?: string | null;
+}

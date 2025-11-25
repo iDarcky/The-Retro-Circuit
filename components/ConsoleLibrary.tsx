@@ -1,34 +1,74 @@
+
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchAllConsoles } from '../services/geminiService';
-import { ConsoleDetails } from '../types';
+import { fetchAllConsoles, fetchConsolesFiltered } from '../services/geminiService';
+import { ConsoleDetails, ConsoleFilterState } from '../types';
 import RetroLoader from './RetroLoader';
 import Button from './Button';
 
 const ConsoleLibrary: React.FC = () => {
   const [consoles, setConsoles] = useState<ConsoleDetails[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'BRAND' | 'LIST'>('BRAND');
+  
+  // Filter State
+  const [filters, setFilters] = useState<ConsoleFilterState>({
+      minYear: 1970,
+      maxYear: 2005,
+      generations: [],
+      types: [],
+      manufacturer: null
+  });
 
+  // Initial Load (Brand View)
   useEffect(() => {
-    const loadConsoles = async () => {
+    loadAll();
+  }, []);
+
+  // Filter Load (List View)
+  useEffect(() => {
+      if (viewMode === 'LIST') {
+          applyFilters();
+      }
+  }, [filters, viewMode]);
+
+  const loadAll = async () => {
       setLoading(true);
       const data = await fetchAllConsoles();
       setConsoles(data);
       setLoading(false);
-    };
-    loadConsoles();
-  }, []);
+  };
 
-  // Get unique brands
-  const brands = Array.from(new Set(consoles.map(c => c.manufacturer))).sort();
+  const applyFilters = async () => {
+      setLoading(true);
+      const data = await fetchConsolesFiltered(filters);
+      setConsoles(data);
+      setLoading(false);
+  };
 
-  // Filter consoles if a brand is selected
-  const displayConsoles = selectedBrand 
-    ? consoles.filter(c => c.manufacturer === selectedBrand).sort((a, b) => a.release_year - b.release_year)
-    : [];
+  const handleBrandSelect = (brand: string) => {
+      setFilters(prev => ({ ...prev, manufacturer: brand }));
+      setViewMode('LIST');
+  };
 
-  // Helper to get brand color
+  const handleFilterChange = (key: keyof ConsoleFilterState, value: any) => {
+      setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  const toggleArrayFilter = (key: 'generations' | 'types', value: any) => {
+      setFilters(prev => {
+          const arr = prev[key] as any[];
+          if (arr.includes(value)) {
+              return { ...prev, [key]: arr.filter(i => i !== value) };
+          } else {
+              return { ...prev, [key]: [...arr, value] };
+          }
+      });
+  };
+
+  // Get unique brands for the main menu
+  const uniqueBrands: string[] = Array.from(new Set(consoles.map(c => c.manufacturer))).sort();
+
   const getBrandColor = (brand: string) => {
     switch(brand.toLowerCase()) {
         case 'nintendo': return 'text-red-500 border-red-500 hover:bg-red-500/10';
@@ -39,89 +79,169 @@ const ConsoleLibrary: React.FC = () => {
     }
   };
 
-  if (loading) return <RetroLoader />;
-
   return (
-    <div className="w-full max-w-6xl mx-auto p-4">
-      <div className="text-center mb-10">
-        <h2 className="text-3xl font-pixel text-retro-neon mb-4 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
+    <div className="w-full max-w-7xl mx-auto p-4">
+      
+      {/* HEADER */}
+      <div className="text-center mb-8 border-b border-retro-grid pb-4">
+        <h2 className="text-3xl font-pixel text-retro-neon mb-2 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
           HARDWARE DATABASE
         </h2>
-        <p className="font-mono text-gray-400">
-            {selectedBrand ? `BROWSING ${selectedBrand.toUpperCase()} ARCHIVES` : 'SELECT MANUFACTURER DIRECTORY'}
-        </p>
+        <div className="flex justify-center gap-4">
+            <button 
+                onClick={() => { setViewMode('BRAND'); setFilters({ minYear: 1970, maxYear: 2005, generations: [], types: [], manufacturer: null }); loadAll(); }}
+                className={`font-mono text-xs px-3 py-1 ${viewMode === 'BRAND' ? 'bg-retro-neon text-black' : 'text-gray-500 hover:text-white'}`}
+            >
+                DIRECTORY MODE
+            </button>
+            <button 
+                onClick={() => setViewMode('LIST')}
+                className={`font-mono text-xs px-3 py-1 ${viewMode === 'LIST' ? 'bg-retro-neon text-black' : 'text-gray-500 hover:text-white'}`}
+            >
+                ADVANCED SEARCH
+            </button>
+        </div>
       </div>
 
-      {/* BRAND SELECTION VIEW */}
-      {!selectedBrand && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {brands.map((brand: string) => (
-                  <button 
-                    key={brand}
-                    onClick={() => setSelectedBrand(brand)}
-                    className={`group border-4 bg-retro-dark p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${getBrandColor(brand)}`}
-                  >
-                      <div className="w-20 h-20 border-2 border-current rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                          </svg>
-                      </div>
-                      <span className="font-pixel text-xl tracking-widest uppercase">{brand}</span>
-                      <span className="font-mono text-xs opacity-75">
-                          {consoles.filter(c => c.manufacturer === brand).length} SYSTEMS DETECTED
-                      </span>
-                  </button>
-              ))}
-          </div>
+      {/* VIEW: BRAND DIRECTORY */}
+      {viewMode === 'BRAND' && (
+          loading ? <RetroLoader /> : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {uniqueBrands.map((brand) => (
+                    <button 
+                        key={brand}
+                        onClick={() => handleBrandSelect(brand)}
+                        className={`group border-4 bg-retro-dark p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${getBrandColor(brand)}`}
+                    >
+                        <div className="w-20 h-20 border-2 border-current rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <span className="font-pixel text-2xl">{brand[0]}</span>
+                        </div>
+                        <span className="font-pixel text-xl tracking-widest uppercase">{brand}</span>
+                        <span className="font-mono text-xs opacity-75">ACCESS FOLDER &gt;</span>
+                    </button>
+                ))}
+                 <button 
+                    onClick={() => setViewMode('LIST')}
+                    className="group border-4 border-dashed border-gray-600 bg-retro-dark p-8 flex flex-col items-center justify-center gap-4 hover:border-retro-pink hover:text-retro-pink transition-colors text-gray-500"
+                >
+                    <span className="font-pixel text-lg">VIEW ALL</span>
+                    <span className="font-mono text-xs">APPLY FILTERS</span>
+                </button>
+            </div>
+          )
       )}
 
-      {/* CONSOLE LIST VIEW */}
-      {selectedBrand && (
-          <div>
-              <div className="mb-8">
-                  <Button variant="secondary" onClick={() => setSelectedBrand(null)}>
-                      &lt; RETURN TO ROOT DIRECTORY
-                  </Button>
+      {/* VIEW: LIST WITH FILTERS */}
+      {viewMode === 'LIST' && (
+          <div className="flex flex-col lg:flex-row gap-8">
+              
+              {/* FILTER SIDEBAR */}
+              <div className="lg:w-64 flex-shrink-0 space-y-6">
+                  <div className="bg-retro-dark border border-retro-grid p-4">
+                      <h3 className="font-pixel text-xs text-retro-blue mb-4 border-b border-retro-grid pb-2">FILTERS</h3>
+                      
+                      {/* Brand Reset */}
+                      {filters.manufacturer && (
+                          <div className="mb-4">
+                              <span className="text-xs font-mono text-gray-500 block">MANUFACTURER</span>
+                              <div className="flex justify-between items-center text-retro-neon font-bold font-mono">
+                                  {filters.manufacturer}
+                                  <button onClick={() => setFilters(prev => ({...prev, manufacturer: null}))} className="text-red-500 hover:text-white">✕</button>
+                              </div>
+                          </div>
+                      )}
+
+                      {/* Year Range */}
+                      <div className="mb-6">
+                          <label className="text-xs font-mono text-gray-500 block mb-2">RELEASE YEAR</label>
+                          <div className="flex gap-2">
+                              <input 
+                                type="number" 
+                                value={filters.minYear} 
+                                onChange={(e) => handleFilterChange('minYear', parseInt(e.target.value))}
+                                className="w-1/2 bg-black border border-retro-grid px-2 py-1 text-white font-mono text-sm"
+                              />
+                              <input 
+                                type="number" 
+                                value={filters.maxYear} 
+                                onChange={(e) => handleFilterChange('maxYear', parseInt(e.target.value))}
+                                className="w-1/2 bg-black border border-retro-grid px-2 py-1 text-white font-mono text-sm"
+                              />
+                          </div>
+                      </div>
+
+                      {/* Generation */}
+                      <div className="mb-6">
+                          <label className="text-xs font-mono text-gray-500 block mb-2">GENERATION</label>
+                          <div className="grid grid-cols-2 gap-2">
+                              {[3, 4, 5, 6].map(gen => (
+                                  <button
+                                    key={gen}
+                                    onClick={() => toggleArrayFilter('generations', gen)}
+                                    className={`text-xs font-mono border px-2 py-1 ${filters.generations.includes(gen) ? 'bg-retro-neon text-black border-retro-neon' : 'border-gray-700 text-gray-400'}`}
+                                  >
+                                      GEN {gen}
+                                  </button>
+                              ))}
+                          </div>
+                      </div>
+
+                       {/* Type */}
+                       <div className="mb-6">
+                          <label className="text-xs font-mono text-gray-500 block mb-2">TYPE</label>
+                          <div className="space-y-2">
+                              {['Home', 'Handheld'].map(type => (
+                                  <label key={type} className="flex items-center gap-2 font-mono text-xs text-gray-300 cursor-pointer">
+                                      <input 
+                                        type="checkbox" 
+                                        checked={filters.types.includes(type)}
+                                        onChange={() => toggleArrayFilter('types', type)}
+                                        className="accent-retro-pink"
+                                      />
+                                      {type.toUpperCase()}
+                                  </label>
+                              ))}
+                          </div>
+                      </div>
+                  </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                {displayConsoles.map((console) => (
-                    <Link 
-                        to={`/consoles/${console.slug}`} 
-                        key={console.id}
-                        className="group block border-2 border-retro-grid bg-retro-dark relative overflow-hidden hover:border-retro-blue transition-all duration-300"
-                    >
-                        <div className="h-40 bg-retro-grid/20 flex items-center justify-center p-4 group-hover:bg-retro-grid/30 transition-colors relative">
-                            {/* Placeholder for console image if none exists */}
-                            {console.image_url ? (
-                                <img src={console.image_url} alt={console.name} className="max-h-full object-contain drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] relative z-10" />
-                            ) : (
-                                <svg className="w-16 h-16 text-retro-grid group-hover:text-retro-blue transition-colors opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <rect x="2" y="6" width="20" height="12" rx="2"></rect>
-                                    <path d="M6 12h4m-2-2v4"></path>
-                                    <line x1="15" y1="11" x2="15" y2="11"></line>
-                                    <line x1="18" y1="13" x2="18" y2="13"></line>
-                                </svg>
-                            )}
-                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20 pointer-events-none"></div>
+              {/* RESULTS GRID */}
+              <div className="flex-1">
+                  {loading ? <RetroLoader /> : (
+                      consoles.length === 0 ? (
+                          <div className="text-center p-12 border-2 border-dashed border-gray-700 font-mono text-gray-500">
+                              NO HARDWARE MATCHES FILTERS.
+                          </div>
+                      ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {consoles.map((console) => (
+                                <Link 
+                                    to={`/consoles/${console.slug}`} 
+                                    key={console.id}
+                                    className="group block border border-retro-grid bg-retro-dark relative overflow-hidden hover:border-retro-blue transition-all"
+                                >
+                                    <div className="h-32 bg-black/40 flex items-center justify-center p-4 relative">
+                                        {console.image_url ? (
+                                            <img src={console.image_url} className="max-h-full object-contain" />
+                                        ) : (
+                                            <span className="font-pixel text-gray-700 text-4xl">?</span>
+                                        )}
+                                    </div>
+                                    <div className="p-3 border-t border-retro-grid">
+                                        <div className="flex justify-between text-[10px] font-mono text-gray-500 mb-1">
+                                            <span>{console.release_year}</span>
+                                            <span>GEN {console.generation}</span>
+                                        </div>
+                                        <h3 className="font-pixel text-xs text-white group-hover:text-retro-neon truncate">
+                                            {console.name}
+                                        </h3>
+                                    </div>
+                                </Link>
+                            ))}
                         </div>
-                        
-                        <div className="p-6 border-t-2 border-retro-grid bg-black/40">
-                            <div className="flex justify-between items-start mb-2">
-                                <span className="font-mono text-xs text-retro-pink border border-retro-pink px-1">
-                                    GEN {console.generation}
-                                </span>
-                                <span className="font-mono text-xs text-gray-500">{console.release_year}</span>
-                            </div>
-                            <h3 className="font-pixel text-sm text-white mb-2 group-hover:text-retro-neon transition-colors">
-                                {console.name}
-                            </h3>
-                            <div className="w-full h-1 bg-retro-grid mt-4 overflow-hidden">
-                                <div className="h-full bg-retro-blue w-0 group-hover:w-full transition-all duration-500 ease-out"></div>
-                            </div>
-                        </div>
-                    </Link>
-                ))}
+                      )
+                  )}
               </div>
           </div>
       )}

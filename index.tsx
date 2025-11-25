@@ -18,6 +18,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import SEOHead from './components/SEOHead';
 import { checkDatabaseConnection, retroAuth } from './services/geminiService';
 import { supabase } from './services/supabaseClient';
+import GlobalSearch from './components/GlobalSearch';
 
 // --- ICONS ---
 const IconNews = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>;
@@ -159,6 +160,9 @@ const AppContent = () => {
                 THE RETRO<br/>CIRCUIT
             </h1>
         </div>
+        
+        {/* GLOBAL SEARCH */}
+        <GlobalSearch />
         
         <nav className="flex-1 overflow-y-auto py-4">
             <SidebarItem to="/" icon={IconHome} label="DASHBOARD" exact />

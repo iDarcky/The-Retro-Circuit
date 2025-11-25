@@ -1,5 +1,5 @@
 
-import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails, UserCollectionItem } from "../types";
+import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails, UserCollectionItem, SearchResult, ConsoleFilterState } from "../types";
 import { supabase } from "./supabaseClient";
 
 const parseMemory = (memStr: string | undefined): number => {
@@ -82,6 +82,92 @@ export const retroAuth = {
         
         const { data } = await supabase.from('admins').select('email').eq('email', user.email).single();
         return !!data;
+    }
+};
+
+// --- SEARCH & FILTER ---
+
+export const searchDatabase = async (query: string): Promise<SearchResult[]> => {
+    if (!query || query.length < 2) return [];
+
+    try {
+        // Search Consoles
+        const { data: consoles } = await supabase
+            .from('consoles')
+            .select('id, slug, name, manufacturer, image_url')
+            .ilike('name', `%${query}%`)
+            .limit(5);
+
+        // Search Games
+        const { data: games } = await supabase
+            .from('games')
+            .select('id, slug, title, developer, image')
+            .ilike('title', `%${query}%`)
+            .limit(5);
+
+        const results: SearchResult[] = [];
+
+        if (consoles) {
+            consoles.forEach((c: any) => results.push({
+                type: 'CONSOLE',
+                id: c.id,
+                slug: c.slug,
+                title: c.name,
+                subtitle: c.manufacturer,
+                image: c.image_url
+            }));
+        }
+
+        if (games) {
+            games.forEach((g: any) => results.push({
+                type: 'GAME',
+                id: g.id,
+                slug: g.slug,
+                title: g.title,
+                subtitle: g.developer,
+                image: g.image
+            }));
+        }
+
+        return results;
+    } catch (e) {
+        console.error("Search failed", e);
+        return [];
+    }
+};
+
+export const fetchConsolesFiltered = async (filters: ConsoleFilterState): Promise<ConsoleDetails[]> => {
+    try {
+        let query = supabase.from('consoles').select('*').order('release_year', { ascending: true });
+
+        // Apply Filters
+        if (filters.manufacturer) {
+            query = query.eq('manufacturer', filters.manufacturer);
+        }
+        
+        if (filters.minYear > 1970) {
+            query = query.gte('release_year', filters.minYear);
+        }
+        
+        if (filters.maxYear < 2005) {
+            query = query.lte('release_year', filters.maxYear);
+        }
+
+        if (filters.generations.length > 0) {
+            query = query.in('generation', filters.generations);
+        }
+
+        if (filters.types.length > 0) {
+            query = query.in('type', filters.types);
+        }
+
+        const { data, error } = await query;
+        if (error) throw error;
+        return data || [];
+
+    } catch (e) {
+        console.error("Filter fetch failed", e);
+        return [];
     }
 };
 
