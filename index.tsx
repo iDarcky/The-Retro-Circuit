@@ -12,6 +12,7 @@ import AuthSection from './components/AuthSection';
 import BootSequence from './components/BootSequence';
 import ConsoleLibrary from './components/ConsoleLibrary';
 import ConsoleSpecs from './components/ConsoleSpecs';
+import AdminPortal from './components/AdminPortal';
 import { SoundProvider, useSound } from './components/SoundContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import SEOHead from './components/SEOHead';
@@ -54,6 +55,8 @@ const SidebarItem = ({ to, icon: Icon, label, exact = false }: { to: string, ico
 // --- LAYOUT COMPONENTS ---
 const FooterStatus = () => {
     const [dbStatus, setDbStatus] = useState<'CHECKING' | 'ONLINE' | 'OFFLINE'>('CHECKING');
+    const { enabled, toggleSound } = useSound();
+    const [crtEnabled, setCrtEnabled] = useState(true);
 
     useEffect(() => {
         const check = async () => {
@@ -64,6 +67,15 @@ const FooterStatus = () => {
         const interval = setInterval(check, 30000); // Check every 30s
         return () => clearInterval(interval);
     }, []);
+
+    const toggleCrt = () => {
+        const next = !crtEnabled;
+        setCrtEnabled(next);
+        const scanlines = document.querySelector('.scanlines');
+        const flicker = document.querySelector('.crt-flicker');
+        if (scanlines) scanlines.classList.toggle('hidden', !next);
+        if (flicker) flicker.classList.toggle('hidden', !next);
+    };
 
     return (
         <footer className="fixed bottom-0 left-0 right-0 h-8 bg-retro-dark border-t border-retro-grid flex items-center justify-between px-4 z-50 text-[10px] font-mono">
@@ -80,8 +92,14 @@ const FooterStatus = () => {
                     {dbStatus === 'CHECKING' ? 'ESTABLISHING UPLINK...' : `DATABASE ${dbStatus}`}
                 </span>
             </div>
-            <div className="text-gray-600">
-                RETRO CIRCUIT v1.0.6 // MEM: 64KB OK
+            
+            <div className="flex items-center space-x-4">
+                 <button onClick={toggleCrt} className="text-retro-blue hover:text-white border border-retro-blue px-2 transition-colors">
+                     {crtEnabled ? 'DISABLE CRT FX' : 'ENABLE CRT FX'}
+                 </button>
+                 <button onClick={toggleSound} className="text-retro-pink hover:text-white border border-retro-pink px-2 transition-colors">
+                     {enabled ? 'MUTE AUDIO' : 'ENABLE AUDIO'}
+                 </button>
             </div>
         </footer>
     );
@@ -94,6 +112,14 @@ const AppContent = () => {
   if (!bootComplete) {
     return <BootSequence onComplete={() => setBootComplete(true)} />;
   }
+
+  // Handle password reset
+  useEffect(() => {
+    // Check URL for recovery link from Supabase
+    if (location.hash.includes('type=recovery')) {
+        sessionStorage.setItem('retro_recovery_pending', 'true');
+    }
+  }, [location]);
 
   return (
     <div className="min-h-screen bg-retro-dark pb-10">
@@ -133,7 +159,7 @@ const AppContent = () => {
             </div>
 
             <div className="p-4 border-t border-retro-grid">
-                <SidebarItem to="/login" icon={IconLogin} label="LOGIN / ACCT" />
+                <SidebarItem to="/login" icon={IconLogin} label="LOGIN / PROFILE" />
             </div>
         </nav>
 
@@ -159,6 +185,7 @@ const AppContent = () => {
                 <Route path="/games/:slug" element={<GameDetails />} />
                 <Route path="/timeline" element={<Timeline />} />
                 <Route path="/login" element={<AuthSection />} />
+                <Route path="/admin" element={<AdminPortal />} />
             </Routes>
 
             {/* Content Footer */}
@@ -173,7 +200,25 @@ const AppContent = () => {
   );
 };
 
-const App = () => {
+const App: React.FC = () => {
+  useEffect(() => {
+    // Check for Konami Code: Up, Up, Down, Down, Left, Right, Left, Right, B, A
+    let keys: string[] = [];
+    const konami = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    
+    const listener = (e: KeyboardEvent) => {
+        keys.push(e.key);
+        keys = keys.slice(-10);
+        if (JSON.stringify(keys) === JSON.stringify(konami)) {
+            document.body.style.filter = 'invert(1)';
+            alert("GOD MODE ENABLED");
+            setTimeout(() => document.body.style.filter = 'none', 5000);
+        }
+    };
+    window.addEventListener('keydown', listener);
+    return () => window.removeEventListener('keydown', listener);
+  }, []);
+
   return (
     <ErrorBoundary>
       <SoundProvider>

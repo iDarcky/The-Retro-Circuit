@@ -2,15 +2,6 @@
 import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails, UserCollectionItem } from "../types";
 import { supabase } from "./supabaseClient";
 
-const MOCK_NEWS: NewsItem[] = [
-    { headline: "Test", date: "2025-11-24", summary: "Test", category: "Hardware" },
-    { headline: "Nintendo PlayStation Prototype Found", date: "2015-08-01", summary: "A rare prototype of the SNES-CD add-on found in a box of junk.", category: "Hardware" }
-];
-
-const MOCK_TIMELINE: TimelineEvent[] = [
-    { year: "1972", name: "Magnavox Odyssey", manufacturer: "Magnavox", description: "The first commercial home video game console is released." }
-];
-
 const parseMemory = (memStr: string | undefined): number => {
     if (!memStr) return 0;
     const normalized = memStr.toUpperCase();
@@ -84,6 +75,47 @@ export const retroAuth = {
         return await supabase.auth.updateUser({
             data: { avatar_id: avatarId }
         });
+    },
+    isAdmin: async (): Promise<boolean> => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user || !user.email) return false;
+        
+        const { data } = await supabase.from('admins').select('email').eq('email', user.email).single();
+        return !!data;
+    }
+};
+
+// --- DATA ENTRY (ADMIN) ---
+
+export const addGame = async (game: GameOfTheWeekData): Promise<boolean> => {
+    try {
+        const { error } = await supabase.from('games').insert([{
+            title: game.title,
+            slug: game.slug,
+            developer: game.developer,
+            year: game.year,
+            genre: game.genre,
+            content: game.content,
+            why_it_matters: game.whyItMatters,
+            rating: game.rating,
+            image: game.image
+        }]);
+        if (error) throw error;
+        return true;
+    } catch (e) {
+        console.error("Add Game Failed:", e);
+        return false;
+    }
+};
+
+export const addConsole = async (consoleData: ConsoleDetails): Promise<boolean> => {
+    try {
+        const { error } = await supabase.from('consoles').insert([consoleData]);
+        if (error) throw error;
+        return true;
+    } catch (e) {
+        console.error("Add Console Failed:", e);
+        return false;
     }
 };
 
@@ -133,7 +165,7 @@ export const removeFromCollection = async (itemId: string): Promise<boolean> => 
 export const fetchRetroNews = async (): Promise<NewsItem[]> => {
     return fetchWithFallback(
         supabase.from('news').select('*').order('created_at', { ascending: false }),
-        MOCK_NEWS
+        []
     );
 };
 
@@ -209,7 +241,7 @@ export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData | null> =>
 export const fetchTimelineData = async (): Promise<TimelineEvent[]> => {
     return fetchWithFallback(
         supabase.from('timeline').select('*').order('year', { ascending: true }),
-        MOCK_TIMELINE
+        []
     );
 };
 
