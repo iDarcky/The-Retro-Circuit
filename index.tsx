@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-do
 import LandingPage from './components/LandingPage';
 import NewsSection from './components/NewsSection';
 import ConsoleComparer from './components/ConsoleComparer';
-import GameOfTheWeek from './components/GameOfTheWeek';
+import GamesList from './components/GamesList';
 import Timeline from './components/Timeline';
 import AuthSection from './components/AuthSection';
 import BootSequence from './components/BootSequence';
@@ -19,7 +19,7 @@ import { checkDatabaseConnection } from './services/geminiService';
 const IconNews = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>;
 const IconDatabase = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>;
 const IconVS = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>;
-const IconGOTW = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>;
+const IconGames = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><path d="M6 12h4m-2-2v4"></path><circle cx="17" cy="11" r="0.5" fill="currentColor"></circle><circle cx="15" cy="13" r="0.5" fill="currentColor"></circle></svg>;
 const IconTimeline = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>;
 const IconLogin = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>;
 const IconHome = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>;
@@ -79,7 +79,7 @@ const FooterStatus = () => {
                 </span>
             </div>
             <div className="text-gray-600">
-                RETRO CIRCUIT v1.0.5 // MEM: 64KB OK
+                RETRO CIRCUIT v1.0.6 // MEM: 64KB OK
             </div>
         </footer>
     );
@@ -126,7 +126,7 @@ const AppContent = () => {
                 <SidebarItem to="/news" icon={IconNews} label="NEWS WIRE" />
                 <SidebarItem to="/consoles" icon={IconDatabase} label="HARDWARE DB" />
                 <SidebarItem to="/comparer" icon={IconVS} label="VS. MODE" />
-                <SidebarItem to="/gotw" icon={IconGOTW} label="GAME OF WEEK" />
+                <SidebarItem to="/games" icon={IconGames} label="GAMES" />
                 <SidebarItem to="/timeline" icon={IconTimeline} label="TIMELINE" />
             </div>
 
@@ -140,7 +140,7 @@ const AppContent = () => {
             <Link to="/" className="p-2 text-retro-neon"><IconHome /></Link>
             <Link to="/news" className="p-2 text-gray-400"><IconNews /></Link>
             <Link to="/consoles" className="p-2 text-gray-400"><IconDatabase /></Link>
-            <Link to="/comparer" className="p-2 text-gray-400"><IconVS /></Link>
+            <Link to="/games" className="p-2 text-gray-400"><IconGames /></Link>
         </nav>
 
         {/* Main Content Area */}
@@ -153,7 +153,7 @@ const AppContent = () => {
                 <Route path="/consoles" element={<ConsoleLibrary />} />
                 <Route path="/consoles/:slug" element={<ConsoleSpecs />} />
                 <Route path="/comparer" element={<ConsoleComparer />} />
-                <Route path="/gotw" element={<GameOfTheWeek />} />
+                <Route path="/games" element={<GamesList />} />
                 <Route path="/timeline" element={<Timeline />} />
                 <Route path="/login" element={<AuthSection />} />
             </Routes>

@@ -1,10 +1,8 @@
-
 import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails } from "../types";
 import { supabase } from "./supabaseClient";
 
 /**
  * MOCK DATA STORE (FALLBACK MODE)
- * These act as the "Simulation" data when the main database is unreachable.
  */
 
 const MOCK_NEWS: NewsItem[] = [
@@ -67,14 +65,48 @@ const MOCK_CONSOLES: ConsoleDetails[] = [
     }
 ];
 
-const MOCK_GOTW: GameOfTheWeekData = {
-    title: "Chrono Trigger",
-    developer: "Square",
-    year: "1995",
-    genre: "RPG",
-    content: "A dream team of creators—Hironobu Sakaguchi (Final Fantasy), Yuji Horii (Dragon Quest), and Akira Toriyama (Dragon Ball)—joined forces to create what many consider the perfect RPG. With its unique time-travel mechanic, seamless battle transitions, and multiple endings, Chrono Trigger pushed the SNES to its absolute limits.",
-    whyItMatters: "Introduced New Game+ and multiple endings to the mainstream. The 'Active Time Battle' version 2.0 refined turn-based combat, and the soundtrack by Yasunori Mitsuda remains legendary."
-};
+const MOCK_GAMES_ARCHIVE: GameOfTheWeekData[] = [
+    {
+        title: "Chrono Trigger",
+        developer: "Square",
+        year: "1995",
+        genre: "RPG",
+        content: "A dream team of creators—Hironobu Sakaguchi (Final Fantasy), Yuji Horii (Dragon Quest), and Akira Toriyama (Dragon Ball)—joined forces to create what many consider the perfect RPG. With its unique time-travel mechanic, seamless battle transitions, and multiple endings, Chrono Trigger pushed the SNES to its absolute limits.",
+        whyItMatters: "Introduced New Game+ and multiple endings to the mainstream. The 'Active Time Battle' version 2.0 refined turn-based combat."
+    },
+    {
+        title: "Super Metroid",
+        developer: "Nintendo R&D1",
+        year: "1994",
+        genre: "Action-Adventure",
+        content: "Samus Aran returns in this atmospheric masterpiece. With its non-linear exploration, environmental storytelling, and perfect pacing, Super Metroid defined the 'Metroidvania' genre. The isolated atmosphere of Planet Zebes remains unmatched.",
+        whyItMatters: "Set the standard for map design and environmental storytelling in 2D platformers. A masterclass in 'show, don't tell'."
+    },
+    {
+        title: "Castlevania: SOTN",
+        developer: "Konami",
+        year: "1997",
+        genre: "Action-RPG",
+        content: "Symphony of the Night ditched the level-based structure of its predecessors for a massive, interconnected castle. Alucard's smooth movement and the deep RPG systems made this a PlayStation essential.",
+        whyItMatters: "Solidified the 'Metroidvania' genre and proved 2D gaming was still vital in the 3D era."
+    },
+    {
+        title: "Metal Gear Solid",
+        developer: "Konami",
+        year: "1998",
+        genre: "Stealth Action",
+        content: "Tactical Espionage Action. Hideo Kojima's cinematic direction blurred the line between movies and games. The voice acting, complex story, and innovative stealth mechanics were revolutionary.",
+        whyItMatters: "Popularized the stealth genre and demonstrated the potential for cinematic storytelling in video games."
+    },
+    {
+        title: "Street Fighter II",
+        developer: "Capcom",
+        year: "1991",
+        genre: "Fighting",
+        content: "The game that created the fighting game community. With its 6-button layout, unique character roster, and combo system (originally a bug!), SFII became a global phenomenon in arcades and homes.",
+        whyItMatters: "Invented the combo system and defined the template for every 2D fighter that followed."
+    }
+];
 
 const MOCK_TIMELINE: TimelineEvent[] = [
     { year: "1972", name: "Magnavox Odyssey", manufacturer: "Magnavox", description: "The first commercial home video game console is released." },
@@ -87,7 +119,7 @@ const MOCK_TIMELINE: TimelineEvent[] = [
 ];
 
 // HELPER: Parse memory strings roughly (e.g. "64KB" vs "2MB") for comparison
-const parseMemory = (memStr: string): number => {
+const parseMemory = (memStr: string | undefined): number => {
     if (!memStr) return 0;
     const normalized = memStr.toUpperCase();
     const match = normalized.match(/(\d+(\.\d+)?)\s*(GB|MB|KB|B)/);
@@ -205,12 +237,22 @@ export const addNewsItem = async (item: NewsItem): Promise<boolean> => {
 };
 
 /**
- * Returns Game of the Week from Supabase (with Fallback)
+ * Returns All Games (Replaces single GOTW)
+ */
+export const fetchAllGames = async (): Promise<GameOfTheWeekData[]> => {
+    return fetchWithFallback(
+        supabase.from('game_of_the_week').select('*').order('year', { ascending: false }),
+        MOCK_GAMES_ARCHIVE
+    );
+};
+
+/**
+ * Returns Game of the Week (Latest) from Supabase (with Fallback)
  */
 export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData | null> => {
   try {
       const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject("Timeout"), 1500));
-      const dbPromise = supabase.from('game_of_the_week').select('*').limit(1).single();
+      const dbPromise = supabase.from('game_of_the_week').select('*').order('year', { ascending: false }).limit(1).single();
       
       const { data, error } = await Promise.race([dbPromise, timeoutPromise]) as any;
 
@@ -225,7 +267,7 @@ export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData | null> =>
       };
   } catch (e) {
       console.warn("Using Mock GOTW");
-      return MOCK_GOTW;
+      return MOCK_GAMES_ARCHIVE[0]; // Return the first game from archive
   }
 };
 
@@ -290,7 +332,7 @@ export const compareConsoles = async (consoleA: string, consoleB: string): Promi
     }
 
     if (c1 && c2) {
-        const parseNum = (str: string) => parseFloat(str?.replace(/[^0-9.]/g, '') || '0') || 0;
+        const parseNum = (str?: string) => parseFloat(str?.replace(/[^0-9.]/g, '') || '0') || 0;
         
         const ram1 = parseMemory(c1.ram);
         const ram2 = parseMemory(c2.ram);
@@ -302,14 +344,14 @@ export const compareConsoles = async (consoleA: string, consoleB: string): Promi
             summary: `Comparison generated for ${c1.name} and ${c2.name}.`,
             points: [
                 { feature: "Release Year", consoleAValue: c1.release_year.toString(), consoleBValue: c2.release_year.toString(), winner: c1.release_year < c2.release_year ? 'A' : 'B' }, 
-                { feature: "CPU", consoleAValue: c1.cpu, consoleBValue: c2.cpu, winner: "Tie" },
-                { feature: "GPU", consoleAValue: c1.gpu, consoleBValue: c2.gpu, winner: "Tie" },
-                { feature: "RAM", consoleAValue: c1.ram, consoleBValue: c2.ram, winner: ramWinner },
-                { feature: "Resolution", consoleAValue: c1.resolution, consoleBValue: c2.resolution, winner: "Tie" },
-                { feature: "Media", consoleAValue: c1.media, consoleBValue: c2.media, winner: "Tie" },
-                { feature: "Audio", consoleAValue: c1.audio, consoleBValue: c2.audio, winner: "Tie" },
-                { feature: "Units Sold", consoleAValue: c1.units_sold, consoleBValue: c2.units_sold, winner: parseNum(c1.units_sold) > parseNum(c2.units_sold) ? 'A' : 'B' },
-                { feature: "Launch Price", consoleAValue: c1.launch_price, consoleBValue: c2.launch_price, winner: parseNum(c1.launch_price) < parseNum(c2.launch_price) ? 'A' : 'B' }
+                { feature: "CPU", consoleAValue: c1.cpu || 'N/A', consoleBValue: c2.cpu || 'N/A', winner: "Tie" },
+                { feature: "GPU", consoleAValue: c1.gpu || 'N/A', consoleBValue: c2.gpu || 'N/A', winner: "Tie" },
+                { feature: "RAM", consoleAValue: c1.ram || 'N/A', consoleBValue: c2.ram || 'N/A', winner: ramWinner },
+                { feature: "Resolution", consoleAValue: c1.resolution || 'N/A', consoleBValue: c2.resolution || 'N/A', winner: "Tie" },
+                { feature: "Media", consoleAValue: c1.media || 'N/A', consoleBValue: c2.media || 'N/A', winner: "Tie" },
+                { feature: "Audio", consoleAValue: c1.audio || 'N/A', consoleBValue: c2.audio || 'N/A', winner: "Tie" },
+                { feature: "Units Sold", consoleAValue: c1.units_sold || 'N/A', consoleBValue: c2.units_sold || 'N/A', winner: parseNum(c1.units_sold) > parseNum(c2.units_sold) ? 'A' : 'B' },
+                { feature: "Launch Price", consoleAValue: c1.launch_price || 'N/A', consoleBValue: c2.launch_price || 'N/A', winner: parseNum(c1.launch_price) < parseNum(c2.launch_price) ? 'A' : 'B' }
             ]
         };
     }
