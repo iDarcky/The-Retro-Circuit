@@ -112,22 +112,27 @@ const AppContent = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
 
-  // Handle password reset - Corrected hook order
+  // FIX: Hooks must be at the top level, before any conditional returns
   useEffect(() => {
+    // Check URL for recovery link from Supabase
     if (location.hash.includes('type=recovery')) {
         sessionStorage.setItem('retro_recovery_pending', 'true');
     }
   }, [location]);
 
-  // Handle Admin Check - Corrected hook order
   useEffect(() => {
-    const checkAdmin = async () => {
-        const isA = await retroAuth.isAdmin();
-        setIsAdmin(isA);
-    };
-    checkAdmin();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => checkAdmin());
-    return () => subscription.unsubscribe();
+      const checkAdmin = async () => {
+          const isA = await retroAuth.isAdmin();
+          setIsAdmin(isA);
+      };
+      
+      checkAdmin();
+
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+          checkAdmin();
+      });
+
+      return () => subscription.unsubscribe();
   }, []);
 
   if (!bootComplete) {

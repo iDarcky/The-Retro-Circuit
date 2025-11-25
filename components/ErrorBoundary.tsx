@@ -10,6 +10,9 @@ interface ErrorBoundaryState {
 }
 
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  // Explicitly declare props to satisfy TypeScript if inference from Component fails
+  declare props: Readonly<ErrorBoundaryProps>;
+
   public state: ErrorBoundaryState = {
     hasError: false
   };
