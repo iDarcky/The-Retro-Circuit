@@ -106,7 +106,6 @@ const parseMemory = (memStr: string): number => {
 };
 
 // HELPER: Fallback Fetcher
-// Tries to execute the DB promise, but returns fallback data if it fails, times out (1500ms), or returns empty data when expected.
 async function fetchWithFallback<T>(dbPromise: Promise<{ data: any, error: any }>, fallback: T): Promise<T> {
     try {
         const timeoutPromise = new Promise<{ data: any, error: any }>((_, reject) => 
@@ -120,7 +119,7 @@ async function fetchWithFallback<T>(dbPromise: Promise<{ data: any, error: any }
              throw new Error("DB Error or Empty Data");
         }
         
-        // Handle array check if fallback is array (if DB returns empty array, usually we want to show mock data in this demo)
+        // Handle array check if fallback is array
         if (Array.isArray(fallback) && Array.isArray(data) && data.length === 0) {
              throw new Error("Empty Array Returned - Switching to Simulation Mode");
         }
@@ -274,7 +273,6 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
 export const compareConsoles = async (consoleA: string, consoleB: string): Promise<ComparisonResult | null> => {
   try {
     // Attempt to fetch from DB
-    // We use ilike for case-insensitive matching on name or exact on slug
     const fetchC1 = supabase.from('consoles').select('*').or(`name.ilike.%${consoleA}%,slug.eq.${consoleA.toLowerCase()}`).limit(1).single();
     const fetchC2 = supabase.from('consoles').select('*').or(`name.ilike.%${consoleB}%,slug.eq.${consoleB.toLowerCase()}`).limit(1).single();
 
@@ -292,10 +290,8 @@ export const compareConsoles = async (consoleA: string, consoleB: string): Promi
     }
 
     if (c1 && c2) {
-        // Helper to determine string based winners (rough approximation for demo)
         const parseNum = (str: string) => parseFloat(str?.replace(/[^0-9.]/g, '') || '0') || 0;
         
-        // RAM Comparison
         const ram1 = parseMemory(c1.ram);
         const ram2 = parseMemory(c2.ram);
         const ramWinner = ram1 === ram2 ? 'Tie' : (ram1 > ram2 ? 'A' : 'B');
@@ -318,7 +314,6 @@ export const compareConsoles = async (consoleA: string, consoleB: string): Promi
         };
     }
 
-    // Fallback if names don't match anything
     return {
         consoleA: consoleA,
         consoleB: consoleB,

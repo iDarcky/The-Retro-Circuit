@@ -1,5 +1,4 @@
 
-
 export interface NewsItem {
   headline: string;
   date: string;
@@ -22,12 +21,14 @@ export interface ComparisonResult {
 }
 
 export interface GameOfTheWeekData {
+  id?: string;
   title: string;
   developer: string;
   year: string;
   genre: string;
   content: string;
   whyItMatters: string;
+  image?: string;
 }
 
 export interface TimelineEvent {
@@ -54,33 +55,4 @@ export interface ConsoleDetails {
   // Body & Design
   dimensions?: string; // e.g., "260 x 190 x 65 mm"
   weight?: string; // e.g., "1.5 kg"
-  casing?: string; // e.g., "Plastic, Matte Black"
-  
-  // Core Specs
-  cpu: string;
-  gpu: string;
-  ram: string;
-  storage?: string; // Built-in storage or memory card
-  
-  // Display (For handhelds/Output for home)
-  resolution: string;
-  display_type?: string; // e.g., "STN LCD", "OLED" (for handhelds)
-  
-  // Audio & Media
-  media: string;
-  audio: string;
-  
-  // Connectivity
-  ports?: string[]; // e.g. ["2x Controller", "AV Out", "RF"]
-  connectivity?: string; // e.g. "Link Cable", "Online Adapter"
-  
-  // Power
-  power_supply?: string; // e.g. "AC Adapter 9V", "4x AA Batteries"
-  battery_life?: string; // For handhelds
-  
-  // Market Data
-  units_sold: string;
-  launch_price: string;
-  inflation_price?: string; // Calculated price today
-  best_selling_game: string;
-}
+  casing?: string; // e
