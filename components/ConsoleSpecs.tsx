@@ -1,9 +1,11 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchConsoleBySlug } from '../services/geminiService';
 import { ConsoleDetails } from '../types';
 import Button from './Button';
 import RetroLoader from './RetroLoader';
+import CollectionToggle from './CollectionToggle';
 
 const ConsoleSpecs: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -55,9 +57,19 @@ const ConsoleSpecs: React.FC = () => {
              MANUFACTURED BY {consoleData.manufacturer.toUpperCase()} // EST. {consoleData.release_year}
            </p>
         </div>
-        <Link to="/consoles" className="mt-4 md:mt-0">
-            <Button variant="secondary">BACK TO LIST</Button>
-        </Link>
+        <div className="mt-4 md:mt-0 flex flex-col items-end gap-2">
+            <Link to="/consoles" className="mb-2">
+                <Button variant="secondary">BACK TO LIST</Button>
+            </Link>
+            <div className="w-48">
+                <CollectionToggle 
+                    itemId={consoleData.slug || consoleData.id} 
+                    itemType="CONSOLE" 
+                    itemName={consoleData.name} 
+                    itemImage={consoleData.image_url}
+                />
+            </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

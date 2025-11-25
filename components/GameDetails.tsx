@@ -5,6 +5,7 @@ import { fetchGameBySlug } from '../services/geminiService';
 import { GameOfTheWeekData } from '../types';
 import Button from './Button';
 import RetroLoader from './RetroLoader';
+import CollectionToggle from './CollectionToggle';
 
 const GameDetails: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -39,11 +40,23 @@ const GameDetails: React.FC = () => {
   return (
     <div className="w-full max-w-6xl mx-auto p-4">
       {/* Header */}
-      <div className="mb-8 border-b-4 border-retro-grid pb-6 flex flex-col md:flex-row justify-between items-end">
-        <div className="w-full">
-           <Link to="/games" className="inline-block mb-4 text-xs font-mono text-retro-blue hover:text-retro-neon transition-colors">
+      <div className="mb-8 border-b-4 border-retro-grid pb-6">
+        <div className="flex justify-between items-start mb-4">
+           <Link to="/games" className="inline-block text-xs font-mono text-retro-blue hover:text-retro-neon transition-colors">
               &lt; BACK TO DATABASE
            </Link>
+           {/* Add Collection Toggle */}
+           <div className="w-64">
+             <CollectionToggle 
+                itemId={game.slug || game.id || ''} 
+                itemType="GAME" 
+                itemName={game.title} 
+                itemImage={game.image}
+             />
+           </div>
+        </div>
+        
+        <div>
            <h1 className="text-4xl md:text-6xl font-pixel text-white drop-shadow-[4px_4px_0_rgba(0,0,0,1)] leading-tight mb-2">
              {game.title}
            </h1>
@@ -59,7 +72,6 @@ const GameDetails: React.FC = () => {
          {/* Left Sidebar: Metadata */}
          <div className="lg:col-span-1 space-y-6">
             <div className="bg-retro-dark border-2 border-retro-grid p-6 relative group overflow-hidden">
-                {/* Image Placeholder / Box Art */}
                 <div className="aspect-[3/4] bg-black/50 border border-retro-grid mb-6 flex items-center justify-center relative">
                     {game.image ? (
                         <img src={game.image} alt={game.title} className="w-full h-full object-cover" />

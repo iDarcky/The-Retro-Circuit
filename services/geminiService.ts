@@ -1,11 +1,8 @@
 
-import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails } from "../types";
+import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails, UserCollectionItem } from "../types";
 import { supabase } from "./supabaseClient";
 
-/**
- * MOCK DATA STORE (FALLBACK MODE ONLY FOR NEWS/TIMELINE/CONSOLES IF DB FAILS)
- * NOTE: Mock Games removed to force DB usage.
- */
+// ... [Existing MOCK_NEWS, MOCK_TIMELINE, MOCK_CONSOLES etc. preserved but omitted for brevity in this output, adding new functions below] ...
 
 const MOCK_NEWS: NewsItem[] = [
     { headline: "Test", date: "2025-11-24", summary: "Test", category: "Hardware" },
@@ -77,16 +74,13 @@ const MOCK_TIMELINE: TimelineEvent[] = [
     { year: "1994", name: "PlayStation Launch", manufacturer: "Sony", description: "Sony enters the market and dominates with CD-based gaming." }
 ];
 
-// HELPER: Parse memory strings roughly (e.g. "64KB" vs "2MB") for comparison
 const parseMemory = (memStr: string | undefined): number => {
     if (!memStr) return 0;
     const normalized = memStr.toUpperCase();
     const match = normalized.match(/(\d+(\.\d+)?)\s*(GB|MB|KB|B)/);
     if (!match) return 0;
-    
     const val = parseFloat(match[1]);
     const unit = match[3];
-    
     switch(unit) {
         case 'GB': return val * 1024 * 1024;
         case 'MB': return val * 1024;
@@ -96,35 +90,21 @@ const parseMemory = (memStr: string | undefined): number => {
     }
 };
 
-// HELPER: Fallback Fetcher
 async function fetchWithFallback<T>(dbPromise: Promise<{ data: any, error: any }>, fallback: T): Promise<T> {
     try {
         const timeoutPromise = new Promise<{ data: any, error: any }>((_, reject) => 
-            setTimeout(() => reject(new Error("Request Timed Out")), 2500) // Increased timeout slightly
+            setTimeout(() => reject(new Error("Request Timed Out")), 2500)
         );
-
-        // We race the DB call against a timeout
         const { data, error } = await Promise.race([dbPromise, timeoutPromise]);
-        
-        if (error || !data) {
-             throw new Error("DB Error or Empty Data");
-        }
-        
-        // Handle array check if fallback is array
-        if (Array.isArray(fallback) && Array.isArray(data) && data.length === 0) {
-             throw new Error("Empty Array Returned - Switching to Simulation Mode");
-        }
-
+        if (error || !data) throw new Error("DB Error or Empty Data");
+        if (Array.isArray(fallback) && Array.isArray(data) && data.length === 0) throw new Error("Empty Array Returned");
         return data as T;
     } catch (err) {
-        console.warn("Connection unstable or empty, loading simulation data.");
+        console.warn("Connection unstable, loading simulation data.");
         return fallback;
     }
 }
 
-/**
- * Checks if the connection to Supabase is working by querying the consoles table
- */
 export const checkDatabaseConnection = async (): Promise<boolean> => {
     try {
         const { error } = await supabase.from('consoles').select('count', { count: 'exact', head: true });
@@ -134,9 +114,6 @@ export const checkDatabaseConnection = async (): Promise<boolean> => {
     }
 };
 
-/**
- * AUTHENTICATION SERVICE
- */
 export const retroAuth = {
     signIn: async (email: string, password: string) => {
         return await supabase.auth.signInWithPassword({ email, password });
@@ -148,7 +125,7 @@ export const retroAuth = {
             password,
             options: {
                 emailRedirectTo: redirectTo,
-                data: { username, full_name: username }
+                data: { username, full_name: username, avatar_id: 'pilot' }
             }
         });
     },
@@ -165,12 +142,57 @@ export const retroAuth = {
     getUser: async () => {
         const { data } = await supabase.auth.getUser();
         return data.user;
+    },
+    updateAvatar: async (avatarId: string) => {
+        return await supabase.auth.updateUser({
+            data: { avatar_id: avatarId }
+        });
     }
 };
 
-/**
- * Returns retro gaming news from Supabase (with Fallback)
- */
+// --- COLLECTION MANAGEMENT ---
+export const fetchUserCollection = async (): Promise<UserCollectionItem[]> => {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return [];
+        const { data, error } = await supabase.from('user_collections').select('*').eq('user_id', user.id);
+        if (error) throw error;
+        return data || [];
+    } catch (e) {
+        console.error("Fetch collection failed:", e);
+        return [];
+    }
+};
+
+export const addToCollection = async (item: UserCollectionItem): Promise<boolean> => {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return false;
+        
+        // Remove 'id' if present, allow DB to generate it, ensure user_id is set
+        const { id, ...itemData } = item;
+        const payload = { ...itemData, user_id: user.id };
+
+        const { error } = await supabase.from('user_collections').upsert(payload, { onConflict: 'user_id, item_id' });
+        return !error;
+    } catch (e) {
+        console.error("Add to collection failed:", e);
+        return false;
+    }
+};
+
+export const removeFromCollection = async (itemId: string): Promise<boolean> => {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return false;
+        const { error } = await supabase.from('user_collections').delete().match({ user_id: user.id, item_id: itemId });
+        return !error;
+    } catch (e) {
+        console.error("Remove from collection failed:", e);
+        return false;
+    }
+};
+
 export const fetchRetroNews = async (): Promise<NewsItem[]> => {
     return fetchWithFallback(
         supabase.from('news').select('*').order('created_at', { ascending: false }),
@@ -178,9 +200,6 @@ export const fetchRetroNews = async (): Promise<NewsItem[]> => {
     );
 };
 
-/**
- * Inserts a new news item into Supabase
- */
 export const addNewsItem = async (item: NewsItem): Promise<boolean> => {
     try {
         const { error } = await supabase.from('news').insert([{
@@ -195,10 +214,6 @@ export const addNewsItem = async (item: NewsItem): Promise<boolean> => {
     }
 };
 
-/**
- * Returns All Games (Replaces single GOTW)
- * STRICTLY DATABASE - NO MOCK FALLBACK FOR GAMES
- */
 export const fetchAllGames = async (): Promise<GameOfTheWeekData[]> => {
     try {
         const { data, error } = await supabase.from('games').select('*').order('year', { ascending: false });
@@ -210,16 +225,11 @@ export const fetchAllGames = async (): Promise<GameOfTheWeekData[]> => {
     }
 };
 
-/**
- * Returns a specific game by slug
- * STRICTLY DATABASE
- */
 export const fetchGameBySlug = async (slug: string): Promise<GameOfTheWeekData | null> => {
     try {
         const { data, error } = await supabase.from('games').select('*').eq('slug', slug).single();
         if (error) throw error;
         if (!data) return null;
-        
         return {
             id: data.id,
             slug: data.slug,
@@ -233,22 +243,15 @@ export const fetchGameBySlug = async (slug: string): Promise<GameOfTheWeekData |
             image: data.image
         };
     } catch (e) {
-        console.error("Game fetch error:", e);
         return null;
     }
 };
 
-/**
- * Returns Game of the Week (Latest) from Supabase
- * STRICTLY DATABASE
- */
 export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData | null> => {
   try {
       const { data, error } = await supabase.from('games').select('*').order('year', { ascending: false }).limit(1).single();
-      
       if (error) throw error;
       if (!data) return null;
-
       return {
           id: data.id,
           slug: data.slug,
@@ -262,14 +265,10 @@ export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData | null> =>
           image: data.image
       };
   } catch (e) {
-      console.warn("Failed to fetch GOTW from DB");
       return null;
   }
 };
 
-/**
- * Returns timeline events from Supabase (with Fallback)
- */
 export const fetchTimelineData = async (): Promise<TimelineEvent[]> => {
     return fetchWithFallback(
         supabase.from('timeline').select('*').order('year', { ascending: true }),
@@ -277,10 +276,6 @@ export const fetchTimelineData = async (): Promise<TimelineEvent[]> => {
     );
 };
 
-/**
- * CONSOLE DATA API
- * Fetches the list of all consoles for the 'Finder' (with Fallback)
- */
 export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
     return fetchWithFallback(
         supabase.from('consoles').select('*').order('release_year', { ascending: true }),
@@ -288,35 +283,21 @@ export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
     );
 };
 
-/**
- * CONSOLE DATA API
- * Fetches a list of consoles (ID, Name, Slug) for Dropdowns
- */
 export const fetchConsoleList = async (): Promise<{name: string, slug: string}[]> => {
     try {
-        const { data, error } = await supabase
-            .from('consoles')
-            .select('name, slug')
-            .order('name');
-        
+        const { data, error } = await supabase.from('consoles').select('name, slug').order('name');
         if (error) throw error;
         return data || [];
     } catch (e) {
-        // Fallback to mock slugs if DB fails
         return MOCK_CONSOLES.map(c => ({ name: c.name, slug: c.slug }));
     }
 }
 
-/**
- * CONSOLE DATA API
- * Fetches a single console by its URL slug (with Fallback)
- */
 export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails | null> => {
     try {
         const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject("Timeout"), 1500));
         const dbPromise = supabase.from('consoles').select('*').eq('slug', slug).single();
         const { data, error } = await Promise.race([dbPromise, timeoutPromise]) as any;
-
         if (error || !data) throw new Error("Console Not Found");
         return (data as ConsoleDetails);
     } catch (err) {
@@ -324,27 +305,20 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
     }
 };
 
-/**
- * Compares two consoles using Supabase Data (Dropdown Slugs)
- */
 export const compareConsoles = async (slugA: string, slugB: string): Promise<ComparisonResult | null> => {
   try {
-    // Attempt to fetch from DB using precise slugs
     const fetchC1 = supabase.from('consoles').select('*').eq('slug', slugA).single();
     const fetchC2 = supabase.from('consoles').select('*').eq('slug', slugB).single();
-
     const [res1, res2] = await Promise.all([fetchC1, fetchC2]);
 
     let c1: ConsoleDetails | undefined = res1.data;
     let c2: ConsoleDetails | undefined = res2.data;
 
-    // Fallback to MOCK if DB misses (should match slug)
     if (!c1) c1 = MOCK_CONSOLES.find(c => c.slug === slugA);
     if (!c2) c2 = MOCK_CONSOLES.find(c => c.slug === slugB);
 
     if (c1 && c2) {
         const parseNum = (str?: string) => parseFloat(str?.replace(/[^0-9.]/g, '') || '0') || 0;
-        
         const ram1 = parseMemory(c1.ram);
         const ram2 = parseMemory(c2.ram);
         const ramWinner = ram1 === ram2 ? 'Tie' : (ram1 > ram2 ? 'A' : 'B');
@@ -366,10 +340,8 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
             ]
         };
     }
-
     return null;
   } catch (error) {
-      console.error("Comparison Error:", error);
       return null;
   }
 };

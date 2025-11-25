@@ -40,6 +40,16 @@ export interface TimelineEvent {
   description: string;
 }
 
+export interface UserCollectionItem {
+  id: string;
+  user_id: string;
+  item_id: string;
+  item_type: 'GAME' | 'CONSOLE';
+  status: 'OWN' | 'WANT';
+  item_name?: string;
+  item_image?: string;
+}
+
 // Phase 2: GSMArena-style Deep Specs
 export interface ConsoleDetails {
   id: string;
