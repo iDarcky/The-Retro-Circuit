@@ -1,70 +1,21 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchManufacturers, fetchConsolesFiltered, fetchManufacturerProfile } from '../services/geminiService';
-import { ConsoleDetails, ConsoleFilterState, ManufacturerProfile } from '../types';
+import { fetchManufacturers, fetchConsolesFiltered, getBrandTheme } from '../services/geminiService';
+import { ConsoleDetails, ConsoleFilterState } from '../types';
 import RetroLoader from './RetroLoader';
 import Button from './Button';
-
-// --- VISUAL THEME MAPPING (PRESENTATION ONLY) ---
-// Data (text) comes from the database, but styling is mapped here.
-const BRAND_THEMES: Record<string, { color: string, bg: string, hover: string }> = {
-    'Nintendo': {
-        color: 'text-red-500 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]',
-        bg: 'bg-red-900/20',
-        hover: 'hover:bg-red-900/40'
-    },
-    'Sega': {
-        color: 'text-blue-500 border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.3)]',
-        bg: 'bg-blue-900/20',
-        hover: 'hover:bg-blue-900/40'
-    },
-    'Sony': {
-        color: 'text-yellow-400 border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.3)]',
-        bg: 'bg-yellow-900/20',
-        hover: 'hover:bg-yellow-900/40'
-    },
-    'Atari': {
-        color: 'text-orange-500 border-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.3)]',
-        bg: 'bg-orange-900/20',
-        hover: 'hover:bg-orange-900/40'
-    },
-    'Microsoft': {
-        color: 'text-green-500 border-green-500 shadow-[0_0_20px_rgba(34,197,94,0.3)]',
-        bg: 'bg-green-900/20',
-        hover: 'hover:bg-green-900/40'
-    },
-    'NEC': {
-        color: 'text-purple-400 border-purple-400 shadow-[0_0_20px_rgba(192,132,252,0.3)]',
-        bg: 'bg-purple-900/20',
-        hover: 'hover:bg-purple-900/40'
-    },
-    'SNK': {
-        color: 'text-teal-400 border-teal-400 shadow-[0_0_20px_rgba(45,212,191,0.3)]',
-        bg: 'bg-teal-900/20',
-        hover: 'hover:bg-teal-900/40'
-    }
-};
-
-const DEFAULT_THEME = {
-    color: 'text-retro-neon border-retro-neon shadow-[0_0_20px_rgba(0,255,157,0.3)]',
-    bg: 'bg-retro-grid/20',
-    hover: 'hover:bg-retro-grid/40'
-};
 
 const ConsoleLibrary: React.FC = () => {
   const [consoles, setConsoles] = useState<ConsoleDetails[]>([]);
   const [brands, setBrands] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<'BRAND' | 'PROFILE' | 'LIST'>('BRAND');
+  const [viewMode, setViewMode] = useState<'BRAND' | 'LIST'>('BRAND');
   
-  // Profile Data
-  const [activeProfile, setActiveProfile] = useState<ManufacturerProfile | null>(null);
-
   // Pagination State for List View
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const ITEMS_PER_PAGE = 12; // Fits 1, 2, 3 cols
+  const ITEMS_PER_PAGE = 12;
 
   // Filter State
   const [filters, setFilters] = useState<ConsoleFilterState>({
@@ -109,27 +60,6 @@ const ConsoleLibrary: React.FC = () => {
       setPage(1);
   }, [filters]);
 
-  const handleBrandSelect = async (brand: string) => {
-      setLoading(true);
-      
-      // Update filters so if they switch to List view it persists
-      const newFilters = { ...filters, manufacturer: brand };
-      setFilters(newFilters);
-      
-      // Fetch Profile AND Consoles for this brand
-      // We fetch a larger limit (100) for the profile view to show everything at once
-      const [profile, consoleData] = await Promise.all([
-          fetchManufacturerProfile(brand),
-          fetchConsolesFiltered(newFilters, 1, 100)
-      ]);
-      
-      setActiveProfile(profile);
-      setConsoles(consoleData.data);
-
-      setViewMode('PROFILE');
-      setLoading(false);
-  };
-
   const handleFilterChange = (key: keyof ConsoleFilterState, value: any) => {
       setFilters(prev => ({ ...prev, [key]: value }));
   };
@@ -143,10 +73,6 @@ const ConsoleLibrary: React.FC = () => {
               return { ...prev, [key]: [...arr, value] };
           }
       });
-  };
-
-  const getBrandTheme = (brand: string) => {
-      return BRAND_THEMES[brand] || DEFAULT_THEME;
   };
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
@@ -166,14 +92,6 @@ const ConsoleLibrary: React.FC = () => {
             >
                 DIRECTORY MODE
             </button>
-            {filters.manufacturer && (
-                <button 
-                    onClick={() => setViewMode('PROFILE')}
-                    className={`font-mono text-xs px-3 py-1 transition-colors ${viewMode === 'PROFILE' ? 'bg-retro-neon text-black' : 'text-gray-500 hover:text-white'}`}
-                >
-                    CORP. DOSSIER
-                </button>
-            )}
             <button 
                 onClick={() => setViewMode('LIST')}
                 className={`font-mono text-xs px-3 py-1 transition-colors ${viewMode === 'LIST' ? 'bg-retro-neon text-black' : 'text-gray-500 hover:text-white'}`}
@@ -190,9 +108,9 @@ const ConsoleLibrary: React.FC = () => {
                 {brands.map((brand) => {
                     const theme = getBrandTheme(brand);
                     return (
-                        <button 
+                        <Link 
                             key={brand}
-                            onClick={() => handleBrandSelect(brand)}
+                            to={`/consoles/brand/${brand}`}
                             className={`group border-4 bg-retro-dark p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${theme.color} ${theme.hover}`}
                         >
                             <div className="w-20 h-20 border-2 border-current rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -200,7 +118,7 @@ const ConsoleLibrary: React.FC = () => {
                             </div>
                             <span className="font-pixel text-xl tracking-widest uppercase">{brand}</span>
                             <span className="font-mono text-xs opacity-75">ACCESS FOLDER &gt;</span>
-                        </button>
+                        </Link>
                     );
                 })}
                  <button 
@@ -212,111 +130,6 @@ const ConsoleLibrary: React.FC = () => {
                 </button>
             </div>
           )
-      )}
-
-      {/* VIEW: COMPANY PROFILE */}
-      {viewMode === 'PROFILE' && activeProfile && (
-          <div className="animate-[fadeIn_0.5s_ease-in-out]">
-             {/* Profile Header */}
-             {(() => {
-                 const theme = getBrandTheme(activeProfile.name);
-                 const themeColorClass = theme.color.split(' ')[0]; // Extract just the text color class for headings
-
-                 return (
-                    <>
-                        <div className={`border-l-8 ${theme.color} bg-retro-dark p-8 mb-8 shadow-lg`}>
-                            <div className="flex flex-col md:flex-row justify-between items-end border-b border-gray-800 pb-6 mb-6">
-                                <div>
-                                    <div className={`font-mono text-xs border inline-block px-2 py-1 mb-2 ${theme.color}`}>CONFIDENTIAL</div>
-                                    <h1 className={`text-5xl md:text-7xl font-pixel ${themeColorClass} opacity-90 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]`}>
-                                        {activeProfile.name}
-                                    </h1>
-                                </div>
-                                <div className="text-right mt-4 md:mt-0">
-                                    <div className="font-mono text-gray-500 text-xs">FOUNDED</div>
-                                    <div className="font-pixel text-white text-lg">{activeProfile.founded}</div>
-                                    <div className="font-mono text-gray-500 text-xs mt-2">ORIGIN</div>
-                                    <div className="font-pixel text-white text-lg">{activeProfile.origin}</div>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                <div className="md:col-span-2">
-                                    <h3 className={`font-pixel text-lg mb-4 ${themeColorClass}`}>CORPORATE HISTORY</h3>
-                                    <p className="font-mono text-gray-300 text-lg leading-relaxed border-l-2 border-gray-700 pl-4">
-                                        {activeProfile.description}
-                                    </p>
-                                </div>
-                                
-                                <div className={`bg-black/30 p-6 border border-gray-800`}>
-                                    <div className="mb-6">
-                                        <h4 className="font-pixel text-xs text-gray-500 mb-2">KEY FRANCHISES</h4>
-                                        <ul className="space-y-2">
-                                            {activeProfile.key_franchises.map((f: string) => (
-                                                <li key={f} className={`font-mono text-sm border-b border-gray-800 pb-1 ${themeColorClass}`}>
-                                                    {f}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-pixel text-xs text-gray-500 mb-2">CURRENT CEO</h4>
-                                        <div className="font-mono text-white text-sm">{activeProfile.ceo}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        {/* MANUFACTURER CONSOLE LIST */}
-                        <div className="mb-12">
-                            <div className="flex items-center gap-4 mb-6">
-                                <h3 className={`font-pixel text-2xl ${themeColorClass}`}>KNOWN HARDWARE UNITS</h3>
-                                <div className="flex-1 h-px bg-gray-800"></div>
-                            </div>
-                            
-                            {consoles.length > 0 ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                                    {consoles.map((console) => (
-                                        <Link 
-                                            to={`/consoles/${console.slug}`} 
-                                            key={console.id}
-                                            className={`group block border border-retro-grid bg-retro-dark relative overflow-hidden transition-all ${theme.hover}`}
-                                        >
-                                            <div className="h-24 bg-black/40 flex items-center justify-center p-4 relative">
-                                                {console.image_url ? (
-                                                    <img src={console.image_url} className="max-h-full object-contain" />
-                                                ) : (
-                                                    <span className="font-pixel text-gray-700 text-2xl">?</span>
-                                                )}
-                                            </div>
-                                            <div className="p-3 border-t border-retro-grid">
-                                                <div className="flex justify-between text-[10px] font-mono text-gray-500 mb-1">
-                                                    <span>{console.release_year}</span>
-                                                    <span>GEN {console.generation}</span>
-                                                </div>
-                                                <h3 className="font-pixel text-xs text-white group-hover:text-retro-neon truncate">
-                                                    {console.name}
-                                                </h3>
-                                            </div>
-                                        </Link>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="p-8 border-2 border-dashed border-gray-800 text-center font-mono text-gray-500">
-                                    NO UNITS DECLASSIFIED IN DATABASE.
-                                </div>
-                            )}
-
-                            <div className="mt-8 text-center">
-                                <Button onClick={() => setViewMode('LIST')} className={`w-full md:w-auto ${theme.bg} ${theme.hover} border-current`}>
-                                    ADVANCED FILTER ACCESS &gt;
-                                </Button>
-                            </div>
-                        </div>
-                    </>
-                 );
-             })()}
-          </div>
       )}
 
       {/* VIEW: LIST WITH FILTERS */}
@@ -336,9 +149,9 @@ const ConsoleLibrary: React.FC = () => {
                                   {filters.manufacturer}
                                   <button onClick={() => { setFilters(prev => ({...prev, manufacturer: null})); setViewMode('BRAND'); }} className="text-red-500 hover:text-white">✕</button>
                               </div>
-                              <button onClick={() => handleBrandSelect(filters.manufacturer!)} className="text-[10px] font-mono text-retro-blue hover:text-white mt-1">
+                              <Link to={`/consoles/brand/${filters.manufacturer}`} className="text-[10px] font-mono text-retro-blue hover:text-white mt-1 block">
                                   [ VIEW CORP DATA ]
-                              </button>
+                              </Link>
                           </div>
                       )}
 

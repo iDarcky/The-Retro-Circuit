@@ -12,6 +12,7 @@ import AuthSection from './components/AuthSection';
 import BootSequence from './components/BootSequence';
 import ConsoleLibrary from './components/ConsoleLibrary';
 import ConsoleSpecs from './components/ConsoleSpecs';
+import ManufacturerDetail from './components/ManufacturerDetail';
 import AdminPortal from './components/AdminPortal';
 import { SoundProvider, useSound } from './components/SoundContext';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -125,16 +126,13 @@ const AppContent = () => {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const location = useLocation();
 
-  // FIX: Hooks must be at the top level, before any conditional returns
   useEffect(() => {
-    // Check URL for recovery link from Supabase
     if (location.hash.includes('type=recovery')) {
         sessionStorage.setItem('retro_recovery_pending', 'true');
     }
   }, [location]);
 
   useEffect(() => {
-      // Close mobile search when route changes
       setMobileSearchOpen(false);
   }, [location]);
 
@@ -230,6 +228,7 @@ const AppContent = () => {
           <Route path="/games" element={<GamesList />} />
           <Route path="/games/:slug" element={<GameDetails />} />
           <Route path="/consoles" element={<ConsoleLibrary />} />
+          <Route path="/consoles/brand/:name" element={<ManufacturerDetail />} />
           <Route path="/consoles/:slug" element={<ConsoleSpecs />} />
           <Route path="/comparer" element={<ConsoleComparer />} />
           <Route path="/timeline" element={<Timeline />} />

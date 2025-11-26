@@ -1,8 +1,55 @@
 import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails, UserCollectionItem, SearchResult, ConsoleFilterState, ManufacturerProfile } from "../types";
 import { supabase } from "./supabaseClient";
 
+// --- VISUAL THEMES ---
+// Shared between ConsoleLibrary and ManufacturerDetail
+export const BRAND_THEMES: Record<string, { color: string, bg: string, hover: string }> = {
+    'Nintendo': {
+        color: 'text-red-500 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]',
+        bg: 'bg-red-900/20',
+        hover: 'hover:bg-red-900/40'
+    },
+    'Sega': {
+        color: 'text-blue-500 border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.3)]',
+        bg: 'bg-blue-900/20',
+        hover: 'hover:bg-blue-900/40'
+    },
+    'Sony': {
+        color: 'text-yellow-400 border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.3)]',
+        bg: 'bg-yellow-900/20',
+        hover: 'hover:bg-yellow-900/40'
+    },
+    'Atari': {
+        color: 'text-orange-500 border-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.3)]',
+        bg: 'bg-orange-900/20',
+        hover: 'hover:bg-orange-900/40'
+    },
+    'Microsoft': {
+        color: 'text-green-500 border-green-500 shadow-[0_0_20px_rgba(34,197,94,0.3)]',
+        bg: 'bg-green-900/20',
+        hover: 'hover:bg-green-900/40'
+    },
+    'NEC': {
+        color: 'text-purple-400 border-purple-400 shadow-[0_0_20px_rgba(192,132,252,0.3)]',
+        bg: 'bg-purple-900/20',
+        hover: 'hover:bg-purple-900/40'
+    },
+    'SNK': {
+        color: 'text-teal-400 border-teal-400 shadow-[0_0_20px_rgba(45,212,191,0.3)]',
+        bg: 'bg-teal-900/20',
+        hover: 'hover:bg-teal-900/40'
+    }
+};
+
+export const getBrandTheme = (brand: string) => {
+    return BRAND_THEMES[brand] || {
+        color: 'text-retro-neon border-retro-neon shadow-[0_0_20px_rgba(0,255,157,0.3)]',
+        bg: 'bg-retro-grid/20',
+        hover: 'hover:bg-retro-grid/40'
+    };
+};
+
 // --- FALLBACK DATA ---
-// Kept as a safety net if the DB table is missing or connection fails
 const FALLBACK_MANUFACTURERS: Record<string, ManufacturerProfile> = {
     'Nintendo': { 
         name: 'Nintendo', 
@@ -59,22 +106,6 @@ const FALLBACK_MANUFACTURERS: Record<string, ManufacturerProfile> = {
         ceo: 'Kenji Matsubara', 
         key_franchises: ['King of Fighters', 'Metal Slug', 'Fatal Fury', 'Samurai Shodown'], 
         description: 'Bankrupt 2001, reformed as SNK Playmore, now focuses on software. Notable Consoles: Neo Geo (arcade and home), Neo Geo Pocket.' 
-    }
-};
-
-const parseMemory = (memStr: string | undefined): number => {
-    if (!memStr) return 0;
-    const normalized = memStr.toUpperCase();
-    const match = normalized.match(/(\d+(\.\d+)?)\s*(GB|MB|KB|B)/);
-    if (!match) return 0;
-    const val = parseFloat(match[1]);
-    const unit = match[3];
-    switch(unit) {
-        case 'GB': return val * 1024 * 1024;
-        case 'MB': return val * 1024;
-        case 'KB': return val;
-        case 'B': return val / 1024;
-        default: return 0;
     }
 };
 
@@ -136,14 +167,12 @@ export const searchDatabase = async (query: string): Promise<SearchResult[]> => 
     if (!query || query.length < 2) return [];
 
     try {
-        // Search Consoles
         const { data: consoles } = await supabase
             .from('consoles')
             .select('id, slug, name, manufacturer, image_url')
             .ilike('name', `%${query}%`)
             .limit(5);
 
-        // Search Games
         const { data: games } = await supabase
             .from('games')
             .select('id, slug, title, developer, image')
@@ -183,13 +212,16 @@ export const searchDatabase = async (query: string): Promise<SearchResult[]> => 
 
 export const fetchManufacturers = async (): Promise<string[]> => {
     try {
-        const { data, error } = await supabase.from('consoles').select('manufacturer');
+        // Now fetching from the dedicated 'manufacturers' table
+        const { data, error } = await supabase.from('manufacturers').select('name').order('name');
         if (error) throw error;
-        // Use Set to get unique values in client since Supabase doesn't support distinct easily on select without RPC
+        return data.map((m: any) => m.name);
+    } catch (e) {
+        console.warn("Falling back to unique console values due to error:", e);
+        // Fallback: Get from consoles table if manufacturers table fails
+        const { data } = await supabase.from('consoles').select('manufacturer');
         const brands = Array.from(new Set((data || []).map((d: any) => d.manufacturer))).sort();
         return brands as string[];
-    } catch (e) {
-        return ['Atari', 'Nintendo', 'Sega', 'Sony'];
     }
 };
 
@@ -205,7 +237,6 @@ export const fetchManufacturerProfile = async (name: string): Promise<Manufactur
         return data as ManufacturerProfile;
     } catch (e) {
         console.warn(`Manufacturer fetch failed for ${name}, utilizing fallback.`);
-        // Return fallback or a generic placeholder
         return FALLBACK_MANUFACTURERS[name] || {
             name: name,
             founded: 'Unknown',
@@ -221,7 +252,6 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
     try {
         let query = supabase.from('consoles').select('*', { count: 'exact' }).order('release_year', { ascending: true });
 
-        // Apply Filters
         if (filters.manufacturer) {
             query = query.eq('manufacturer', filters.manufacturer);
         }
@@ -255,7 +285,6 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
     }
 };
 
-// Deprecated: Use fetchConsolesFiltered
 export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
     const { data } = await fetchConsolesFiltered({ 
         minYear: 1970, maxYear: 2005, generations: [], types: [], manufacturer: null 
@@ -263,7 +292,6 @@ export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
     return data;
 };
 
-// Optimized list fetch for dropdowns
 export const fetchConsoleList = async (): Promise<{name: string, slug: string}[]> => {
     const { data } = await supabase.from('consoles').select('name, slug').order('name');
     return data || [];
@@ -286,7 +314,6 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
         
         if(!cA || !cB) return null;
 
-        // Basic comparison logic since we don't have the AI model here
         return {
             consoleA: cA.name,
             consoleB: cB.name,
@@ -320,20 +347,17 @@ export const addGame = async (game: GameOfTheWeekData): Promise<boolean> => {
         if (error) throw error;
         return true;
     } catch (e) {
-        console.error("Add Game Failed:", e);
         return false;
     }
 };
 
 export const addConsole = async (consoleData: ConsoleDetails): Promise<boolean> => {
     try {
-        // Remove ID if present to allow DB generation
         const { id, ...data } = consoleData;
         const { error } = await supabase.from('consoles').insert([data]);
         if (error) throw error;
         return true;
     } catch (e) {
-        console.error("Add Console Failed:", e);
         return false;
     }
 };
@@ -347,7 +371,6 @@ export const fetchUserCollection = async (): Promise<UserCollectionItem[]> => {
         if (error) throw error;
         return data || [];
     } catch (e) {
-        console.error("Fetch collection failed:", e);
         return [];
     }
 };
@@ -357,14 +380,12 @@ export const addToCollection = async (item: UserCollectionItem): Promise<boolean
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return false;
         
-        // Remove 'id' if present, allow DB to generate it, ensure user_id is set
         const { id, ...itemData } = item;
         const payload = { ...itemData, user_id: user.id };
 
         const { error } = await supabase.from('user_collections').upsert(payload, { onConflict: 'user_id, item_id' });
         return !error;
     } catch (e) {
-        console.error("Add to collection failed:", e);
         return false;
     }
 };
@@ -376,7 +397,6 @@ export const removeFromCollection = async (itemId: string): Promise<boolean> => 
         const { error } = await supabase.from('user_collections').delete().match({ user_id: user.id, item_id: itemId });
         return !error;
     } catch (e) {
-        console.error("Remove from collection failed:", e);
         return false;
     }
 };
@@ -402,7 +422,6 @@ export const fetchRetroNews = async (page: number = 1, limit: number = 20, categ
         
         return { data: data as NewsItem[], count: count || 0 };
     } catch (e) {
-        // Fallback or empty
         return { data: [], count: 0 };
     }
 };
@@ -421,7 +440,6 @@ export const addNewsItem = async (item: NewsItem): Promise<boolean> => {
     }
 };
 
-// Updated to support pagination and field mapping
 export const fetchGamesPaginated = async (page: number = 1, limit: number = 9): Promise<{ data: GameOfTheWeekData[], count: number }> => {
     try {
         const from = (page - 1) * limit;
@@ -443,7 +461,7 @@ export const fetchGamesPaginated = async (page: number = 1, limit: number = 9): 
             year: g.year,
             genre: g.genre,
             content: g.content,
-            whyItMatters: g.why_it_matters, // Map from snake_case
+            whyItMatters: g.why_it_matters,
             rating: g.rating,
             image: g.image
         }));
@@ -453,7 +471,6 @@ export const fetchGamesPaginated = async (page: number = 1, limit: number = 9): 
             count: count || 0 
         };
     } catch (e) {
-        console.error("Failed to fetch games:", e);
         return { data: [], count: 0 };
     }
 };
