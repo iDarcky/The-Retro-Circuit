@@ -269,46 +269,68 @@ export const searchDatabase = async (query: string): Promise<SearchResult[]> => 
     if (!query || query.length < 2) return [];
 
     try {
-        const { data: consoles } = await supabase
-            .from('consoles')
-            .select('id, slug, name, manufacturer, image_url')
-            .ilike('name', `%${query}%`)
-            .limit(5);
-
-        const { data: games } = await supabase
-            .from('games')
-            .select('id, slug, title, developer, image')
+        // Optimized search using 'global_search_index' view
+        // Fallbacks to legacy method if view does not exist yet
+        const { data, error } = await supabase
+            .from('global_search_index')
+            .select('*')
             .ilike('title', `%${query}%`)
-            .limit(5);
+            .limit(10);
 
-        const results: SearchResult[] = [];
+        if (error) throw error;
 
-        if (consoles) {
-            consoles.forEach((c: any) => results.push({
-                type: 'CONSOLE',
-                id: c.id,
-                slug: c.slug,
-                title: c.name,
-                subtitle: c.manufacturer,
-                image: c.image_url
-            }));
-        }
-
-        if (games) {
-            games.forEach((g: any) => results.push({
-                type: 'GAME',
-                id: g.id,
-                slug: g.slug,
-                title: g.title,
-                subtitle: g.developer,
-                image: g.image
-            }));
-        }
-
-        return results;
+        return (data || []).map((item: any) => ({
+            type: item.type as 'GAME' | 'CONSOLE',
+            id: item.id,
+            slug: item.slug,
+            title: item.title,
+            subtitle: item.subtitle,
+            image: item.image
+        }));
     } catch (e) {
-        console.error("Search failed", e);
-        return [];
+        // Fallback for when View doesn't exist yet
+        // This ensures the app doesn't break if the SQL hasn't been run
+        try {
+            const { data: consoles } = await supabase
+                .from('consoles')
+                .select('id, slug, name, manufacturer, image_url')
+                .ilike('name', `%${query}%`)
+                .limit(5);
+
+            const { data: games } = await supabase
+                .from('games')
+                .select('id, slug, title, developer, image')
+                .ilike('title', `%${query}%`)
+                .limit(5);
+
+            const results: SearchResult[] = [];
+
+            if (consoles) {
+                consoles.forEach((c: any) => results.push({
+                    type: 'CONSOLE',
+                    id: c.id,
+                    slug: c.slug,
+                    title: c.name,
+                    subtitle: c.manufacturer,
+                    image: c.image_url
+                }));
+            }
+
+            if (games) {
+                games.forEach((g: any) => results.push({
+                    type: 'GAME',
+                    id: g.id,
+                    slug: g.slug,
+                    title: g.title,
+                    subtitle: g.developer,
+                    image: g.image
+                }));
+            }
+            return results;
+        } catch (legacyError) {
+             console.error("All search methods failed", legacyError);
+             return [];
+        }
     }
 };
 
