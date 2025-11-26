@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
@@ -72,7 +71,7 @@ const MobileNavItem = ({ to, icon: Icon, label, exact = false }: { to: string, i
         <Link 
             to={to}
             onClick={playClick}
-            className={`flex flex-col items-center justify-center flex-1 h-full transition-all active:scale-95 ${isActive ? 'text-retro-neon bg-retro-grid/30 border-t-2 border-retro-neon' : 'text-gray-500 hover:text-gray-300 border-t-2 border-transparent'}`}
+            className={`flex flex-col items-center justify-center flex-1 h-full transition-all active:scale-95 rounded-xl mx-1 ${isActive ? 'text-retro-neon bg-retro-neon/10 shadow-[0_0_10px_rgba(0,255,157,0.2)]' : 'text-gray-500 hover:text-gray-300'}`}
         >
             <Icon className={`w-5 h-5 mb-1 ${isActive ? 'text-retro-neon drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]' : ''}`} />
             <span className="text-[9px] font-pixel tracking-tighter">{label}</span>
@@ -196,7 +195,7 @@ const AppContent = () => {
 
   return (
     // pb-24 on mobile to accommodate fixed bottom nav
-    <div className="flex flex-col md:flex-row min-h-screen pt-16 md:pt-0 pb-24 md:pb-12 bg-retro-dark relative">
+    <div className="flex flex-col md:flex-row min-h-screen pt-16 md:pt-0 bg-retro-dark relative overflow-hidden">
       <SEOHead title="Gateway to the Golden Age" description="Comparing retro consoles and games." />
 
       {/* MOBILE HEADER */}
@@ -276,8 +275,8 @@ const AppContent = () => {
         </div>
       )}
 
-      {/* MOBILE BOTTOM NAV */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-retro-dark border-t border-retro-grid z-[60] flex justify-between items-center px-1 pb-safe">
+      {/* MOBILE BOTTOM NAV - FLOATING STYLE */}
+      <div className="md:hidden fixed bottom-6 left-4 right-4 h-16 bg-retro-dark/95 backdrop-blur-md border border-retro-grid/50 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] z-[60] flex justify-between items-center p-2">
         <MobileNavItem to="/" icon={IconHome} label="HOME" exact />
         <MobileNavItem to="/news" icon={IconNews} label="NEWS" />
         <MobileNavItem to="/games" icon={IconGames} label="GAMES" />
@@ -288,72 +287,73 @@ const AppContent = () => {
       {/* SIDEBAR (DESKTOP) */}
       <aside className="hidden md:flex flex-col w-64 bg-retro-dark border-r border-retro-grid fixed top-0 bottom-0 left-0 z-40">
         <div className="p-6 border-b border-retro-grid text-center">
-            <h1 className="font-pixel text-retro-neon text-xl leading-relaxed drop-shadow-[2px_2px_0_rgba(255,0,255,0.5)]">
-                THE RETRO<br/>CIRCUIT
-            </h1>
+            <Link to="/">
+                <h1 className="font-pixel text-retro-neon text-xl leading-relaxed drop-shadow-[2px_2px_0_rgba(255,0,255,0.5)]">
+                    THE RETRO<br/>CIRCUIT
+                </h1>
+            </Link>
         </div>
         
         {/* GLOBAL SEARCH */}
         <GlobalSearch />
         
-        <nav className="flex-1 overflow-y-auto py-4">
+        <nav className="flex-1 overflow-y-auto py-4 custom-scrollbar">
             <SidebarItem to="/" icon={IconHome} label="DASHBOARD" exact />
             <SidebarItem to="/news" icon={IconNews} label="NEWS FEED" />
             <SidebarItem to="/games" icon={IconGames} label="GAMES" />
             <SidebarItem to="/consoles" icon={IconDatabase} label="HARDWARE" />
             <SidebarItem to="/comparer" icon={IconVS} label="VS. MODE" />
             <SidebarItem to="/timeline" icon={IconTimeline} label="TIMELINE" />
+            {isAdmin && <SidebarItem to="/admin" icon={IconLock} label="ADMIN PORTAL" />}
         </nav>
-        
-        <div className="p-4 border-t border-retro-grid mb-8">
-            <Link to="/login" className="flex items-center text-xs font-mono text-gray-500 hover:text-retro-neon transition-colors">
-                <IconLogin className="w-4 h-4 mr-2" />
-                <span>PILOT LOGIN</span>
-            </Link>
-            {isAdmin && (
-                <Link to="/admin" className="flex items-center text-xs font-mono text-retro-pink hover:text-white transition-colors mt-2">
-                    <IconLock className="w-4 h-4 mr-2" />
-                    <span>ADMIN CONSOLE</span>
-                </Link>
-            )}
+
+        <div className="p-4 border-t border-retro-grid bg-retro-dark">
+             <SidebarItem to="/login" icon={IconLogin} label="PILOT ACCESS" />
         </div>
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 md:ml-64 w-full">
-        <Suspense fallback={<div className="p-8"><RetroLoader /></div>}>
-          <ErrorBoundary>
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/news" element={<NewsSection limit={10} />} />
-              <Route path="/games" element={<GamesList />} />
-              <Route path="/games/:slug" element={<GameDetails />} />
-              <Route path="/consoles" element={<ConsoleLibrary />} />
-              <Route path="/consoles/:slug" element={<ConsoleSpecs />} />
-              <Route path="/consoles/brand/:name" element={<ManufacturerDetail />} />
-              <Route path="/comparer" element={<ConsoleComparer />} />
-              <Route path="/timeline" element={<Timeline />} />
-              <Route path="/login" element={<AuthSection />} />
-              <Route path="/admin" element={<AdminPortal />} />
-              <Route path="/sitemap" element={<HtmlSitemap />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </ErrorBoundary>
+      <main className="flex-1 md:ml-64 pb-24 md:pb-12 min-h-screen relative overflow-x-hidden">
+        <Suspense fallback={<RetroLoader />}>
+            <ErrorBoundary>
+                <Routes>
+                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/news" element={<NewsSection />} />
+                    <Route path="/games" element={<GamesList />} />
+                    <Route path="/games/:slug" element={<GameDetails />} />
+                    <Route path="/consoles" element={<ConsoleLibrary />} />
+                    <Route path="/consoles/brand/:name" element={<ManufacturerDetail />} />
+                    <Route path="/consoles/:slug" element={<ConsoleSpecs />} />
+                    <Route path="/comparer" element={<ConsoleComparer />} />
+                    <Route path="/timeline" element={<Timeline />} />
+                    <Route path="/login" element={<AuthSection />} />
+                    <Route path="/admin" element={<AdminPortal />} />
+                    <Route path="/sitemap" element={<HtmlSitemap />} />
+                    <Route path="*" element={<NotFound />} />
+                </Routes>
+            </ErrorBoundary>
         </Suspense>
-      </main>
 
-      {/* FOOTER STATUS (Desktop Only) */}
-      <FooterStatus crtEnabled={crtEnabled} onToggleCrt={toggleCrt} />
+        <FooterStatus crtEnabled={crtEnabled} onToggleCrt={toggleCrt} />
+      </main>
     </div>
   );
 };
 
+const App = () => {
+    return (
+        <React.StrictMode>
+            <SoundProvider>
+                <BrowserRouter>
+                    <AppContent />
+                </BrowserRouter>
+            </SoundProvider>
+        </React.StrictMode>
+    );
+};
+
 const container = document.getElementById('root');
-const root = createRoot(container!);
-root.render(
-  <BrowserRouter>
-    <SoundProvider>
-      <AppContent />
-    </SoundProvider>
-  </BrowserRouter>
-);
+if (container) {
+    const root = createRoot(container);
+    root.render(<App />);
+}
