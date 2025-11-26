@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, Suspense, lazy, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
@@ -126,8 +127,8 @@ const Footer = () => (
   </footer>
 );
 
-// --- MAIN APP ---
-const App = () => {
+// --- MAIN APP CONTENT ---
+const AppContent = () => {
   const [booted, setBooted] = useState(false);
   const [dbStatus, setDbStatus] = useState<boolean | null>(null);
 
@@ -150,48 +151,55 @@ const App = () => {
   }
 
   return (
-    <SoundProvider>
-      <BrowserRouter>
-        <div className="min-h-screen flex flex-col relative">
-          <SEOHead title="Home" description="The Retro Circuit - The ultimate retro gaming database." />
-          <Navigation />
-          
-          <main className="flex-grow relative z-10">
-            <div className="max-w-7xl mx-auto">
-               <GlobalSearch />
+    <BrowserRouter>
+      <div className="min-h-screen flex flex-col relative">
+        <SEOHead title="Home" description="The Retro Circuit - The ultimate retro gaming database." />
+        <Navigation />
+        
+        <main className="flex-grow relative z-10">
+          <div className="max-w-7xl mx-auto">
+             <GlobalSearch />
+          </div>
+
+          {!isSupabaseConfigured && (
+            <div className="bg-red-900/80 text-white text-center p-2 font-mono text-xs fixed top-0 w-full z-[100]">
+              ⚠ SUPABASE KEYS MISSING. RUNNING IN OFFLINE/DEMO MODE.
             </div>
+          )}
 
-            {!isSupabaseConfigured && (
-              <div className="bg-red-900/80 text-white text-center p-2 font-mono text-xs fixed top-0 w-full z-[100]">
-                ⚠ SUPABASE KEYS MISSING. RUNNING IN OFFLINE/DEMO MODE.
-              </div>
-            )}
+          <ErrorBoundary>
+            <Suspense fallback={<RetroLoader />}>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/news" element={<NewsSection />} />
+                <Route path="/games" element={<GamesList />} />
+                <Route path="/games/:slug" element={<GameDetails />} />
+                <Route path="/consoles" element={<ConsoleLibrary />} />
+                <Route path="/consoles/:slug" element={<ConsoleSpecs />} />
+                <Route path="/consoles/brand/:name" element={<ManufacturerDetail />} />
+                <Route path="/comparer" element={<ConsoleComparer />} />
+                <Route path="/timeline" element={<Timeline />} />
+                <Route path="/login" element={<AuthSection />} />
+                <Route path="/admin" element={<AdminPortal />} />
+                <Route path="/sitemap.xml" element={<HtmlSitemap />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
+        </main>
+        
+        <Footer />
+      </div>
+      <Analytics />
+    </BrowserRouter>
+  );
+};
 
-            <ErrorBoundary>
-              <Suspense fallback={<RetroLoader />}>
-                <Routes>
-                  <Route path="/" element={<LandingPage />} />
-                  <Route path="/news" element={<NewsSection />} />
-                  <Route path="/games" element={<GamesList />} />
-                  <Route path="/games/:slug" element={<GameDetails />} />
-                  <Route path="/consoles" element={<ConsoleLibrary />} />
-                  <Route path="/consoles/:slug" element={<ConsoleSpecs />} />
-                  <Route path="/consoles/brand/:name" element={<ManufacturerDetail />} />
-                  <Route path="/comparer" element={<ConsoleComparer />} />
-                  <Route path="/timeline" element={<Timeline />} />
-                  <Route path="/login" element={<AuthSection />} />
-                  <Route path="/admin" element={<AdminPortal />} />
-                  <Route path="/sitemap.xml" element={<HtmlSitemap />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Suspense>
-            </ErrorBoundary>
-          </main>
-          
-          <Footer />
-        </div>
-        <Analytics />
-      </BrowserRouter>
+// --- APP ROOT ---
+const App = () => {
+  return (
+    <SoundProvider>
+      <AppContent />
     </SoundProvider>
   );
 };
