@@ -1,4 +1,5 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import * as React from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Analytics } from "@vercel/analytics/react";
@@ -201,9 +202,8 @@ const AppContent = () => {
 
       {/* MOBILE HEADER */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-retro-dark border-b border-retro-grid z-[60] flex items-center justify-between px-4 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
-        <Link to="/" className="font-pixel text-retro-neon text-sm flex items-center gap-2">
-            <span className="text-xl">❖</span>
-            THE RETRO CIRCUIT
+        <Link to="/" className="flex items-center gap-2">
+            <img src="/logo.png" alt="The Retro Circuit" className="h-10 w-auto object-contain drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]" />
         </Link>
         <div className="flex gap-4 items-center">
             <button 
@@ -287,11 +287,9 @@ const AppContent = () => {
 
       {/* SIDEBAR (DESKTOP) */}
       <aside className="hidden md:flex flex-col w-64 bg-retro-dark border-r border-retro-grid fixed top-0 bottom-0 left-0 z-40">
-        <div className="p-6 border-b border-retro-grid text-center">
+        <div className="p-6 border-b border-retro-grid text-center flex justify-center items-center">
             <Link to="/">
-                <h1 className="font-pixel text-retro-neon text-xl leading-relaxed drop-shadow-[2px_2px_0_rgba(255,0,255,0.5)]">
-                    THE RETRO<br/>CIRCUIT
-                </h1>
+                <img src="/logo.png" alt="The Retro Circuit" className="w-full max-w-[180px] h-auto object-contain drop-shadow-[0_0_8px_rgba(0,255,157,0.3)] hover:scale-105 transition-transform duration-300" />
             </Link>
         </div>
         
