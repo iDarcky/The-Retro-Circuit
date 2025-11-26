@@ -1,8 +1,7 @@
-
 import React, { useEffect, useState } from 'react';
 import { retroAuth, addGame, addConsole, addNewsItem } from '../services/geminiService';
 import Button from './Button';
-import { ConsoleDetails, GameOfTheWeekData, NewsItem } from '../types';
+import { ConsoleDetails, GameOfTheWeekData, NewsItem, NewsItemSchema, GameSchema, ConsoleSchema } from '../types';
 
 type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE';
 
@@ -11,6 +10,7 @@ const AdminPortal: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<AdminTab>('NEWS');
     const [message, setMessage] = useState<string | null>(null);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     // News Form State
     const [newsHeadline, setNewsHeadline] = useState('');
@@ -49,20 +49,35 @@ const AdminPortal: React.FC = () => {
 
     const handleSubmitNews = async (e: React.FormEvent) => {
         e.preventDefault();
+        setMessage(null);
+        setErrorMsg(null);
+
+        // Validation
+        const rawData = { headline: newsHeadline, summary: newsSummary, category: newsCategory };
+        const result = NewsItemSchema.safeParse(rawData);
+        
+        if (!result.success) {
+            setErrorMsg(result.error.issues.map(i => i.message).join(', '));
+            return;
+        }
+
         setLoading(true);
-        const item: NewsItem = { headline: newsHeadline, summary: newsSummary, category: newsCategory, date: new Date().toISOString() };
+        const item: NewsItem = { ...result.data, date: new Date().toISOString() };
         const success = await addNewsItem(item);
         if (success) {
             setMessage("NEWS UPLINK SUCCESSFUL");
             setNewsHeadline(''); setNewsSummary('');
-        } else setMessage("TRANSMISSION FAILED");
+        } else setErrorMsg("TRANSMISSION FAILED - CHECK DB CONNECTION");
         setLoading(false);
     };
 
     const handleSubmitGame = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
-        const game: GameOfTheWeekData = {
+        setMessage(null);
+        setErrorMsg(null);
+
+        // Validation
+        const rawData = {
             title: gameTitle,
             slug: gameSlug || gameTitle.toLowerCase().replace(/ /g, '-'),
             developer: gameDev,
@@ -73,39 +88,57 @@ const AdminPortal: React.FC = () => {
             rating: 5,
             image: gameImage
         };
-        const success = await addGame(game);
+
+        const result = GameSchema.safeParse(rawData);
+        if (!result.success) {
+             setErrorMsg(result.error.issues.map(i => `${i.path[0]}: ${i.message}`).join(', '));
+             return;
+        }
+
+        setLoading(true);
+        const success = await addGame(result.data as GameOfTheWeekData);
         if (success) {
             setMessage("GAME ARCHIVED SUCCESSFULLY");
             setGameTitle(''); setGameContent('');
-        } else setMessage("ARCHIVE FAILED");
+        } else setErrorMsg("ARCHIVE FAILED - CHECK DB CONNECTION");
         setLoading(false);
     };
 
     const handleSubmitConsole = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
+        setMessage(null);
+        setErrorMsg(null);
+
         try {
             const specs = JSON.parse(consoleSpecs);
-            const cons: ConsoleDetails = {
-                id: '', // DB generated
+            const rawData = {
+                id: '', 
                 name: consoleName,
                 slug: consoleSlug || consoleName.toLowerCase().replace(/ /g, '-'),
                 manufacturer: consoleManu,
-                release_year: parseInt(consoleYear),
+                release_year: consoleYear, // string from input, z.coerce handles it
                 type: consoleType,
-                generation: parseInt(consoleGen),
+                generation: consoleGen, // string from input, z.coerce handles it
                 intro_text: consoleIntro,
                 image_url: consoleImage,
                 ...specs
             };
-            const success = await addConsole(cons);
+
+            const result = ConsoleSchema.safeParse(rawData);
+            if (!result.success) {
+                setErrorMsg(result.error.issues.map(i => `${i.path[0]}: ${i.message}`).join(', '));
+                return;
+            }
+
+            setLoading(true);
+            const success = await addConsole(result.data as ConsoleDetails);
             if (success) {
                 setMessage("HARDWARE REGISTERED");
                 setConsoleName('');
             }
-            else setMessage("REGISTRATION FAILED");
+            else setErrorMsg("REGISTRATION FAILED - CHECK DB CONNECTION");
         } catch (err) {
-            setMessage("INVALID JSON IN SPECS FIELD");
+            setErrorMsg("INVALID JSON IN SPECS FIELD");
         }
         setLoading(false);
     };
@@ -133,12 +166,18 @@ const AdminPortal: React.FC = () => {
                     &gt; {message}
                 </div>
             )}
+            
+            {errorMsg && (
+                <div className="bg-red-900/30 border border-red-500 text-red-400 p-4 mb-6">
+                    ⚠ ERROR: {errorMsg}
+                </div>
+            )}
 
             <div className="flex gap-4 mb-8">
                 {(['NEWS', 'GAME', 'CONSOLE'] as AdminTab[]).map(tab => (
                     <button
                         key={tab}
-                        onClick={() => { setActiveTab(tab); setMessage(null); }}
+                        onClick={() => { setActiveTab(tab); setMessage(null); setErrorMsg(null); }}
                         className={`px-4 py-2 border-2 ${activeTab === tab ? 'border-retro-neon text-retro-neon bg-retro-neon/10' : 'border-gray-700 text-gray-500'}`}
                     >
                         ADD {tab}

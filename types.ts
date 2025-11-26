@@ -1,3 +1,4 @@
+import { z } from 'zod';
 
 export interface NewsItem {
   headline: string;
@@ -5,6 +6,13 @@ export interface NewsItem {
   summary: string;
   category: 'Hardware' | 'Software' | 'Industry' | 'Rumor';
 }
+
+export const NewsItemSchema = z.object({
+  headline: z.string().min(5, "Headline too short"),
+  date: z.string().optional(),
+  summary: z.string().min(10, "Summary too short"),
+  category: z.enum(['Hardware', 'Software', 'Industry', 'Rumor']),
+});
 
 export interface ComparisonPoint {
   feature: string;
@@ -32,6 +40,19 @@ export interface GameOfTheWeekData {
   image?: string;
   rating?: number;
 }
+
+export const GameSchema = z.object({
+  id: z.string().optional(),
+  slug: z.string().optional(),
+  title: z.string().min(2, "Title is required"),
+  developer: z.string().min(2, "Developer is required"),
+  year: z.string().regex(/^\d{4}$/, "Year must be 4 digits"),
+  genre: z.string().min(2, "Genre is required"),
+  content: z.string().min(20, "Content must be substantial"),
+  whyItMatters: z.string().min(10, "Field is required"),
+  rating: z.number().min(1).max(5).default(5),
+  image: z.string().url("Invalid Image URL").optional().or(z.literal('')),
+});
 
 export interface TimelineEvent {
   year: string;
@@ -101,6 +122,18 @@ export interface ConsoleDetails {
   battery_life?: string;
   connectivity?: string;
 }
+
+export const ConsoleSchema = z.object({
+  name: z.string().min(1, "Name required"),
+  slug: z.string().optional(),
+  manufacturer: z.string().min(1, "Manufacturer required"),
+  release_year: z.coerce.number().int().min(1970).max(2030),
+  type: z.string().min(1),
+  generation: z.coerce.number().int().min(1).max(10),
+  intro_text: z.string().min(10),
+  image_url: z.string().url("Invalid URL").optional().or(z.literal('')),
+  // Dynamic specs are kept flexible
+});
 
 // Search & Filter Types
 export interface SearchResult {
