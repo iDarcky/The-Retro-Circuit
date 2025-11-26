@@ -1,5 +1,14 @@
-import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails, UserCollectionItem, SearchResult, ConsoleFilterState } from "../types";
+import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails, UserCollectionItem, SearchResult, ConsoleFilterState, ManufacturerProfile } from "../types";
 import { supabase } from "./supabaseClient";
+
+// --- FALLBACK DATA ---
+// Kept as a safety net if the DB table is missing or connection fails
+const FALLBACK_MANUFACTURERS: Record<string, ManufacturerProfile> = {
+    'Nintendo': { name: 'Nintendo', founded: '1889', origin: 'Kyoto, Japan', ceo: 'Shuntaro Furukawa', key_franchises: ['Mario', 'Zelda', 'Metroid', 'Pokémon'], description: 'The oldest player in the game. Originally a hanafuda playing card company, Nintendo saved the industry after the 1983 crash.' },
+    'Sega': { name: 'Sega', founded: '1960', origin: 'Tokyo, Japan', ceo: 'Haruki Satomi', key_franchises: ['Sonic', 'Yakuza', 'Virtua Fighter'], description: 'Service Games (SEGA) brought the arcade experience home. Known for their aggressive marketing in the 90s.' },
+    'Sony': { name: 'Sony', founded: '1946', origin: 'Tokyo, Japan', ceo: 'Kenichiro Yoshida', key_franchises: ['Gran Turismo', 'God of War', 'Uncharted'], description: 'The electronics giant that entered the market when a partnership with Nintendo went sour.' },
+    'Atari': { name: 'Atari', founded: '1972', origin: 'California, USA', ceo: 'Wade Rosen', key_franchises: ['Pong', 'Asteroids', 'Centipede'], description: 'The pioneers who started it all. Nolan Bushnell\'s creation brought Pong to the masses and defined the home console market.' }
+};
 
 const parseMemory = (memStr: string | undefined): number => {
     if (!memStr) return 0;
@@ -16,21 +25,6 @@ const parseMemory = (memStr: string | undefined): number => {
         default: return 0;
     }
 };
-
-async function fetchWithFallback<T>(dbPromise: any, fallback: T): Promise<T> {
-    try {
-        const timeoutPromise = new Promise<{ data: any, error: any }>((_, reject) => 
-            setTimeout(() => reject(new Error("Request Timed Out")), 2500)
-        );
-        const { data, error } = await Promise.race([dbPromise, timeoutPromise]);
-        if (error || !data) throw new Error("DB Error or Empty Data");
-        if (Array.isArray(fallback) && Array.isArray(data) && data.length === 0) throw new Error("Empty Array Returned");
-        return data as T;
-    } catch (err) {
-        console.warn("Connection unstable, loading simulation data.");
-        return fallback;
-    }
-}
 
 export const checkDatabaseConnection = async (): Promise<boolean> => {
     try {
@@ -144,6 +138,30 @@ export const fetchManufacturers = async (): Promise<string[]> => {
         return brands as string[];
     } catch (e) {
         return ['Atari', 'Nintendo', 'Sega', 'Sony'];
+    }
+};
+
+export const fetchManufacturerProfile = async (name: string): Promise<ManufacturerProfile> => {
+    try {
+        const { data, error } = await supabase
+            .from('manufacturers')
+            .select('*')
+            .ilike('name', name)
+            .single();
+        
+        if (error || !data) throw error;
+        return data as ManufacturerProfile;
+    } catch (e) {
+        console.warn(`Manufacturer fetch failed for ${name}, utilizing fallback.`);
+        // Return fallback or a generic placeholder
+        return FALLBACK_MANUFACTURERS[name] || {
+            name: name,
+            founded: 'Unknown',
+            origin: 'Unknown',
+            description: 'No dossier found in mainframe.',
+            ceo: 'Unknown',
+            key_franchises: []
+        };
     }
 };
 

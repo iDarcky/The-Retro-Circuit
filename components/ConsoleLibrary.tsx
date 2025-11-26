@@ -1,91 +1,52 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchManufacturers, fetchConsolesFiltered } from '../services/geminiService';
-import { ConsoleDetails, ConsoleFilterState } from '../types';
+import { fetchManufacturers, fetchConsolesFiltered, fetchManufacturerProfile } from '../services/geminiService';
+import { ConsoleDetails, ConsoleFilterState, ManufacturerProfile } from '../types';
 import RetroLoader from './RetroLoader';
 import Button from './Button';
 
-// --- STATIC DATA FOR MANUFACTURER PROFILES ---
-const COMPANY_DATA: Record<string, any> = {
+// --- VISUAL THEME MAPPING (PRESENTATION ONLY) ---
+// Data (text) comes from the database, but styling is mapped here.
+const BRAND_THEMES: Record<string, { color: string, bg: string, hover: string }> = {
     'Nintendo': {
-        founded: '1889',
-        origin: 'Kyoto, Japan',
-        description: 'The oldest player in the game. Originally a hanafuda playing card company, Nintendo saved the industry after the 1983 crash. They prioritize gameplay mechanics, durability ("Nintendium"), and lateral thinking with withered technology over raw graphical power.',
-        ceo: 'Shuntaro Furukawa',
-        key_franchises: ['Mario', 'Zelda', 'Metroid', 'Pokémon'],
         color: 'text-red-500 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]',
         bg: 'bg-red-900/20',
         hover: 'hover:bg-red-900/40'
     },
     'Sega': {
-        founded: '1960',
-        origin: 'Tokyo, Japan',
-        description: 'Service Games (SEGA) brought the arcade experience home. Known for their aggressive marketing in the 90s ("Sega Does What Nintendon\'t") and the "Blast Processing" era. A rebel spirit that pushed technical boundaries before bowing out of hardware in 2001.',
-        ceo: 'Haruki Satomi',
-        key_franchises: ['Sonic', 'Yakuza', 'Virtua Fighter', 'Phantasy Star'],
         color: 'text-blue-500 border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.3)]',
         bg: 'bg-blue-900/20',
         hover: 'hover:bg-blue-900/40'
     },
     'Sony': {
-        founded: '1946',
-        origin: 'Tokyo, Japan',
-        description: 'The electronics giant that entered the market when a partnership with Nintendo went sour. The PlayStation brand made gaming "cool" for adults, leveraging CD-ROM technology to revolutionize 3D gaming and cinematic storytelling.',
-        ceo: 'Kenichiro Yoshida',
-        key_franchises: ['Gran Turismo', 'God of War', 'Uncharted', 'Ratchet & Clank'],
         color: 'text-yellow-400 border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.3)]',
         bg: 'bg-yellow-900/20',
         hover: 'hover:bg-yellow-900/40'
     },
     'Atari': {
-        founded: '1972',
-        origin: 'California, USA',
-        description: 'The pioneers who started it all. Nolan Bushnell\'s creation brought Pong to the masses and defined the home console market with the 2600. A cautionary tale of boom and bust, but an eternal icon of retro culture.',
-        ceo: 'Wade Rosen',
-        key_franchises: ['Pong', 'Asteroids', 'Centipede', 'RollerCoaster Tycoon'],
         color: 'text-orange-500 border-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.3)]',
         bg: 'bg-orange-900/20',
         hover: 'hover:bg-orange-900/40'
     },
     'Microsoft': {
-        founded: '1975',
-        origin: 'Redmond, USA',
-        description: 'The software behemoth that brought PC architecture to the living room. The Xbox introduced a robust online infrastructure (Xbox Live) that became the industry standard for multiplayer gaming and digital distribution.',
-        ceo: 'Satya Nadella',
-        key_franchises: ['Halo', 'Gears of War', 'Forza', 'Fable'],
         color: 'text-green-500 border-green-500 shadow-[0_0_20px_rgba(34,197,94,0.3)]',
         bg: 'bg-green-900/20',
         hover: 'hover:bg-green-900/40'
     },
     'NEC': {
-        founded: '1899',
-        origin: 'Tokyo, Japan',
-        description: 'An IT giant that partnered with Hudson Soft to create the PC Engine (TurboGrafx-16). It dominated the Japanese market for a time with its compact design and high-quality arcade ports, bridging the 8-bit and 16-bit eras.',
-        ceo: 'Takayuki Morita',
-        key_franchises: ['Bomberman', 'Bonk', 'Adventure Island', 'Ys'],
         color: 'text-purple-400 border-purple-400 shadow-[0_0_20px_rgba(192,132,252,0.3)]',
         bg: 'bg-purple-900/20',
         hover: 'hover:bg-purple-900/40'
     },
     'SNK': {
-        founded: '1978',
-        origin: 'Osaka, Japan',
-        description: 'Shin Nihon Kikaku (New Japan Project). They brought the exact arcade hardware into the home with the Neo Geo. "The Future is Now." Known for expensive, elite hardware and technically superior 2D fighting games.',
-        ceo: 'Kenji Matsubara',
-        key_franchises: ['King of Fighters', 'Metal Slug', 'Fatal Fury', 'Samurai Shodown'],
         color: 'text-teal-400 border-teal-400 shadow-[0_0_20px_rgba(45,212,191,0.3)]',
         bg: 'bg-teal-900/20',
         hover: 'hover:bg-teal-900/40'
     }
 };
 
-const DEFAULT_COMPANY = {
-    founded: 'Unknown',
-    origin: 'Unknown',
-    description: 'A legendary hardware manufacturer from the golden age of gaming. No detailed classified files found in current archive.',
-    ceo: 'Unknown',
-    key_franchises: [],
+const DEFAULT_THEME = {
     color: 'text-retro-neon border-retro-neon shadow-[0_0_20px_rgba(0,255,157,0.3)]',
     bg: 'bg-retro-grid/20',
     hover: 'hover:bg-retro-grid/40'
@@ -97,6 +58,9 @@ const ConsoleLibrary: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'BRAND' | 'PROFILE' | 'LIST'>('BRAND');
   
+  // Profile Data
+  const [activeProfile, setActiveProfile] = useState<ManufacturerProfile | null>(null);
+
   // Pagination State for List View
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -145,9 +109,15 @@ const ConsoleLibrary: React.FC = () => {
       setPage(1);
   }, [filters]);
 
-  const handleBrandSelect = (brand: string) => {
+  const handleBrandSelect = async (brand: string) => {
+      setLoading(true);
       setFilters(prev => ({ ...prev, manufacturer: brand }));
+      
+      const profile = await fetchManufacturerProfile(brand);
+      setActiveProfile(profile);
+
       setViewMode('PROFILE');
+      setLoading(false);
   };
 
   const handleFilterChange = (key: keyof ConsoleFilterState, value: any) => {
@@ -165,25 +135,11 @@ const ConsoleLibrary: React.FC = () => {
       });
   };
 
-  const getBrandColor = (brand: string) => {
-    switch(brand.toLowerCase()) {
-        case 'nintendo': return 'text-red-500 border-red-500 hover:bg-red-500/10';
-        case 'sega': return 'text-blue-500 border-blue-500 hover:bg-blue-500/10';
-        case 'sony': return 'text-yellow-400 border-yellow-400 hover:bg-yellow-400/10';
-        case 'atari': return 'text-orange-500 border-orange-500 hover:bg-orange-500/10';
-        case 'microsoft': return 'text-green-500 border-green-500 hover:bg-green-500/10';
-        case 'nec': return 'text-purple-400 border-purple-400 hover:bg-purple-400/10';
-        case 'snk': return 'text-teal-400 border-teal-400 hover:bg-teal-400/10';
-        default: return 'text-retro-neon border-retro-neon hover:bg-retro-neon/10';
-    }
+  const getBrandTheme = (brand: string) => {
+      return BRAND_THEMES[brand] || DEFAULT_THEME;
   };
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
-
-  // Helper to get active company data
-  const activeCompany = filters.manufacturer 
-    ? (COMPANY_DATA[filters.manufacturer] || DEFAULT_COMPANY)
-    : DEFAULT_COMPANY;
 
   return (
     <div className="w-full max-w-7xl mx-auto p-4">
@@ -221,19 +177,22 @@ const ConsoleLibrary: React.FC = () => {
       {viewMode === 'BRAND' && (
           loading ? <RetroLoader /> : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {brands.map((brand) => (
-                    <button 
-                        key={brand}
-                        onClick={() => handleBrandSelect(brand)}
-                        className={`group border-4 bg-retro-dark p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${getBrandColor(brand)}`}
-                    >
-                        <div className="w-20 h-20 border-2 border-current rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <span className="font-pixel text-2xl">{brand[0]}</span>
-                        </div>
-                        <span className="font-pixel text-xl tracking-widest uppercase">{brand}</span>
-                        <span className="font-mono text-xs opacity-75">ACCESS FOLDER &gt;</span>
-                    </button>
-                ))}
+                {brands.map((brand) => {
+                    const theme = getBrandTheme(brand);
+                    return (
+                        <button 
+                            key={brand}
+                            onClick={() => handleBrandSelect(brand)}
+                            className={`group border-4 bg-retro-dark p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${theme.color} ${theme.hover}`}
+                        >
+                            <div className="w-20 h-20 border-2 border-current rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span className="font-pixel text-2xl">{brand[0]}</span>
+                            </div>
+                            <span className="font-pixel text-xl tracking-widest uppercase">{brand}</span>
+                            <span className="font-mono text-xs opacity-75">ACCESS FOLDER &gt;</span>
+                        </button>
+                    );
+                })}
                  <button 
                     onClick={() => setViewMode('LIST')}
                     className="group border-4 border-dashed border-gray-600 bg-retro-dark p-8 flex flex-col items-center justify-center gap-4 hover:border-retro-pink hover:text-retro-pink transition-colors text-gray-500"
@@ -246,57 +205,64 @@ const ConsoleLibrary: React.FC = () => {
       )}
 
       {/* VIEW: COMPANY PROFILE */}
-      {viewMode === 'PROFILE' && filters.manufacturer && (
+      {viewMode === 'PROFILE' && activeProfile && (
           <div className="animate-[fadeIn_0.5s_ease-in-out]">
              {/* Profile Header */}
-             <div className={`border-l-8 ${activeCompany.color} bg-retro-dark p-8 mb-8 shadow-lg`}>
-                 <div className="flex flex-col md:flex-row justify-between items-end border-b border-gray-800 pb-6 mb-6">
-                    <div>
-                        <div className={`font-mono text-xs border inline-block px-2 py-1 mb-2 ${activeCompany.color}`}>CONFIDENTIAL</div>
-                        <h1 className={`text-5xl md:text-7xl font-pixel ${activeCompany.color.split(' ')[0]} opacity-90 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]`}>
-                            {filters.manufacturer}
-                        </h1>
-                    </div>
-                    <div className="text-right mt-4 md:mt-0">
-                         <div className="font-mono text-gray-500 text-xs">FOUNDED</div>
-                         <div className="font-pixel text-white text-lg">{activeCompany.founded}</div>
-                         <div className="font-mono text-gray-500 text-xs mt-2">ORIGIN</div>
-                         <div className="font-pixel text-white text-lg">{activeCompany.origin}</div>
-                    </div>
-                 </div>
+             {(() => {
+                 const theme = getBrandTheme(activeProfile.name);
+                 const themeColorClass = theme.color.split(' ')[0]; // Extract just the text color class for headings
 
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                     <div className="md:col-span-2">
-                         <h3 className={`font-pixel text-lg mb-4 ${activeCompany.color.split(' ')[0]}`}>CORPORATE HISTORY</h3>
-                         <p className="font-mono text-gray-300 text-lg leading-relaxed border-l-2 border-gray-700 pl-4">
-                             {activeCompany.description}
-                         </p>
-                         
-                         <div className="mt-8">
-                             <Button onClick={() => setViewMode('LIST')} className={`w-full md:w-auto ${activeCompany.bg} ${activeCompany.hover} border-current`}>
-                                 INITIALIZE HARDWARE DATABASE &gt;
-                             </Button>
-                         </div>
-                     </div>
-                     
-                     <div className={`bg-black/30 p-6 border border-gray-800`}>
-                         <div className="mb-6">
-                             <h4 className="font-pixel text-xs text-gray-500 mb-2">KEY FRANCHISES</h4>
-                             <ul className="space-y-2">
-                                 {activeCompany.key_franchises.map((f: string) => (
-                                     <li key={f} className={`font-mono text-sm border-b border-gray-800 pb-1 ${activeCompany.color.split(' ')[0]}`}>
-                                         {f}
-                                     </li>
-                                 ))}
-                             </ul>
-                         </div>
-                         <div>
-                             <h4 className="font-pixel text-xs text-gray-500 mb-2">CURRENT CEO</h4>
-                             <div className="font-mono text-white text-sm">{activeCompany.ceo}</div>
-                         </div>
-                     </div>
-                 </div>
-             </div>
+                 return (
+                    <div className={`border-l-8 ${theme.color} bg-retro-dark p-8 mb-8 shadow-lg`}>
+                        <div className="flex flex-col md:flex-row justify-between items-end border-b border-gray-800 pb-6 mb-6">
+                            <div>
+                                <div className={`font-mono text-xs border inline-block px-2 py-1 mb-2 ${theme.color}`}>CONFIDENTIAL</div>
+                                <h1 className={`text-5xl md:text-7xl font-pixel ${themeColorClass} opacity-90 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]`}>
+                                    {activeProfile.name}
+                                </h1>
+                            </div>
+                            <div className="text-right mt-4 md:mt-0">
+                                <div className="font-mono text-gray-500 text-xs">FOUNDED</div>
+                                <div className="font-pixel text-white text-lg">{activeProfile.founded}</div>
+                                <div className="font-mono text-gray-500 text-xs mt-2">ORIGIN</div>
+                                <div className="font-pixel text-white text-lg">{activeProfile.origin}</div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div className="md:col-span-2">
+                                <h3 className={`font-pixel text-lg mb-4 ${themeColorClass}`}>CORPORATE HISTORY</h3>
+                                <p className="font-mono text-gray-300 text-lg leading-relaxed border-l-2 border-gray-700 pl-4">
+                                    {activeProfile.description}
+                                </p>
+                                
+                                <div className="mt-8">
+                                    <Button onClick={() => setViewMode('LIST')} className={`w-full md:w-auto ${theme.bg} ${theme.hover} border-current`}>
+                                        INITIALIZE HARDWARE DATABASE &gt;
+                                    </Button>
+                                </div>
+                            </div>
+                            
+                            <div className={`bg-black/30 p-6 border border-gray-800`}>
+                                <div className="mb-6">
+                                    <h4 className="font-pixel text-xs text-gray-500 mb-2">KEY FRANCHISES</h4>
+                                    <ul className="space-y-2">
+                                        {activeProfile.key_franchises.map((f: string) => (
+                                            <li key={f} className={`font-mono text-sm border-b border-gray-800 pb-1 ${themeColorClass}`}>
+                                                {f}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 className="font-pixel text-xs text-gray-500 mb-2">CURRENT CEO</h4>
+                                    <div className="font-mono text-white text-sm">{activeProfile.ceo}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 );
+             })()}
           </div>
       )}
 
@@ -317,7 +283,7 @@ const ConsoleLibrary: React.FC = () => {
                                   {filters.manufacturer}
                                   <button onClick={() => { setFilters(prev => ({...prev, manufacturer: null})); setViewMode('BRAND'); }} className="text-red-500 hover:text-white">✕</button>
                               </div>
-                              <button onClick={() => setViewMode('PROFILE')} className="text-[10px] font-mono text-retro-blue hover:text-white mt-1">
+                              <button onClick={() => handleBrandSelect(filters.manufacturer!)} className="text-[10px] font-mono text-retro-blue hover:text-white mt-1">
                                   [ VIEW CORP DATA ]
                               </button>
                           </div>

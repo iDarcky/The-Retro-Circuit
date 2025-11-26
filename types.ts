@@ -50,6 +50,16 @@ export interface UserCollectionItem {
   item_image?: string;
 }
 
+export interface ManufacturerProfile {
+  id?: string;
+  name: string;
+  founded: string;
+  origin: string;
+  description: string;
+  ceo: string;
+  key_franchises: string[];
+}
+
 // Phase 2: GSMArena-style Deep Specs
 export interface ConsoleDetails {
   id: string;
