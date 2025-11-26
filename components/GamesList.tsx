@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { fetchGamesPaginated } from '../services/geminiService';
 import { GameOfTheWeekData } from '../types';
 import Button from './Button';
@@ -9,32 +8,45 @@ import { Link } from 'react-router-dom';
 const GamesList: React.FC = () => {
   const [games, setGames] = useState<GameOfTheWeekData[]>([]);
   const [loading, setLoading] = useState(true);
-  
-  // Pagination State
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const ITEMS_PER_PAGE = 9;
+  const [hasMore, setHasMore] = useState(true);
+  const observerTarget = useRef(null);
+  
+  const ITEMS_PER_PAGE = 12;
 
+  const loadGames = useCallback(async (pageNum: number) => {
+    setLoading(true);
+    const { data, count } = await fetchGamesPaginated(pageNum, ITEMS_PER_PAGE);
+    
+    if (pageNum === 1) {
+        setGames(data);
+    } else {
+        setGames(prev => [...prev, ...data]);
+    }
+    
+    setHasMore(games.length + data.length < count);
+    setLoading(false);
+  }, []);
+
+  // Initial Load
   useEffect(() => {
-    const loadGames = async () => {
-      setLoading(true);
-      const { data, count } = await fetchGamesPaginated(page, ITEMS_PER_PAGE);
-      setGames(data);
-      setTotalPages(Math.ceil(count / ITEMS_PER_PAGE));
-      setLoading(false);
-      // Scroll to top on page change
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-    loadGames();
-  }, [page]);
+    loadGames(1);
+  }, []);
 
-  const handlePrev = () => {
-    if (page > 1) setPage(p => p - 1);
-  };
+  // Infinite Scroll Trigger
+  useEffect(() => {
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && !loading && hasMore) {
+        const nextPage = page + 1;
+        setPage(nextPage);
+        loadGames(nextPage);
+      }
+    }, { threshold: 0.5 });
 
-  const handleNext = () => {
-    if (page < totalPages) setPage(p => p + 1);
-  };
+    if (observerTarget.current) observer.observe(observerTarget.current);
+    
+    return () => observer.disconnect();
+  }, [loading, hasMore, page]);
 
   return (
     <div className="w-full max-w-7xl mx-auto p-4">
@@ -45,95 +57,76 @@ const GamesList: React.FC = () => {
         <p className="font-mono text-gray-400">Archived reviews and analysis.</p>
       </div>
 
-      {loading ? (
-        <RetroLoader />
-      ) : games.length === 0 ? (
+      {games.length === 0 && !loading ? (
         <div className="text-center p-12 border-2 border-dashed border-gray-700 font-mono text-gray-500">
            NO GAMES FOUND IN DATABASE.
         </div>
       ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {games.map((game, idx) => (
-              <Link 
-                to={`/games/${game.slug || game.id}`} 
-                key={game.id || idx} 
-                className="group border-4 border-retro-grid bg-retro-dark relative overflow-hidden hover:border-retro-pink transition-all duration-300 block"
-              >
-                
-                {/* Header / Title */}
-                <div className="bg-retro-grid/30 p-4 border-b-2 border-retro-grid group-hover:bg-retro-pink/10 transition-colors">
-                  <div className="flex justify-between items-start mb-2">
-                      <span className="font-mono text-[10px] text-retro-dark bg-retro-neon px-2 py-0.5 font-bold">
-                          {game.year}
-                      </span>
-                      <span className="font-mono text-[10px] text-retro-blue border border-retro-blue px-2 py-0.5">
-                          {game.genre.toUpperCase()}
-                      </span>
-                  </div>
-                  <h3 className="font-pixel text-lg text-white leading-tight group-hover:text-retro-pink transition-colors">
-                      {game.title}
-                  </h3>
-                  <p className="font-mono text-xs text-gray-500 mt-1">{game.developer.toUpperCase()}</p>
-                </div>
-
-                {/* Content */}
-                <div className="p-6">
-                   {/* Visual Placeholder if no image */}
-                   <div className="h-32 mb-4 bg-black/50 border border-retro-grid/50 flex items-center justify-center relative overflow-hidden">
-                       {game.image ? (
-                          <img src={game.image} alt={game.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
-                       ) : (
-                          <div className="text-center opacity-30">
-                              <div className="font-pixel text-2xl text-retro-grid">INSERT</div>
-                              <div className="font-pixel text-2xl text-retro-grid">GAME</div>
-                          </div>
-                       )}
-                       <div className="absolute inset-0 bg-gradient-to-t from-retro-dark to-transparent"></div>
-                   </div>
-
-                   <p className="font-mono text-gray-400 text-sm line-clamp-4 leading-relaxed">
-                       {game.content}
-                   </p>
-
-                   <div className="mt-4 pt-4 border-t border-retro-grid/50">
-                       <span className="font-pixel text-[10px] text-retro-blue block mb-2">WHY IT MATTERS</span>
-                       <p className="font-mono text-xs text-gray-300 leading-snug line-clamp-2">
-                           {game.whyItMatters}
-                       </p>
-                   </div>
-                </div>
-
-                {/* Decorative corners */}
-                <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-retro-grid group-hover:border-retro-pink transition-colors"></div>
-              </Link>
-            ))}
-          </div>
-
-          {/* Pagination Controls */}
-          <div className="flex justify-center items-center gap-6 font-mono text-sm border-t border-retro-grid pt-8">
-              <button 
-                onClick={handlePrev} 
-                disabled={page === 1}
-                className={`flex items-center gap-2 px-4 py-2 border border-retro-grid transition-colors ${page === 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-retro-grid/50 hover:text-retro-neon'}`}
-              >
-                  <span>&lt; PREV</span>
-              </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+          {games.map((game, idx) => (
+            <Link 
+              to={`/games/${game.slug || game.id}`} 
+              key={`${game.id}-${idx}`} 
+              className="group border-4 border-retro-grid bg-retro-dark relative overflow-hidden hover:border-retro-pink transition-all duration-300 block"
+            >
               
-              <div className="text-gray-400">
-                  PAGE <span className="text-retro-neon">{page}</span> OF {totalPages}
+              {/* Header / Title */}
+              <div className="bg-retro-grid/30 p-4 border-b-2 border-retro-grid group-hover:bg-retro-pink/10 transition-colors">
+                <div className="flex justify-between items-start mb-2">
+                    <span className="font-mono text-[10px] text-retro-dark bg-retro-neon px-2 py-0.5 font-bold">
+                        {game.year}
+                    </span>
+                    <span className="font-mono text-[10px] text-retro-blue border border-retro-blue px-2 py-0.5">
+                        {game.genre.toUpperCase()}
+                    </span>
+                </div>
+                <h3 className="font-pixel text-lg text-white leading-tight group-hover:text-retro-pink transition-colors">
+                    {game.title}
+                </h3>
+                <p className="font-mono text-xs text-gray-500 mt-1">{game.developer.toUpperCase()}</p>
               </div>
-              
-              <button 
-                onClick={handleNext} 
-                disabled={page === totalPages}
-                className={`flex items-center gap-2 px-4 py-2 border border-retro-grid transition-colors ${page === totalPages ? 'opacity-30 cursor-not-allowed' : 'hover:bg-retro-grid/50 hover:text-retro-neon'}`}
-              >
-                  <span>NEXT &gt;</span>
-              </button>
-          </div>
-        </>
+
+              {/* Content */}
+              <div className="p-6">
+                 {/* Visual Placeholder if no image */}
+                 <div className="h-32 mb-4 bg-black/50 border border-retro-grid/50 flex items-center justify-center relative overflow-hidden">
+                     {game.image ? (
+                        <img src={game.image} alt={game.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                     ) : (
+                        <div className="text-center opacity-30">
+                            <div className="font-pixel text-2xl text-retro-grid">INSERT</div>
+                            <div className="font-pixel text-2xl text-retro-grid">GAME</div>
+                        </div>
+                     )}
+                     <div className="absolute inset-0 bg-gradient-to-t from-retro-dark to-transparent"></div>
+                 </div>
+
+                 <p className="font-mono text-gray-400 text-sm line-clamp-4 leading-relaxed">
+                     {game.content}
+                 </p>
+
+                 <div className="mt-4 pt-4 border-t border-retro-grid/50">
+                     <span className="font-pixel text-[10px] text-retro-blue block mb-2">WHY IT MATTERS</span>
+                     <p className="font-mono text-xs text-gray-300 leading-snug line-clamp-2">
+                         {game.whyItMatters}
+                     </p>
+                 </div>
+              </div>
+
+              {/* Decorative corners */}
+              <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-retro-grid group-hover:border-retro-pink transition-colors"></div>
+            </Link>
+          ))}
+        </div>
       )}
+      
+      {/* Loading & Infinite Scroll Target */}
+      <div ref={observerTarget} className="py-8 flex justify-center">
+          {loading && <RetroLoader />}
+          {!loading && !hasMore && games.length > 0 && (
+             <div className="font-mono text-gray-600 text-xs">END OF DATABASE</div>
+          )}
+      </div>
     </div>
   );
 };

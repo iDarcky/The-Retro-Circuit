@@ -1,16 +1,21 @@
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchAllConsoles, fetchConsolesFiltered } from '../services/geminiService';
+import { fetchManufacturers, fetchConsolesFiltered } from '../services/geminiService';
 import { ConsoleDetails, ConsoleFilterState } from '../types';
 import RetroLoader from './RetroLoader';
 import Button from './Button';
 
 const ConsoleLibrary: React.FC = () => {
   const [consoles, setConsoles] = useState<ConsoleDetails[]>([]);
+  const [brands, setBrands] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'BRAND' | 'LIST'>('BRAND');
   
+  // Pagination State for List View
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const observerTarget = useRef(null);
+
   // Filter State
   const [filters, setFilters] = useState<ConsoleFilterState>({
       minYear: 1970,
@@ -20,31 +25,56 @@ const ConsoleLibrary: React.FC = () => {
       manufacturer: null
   });
 
-  // Initial Load (Brand View)
+  // Initial Load (Brands)
   useEffect(() => {
-    loadAll();
+    const init = async () => {
+        setLoading(true);
+        const uniqueBrands = await fetchManufacturers();
+        setBrands(uniqueBrands);
+        setLoading(false);
+    };
+    init();
   }, []);
 
-  // Filter Load (List View)
+  const loadConsoles = useCallback(async (pageNum: number, isNewFilter: boolean) => {
+      if (isNewFilter) setLoading(true);
+      
+      const { data, count } = await fetchConsolesFiltered(filters, pageNum, 12);
+      
+      if (isNewFilter) {
+          setConsoles(data);
+      } else {
+          setConsoles(prev => [...prev, ...data]);
+      }
+      
+      setHasMore((isNewFilter ? 0 : consoles.length) + data.length < count);
+      setLoading(false);
+  }, [filters]);
+
+  // Handle Filter Changes
   useEffect(() => {
       if (viewMode === 'LIST') {
-          applyFilters();
+          setPage(1);
+          setHasMore(true);
+          loadConsoles(1, true);
       }
   }, [filters, viewMode]);
 
-  const loadAll = async () => {
-      setLoading(true);
-      const data = await fetchAllConsoles();
-      setConsoles(data);
-      setLoading(false);
-  };
+  // Infinite Scroll Observer
+  useEffect(() => {
+    if (viewMode !== 'LIST') return;
 
-  const applyFilters = async () => {
-      setLoading(true);
-      const data = await fetchConsolesFiltered(filters);
-      setConsoles(data);
-      setLoading(false);
-  };
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && !loading && hasMore) {
+        const nextPage = page + 1;
+        setPage(nextPage);
+        loadConsoles(nextPage, false);
+      }
+    }, { threshold: 0.5 });
+
+    if (observerTarget.current) observer.observe(observerTarget.current);
+    return () => observer.disconnect();
+  }, [loading, hasMore, page, viewMode, loadConsoles]);
 
   const handleBrandSelect = (brand: string) => {
       setFilters(prev => ({ ...prev, manufacturer: brand }));
@@ -66,9 +96,6 @@ const ConsoleLibrary: React.FC = () => {
       });
   };
 
-  // Get unique brands for the main menu - explicitly typed as string array for robustness
-  const uniqueBrands: string[] = (Array.from(new Set(consoles.map(c => c.manufacturer))) as string[]).sort();
-
   const getBrandColor = (brand: string) => {
     switch(brand.toLowerCase()) {
         case 'nintendo': return 'text-red-500 border-red-500 hover:bg-red-500/10';
@@ -89,7 +116,7 @@ const ConsoleLibrary: React.FC = () => {
         </h2>
         <div className="flex justify-center gap-4">
             <button 
-                onClick={() => { setViewMode('BRAND'); setFilters({ minYear: 1970, maxYear: 2005, generations: [], types: [], manufacturer: null }); loadAll(); }}
+                onClick={() => { setViewMode('BRAND'); setFilters({ minYear: 1970, maxYear: 2005, generations: [], types: [], manufacturer: null }); }}
                 className={`font-mono text-xs px-3 py-1 ${viewMode === 'BRAND' ? 'bg-retro-neon text-black' : 'text-gray-500 hover:text-white'}`}
             >
                 DIRECTORY MODE
@@ -107,7 +134,7 @@ const ConsoleLibrary: React.FC = () => {
       {viewMode === 'BRAND' && (
           loading ? <RetroLoader /> : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {uniqueBrands.map((brand) => (
+                {brands.map((brand) => (
                     <button 
                         key={brand}
                         onClick={() => handleBrandSelect(brand)}
@@ -208,40 +235,43 @@ const ConsoleLibrary: React.FC = () => {
 
               {/* RESULTS GRID */}
               <div className="flex-1">
-                  {loading ? <RetroLoader /> : (
-                      consoles.length === 0 ? (
-                          <div className="text-center p-12 border-2 border-dashed border-gray-700 font-mono text-gray-500">
-                              NO HARDWARE MATCHES FILTERS.
-                          </div>
-                      ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {consoles.map((console) => (
-                                <Link 
-                                    to={`/consoles/${console.slug}`} 
-                                    key={console.id}
-                                    className="group block border border-retro-grid bg-retro-dark relative overflow-hidden hover:border-retro-blue transition-all"
-                                >
-                                    <div className="h-32 bg-black/40 flex items-center justify-center p-4 relative">
-                                        {console.image_url ? (
-                                            <img src={console.image_url} className="max-h-full object-contain" />
-                                        ) : (
-                                            <span className="font-pixel text-gray-700 text-4xl">?</span>
-                                        )}
+                  {consoles.length === 0 && !loading ? (
+                      <div className="text-center p-12 border-2 border-dashed border-gray-700 font-mono text-gray-500">
+                          NO HARDWARE MATCHES FILTERS.
+                      </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {consoles.map((console, idx) => (
+                            <Link 
+                                to={`/consoles/${console.slug}`} 
+                                key={`${console.id}-${idx}`}
+                                className="group block border border-retro-grid bg-retro-dark relative overflow-hidden hover:border-retro-blue transition-all"
+                            >
+                                <div className="h-32 bg-black/40 flex items-center justify-center p-4 relative">
+                                    {console.image_url ? (
+                                        <img src={console.image_url} className="max-h-full object-contain" />
+                                    ) : (
+                                        <span className="font-pixel text-gray-700 text-4xl">?</span>
+                                    )}
+                                </div>
+                                <div className="p-3 border-t border-retro-grid">
+                                    <div className="flex justify-between text-[10px] font-mono text-gray-500 mb-1">
+                                        <span>{console.release_year}</span>
+                                        <span>GEN {console.generation}</span>
                                     </div>
-                                    <div className="p-3 border-t border-retro-grid">
-                                        <div className="flex justify-between text-[10px] font-mono text-gray-500 mb-1">
-                                            <span>{console.release_year}</span>
-                                            <span>GEN {console.generation}</span>
-                                        </div>
-                                        <h3 className="font-pixel text-xs text-white group-hover:text-retro-neon truncate">
-                                            {console.name}
-                                        </h3>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                      )
+                                    <h3 className="font-pixel text-xs text-white group-hover:text-retro-neon truncate">
+                                        {console.name}
+                                    </h3>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
                   )}
+                  
+                   {/* Infinite Scroll Loader */}
+                   <div ref={observerTarget} className="py-6 flex justify-center w-full">
+                       {loading && <RetroLoader />}
+                   </div>
               </div>
           </div>
       )}

@@ -1,4 +1,3 @@
-
 import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails, UserCollectionItem, SearchResult, ConsoleFilterState } from "../types";
 import { supabase } from "./supabaseClient";
 
@@ -136,9 +135,21 @@ export const searchDatabase = async (query: string): Promise<SearchResult[]> => 
     }
 };
 
-export const fetchConsolesFiltered = async (filters: ConsoleFilterState): Promise<ConsoleDetails[]> => {
+export const fetchManufacturers = async (): Promise<string[]> => {
     try {
-        let query = supabase.from('consoles').select('*').order('release_year', { ascending: true });
+        const { data, error } = await supabase.from('consoles').select('manufacturer');
+        if (error) throw error;
+        // Use Set to get unique values in client since Supabase doesn't support distinct easily on select without RPC
+        const brands = Array.from(new Set((data || []).map((d: any) => d.manufacturer))).sort();
+        return brands as string[];
+    } catch (e) {
+        return ['Atari', 'Nintendo', 'Sega', 'Sony'];
+    }
+};
+
+export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: number = 1, limit: number = 20): Promise<{ data: ConsoleDetails[], count: number }> => {
+    try {
+        let query = supabase.from('consoles').select('*', { count: 'exact' }).order('release_year', { ascending: true });
 
         // Apply Filters
         if (filters.manufacturer) {
@@ -161,15 +172,65 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState): Promis
             query = query.in('type', filters.types);
         }
 
-        const { data, error } = await query;
+        const from = (page - 1) * limit;
+        const to = from + limit - 1;
+
+        const { data, count, error } = await query.range(from, to);
         if (error) throw error;
-        return data || [];
+        return { data: data || [], count: count || 0 };
 
     } catch (e) {
         console.error("Filter fetch failed", e);
-        return [];
+        return { data: [], count: 0 };
     }
 };
+
+// Deprecated: Use fetchConsolesFiltered
+export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
+    const { data } = await fetchConsolesFiltered({ 
+        minYear: 1970, maxYear: 2005, generations: [], types: [], manufacturer: null 
+    }, 1, 100);
+    return data;
+};
+
+// Optimized list fetch for dropdowns
+export const fetchConsoleList = async (): Promise<{name: string, slug: string}[]> => {
+    const { data } = await supabase.from('consoles').select('name, slug').order('name');
+    return data || [];
+};
+
+export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails | null> => {
+    try {
+        const { data, error } = await supabase.from('consoles').select('*').eq('slug', slug).single();
+        if (error) throw error;
+        return data as ConsoleDetails;
+    } catch (e) {
+        return null;
+    }
+};
+
+export const compareConsoles = async (slugA: string, slugB: string): Promise<ComparisonResult | null> => {
+    try {
+        const { data: cA } = await supabase.from('consoles').select('*').eq('slug', slugA).single();
+        const { data: cB } = await supabase.from('consoles').select('*').eq('slug', slugB).single();
+        
+        if(!cA || !cB) return null;
+
+        // Basic comparison logic since we don't have the AI model here
+        return {
+            consoleA: cA.name,
+            consoleB: cB.name,
+            summary: `Comparison between ${cA.name} (${cA.release_year}) and ${cB.name} (${cB.release_year}).`,
+            points: [
+                { feature: 'Year', consoleAValue: cA.release_year.toString(), consoleBValue: cB.release_year.toString(), winner: cA.release_year < cB.release_year ? 'A' : 'B' },
+                { feature: 'Gen', consoleAValue: `Gen ${cA.generation}`, consoleBValue: `Gen ${cB.generation}`, winner: cA.generation > cB.generation ? 'A' : 'B' },
+                { feature: 'Media', consoleAValue: cA.media || 'N/A', consoleBValue: cB.media || 'N/A', winner: 'Tie' }
+            ]
+        }
+    } catch(e) {
+        return null;
+    }
+}
 
 // --- DATA ENTRY (ADMIN) ---
 
@@ -250,11 +311,24 @@ export const removeFromCollection = async (itemId: string): Promise<boolean> => 
     }
 };
 
-export const fetchRetroNews = async (): Promise<NewsItem[]> => {
-    return fetchWithFallback(
-        supabase.from('news').select('*').order('created_at', { ascending: false }),
-        []
-    );
+export const fetchRetroNews = async (page: number = 1, limit: number = 20): Promise<{ data: NewsItem[], count: number }> => {
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+    
+    try {
+        const { data, count, error } = await supabase
+            .from('news')
+            .select('*', { count: 'exact' })
+            .order('created_at', { ascending: false })
+            .range(from, to);
+        
+        if (error) throw error;
+        
+        return { data: data as NewsItem[], count: count || 0 };
+    } catch (e) {
+        // Fallback or empty
+        return { data: [], count: 0 };
+    }
 };
 
 export const addNewsItem = async (item: NewsItem): Promise<boolean> => {
@@ -308,7 +382,6 @@ export const fetchGamesPaginated = async (page: number = 1, limit: number = 9): 
     }
 };
 
-// Deprecated in favor of fetchGamesPaginated, kept for backward compatibility if needed
 export const fetchAllGames = async (): Promise<GameOfTheWeekData[]> => {
     try {
         const { data } = await fetchGamesPaginated(1, 100);
@@ -363,75 +436,11 @@ export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData | null> =>
 };
 
 export const fetchTimelineData = async (): Promise<TimelineEvent[]> => {
-    return fetchWithFallback(
-        supabase.from('timeline').select('*').order('year', { ascending: true }),
-        []
-    );
-};
-
-export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
-    return fetchWithFallback(
-        supabase.from('consoles').select('*').order('release_year', { ascending: true }),
-        []
-    );
-};
-
-export const fetchConsoleList = async (): Promise<{name: string, slug: string}[]> => {
     try {
-        const { data, error } = await supabase.from('consoles').select('name, slug').order('name');
+        const { data, error } = await supabase.from('timeline').select('*').order('year', { ascending: true });
         if (error) throw error;
         return data || [];
     } catch (e) {
         return [];
     }
-}
-
-export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails | null> => {
-    try {
-        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject("Timeout"), 1500));
-        const dbPromise = supabase.from('consoles').select('*').eq('slug', slug).single();
-        const { data, error } = await Promise.race([dbPromise, timeoutPromise]) as any;
-        if (error || !data) throw new Error("Console Not Found");
-        return (data as ConsoleDetails);
-    } catch (err) {
-        return null;
-    }
-};
-
-export const compareConsoles = async (slugA: string, slugB: string): Promise<ComparisonResult | null> => {
-  try {
-    const fetchC1 = supabase.from('consoles').select('*').eq('slug', slugA).single();
-    const fetchC2 = supabase.from('consoles').select('*').eq('slug', slugB).single();
-    const [res1, res2] = await Promise.all([fetchC1, fetchC2]);
-
-    let c1: ConsoleDetails | undefined = res1.data;
-    let c2: ConsoleDetails | undefined = res2.data;
-
-    if (c1 && c2) {
-        const parseNum = (str?: string) => parseFloat(str?.replace(/[^0-9.]/g, '') || '0') || 0;
-        const ram1 = parseMemory(c1.ram);
-        const ram2 = parseMemory(c2.ram);
-        const ramWinner = ram1 === ram2 ? 'Tie' : (ram1 > ram2 ? 'A' : 'B');
-
-         return {
-            consoleA: c1.name,
-            consoleB: c2.name,
-            summary: `Comparison generated for ${c1.name} and ${c2.name}.`,
-            points: [
-                { feature: "Release Year", consoleAValue: c1.release_year.toString(), consoleBValue: c2.release_year.toString(), winner: c1.release_year < c2.release_year ? 'A' : 'B' }, 
-                { feature: "CPU", consoleAValue: c1.cpu || 'N/A', consoleBValue: c2.cpu || 'N/A', winner: "Tie" },
-                { feature: "GPU", consoleAValue: c1.gpu || 'N/A', consoleBValue: c2.gpu || 'N/A', winner: "Tie" },
-                { feature: "RAM", consoleAValue: c1.ram || 'N/A', consoleBValue: c2.ram || 'N/A', winner: ramWinner },
-                { feature: "Resolution", consoleAValue: c1.resolution || 'N/A', consoleBValue: c2.resolution || 'N/A', winner: "Tie" },
-                { feature: "Media", consoleAValue: c1.media || 'N/A', consoleBValue: c2.media || 'N/A', winner: "Tie" },
-                { feature: "Audio", consoleAValue: c1.audio || 'N/A', consoleBValue: c2.audio || 'N/A', winner: "Tie" },
-                { feature: "Units Sold", consoleAValue: c1.units_sold || 'N/A', consoleBValue: c2.units_sold || 'N/A', winner: parseNum(c1.units_sold) > parseNum(c2.units_sold) ? 'A' : 'B' },
-                { feature: "Launch Price", consoleAValue: c1.launch_price || 'N/A', consoleBValue: c2.launch_price || 'N/A', winner: parseNum(c1.launch_price) < parseNum(c2.launch_price) ? 'A' : 'B' }
-            ]
-        };
-    }
-    return null;
-  } catch (error) {
-      return null;
-  }
 };

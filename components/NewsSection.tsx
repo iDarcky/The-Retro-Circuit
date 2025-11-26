@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { fetchRetroNews, addNewsItem } from '../services/geminiService';
 import { NewsItem } from '../types';
 import Button from './Button';
 import { Link } from 'react-router-dom';
+import RetroLoader from './RetroLoader';
 
 interface NewsSectionProps {
   limit?: number;
@@ -19,6 +20,12 @@ const NewsSection: React.FC<NewsSectionProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Pagination
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const observerTarget = useRef(null);
+  const ITEMS_PER_PAGE = compact ? (limit || 3) : 10;
+
   // Form State
   const [showTransmitter, setShowTransmitter] = useState(false);
   const [newHeadline, setNewHeadline] = useState('');
@@ -26,22 +33,44 @@ const NewsSection: React.FC<NewsSectionProps> = ({
   const [newCategory, setNewCategory] = useState<'Hardware' | 'Software' | 'Industry' | 'Rumor'>('Hardware');
   const [submitting, setSubmitting] = useState(false);
 
-  const loadNews = async () => {
+  const loadNews = useCallback(async (pageNum: number, isRefresh = false) => {
     setLoading(true);
     setError(null);
     try {
-      const items = await fetchRetroNews();
-      setNews(items);
+      const { data, count } = await fetchRetroNews(pageNum, ITEMS_PER_PAGE);
+      if (isRefresh || pageNum === 1) {
+          setNews(data);
+      } else {
+          setNews(prev => [...prev, ...data]);
+      }
+      setHasMore(news.length + data.length < count && !compact); // Disable infinite scroll on compact
     } catch (e) {
       setError("NO CONNECTION TO MAINFRAME. CHECK SUPABASE CONFIG.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [compact, ITEMS_PER_PAGE, news.length]);
 
   useEffect(() => {
-    loadNews();
+    loadNews(1, true);
   }, []);
+
+  // Infinite Scroll Trigger (Only for full view)
+  useEffect(() => {
+    if (compact) return;
+    
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && !loading && hasMore) {
+        const nextPage = page + 1;
+        setPage(nextPage);
+        loadNews(nextPage);
+      }
+    }, { threshold: 0.5 });
+
+    if (observerTarget.current) observer.observe(observerTarget.current);
+    
+    return () => observer.disconnect();
+  }, [loading, hasMore, page, compact, loadNews]);
 
   const handleTransmit = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -62,14 +91,13 @@ const NewsSection: React.FC<NewsSectionProps> = ({
           setNewHeadline('');
           setNewSummary('');
           setShowTransmitter(false);
-          await loadNews();
+          setPage(1);
+          await loadNews(1, true);
       } else {
           alert("TRANSMISSION FAILED: CHECK DATABASE PERMISSIONS (RLS)");
       }
       setSubmitting(false);
   };
-
-  const displayNews = limit ? news.slice(0, limit) : news;
 
   return (
     <div className={`w-full ${compact ? '' : 'max-w-6xl mx-auto p-4'}`}>
@@ -87,7 +115,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({
               </Button>
             )}
             {!compact && (
-              <Button onClick={loadNews} isLoading={loading} variant="primary">
+              <Button onClick={() => loadNews(1, true)} isLoading={loading} variant="primary">
                 REFRESH
               </Button>
             )}
@@ -155,7 +183,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({
         </div>
       )}
 
-      {loading ? (
+      {loading && news.length === 0 ? (
         <div className={`grid grid-cols-1 ${compact ? '' : 'md:grid-cols-2'} gap-6`}>
           {[1, 2].map((i) => (
             <div key={i} className="h-32 border border-retro-grid bg-retro-grid/20 animate-pulse rounded p-4">
@@ -170,8 +198,8 @@ const NewsSection: React.FC<NewsSectionProps> = ({
          </div>
       ) : (
         <div className={`grid grid-cols-1 ${compact ? '' : 'md:grid-cols-2'} gap-6`}>
-          {displayNews.map((item, index) => (
-            <article key={index} className={`group relative border-2 border-retro-grid bg-retro-dark hover:border-retro-neon transition-colors duration-300 ${compact ? 'p-4' : 'p-6'} overflow-hidden`}>
+          {news.map((item, index) => (
+            <article key={`${index}-${item.date}`} className={`group relative border-2 border-retro-grid bg-retro-dark hover:border-retro-neon transition-colors duration-300 ${compact ? 'p-4' : 'p-6'} overflow-hidden`}>
               <div className="absolute top-0 right-0 bg-retro-grid text-retro-neon text-xs font-mono px-2 py-1">
                 {new Date(item.date).toLocaleDateString()}
               </div>
@@ -195,6 +223,13 @@ const NewsSection: React.FC<NewsSectionProps> = ({
             </article>
           ))}
         </div>
+      )}
+
+      {/* Infinite Scroll Loader for full page */}
+      {!compact && (
+          <div ref={observerTarget} className="py-8 flex justify-center">
+              {loading && <RetroLoader />}
+          </div>
       )}
     </div>
   );
