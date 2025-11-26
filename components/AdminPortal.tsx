@@ -1,5 +1,6 @@
 
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { retroAuth, addGame, addConsole, addNewsItem, fetchConsoleList } from '../services/geminiService';
 import Button from './Button';
 import { ConsoleDetails, GameOfTheWeekData, NewsItem, NewsItemSchema, GameSchema, ConsoleSchema } from '../types';

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import * as React from 'react';
 import { RETRO_AVATARS } from '../utils/avatars';
 
 interface AvatarSelectorProps {

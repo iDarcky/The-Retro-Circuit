@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+
+import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { fetchTimelineData } from '../services/geminiService';
 import { TimelineEvent } from '../types';
 

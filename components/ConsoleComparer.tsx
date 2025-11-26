@@ -1,5 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { compareConsoles, fetchConsoleList } from '../services/geminiService';
 import { ComparisonResult } from '../types';

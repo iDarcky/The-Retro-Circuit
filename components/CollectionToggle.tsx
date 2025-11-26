@@ -1,5 +1,6 @@
 
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { addToCollection, fetchUserCollection, removeFromCollection, retroAuth } from '../services/geminiService';
 import { UserCollectionItem } from '../types';
 import Button from './Button';

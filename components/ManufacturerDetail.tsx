@@ -1,5 +1,6 @@
 
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { fetchManufacturerProfile, fetchConsolesFiltered, getBrandTheme } from '../services/geminiService';
 import { ConsoleDetails, ManufacturerProfile } from '../types';
