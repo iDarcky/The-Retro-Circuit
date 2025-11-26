@@ -1,3 +1,4 @@
+
 import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails, UserCollectionItem, SearchResult, ConsoleFilterState, ManufacturerProfile } from "../types";
 import { supabase } from "./supabaseClient";
 
@@ -38,6 +39,41 @@ export const BRAND_THEMES: Record<string, { color: string, bg: string, hover: st
         color: 'text-teal-400 border-teal-400 shadow-[0_0_20px_rgba(45,212,191,0.3)]',
         bg: 'bg-teal-900/20',
         hover: 'hover:bg-teal-900/40'
+    },
+    'Coleco': {
+        color: 'text-indigo-400 border-indigo-400 shadow-[0_0_20px_rgba(129,140,248,0.3)]',
+        bg: 'bg-indigo-900/20',
+        hover: 'hover:bg-indigo-900/40'
+    },
+    'Mattel': {
+        color: 'text-red-600 border-red-600 shadow-[0_0_20px_rgba(220,38,38,0.3)]',
+        bg: 'bg-red-900/10',
+        hover: 'hover:bg-red-900/30'
+    },
+    'Magnavox': {
+        color: 'text-amber-500 border-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.3)]',
+        bg: 'bg-amber-900/20',
+        hover: 'hover:bg-amber-900/40'
+    },
+    '3DO': {
+        color: 'text-gray-200 border-gray-200 shadow-[0_0_20px_rgba(229,231,235,0.3)]',
+        bg: 'bg-gray-800/40',
+        hover: 'hover:bg-gray-700/60'
+    },
+    'Bandai': {
+        color: 'text-rose-400 border-rose-400 shadow-[0_0_20px_rgba(251,113,133,0.3)]',
+        bg: 'bg-rose-900/20',
+        hover: 'hover:bg-rose-900/40'
+    },
+    'GCE': {
+        color: 'text-blue-300 border-blue-300 shadow-[0_0_20px_rgba(147,197,253,0.3)]',
+        bg: 'bg-blue-900/30',
+        hover: 'hover:bg-blue-900/50'
+    },
+    'Commodore': {
+        color: 'text-blue-200 border-blue-200 shadow-[0_0_20px_rgba(191,219,254,0.3)]',
+        bg: 'bg-blue-900/20',
+        hover: 'hover:bg-blue-800/40'
     }
 };
 
@@ -106,6 +142,54 @@ const FALLBACK_MANUFACTURERS: Record<string, ManufacturerProfile> = {
         ceo: 'Kenji Matsubara', 
         key_franchises: ['King of Fighters', 'Metal Slug', 'Fatal Fury', 'Samurai Shodown'], 
         description: 'Bankrupt 2001, reformed as SNK Playmore, now focuses on software. Notable Consoles: Neo Geo (arcade and home), Neo Geo Pocket.' 
+    },
+    'Coleco': {
+        name: 'Coleco',
+        founded: '1932',
+        origin: 'Connecticut, USA',
+        ceo: 'N/A',
+        key_franchises: ['Donkey Kong (Port)', 'Zaxxon', 'Cabbage Patch Kids'],
+        description: 'ColecoVision competed with Atari 2600, company folded after video game crash. Notable Consoles: Telstar, ColecoVision.'
+    },
+    'Mattel': {
+        name: 'Mattel',
+        founded: '1945',
+        origin: 'California, USA',
+        ceo: 'Ynon Kreiz',
+        key_franchises: ['Astrosmash', 'Shark! Shark!', 'BurgerTime'],
+        description: 'Still active in toys, licensed Intellivision brand to others. Notable Consoles: Intellivision.'
+    },
+    'Magnavox': {
+        name: 'Magnavox',
+        founded: '1917',
+        origin: 'Indiana, USA',
+        ceo: 'N/A',
+        key_franchises: ['K.C. Munchkin', 'Pick Axe Pete', 'Hotel Mario'],
+        description: 'Created the first home console (Odyssey, 1972). Notable Consoles: Odyssey, Odyssey 2, CD-i.'
+    },
+    '3DO': {
+        name: '3DO',
+        founded: '1991',
+        origin: 'California, USA',
+        ceo: 'Trip Hawkins',
+        key_franchises: ['Gex', 'Road Rash', 'Need for Speed'],
+        description: 'Expensive console ($699 launch), early CD-based gaming. Notable Consoles: 3DO Interactive Multiplayer.'
+    },
+    'Bandai': {
+        name: 'Bandai',
+        founded: '1950',
+        origin: 'Tokyo, Japan',
+        ceo: 'Masaru Kawaguchi',
+        key_franchises: ['Digimon', 'Gundam', 'Tamagotchi'],
+        description: 'Merged with Namco in 2005. Notable Consoles: Pippin (with Apple), WonderSwan.'
+    },
+    'GCE': {
+        name: 'GCE',
+        founded: '1978',
+        origin: 'California, USA',
+        ceo: 'N/A',
+        key_franchises: ['Mine Storm', 'Spike'],
+        description: 'General Consumer Electronics. Created the only vector-based home console with built-in screen. Notable Consoles: Vectrex.'
     }
 };
 
