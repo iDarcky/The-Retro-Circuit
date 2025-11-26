@@ -126,6 +126,11 @@ const AppContent = () => {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const location = useLocation();
 
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   useEffect(() => {
     if (location.hash.includes('type=recovery')) {
         sessionStorage.setItem('retro_recovery_pending', 'true');
