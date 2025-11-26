@@ -14,6 +14,7 @@ import ConsoleLibrary from './components/ConsoleLibrary';
 import ConsoleSpecs from './components/ConsoleSpecs';
 import ManufacturerDetail from './components/ManufacturerDetail';
 import AdminPortal from './components/AdminPortal';
+import NotFound from './components/NotFound';
 import { SoundProvider, useSound } from './components/SoundContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import SEOHead from './components/SEOHead';
@@ -239,6 +240,8 @@ const AppContent = () => {
           <Route path="/timeline" element={<Timeline />} />
           <Route path="/login" element={<AuthSection />} />
           <Route path="/admin" element={<AdminPortal />} />
+          {/* Catch-all 404 Route */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
 
