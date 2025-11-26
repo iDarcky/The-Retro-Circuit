@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import * as React from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 interface SoundContextType {
   playHover: () => void;

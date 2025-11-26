@@ -1,5 +1,5 @@
-
-import React, { useState, useEffect, useRef } from 'react';
+import * as React from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { searchDatabase } from '../services/geminiService';
 import { SearchResult } from '../types';

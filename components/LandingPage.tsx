@@ -1,9 +1,7 @@
-
-import React from 'react';
+import * as React from 'react';
 import { Link } from 'react-router-dom';
 import GameOfTheWeek from './GameOfTheWeek';
 import NewsSection from './NewsSection';
-import Button from './Button';
 import SEOHead from './SEOHead';
 
 const LandingPage: React.FC = () => {

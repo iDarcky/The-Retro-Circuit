@@ -114,6 +114,13 @@
   }
 }
 </script>
+<!-- Global Shim for React to support libs expecting default exports or global variables -->
+<script type="module">
+  import * as React from 'react';
+  import * as ReactDOM from 'react-dom/client';
+  window.React = React;
+  window.ReactDOM = ReactDOM;
+</script>
 </head>
   <body>
     <div id="root"></div>
