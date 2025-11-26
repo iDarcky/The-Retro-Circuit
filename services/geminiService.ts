@@ -104,6 +104,82 @@ export const BRAND_THEMES: Record<string, { color: string, bg: string, hover: st
         color: 'text-pink-400 border-pink-400 shadow-[0_0_20px_rgba(244,114,182,0.3)]',
         bg: 'bg-pink-900/20',
         hover: 'hover:bg-pink-900/40'
+    },
+    // MODERN HANDHELDS
+    'Valve': {
+        color: 'text-blue-400 border-blue-400 shadow-[0_0_20px_rgba(96,165,250,0.3)]',
+        bg: 'bg-slate-900/50',
+        hover: 'hover:bg-slate-800/60'
+    },
+    'Retroid': {
+        color: 'text-orange-400 border-orange-400 shadow-[0_0_20px_rgba(251,146,60,0.3)]',
+        bg: 'bg-orange-900/20',
+        hover: 'hover:bg-orange-800/40'
+    },
+    'Anbernic': {
+        color: 'text-gray-300 border-gray-300 shadow-[0_0_20px_rgba(209,213,219,0.3)]',
+        bg: 'bg-gray-800/30',
+        hover: 'hover:bg-gray-700/50'
+    },
+    'Analogue': {
+        color: 'text-white border-white shadow-[0_0_20px_rgba(255,255,255,0.2)]',
+        bg: 'bg-black',
+        hover: 'hover:bg-gray-900'
+    },
+    'Panic': {
+        color: 'text-yellow-300 border-yellow-300 shadow-[0_0_20px_rgba(253,224,71,0.3)]',
+        bg: 'bg-yellow-900/20',
+        hover: 'hover:bg-yellow-800/40'
+    },
+    'Ayaneo': {
+        color: 'text-cyan-400 border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.3)]',
+        bg: 'bg-cyan-900/20',
+        hover: 'hover:bg-cyan-800/40'
+    },
+    'Ayn': {
+        color: 'text-sky-300 border-sky-300 shadow-[0_0_20px_rgba(125,211,252,0.3)]',
+        bg: 'bg-sky-900/20',
+        hover: 'hover:bg-sky-800/40'
+    },
+    'Powkiddy': {
+        color: 'text-red-300 border-red-300 shadow-[0_0_20px_rgba(252,165,165,0.3)]',
+        bg: 'bg-red-900/10',
+        hover: 'hover:bg-red-900/30'
+    },
+    'Miyoo': {
+        color: 'text-purple-300 border-purple-300 shadow-[0_0_20px_rgba(216,180,254,0.3)]',
+        bg: 'bg-purple-900/20',
+        hover: 'hover:bg-purple-800/40'
+    },
+    'GPD': {
+        color: 'text-blue-500 border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.3)]',
+        bg: 'bg-blue-900/20',
+        hover: 'hover:bg-blue-800/40'
+    },
+    'Asus': {
+        color: 'text-red-600 border-red-600 shadow-[0_0_20px_rgba(220,38,38,0.3)]',
+        bg: 'bg-red-950/40',
+        hover: 'hover:bg-red-900/60'
+    },
+    'Lenovo': {
+        color: 'text-indigo-500 border-indigo-500 shadow-[0_0_20px_rgba(99,102,241,0.3)]',
+        bg: 'bg-indigo-900/20',
+        hover: 'hover:bg-indigo-800/40'
+    },
+    'MSI': {
+        color: 'text-red-500 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]',
+        bg: 'bg-red-900/20',
+        hover: 'hover:bg-red-800/40'
+    },
+    'Evercade': {
+        color: 'text-white border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]',
+        bg: 'bg-red-900/30',
+        hover: 'hover:bg-red-800/50'
+    },
+    'Logitech': {
+        color: 'text-teal-300 border-teal-300 shadow-[0_0_20px_rgba(94,234,212,0.3)]',
+        bg: 'bg-teal-900/20',
+        hover: 'hover:bg-teal-800/40'
     }
 };
 
@@ -276,6 +352,55 @@ const FALLBACK_MANUFACTURERS: Record<string, ManufacturerProfile> = {
         ceo: 'Kazuhiro Kashio',
         key_franchises: ['Anime Sticker Maker'],
         description: 'Failed girls-focused console, Japan-only. Notable Consoles: Loopy.'
+    },
+    // MODERN HANDHELD FALLBACKS
+    'Valve': {
+        name: 'Valve',
+        founded: '1996',
+        origin: 'Bellevue, USA',
+        ceo: 'Gabe Newell',
+        key_franchises: ['Half-Life', 'Portal', 'Steam Deck'],
+        description: 'PC gaming giant. Notable Devices: Steam Deck.'
+    },
+    'Analogue': {
+        name: 'Analogue',
+        founded: '2011',
+        origin: 'Seattle, USA',
+        ceo: 'Christopher Taber',
+        key_franchises: ['Analogue Pocket', 'Super Nt'],
+        description: 'Premium FPGA-based hardware clones.'
+    },
+    'Retroid': {
+        name: 'Retroid',
+        founded: '2019',
+        origin: 'Shenzhen, China',
+        ceo: 'N/A',
+        key_franchises: ['Retroid Pocket'],
+        description: 'Popular for Android-based retro gaming handhelds.'
+    },
+    'Anbernic': {
+        name: 'Anbernic',
+        founded: '2017',
+        origin: 'Shenzhen, China',
+        ceo: 'N/A',
+        key_franchises: ['RG35XX', 'RG405'],
+        description: 'Prolific manufacturer of retro handhelds.'
+    },
+    'Miyoo': {
+        name: 'Miyoo',
+        founded: '2019',
+        origin: 'Shenzhen, China',
+        ceo: 'N/A',
+        key_franchises: ['Miyoo Mini'],
+        description: 'Cult following for ultra-portable retro gaming.'
+    },
+    'Panic': {
+        name: 'Panic',
+        founded: '1997',
+        origin: 'Portland, USA',
+        ceo: 'Cabel Sasser',
+        key_franchises: ['Playdate'],
+        description: 'Unique crank-based indie gaming handheld.'
     }
 };
 
