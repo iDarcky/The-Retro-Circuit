@@ -111,10 +111,20 @@ const ConsoleLibrary: React.FC = () => {
 
   const handleBrandSelect = async (brand: string) => {
       setLoading(true);
-      setFilters(prev => ({ ...prev, manufacturer: brand }));
       
-      const profile = await fetchManufacturerProfile(brand);
+      // Update filters so if they switch to List view it persists
+      const newFilters = { ...filters, manufacturer: brand };
+      setFilters(newFilters);
+      
+      // Fetch Profile AND Consoles for this brand
+      // We fetch a larger limit (100) for the profile view to show everything at once
+      const [profile, consoleData] = await Promise.all([
+          fetchManufacturerProfile(brand),
+          fetchConsolesFiltered(newFilters, 1, 100)
+      ]);
+      
       setActiveProfile(profile);
+      setConsoles(consoleData.data);
 
       setViewMode('PROFILE');
       setLoading(false);
@@ -213,54 +223,97 @@ const ConsoleLibrary: React.FC = () => {
                  const themeColorClass = theme.color.split(' ')[0]; // Extract just the text color class for headings
 
                  return (
-                    <div className={`border-l-8 ${theme.color} bg-retro-dark p-8 mb-8 shadow-lg`}>
-                        <div className="flex flex-col md:flex-row justify-between items-end border-b border-gray-800 pb-6 mb-6">
-                            <div>
-                                <div className={`font-mono text-xs border inline-block px-2 py-1 mb-2 ${theme.color}`}>CONFIDENTIAL</div>
-                                <h1 className={`text-5xl md:text-7xl font-pixel ${themeColorClass} opacity-90 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]`}>
-                                    {activeProfile.name}
-                                </h1>
+                    <>
+                        <div className={`border-l-8 ${theme.color} bg-retro-dark p-8 mb-8 shadow-lg`}>
+                            <div className="flex flex-col md:flex-row justify-between items-end border-b border-gray-800 pb-6 mb-6">
+                                <div>
+                                    <div className={`font-mono text-xs border inline-block px-2 py-1 mb-2 ${theme.color}`}>CONFIDENTIAL</div>
+                                    <h1 className={`text-5xl md:text-7xl font-pixel ${themeColorClass} opacity-90 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]`}>
+                                        {activeProfile.name}
+                                    </h1>
+                                </div>
+                                <div className="text-right mt-4 md:mt-0">
+                                    <div className="font-mono text-gray-500 text-xs">FOUNDED</div>
+                                    <div className="font-pixel text-white text-lg">{activeProfile.founded}</div>
+                                    <div className="font-mono text-gray-500 text-xs mt-2">ORIGIN</div>
+                                    <div className="font-pixel text-white text-lg">{activeProfile.origin}</div>
+                                </div>
                             </div>
-                            <div className="text-right mt-4 md:mt-0">
-                                <div className="font-mono text-gray-500 text-xs">FOUNDED</div>
-                                <div className="font-pixel text-white text-lg">{activeProfile.founded}</div>
-                                <div className="font-mono text-gray-500 text-xs mt-2">ORIGIN</div>
-                                <div className="font-pixel text-white text-lg">{activeProfile.origin}</div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <div className="md:col-span-2">
+                                    <h3 className={`font-pixel text-lg mb-4 ${themeColorClass}`}>CORPORATE HISTORY</h3>
+                                    <p className="font-mono text-gray-300 text-lg leading-relaxed border-l-2 border-gray-700 pl-4">
+                                        {activeProfile.description}
+                                    </p>
+                                </div>
+                                
+                                <div className={`bg-black/30 p-6 border border-gray-800`}>
+                                    <div className="mb-6">
+                                        <h4 className="font-pixel text-xs text-gray-500 mb-2">KEY FRANCHISES</h4>
+                                        <ul className="space-y-2">
+                                            {activeProfile.key_franchises.map((f: string) => (
+                                                <li key={f} className={`font-mono text-sm border-b border-gray-800 pb-1 ${themeColorClass}`}>
+                                                    {f}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-pixel text-xs text-gray-500 mb-2">CURRENT CEO</h4>
+                                        <div className="font-mono text-white text-sm">{activeProfile.ceo}</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            <div className="md:col-span-2">
-                                <h3 className={`font-pixel text-lg mb-4 ${themeColorClass}`}>CORPORATE HISTORY</h3>
-                                <p className="font-mono text-gray-300 text-lg leading-relaxed border-l-2 border-gray-700 pl-4">
-                                    {activeProfile.description}
-                                </p>
-                                
-                                <div className="mt-8">
-                                    <Button onClick={() => setViewMode('LIST')} className={`w-full md:w-auto ${theme.bg} ${theme.hover} border-current`}>
-                                        INITIALIZE HARDWARE DATABASE &gt;
-                                    </Button>
-                                </div>
+                        
+                        {/* MANUFACTURER CONSOLE LIST */}
+                        <div className="mb-12">
+                            <div className="flex items-center gap-4 mb-6">
+                                <h3 className={`font-pixel text-2xl ${themeColorClass}`}>KNOWN HARDWARE UNITS</h3>
+                                <div className="flex-1 h-px bg-gray-800"></div>
                             </div>
                             
-                            <div className={`bg-black/30 p-6 border border-gray-800`}>
-                                <div className="mb-6">
-                                    <h4 className="font-pixel text-xs text-gray-500 mb-2">KEY FRANCHISES</h4>
-                                    <ul className="space-y-2">
-                                        {activeProfile.key_franchises.map((f: string) => (
-                                            <li key={f} className={`font-mono text-sm border-b border-gray-800 pb-1 ${themeColorClass}`}>
-                                                {f}
-                                            </li>
-                                        ))}
-                                    </ul>
+                            {consoles.length > 0 ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                    {consoles.map((console) => (
+                                        <Link 
+                                            to={`/consoles/${console.slug}`} 
+                                            key={console.id}
+                                            className={`group block border border-retro-grid bg-retro-dark relative overflow-hidden transition-all ${theme.hover}`}
+                                        >
+                                            <div className="h-24 bg-black/40 flex items-center justify-center p-4 relative">
+                                                {console.image_url ? (
+                                                    <img src={console.image_url} className="max-h-full object-contain" />
+                                                ) : (
+                                                    <span className="font-pixel text-gray-700 text-2xl">?</span>
+                                                )}
+                                            </div>
+                                            <div className="p-3 border-t border-retro-grid">
+                                                <div className="flex justify-between text-[10px] font-mono text-gray-500 mb-1">
+                                                    <span>{console.release_year}</span>
+                                                    <span>GEN {console.generation}</span>
+                                                </div>
+                                                <h3 className="font-pixel text-xs text-white group-hover:text-retro-neon truncate">
+                                                    {console.name}
+                                                </h3>
+                                            </div>
+                                        </Link>
+                                    ))}
                                 </div>
-                                <div>
-                                    <h4 className="font-pixel text-xs text-gray-500 mb-2">CURRENT CEO</h4>
-                                    <div className="font-mono text-white text-sm">{activeProfile.ceo}</div>
+                            ) : (
+                                <div className="p-8 border-2 border-dashed border-gray-800 text-center font-mono text-gray-500">
+                                    NO UNITS DECLASSIFIED IN DATABASE.
                                 </div>
+                            )}
+
+                            <div className="mt-8 text-center">
+                                <Button onClick={() => setViewMode('LIST')} className={`w-full md:w-auto ${theme.bg} ${theme.hover} border-current`}>
+                                    ADVANCED FILTER ACCESS &gt;
+                                </Button>
                             </div>
                         </div>
-                    </div>
+                    </>
                  );
              })()}
           </div>
