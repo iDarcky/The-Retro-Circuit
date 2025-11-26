@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Analytics } from "@vercel/analytics/react";
 import BootSequence from './components/BootSequence';
 import { SoundProvider, useSound } from './components/SoundContext';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -345,6 +346,7 @@ const App = () => {
         <React.StrictMode>
             <SoundProvider>
                 <BrowserRouter>
+                    <Analytics />
                     <AppContent />
                 </BrowserRouter>
             </SoundProvider>
