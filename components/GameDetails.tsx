@@ -51,7 +51,7 @@ const GameDetails: React.FC = () => {
     "name": game.title,
     "description": game.content.substring(0, 160) + "...",
     "genre": [game.genre],
-    "gamePlatform": "Retro Console",
+    "gamePlatform": game.console_slug ? `https://theretrocircuit.com/consoles/${game.console_slug}` : "Retro Console",
     "publisher": game.developer,
     "author": {
       "@type": "Organization",
@@ -107,10 +107,18 @@ const GameDetails: React.FC = () => {
            <h1 className="text-4xl md:text-6xl font-pixel text-white drop-shadow-[4px_4px_0_rgba(0,0,0,1)] leading-tight mb-2">
              {game.title}
            </h1>
-           <div className="flex gap-4 font-mono text-lg text-retro-pink">
+           <div className="flex flex-wrap gap-4 font-mono text-lg text-retro-pink items-center">
               <span>{game.developer}</span>
               <span className="text-gray-600">//</span>
               <span>{game.year}</span>
+              {game.console_slug && (
+                  <>
+                      <span className="text-gray-600">//</span>
+                      <Link to={`/consoles/${game.console_slug}`} className="text-retro-neon hover:underline bg-retro-neon/10 px-2 border border-retro-neon/50 text-sm">
+                          PLATFORM: {game.console_slug.replace(/-/g, ' ').toUpperCase()}
+                      </Link>
+                  </>
+              )}
            </div>
         </div>
       </div>

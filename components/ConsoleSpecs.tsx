@@ -1,8 +1,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { fetchConsoleBySlug } from '../services/geminiService';
-import { ConsoleDetails } from '../types';
+import { fetchConsoleBySlug, fetchGamesForConsole } from '../services/geminiService';
+import { ConsoleDetails, GameOfTheWeekData } from '../types';
 import Button from './Button';
 import RetroLoader from './RetroLoader';
 import CollectionToggle from './CollectionToggle';
@@ -11,6 +11,7 @@ import SEOHead from './SEOHead';
 const ConsoleSpecs: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const [consoleData, setConsoleData] = useState<ConsoleDetails | null>(null);
+  const [games, setGames] = useState<GameOfTheWeekData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,6 +20,10 @@ const ConsoleSpecs: React.FC = () => {
       setLoading(true);
       const data = await fetchConsoleBySlug(slug);
       setConsoleData(data);
+      if (data) {
+          const gameList = await fetchGamesForConsole(slug);
+          setGames(gameList);
+      }
       setLoading(false);
     };
     loadData();
@@ -256,6 +261,29 @@ const ConsoleSpecs: React.FC = () => {
                     )}
                  </div>
             </div>
+
+            {/* RELATED GAMES */}
+            {games.length > 0 && (
+                <div className="pt-8 border-t border-retro-grid">
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="font-pixel text-xl text-white">GAME LIBRARY</h3>
+                        <Link to="/games" className="text-xs font-mono text-retro-blue hover:text-white">VIEW ALL GAMES &gt;</Link>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {games.map(game => (
+                            <Link to={`/games/${game.slug || game.id}`} key={game.id} className="group border border-retro-grid bg-retro-dark p-4 flex gap-4 hover:border-retro-neon transition-colors">
+                                <div className="w-16 h-16 bg-black flex-shrink-0">
+                                    {game.image && <img src={game.image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100" />}
+                                </div>
+                                <div className="overflow-hidden">
+                                    <div className="font-pixel text-xs text-white truncate group-hover:text-retro-neon">{game.title}</div>
+                                    <div className="font-mono text-[10px] text-gray-500">{game.year} // {game.developer}</div>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
          </div>
       </div>
     </div>

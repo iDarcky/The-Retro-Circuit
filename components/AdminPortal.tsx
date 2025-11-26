@@ -1,5 +1,6 @@
+
 import React, { useEffect, useState } from 'react';
-import { retroAuth, addGame, addConsole, addNewsItem } from '../services/geminiService';
+import { retroAuth, addGame, addConsole, addNewsItem, fetchConsoleList } from '../services/geminiService';
 import Button from './Button';
 import { ConsoleDetails, GameOfTheWeekData, NewsItem, NewsItemSchema, GameSchema, ConsoleSchema } from '../types';
 
@@ -11,6 +12,7 @@ const AdminPortal: React.FC = () => {
     const [activeTab, setActiveTab] = useState<AdminTab>('NEWS');
     const [message, setMessage] = useState<string | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
+    const [availableConsoles, setAvailableConsoles] = useState<{name: string, slug: string}[]>([]);
 
     // News Form State
     const [newsHeadline, setNewsHeadline] = useState('');
@@ -26,6 +28,7 @@ const AdminPortal: React.FC = () => {
     const [gameContent, setGameContent] = useState('');
     const [gameMatter, setGameMatter] = useState('');
     const [gameImage, setGameImage] = useState('');
+    const [gameConsoleSlug, setGameConsoleSlug] = useState('');
 
     // Console Form State
     const [consoleName, setConsoleName] = useState('');
@@ -42,6 +45,10 @@ const AdminPortal: React.FC = () => {
         const check = async () => {
             const admin = await retroAuth.isAdmin();
             setIsAdmin(admin);
+            if (admin) {
+                const consoles = await fetchConsoleList();
+                setAvailableConsoles(consoles);
+            }
             setLoading(false);
         };
         check();
@@ -86,12 +93,13 @@ const AdminPortal: React.FC = () => {
             content: gameContent,
             whyItMatters: gameMatter,
             rating: 5,
-            image: gameImage
+            image: gameImage,
+            console_slug: gameConsoleSlug || undefined
         };
 
         const result = GameSchema.safeParse(rawData);
         if (!result.success) {
-             setErrorMsg(result.error.issues.map(i => `${i.path[0]}: ${i.message}`).join(', '));
+             setErrorMsg(result.error.issues.map(i => `${String(i.path[0])}: ${i.message}`).join(', '));
              return;
         }
 
@@ -126,7 +134,7 @@ const AdminPortal: React.FC = () => {
 
             const result = ConsoleSchema.safeParse(rawData);
             if (!result.success) {
-                setErrorMsg(result.error.issues.map(i => `${i.path[0]}: ${i.message}`).join(', '));
+                setErrorMsg(result.error.issues.map(i => `${String(i.path[0])}: ${i.message}`).join(', '));
                 return;
             }
 
@@ -204,6 +212,12 @@ const AdminPortal: React.FC = () => {
                     <form onSubmit={handleSubmitGame} className="space-y-4 grid grid-cols-2 gap-4">
                         <input className="bg-black border border-gray-700 p-2 col-span-2" placeholder="Title" value={gameTitle} onChange={e => setGameTitle(e.target.value)} />
                         <input className="bg-black border border-gray-700 p-2" placeholder="Slug (optional)" value={gameSlug} onChange={e => setGameSlug(e.target.value)} />
+                        <select className="bg-black border border-gray-700 p-2" value={gameConsoleSlug} onChange={e => setGameConsoleSlug(e.target.value)}>
+                            <option value="">-- Link Console (Optional) --</option>
+                            {availableConsoles.map(c => (
+                                <option key={c.slug} value={c.slug}>{c.name}</option>
+                            ))}
+                        </select>
                         <input className="bg-black border border-gray-700 p-2" placeholder="Developer" value={gameDev} onChange={e => setGameDev(e.target.value)} />
                         <input className="bg-black border border-gray-700 p-2" placeholder="Year" value={gameYear} onChange={e => setGameYear(e.target.value)} />
                         <input className="bg-black border border-gray-700 p-2" placeholder="Genre" value={gameGenre} onChange={e => setGameGenre(e.target.value)} />

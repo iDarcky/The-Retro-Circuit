@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { fetchRetroNews, addNewsItem } from '../services/geminiService';
+import { fetchRetroNews, addNewsItem, fetchConsoleList, fetchGameList } from '../services/geminiService';
 import { NewsItem } from '../types';
 import Button from './Button';
 import { Link } from 'react-router-dom';
@@ -27,6 +27,12 @@ const NewsSection: React.FC<NewsSectionProps> = ({
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
+  
+  // Reference Data for Auto-Linking
+  const [referenceData, setReferenceData] = useState<{
+      consoles: {name: string, slug: string}[],
+      games: {title: string, slug: string, id: string}[]
+  }>({ consoles: [], games: [] });
   
   // 10 is divisible by 2 (md:grid-cols-2) and 1 (sm:grid-cols-1)
   const ITEMS_PER_PAGE = compact ? (limit || 3) : 10; 
@@ -58,6 +64,19 @@ const NewsSection: React.FC<NewsSectionProps> = ({
     loadNews(page, selectedCategory);
   }, [page, selectedCategory, loadNews]);
 
+  // Fetch reference data for auto-linking in the background
+  useEffect(() => {
+      const loadRefs = async () => {
+          try {
+              const [c, g] = await Promise.all([fetchConsoleList(), fetchGameList()]);
+              setReferenceData({ consoles: c, games: g });
+          } catch (e) {
+              console.warn("Failed to load reference data for linking");
+          }
+      };
+      loadRefs();
+  }, []);
+
   const handleCategoryChange = (category: string) => {
       setSelectedCategory(category);
       setPage(1); // Reset to first page on filter change
@@ -88,6 +107,34 @@ const NewsSection: React.FC<NewsSectionProps> = ({
           alert("TRANSMISSION FAILED: CHECK DATABASE PERMISSIONS (RLS)");
       }
       setSubmitting(false);
+  };
+
+  // Helper to find related entities in text
+  const getRelatedLinks = (text: string) => {
+      const lowerText = text.toLowerCase();
+      const matches: { type: 'GAME' | 'CONSOLE', label: string, to: string }[] = [];
+
+      // Check Consoles
+      referenceData.consoles.forEach(c => {
+          // Escape special regex chars in name
+          const safeName = c.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').toLowerCase();
+          // Use word boundaries to avoid partial matches (e.g. "NES" in "JONES")
+          const regex = new RegExp(`\\b${safeName}\\b`, 'i');
+          if (regex.test(lowerText)) {
+              matches.push({ type: 'CONSOLE', label: c.name, to: `/consoles/${c.slug}` });
+          }
+      });
+
+      // Check Games
+      referenceData.games.forEach(g => {
+          const safeTitle = g.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').toLowerCase();
+          const regex = new RegExp(`\\b${safeTitle}\\b`, 'i');
+          if (regex.test(lowerText)) {
+              matches.push({ type: 'GAME', label: g.title, to: `/games/${g.slug || g.id}` });
+          }
+      });
+
+      return matches;
   };
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
@@ -257,8 +304,11 @@ const NewsSection: React.FC<NewsSectionProps> = ({
       ) : (
         <>
             <div className={`grid grid-cols-1 ${compact ? '' : 'md:grid-cols-2'} gap-6`}>
-            {news.map((item, index) => (
-                <article key={`${index}-${item.date}`} className={`group relative border-2 border-retro-grid bg-retro-dark hover:border-retro-neon transition-colors duration-300 ${compact ? 'p-4' : 'p-6'} overflow-hidden`}>
+            {news.map((item, index) => {
+                const relatedLinks = getRelatedLinks(`${item.headline} ${item.summary}`);
+                
+                return (
+                <article key={`${index}-${item.date}`} className={`group relative border-2 border-retro-grid bg-retro-dark hover:border-retro-neon transition-colors duration-300 ${compact ? 'p-4' : 'p-6'} overflow-hidden flex flex-col h-full`}>
                 <div className="absolute top-0 right-0 bg-retro-grid text-retro-neon text-xs font-mono px-2 py-1">
                     {new Date(item.date).toLocaleDateString()}
                 </div>
@@ -277,12 +327,33 @@ const NewsSection: React.FC<NewsSectionProps> = ({
                     {item.headline}
                     </h3>
                 </div>
-                <p className={`text-gray-400 font-mono text-sm leading-relaxed border-l-2 border-retro-grid pl-4 ${compact ? 'line-clamp-3' : ''}`}>
+                <p className={`text-gray-400 font-mono text-sm leading-relaxed border-l-2 border-retro-grid pl-4 flex-grow ${compact ? 'line-clamp-3' : ''}`}>
                     {item.summary}
                 </p>
+
+                {/* Related Links */}
+                {relatedLinks.length > 0 && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                        {relatedLinks.map(link => (
+                            <Link 
+                                key={link.to} 
+                                to={link.to}
+                                className={`text-[10px] font-mono border px-2 py-0.5 transition-colors flex items-center gap-1
+                                    ${link.type === 'CONSOLE' 
+                                        ? 'border-retro-blue text-retro-blue hover:bg-retro-blue hover:text-black' 
+                                        : 'border-retro-pink text-retro-pink hover:bg-retro-pink hover:text-black'
+                                    }`}
+                            >
+                                <span className="opacity-75">{link.type === 'CONSOLE' ? 'HARDWARE:' : 'GAME:'}</span>
+                                <span className="font-bold">{link.label}</span>
+                            </Link>
+                        ))}
+                    </div>
+                )}
+
                 <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-retro-pink via-retro-neon to-retro-blue opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </article>
-            ))}
+            )})}
             </div>
 
             {/* Pagination Controls (Only show in full mode) */}

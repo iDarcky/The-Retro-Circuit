@@ -1,3 +1,4 @@
+
 import { z } from 'zod';
 
 export interface NewsItem {
@@ -39,6 +40,7 @@ export interface GameOfTheWeekData {
   whyItMatters: string;
   image?: string;
   rating?: number;
+  console_slug?: string;
 }
 
 export const GameSchema = z.object({
@@ -52,6 +54,7 @@ export const GameSchema = z.object({
   whyItMatters: z.string().min(10, "Field is required"),
   rating: z.number().min(1).max(5).default(5),
   image: z.string().url("Invalid Image URL").optional().or(z.literal('')),
+  console_slug: z.string().optional(),
 });
 
 export interface TimelineEvent {

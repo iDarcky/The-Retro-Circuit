@@ -1,3 +1,4 @@
+
 import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails, UserCollectionItem, SearchResult, ConsoleFilterState, ManufacturerProfile } from "../types";
 import { supabase } from "./supabaseClient";
 
@@ -200,7 +201,6 @@ const FALLBACK_MANUFACTURERS: Record<string, ManufacturerProfile> = {
         key_franchises: ['Mario', 'Zelda', 'Metroid', 'Pokémon', 'Smash Bros'], 
         description: 'Active, dominant in handheld/hybrid market. Founded in 1889. Notable Consoles: NES, SNES, N64, GameCube, Wii, Wii U, Switch.' 
     },
-    // ... (keeping existing fallback data structure but truncated for brevity in this response)
     'Sony': { 
         name: 'Sony', 
         founded: '1946', 
@@ -209,7 +209,6 @@ const FALLBACK_MANUFACTURERS: Record<string, ManufacturerProfile> = {
         key_franchises: ['Gran Turismo', 'God of War', 'Uncharted', 'The Last of Us'], 
         description: 'Active, leading home console manufacturer. Entered gaming in 1994. Notable Consoles: PlayStation, PS2, PS3, PS4, PS5.' 
     },
-    // ... (Assume other fallbacks are preserved as they are static data)
 };
 
 export const checkDatabaseConnection = async (): Promise<boolean> => {
@@ -449,7 +448,8 @@ export const addGame = async (game: GameOfTheWeekData): Promise<boolean> => {
             content: game.content,
             why_it_matters: game.whyItMatters,
             rating: game.rating,
-            image: game.image
+            image: game.image,
+            console_slug: game.console_slug
         }]);
         if (error) throw error;
         return true;
@@ -570,7 +570,8 @@ export const fetchGamesPaginated = async (page: number = 1, limit: number = 9): 
             content: g.content,
             whyItMatters: g.why_it_matters,
             rating: g.rating,
-            image: g.image
+            image: g.image,
+            console_slug: g.console_slug
         }));
 
         return { 
@@ -606,10 +607,39 @@ export const fetchGameBySlug = async (slug: string): Promise<GameOfTheWeekData |
             content: data.content,
             whyItMatters: data.why_it_matters,
             rating: data.rating,
-            image: data.image
+            image: data.image,
+            console_slug: data.console_slug
         };
     } catch (e) {
         return null;
+    }
+};
+
+export const fetchGamesForConsole = async (consoleSlug: string): Promise<GameOfTheWeekData[]> => {
+    try {
+        const { data, error } = await supabase
+            .from('games')
+            .select('*')
+            .eq('console_slug', consoleSlug)
+            .order('year', { ascending: true });
+        
+        if (error) throw error;
+
+        return (data || []).map((g: any) => ({
+            id: g.id,
+            slug: g.slug,
+            title: g.title,
+            developer: g.developer,
+            year: g.year,
+            genre: g.genre,
+            content: g.content,
+            whyItMatters: g.why_it_matters,
+            rating: g.rating,
+            image: g.image,
+            console_slug: g.console_slug
+        }));
+    } catch (e) {
+        return [];
     }
 };
 
@@ -628,7 +658,8 @@ export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData | null> =>
           content: data.content,
           whyItMatters: data.why_it_matters,
           rating: data.rating,
-          image: data.image
+          image: data.image,
+          console_slug: data.console_slug
       };
   } catch (e) {
       return null;
