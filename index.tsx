@@ -9,10 +9,9 @@ import SEOHead from './components/SEOHead';
 import { checkDatabaseConnection, retroAuth } from './services/geminiService';
 import { supabase, isSupabaseConfigured } from './services/supabaseClient';
 import GlobalSearch from './components/GlobalSearch';
-import RetroLoader from './components/RetroLoader'; // Keep critical UI eager loaded
+import RetroLoader from './components/RetroLoader';
 
 // --- LAZY LOADED PAGES (Code Splitting) ---
-// This splits the app into separate files for each page, improving initial load time.
 const LandingPage = React.lazy(() => import('./components/LandingPage'));
 const NewsSection = React.lazy(() => import('./components/NewsSection'));
 const ConsoleComparer = React.lazy(() => import('./components/ConsoleComparer'));
@@ -28,14 +27,16 @@ const HtmlSitemap = React.lazy(() => import('./components/HtmlSitemap'));
 const NotFound = React.lazy(() => import('./components/NotFound'));
 
 // --- ICONS ---
-const IconNews = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>;
-const IconDatabase = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>;
-const IconVS = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>;
-const IconGames = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><path d="M6 12h4m-2-2v4"></path><circle cx="17" cy="11" r="0.5" fill="currentColor"></circle><circle cx="15" cy="13" r="0.5" fill="currentColor"></circle></svg>;
-const IconTimeline = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>;
-const IconLogin = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>;
-const IconHome = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>;
-const IconLock = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
+// Updated to accept className for flexible styling (mobile vs desktop)
+const IconNews = ({ className = "w-5 h-5 mr-2" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>;
+const IconDatabase = ({ className = "w-5 h-5 mr-2" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>;
+const IconVS = ({ className = "w-5 h-5 mr-2" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>;
+const IconGames = ({ className = "w-5 h-5 mr-2" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><path d="M6 12h4m-2-2v4"></path><circle cx="17" cy="11" r="0.5" fill="currentColor"></circle><circle cx="15" cy="13" r="0.5" fill="currentColor"></circle></svg>;
+const IconTimeline = ({ className = "w-5 h-5 mr-2" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>;
+const IconLogin = ({ className = "w-5 h-5 mr-2" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>;
+const IconHome = ({ className = "w-5 h-5 mr-2" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2-2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>;
+const IconLock = ({ className = "w-5 h-5 mr-2" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
+const IconSettings = ({ className = "w-5 h-5 mr-2" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>;
 
 // --- SIDEBAR NAVIGATION ---
 const SidebarItem = ({ to, icon: Icon, label, exact = false }: { to: string, icon: any, label: string, exact?: boolean }) => {
@@ -62,11 +63,28 @@ const SidebarItem = ({ to, icon: Icon, label, exact = false }: { to: string, ico
   );
 };
 
+// --- MOBILE BOTTOM NAVIGATION ---
+const MobileNavItem = ({ to, icon: Icon, label, exact = false }: { to: string, icon: any, label: string, exact?: boolean }) => {
+    const location = useLocation();
+    const isActive = exact ? location.pathname === to : location.pathname.startsWith(to);
+    const { playClick } = useSound();
+
+    return (
+        <Link 
+            to={to}
+            onClick={playClick}
+            className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${isActive ? 'text-retro-neon bg-retro-grid/30' : 'text-gray-500 hover:text-gray-300'}`}
+        >
+            <Icon className={`w-5 h-5 mb-1 ${isActive ? 'text-retro-neon' : ''}`} />
+            <span className="text-[9px] font-pixel tracking-tighter">{label}</span>
+        </Link>
+    );
+};
+
 // --- LAYOUT COMPONENTS ---
-const FooterStatus = () => {
+const FooterStatus = ({ crtEnabled, onToggleCrt }: { crtEnabled: boolean, onToggleCrt: () => void }) => {
     const [dbStatus, setDbStatus] = useState<'CHECKING' | 'ONLINE' | 'OFFLINE'>('CHECKING');
     const { enabled, toggleSound } = useSound();
-    const [crtEnabled, setCrtEnabled] = useState(true);
 
     useEffect(() => {
         const check = async () => {
@@ -82,17 +100,8 @@ const FooterStatus = () => {
         return () => clearInterval(interval);
     }, []);
 
-    const toggleCrt = () => {
-        const next = !crtEnabled;
-        setCrtEnabled(next);
-        const scanlines = document.querySelector('.scanlines');
-        const flicker = document.querySelector('.crt-flicker');
-        if (scanlines) scanlines.classList.toggle('hidden', !next);
-        if (flicker) flicker.classList.toggle('hidden', !next);
-    };
-
     return (
-        <footer className={`fixed bottom-0 left-0 right-0 ${!isSupabaseConfigured ? 'h-auto pb-1' : 'h-8'} bg-retro-dark border-t border-retro-grid flex flex-col justify-end z-50 font-mono`}>
+        <footer className={`hidden md:flex fixed bottom-0 left-0 right-0 ${!isSupabaseConfigured ? 'h-auto pb-1' : 'h-8'} bg-retro-dark border-t border-retro-grid flex-col justify-end z-50 font-mono`}>
             {!isSupabaseConfigured && (
                 <div className="w-full bg-retro-pink text-black text-center text-[10px] py-1 font-bold animate-pulse mb-1">
                     ⚠ SYSTEM ALERT: DATABASE DISCONNECTED (MISSING .ENV CONFIG)
@@ -111,14 +120,13 @@ const FooterStatus = () => {
                         }`}></span>
                         {dbStatus === 'CHECKING' ? 'ESTABLISHING UPLINK...' : `DATABASE ${dbStatus}`}
                     </span>
-                    {/* SITEMAP LINK */}
                     <Link to="/sitemap" className="text-gray-500 hover:text-retro-blue ml-4 border-l border-gray-700 pl-4">
                         [ SITEMAP ]
                     </Link>
                 </div>
                 
                 <div className="flex items-center space-x-4">
-                    <button onClick={toggleCrt} className="text-retro-blue hover:text-white border border-retro-blue px-2 transition-colors">
+                    <button onClick={onToggleCrt} className="text-retro-blue hover:text-white border border-retro-blue px-2 transition-colors">
                         {crtEnabled ? 'DISABLE CRT FX' : 'ENABLE CRT FX'}
                     </button>
                     <button onClick={toggleSound} className="text-retro-pink hover:text-white border border-retro-pink px-2 transition-colors">
@@ -134,7 +142,20 @@ const AppContent = () => {
   const [bootComplete, setBootComplete] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false);
+  const [crtEnabled, setCrtEnabled] = useState(true);
   const location = useLocation();
+  const { enabled: soundEnabled, toggleSound } = useSound();
+
+  // CRT Effect Toggle Logic
+  const toggleCrt = () => {
+    const next = !crtEnabled;
+    setCrtEnabled(next);
+    const scanlines = document.querySelector('.scanlines');
+    const flicker = document.querySelector('.crt-flicker');
+    if (scanlines) scanlines.classList.toggle('hidden', !next);
+    if (flicker) flicker.classList.toggle('hidden', !next);
+  };
 
   // Scroll to top on route change
   useEffect(() => {
@@ -149,6 +170,7 @@ const AppContent = () => {
 
   useEffect(() => {
       setMobileSearchOpen(false);
+      setMobileSettingsOpen(false);
   }, [location]);
 
   useEffect(() => {
@@ -173,25 +195,67 @@ const AppContent = () => {
   }
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen pt-0 md:pt-0 pb-12">
+    <div className="flex flex-col md:flex-row min-h-screen pt-0 md:pt-0 pb-20 md:pb-12 bg-retro-dark">
       <SEOHead title="Gateway to the Golden Age" description="Comparing retro consoles and games." />
 
       {/* MOBILE HEADER */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-retro-dark border-b border-retro-grid z-40 flex items-center justify-between px-4">
-        <div className="font-pixel text-retro-neon text-sm">THE RETRO CIRCUIT</div>
+      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-retro-dark border-b border-retro-grid z-40 flex items-center justify-between px-4 shadow-lg">
+        <Link to="/" className="font-pixel text-retro-neon text-sm flex items-center gap-2">
+            <span className="text-xl">❖</span>
+            THE RETRO CIRCUIT
+        </Link>
         <div className="flex gap-4 items-center">
             <button 
-                onClick={() => setMobileSearchOpen(!mobileSearchOpen)} 
+                onClick={() => { setMobileSearchOpen(!mobileSearchOpen); setMobileSettingsOpen(false); }}
                 className={`p-2 transition-colors ${mobileSearchOpen ? 'text-retro-neon' : 'text-gray-400'}`}
+                aria-label="Search"
             >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
             </button>
-            {isAdmin && <Link to="/admin" className="p-2 text-retro-pink"><IconLock /></Link>}
-            <Link to="/login"><IconLogin /></Link>
+            <button
+                onClick={() => { setMobileSettingsOpen(!mobileSettingsOpen); setMobileSearchOpen(false); }}
+                className={`p-2 transition-colors ${mobileSettingsOpen ? 'text-retro-neon' : 'text-gray-400'}`}
+                aria-label="Settings"
+            >
+                <IconSettings className="w-5 h-5" />
+            </button>
+            {isAdmin && <Link to="/admin" className="p-2 text-retro-pink"><IconLock className="w-5 h-5" /></Link>}
         </div>
       </div>
+
+      {/* MOBILE SETTINGS DROPDOWN */}
+      {mobileSettingsOpen && (
+          <div className="md:hidden fixed top-16 right-0 w-64 bg-retro-dark border-l border-b border-retro-grid z-50 p-4 shadow-xl animate-[slideDown_0.2s_ease-out]">
+              <div className="space-y-4">
+                  <div>
+                      <h4 className="font-pixel text-xs text-retro-blue mb-2">SYSTEM CONTROLS</h4>
+                      <button 
+                        onClick={toggleCrt} 
+                        className={`w-full border p-2 font-mono text-xs flex justify-between ${crtEnabled ? 'border-retro-neon text-retro-neon bg-retro-neon/10' : 'border-gray-600 text-gray-500'}`}
+                      >
+                          <span>CRT EFFECTS</span>
+                          <span>{crtEnabled ? 'ON' : 'OFF'}</span>
+                      </button>
+                  </div>
+                  <div>
+                      <button 
+                        onClick={toggleSound} 
+                        className={`w-full border p-2 font-mono text-xs flex justify-between ${soundEnabled ? 'border-retro-pink text-retro-pink bg-retro-pink/10' : 'border-gray-600 text-gray-500'}`}
+                      >
+                          <span>AUDIO SYSTEM</span>
+                          <span>{soundEnabled ? 'ON' : 'OFF'}</span>
+                      </button>
+                  </div>
+                  <div className="pt-2 border-t border-retro-grid/50">
+                      <Link to="/login" className="block text-center w-full bg-retro-grid/20 hover:bg-retro-grid/40 text-gray-300 font-mono text-xs py-2 border border-retro-grid">
+                          LOGIN / PROFILE
+                      </Link>
+                  </div>
+              </div>
+          </div>
+      )}
 
       {/* MOBILE SEARCH OVERLAY */}
       {mobileSearchOpen && (
@@ -215,65 +279,74 @@ const AppContent = () => {
             <SidebarItem to="/" icon={IconHome} label="DASHBOARD" exact />
             <SidebarItem to="/news" icon={IconNews} label="NEWS FEED" />
             <SidebarItem to="/games" icon={IconGames} label="GAMES" />
-            <SidebarItem to="/consoles" icon={IconDatabase} label="HARDWARE DB" />
+            <SidebarItem to="/consoles" icon={IconDatabase} label="HARDWARE" />
             <SidebarItem to="/comparer" icon={IconVS} label="VS. MODE" />
             <SidebarItem to="/timeline" icon={IconTimeline} label="TIMELINE" />
         </nav>
-
+        
         <div className="p-4 border-t border-retro-grid">
-            {isAdmin && <SidebarItem to="/admin" icon={IconLock} label="ROOT ACCESS" />}
-            <SidebarItem to="/login" icon={IconLogin} label="LOGIN / PROFILE" />
+            <Link to="/login" className="flex items-center text-xs font-mono text-gray-500 hover:text-retro-neon transition-colors">
+                <IconLogin className="w-4 h-4 mr-2" />
+                <span>PILOT LOGIN</span>
+            </Link>
+            {isAdmin && (
+                <Link to="/admin" className="flex items-center text-xs font-mono text-retro-pink hover:text-white transition-colors mt-2">
+                    <IconLock className="w-4 h-4 mr-2" />
+                    <span>ADMIN ACCESS</span>
+                </Link>
+            )}
         </div>
       </aside>
 
       {/* MOBILE BOTTOM NAV */}
-      <nav className="md:hidden fixed bottom-8 left-0 right-0 bg-retro-dark border-t border-retro-grid flex justify-around p-2 z-40">
-        <Link to="/" className="p-2 text-gray-400 hover:text-retro-neon"><IconHome /></Link>
-        <Link to="/news" className="p-2 text-gray-400 hover:text-retro-neon"><IconNews /></Link>
-        <Link to="/games" className="p-2 text-gray-400 hover:text-retro-neon"><IconGames /></Link>
-        <Link to="/consoles" className="p-2 text-gray-400 hover:text-retro-neon"><IconDatabase /></Link>
-        <Link to="/comparer" className="p-2 text-gray-400 hover:text-retro-neon"><IconVS /></Link>
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-retro-dark border-t border-retro-grid z-50 flex items-center justify-between px-2 pb-safe">
+        <MobileNavItem to="/" icon={IconHome} label="HOME" exact />
+        <MobileNavItem to="/news" icon={IconNews} label="NEWS" />
+        <MobileNavItem to="/games" icon={IconGames} label="GAMES" />
+        <MobileNavItem to="/consoles" icon={IconDatabase} label="HARDWARE" />
+        <MobileNavItem to="/timeline" icon={IconTimeline} label="TIMELINE" />
       </nav>
 
-      {/* MAIN CONTENT AREA */}
-      <main className="flex-1 md:ml-64 p-4 md:p-8 pt-20 md:pt-8 min-h-screen">
-        <Suspense fallback={<div className="flex items-center justify-center h-full"><RetroLoader /></div>}>
-            <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/news" element={<NewsSection />} />
-                <Route path="/games" element={<GamesList />} />
-                <Route path="/games/:slug" element={<GameDetails />} />
-                <Route path="/consoles" element={<ConsoleLibrary />} />
-                <Route path="/consoles/brand/:name" element={<ManufacturerDetail />} />
-                <Route path="/consoles/:slug" element={<ConsoleSpecs />} />
-                <Route path="/comparer" element={<ConsoleComparer />} />
-                <Route path="/timeline" element={<Timeline />} />
-                <Route path="/login" element={<AuthSection />} />
-                <Route path="/admin" element={<AdminPortal />} />
-                <Route path="/sitemap" element={<HtmlSitemap />} />
-                {/* Catch-all 404 Route */}
-                <Route path="*" element={<NotFound />} />
-            </Routes>
+      {/* MAIN CONTENT */}
+      <main className="flex-1 md:ml-64 pt-16 md:pt-0 min-h-screen transition-all duration-300 relative">
+        <Suspense fallback={<div className="pt-20"><RetroLoader /></div>}>
+            <ErrorBoundary>
+                <Routes>
+                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/news" element={<NewsSection limit={10} />} />
+                    <Route path="/games" element={<GamesList />} />
+                    <Route path="/games/:slug" element={<GameDetails />} />
+                    <Route path="/consoles" element={<ConsoleLibrary />} />
+                    <Route path="/consoles/brand/:name" element={<ManufacturerDetail />} />
+                    <Route path="/consoles/:slug" element={<ConsoleSpecs />} />
+                    <Route path="/comparer" element={<ConsoleComparer />} />
+                    <Route path="/timeline" element={<Timeline />} />
+                    <Route path="/login" element={<AuthSection />} />
+                    <Route path="/admin" element={<AdminPortal />} />
+                    <Route path="/sitemap" element={<HtmlSitemap />} />
+                    <Route path="*" element={<NotFound />} />
+                </Routes>
+            </ErrorBoundary>
         </Suspense>
       </main>
 
-      <FooterStatus />
+      {/* DESKTOP FOOTER */}
+      <FooterStatus crtEnabled={crtEnabled} onToggleCrt={toggleCrt} />
     </div>
   );
 };
 
-const App = () => {
-  return (
-    <ErrorBoundary>
-        <SoundProvider>
-            <BrowserRouter>
-                <AppContent />
-            </BrowserRouter>
-        </SoundProvider>
-    </ErrorBoundary>
-  );
-};
-
+// --- INITIALIZATION ---
 const container = document.getElementById('root');
-const root = createRoot(container!);
-root.render(<App />);
+if (container) {
+  const root = createRoot(container);
+  root.render(
+    <React.StrictMode>
+      <BrowserRouter>
+        <SoundProvider>
+          <AppContent />
+        </SoundProvider>
+      </BrowserRouter>
+    </React.StrictMode>
+  );
+}
