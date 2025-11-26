@@ -1,6 +1,8 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import * as React from 'react';
+import { useState, useEffect, Suspense, lazy, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Analytics } from "@vercel/analytics/react";
 import BootSequence from './components/BootSequence';
 import { SoundProvider, useSound } from './components/SoundContext';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -11,19 +13,19 @@ import GlobalSearch from './components/GlobalSearch';
 import RetroLoader from './components/RetroLoader';
 
 // --- LAZY LOADED PAGES (Code Splitting) ---
-const LandingPage = React.lazy(() => import('./components/LandingPage'));
-const NewsSection = React.lazy(() => import('./components/NewsSection'));
-const ConsoleComparer = React.lazy(() => import('./components/ConsoleComparer'));
-const GamesList = React.lazy(() => import('./components/GamesList'));
-const GameDetails = React.lazy(() => import('./components/GameDetails'));
-const Timeline = React.lazy(() => import('./components/Timeline'));
-const AuthSection = React.lazy(() => import('./components/AuthSection'));
-const ConsoleLibrary = React.lazy(() => import('./components/ConsoleLibrary'));
-const ConsoleSpecs = React.lazy(() => import('./components/ConsoleSpecs'));
-const ManufacturerDetail = React.lazy(() => import('./components/ManufacturerDetail'));
-const AdminPortal = React.lazy(() => import('./components/AdminPortal'));
-const HtmlSitemap = React.lazy(() => import('./components/HtmlSitemap'));
-const NotFound = React.lazy(() => import('./components/NotFound'));
+const LandingPage = lazy(() => import('./components/LandingPage'));
+const NewsSection = lazy(() => import('./components/NewsSection'));
+const ConsoleComparer = lazy(() => import('./components/ConsoleComparer'));
+const GamesList = lazy(() => import('./components/GamesList'));
+const GameDetails = lazy(() => import('./components/GameDetails'));
+const Timeline = lazy(() => import('./components/Timeline'));
+const AuthSection = lazy(() => import('./components/AuthSection'));
+const ConsoleLibrary = lazy(() => import('./components/ConsoleLibrary'));
+const ConsoleSpecs = lazy(() => import('./components/ConsoleSpecs'));
+const ManufacturerDetail = lazy(() => import('./components/ManufacturerDetail'));
+const AdminPortal = lazy(() => import('./components/AdminPortal'));
+const HtmlSitemap = lazy(() => import('./components/HtmlSitemap'));
+const NotFound = lazy(() => import('./components/NotFound'));
 
 // --- ICONS ---
 const IconNews = ({ className = "w-5 h-5" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>;
@@ -342,13 +344,14 @@ const AppContent = () => {
 
 const App = () => {
     return (
-        <React.StrictMode>
+        <StrictMode>
             <SoundProvider>
                 <BrowserRouter>
                     <AppContent />
+                    <Analytics />
                 </BrowserRouter>
             </SoundProvider>
-        </React.StrictMode>
+        </StrictMode>
     );
 };
 
