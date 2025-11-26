@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { fetchConsoleBySlug, fetchGamesForConsole } from '../services/geminiService';
 import { ConsoleDetails, GameOfTheWeekData } from '../types';
 import Button from './Button';
@@ -10,6 +10,7 @@ import SEOHead from './SEOHead';
 
 const ConsoleSpecs: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
   const [consoleData, setConsoleData] = useState<ConsoleDetails | null>(null);
   const [games, setGames] = useState<GameOfTheWeekData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,6 +34,11 @@ const ConsoleSpecs: React.FC = () => {
       if (!consoleData) return;
       const query = encodeURIComponent(`${consoleData.name} console`);
       window.open(`https://www.ebay.com/sch/i.html?_nkw=${query}`, '_blank');
+  };
+
+  const handleCompare = () => {
+      if (!consoleData) return;
+      navigate(`/comparer?preselect=${consoleData.slug}`);
   };
 
   if (loading) return <RetroLoader />;
@@ -165,6 +171,11 @@ const ConsoleSpecs: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            <Button onClick={handleCompare} variant="secondary" className="w-full flex items-center justify-center gap-2">
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                VS. COMPARE SYSTEM
+            </Button>
          </div>
 
          {/* Right Col: Specs & Info */}

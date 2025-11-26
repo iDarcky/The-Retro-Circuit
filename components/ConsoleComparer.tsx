@@ -1,10 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { compareConsoles, fetchConsoleList } from '../services/geminiService';
 import { ComparisonResult } from '../types';
 import Button from './Button';
 
 const ConsoleComparer: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [consoleA, setConsoleA] = useState('');
   const [consoleB, setConsoleB] = useState('');
   const [consoleList, setConsoleList] = useState<{name: string, slug: string}[]>([]);
@@ -18,6 +20,14 @@ const ConsoleComparer: React.FC = () => {
     };
     loadList();
   }, []);
+
+  // Handle URL Preselect (coming from ConsoleSpecs page)
+  useEffect(() => {
+      const preselect = searchParams.get('preselect');
+      if (preselect) {
+          setConsoleA(preselect);
+      }
+  }, [searchParams]);
 
   const handleCompare = async () => {
     if (!consoleA || !consoleB) return;
