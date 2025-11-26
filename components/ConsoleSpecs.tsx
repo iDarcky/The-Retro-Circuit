@@ -6,6 +6,7 @@ import { ConsoleDetails } from '../types';
 import Button from './Button';
 import RetroLoader from './RetroLoader';
 import CollectionToggle from './CollectionToggle';
+import SEOHead from './SEOHead';
 
 const ConsoleSpecs: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -34,6 +35,7 @@ const ConsoleSpecs: React.FC = () => {
   if (!consoleData) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
+        <SEOHead title="Unknown Hardware" description="Hardware specification not found." />
         <h2 className="font-pixel text-retro-pink text-2xl mb-4">ERROR 404</h2>
         <p className="font-mono text-gray-400 mb-8">CONSOLE DATA NOT FOUND IN ARCHIVE.</p>
         <Link to="/consoles">
@@ -43,8 +45,35 @@ const ConsoleSpecs: React.FC = () => {
     );
   }
 
+  // Schema for Product (Hardware)
+  const productSchema = {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": consoleData.name,
+    "image": consoleData.image_url,
+    "description": consoleData.intro_text.substring(0, 160),
+    "brand": {
+      "@type": "Brand",
+      "name": consoleData.manufacturer
+    },
+    "releaseDate": consoleData.release_year.toString(),
+    "manufacturer": {
+      "@type": "Organization",
+      "name": consoleData.manufacturer
+    },
+    "category": "Video Game Consoles"
+  };
+
   return (
     <div className="w-full max-w-5xl mx-auto p-4">
+      <SEOHead 
+        title={`${consoleData.name} Specs & History`} 
+        description={`Full specifications, history, and market data for the ${consoleData.manufacturer} ${consoleData.name}. Released in ${consoleData.release_year}.`}
+        image={consoleData.image_url}
+        type="product"
+        structuredData={productSchema}
+      />
+
       {/* Header */}
       <div className="mb-8 border-b-4 border-retro-grid pb-6 flex flex-col md:flex-row justify-between items-end">
         <div>

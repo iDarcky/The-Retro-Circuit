@@ -6,6 +6,7 @@ import { GameOfTheWeekData } from '../types';
 import Button from './Button';
 import RetroLoader from './RetroLoader';
 import CollectionToggle from './CollectionToggle';
+import SEOHead from './SEOHead';
 
 const GameDetails: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -28,6 +29,7 @@ const GameDetails: React.FC = () => {
   if (!game) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
+        <SEOHead title="Game Not Found" description="The requested game cartridge could not be located in our archives." />
         <h2 className="font-pixel text-retro-pink text-2xl mb-4">ERROR 404</h2>
         <p className="font-mono text-gray-400 mb-8">GAME CARTRIDGE NOT FOUND.</p>
         <Link to="/games">
@@ -42,8 +44,38 @@ const GameDetails: React.FC = () => {
       window.open(`https://www.ebay.com/sch/i.html?_nkw=${query}`, '_blank');
   };
 
+  // Google Schema for Video Game
+  const gameSchema = {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": game.title,
+    "description": game.content.substring(0, 160) + "...",
+    "genre": [game.genre],
+    "gamePlatform": "Retro Console",
+    "publisher": game.developer,
+    "author": {
+      "@type": "Organization",
+      "name": game.developer
+    },
+    "datePublished": game.year,
+    "image": game.image,
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": game.rating || 5,
+      "bestRating": "5",
+      "ratingCount": "1" // Static for now, would be dynamic in a real review system
+    }
+  };
+
   return (
     <div className="w-full max-w-6xl mx-auto p-4">
+      <SEOHead 
+        title={`${game.title} (${game.year}) Review`} 
+        description={`Read our retrospective review of ${game.title} by ${game.developer}. ${game.whyItMatters}`}
+        image={game.image}
+        structuredData={gameSchema}
+      />
+      
       {/* Header */}
       <div className="mb-8 border-b-4 border-retro-grid pb-6">
         <div className="flex justify-between items-start mb-4">
