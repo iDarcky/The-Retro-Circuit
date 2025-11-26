@@ -353,7 +353,7 @@ const FALLBACK_MANUFACTURERS: Record<string, ManufacturerProfile> = {
         key_franchises: ['Anime Sticker Maker'],
         description: 'Failed girls-focused console, Japan-only. Notable Consoles: Loopy.'
     },
-    // MODERN HANDHELD FALLBACKS
+    // MODERN HANDHELDS
     'Valve': {
         name: 'Valve',
         founded: '1996',
@@ -589,6 +589,11 @@ export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
 
 export const fetchConsoleList = async (): Promise<{name: string, slug: string}[]> => {
     const { data } = await supabase.from('consoles').select('name, slug').order('name');
+    return data || [];
+};
+
+export const fetchGameList = async (): Promise<{title: string, slug: string, id: string}[]> => {
+    const { data } = await supabase.from('games').select('title, slug, id').order('title');
     return data || [];
 };
 

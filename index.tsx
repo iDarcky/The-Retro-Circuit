@@ -24,6 +24,7 @@ const ConsoleLibrary = React.lazy(() => import('./components/ConsoleLibrary'));
 const ConsoleSpecs = React.lazy(() => import('./components/ConsoleSpecs'));
 const ManufacturerDetail = React.lazy(() => import('./components/ManufacturerDetail'));
 const AdminPortal = React.lazy(() => import('./components/AdminPortal'));
+const HtmlSitemap = React.lazy(() => import('./components/HtmlSitemap'));
 const NotFound = React.lazy(() => import('./components/NotFound'));
 
 // --- ICONS ---
@@ -110,6 +111,10 @@ const FooterStatus = () => {
                         }`}></span>
                         {dbStatus === 'CHECKING' ? 'ESTABLISHING UPLINK...' : `DATABASE ${dbStatus}`}
                     </span>
+                    {/* SITEMAP LINK */}
+                    <Link to="/sitemap" className="text-gray-500 hover:text-retro-blue ml-4 border-l border-gray-700 pl-4">
+                        [ SITEMAP ]
+                    </Link>
                 </div>
                 
                 <div className="flex items-center space-x-4">
@@ -245,6 +250,7 @@ const AppContent = () => {
                 <Route path="/timeline" element={<Timeline />} />
                 <Route path="/login" element={<AuthSection />} />
                 <Route path="/admin" element={<AdminPortal />} />
+                <Route path="/sitemap" element={<HtmlSitemap />} />
                 {/* Catch-all 404 Route */}
                 <Route path="*" element={<NotFound />} />
             </Routes>
