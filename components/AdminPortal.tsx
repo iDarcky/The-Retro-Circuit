@@ -54,6 +54,33 @@ const AdminPortal: React.FC = () => {
         check();
     }, []);
 
+    const fillSpecTemplate = () => {
+        const template = {
+            release_date: "YYYY-MM-DD",
+            discontinued_date: "YYYY-MM-DD",
+            dimensions: "00 x 00 x 00 mm",
+            weight: "000g",
+            casing: "Material description",
+            cpu: "Processor Name",
+            gpu: "Graphics Chip",
+            ram: "0 KB/MB",
+            media: "Cartridge/CD/Digital",
+            audio: "Sound Chip Details",
+            resolution: "000x000",
+            display_type: "N/A or LCD Type",
+            storage: "Internal Capacity",
+            units_sold: "00 million",
+            launch_price: "$000",
+            inflation_price: "$000",
+            best_selling_game: "Game Title",
+            ports: ["Port 1", "Port 2"],
+            power_supply: "Battery or Adapter",
+            battery_life: "00 hours",
+            connectivity: "N/A or Wi-Fi/Link Cable"
+        };
+        setConsoleSpecs(JSON.stringify(template, null, 4));
+    };
+
     const handleSubmitNews = async (e: React.FormEvent) => {
         e.preventDefault();
         setMessage(null);
@@ -237,8 +264,13 @@ const AdminPortal: React.FC = () => {
                         <input className="bg-black border border-gray-700 p-2 col-span-2" placeholder="Image URL" value={consoleImage} onChange={e => setConsoleImage(e.target.value)} />
                         <textarea className="bg-black border border-gray-700 p-2 col-span-2 h-20" placeholder="Intro Text" value={consoleIntro} onChange={e => setConsoleIntro(e.target.value)} />
                         <div className="col-span-2">
-                            <label className="text-xs text-retro-neon mb-1 block">ADDITIONAL SPECS (JSON)</label>
-                            <textarea className="bg-black border border-gray-700 p-2 w-full h-40 font-mono text-xs" value={consoleSpecs} onChange={e => setConsoleSpecs(e.target.value)} 
+                            <div className="flex justify-between items-end mb-2">
+                                <label className="text-xs text-retro-neon block">ADDITIONAL SPECS (JSON)</label>
+                                <button type="button" onClick={fillSpecTemplate} className="text-[10px] text-retro-blue hover:text-white border border-retro-blue px-2 py-1">
+                                    LOAD TEMPLATE
+                                </button>
+                            </div>
+                            <textarea className="bg-black border border-gray-700 p-2 w-full h-64 font-mono text-xs" value={consoleSpecs} onChange={e => setConsoleSpecs(e.target.value)} 
                             placeholder='{ "cpu": "...", "ram": "..." }' />
                         </div>
                         <div className="col-span-2"><Button type="submit">REGISTER HARDWARE</Button></div>
