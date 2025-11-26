@@ -12,28 +12,24 @@ const SEOHead: React.FC<SEOHeadProps> = ({ title, description, type = 'website' 
     // Update Title
     document.title = `THE RETRO CIRCUIT | ${title}`;
 
-    // Helper to update meta tags
-    const updateMeta = (name: string, content: string, attribute = 'name') => {
-      let element = document.querySelector(`meta[${attribute}="${name}"]`);
-      if (!element) {
+    // Helper to safely update or create meta tags
+    const updateMeta = (selector: string, attribute: string, value: string, createKey?: string, createVal?: string) => {
+      let element = document.querySelector(selector);
+      if (!element && createKey && createVal) {
         element = document.createElement('meta');
-        element.setAttribute(attribute, name);
+        element.setAttribute(createKey, createVal);
         document.head.appendChild(element);
       }
-      element.setAttribute('content', content);
+      if (element) {
+        element.setAttribute(attribute, value);
+      }
     };
 
-    // Update Standard Meta
-    updateMeta('description', description);
+    updateMeta('meta[name="description"]', 'content', description, 'name', 'description');
+    updateMeta('meta[property="og:title"]', 'content', `The Retro Circuit - ${title}`, 'property', 'og:title');
+    updateMeta('meta[property="og:description"]', 'content', description, 'property', 'og:description');
+    updateMeta('meta[property="og:type"]', 'content', type, 'property', 'og:type');
 
-    // Update Open Graph (Social Media)
-    updateMeta('og:title', `The Retro Circuit - ${title}`, 'property');
-    updateMeta('og:description', description, 'property');
-    updateMeta('og:type', type, 'property');
-    updateMeta('og:site_name', 'The Retro Circuit', 'property');
-
-    // Cleanup isn't strictly necessary for a simple SPA, 
-    // but good practice if we were unmounting to a non-SEO state.
   }, [title, description, type]);
 
   return null;
