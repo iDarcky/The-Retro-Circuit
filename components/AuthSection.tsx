@@ -1,6 +1,5 @@
 
-import * as React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { retroAuth, fetchUserCollection } from '../services/geminiService';
 import { supabase } from '../services/supabaseClient';
 import Button from './Button';

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { useSound } from './SoundContext';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

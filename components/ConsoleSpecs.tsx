@@ -1,6 +1,5 @@
 
-import * as React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { fetchConsoleBySlug, fetchGamesForConsole } from '../services/geminiService';
 import { ConsoleDetails, GameOfTheWeekData } from '../types';

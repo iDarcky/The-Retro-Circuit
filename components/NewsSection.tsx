@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { useEffect, useState, useCallback } from 'react';
+
+import React, { useEffect, useState, useCallback } from 'react';
 import { fetchRetroNews, addNewsItem, fetchConsoleList, fetchGameList } from '../services/geminiService';
 import { NewsItem } from '../types';
 import Button from './Button';

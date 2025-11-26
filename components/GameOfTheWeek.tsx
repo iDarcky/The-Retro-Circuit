@@ -1,6 +1,5 @@
 
-import * as React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { fetchGameOfTheWeek } from '../services/geminiService';
 import { GameOfTheWeekData } from '../types';
 import Button from './Button';
