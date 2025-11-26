@@ -1,26 +1,30 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
-import LandingPage from './components/LandingPage';
-import NewsSection from './components/NewsSection';
-import ConsoleComparer from './components/ConsoleComparer';
-import GamesList from './components/GamesList';
-import GameDetails from './components/GameDetails';
-import Timeline from './components/Timeline';
-import AuthSection from './components/AuthSection';
 import BootSequence from './components/BootSequence';
-import ConsoleLibrary from './components/ConsoleLibrary';
-import ConsoleSpecs from './components/ConsoleSpecs';
-import ManufacturerDetail from './components/ManufacturerDetail';
-import AdminPortal from './components/AdminPortal';
-import NotFound from './components/NotFound';
 import { SoundProvider, useSound } from './components/SoundContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import SEOHead from './components/SEOHead';
 import { checkDatabaseConnection, retroAuth } from './services/geminiService';
 import { supabase, isSupabaseConfigured } from './services/supabaseClient';
 import GlobalSearch from './components/GlobalSearch';
+import RetroLoader from './components/RetroLoader'; // Keep critical UI eager loaded
+
+// --- LAZY LOADED PAGES (Code Splitting) ---
+// This splits the app into separate files for each page, improving initial load time.
+const LandingPage = React.lazy(() => import('./components/LandingPage'));
+const NewsSection = React.lazy(() => import('./components/NewsSection'));
+const ConsoleComparer = React.lazy(() => import('./components/ConsoleComparer'));
+const GamesList = React.lazy(() => import('./components/GamesList'));
+const GameDetails = React.lazy(() => import('./components/GameDetails'));
+const Timeline = React.lazy(() => import('./components/Timeline'));
+const AuthSection = React.lazy(() => import('./components/AuthSection'));
+const ConsoleLibrary = React.lazy(() => import('./components/ConsoleLibrary'));
+const ConsoleSpecs = React.lazy(() => import('./components/ConsoleSpecs'));
+const ManufacturerDetail = React.lazy(() => import('./components/ManufacturerDetail'));
+const AdminPortal = React.lazy(() => import('./components/AdminPortal'));
+const NotFound = React.lazy(() => import('./components/NotFound'));
 
 // --- ICONS ---
 const IconNews = () => <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>;
@@ -228,21 +232,23 @@ const AppContent = () => {
 
       {/* MAIN CONTENT AREA */}
       <main className="flex-1 md:ml-64 p-4 md:p-8 pt-20 md:pt-8 min-h-screen">
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/news" element={<NewsSection />} />
-          <Route path="/games" element={<GamesList />} />
-          <Route path="/games/:slug" element={<GameDetails />} />
-          <Route path="/consoles" element={<ConsoleLibrary />} />
-          <Route path="/consoles/brand/:name" element={<ManufacturerDetail />} />
-          <Route path="/consoles/:slug" element={<ConsoleSpecs />} />
-          <Route path="/comparer" element={<ConsoleComparer />} />
-          <Route path="/timeline" element={<Timeline />} />
-          <Route path="/login" element={<AuthSection />} />
-          <Route path="/admin" element={<AdminPortal />} />
-          {/* Catch-all 404 Route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><RetroLoader /></div>}>
+            <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/news" element={<NewsSection />} />
+                <Route path="/games" element={<GamesList />} />
+                <Route path="/games/:slug" element={<GameDetails />} />
+                <Route path="/consoles" element={<ConsoleLibrary />} />
+                <Route path="/consoles/brand/:name" element={<ManufacturerDetail />} />
+                <Route path="/consoles/:slug" element={<ConsoleSpecs />} />
+                <Route path="/comparer" element={<ConsoleComparer />} />
+                <Route path="/timeline" element={<Timeline />} />
+                <Route path="/login" element={<AuthSection />} />
+                <Route path="/admin" element={<AdminPortal />} />
+                {/* Catch-all 404 Route */}
+                <Route path="*" element={<NotFound />} />
+            </Routes>
+        </Suspense>
       </main>
 
       <FooterStatus />
