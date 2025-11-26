@@ -8,6 +8,33 @@ import RetroLoader from './RetroLoader';
 import CollectionToggle from './CollectionToggle';
 import SEOHead from './SEOHead';
 
+// Helper component for table rows
+const SpecRow = ({ label, value, highlight = false }: { label: string, value?: string, highlight?: boolean }) => {
+    if (!value) return null;
+    return (
+        <tr className="border-b border-retro-grid/50 last:border-0 hover:bg-white/5 transition-colors">
+            <td className="py-3 px-2 md:px-4 font-mono text-xs uppercase text-gray-400 w-1/3 md:w-1/4 align-top">
+                {label}
+            </td>
+            <td className={`py-3 px-2 md:px-4 font-mono text-sm ${highlight ? 'text-retro-neon font-bold' : 'text-gray-200'}`}>
+                {value}
+            </td>
+        </tr>
+    );
+};
+
+// Helper component for sections
+const SpecSection = ({ title, children }: { title: string, children: React.ReactNode }) => (
+    <div className="mb-0 border-b border-retro-grid last:border-0">
+        <h3 className="bg-retro-grid/20 text-retro-blue font-pixel text-xs px-4 py-2 uppercase tracking-wider border-b border-retro-grid/30">
+            {title}
+        </h3>
+        <table className="w-full">
+            <tbody>{children}</tbody>
+        </table>
+    </div>
+);
+
 const ConsoleSpecs: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
@@ -76,7 +103,7 @@ const ConsoleSpecs: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-4">
+    <div className="w-full max-w-6xl mx-auto p-0 md:p-4">
       <SEOHead 
         title={`${consoleData.name} Specs & History`} 
         description={`Full specifications, history, and market data for the ${consoleData.manufacturer} ${consoleData.name}. Released in ${consoleData.release_year}.`}
@@ -85,217 +112,175 @@ const ConsoleSpecs: React.FC = () => {
         structuredData={productSchema}
       />
 
-      {/* Header */}
-      <div className="mb-8 border-b-4 border-retro-grid pb-6 flex flex-col md:flex-row justify-between items-end">
-        <div>
-           <div className="flex gap-2 mb-2">
-              <span className="font-mono text-xs text-retro-dark bg-retro-neon px-2 py-0.5 font-bold">
-                  GEN {consoleData.generation}
-              </span>
-              <span className="font-mono text-xs text-retro-blue border border-retro-blue px-2 py-0.5">
-                  {consoleData.type.toUpperCase()}
-              </span>
-           </div>
-           <h1 className="text-4xl md:text-5xl font-pixel text-white drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">
-             {consoleData.name}
-           </h1>
-           <p className="font-mono text-retro-pink mt-2 text-lg">
-             MANUFACTURED BY {consoleData.manufacturer.toUpperCase()} // EST. {consoleData.release_year}
-           </p>
+      {/* Main Container - GSM Arena Style Sheet */}
+      <div className="bg-retro-dark md:border border-retro-grid shadow-2xl overflow-hidden">
+        
+        {/* HEADER SECTION */}
+        <div className="p-6 border-b border-retro-grid relative bg-gradient-to-r from-retro-dark to-retro-grid/10">
+            <div className="flex flex-col gap-4">
+                <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <span className="font-mono text-[10px] text-black bg-retro-neon px-2 py-0.5 font-bold rounded-sm">
+                        GEN {consoleData.generation}
+                    </span>
+                    <span className="font-mono text-[10px] text-retro-blue border border-retro-blue px-2 py-0.5 rounded-sm">
+                        {consoleData.type.toUpperCase()}
+                    </span>
+                    <Link to={`/consoles/brand/${consoleData.manufacturer}`} className="font-mono text-[10px] text-gray-400 hover:text-white border-b border-gray-600 hover:border-white transition-colors">
+                        {consoleData.manufacturer.toUpperCase()}
+                    </Link>
+                </div>
+                
+                <h1 className="text-3xl md:text-5xl font-pixel text-white drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">
+                    {consoleData.name}
+                </h1>
+                
+                {/* Action Bar */}
+                <div className="flex flex-wrap gap-3 mt-2">
+                    <CollectionToggle 
+                        itemId={consoleData.slug || consoleData.id} 
+                        itemType="CONSOLE" 
+                        itemName={consoleData.name} 
+                        itemImage={consoleData.image_url}
+                    />
+                    <Button onClick={handleCompare} variant="secondary" className="text-xs py-1 h-full">
+                        VS. COMPARE
+                    </Button>
+                    <button 
+                        onClick={handleEbaySearch}
+                        className="bg-blue-900/30 border border-blue-500 text-blue-300 hover:bg-blue-600 hover:text-white px-3 py-1 font-mono text-xs transition-colors flex items-center gap-2"
+                    >
+                        FIND ON EBAY
+                    </button>
+                </div>
+            </div>
         </div>
-        <div className="mt-4 md:mt-0 flex flex-col items-end gap-2">
-            <div className="flex gap-2 mb-2">
-                <Link to="/consoles">
-                    <Button variant="secondary" className="text-xs py-2">BACK TO LIST</Button>
-                </Link>
-                <button 
-                    onClick={handleEbaySearch}
-                    className="bg-blue-600/20 border border-blue-500 text-blue-400 hover:bg-blue-600 hover:text-white px-3 py-2 font-mono text-xs transition-colors flex items-center gap-2"
-                    title="Search on eBay"
-                >
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-                    BUY ON EBAY
-                </button>
-            </div>
-            <div className="w-64">
-                <CollectionToggle 
-                    itemId={consoleData.slug || consoleData.id} 
-                    itemType="CONSOLE" 
-                    itemName={consoleData.name} 
-                    itemImage={consoleData.image_url}
-                />
-            </div>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-         {/* Left Col: Image & Market Data */}
-         <div className="space-y-6">
-            <div className="aspect-square bg-retro-grid/20 border-2 border-retro-grid flex items-center justify-center p-8 relative overflow-hidden group">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
-                {consoleData.image_url ? (
-                    <img src={consoleData.image_url} alt={consoleData.name} className="w-full object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.1)]" />
-                ) : (
-                    <div className="text-center">
-                        <div className="font-pixel text-6xl text-retro-grid mb-4">?</div>
-                        <div className="font-mono text-xs text-gray-500">NO VISUAL RECORD</div>
-                    </div>
-                )}
-                {/* Decorative corners */}
-                <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-retro-neon"></div>
-                <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-retro-neon"></div>
-                <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-retro-neon"></div>
-                <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-retro-neon"></div>
-            </div>
-
-            <div className="bg-retro-dark border border-retro-grid p-6">
-                <h3 className="font-pixel text-xs text-retro-blue mb-4 border-b border-retro-grid pb-2">MARKET PERFORMANCE</h3>
-                <div className="space-y-4 font-mono text-sm">
-                    <div className="flex justify-between">
-                        <span className="text-gray-500">TOTAL UNITS</span>
-                        <span className="text-white">{consoleData.units_sold}</span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-gray-500">LAUNCH PRICE</span>
-                        <span className="text-retro-neon">{consoleData.launch_price}</span>
-                    </div>
-                    {consoleData.inflation_price && (
-                        <div className="flex justify-between">
-                            <span className="text-gray-500 text-xs italic">INFLATION ADJ.</span>
-                            <span className="text-gray-400 text-xs italic">{consoleData.inflation_price}</span>
+        {/* CONTENT GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-12">
+            
+            {/* LEFT COLUMN: VISUALS & QUICK STATS (lg:col-span-4) */}
+            <div className="lg:col-span-4 border-b lg:border-b-0 lg:border-r border-retro-grid bg-black/20">
+                <div className="p-6">
+                    <div className="aspect-square bg-white/5 border border-retro-grid flex items-center justify-center p-8 relative overflow-hidden mb-6">
+                        {consoleData.image_url ? (
+                            <img src={consoleData.image_url} alt={consoleData.name} className="w-full h-full object-contain drop-shadow-xl" />
+                        ) : (
+                            <div className="text-center opacity-30">
+                                <div className="font-pixel text-4xl text-retro-grid">NO IMG</div>
+                            </div>
+                        )}
+                        <div className="absolute top-2 right-2 flex flex-col gap-1">
+                             <div className="w-2 h-2 bg-retro-neon rounded-full animate-pulse shadow-[0_0_10px_rgba(0,255,157,0.8)]"></div>
                         </div>
-                    )}
-                    <div>
-                        <span className="text-gray-500 block mb-1">BEST SELLING TITLE</span>
-                        <span className="text-retro-pink block truncate">{consoleData.best_selling_game}</span>
+                    </div>
+
+                    {/* Intro Text / Synopsis */}
+                    <div className="mb-6">
+                        <h4 className="font-pixel text-xs text-retro-pink mb-2">SYSTEM BRIEF</h4>
+                        <p className="font-mono text-xs text-gray-400 leading-relaxed text-justify">
+                            {consoleData.intro_text}
+                        </p>
+                    </div>
+
+                    {/* Quick Market Stats */}
+                    <div className="border-t border-retro-grid pt-4">
+                         <div className="flex justify-between items-center mb-2">
+                             <span className="font-mono text-xs text-gray-500">RELEASED</span>
+                             <span className="font-mono text-sm text-white">{consoleData.release_year}</span>
+                         </div>
+                         <div className="flex justify-between items-center mb-2">
+                             <span className="font-mono text-xs text-gray-500">SOLD</span>
+                             <span className="font-mono text-sm text-white">{consoleData.units_sold || 'N/A'}</span>
+                         </div>
+                         <div className="flex justify-between items-center">
+                             <span className="font-mono text-xs text-gray-500">PRICE (LAUNCH)</span>
+                             <span className="font-mono text-sm text-retro-neon">{consoleData.launch_price || 'N/A'}</span>
+                         </div>
                     </div>
                 </div>
             </div>
 
-            <Button onClick={handleCompare} variant="secondary" className="w-full flex items-center justify-center gap-2">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                VS. COMPARE SYSTEM
-            </Button>
-         </div>
-
-         {/* Right Col: Specs & Info */}
-         <div className="lg:col-span-2 space-y-8">
-            <div className="bg-retro-grid/10 p-6 border-l-4 border-retro-neon">
-                <h3 className="font-pixel text-sm text-retro-neon mb-4">SYSTEM OVERVIEW</h3>
-                <p className="font-mono text-gray-300 leading-relaxed whitespace-pre-line">
-                    {consoleData.intro_text}
-                </p>
-            </div>
-
-            {/* Core Tech */}
-            <div>
-                <h3 className="font-pixel text-xl text-white mb-6 flex items-center gap-4">
-                    TECHNICAL SPECS
-                    <div className="flex-1 h-px bg-retro-grid"></div>
-                </h3>
+            {/* RIGHT COLUMN: DETAILED SPECS TABLE (lg:col-span-8) */}
+            <div className="lg:col-span-8 bg-retro-dark">
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {[
-                        { label: 'CPU', value: consoleData.cpu },
-                        { label: 'GPU', value: consoleData.gpu },
-                        { label: 'MEMORY (RAM)', value: consoleData.ram },
-                        { label: 'MEDIA FORMAT', value: consoleData.media },
-                        { label: 'AUDIO CHIP', value: consoleData.audio },
-                        { label: 'RESOLUTION', value: consoleData.resolution },
-                        { label: 'DISPLAY TYPE', value: consoleData.display_type },
-                        { label: 'STORAGE', value: consoleData.storage },
-                    ].map((spec, i) => (
-                        spec.value ? (
-                            <div key={i} className="bg-retro-dark border border-retro-grid p-4 hover:border-retro-blue transition-colors group">
-                                <label className="block font-mono text-[10px] text-gray-500 mb-1 group-hover:text-retro-blue transition-colors">{spec.label}</label>
-                                <div className="font-mono text-sm text-retro-neon">{spec.value}</div>
+                {/* Launch Category */}
+                <SpecSection title="Launch">
+                    <SpecRow label="Announced" value={consoleData.release_year.toString()} />
+                    <SpecRow label="Status" value={consoleData.discontinued_date ? `Discontinued (${consoleData.discontinued_date})` : 'Discontinued'} />
+                </SpecSection>
+
+                {/* Body Category */}
+                <SpecSection title="Body">
+                    <SpecRow label="Dimensions" value={consoleData.dimensions} />
+                    <SpecRow label="Weight" value={consoleData.weight} />
+                    <SpecRow label="Build" value={consoleData.casing} />
+                </SpecSection>
+
+                {/* Platform Category */}
+                <SpecSection title="Platform">
+                    <SpecRow label="CPU" value={consoleData.cpu} highlight />
+                    <SpecRow label="GPU" value={consoleData.gpu} highlight />
+                    <SpecRow label="Media" value={consoleData.media} />
+                    <SpecRow label="Audio Chip" value={consoleData.audio} />
+                </SpecSection>
+
+                {/* Memory Category */}
+                <SpecSection title="Memory">
+                    <SpecRow label="Internal (RAM)" value={consoleData.ram} />
+                    <SpecRow label="Storage" value={consoleData.storage} />
+                </SpecSection>
+
+                {/* Display Category (Often relevant for handhelds) */}
+                <SpecSection title="Display">
+                    <SpecRow label="Resolution" value={consoleData.resolution} />
+                    <SpecRow label="Type" value={consoleData.display_type} />
+                </SpecSection>
+
+                {/* Comms/Ports Category */}
+                <SpecSection title="Comms">
+                    <SpecRow label="Ports" value={consoleData.ports?.join(", ")} />
+                    <SpecRow label="Network" value={consoleData.connectivity} />
+                </SpecSection>
+
+                 {/* Power Category */}
+                 <SpecSection title="Battery">
+                    <SpecRow label="Type" value={consoleData.power_supply} />
+                    <SpecRow label="Life" value={consoleData.battery_life} />
+                </SpecSection>
+
+                {/* Misc Category */}
+                <SpecSection title="Misc">
+                    <SpecRow label="Best Seller" value={consoleData.best_selling_game} highlight />
+                    <SpecRow label="Inflation Adj." value={consoleData.inflation_price} />
+                </SpecSection>
+
+            </div>
+        </div>
+
+        {/* RELATED GAMES SECTION (Footer of the sheet) */}
+        {games.length > 0 && (
+            <div className="border-t border-retro-grid p-6 bg-black/20">
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-pixel text-sm text-retro-neon">TOP TITLES</h3>
+                    <Link to="/games" className="text-[10px] font-mono text-retro-blue hover:text-white uppercase">See All Games &gt;</Link>
+                </div>
+                <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x">
+                    {games.map(game => (
+                        <Link to={`/games/${game.slug || game.id}`} key={game.id} className="snap-start flex-shrink-0 w-32 group">
+                            <div className="aspect-[3/4] bg-black border border-retro-grid mb-2 overflow-hidden relative">
+                                {game.image ? (
+                                    <img src={game.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-retro-grid font-pixel text-xs">NO ART</div>
+                                )}
                             </div>
-                        ) : null
+                            <div className="font-pixel text-[10px] text-gray-300 truncate group-hover:text-retro-neon">{game.title}</div>
+                            <div className="font-mono text-[9px] text-gray-500">{game.year}</div>
+                        </Link>
                     ))}
                 </div>
             </div>
-
-            {/* Physical & IO */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                 {/* Physical */}
-                 <div className="bg-retro-dark border border-retro-grid p-6">
-                    <h3 className="font-pixel text-xs text-retro-pink mb-4 border-b border-retro-grid pb-2">PHYSICAL CHASSIS</h3>
-                    <div className="space-y-4 font-mono text-sm">
-                        {consoleData.dimensions && (
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">DIMENSIONS</span>
-                                <span className="text-white text-right">{consoleData.dimensions}</span>
-                            </div>
-                        )}
-                        {consoleData.weight && (
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">WEIGHT</span>
-                                <span className="text-white text-right">{consoleData.weight}</span>
-                            </div>
-                        )}
-                        {consoleData.casing && (
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">MATERIAL</span>
-                                <span className="text-white text-right">{consoleData.casing}</span>
-                            </div>
-                        )}
-                         {consoleData.power_supply && (
-                            <div className="flex justify-between border-t border-retro-grid/30 pt-4 mt-4">
-                                <span className="text-gray-500">POWER</span>
-                                <span className="text-white text-right">{consoleData.power_supply}</span>
-                            </div>
-                        )}
-                        {consoleData.battery_life && (
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">BATTERY</span>
-                                <span className="text-retro-neon text-right">{consoleData.battery_life}</span>
-                            </div>
-                        )}
-                    </div>
-                 </div>
-
-                 {/* I/O */}
-                 <div className="bg-retro-dark border border-retro-grid p-6">
-                    <h3 className="font-pixel text-xs text-retro-blue mb-4 border-b border-retro-grid pb-2">I/O PORTS</h3>
-                    {consoleData.ports && consoleData.ports.length > 0 ? (
-                        <ul className="list-disc list-inside font-mono text-sm text-retro-neon space-y-1">
-                            {consoleData.ports.map((p, i) => <li key={i}>{p}</li>)}
-                        </ul>
-                    ) : (
-                        <span className="font-mono text-xs text-gray-500">NO PORT DATA AVAILABLE</span>
-                    )}
-                     {consoleData.connectivity && (
-                        <div className="mt-4 pt-4 border-t border-retro-grid/50">
-                             <span className="text-gray-500 text-xs block mb-1">NETWORK/EXPANSION</span>
-                             <span className="text-white font-mono text-sm">{consoleData.connectivity}</span>
-                        </div>
-                    )}
-                 </div>
-            </div>
-
-            {/* RELATED GAMES */}
-            {games.length > 0 && (
-                <div className="pt-8 border-t border-retro-grid">
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="font-pixel text-xl text-white">GAME LIBRARY</h3>
-                        <Link to="/games" className="text-xs font-mono text-retro-blue hover:text-white">VIEW ALL GAMES &gt;</Link>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {games.map(game => (
-                            <Link to={`/games/${game.slug || game.id}`} key={game.id} className="group border border-retro-grid bg-retro-dark p-4 flex gap-4 hover:border-retro-neon transition-colors">
-                                <div className="w-16 h-16 bg-black flex-shrink-0">
-                                    {game.image && <img src={game.image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100" />}
-                                </div>
-                                <div className="overflow-hidden">
-                                    <div className="font-pixel text-xs text-white truncate group-hover:text-retro-neon">{game.title}</div>
-                                    <div className="font-mono text-[10px] text-gray-500">{game.year} // {game.developer}</div>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-            )}
-         </div>
+        )}
       </div>
     </div>
   );
