@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+
+import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchManufacturers, fetchConsolesFiltered } from '../services/geminiService';
 import { ConsoleDetails, ConsoleFilterState } from '../types';
@@ -13,8 +14,8 @@ const ConsoleLibrary: React.FC = () => {
   
   // Pagination State for List View
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const observerTarget = useRef(null);
+  const [totalCount, setTotalCount] = useState(0);
+  const ITEMS_PER_PAGE = 12; // Fits 1, 2, 3 cols
 
   // Filter State
   const [filters, setFilters] = useState<ConsoleFilterState>({
@@ -36,45 +37,28 @@ const ConsoleLibrary: React.FC = () => {
     init();
   }, []);
 
-  const loadConsoles = useCallback(async (pageNum: number, isNewFilter: boolean) => {
-      if (isNewFilter) setLoading(true);
+  const loadConsoles = useCallback(async (pageNum: number) => {
+      setLoading(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       
-      const { data, count } = await fetchConsolesFiltered(filters, pageNum, 12);
+      const { data, count } = await fetchConsolesFiltered(filters, pageNum, ITEMS_PER_PAGE);
       
-      if (isNewFilter) {
-          setConsoles(data);
-      } else {
-          setConsoles(prev => [...prev, ...data]);
-      }
-      
-      setHasMore((isNewFilter ? 0 : consoles.length) + data.length < count);
+      setConsoles(data);
+      setTotalCount(count);
       setLoading(false);
   }, [filters]);
 
-  // Handle Filter Changes
+  // Handle Filter/View Changes
   useEffect(() => {
       if (viewMode === 'LIST') {
-          setPage(1);
-          setHasMore(true);
-          loadConsoles(1, true);
+          loadConsoles(page);
       }
-  }, [filters, viewMode]);
+  }, [page, viewMode, filters]); 
 
-  // Infinite Scroll Observer
+  // Reset page when filters change
   useEffect(() => {
-    if (viewMode !== 'LIST') return;
-
-    const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && !loading && hasMore) {
-        const nextPage = page + 1;
-        setPage(nextPage);
-        loadConsoles(nextPage, false);
-      }
-    }, { threshold: 0.5 });
-
-    if (observerTarget.current) observer.observe(observerTarget.current);
-    return () => observer.disconnect();
-  }, [loading, hasMore, page, viewMode, loadConsoles]);
+      setPage(1);
+  }, [filters]);
 
   const handleBrandSelect = (brand: string) => {
       setFilters(prev => ({ ...prev, manufacturer: brand }));
@@ -105,6 +89,8 @@ const ConsoleLibrary: React.FC = () => {
         default: return 'text-retro-neon border-retro-neon hover:bg-retro-neon/10';
     }
   };
+
+  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
   return (
     <div className="w-full max-w-7xl mx-auto p-4">
@@ -235,43 +221,69 @@ const ConsoleLibrary: React.FC = () => {
 
               {/* RESULTS GRID */}
               <div className="flex-1">
-                  {consoles.length === 0 && !loading ? (
+                  {loading ? (
+                       <RetroLoader />
+                  ) : consoles.length === 0 ? (
                       <div className="text-center p-12 border-2 border-dashed border-gray-700 font-mono text-gray-500">
                           NO HARDWARE MATCHES FILTERS.
                       </div>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {consoles.map((console, idx) => (
-                            <Link 
-                                to={`/consoles/${console.slug}`} 
-                                key={`${console.id}-${idx}`}
-                                className="group block border border-retro-grid bg-retro-dark relative overflow-hidden hover:border-retro-blue transition-all"
-                            >
-                                <div className="h-32 bg-black/40 flex items-center justify-center p-4 relative">
-                                    {console.image_url ? (
-                                        <img src={console.image_url} className="max-h-full object-contain" />
-                                    ) : (
-                                        <span className="font-pixel text-gray-700 text-4xl">?</span>
-                                    )}
-                                </div>
-                                <div className="p-3 border-t border-retro-grid">
-                                    <div className="flex justify-between text-[10px] font-mono text-gray-500 mb-1">
-                                        <span>{console.release_year}</span>
-                                        <span>GEN {console.generation}</span>
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {consoles.map((console, idx) => (
+                                <Link 
+                                    to={`/consoles/${console.slug}`} 
+                                    key={`${console.id}-${idx}`}
+                                    className="group block border border-retro-grid bg-retro-dark relative overflow-hidden hover:border-retro-blue transition-all"
+                                >
+                                    <div className="h-32 bg-black/40 flex items-center justify-center p-4 relative">
+                                        {console.image_url ? (
+                                            <img src={console.image_url} className="max-h-full object-contain" />
+                                        ) : (
+                                            <span className="font-pixel text-gray-700 text-4xl">?</span>
+                                        )}
                                     </div>
-                                    <h3 className="font-pixel text-xs text-white group-hover:text-retro-neon truncate">
-                                        {console.name}
-                                    </h3>
+                                    <div className="p-3 border-t border-retro-grid">
+                                        <div className="flex justify-between text-[10px] font-mono text-gray-500 mb-1">
+                                            <span>{console.release_year}</span>
+                                            <span>GEN {console.generation}</span>
+                                        </div>
+                                        <h3 className="font-pixel text-xs text-white group-hover:text-retro-neon truncate">
+                                            {console.name}
+                                        </h3>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                            <div className="flex justify-center items-center gap-4 py-8 border-t border-retro-grid/30 mt-8">
+                                <Button 
+                                    variant="secondary" 
+                                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                                    disabled={page === 1}
+                                    className="text-xs"
+                                >
+                                    &lt; PREV
+                                </Button>
+                                
+                                <div className="font-pixel text-xs text-retro-neon bg-retro-grid/20 px-4 py-2 rounded">
+                                    PAGE {page} OF {totalPages}
                                 </div>
-                            </Link>
-                        ))}
-                    </div>
+
+                                <Button 
+                                    variant="secondary" 
+                                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                    disabled={page >= totalPages}
+                                    className="text-xs"
+                                >
+                                    NEXT &gt;
+                                </Button>
+                            </div>
+                        )}
+                    </>
                   )}
-                  
-                   {/* Infinite Scroll Loader */}
-                   <div ref={observerTarget} className="py-6 flex justify-center w-full">
-                       {loading && <RetroLoader />}
-                   </div>
               </div>
           </div>
       )}

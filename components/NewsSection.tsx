@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+
+import React, { useEffect, useState, useCallback } from 'react';
 import { fetchRetroNews, addNewsItem } from '../services/geminiService';
 import { NewsItem } from '../types';
 import Button from './Button';
@@ -22,9 +23,9 @@ const NewsSection: React.FC<NewsSectionProps> = ({
 
   // Pagination
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const observerTarget = useRef(null);
-  const ITEMS_PER_PAGE = compact ? (limit || 3) : 10;
+  const [totalCount, setTotalCount] = useState(0);
+  // 10 is divisible by 2 (md:grid-cols-2) and 1 (sm:grid-cols-1)
+  const ITEMS_PER_PAGE = compact ? (limit || 3) : 10; 
 
   // Form State
   const [showTransmitter, setShowTransmitter] = useState(false);
@@ -36,41 +37,22 @@ const NewsSection: React.FC<NewsSectionProps> = ({
   const loadNews = useCallback(async (pageNum: number, isRefresh = false) => {
     setLoading(true);
     setError(null);
+    if (!compact) window.scrollTo({ top: 0, behavior: 'smooth' });
+
     try {
       const { data, count } = await fetchRetroNews(pageNum, ITEMS_PER_PAGE);
-      if (isRefresh || pageNum === 1) {
-          setNews(data);
-      } else {
-          setNews(prev => [...prev, ...data]);
-      }
-      setHasMore(news.length + data.length < count && !compact); // Disable infinite scroll on compact
+      setNews(data); // Replace data for pagination
+      setTotalCount(count);
     } catch (e) {
       setError("NO CONNECTION TO MAINFRAME. CHECK SUPABASE CONFIG.");
     } finally {
       setLoading(false);
     }
-  }, [compact, ITEMS_PER_PAGE, news.length]);
+  }, [compact, ITEMS_PER_PAGE]);
 
   useEffect(() => {
-    loadNews(1, true);
-  }, []);
-
-  // Infinite Scroll Trigger (Only for full view)
-  useEffect(() => {
-    if (compact) return;
-    
-    const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && !loading && hasMore) {
-        const nextPage = page + 1;
-        setPage(nextPage);
-        loadNews(nextPage);
-      }
-    }, { threshold: 0.5 });
-
-    if (observerTarget.current) observer.observe(observerTarget.current);
-    
-    return () => observer.disconnect();
-  }, [loading, hasMore, page, compact, loadNews]);
+    loadNews(page, true);
+  }, [page, loadNews]);
 
   const handleTransmit = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -98,6 +80,8 @@ const NewsSection: React.FC<NewsSectionProps> = ({
       }
       setSubmitting(false);
   };
+
+  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
   return (
     <div className={`w-full ${compact ? '' : 'max-w-6xl mx-auto p-4'}`}>
@@ -183,53 +167,73 @@ const NewsSection: React.FC<NewsSectionProps> = ({
         </div>
       )}
 
-      {loading && news.length === 0 ? (
+      {loading ? (
         <div className={`grid grid-cols-1 ${compact ? '' : 'md:grid-cols-2'} gap-6`}>
-          {[1, 2].map((i) => (
-            <div key={i} className="h-32 border border-retro-grid bg-retro-grid/20 animate-pulse rounded p-4">
-              <div className="h-4 bg-retro-grid/50 w-3/4 mb-4"></div>
-              <div className="h-24 bg-retro-grid/30 w-full"></div>
-            </div>
-          ))}
+            {[1, 2].map((i) => (
+                <div key={i} className="h-32 border border-retro-grid bg-retro-grid/20 animate-pulse rounded p-4">
+                    <div className="h-4 bg-retro-grid/50 w-3/4 mb-4"></div>
+                    <div className="h-24 bg-retro-grid/30 w-full"></div>
+                </div>
+            ))}
         </div>
       ) : news.length === 0 && !error ? (
          <div className="text-center py-12 border border-retro-grid border-dashed text-gray-500 font-mono">
              <div className="mb-4">NO NEWS DATA FOUND IN DATABASE.</div>
          </div>
       ) : (
-        <div className={`grid grid-cols-1 ${compact ? '' : 'md:grid-cols-2'} gap-6`}>
-          {news.map((item, index) => (
-            <article key={`${index}-${item.date}`} className={`group relative border-2 border-retro-grid bg-retro-dark hover:border-retro-neon transition-colors duration-300 ${compact ? 'p-4' : 'p-6'} overflow-hidden`}>
-              <div className="absolute top-0 right-0 bg-retro-grid text-retro-neon text-xs font-mono px-2 py-1">
-                {new Date(item.date).toLocaleDateString()}
-              </div>
-              <div className="mb-3">
-                <span className={`inline-block px-2 py-0.5 text-[10px] font-bold font-mono mb-2 ${
-                  item.category === 'Hardware' ? 'bg-retro-blue text-retro-dark' :
-                  item.category === 'Software' ? 'bg-retro-pink text-retro-dark' :
-                  item.category === 'Rumor' ? 'bg-yellow-400 text-retro-dark' :
-                  'bg-retro-neon text-retro-dark'
-                }`}>
-                  {item.category.toUpperCase()}
-                </span>
-                <h3 className={`${compact ? 'text-lg' : 'text-xl'} font-bold font-mono text-retro-blue group-hover:text-retro-neon transition-colors leading-tight`}>
-                  {item.headline}
-                </h3>
-              </div>
-              <p className={`text-gray-400 font-mono text-sm leading-relaxed border-l-2 border-retro-grid pl-4 ${compact ? 'line-clamp-3' : ''}`}>
-                {item.summary}
-              </p>
-              <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-retro-pink via-retro-neon to-retro-blue opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            </article>
-          ))}
-        </div>
-      )}
+        <>
+            <div className={`grid grid-cols-1 ${compact ? '' : 'md:grid-cols-2'} gap-6`}>
+            {news.map((item, index) => (
+                <article key={`${index}-${item.date}`} className={`group relative border-2 border-retro-grid bg-retro-dark hover:border-retro-neon transition-colors duration-300 ${compact ? 'p-4' : 'p-6'} overflow-hidden`}>
+                <div className="absolute top-0 right-0 bg-retro-grid text-retro-neon text-xs font-mono px-2 py-1">
+                    {new Date(item.date).toLocaleDateString()}
+                </div>
+                <div className="mb-3">
+                    <span className={`inline-block px-2 py-0.5 text-[10px] font-bold font-mono mb-2 ${
+                    item.category === 'Hardware' ? 'bg-retro-blue text-retro-dark' :
+                    item.category === 'Software' ? 'bg-retro-pink text-retro-dark' :
+                    item.category === 'Rumor' ? 'bg-yellow-400 text-retro-dark' :
+                    'bg-retro-neon text-retro-dark'
+                    }`}>
+                    {item.category.toUpperCase()}
+                    </span>
+                    <h3 className={`${compact ? 'text-lg' : 'text-xl'} font-bold font-mono text-retro-blue group-hover:text-retro-neon transition-colors leading-tight`}>
+                    {item.headline}
+                    </h3>
+                </div>
+                <p className={`text-gray-400 font-mono text-sm leading-relaxed border-l-2 border-retro-grid pl-4 ${compact ? 'line-clamp-3' : ''}`}>
+                    {item.summary}
+                </p>
+                <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-retro-pink via-retro-neon to-retro-blue opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                </article>
+            ))}
+            </div>
 
-      {/* Infinite Scroll Loader for full page */}
-      {!compact && (
-          <div ref={observerTarget} className="py-8 flex justify-center">
-              {loading && <RetroLoader />}
-          </div>
+            {/* Pagination Controls (Only show in full mode) */}
+            {!compact && totalPages > 1 && (
+                 <div className="flex justify-center items-center gap-4 py-8 border-t border-retro-grid/30 mt-8">
+                     <Button 
+                         variant="secondary" 
+                         onClick={() => setPage(p => Math.max(1, p - 1))}
+                         disabled={page === 1}
+                     >
+                         &lt; PREV
+                     </Button>
+                     
+                     <div className="font-pixel text-xs text-retro-neon bg-retro-grid/20 px-4 py-2 rounded">
+                         PAGE {page} OF {totalPages}
+                     </div>
+ 
+                     <Button 
+                         variant="secondary" 
+                         onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                         disabled={page >= totalPages}
+                     >
+                         NEXT &gt;
+                     </Button>
+                 </div>
+            )}
+        </>
       )}
     </div>
   );
