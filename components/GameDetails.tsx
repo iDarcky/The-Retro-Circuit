@@ -67,6 +67,9 @@ const GameDetails: React.FC = () => {
     }
   };
 
+  // Safe rating calculation
+  const safeRating = Math.min(5, Math.max(0, Math.round(game.rating || 5)));
+
   return (
     <div className="w-full max-w-6xl mx-auto p-4">
       <SEOHead 
@@ -155,7 +158,7 @@ const GameDetails: React.FC = () => {
                         <div>
                             <span className="text-gray-500 block text-[10px] mb-1">RATING</span>
                             <div className="text-yellow-400 text-lg tracking-widest">
-                                {'★'.repeat(game.rating)}{'☆'.repeat(5 - game.rating)}
+                                {'★'.repeat(safeRating)}{'☆'.repeat(5 - safeRating)}
                             </div>
                         </div>
                     )}

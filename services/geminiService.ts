@@ -213,7 +213,7 @@ const FALLBACK_MANUFACTURERS: Record<string, ManufacturerProfile> = {
 
 export const checkDatabaseConnection = async (): Promise<boolean> => {
     try {
-        const { error } = await supabase.from('consoles').select('count', { count: 'exact', head: true });
+        const { error } = await supabase.from('consoles').select('*', { count: 'exact', head: true });
         return !error;
     } catch (e) {
         return false;
@@ -360,7 +360,12 @@ export const fetchManufacturerProfile = async (name: string): Promise<Manufactur
         return data as ManufacturerProfile;
     } catch (e) {
         console.warn(`Manufacturer fetch failed for ${name}, utilizing fallback.`);
-        return FALLBACK_MANUFACTURERS[name] || {
+        
+        // Safe case-insensitive fallback lookup
+        const fallbackKey = Object.keys(FALLBACK_MANUFACTURERS).find(k => k.toLowerCase() === name.toLowerCase());
+        const fallbackData = fallbackKey ? FALLBACK_MANUFACTURERS[fallbackKey] : undefined;
+        
+        return fallbackData || {
             name: name,
             founded: 'Unknown',
             origin: 'Unknown',
