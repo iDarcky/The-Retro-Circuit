@@ -15,6 +15,10 @@ const ManufacturerDetail: React.FC = () => {
     useEffect(() => {
         const loadData = async () => {
             if (!name) return;
+            
+            // Reset scroll position to top
+            window.scrollTo(0, 0);
+            
             setLoading(true);
             try {
                 // Fetch profile and all consoles for this manufacturer

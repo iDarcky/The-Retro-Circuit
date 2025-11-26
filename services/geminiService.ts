@@ -74,6 +74,36 @@ export const BRAND_THEMES: Record<string, { color: string, bg: string, hover: st
         color: 'text-blue-200 border-blue-200 shadow-[0_0_20px_rgba(191,219,254,0.3)]',
         bg: 'bg-blue-900/20',
         hover: 'hover:bg-blue-800/40'
+    },
+    'Panasonic': {
+        color: 'text-blue-600 border-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.3)]',
+        bg: 'bg-blue-900/20',
+        hover: 'hover:bg-blue-900/40'
+    },
+    'Amstrad': {
+        color: 'text-gray-400 border-gray-400 shadow-[0_0_20px_rgba(156,163,175,0.3)]',
+        bg: 'bg-gray-800/30',
+        hover: 'hover:bg-gray-700/50'
+    },
+    'Fairchild': {
+        color: 'text-yellow-600 border-yellow-600 shadow-[0_0_20px_rgba(202,138,4,0.3)]',
+        bg: 'bg-yellow-900/10',
+        hover: 'hover:bg-yellow-900/30'
+    },
+    'Bally': {
+        color: 'text-red-400 border-red-400 shadow-[0_0_20px_rgba(248,113,113,0.3)]',
+        bg: 'bg-red-900/20',
+        hover: 'hover:bg-red-800/40'
+    },
+    'Epoch': {
+        color: 'text-red-500 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]',
+        bg: 'bg-red-950/30',
+        hover: 'hover:bg-red-900/50'
+    },
+    'Casio': {
+        color: 'text-pink-400 border-pink-400 shadow-[0_0_20px_rgba(244,114,182,0.3)]',
+        bg: 'bg-pink-900/20',
+        hover: 'hover:bg-pink-900/40'
     }
 };
 
@@ -190,6 +220,62 @@ const FALLBACK_MANUFACTURERS: Record<string, ManufacturerProfile> = {
         ceo: 'N/A',
         key_franchises: ['Mine Storm', 'Spike'],
         description: 'General Consumer Electronics. Created the only vector-based home console with built-in screen. Notable Consoles: Vectrex.'
+    },
+    'Commodore': {
+        name: 'Commodore',
+        founded: '1954',
+        origin: 'Pennsylvania, USA',
+        ceo: 'Jack Tramiel',
+        key_franchises: ['Turrican', 'Lemmings', 'Zool', 'Chaos Engine'],
+        description: 'Better known for computers (C64, Amiga). Released the CD32 in 1993, a consolized Amiga 1200.'
+    },
+    'Panasonic': {
+        name: 'Panasonic',
+        founded: '1918',
+        origin: 'Osaka, Japan',
+        ceo: 'Yuki Kusumi',
+        key_franchises: ['Real 3DO', 'Panasonic Q'],
+        description: 'Made limited gaming hardware including the high-end 3DO FZ-1 and the legendary Panasonic Q (GameCube with DVD).'
+    },
+    'Amstrad': {
+        name: 'Amstrad',
+        founded: '1968',
+        origin: 'Brentwood, UK',
+        ceo: 'Alan Sugar',
+        key_franchises: ['Burnin Rubber', 'Pang', 'RoboCop'],
+        description: 'Failed console attempt, better known for computers (CPC). Notable Consoles: GX4000.'
+    },
+    'Fairchild': {
+        name: 'Fairchild',
+        founded: '1927',
+        origin: 'California, USA',
+        ceo: 'N/A',
+        key_franchises: ['Video Whizball', 'Tennis'],
+        description: 'Semiconductor company that released the first cartridge-based console. Notable Consoles: Channel F.'
+    },
+    'Bally': {
+        name: 'Bally',
+        founded: '1932',
+        origin: 'Chicago, USA',
+        ceo: 'N/A',
+        key_franchises: ['The Incredible Wizard', 'Star Battle'],
+        description: 'Arcade manufacturer\'s home console attempt. Notable Consoles: Astrocade.'
+    },
+    'Epoch': {
+        name: 'Epoch',
+        founded: '1958',
+        origin: 'Tokyo, Japan',
+        ceo: 'Michihiro Maeda',
+        key_franchises: ['Epoch Baseball', 'Sylvanian Families'],
+        description: 'Japan-only systems. Notable Consoles: Cassette Vision, Super Cassette Vision.'
+    },
+    'Casio': {
+        name: 'Casio',
+        founded: '1946',
+        origin: 'Tokyo, Japan',
+        ceo: 'Kazuhiro Kashio',
+        key_franchises: ['Anime Sticker Maker'],
+        description: 'Failed girls-focused console, Japan-only. Notable Consoles: Loopy.'
     }
 };
 
