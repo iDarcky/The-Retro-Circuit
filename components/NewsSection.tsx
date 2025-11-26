@@ -12,6 +12,8 @@ interface NewsSectionProps {
   compact?: boolean;
 }
 
+type NewsCategory = 'Hardware' | 'Software' | 'Industry' | 'Rumor';
+
 const NewsSection: React.FC<NewsSectionProps> = ({ 
   limit, 
   showAddForm = true, 
@@ -21,9 +23,11 @@ const NewsSection: React.FC<NewsSectionProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Pagination
+  // Pagination & Filtering
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
+  
   // 10 is divisible by 2 (md:grid-cols-2) and 1 (sm:grid-cols-1)
   const ITEMS_PER_PAGE = compact ? (limit || 3) : 10; 
 
@@ -31,17 +35,17 @@ const NewsSection: React.FC<NewsSectionProps> = ({
   const [showTransmitter, setShowTransmitter] = useState(false);
   const [newHeadline, setNewHeadline] = useState('');
   const [newSummary, setNewSummary] = useState('');
-  const [newCategory, setNewCategory] = useState<'Hardware' | 'Software' | 'Industry' | 'Rumor'>('Hardware');
+  const [newCategory, setNewCategory] = useState<NewsCategory>('Hardware');
   const [submitting, setSubmitting] = useState(false);
 
-  const loadNews = useCallback(async (pageNum: number, isRefresh = false) => {
+  const loadNews = useCallback(async (pageNum: number, category: string) => {
     setLoading(true);
     setError(null);
     if (!compact) window.scrollTo({ top: 0, behavior: 'smooth' });
 
     try {
-      const { data, count } = await fetchRetroNews(pageNum, ITEMS_PER_PAGE);
-      setNews(data); // Replace data for pagination
+      const { data, count } = await fetchRetroNews(pageNum, ITEMS_PER_PAGE, category);
+      setNews(data); 
       setTotalCount(count);
     } catch (e) {
       setError("NO CONNECTION TO MAINFRAME. CHECK SUPABASE CONFIG.");
@@ -51,8 +55,13 @@ const NewsSection: React.FC<NewsSectionProps> = ({
   }, [compact, ITEMS_PER_PAGE]);
 
   useEffect(() => {
-    loadNews(page, true);
-  }, [page, loadNews]);
+    loadNews(page, selectedCategory);
+  }, [page, selectedCategory, loadNews]);
+
+  const handleCategoryChange = (category: string) => {
+      setSelectedCategory(category);
+      setPage(1); // Reset to first page on filter change
+  };
 
   const handleTransmit = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -74,7 +83,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({
           setNewSummary('');
           setShowTransmitter(false);
           setPage(1);
-          await loadNews(1, true);
+          await loadNews(1, selectedCategory);
       } else {
           alert("TRANSMISSION FAILED: CHECK DATABASE PERMISSIONS (RLS)");
       }
@@ -83,35 +92,97 @@ const NewsSection: React.FC<NewsSectionProps> = ({
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
+  // Style helpers for tags and filters
+  const getCategoryColor = (cat: string) => {
+      switch(cat) {
+          case 'Hardware': return 'text-retro-blue border-retro-blue hover:bg-retro-blue hover:text-retro-dark';
+          case 'Software': return 'text-retro-pink border-retro-pink hover:bg-retro-pink hover:text-retro-dark';
+          case 'Industry': return 'text-retro-neon border-retro-neon hover:bg-retro-neon hover:text-retro-dark';
+          case 'Rumor': return 'text-yellow-400 border-yellow-400 hover:bg-yellow-400 hover:text-retro-dark';
+          default: return 'text-gray-400 border-gray-400 hover:bg-gray-400 hover:text-retro-dark';
+      }
+  };
+
+  const getTagStyle = (cat: string) => {
+    switch(cat) {
+        case 'Hardware': return 'bg-retro-blue text-retro-dark';
+        case 'Software': return 'bg-retro-pink text-retro-dark';
+        case 'Industry': return 'bg-retro-neon text-retro-dark';
+        case 'Rumor': return 'bg-yellow-400 text-retro-dark';
+        default: return 'bg-gray-400 text-retro-dark';
+    }
+};
+
   return (
     <div className={`w-full ${compact ? '' : 'max-w-6xl mx-auto p-4'}`}>
-      <div className="flex justify-between items-end mb-8 border-b-2 border-retro-grid pb-4">
+      <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b-2 border-retro-grid pb-4 gap-4">
         <div>
           <h2 className={`${compact ? 'text-xl' : 'text-3xl'} font-pixel text-retro-neon mb-2 drop-shadow-[2px_2px_0_rgba(255,0,255,0.5)]`}>
             {compact ? 'LATEST SIGNALS' : 'CIRCUIT FEED'}
           </h2>
           {!compact && <p className="font-mono text-gray-400">Latest signals from the golden age.</p>}
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
             {showAddForm && (
-              <Button onClick={() => setShowTransmitter(!showTransmitter)} variant="secondary">
-                 {showTransmitter ? 'CLOSE UPLINK' : 'BROADCAST SIGNAL'}
+              <Button onClick={() => setShowTransmitter(!showTransmitter)} variant="secondary" className="text-xs">
+                 {showTransmitter ? 'CLOSE' : 'BROADCAST'}
               </Button>
             )}
             {!compact && (
-              <Button onClick={() => loadNews(1, true)} isLoading={loading} variant="primary">
+              <Button onClick={() => loadNews(1, selectedCategory)} isLoading={loading} variant="primary" className="text-xs">
                 REFRESH
               </Button>
             )}
             {compact && (
                <Link to="/news">
-                 <button className="font-mono text-xs text-retro-blue hover:text-retro-neon border border-retro-blue hover:border-retro-neon px-3 py-2 transition-colors">
-                   VIEW ARCHIVE
+                 <button className="font-mono text-xs text-retro-blue hover:text-retro-neon border border-retro-blue hover:border-retro-neon px-3 py-2 transition-colors uppercase">
+                   View Archive
                  </button>
                </Link>
             )}
         </div>
       </div>
+
+      {/* FILTER BAR (Only in Full View) */}
+      {!compact && (
+          <div className="flex flex-wrap gap-3 mb-8">
+              <button 
+                  onClick={() => handleCategoryChange('ALL')}
+                  className={`font-mono text-xs px-4 py-1 border transition-all ${
+                      selectedCategory === 'ALL' 
+                      ? 'bg-white text-retro-dark border-white font-bold' 
+                      : 'text-gray-400 border-gray-600 hover:border-white hover:text-white'
+                  }`}
+              >
+                  ALL SIGNALS
+              </button>
+              {['Hardware', 'Software', 'Industry', 'Rumor'].map(cat => {
+                  const isActive = selectedCategory === cat;
+                  const colors = getCategoryColor(cat);
+                  // Split color string to get base border/text vs active bg logic
+                  // Simplified: if active, invert colors manually based on category
+                  let activeClass = '';
+                  if (isActive) {
+                      if (cat === 'Hardware') activeClass = 'bg-retro-blue text-retro-dark border-retro-blue';
+                      else if (cat === 'Software') activeClass = 'bg-retro-pink text-retro-dark border-retro-pink';
+                      else if (cat === 'Industry') activeClass = 'bg-retro-neon text-retro-dark border-retro-neon';
+                      else if (cat === 'Rumor') activeClass = 'bg-yellow-400 text-retro-dark border-yellow-400';
+                  } else {
+                      activeClass = colors; // Use the hover classes defined in helper
+                  }
+
+                  return (
+                    <button
+                        key={cat}
+                        onClick={() => handleCategoryChange(cat)}
+                        className={`font-mono text-xs px-4 py-1 border transition-all uppercase ${activeClass}`}
+                    >
+                        {cat}
+                    </button>
+                  );
+              })}
+          </div>
+      )}
 
       {showAddForm && showTransmitter && (
           <div className="mb-10 p-6 border-2 border-dashed border-retro-neon bg-retro-neon/5">
@@ -178,7 +249,10 @@ const NewsSection: React.FC<NewsSectionProps> = ({
         </div>
       ) : news.length === 0 && !error ? (
          <div className="text-center py-12 border border-retro-grid border-dashed text-gray-500 font-mono">
-             <div className="mb-4">NO NEWS DATA FOUND IN DATABASE.</div>
+             <div className="mb-4">NO SIGNAL FOUND FOR THIS FREQUENCY.</div>
+             {selectedCategory !== 'ALL' && (
+                 <button onClick={() => handleCategoryChange('ALL')} className="text-retro-blue underline text-xs">RESET FREQUENCY</button>
+             )}
          </div>
       ) : (
         <>
@@ -189,14 +263,16 @@ const NewsSection: React.FC<NewsSectionProps> = ({
                     {new Date(item.date).toLocaleDateString()}
                 </div>
                 <div className="mb-3">
-                    <span className={`inline-block px-2 py-0.5 text-[10px] font-bold font-mono mb-2 ${
-                    item.category === 'Hardware' ? 'bg-retro-blue text-retro-dark' :
-                    item.category === 'Software' ? 'bg-retro-pink text-retro-dark' :
-                    item.category === 'Rumor' ? 'bg-yellow-400 text-retro-dark' :
-                    'bg-retro-neon text-retro-dark'
-                    }`}>
-                    {item.category.toUpperCase()}
-                    </span>
+                    <button 
+                        onClick={(e) => {
+                            e.preventDefault();
+                            if(!compact) handleCategoryChange(item.category);
+                        }}
+                        className={`inline-block px-2 py-0.5 text-[10px] font-bold font-mono mb-2 uppercase ${getTagStyle(item.category)} ${!compact ? 'hover:opacity-80 cursor-pointer' : 'cursor-default'}`}
+                        title={!compact ? "Filter by this category" : ""}
+                    >
+                        {item.category}
+                    </button>
                     <h3 className={`${compact ? 'text-lg' : 'text-xl'} font-bold font-mono text-retro-blue group-hover:text-retro-neon transition-colors leading-tight`}>
                     {item.headline}
                     </h3>

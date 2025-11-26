@@ -9,7 +9,7 @@ const FALLBACK_MANUFACTURERS: Record<string, ManufacturerProfile> = {
         founded: '1889', 
         origin: 'Kyoto, Japan', 
         ceo: 'Shuntaro Furukawa', 
-        key_franchises: ['Mario', 'Zelda', 'Metroid', 'Pokémon'], 
+        key_franchises: ['Mario', 'Zelda', 'Metroid', 'Pokémon', 'Smash Bros'], 
         description: 'Active, dominant in handheld/hybrid market. Founded in 1889. Notable Consoles: NES, SNES, N64, GameCube, Wii, Wii U, Switch.' 
     },
     'Sony': { 
@@ -17,7 +17,7 @@ const FALLBACK_MANUFACTURERS: Record<string, ManufacturerProfile> = {
         founded: '1946', 
         origin: 'Tokyo, Japan', 
         ceo: 'Kenichiro Yoshida', 
-        key_franchises: ['Gran Turismo', 'God of War', 'Uncharted'], 
+        key_franchises: ['Gran Turismo', 'God of War', 'Uncharted', 'The Last of Us'], 
         description: 'Active, leading home console manufacturer. Entered gaming in 1994. Notable Consoles: PlayStation, PS2, PS3, PS4, PS5.' 
     },
     'Microsoft': { 
@@ -25,7 +25,7 @@ const FALLBACK_MANUFACTURERS: Record<string, ManufacturerProfile> = {
         founded: '1975', 
         origin: 'Redmond, USA', 
         ceo: 'Satya Nadella', 
-        key_franchises: ['Halo', 'Gears of War', 'Forza'], 
+        key_franchises: ['Halo', 'Gears of War', 'Forza', 'Fable'], 
         description: 'Active, major competitor in home console market since 2001. Notable Consoles: Xbox, Xbox 360, Xbox One, Xbox Series X/S.' 
     },
     'Sega': { 
@@ -33,7 +33,7 @@ const FALLBACK_MANUFACTURERS: Record<string, ManufacturerProfile> = {
         founded: '1960', 
         origin: 'Tokyo, Japan', 
         ceo: 'Haruki Satomi', 
-        key_franchises: ['Sonic', 'Yakuza', 'Virtua Fighter'], 
+        key_franchises: ['Sonic', 'Yakuza', 'Virtua Fighter', 'Persona'], 
         description: 'Exited hardware in 2001, now software-only. Notable Consoles: Master System, Genesis/Mega Drive, Saturn, Dreamcast.' 
     },
     'Atari': { 
@@ -41,7 +41,7 @@ const FALLBACK_MANUFACTURERS: Record<string, ManufacturerProfile> = {
         founded: '1972', 
         origin: 'California, USA', 
         ceo: 'Wade Rosen', 
-        key_franchises: ['Pong', 'Asteroids', 'Centipede'], 
+        key_franchises: ['Pong', 'Asteroids', 'Centipede', 'RollerCoaster Tycoon'], 
         description: 'Pioneered home gaming, exited hardware 1996. Notable Consoles: 2600, 5200, 7800, Jaguar, Lynx.' 
     },
     'NEC': { 
@@ -49,7 +49,7 @@ const FALLBACK_MANUFACTURERS: Record<string, ManufacturerProfile> = {
         founded: '1899', 
         origin: 'Tokyo, Japan', 
         ceo: 'Takayuki Morita', 
-        key_franchises: ['Bomberman', 'Bonk'], 
+        key_franchises: ['Bomberman', 'Bonk', 'Adventure Island'], 
         description: 'Exited gaming hardware, brand remains in electronics. Notable Consoles: TurboGrafx-16/PC Engine, PC-FX.' 
     },
     'SNK': { 
@@ -57,8 +57,8 @@ const FALLBACK_MANUFACTURERS: Record<string, ManufacturerProfile> = {
         founded: '1978', 
         origin: 'Osaka, Japan', 
         ceo: 'Kenji Matsubara', 
-        key_franchises: ['King of Fighters', 'Metal Slug'], 
-        description: 'Bankrupt 2001, reformed as SNK Playmore. Known for the Neo Geo.' 
+        key_franchises: ['King of Fighters', 'Metal Slug', 'Fatal Fury', 'Samurai Shodown'], 
+        description: 'Bankrupt 2001, reformed as SNK Playmore, now focuses on software. Notable Consoles: Neo Geo (arcade and home), Neo Geo Pocket.' 
     }
 };
 
@@ -381,14 +381,20 @@ export const removeFromCollection = async (itemId: string): Promise<boolean> => 
     }
 };
 
-export const fetchRetroNews = async (page: number = 1, limit: number = 20): Promise<{ data: NewsItem[], count: number }> => {
+export const fetchRetroNews = async (page: number = 1, limit: number = 20, category?: string): Promise<{ data: NewsItem[], count: number }> => {
     const from = (page - 1) * limit;
     const to = from + limit - 1;
     
     try {
-        const { data, count, error } = await supabase
+        let query = supabase
             .from('news')
-            .select('*', { count: 'exact' })
+            .select('*', { count: 'exact' });
+
+        if (category && category !== 'ALL') {
+            query = query.eq('category', category);
+        }
+            
+        const { data, count, error } = await query
             .order('created_at', { ascending: false })
             .range(from, to);
         
