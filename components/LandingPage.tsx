@@ -1,17 +1,16 @@
 
-import React from 'react';
+import { type FC } from 'react';
 import { Link } from 'react-router-dom';
 import GameOfTheWeek from './GameOfTheWeek';
 import NewsSection from './NewsSection';
-import Button from './Button';
 import SEOHead from './SEOHead';
 
-const LandingPage: React.FC = () => {
+const LandingPage: FC = () => {
   return (
     <div className="w-full max-w-7xl mx-auto p-4 space-y-12">
       <SEOHead 
-        title="Retro Gaming Database & Comparisons" 
-        description="The ultimate retro gaming database. Compare hardware specs for Nintendo, Sega, and PlayStation consoles. Read classic game reviews, explore video game history, and track industry news."
+        title="Retro Gaming Database & News" 
+        description="The ultimate retro gaming hub. Compare console specs, read classic game reviews, and track the history of video game hardware from Atari to PlayStation."
       />
       
       {/* Welcome Banner */}

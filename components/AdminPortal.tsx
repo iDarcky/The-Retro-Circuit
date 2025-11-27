@@ -1,12 +1,12 @@
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, type FC, type FormEvent } from 'react';
 import { retroAuth, addGame, addConsole, addNewsItem, fetchConsoleList } from '../services/geminiService';
 import Button from './Button';
 import { ConsoleDetails, GameOfTheWeekData, NewsItem, NewsItemSchema, GameSchema, ConsoleSchema } from '../types';
 
 type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE';
 
-const AdminPortal: React.FC = () => {
+const AdminPortal: FC = () => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<AdminTab>('NEWS');
@@ -81,7 +81,7 @@ const AdminPortal: React.FC = () => {
         setConsoleSpecs(JSON.stringify(template, null, 4));
     };
 
-    const handleSubmitNews = async (e: React.FormEvent) => {
+    const handleSubmitNews = async (e: FormEvent) => {
         e.preventDefault();
         setMessage(null);
         setErrorMsg(null);
@@ -105,7 +105,7 @@ const AdminPortal: React.FC = () => {
         setLoading(false);
     };
 
-    const handleSubmitGame = async (e: React.FormEvent) => {
+    const handleSubmitGame = async (e: FormEvent) => {
         e.preventDefault();
         setMessage(null);
         setErrorMsg(null);
@@ -139,7 +139,7 @@ const AdminPortal: React.FC = () => {
         setLoading(false);
     };
 
-    const handleSubmitConsole = async (e: React.FormEvent) => {
+    const handleSubmitConsole = async (e: FormEvent) => {
         e.preventDefault();
         setMessage(null);
         setErrorMsg(null);

@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+
+import { createContext, useContext, useEffect, useRef, useState, type FC, type ReactNode } from 'react';
 
 interface SoundContextType {
   playHover: () => void;
@@ -18,7 +19,7 @@ export const useSound = () => {
   return context;
 };
 
-export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const SoundProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [enabled, setEnabled] = useState(true);
   const audioCtxRef = useRef<AudioContext | null>(null);
 

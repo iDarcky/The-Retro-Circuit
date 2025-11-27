@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, type FC } from 'react';
 import { addToCollection, fetchUserCollection, removeFromCollection, retroAuth } from '../services/geminiService';
 import { UserCollectionItem } from '../types';
 import Button from './Button';
@@ -12,7 +12,7 @@ interface CollectionToggleProps {
     itemImage?: string;
 }
 
-const CollectionToggle: React.FC<CollectionToggleProps> = ({ itemId, itemType, itemName, itemImage }) => {
+const CollectionToggle: FC<CollectionToggleProps> = ({ itemId, itemType, itemName, itemImage }) => {
     const [status, setStatus] = useState<'OWN' | 'WANT' | null>(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();

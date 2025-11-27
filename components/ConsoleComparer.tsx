@@ -1,12 +1,11 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, type FC } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { compareConsoles, fetchConsoleList } from '../services/geminiService';
 import { ComparisonResult } from '../types';
 import Button from './Button';
-import SEOHead from './SEOHead';
 
-const ConsoleComparer: React.FC = () => {
+const ConsoleComparer: FC = () => {
   const [searchParams] = useSearchParams();
   const [consoleA, setConsoleA] = useState('');
   const [consoleB, setConsoleB] = useState('');
@@ -40,10 +39,6 @@ const ConsoleComparer: React.FC = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4">
-      <SEOHead 
-         title="Console VS. Comparer" 
-         description="Compare retro video game consoles side-by-side. Battle specifications between Nintendo, Sega, Sony, and more to see which hardware reigned supreme."
-      />
       <div className="text-center mb-10">
         <h2 className="text-3xl font-pixel text-retro-blue mb-4 drop-shadow-[0_0_10px_rgba(0,255,255,0.5)]">
           VS. MODE

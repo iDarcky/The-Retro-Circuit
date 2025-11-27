@@ -1,11 +1,11 @@
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, type FC } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchConsoleList, fetchGameList, fetchManufacturers } from '../services/geminiService';
 import RetroLoader from './RetroLoader';
 import SEOHead from './SEOHead';
 
-const HtmlSitemap: React.FC = () => {
+const HtmlSitemap: FC = () => {
     const [consoles, setConsoles] = useState<{name: string, slug: string}[]>([]);
     const [games, setGames] = useState<{title: string, slug: string, id: string}[]>([]);
     const [brands, setBrands] = useState<string[]>([]);

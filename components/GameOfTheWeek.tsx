@@ -1,11 +1,11 @@
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, type FC } from 'react';
 import { fetchGameOfTheWeek } from '../services/geminiService';
 import { GameOfTheWeekData } from '../types';
 import Button from './Button';
 import { Link } from 'react-router-dom';
 
-const GameOfTheWeek: React.FC = () => {
+const GameOfTheWeek: FC = () => {
   const [game, setGame] = useState<GameOfTheWeekData | null>(null);
   const [loading, setLoading] = useState(false);
   const [attempted, setAttempted] = useState(false);

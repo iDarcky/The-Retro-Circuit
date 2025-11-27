@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, type FC } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchGameBySlug } from '../services/geminiService';
 import { GameOfTheWeekData } from '../types';
@@ -8,7 +7,7 @@ import RetroLoader from './RetroLoader';
 import CollectionToggle from './CollectionToggle';
 import SEOHead from './SEOHead';
 
-const GameDetails: React.FC = () => {
+const GameDetails: FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const [game, setGame] = useState<GameOfTheWeekData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -100,91 +99,72 @@ const GameDetails: React.FC = () => {
                 className="bg-blue-600/20 border border-blue-500 text-blue-400 hover:bg-blue-600 hover:text-white px-3 py-1 font-mono text-xs transition-colors flex items-center gap-2"
                 title="Search on eBay"
              >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-                FIND ON EBAY
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                SEARCH EBAY
              </button>
            </div>
         </div>
         
-        <div>
-           <h1 className="text-4xl md:text-6xl font-pixel text-white drop-shadow-[4px_4px_0_rgba(0,0,0,1)] leading-tight mb-2">
-             {game.title}
-           </h1>
-           <div className="flex flex-wrap gap-4 font-mono text-lg text-retro-pink items-center">
-              <span>{game.developer}</span>
-              <span className="text-gray-600">//</span>
-              <span>{game.year}</span>
-              {game.console_slug && (
-                  <>
-                      <span className="text-gray-600">//</span>
-                      <Link to={`/consoles/${game.console_slug}`} className="text-retro-neon hover:underline bg-retro-neon/10 px-2 border border-retro-neon/50 text-sm">
-                          PLATFORM: {game.console_slug.replace(/-/g, ' ').toUpperCase()}
-                      </Link>
-                  </>
-              )}
-           </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-         {/* Left Sidebar: Metadata */}
-         <div className="lg:col-span-1 space-y-6">
-            <div className="bg-retro-dark border-2 border-retro-grid p-6 relative group overflow-hidden">
-                <div className="aspect-[3/4] bg-black/50 border border-retro-grid mb-6 flex items-center justify-center relative">
+        <div className="flex flex-col md:flex-row gap-8">
+            <div className="w-full md:w-1/3">
+                <div className="aspect-[3/4] bg-black border-2 border-retro-grid relative shadow-lg overflow-hidden group">
                     {game.image ? (
                         <img src={game.image} alt={game.title} className="w-full h-full object-cover" />
                     ) : (
-                        <div className="text-center opacity-30">
-                            <div className="font-pixel text-xl text-retro-grid">NO ART</div>
-                        </div>
+                        <div className="flex items-center justify-center h-full text-retro-grid font-pixel">NO COVER</div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-retro-dark to-transparent opacity-50"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                        <span className="font-pixel text-xs text-retro-neon">COVER ART</span>
+                    </div>
                 </div>
-
-                <div className="space-y-4 font-mono text-sm">
-                    <div>
-                        <span className="text-gray-500 block text-[10px] mb-1">GENRE</span>
-                        <span className="text-retro-blue border border-retro-blue px-2 py-0.5 inline-block">{game.genre.toUpperCase()}</span>
-                    </div>
-                    <div>
-                        <span className="text-gray-500 block text-[10px] mb-1">DEVELOPER</span>
-                        <span className="text-white">{game.developer}</span>
-                    </div>
-                    <div>
-                        <span className="text-gray-500 block text-[10px] mb-1">RELEASE YEAR</span>
-                        <span className="text-white">{game.year}</span>
-                    </div>
-                    {game.rating && (
-                        <div>
-                            <span className="text-gray-500 block text-[10px] mb-1">RATING</span>
-                            <div className="text-yellow-400 text-lg tracking-widest">
-                                {'★'.repeat(safeRating)}{'☆'.repeat(5 - safeRating)}
-                            </div>
-                        </div>
+            </div>
+            
+            <div className="w-full md:w-2/3">
+                <h1 className="text-4xl md:text-6xl font-pixel text-white mb-2 drop-shadow-[4px_4px_0_rgba(255,0,255,0.5)] leading-tight">
+                    {game.title}
+                </h1>
+                <div className="flex flex-wrap gap-4 mb-8 font-mono text-sm text-retro-blue">
+                    <span className="bg-retro-blue/10 px-2 py-1 border border-retro-blue">{game.developer}</span>
+                    <span className="bg-retro-blue/10 px-2 py-1 border border-retro-blue">{game.year}</span>
+                    <span className="bg-retro-blue/10 px-2 py-1 border border-retro-blue">{game.genre}</span>
+                    {game.console_slug && (
+                        <Link to={`/consoles/${game.console_slug}`} className="bg-retro-neon/10 px-2 py-1 border border-retro-neon text-retro-neon hover:bg-retro-neon hover:text-black transition-colors">
+                            PLATFORM &gt;
+                        </Link>
                     )}
                 </div>
-            </div>
-         </div>
-
-         {/* Main Content */}
-         <div className="lg:col-span-3 space-y-8">
-            <div className="bg-retro-grid/10 border-l-4 border-retro-neon p-6">
-                <h3 className="font-pixel text-lg text-retro-neon mb-4">MISSION REPORT</h3>
-                <p className="font-mono text-gray-300 text-lg leading-relaxed whitespace-pre-line">
-                    {game.content}
-                </p>
-            </div>
-
-            <div className="bg-retro-dark border border-retro-grid p-8 relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-2 opacity-10">
-                    <svg className="w-24 h-24 text-retro-blue" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                
+                <div className="bg-retro-dark border border-retro-grid p-6 mb-8 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 bg-retro-grid px-2 py-1 text-[10px] text-black font-bold font-mono">
+                        ARCHIVE FILE
+                    </div>
+                    <p className="font-mono text-gray-300 leading-relaxed whitespace-pre-line text-lg">
+                        {game.content}
+                    </p>
                 </div>
-                <h3 className="font-pixel text-sm text-retro-blue mb-4 border-b border-retro-grid/50 pb-2">WHY IT MATTERS</h3>
-                <p className="font-mono text-gray-400 leading-relaxed italic">
-                    "{game.whyItMatters}"
-                </p>
+                
+                <div className="bg-retro-pink/10 border border-retro-pink p-6">
+                    <h3 className="font-pixel text-retro-pink mb-2">WHY IT MATTERS</h3>
+                    <p className="font-mono text-retro-pink/80 leading-relaxed">
+                        {game.whyItMatters}
+                    </p>
+                </div>
+                
+                {/* Rating */}
+                <div className="mt-8 flex items-center gap-4">
+                    <span className="font-pixel text-sm text-gray-500">RATING:</span>
+                    <div className="flex gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                            <svg key={star} className={`w-6 h-6 ${star <= safeRating ? 'text-yellow-400' : 'text-gray-700'}`} fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                        ))}
+                    </div>
+                </div>
             </div>
-         </div>
+        </div>
       </div>
     </div>
   );

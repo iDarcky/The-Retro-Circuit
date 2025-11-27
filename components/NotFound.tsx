@@ -1,8 +1,9 @@
-import React from 'react';
+
+import { type FC } from 'react';
 import { Link } from 'react-router-dom';
 import Button from './Button';
 
-const NotFound: React.FC = () => {
+const NotFound: FC = () => {
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center">
       <div className="font-pixel text-6xl text-retro-pink mb-4 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] animate-pulse">

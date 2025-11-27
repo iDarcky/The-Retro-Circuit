@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+
+import { useEffect, useState, type FC } from 'react';
 import { useSound } from './SoundContext';
 
 interface BootSequenceProps {
   onComplete: () => void;
 }
 
-const BootSequence: React.FC<BootSequenceProps> = ({ onComplete }) => {
+const BootSequence: FC<BootSequenceProps> = ({ onComplete }) => {
   const [lines, setLines] = useState<string[]>([]);
   const { playHover, playBoot } = useSound();
 

@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+
+import { useEffect, type FC } from 'react';
 import { useLocation } from 'react-router-dom';
 
 interface SEOHeadProps {
@@ -9,7 +10,7 @@ interface SEOHeadProps {
   structuredData?: Record<string, any>; // JSON-LD Schema
 }
 
-const SEOHead: React.FC<SEOHeadProps> = ({ title, description, type = 'website', image, structuredData }) => {
+const SEOHead: FC<SEOHeadProps> = ({ title, description, type = 'website', image, structuredData }) => {
   const location = useLocation();
   
   // Clean URL: Remove trailing slash to ensure consistency (e.g., /games/ and /games are treated as /games)

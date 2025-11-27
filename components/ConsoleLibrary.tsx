@@ -1,13 +1,12 @@
 
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, type FC } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchManufacturers, fetchConsolesFiltered, getBrandTheme } from '../services/geminiService';
 import { ConsoleDetails, ConsoleFilterState } from '../types';
 import RetroLoader from './RetroLoader';
 import Button from './Button';
-import SEOHead from './SEOHead';
 
-const ConsoleLibrary: React.FC = () => {
+const ConsoleLibrary: FC = () => {
   const [consoles, setConsoles] = useState<ConsoleDetails[]>([]);
   const [brands, setBrands] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -80,10 +79,6 @@ const ConsoleLibrary: React.FC = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto p-4">
-      <SEOHead 
-        title="Retro Console Database & Specs" 
-        description="Browse our complete directory of video game consoles from 1970 to 2005. Filter by generation (8-bit, 16-bit, 32-bit), manufacturer, and type." 
-      />
       
       {/* HEADER */}
       <div className="text-center mb-8 border-b border-retro-grid pb-4">

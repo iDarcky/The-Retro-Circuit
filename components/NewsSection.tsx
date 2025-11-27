@@ -1,11 +1,10 @@
 
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, type FC, type FormEvent } from 'react';
 import { fetchRetroNews, addNewsItem, fetchConsoleList, fetchGameList } from '../services/geminiService';
 import { NewsItem } from '../types';
 import Button from './Button';
 import { Link } from 'react-router-dom';
 import RetroLoader from './RetroLoader';
-import SEOHead from './SEOHead';
 
 interface NewsSectionProps {
   limit?: number;
@@ -15,7 +14,7 @@ interface NewsSectionProps {
 
 type NewsCategory = 'Hardware' | 'Software' | 'Industry' | 'Rumor';
 
-const NewsSection: React.FC<NewsSectionProps> = ({ 
+const NewsSection: FC<NewsSectionProps> = ({ 
   limit, 
   showAddForm = true, 
   compact = false 
@@ -83,7 +82,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({
       setPage(1); // Reset to first page on filter change
   };
 
-  const handleTransmit = async (e: React.FormEvent) => {
+  const handleTransmit = async (e: FormEvent) => {
       e.preventDefault();
       if (!newHeadline || !newSummary) return;
 
@@ -163,13 +162,6 @@ const NewsSection: React.FC<NewsSectionProps> = ({
 
   return (
     <div className={`w-full ${compact ? '' : 'max-w-6xl mx-auto p-4'}`}>
-      {!compact && (
-          <SEOHead 
-            title="Retro Gaming News & Signals" 
-            description="The latest updates, hardware announcements, software leaks, and industry rumors from the world of retro gaming." 
-          />
-      )}
-      
       <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b-2 border-retro-grid pb-4 gap-4">
         <div>
           <h2 className={`${compact ? 'text-xl' : 'text-3xl'} font-pixel text-retro-neon mb-2 drop-shadow-[2px_2px_0_rgba(255,0,255,0.5)]`}>

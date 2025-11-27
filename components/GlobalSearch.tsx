@@ -1,11 +1,11 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { searchDatabase } from '../services/geminiService';
 import { SearchResult } from '../types';
 import { useSound } from './SoundContext';
 
-const GlobalSearch: React.FC = () => {
+const GlobalSearch: FC = () => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isOpen, setIsOpen] = useState(false);

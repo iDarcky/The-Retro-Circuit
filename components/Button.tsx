@@ -1,12 +1,13 @@
-import React from 'react';
+
+import { type ButtonHTMLAttributes, type FC, type MouseEvent } from 'react';
 import { useSound } from './SoundContext';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger';
   isLoading?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({ 
+const Button: FC<ButtonProps> = ({ 
   children, 
   variant = 'primary', 
   isLoading = false, 
@@ -26,12 +27,12 @@ const Button: React.FC<ButtonProps> = ({
     danger: "border-retro-pink text-retro-pink hover:bg-retro-pink hover:text-retro-dark shadow-[0_0_10px_rgba(255,0,255,0.5)]",
   };
 
-  const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleMouseEnter = (e: MouseEvent<HTMLButtonElement>) => {
     if (!disabled && !isLoading) playHover();
     if (onMouseEnter) onMouseEnter(e);
   };
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     if (!disabled && !isLoading) playClick();
     if (onClick) onClick(e);
   };

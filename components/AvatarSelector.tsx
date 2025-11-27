@@ -1,5 +1,5 @@
 
-import React from 'react';
+import { type FC } from 'react';
 import { RETRO_AVATARS } from '../utils/avatars';
 
 interface AvatarSelectorProps {
@@ -7,7 +7,7 @@ interface AvatarSelectorProps {
     onSelect: (id: string) => void;
 }
 
-const AvatarSelector: React.FC<AvatarSelectorProps> = ({ selectedId, onSelect }) => {
+const AvatarSelector: FC<AvatarSelectorProps> = ({ selectedId, onSelect }) => {
     return (
         <div className="grid grid-cols-5 gap-2 p-2 bg-retro-dark border border-retro-grid">
             {RETRO_AVATARS.map((avatar) => (
