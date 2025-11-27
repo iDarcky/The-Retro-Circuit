@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
@@ -141,6 +142,7 @@ const FooterStatus = ({ crtEnabled, onToggleCrt }: { crtEnabled: boolean, onTogg
 const AppContent = () => {
   const [bootComplete, setBootComplete] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [user, setUser] = useState<any>(null);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false);
   const [crtEnabled, setCrtEnabled] = useState(true);
@@ -176,15 +178,20 @@ const AppContent = () => {
   useEffect(() => {
       if (!isSupabaseConfigured) return;
 
-      const checkAdmin = async () => {
+      const checkAuth = async () => {
           const isA = await retroAuth.isAdmin();
+          const u = await retroAuth.getUser();
           setIsAdmin(isA);
+          setUser(u);
       };
       
-      checkAdmin();
+      checkAuth();
 
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-          checkAdmin();
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+          const u = session?.user || null;
+          setUser(u);
+          const isA = await retroAuth.isAdmin();
+          setIsAdmin(isA);
       });
 
       return () => subscription.unsubscribe();
@@ -234,85 +241,134 @@ const AppContent = () => {
             />
             <div className="md:hidden fixed top-16 right-0 w-72 bg-retro-dark border-l border-b border-retro-grid z-[60] p-6 shadow-[0_0_50px_rgba(0,0,0,0.8)] animate-[slideDown_0.2s_ease-out]">
                 <div className="space-y-6">
+                    {/* CRT Toggle in Mobile Menu */}
                     <div>
-                        <h4 className="font-pixel text-xs text-retro-blue mb-3 border-b border-retro-grid/50 pb-2">SYSTEM CONTROLS</h4>
-                        <div className="space-y-3">
-                            <button 
-                                onClick={toggleCrt} 
-                                className={`w-full border p-3 font-mono text-xs flex justify-between items-center transition-colors ${crtEnabled ? 'border-retro-neon text-retro-neon bg-retro-neon/10' : 'border-gray-600 text-gray-500'}`}
-                            >
-                                <span>CRT EFFECTS</span>
-                                <span className="font-bold">{crtEnabled ? 'ON' : 'OFF'}</span>
-                            </button>
-                            <button 
-                                onClick={toggleSound} 
-                                className={`w-full border p-3 font-mono text-xs flex justify-between items-center transition-colors ${soundEnabled ? 'border-retro-pink text-retro-pink bg-retro-pink/10' : 'border-gray-600 text-gray-500'}`}
-                            >
-                                <span>AUDIO SYSTEM</span>
-                                <span className="font-bold">{soundEnabled ? 'ON' : 'OFF'}</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div>
-                         <h4 className="font-pixel text-xs text-retro-blue mb-3 border-b border-retro-grid/50 pb-2">PILOT ACCESS</h4>
-                         <Link 
-                            to="/login" 
-                            onClick={() => setMobileSettingsOpen(false)}
-                            className="block text-center w-full bg-retro-grid/20 hover:bg-retro-grid/40 text-gray-300 hover:text-white font-mono text-xs py-3 border border-retro-grid transition-colors"
+                        <div className="font-pixel text-xs text-gray-500 mb-2">VISUAL FX</div>
+                        <button 
+                            onClick={() => { toggleCrt(); setMobileSettingsOpen(false); }}
+                            className={`w-full border px-4 py-2 font-mono text-sm flex justify-between items-center ${crtEnabled ? 'border-retro-neon text-retro-neon' : 'border-gray-600 text-gray-400'}`}
                         >
-                            LOGIN / PROFILE
+                            <span>CRT SCANLINES</span>
+                            <span>{crtEnabled ? 'ON' : 'OFF'}</span>
+                        </button>
+                    </div>
+
+                    {/* Sound Toggle in Mobile Menu */}
+                    <div>
+                        <div className="font-pixel text-xs text-gray-500 mb-2">AUDIO</div>
+                        <button 
+                            onClick={() => { toggleSound(); setMobileSettingsOpen(false); }}
+                            className={`w-full border px-4 py-2 font-mono text-sm flex justify-between items-center ${soundEnabled ? 'border-retro-pink text-retro-pink' : 'border-gray-600 text-gray-400'}`}
+                        >
+                            <span>SYSTEM SOUND</span>
+                            <span>{soundEnabled ? 'ON' : 'OFF'}</span>
+                        </button>
+                    </div>
+
+                    {/* Footer Links in Mobile Menu */}
+                    <div className="pt-6 border-t border-retro-grid">
+                        <Link to="/sitemap" onClick={() => setMobileSettingsOpen(false)} className="block font-mono text-xs text-gray-500 hover:text-white mb-2">
+                            [ SYSTEM MAP ]
                         </Link>
+                         <div className="font-mono text-[10px] text-gray-600">
+                            v1.0.4 // RETRO-CIRCUIT
+                        </div>
                     </div>
                 </div>
             </div>
           </>
       )}
 
-      {/* MOBILE SEARCH OVERLAY */}
-      {mobileSearchOpen && (
-        <div className="md:hidden fixed top-16 left-0 right-0 z-[55] bg-retro-dark border-b border-retro-grid shadow-lg animate-[slideDown_0.2s_ease-out]">
-            <GlobalSearch />
-        </div>
-      )}
+      {/* DESKTOP SIDEBAR */}
+      <aside className="hidden md:flex flex-col w-64 bg-retro-dark border-r border-retro-grid h-screen sticky top-0 z-50">
+          <div className="p-6 border-b border-retro-grid">
+             <Link to="/" className="block group">
+                <img src="/logo.png" alt="Retro Circuit" className="w-full h-auto mb-2 opacity-80 group-hover:opacity-100 transition-opacity" />
+                <div className="font-pixel text-center text-xs text-retro-neon tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">EST. 198X</div>
+             </Link>
+          </div>
 
-      {/* MOBILE BOTTOM NAV - FLOATING STYLE */}
-      <div className="md:hidden fixed bottom-6 left-4 right-4 h-16 bg-retro-dark/95 backdrop-blur-md border border-retro-grid/50 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] z-[60] flex justify-between items-center p-2">
-        <MobileNavItem to="/" icon={IconHome} label="HOME" exact />
-        <MobileNavItem to="/news" icon={IconNews} label="NEWS" />
-        <MobileNavItem to="/games" icon={IconGames} label="GAMES" />
-        <MobileNavItem to="/consoles" icon={IconDatabase} label="HARDWARE" />
-        <MobileNavItem to="/comparer" icon={IconVS} label="VS" />
-      </div>
-
-      {/* SIDEBAR (DESKTOP) */}
-      <aside className="hidden md:flex flex-col w-64 bg-retro-dark border-r border-retro-grid fixed top-0 bottom-0 left-0 z-40">
-        <div className="p-6 border-b border-retro-grid text-center flex justify-center items-center">
-            <Link to="/">
-                <img src="/logo.png" alt="The Retro Circuit" className="w-full max-w-[180px] h-auto object-contain drop-shadow-[0_0_8px_rgba(0,255,157,0.3)] hover:scale-105 transition-transform duration-300" />
-            </Link>
-        </div>
-        
-        {/* GLOBAL SEARCH */}
-        <GlobalSearch />
-        
-        <nav className="flex-1 overflow-y-auto py-4 custom-scrollbar">
-            <SidebarItem to="/" icon={IconHome} label="DASHBOARD" exact />
-            <SidebarItem to="/news" icon={IconNews} label="NEWS FEED" />
-            <SidebarItem to="/games" icon={IconGames} label="GAMES" />
-            <SidebarItem to="/consoles" icon={IconDatabase} label="HARDWARE" />
-            <SidebarItem to="/comparer" icon={IconVS} label="VS. MODE" />
-            <SidebarItem to="/timeline" icon={IconTimeline} label="TIMELINE" />
-            {isAdmin && <SidebarItem to="/admin" icon={IconLock} label="ADMIN PORTAL" />}
-        </nav>
-
-        <div className="p-4 border-t border-retro-grid bg-retro-dark">
-             <SidebarItem to="/login" icon={IconLogin} label="PILOT ACCESS" />
-        </div>
+          <nav className="flex-1 overflow-y-auto py-4 custom-scrollbar">
+              <SidebarItem to="/" icon={IconHome} label="DASHBOARD" exact />
+              <SidebarItem to="/news" icon={IconNews} label="SIGNALS" />
+              <SidebarItem to="/games" icon={IconGames} label="GAME DB" />
+              <SidebarItem to="/consoles" icon={IconDatabase} label="HARDWARE" />
+              <SidebarItem to="/comparer" icon={IconVS} label="VS. MODE" />
+              <SidebarItem to="/timeline" icon={IconTimeline} label="TIMELINE" />
+              
+              <div className="my-4 border-t border-retro-grid mx-4"></div>
+              
+              <SidebarItem to={user ? "/login" : "/login"} icon={IconLogin} label={user ? "ID CARD" : "LOGIN"} />
+              {isAdmin && <SidebarItem to="/admin" icon={IconLock} label="ROOT ACCESS" />}
+          </nav>
+          
+          <div className="p-4 border-t border-retro-grid bg-black/20">
+              <GlobalSearch />
+          </div>
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 md:ml-64 pb-24 md:pb-12 min-h-screen relative overflow-x-hidden">
-        <Suspense fallback={<RetroLoader />}>
-            <ErrorBoundary>
-                <Routes>
-                    <
+      <main className="flex-1 min-h-screen relative z-10 overflow-x-hidden">
+          <div className="md:hidden p-4">
+              {/* Mobile Search Bar visible when toggled */}
+              {mobileSearchOpen && (
+                  <div className="mb-4 animate-[slideDown_0.2s_ease-out]">
+                      <GlobalSearch />
+                  </div>
+              )}
+          </div>
+
+          <Suspense fallback={<RetroLoader />}>
+              <ErrorBoundary>
+                  <Routes>
+                      <Route path="/" element={<LandingPage />} />
+                      <Route path="/news" element={<NewsSection />} />
+                      <Route path="/games" element={<GamesList />} />
+                      <Route path="/games/:slug" element={<GameDetails />} />
+                      <Route path="/consoles" element={<ConsoleLibrary />} />
+                      <Route path="/consoles/brand/:name" element={<ManufacturerDetail />} />
+                      <Route path="/consoles/:slug" element={<ConsoleSpecs />} />
+                      <Route path="/comparer" element={<ConsoleComparer />} />
+                      <Route path="/timeline" element={<Timeline />} />
+                      <Route path="/login" element={<AuthSection />} />
+                      <Route path="/signup" element={<AuthSection />} />
+                      <Route path="/recovery" element={<AuthSection />} />
+                      <Route path="/admin" element={<AdminPortal />} />
+                      <Route path="/sitemap" element={<HtmlSitemap />} />
+                      <Route path="*" element={<NotFound />} />
+                  </Routes>
+              </ErrorBoundary>
+          </Suspense>
+
+          <div className="h-16 md:h-0"></div> {/* Spacer for mobile nav */}
+      </main>
+
+      {/* MOBILE BOTTOM NAV */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-retro-dark border-t border-retro-grid z-50 flex items-center justify-around px-2 pb-safe">
+          <MobileNavItem to="/" icon={IconHome} label="HOME" exact />
+          <MobileNavItem to="/games" icon={IconGames} label="GAMES" />
+          <MobileNavItem to="/consoles" icon={IconDatabase} label="SYSTEMS" />
+          <MobileNavItem to="/login" icon={IconLogin} label={user ? "ME" : "LOGIN"} />
+      </div>
+      
+      <FooterStatus crtEnabled={crtEnabled} onToggleCrt={toggleCrt} />
+    </div>
+  );
+};
+
+const App = () => {
+    return (
+        <React.StrictMode>
+             <Analytics />
+             <SoundProvider>
+                <BrowserRouter>
+                    <AppContent />
+                </BrowserRouter>
+             </SoundProvider>
+        </React.StrictMode>
+    );
+};
+
+const container = document.getElementById('root');
+const root = createRoot(container!);
+root.render(<App />);
