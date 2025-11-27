@@ -6,6 +6,9 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     base: './', // Ensures relative paths for assets, useful for static hosting
+    resolve: {
+      dedupe: ['react', 'react-dom'],
+    },
     build: {
       rollupOptions: {
         output: {

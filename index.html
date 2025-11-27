@@ -33,11 +33,21 @@
             animation: {
               'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
               'scanline': 'scanline 8s linear infinite',
+              'slideDown': 'slideDown 0.2s ease-out',
+              'fadeIn': 'fadeIn 0.5s ease-in-out',
             },
             keyframes: {
               scanline: {
                 '0%': { transform: 'translateY(-100%)' },
                 '100%': { transform: 'translateY(100%)' }
+              },
+              slideDown: {
+                  '0%': { opacity: '0', transform: 'translateY(-10px)' },
+                  '100%': { opacity: '1', transform: 'translateY(0)' }
+              },
+              fadeIn: {
+                  '0%': { opacity: '0' },
+                  '100%': { opacity: '1' }
               }
             }
           }
@@ -51,19 +61,22 @@
         overflow-x: hidden;
       }
       /* Custom Scrollbar */
-      ::-webkit-scrollbar {
+      .custom-scrollbar::-webkit-scrollbar {
         width: 8px;
+        height: 8px;
       }
-      ::-webkit-scrollbar-track {
+      .custom-scrollbar::-webkit-scrollbar-track {
         background: #0f0f1b; 
       }
-      ::-webkit-scrollbar-thumb {
+      .custom-scrollbar::-webkit-scrollbar-thumb {
         background: #2a2a40; 
         border: 1px solid #00ff9d;
       }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #00ff9d; 
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #00ff9d;
       }
+      
+      /* CRT Effects */
       .scanlines {
         background: linear-gradient(
           to bottom,
@@ -75,45 +88,40 @@
         background-size: 100% 4px;
         position: fixed;
         pointer-events: none;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        z-index: 50;
-        will-change: transform; /* Performance Hint */
+        top: 0; right: 0; bottom: 0; left: 0;
+        z-index: 9998;
       }
       .crt-flicker {
-        animation: flicker 0.15s infinite;
-        pointer-events: none;
+        opacity: 0.15;
         position: fixed;
         top: 0; left: 0; right: 0; bottom: 0;
         background: rgba(18, 16, 16, 0.1);
-        opacity: 0.1;
-        z-index: 49;
-        will-change: opacity; /* Performance Hint */
+        z-index: 9999;
+        pointer-events: none;
+        animation: flicker 0.15s infinite;
       }
       @keyframes flicker {
-        0% { opacity: 0.05; }
-        50% { opacity: 0.1; }
-        100% { opacity: 0.05; }
+        0% { opacity: 0.1; }
+        50% { opacity: 0.2; }
+        100% { opacity: 0.1; }
+      }
+      /* Safe area for mobile */
+      .pb-safe {
+          padding-bottom: env(safe-area-inset-bottom);
       }
     </style>
-<script type="importmap">
+  <script type="importmap">
 {
   "imports": {
-    "react": "https://aistudiocdn.com/react@18.3.1",
-    "react-dom": "https://aistudiocdn.com/react-dom@18.3.1",
-    "react-dom/client": "https://aistudiocdn.com/react-dom@18.3.1/client",
-    "react-router": "https://aistudiocdn.com/react-router@6.22.3",
-    "react-router-dom": "https://aistudiocdn.com/react-router-dom@6.22.3",
-    "@vercel/analytics/react": "https://aistudiocdn.com/@vercel/analytics@1.2.2/react",
-    "zod": "https://aistudiocdn.com/zod@3.22.4",
-    "@supabase/supabase-js": "https://aistudiocdn.com/@supabase/supabase-js@2.39.0",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "@vercel/analytics/": "https://aistudiocdn.com/@vercel/analytics@^1.5.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "@vercel/analytics/": "https://aistudiocdn.com/@vercel/analytics@^1.5.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
     "vite": "https://aistudiocdn.com/vite@^7.2.4",
-    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1"
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.6",
+    "zod": "https://aistudiocdn.com/zod@^4.1.13",
+    "@supabase/supabase-js": "https://aistudiocdn.com/@supabase/supabase-js@^2.86.0"
   }
 }
 </script>
