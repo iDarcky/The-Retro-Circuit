@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -20,39 +19,40 @@ const SEOHead: React.FC<SEOHeadProps> = ({ title, description, type = 'website',
     
   const canonicalUrl = `https://theretrocircuit.com${cleanPath}`;
   const defaultImage = 'https://theretrocircuit.com/og-image.jpg';
+  const siteName = 'The Retro Circuit';
+  const fullTitle = `${title} | ${siteName}`;
 
   useEffect(() => {
-    // 1. Update Title
-    document.title = `${title} | The Retro Circuit`;
+    // 1. Update Document Title
+    document.title = fullTitle;
 
     // 2. Helper to safely update or create meta tags
-    const updateMeta = (selector: string, attribute: string, value: string, createKey?: string, createVal?: string) => {
-      let element = document.querySelector(selector);
-      if (!element && createKey && createVal) {
+    const updateMeta = (nameAttr: string, nameVal: string, contentVal: string) => {
+      let element = document.querySelector(`meta[${nameAttr}="${nameVal}"]`);
+      if (!element) {
         element = document.createElement('meta');
-        element.setAttribute(createKey, createVal);
+        element.setAttribute(nameAttr, nameVal);
         document.head.appendChild(element);
       }
-      if (element) {
-        element.setAttribute(attribute, value);
-      }
+      element.setAttribute('content', contentVal);
     };
 
     // 3. Standard Meta Tags
-    updateMeta('meta[name="description"]', 'content', description, 'name', 'description');
+    updateMeta('name', 'description', description);
     
     // 4. Open Graph (Facebook/Discord/LinkedIn)
-    updateMeta('meta[property="og:title"]', 'content', title, 'property', 'og:title');
-    updateMeta('meta[property="og:description"]', 'content', description, 'property', 'og:description');
-    updateMeta('meta[property="og:type"]', 'content', type, 'property', 'og:type');
-    updateMeta('meta[property="og:url"]', 'content', canonicalUrl, 'property', 'og:url');
-    updateMeta('meta[property="og:image"]', 'content', image || defaultImage, 'property', 'og:image');
+    updateMeta('property', 'og:title', fullTitle);
+    updateMeta('property', 'og:description', description);
+    updateMeta('property', 'og:type', type);
+    updateMeta('property', 'og:url', canonicalUrl);
+    updateMeta('property', 'og:image', image || defaultImage);
+    updateMeta('property', 'og:site_name', siteName);
 
     // 5. Twitter Card
-    updateMeta('meta[name="twitter:card"]', 'content', 'summary_large_image', 'name', 'twitter:card');
-    updateMeta('meta[name="twitter:title"]', 'content', title, 'name', 'twitter:title');
-    updateMeta('meta[name="twitter:description"]', 'content', description, 'name', 'twitter:description');
-    updateMeta('meta[name="twitter:image"]', 'content', image || defaultImage, 'name', 'twitter:image');
+    updateMeta('name', 'twitter:card', 'summary_large_image');
+    updateMeta('name', 'twitter:title', fullTitle);
+    updateMeta('name', 'twitter:description', description);
+    updateMeta('name', 'twitter:image', image || defaultImage);
 
     // 6. Canonical Link
     let linkCanon = document.querySelector('link[rel="canonical"]');
@@ -75,7 +75,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({ title, description, type = 'website',
       document.head.appendChild(script);
     }
 
-  }, [title, description, type, image, structuredData, canonicalUrl]);
+  }, [fullTitle, description, type, image, structuredData, canonicalUrl]);
 
   return null;
 };
