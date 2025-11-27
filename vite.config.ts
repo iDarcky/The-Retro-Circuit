@@ -7,13 +7,13 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     base: './', // Ensures relative paths for assets, useful for static hosting
     resolve: {
-      dedupe: ['react', 'react-dom'],
+      dedupe: ['react', 'react-dom', 'react-router-dom', 'react-router'],
     },
     build: {
       rollupOptions: {
         output: {
           manualChunks: {
-            'vendor-react': ['react', 'react-dom'],
+            'vendor-react': ['react', 'react-dom', 'react-router-dom'],
             'ui-utils': ['./components/Button.tsx', './utils/security.ts'],
           }
         }
