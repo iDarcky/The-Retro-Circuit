@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { useState, useEffect, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
@@ -203,7 +203,7 @@ const AppContent = () => {
       {/* MOBILE HEADER */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-retro-dark border-b border-retro-grid z-[60] flex items-center justify-between px-4 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
         <Link to="/" className="flex items-center gap-2">
-            <img src="/logo.png" alt="The Retro Circuit" className="h-10 w-auto object-contain drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]" />
+            <img src="/logo.svg" alt="The Retro Circuit" className="h-10 w-auto object-contain drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]" />
         </Link>
         <div className="flex gap-4 items-center">
             <button 
@@ -289,7 +289,7 @@ const AppContent = () => {
       <aside className="hidden md:flex flex-col w-64 bg-retro-dark border-r border-retro-grid fixed top-0 bottom-0 left-0 z-40">
         <div className="p-6 border-b border-retro-grid text-center flex justify-center items-center">
             <Link to="/">
-                <img src="/logo.png" alt="The Retro Circuit" className="w-full max-w-[180px] h-auto object-contain drop-shadow-[0_0_8px_rgba(0,255,157,0.3)] hover:scale-105 transition-transform duration-300" />
+                <img src="/logo.svg" alt="The Retro Circuit" className="w-full max-w-[180px] h-auto object-contain drop-shadow-[0_0_8px_rgba(0,255,157,0.3)] hover:scale-105 transition-transform duration-300" />
             </Link>
         </div>
         
