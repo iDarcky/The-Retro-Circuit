@@ -5,6 +5,7 @@ import { fetchManufacturerProfile, fetchConsolesFiltered, getBrandTheme } from '
 import { ConsoleDetails, ManufacturerProfile } from '../types';
 import RetroLoader from './RetroLoader';
 import Button from './Button';
+import SEOHead from './SEOHead';
 
 const ManufacturerDetail: React.FC = () => {
     const { name } = useParams<{ name: string }>();
@@ -58,6 +59,10 @@ const ManufacturerDetail: React.FC = () => {
 
     return (
         <div className="w-full max-w-7xl mx-auto p-4 animate-[fadeIn_0.5s_ease-in-out]">
+            <SEOHead 
+                title={`${profile.name} History & Consoles`} 
+                description={`Explore the history of ${profile.name}. View all released consoles, corporate history, key franchises, and market details.`}
+            />
             {/* Header / Dossier */}
             <div className={`border-l-8 ${theme.color} bg-retro-dark p-8 mb-8 shadow-lg`}>
                 <div className="flex flex-col md:flex-row justify-between items-end border-b border-gray-800 pb-6 mb-6">

@@ -5,6 +5,7 @@ import { GameOfTheWeekData } from '../types';
 import Button from './Button';
 import RetroLoader from './RetroLoader';
 import { Link } from 'react-router-dom';
+import SEOHead from './SEOHead';
 
 const GamesList: React.FC = () => {
   const [games, setGames] = useState<GameOfTheWeekData[]>([]);
@@ -35,6 +36,10 @@ const GamesList: React.FC = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto p-4">
+      <SEOHead 
+         title="Retro Game Reviews & Archive" 
+         description="Explore our extensive library of classic video game reviews. From Super Mario to obscure hidden gems, read in-depth analysis of games from the 80s, 90s, and 2000s."
+      />
       <div className="text-center mb-12">
         <h2 className="text-3xl font-pixel text-retro-neon mb-4 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
           GAME DATABASE

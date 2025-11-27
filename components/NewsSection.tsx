@@ -5,6 +5,7 @@ import { NewsItem } from '../types';
 import Button from './Button';
 import { Link } from 'react-router-dom';
 import RetroLoader from './RetroLoader';
+import SEOHead from './SEOHead';
 
 interface NewsSectionProps {
   limit?: number;
@@ -162,6 +163,13 @@ const NewsSection: React.FC<NewsSectionProps> = ({
 
   return (
     <div className={`w-full ${compact ? '' : 'max-w-6xl mx-auto p-4'}`}>
+      {!compact && (
+          <SEOHead 
+            title="Retro Gaming News & Signals" 
+            description="The latest updates, hardware announcements, software leaks, and industry rumors from the world of retro gaming." 
+          />
+      )}
+      
       <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b-2 border-retro-grid pb-4 gap-4">
         <div>
           <h2 className={`${compact ? 'text-xl' : 'text-3xl'} font-pixel text-retro-neon mb-2 drop-shadow-[2px_2px_0_rgba(255,0,255,0.5)]`}>

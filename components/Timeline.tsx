@@ -1,6 +1,8 @@
+
 import React, { useEffect, useState } from 'react';
 import { fetchTimelineData } from '../services/geminiService';
 import { TimelineEvent } from '../types';
+import SEOHead from './SEOHead';
 
 const Timeline: React.FC = () => {
   const [events, setEvents] = useState<TimelineEvent[]>([]);
@@ -20,6 +22,10 @@ const Timeline: React.FC = () => {
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4">
+        <SEOHead 
+           title="Video Game History Timeline" 
+           description="Interactive timeline of video game history. Explore key events, console launches, and industry milestones from the early 1970s to today."
+        />
         <h2 className="text-3xl font-pixel text-center text-retro-pink mb-10 drop-shadow-[0_0_10px_rgba(255,0,255,0.5)]">
             SYSTEM CHRONOLOGY
         </h2>
