@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
         output: {
           manualChunks: {
             'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-            'ui-utils': ['./components/Button.tsx', './utils/security.ts'],
+            'ui-utils': ['./components/ui/Button.tsx', './utils/security.ts'],
           }
         }
       }
