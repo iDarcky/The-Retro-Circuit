@@ -1,11 +1,13 @@
-
 import { createClient } from '@supabase/supabase-js';
 
 // Helper function to safely get environment variables
 const getEnvVar = (key: string): string | undefined => {
-  // @ts-ignore
-  const val = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env[key] : undefined;
-  return val;
+  // Check for Next.js public env vars first
+  if (typeof process !== 'undefined' && process.env) {
+      if (key === 'VITE_SUPABASE_URL') return process.env.NEXT_PUBLIC_SUPABASE_URL;
+      if (key === 'VITE_SUPABASE_ANON_KEY') return process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  }
+  return undefined;
 };
 
 // Retrieve environment variables
@@ -16,8 +18,7 @@ const envKey = getEnvVar('VITE_SUPABASE_ANON_KEY');
 export const isSupabaseConfigured = !!(envUrl && envKey);
 
 // Initialize Supabase client
-// If variables are missing (local dev without .env), use placeholders to prevent crash.
-// Vercel will inject the correct values during build/runtime.
+// If variables are missing, use placeholders to prevent crash during build
 export const supabase = createClient(
   envUrl || 'https://placeholder.supabase.co',
   envKey || 'placeholder-key'

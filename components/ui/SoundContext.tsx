@@ -1,3 +1,4 @@
+'use client';
 
 import { createContext, useContext, useEffect, useRef, useState, type FC, type ReactNode } from 'react';
 
@@ -39,12 +40,16 @@ export const SoundProvider: FC<{ children: ReactNode }> = ({ children }) => {
     };
 
     // Browsers require user interaction to start audio contexts
-    window.addEventListener('click', initAudio, { once: true });
-    window.addEventListener('keydown', initAudio, { once: true });
+    if (typeof window !== 'undefined') {
+        window.addEventListener('click', initAudio, { once: true });
+        window.addEventListener('keydown', initAudio, { once: true });
+    }
     
     return () => {
-        window.removeEventListener('click', initAudio);
-        window.removeEventListener('keydown', initAudio);
+        if (typeof window !== 'undefined') {
+            window.removeEventListener('click', initAudio);
+            window.removeEventListener('keydown', initAudio);
+        }
     };
   }, []);
 

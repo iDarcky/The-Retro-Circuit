@@ -1,3 +1,4 @@
+'use client';
 
 import { type ButtonHTMLAttributes, type FC, type MouseEvent } from 'react';
 import { useSound } from './SoundContext';
