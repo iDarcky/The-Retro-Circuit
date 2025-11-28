@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useCallback, type FC } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchManufacturers, fetchConsolesFiltered, getBrandTheme } from '../services/geminiService';
@@ -111,7 +110,7 @@ const ConsoleLibrary: FC = () => {
                         <Link 
                             key={brand}
                             to={`/systems/brand/${brand}`}
-                            className={`group border-4 bg-retro-dark p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${theme.color} ${theme.hover}`}
+                            className={`group border-4 p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${theme.color} ${theme.bg} ${theme.hover}`}
                         >
                             <div className="w-20 h-20 border-2 border-current rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <span className="font-pixel text-2xl">{brand[0]}</span>

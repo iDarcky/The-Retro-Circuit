@@ -99,7 +99,7 @@ const FooterStatus = ({ crtEnabled, onToggleCrt }: { crtEnabled: boolean, onTogg
     }, []);
 
     return (
-        <footer className={`hidden md:flex fixed bottom-0 left-0 right-0 ${!isSupabaseConfigured ? 'h-auto pb-1' : 'h-8'} bg-retro-dark border-t border-retro-grid flex-col justify-end z-50 font-mono`}>
+        <footer className={`hidden md:flex fixed bottom-0 left-0 right-0 ${!isSupabaseConfigured ? 'h-auto pb-1' : 'h-8'} bg-retro-dark border-t border-retro-grid flex-col justify-end z-[60] font-mono`}>
             {!isSupabaseConfigured && (
                 <div className="w-full bg-retro-pink text-black text-center text-[10px] py-1 font-bold animate-pulse mb-1">
                     ⚠ SYSTEM ALERT: DATABASE DISCONNECTED (MISSING .ENV CONFIG)
@@ -156,7 +156,9 @@ const AppContent = () => {
   };
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // Scroll the main content container to top on route change
+    const mainContainer = document.querySelector('main');
+    if (mainContainer) mainContainer.scrollTo(0, 0);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -197,7 +199,7 @@ const AppContent = () => {
   }
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen pt-16 md:pt-0 bg-retro-dark relative overflow-hidden">
+    <div className="flex flex-col md:flex-row h-screen pt-16 md:pt-0 bg-retro-dark relative overflow-hidden">
       <SEOHead title="Gateway to the Golden Age" description="Comparing retro consoles and games." />
 
       {/* MOBILE HEADER */}
@@ -271,7 +273,7 @@ const AppContent = () => {
       )}
 
       {/* DESKTOP SIDEBAR */}
-      <aside className="hidden md:flex flex-col w-64 bg-retro-dark border-r border-retro-grid h-screen sticky top-0 z-50">
+      <aside className="hidden md:flex flex-col w-64 bg-retro-dark border-r border-retro-grid h-full z-50 flex-shrink-0 pb-8">
           <div className="p-6 border-b border-retro-grid">
              <Link to="/" className="block group">
                 <img src="/logo.png" alt="Retro Circuit" className="w-full h-auto mb-2 opacity-80 group-hover:opacity-100 transition-opacity" />
@@ -299,7 +301,7 @@ const AppContent = () => {
       </aside>
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 min-h-screen relative z-10 overflow-x-hidden">
+      <main className="flex-1 h-full relative z-10 overflow-y-auto overflow-x-hidden custom-scrollbar">
           <div className="md:hidden p-4">
               {mobileSearchOpen && (
                   <div className="mb-4 animate-[slideDown_0.2s_ease-out]">
@@ -330,7 +332,7 @@ const AppContent = () => {
               </ErrorBoundary>
           </Suspense>
 
-          <div className="h-16 md:h-0"></div>
+          <div className="h-16 md:h-8"></div>
       </main>
 
       {/* MOBILE BOTTOM NAV */}
