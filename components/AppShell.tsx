@@ -23,7 +23,8 @@ const IconSettings = ({ className = "w-5 h-5" }: { className?: string }) => <svg
 
 const SidebarItem = ({ to, icon: Icon, label, exact = false }: { to: string, icon: any, label: string, exact?: boolean }) => {
   const pathname = usePathname();
-  const isActive = exact ? pathname === to : pathname.startsWith(to);
+  const safePathname = pathname || '';
+  const isActive = exact ? safePathname === to : safePathname.startsWith(to);
   const { playHover, playClick } = useSound();
 
   return (
@@ -47,7 +48,8 @@ const SidebarItem = ({ to, icon: Icon, label, exact = false }: { to: string, ico
 
 const MobileNavItem = ({ to, icon: Icon, label, exact = false }: { to: string, icon: any, label: string, exact?: boolean }) => {
     const pathname = usePathname();
-    const isActive = exact ? pathname === to : pathname.startsWith(to);
+    const safePathname = pathname || '';
+    const isActive = exact ? safePathname === to : safePathname.startsWith(to);
     const { playClick } = useSound();
 
     return (
