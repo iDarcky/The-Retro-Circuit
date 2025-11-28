@@ -3,7 +3,7 @@
 import { type FC } from 'react';
 import Link from 'next/link';
 import GameOfTheWeek from '@/components/GameOfTheWeek';
-import SignalFeed from '@/app/signals/page';
+import SignalFeed from '@/components/SignalFeed';
 
 const ControlRoom: FC = () => {
   return (
