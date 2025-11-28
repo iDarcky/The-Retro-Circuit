@@ -1,3 +1,4 @@
+
 import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails, UserCollectionItem, SearchResult, ConsoleFilterState, ManufacturerProfile, ComparisonPoint } from "../types";
 import { supabase } from "./supabaseClient";
 
@@ -83,7 +84,7 @@ export const retroAuth = {
         return await supabase.auth.signInWithPassword({ email, password });
     },
     signUp: async (email: string, password: string, username: string) => {
-        const redirectTo = typeof window !== 'undefined' ? window.location.origin : '';
+        const redirectTo = window.location.origin;
         return await supabase.auth.signUp({ 
             email, 
             password,
@@ -94,7 +95,7 @@ export const retroAuth = {
         });
     },
     resetPassword: async (email: string) => {
-        const redirectTo = typeof window !== 'undefined' ? window.location.origin : '';
+        const redirectTo = window.location.origin;
         return await supabase.auth.resetPasswordForEmail(email, { redirectTo });
     },
     updateUserPassword: async (newPassword: string) => {

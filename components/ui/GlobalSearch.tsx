@@ -1,9 +1,8 @@
-'use client';
 
 import { useState, useEffect, useRef, type FC } from 'react';
-import { useRouter } from 'next/navigation';
-import { searchDatabase } from '@/services/geminiService';
-import { SearchResult } from '@/types';
+import { useNavigate } from 'react-router-dom';
+import { searchDatabase } from '../../services/geminiService';
+import { SearchResult } from '../../types';
 import { useSound } from './SoundContext';
 
 const GlobalSearch: FC = () => {
@@ -12,7 +11,7 @@ const GlobalSearch: FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
-    const router = useRouter();
+    const navigate = useNavigate();
     const { playHover, playClick } = useSound();
 
     // Close on click outside
@@ -47,7 +46,7 @@ const GlobalSearch: FC = () => {
     const handleSelect = (result: SearchResult) => {
         playClick();
         const path = result.type === 'GAME' ? `/archive/${result.slug}` : `/systems/${result.slug}`;
-        router.push(path);
+        navigate(path);
         setIsOpen(false);
         setQuery('');
     };

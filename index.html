@@ -1,12 +1,106 @@
-<script type="importmap">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="description" content="The Retro Circuit is the ultimate database for retro gaming hardware and software. Compare console specs, read classic game reviews, and explore video game history." />
+    <meta name="keywords" content="retro gaming, console specs, video game database, retro reviews, console comparison, nintendo, sega, playstation history" />
+    <meta name="theme-color" content="#0f0f1b" />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="The Retro Circuit" />
+    <meta property="og:description" content="Explore retro consoles and games." />
+    <meta property="og:image" content="/og-image.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>The Retro Circuit | Retro Gaming Database & Comparisons</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              retro: {
+                dark: '#0f0f1b',
+                grid: '#2a2a40',
+                neon: '#00ff9d',
+                pink: '#ff00ff',
+                blue: '#00ffff',
+              }
+            },
+            fontFamily: {
+              'pixel': ['"Press Start 2P"', 'cursive'],
+              'mono': ['"Share Tech Mono"', 'monospace']
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body { background-color: #0f0f1b; color: white; }
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar { width: 8px; height: 8px; }
+      ::-webkit-scrollbar-track { background: #0f0f1b; border-left: 1px solid #2a2a40; }
+      ::-webkit-scrollbar-thumb { background: #2a2a40; border: 1px solid #00ff9d; }
+      ::-webkit-scrollbar-thumb:hover { background: #00ff9d; }
+      
+      /* CRT Effects */
+      .scanlines {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;
+        background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+        background-size: 100% 4px;
+        opacity: 0.15;
+      }
+      .crt-flicker {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9998;
+        background: rgba(18, 16, 16, 0.1);
+        opacity: 0;
+        animation: flicker 0.15s infinite;
+      }
+      @keyframes flicker {
+        0% { opacity: 0.02; }
+        50% { opacity: 0.05; }
+        100% { opacity: 0.02; }
+      }
+      @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+    </style>
+  <script type="importmap">
 {
   "imports": {
-    "zod": "https://aistudiocdn.com/zod@^4.1.13",
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "@supabase/supabase-js": "https://aistudiocdn.com/@supabase/supabase-js@^2.86.0",
-    "next/": "https://aistudiocdn.com/next@^16.0.5/",
-    "next": "https://aistudiocdn.com/next@^16.0.5"
+    "react": "https://esm.sh/react@19.0.0-rc-69d4b800-20241021",
+    "react/jsx-runtime": "https://esm.sh/react@19.0.0-rc-69d4b800-20241021/jsx-runtime",
+    "react/jsx-dev-runtime": "https://esm.sh/react@19.0.0-rc-69d4b800-20241021/jsx-dev-runtime",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0-rc-69d4b800-20241021/client",
+    "react-dom": "https://esm.sh/react-dom@19.0.0-rc-69d4b800-20241021",
+    "react-router-dom": "https://esm.sh/react-router-dom@6.22.3?deps=react@19.0.0-rc-69d4b800-20241021,react-dom@19.0.0-rc-69d4b800-20241021",
+    "react-router": "https://esm.sh/react-router@6.22.3?deps=react@19.0.0-rc-69d4b800-20241021,react-dom@19.0.0-rc-69d4b800-20241021",
+    "@remix-run/router": "https://esm.sh/@remix-run/router@1.15.3",
+    "zod": "https://esm.sh/zod@3.23.8",
+    "vite": "https://esm.sh/vite@5.4.1",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@4.3.1",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.39.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/"
   }
 }
 </script>
+</head>
+  <body>
+    <div id="root">
+      <!-- STATIC CONTENT FOR SEO CRAWLERS -->
+      <div style="visibility: hidden; height: 0; overflow: hidden;">
+        <h1>The Retro Circuit</h1>
+        <p>The ultimate retro gaming database. Compare console specs, read classic game reviews, and view the complete timeline of video game history.</p>
+        <p>Features: Nintendo vs Sega comparisons, PlayStation specs, Game Boy history, and expert reviews of classic titles like Super Mario, Sonic the Hedgehog, and more.</p>
+      </div>
+    </div>
+    <div class="scanlines"></div>
+    <div class="crt-flicker"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
