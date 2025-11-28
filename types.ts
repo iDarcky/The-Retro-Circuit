@@ -20,6 +20,8 @@ export interface ComparisonPoint {
   consoleAValue: string;
   consoleBValue: string;
   winner: 'A' | 'B' | 'Tie';
+  aScore?: number; // 0-100 for visual bar
+  bScore?: number; // 0-100 for visual bar
 }
 
 export interface ComparisonResult {

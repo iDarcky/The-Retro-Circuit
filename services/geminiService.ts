@@ -1,5 +1,5 @@
 
-import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails, UserCollectionItem, SearchResult, ConsoleFilterState, ManufacturerProfile } from "../types";
+import { NewsItem, ComparisonResult, GameOfTheWeekData, TimelineEvent, ConsoleDetails, UserCollectionItem, SearchResult, ConsoleFilterState, ManufacturerProfile, ComparisonPoint } from "../types";
 import { supabase } from "./supabaseClient";
 
 // --- VISUAL THEMES ---
@@ -440,6 +440,53 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
     }
 };
 
+// --- COMPARISON LOGIC & HELPERS ---
+
+// Helper to extract numbers from messy spec strings (e.g. "3.58 MHz" -> 3.58, "4 GB" -> 4000)
+// Returns value in MB for memory, MHz for speed
+const parseSpecValue = (val: string | undefined): number => {
+    if (!val) return 0;
+    const clean = val.toLowerCase().replace(/,/g, '');
+    const num = parseFloat(clean.match(/[0-9.]+/)?.[0] || '0');
+    
+    // Normalize Memory/Storage to MB
+    if (clean.includes('kb') || clean.includes('kilobyte')) return num / 1024;
+    if (clean.includes('gb') || clean.includes('gigabyte')) return num * 1024;
+    if (clean.includes('tb') || clean.includes('terabyte')) return num * 1024 * 1024;
+    if (clean.includes('byte')) return num / 1024 / 1024; // Raw bytes
+
+    // Normalize Speed to MHz
+    if (clean.includes('ghz')) return num * 1000;
+    
+    return num;
+};
+
+// Helper to parse currency strings (e.g. "$199.99" -> 199.99)
+const parsePrice = (priceStr?: string): number => {
+    if (!priceStr) return 0;
+    const clean = priceStr.replace(/[^0-9.]/g, '');
+    return parseFloat(clean) || 0;
+};
+
+// Helper to parse sales strings (e.g. "61.9 million" -> 61.9)
+const parseSales = (salesStr?: string): number => {
+    if (!salesStr) return 0;
+    const clean = salesStr.toLowerCase().replace(/[^0-9.]/g, '');
+    // If just a number like "60000000", divide by million
+    const num = parseFloat(clean);
+    if (num > 1000) return num / 1000000;
+    return num || 0;
+};
+
+const calculateScore = (valA: number, valB: number): { a: number, b: number } => {
+    const max = Math.max(valA, valB);
+    if (max === 0) return { a: 0, b: 0 };
+    return {
+        a: Math.round((valA / max) * 100),
+        b: Math.round((valB / max) * 100)
+    };
+};
+
 export const compareConsoles = async (slugA: string, slugB: string): Promise<ComparisonResult | null> => {
     try {
         const { data: cA } = await supabase.from('consoles').select('*').eq('slug', slugA).single();
@@ -447,17 +494,88 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
         
         if(!cA || !cB) return null;
 
+        // PARSE VALUES
+        const yearA = cA.release_year;
+        const yearB = cB.release_year;
+        
+        const priceA = parsePrice(cA.launch_price);
+        const priceB = parsePrice(cB.launch_price);
+        
+        const salesA = parseSales(cA.units_sold);
+        const salesB = parseSales(cB.units_sold);
+        
+        const cpuA = parseSpecValue(cA.cpu);
+        const cpuB = parseSpecValue(cB.cpu);
+        
+        const ramA = parseSpecValue(cA.ram);
+        const ramB = parseSpecValue(cB.ram);
+
+        // GENERATE COMPARISON POINTS
+        const points: ComparisonPoint[] = [];
+
+        // 1. Generation / Year
+        points.push({
+            feature: 'Legacy',
+            consoleAValue: `${cA.release_year} (Gen ${cA.generation})`,
+            consoleBValue: `${cB.release_year} (Gen ${cB.generation})`,
+            winner: cA.generation > cB.generation ? 'A' : (cB.generation > cA.generation ? 'B' : 'Tie'),
+            aScore: cA.generation > cB.generation ? 100 : (cA.generation === cB.generation ? 50 : 30),
+            bScore: cB.generation > cA.generation ? 100 : (cA.generation === cB.generation ? 50 : 30)
+        });
+
+        // 2. Sales Performance
+        const salesScore = calculateScore(salesA, salesB);
+        points.push({
+            feature: 'Market (Units Sold)',
+            consoleAValue: cA.units_sold || 'Unknown',
+            consoleBValue: cB.units_sold || 'Unknown',
+            winner: salesA > salesB ? 'A' : (salesB > salesA ? 'B' : 'Tie'),
+            aScore: salesScore.a,
+            bScore: salesScore.b
+        });
+
+        // 3. Launch Price (Lower is better usually, but for power comparison higher usually means more tech)
+        // Here we highlight the CHEAPER option as the "Winner" for value
+        points.push({
+            feature: 'Launch Cost',
+            consoleAValue: cA.launch_price || 'Unknown',
+            consoleBValue: cB.launch_price || 'Unknown',
+            winner: (priceA > 0 && priceB > 0) ? (priceA < priceB ? 'A' : (priceB < priceA ? 'B' : 'Tie')) : 'Tie',
+            // For visual bars, we might inverse logic or just show magnitude. Let's show magnitude of price.
+            aScore: calculateScore(priceA, priceB).a,
+            bScore: calculateScore(priceA, priceB).b
+        });
+
+        // 4. CPU Speed (Rough Estimate)
+        const cpuScore = calculateScore(cpuA, cpuB);
+        points.push({
+            feature: 'Processing Power',
+            consoleAValue: cA.cpu ? (cA.cpu.length > 20 ? 'Custom CPU' : cA.cpu) : 'Unknown',
+            consoleBValue: cB.cpu ? (cB.cpu.length > 20 ? 'Custom CPU' : cB.cpu) : 'Unknown',
+            winner: cpuA > cpuB ? 'A' : (cpuB > cpuA ? 'B' : 'Tie'),
+            aScore: cpuScore.a,
+            bScore: cpuScore.b
+        });
+
+        // 5. Memory
+        const ramScore = calculateScore(ramA, ramB);
+        points.push({
+            feature: 'Memory (RAM)',
+            consoleAValue: cA.ram || 'Unknown',
+            consoleBValue: cB.ram || 'Unknown',
+            winner: ramA > ramB ? 'A' : (ramB > ramA ? 'B' : 'Tie'),
+            aScore: ramScore.a,
+            bScore: ramScore.b
+        });
+
         return {
             consoleA: cA.name,
             consoleB: cB.name,
-            summary: `Comparison between ${cA.name} (${cA.release_year}) and ${cB.name} (${cB.release_year}).`,
-            points: [
-                { feature: 'Year', consoleAValue: cA.release_year.toString(), consoleBValue: cB.release_year.toString(), winner: cA.release_year < cB.release_year ? 'A' : 'B' },
-                { feature: 'Gen', consoleAValue: `Gen ${cA.generation}`, consoleBValue: `Gen ${cB.generation}`, winner: cA.generation > cB.generation ? 'A' : 'B' },
-                { feature: 'Media', consoleAValue: cA.media || 'N/A', consoleBValue: cB.media || 'N/A', winner: 'Tie' }
-            ]
+            summary: `${cA.manufacturer} faces off against ${cB.manufacturer}.`,
+            points: points
         }
     } catch(e) {
+        console.error("Comparison Error", e);
         return null;
     }
 }
