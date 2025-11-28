@@ -71,7 +71,7 @@ const ConsoleComparer: FC = () => {
       {/* HEADER */}
       <div className="text-center mb-10">
         <h2 className="text-4xl md:text-6xl font-pixel text-retro-neon mb-4 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">
-          THE ARENA
+          VS MODE
         </h2>
         <p className="font-mono text-gray-400">SELECT YOUR FIGHTERS</p>
       </div>

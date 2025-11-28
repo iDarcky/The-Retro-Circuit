@@ -1,3 +1,4 @@
+
 import { useState, useEffect, Suspense, lazy, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
@@ -74,7 +75,7 @@ const MobileNavItem = ({ to, icon: Icon, label, exact = false }: { to: string, i
             className={`flex flex-col items-center justify-center flex-1 h-full transition-all active:scale-95 rounded-xl mx-1 ${isActive ? 'text-retro-neon bg-retro-neon/10 shadow-[0_0_10px_rgba(0,255,157,0.2)]' : 'text-gray-500 hover:text-gray-300'}`}
         >
             <Icon className={`w-5 h-5 mb-1 ${isActive ? 'text-retro-neon drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]' : ''}`} />
-            <span className="text-[9px] font-pixel tracking-tighter">{label}</span>
+            <span className="text-[9px] font-pixel tracking-tighter text-center leading-tight">{label}</span>
         </Link>
     );
 };
@@ -282,12 +283,12 @@ const AppContent = () => {
           </div>
 
           <nav className="flex-1 overflow-y-auto py-4 custom-scrollbar">
-              <SidebarItem to="/" icon={IconHome} label="DASHBOARD" exact />
-              <SidebarItem to="/signals" icon={IconNews} label="SIGNALS" />
-              <SidebarItem to="/archive" icon={IconGames} label="ARCHIVE" />
-              <SidebarItem to="/systems" icon={IconDatabase} label="SYSTEMS" />
-              <SidebarItem to="/arena" icon={IconVS} label="ARENA" />
-              <SidebarItem to="/chrono" icon={IconTimeline} label="CHRONO" />
+              <SidebarItem to="/" icon={IconHome} label="CONTROL ROOM" exact />
+              <SidebarItem to="/signals" icon={IconNews} label="SIGNAL FEED" />
+              <SidebarItem to="/archive" icon={IconGames} label="GAME VAULT" />
+              <SidebarItem to="/systems" icon={IconDatabase} label="CONSOLE VAULT" />
+              <SidebarItem to="/arena" icon={IconVS} label="VS MODE" />
+              <SidebarItem to="/chrono" icon={IconTimeline} label="HISTORY LINE" />
               
               <div className="my-4 border-t border-retro-grid mx-4"></div>
               
@@ -337,10 +338,10 @@ const AppContent = () => {
 
       {/* MOBILE BOTTOM NAV */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-retro-dark border-t border-retro-grid z-50 flex items-center justify-around px-2 pb-safe">
-          <MobileNavItem to="/" icon={IconHome} label="HOME" exact />
-          <MobileNavItem to="/archive" icon={IconGames} label="ARCHIVE" />
-          <MobileNavItem to="/systems" icon={IconDatabase} label="SYSTEMS" />
-          <MobileNavItem to="/arena" icon={IconVS} label="ARENA" />
+          <MobileNavItem to="/" icon={IconHome} label="CONTROL" exact />
+          <MobileNavItem to="/archive" icon={IconGames} label="GAME VAULT" />
+          <MobileNavItem to="/systems" icon={IconDatabase} label="CONSOLE VAULT" />
+          <MobileNavItem to="/arena" icon={IconVS} label="VS MODE" />
       </div>
       
       <FooterStatus crtEnabled={crtEnabled} onToggleCrt={toggleCrt} />

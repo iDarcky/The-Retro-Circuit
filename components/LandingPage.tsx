@@ -54,7 +54,7 @@ const LandingPage: FC = () => {
                     <Link to="/arena" className="block">
                         <div className="group border-2 border-retro-grid hover:border-retro-neon bg-black p-4 flex items-center justify-between transition-all">
                             <div>
-                                <div className="font-pixel text-sm text-white group-hover:text-retro-neon">THE ARENA</div>
+                                <div className="font-pixel text-sm text-white group-hover:text-retro-neon">VS MODE</div>
                                 <div className="font-mono text-xs text-gray-500">Spec Showdown</div>
                             </div>
                             <svg className="w-6 h-6 text-retro-grid group-hover:text-retro-neon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
@@ -64,7 +64,7 @@ const LandingPage: FC = () => {
                     <Link to="/systems" className="block">
                         <div className="group border-2 border-retro-grid hover:border-retro-pink bg-black p-4 flex items-center justify-between transition-all">
                             <div>
-                                <div className="font-pixel text-sm text-white group-hover:text-retro-pink">SYSTEM DB</div>
+                                <div className="font-pixel text-sm text-white group-hover:text-retro-pink">CONSOLE VAULT</div>
                                 <div className="font-mono text-xs text-gray-500">Hardware Archive</div>
                             </div>
                             <svg className="w-6 h-6 text-retro-grid group-hover:text-retro-pink" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>

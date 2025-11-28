@@ -22,7 +22,7 @@ const Timeline: FC = () => {
   return (
     <div className="w-full max-w-6xl mx-auto p-4">
         <h2 className="text-3xl font-pixel text-center text-retro-pink mb-10 drop-shadow-[0_0_10px_rgba(255,0,255,0.5)]">
-            SYSTEM CHRONOLOGY
+            HISTORY LINE
         </h2>
 
         {loading ? (

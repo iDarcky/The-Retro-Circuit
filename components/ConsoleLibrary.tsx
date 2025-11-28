@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useCallback, type FC } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchManufacturers, fetchConsolesFiltered, getBrandTheme } from '../services/geminiService';
@@ -82,7 +83,7 @@ const ConsoleLibrary: FC = () => {
       {/* HEADER */}
       <div className="text-center mb-8 border-b border-retro-grid pb-4">
         <h2 className="text-3xl font-pixel text-retro-neon mb-2 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
-          SYSTEMS DATABASE
+          CONSOLE VAULT
         </h2>
         <div className="flex justify-center gap-4">
             <button 

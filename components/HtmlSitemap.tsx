@@ -42,12 +42,12 @@ const HtmlSitemap: FC = () => {
                 <div>
                     <h2 className="font-pixel text-xl text-white mb-4">SECTORS</h2>
                     <ul className="space-y-2 font-mono text-sm">
-                        <li><Link to="/" className="text-retro-blue hover:text-white hover:underline">Dashboard</Link></li>
-                        <li><Link to="/signals" className="text-retro-blue hover:text-white hover:underline">Signals (News)</Link></li>
-                        <li><Link to="/archive" className="text-retro-blue hover:text-white hover:underline">Archive (Games)</Link></li>
-                        <li><Link to="/systems" className="text-retro-blue hover:text-white hover:underline">Systems (Consoles)</Link></li>
-                        <li><Link to="/arena" className="text-retro-blue hover:text-white hover:underline">The Arena (VS Mode)</Link></li>
-                        <li><Link to="/chrono" className="text-retro-blue hover:text-white hover:underline">Chrono (Timeline)</Link></li>
+                        <li><Link to="/" className="text-retro-blue hover:text-white hover:underline">Control Room</Link></li>
+                        <li><Link to="/signals" className="text-retro-blue hover:text-white hover:underline">Signal Feed</Link></li>
+                        <li><Link to="/archive" className="text-retro-blue hover:text-white hover:underline">Game Vault</Link></li>
+                        <li><Link to="/systems" className="text-retro-blue hover:text-white hover:underline">Console Vault</Link></li>
+                        <li><Link to="/arena" className="text-retro-blue hover:text-white hover:underline">VS Mode</Link></li>
+                        <li><Link to="/chrono" className="text-retro-blue hover:text-white hover:underline">History Line</Link></li>
                     </ul>
 
                     <h2 className="font-pixel text-xl text-white mt-8 mb-4">MANUFACTURERS</h2>

@@ -37,7 +37,7 @@ const GamesList: FC = () => {
     <div className="w-full max-w-7xl mx-auto p-4">
       <div className="text-center mb-12">
         <h2 className="text-3xl font-pixel text-retro-neon mb-4 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
-          GAME DATABASE
+          GAME VAULT
         </h2>
         <p className="font-mono text-gray-400">Archived reviews and analysis.</p>
       </div>
