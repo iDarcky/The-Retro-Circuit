@@ -1,8 +1,8 @@
 
 import { useState, useEffect, useRef, type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { searchDatabase } from '../services/geminiService';
-import { SearchResult } from '../types';
+import { searchDatabase } from '../../services/geminiService';
+import { SearchResult } from '../../types';
 import { useSound } from './SoundContext';
 
 const GlobalSearch: FC = () => {

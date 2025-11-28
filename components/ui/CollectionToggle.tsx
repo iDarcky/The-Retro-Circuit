@@ -1,7 +1,7 @@
 
 import { useEffect, useState, type FC } from 'react';
-import { addToCollection, fetchUserCollection, removeFromCollection, retroAuth } from '../services/geminiService';
-import { UserCollectionItem } from '../types';
+import { addToCollection, fetchUserCollection, removeFromCollection, retroAuth } from '../../services/geminiService';
+import { UserCollectionItem } from '../../types';
 import Button from './Button';
 import { useNavigate } from 'react-router-dom';
 
