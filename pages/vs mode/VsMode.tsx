@@ -1,10 +1,9 @@
-
 import { useState, useEffect, type FC } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { compareConsoles, fetchConsoleList } from '../services/geminiService';
-import { ComparisonResult } from '../types';
-import Button from './Button';
-import SEOHead from './SEOHead';
+import { compareConsoles, fetchConsoleList } from '../../services/geminiService';
+import { ComparisonResult } from '../../types';
+import Button from '../../components/ui/Button';
+import SEOHead from '../../components/ui/SEOHead';
 
 const StatBar = ({ value, color, align }: { value: number, color: string, align: 'left' | 'right' }) => {
     const safeValue = isNaN(value) ? 0 : Math.min(100, Math.max(0, value));
@@ -19,7 +18,7 @@ const StatBar = ({ value, color, align }: { value: number, color: string, align:
     );
 };
 
-const ConsoleComparer: FC = () => {
+const VsMode: FC = () => {
   const [searchParams] = useSearchParams();
   const [consoleA, setConsoleA] = useState('');
   const [consoleB, setConsoleB] = useState('');
@@ -215,4 +214,4 @@ const ConsoleComparer: FC = () => {
   );
 };
 
-export default ConsoleComparer;
+export default VsMode;

@@ -1,10 +1,9 @@
-
 import { useEffect, useState, useCallback, type FC, type FormEvent } from 'react';
-import { fetchRetroNews, addNewsItem, fetchConsoleList, fetchGameList } from '../services/geminiService';
-import { NewsItem, NewsCategory } from '../types';
-import Button from '../components/ui/Button';
+import { fetchRetroNews, addNewsItem, fetchConsoleList, fetchGameList } from '../../services/geminiService';
+import { NewsItem, NewsCategory } from '../../types';
+import Button from '../../components/ui/Button';
 import { Link } from 'react-router-dom';
-import RetroLoader from '../components/ui/RetroLoader';
+import RetroLoader from '../../components/ui/RetroLoader';
 
 interface SignalFeedProps {
   limit?: number;

@@ -1,12 +1,11 @@
-
 import { useState, useEffect, type FC, type FormEvent } from 'react';
-import { retroAuth, fetchUserCollection } from '../services/geminiService';
-import { supabase } from '../services/supabaseClient';
-import Button from '../components/ui/Button';
+import { retroAuth, fetchUserCollection } from '../../services/geminiService';
+import { supabase } from '../../services/supabaseClient';
+import Button from '../../components/ui/Button';
 import { useNavigate, Link } from 'react-router-dom';
-import AvatarSelector from '../components/ui/AvatarSelector';
-import { RETRO_AVATARS } from '../utils/avatars';
-import { UserCollectionItem } from '../types';
+import AvatarSelector from '../../components/ui/AvatarSelector';
+import { RETRO_AVATARS } from '../../utils/avatars';
+import { UserCollectionItem } from '../../types';
 
 type AuthMode = 'LOGIN' | 'SIGNUP' | 'RECOVERY' | 'UPDATE_PASSWORD' | 'PROFILE';
 

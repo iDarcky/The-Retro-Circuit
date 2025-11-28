@@ -1,9 +1,8 @@
-
 import { useEffect, useState, type FC } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchConsoleList, fetchGameList, fetchManufacturers } from '../services/geminiService';
-import RetroLoader from '../components/ui/RetroLoader';
-import SEOHead from '../components/ui/SEOHead';
+import { fetchConsoleList, fetchGameList, fetchManufacturers } from '../../services/geminiService';
+import RetroLoader from '../../components/ui/RetroLoader';
+import SEOHead from '../../components/ui/SEOHead';
 
 const SystemMap: FC = () => {
     const [consoles, setConsoles] = useState<{name: string, slug: string}[]>([]);

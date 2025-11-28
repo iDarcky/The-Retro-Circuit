@@ -1,4 +1,3 @@
-
 import { useState, useEffect, Suspense, lazy, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
@@ -12,19 +11,19 @@ import GlobalSearch from './components/ui/GlobalSearch';
 import RetroLoader from './components/ui/RetroLoader';
 
 // --- LAZY LOADED PAGES (Code Splitting) ---
-const ControlRoom = lazy(() => import('./pages/ControlRoom'));
-const SignalFeed = lazy(() => import('./pages/SignalFeed'));
-const VsMode = lazy(() => import('./pages/VsMode'));
-const GameVault = lazy(() => import('./pages/GameVault'));
-const GameDetails = lazy(() => import('./pages/GameDetails'));
-const HistoryLine = lazy(() => import('./pages/HistoryLine'));
-const AuthPage = lazy(() => import('./pages/AuthPage'));
-const ConsoleVault = lazy(() => import('./pages/ConsoleVault'));
-const ConsoleSpecs = lazy(() => import('./pages/ConsoleSpecs'));
-const ManufacturerDetail = lazy(() => import('./pages/ManufacturerDetail'));
-const AdminPortal = lazy(() => import('./pages/AdminPortal'));
-const SystemMap = lazy(() => import('./pages/SystemMap'));
-const NotFound = lazy(() => import('./pages/NotFound'));
+const ControlRoom = lazy(() => import('./pages/ControlRoom/ControlRoom'));
+const SignalFeed = lazy(() => import('./pages/SignalFeed/SignalFeed'));
+const VsMode = lazy(() => import('./pages/vs mode/VsMode'));
+const GameVault = lazy(() => import('./pages/GameVault/GameVault'));
+const GameDetails = lazy(() => import('./pages/GameVault/GameDetails'));
+const HistoryLine = lazy(() => import('./pages/timeline page/HistoryLine'));
+const AuthPage = lazy(() => import('./pages/auth/AuthPage'));
+const ConsoleVault = lazy(() => import('./pages/ConsoleVault/ConsoleVault'));
+const ConsoleSpecs = lazy(() => import('./pages/ConsoleVault/ConsoleSpecs'));
+const ManufacturerDetail = lazy(() => import('./pages/ConsoleVault/ManufacturerDetail'));
+const AdminPortal = lazy(() => import('./pages/auth/AdminPortal'));
+const SystemMap = lazy(() => import('./components/ui/SystemMap'));
+const NotFound = lazy(() => import('./components/ui/NotFound'));
 
 // --- ICONS ---
 const IconNews = ({ className = "w-5 h-5" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>;

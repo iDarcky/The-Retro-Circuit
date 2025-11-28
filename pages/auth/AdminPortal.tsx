@@ -1,8 +1,7 @@
-
 import { useEffect, useState, type FC, type FormEvent } from 'react';
-import { retroAuth, addGame, addConsole, addNewsItem, fetchConsoleList } from '../services/geminiService';
-import Button from './Button';
-import { ConsoleDetails, GameOfTheWeekData, NewsItem, NewsItemSchema, GameSchema, ConsoleSchema } from '../types';
+import { retroAuth, addGame, addConsole, addNewsItem, fetchConsoleList } from '../../services/geminiService';
+import Button from '../../components/ui/Button';
+import { ConsoleDetails, GameOfTheWeekData, NewsItem, NewsItemSchema, GameSchema, ConsoleSchema } from '../../types';
 
 type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE';
 

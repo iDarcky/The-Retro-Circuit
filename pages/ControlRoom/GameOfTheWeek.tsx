@@ -1,8 +1,7 @@
-
 import { useEffect, useState, type FC } from 'react';
-import { fetchGameOfTheWeek } from '../services/geminiService';
-import { GameOfTheWeekData } from '../types';
-import Button from './Button';
+import { fetchGameOfTheWeek } from '../../services/geminiService';
+import { GameOfTheWeekData } from '../../types';
+import Button from '../../components/ui/Button';
 import { Link } from 'react-router-dom';
 
 const GameOfTheWeek: FC = () => {

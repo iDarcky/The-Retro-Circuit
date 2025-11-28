@@ -1,12 +1,11 @@
-
 import { useEffect, useState, type FC, type ReactNode } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { fetchConsoleBySlug, fetchGamesForConsole } from '../services/geminiService';
-import { ConsoleDetails, GameOfTheWeekData } from '../types';
-import Button from './Button';
-import RetroLoader from './RetroLoader';
-import CollectionToggle from './CollectionToggle';
-import SEOHead from './SEOHead';
+import { fetchConsoleBySlug, fetchGamesForConsole } from '../../services/geminiService';
+import { ConsoleDetails, GameOfTheWeekData } from '../../types';
+import Button from '../../components/ui/Button';
+import RetroLoader from '../../components/ui/RetroLoader';
+import CollectionToggle from '../../components/ui/CollectionToggle';
+import SEOHead from '../../components/ui/SEOHead';
 
 // Helper component for table rows
 const SpecRow = ({ label, value, highlight = false }: { label: string, value?: string, highlight?: boolean }) => {

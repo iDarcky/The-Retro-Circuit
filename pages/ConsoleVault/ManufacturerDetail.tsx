@@ -1,10 +1,9 @@
-
 import { useEffect, useState, type FC } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { fetchManufacturerProfile, fetchConsolesFiltered, getBrandTheme } from '../services/geminiService';
-import { ConsoleDetails, ManufacturerProfile } from '../types';
-import RetroLoader from './RetroLoader';
-import Button from './Button';
+import { fetchManufacturerProfile, fetchConsolesFiltered, getBrandTheme } from '../../services/geminiService';
+import { ConsoleDetails, ManufacturerProfile } from '../../types';
+import RetroLoader from '../../components/ui/RetroLoader';
+import Button from '../../components/ui/Button';
 
 const ManufacturerDetail: FC = () => {
     const { name } = useParams<{ name: string }>();

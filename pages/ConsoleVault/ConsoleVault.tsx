@@ -1,10 +1,9 @@
-
 import { useEffect, useState, useCallback, type FC } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchManufacturers, fetchConsolesFiltered, getBrandTheme } from '../services/geminiService';
-import { ConsoleDetails, ConsoleFilterState } from '../types';
-import RetroLoader from '../components/ui/RetroLoader';
-import Button from '../components/ui/Button';
+import { fetchManufacturers, fetchConsolesFiltered, getBrandTheme } from '../../services/geminiService';
+import { ConsoleDetails, ConsoleFilterState } from '../../types';
+import RetroLoader from '../../components/ui/RetroLoader';
+import Button from '../../components/ui/Button';
 
 const ConsoleVault: FC = () => {
   const [consoles, setConsoles] = useState<ConsoleDetails[]>([]);

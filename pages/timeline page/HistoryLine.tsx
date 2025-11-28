@@ -1,9 +1,8 @@
-
 import { useEffect, useState, type FC } from 'react';
-import { fetchTimelineData } from '../services/geminiService';
-import { TimelineEvent } from '../types';
+import { fetchTimelineData } from '../../services/geminiService';
+import { TimelineEvent } from '../../types';
 
-const Timeline: FC = () => {
+const HistoryLine: FC = () => {
   const [events, setEvents] = useState<TimelineEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<TimelineEvent | null>(null);
@@ -92,4 +91,4 @@ const Timeline: FC = () => {
   );
 };
 
-export default Timeline;
+export default HistoryLine;

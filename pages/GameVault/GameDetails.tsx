@@ -1,12 +1,11 @@
-
 import { useEffect, useState, type FC } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { fetchGameBySlug } from '../services/geminiService';
-import { GameOfTheWeekData } from '../types';
-import Button from './Button';
-import RetroLoader from './RetroLoader';
-import CollectionToggle from './CollectionToggle';
-import SEOHead from './SEOHead';
+import { fetchGameBySlug } from '../../services/geminiService';
+import { GameOfTheWeekData } from '../../types';
+import Button from '../../components/ui/Button';
+import RetroLoader from '../../components/ui/RetroLoader';
+import CollectionToggle from '../../components/ui/CollectionToggle';
+import SEOHead from '../../components/ui/SEOHead';
 
 const GameDetails: FC = () => {
   const { slug } = useParams<{ slug: string }>();
