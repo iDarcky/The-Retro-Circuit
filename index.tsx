@@ -1,4 +1,3 @@
-
 import { useState, useEffect, Suspense, lazy, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
@@ -30,7 +29,7 @@ const NotFound = lazy(() => import('./components/NotFound'));
 const IconNews = ({ className = "w-5 h-5" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>;
 const IconDatabase = ({ className = "w-5 h-5" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>;
 const IconVS = ({ className = "w-5 h-5" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>;
-const IconGames = ({ className = "w-5 h-5" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><path d="M6 12h4m-2-2v4"></path><circle cx="17" cy="11" r="0.5" fill="currentColor"></circle><circle cx="15" cy="13" r="0.5" fill="currentColor"></circle></svg>;
+const IconGames = ({ className = "w-5 h-5" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><path d="M6 12h4m-2-2v4"/><circle cx="17" cy="11" r="0.5" fill="currentColor"></circle><circle cx="15" cy="13" r="0.5" fill="currentColor"></circle></svg>;
 const IconTimeline = ({ className = "w-5 h-5" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>;
 const IconLogin = ({ className = "w-5 h-5" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>;
 const IconHome = ({ className = "w-5 h-5" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2-2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>;
@@ -99,7 +98,6 @@ const FooterStatus = ({ crtEnabled, onToggleCrt }: { crtEnabled: boolean, onTogg
         return () => clearInterval(interval);
     }, []);
 
-    // NOTE: Hidden on mobile (md:flex) to save space, moved controls to mobile header/menu
     return (
         <footer className={`hidden md:flex fixed bottom-0 left-0 right-0 ${!isSupabaseConfigured ? 'h-auto pb-1' : 'h-8'} bg-retro-dark border-t border-retro-grid flex-col justify-end z-50 font-mono`}>
             {!isSupabaseConfigured && (
@@ -148,7 +146,6 @@ const AppContent = () => {
   const location = useLocation();
   const { enabled: soundEnabled, toggleSound } = useSound();
 
-  // CRT Effect Toggle Logic
   const toggleCrt = () => {
     const next = !crtEnabled;
     setCrtEnabled(next);
@@ -158,7 +155,6 @@ const AppContent = () => {
     if (flicker) flicker.classList.toggle('hidden', !next);
   };
 
-  // Scroll to top on route change
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
@@ -201,7 +197,6 @@ const AppContent = () => {
   }
 
   return (
-    // pb-24 on mobile to accommodate fixed bottom nav
     <div className="flex flex-col md:flex-row min-h-screen pt-16 md:pt-0 bg-retro-dark relative overflow-hidden">
       <SEOHead title="Gateway to the Golden Age" description="Comparing retro consoles and games." />
 
@@ -231,7 +226,7 @@ const AppContent = () => {
         </div>
       </div>
 
-      {/* MOBILE SETTINGS DROPDOWN (Backdrop + Menu) */}
+      {/* MOBILE SETTINGS MENU */}
       {mobileSettingsOpen && (
           <>
             <div 
@@ -240,7 +235,6 @@ const AppContent = () => {
             />
             <div className="md:hidden fixed top-16 right-0 w-72 bg-retro-dark border-l border-b border-retro-grid z-[60] p-6 shadow-[0_0_50px_rgba(0,0,0,0.8)] animate-[slideDown_0.2s_ease-out]">
                 <div className="space-y-6">
-                    {/* CRT Toggle in Mobile Menu */}
                     <div>
                         <div className="font-pixel text-xs text-gray-500 mb-2">VISUAL FX</div>
                         <button 
@@ -252,7 +246,6 @@ const AppContent = () => {
                         </button>
                     </div>
 
-                    {/* Sound Toggle in Mobile Menu */}
                     <div>
                         <div className="font-pixel text-xs text-gray-500 mb-2">AUDIO</div>
                         <button 
@@ -264,7 +257,6 @@ const AppContent = () => {
                         </button>
                     </div>
 
-                    {/* Footer Links in Mobile Menu */}
                     <div className="pt-6 border-t border-retro-grid">
                         <Link to="/sitemap" onClick={() => setMobileSettingsOpen(false)} className="block font-mono text-xs text-gray-500 hover:text-white mb-2">
                             [ SYSTEM MAP ]
@@ -306,10 +298,9 @@ const AppContent = () => {
           </div>
       </aside>
 
-      {/* MAIN CONTENT AREA */}
+      {/* MAIN CONTENT */}
       <main className="flex-1 min-h-screen relative z-10 overflow-x-hidden">
           <div className="md:hidden p-4">
-              {/* Mobile Search Bar visible when toggled */}
               {mobileSearchOpen && (
                   <div className="mb-4 animate-[slideDown_0.2s_ease-out]">
                       <GlobalSearch />
@@ -339,7 +330,7 @@ const AppContent = () => {
               </ErrorBoundary>
           </Suspense>
 
-          <div className="h-16 md:h-0"></div> {/* Spacer for mobile nav */}
+          <div className="h-16 md:h-0"></div>
       </main>
 
       {/* MOBILE BOTTOM NAV */}
