@@ -2,7 +2,7 @@
 import { useEffect, useState, type FC } from 'react';
 import { fetchGameOfTheWeek } from '../services/geminiService';
 import { GameOfTheWeekData } from '../types';
-import Button from './ui/Button';
+import Button from './Button';
 import { Link } from 'react-router-dom';
 
 const GameOfTheWeek: FC = () => {

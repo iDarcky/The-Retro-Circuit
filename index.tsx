@@ -2,29 +2,29 @@
 import { useState, useEffect, Suspense, lazy, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
-import BootSequence from './components/BootSequence';
-import { SoundProvider, useSound } from './components/SoundContext';
-import ErrorBoundary from './components/ErrorBoundary';
-import SEOHead from './components/SEOHead';
+import BootSequence from './components/ui/BootSequence';
+import { SoundProvider, useSound } from './components/ui/SoundContext';
+import ErrorBoundary from './components/ui/ErrorBoundary';
+import SEOHead from './components/ui/SEOHead';
 import { checkDatabaseConnection, retroAuth } from './services/geminiService';
 import { supabase, isSupabaseConfigured } from './services/supabaseClient';
-import GlobalSearch from './components/GlobalSearch';
-import RetroLoader from './components/RetroLoader';
+import GlobalSearch from './components/ui/GlobalSearch';
+import RetroLoader from './components/ui/RetroLoader';
 
 // --- LAZY LOADED PAGES (Code Splitting) ---
-const LandingPage = lazy(() => import('./components/LandingPage'));
-const NewsSection = lazy(() => import('./components/NewsSection'));
-const ConsoleComparer = lazy(() => import('./components/ConsoleComparer'));
-const GamesList = lazy(() => import('./components/GamesList'));
-const GameDetails = lazy(() => import('./components/GameDetails'));
-const Timeline = lazy(() => import('./components/Timeline'));
-const AuthSection = lazy(() => import('./components/AuthSection'));
-const ConsoleLibrary = lazy(() => import('./components/ConsoleLibrary'));
-const ConsoleSpecs = lazy(() => import('./components/ConsoleSpecs'));
-const ManufacturerDetail = lazy(() => import('./components/ManufacturerDetail'));
-const AdminPortal = lazy(() => import('./components/AdminPortal'));
-const HtmlSitemap = lazy(() => import('./components/HtmlSitemap'));
-const NotFound = lazy(() => import('./components/NotFound'));
+const ControlRoom = lazy(() => import('./pages/ControlRoom'));
+const SignalFeed = lazy(() => import('./pages/SignalFeed'));
+const VsMode = lazy(() => import('./pages/VsMode'));
+const GameVault = lazy(() => import('./pages/GameVault'));
+const GameDetails = lazy(() => import('./pages/GameDetails'));
+const HistoryLine = lazy(() => import('./pages/HistoryLine'));
+const AuthPage = lazy(() => import('./pages/AuthPage'));
+const ConsoleVault = lazy(() => import('./pages/ConsoleVault'));
+const ConsoleSpecs = lazy(() => import('./pages/ConsoleSpecs'));
+const ManufacturerDetail = lazy(() => import('./pages/ManufacturerDetail'));
+const AdminPortal = lazy(() => import('./pages/AdminPortal'));
+const SystemMap = lazy(() => import('./pages/SystemMap'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 // --- ICONS ---
 const IconNews = ({ className = "w-5 h-5" }: { className?: string }) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>;
@@ -120,7 +120,7 @@ const FooterStatus = ({ crtEnabled, onToggleCrt }: { crtEnabled: boolean, onTogg
                         {dbStatus === 'CHECKING' ? 'ESTABLISHING UPLINK...' : `DATABASE ${dbStatus}`}
                     </span>
                     <Link to="/sitemap" className="text-gray-500 hover:text-retro-blue ml-4 border-l border-gray-700 pl-4">
-                        [ SITEMAP ]
+                        [ SYSTEM MAP ]
                     </Link>
                 </div>
                 
@@ -314,20 +314,20 @@ const AppContent = () => {
           <Suspense fallback={<RetroLoader />}>
               <ErrorBoundary>
                   <Routes>
-                      <Route path="/" element={<LandingPage />} />
-                      <Route path="/signals" element={<NewsSection />} />
-                      <Route path="/archive" element={<GamesList />} />
+                      <Route path="/" element={<ControlRoom />} />
+                      <Route path="/signals" element={<SignalFeed />} />
+                      <Route path="/archive" element={<GameVault />} />
                       <Route path="/archive/:slug" element={<GameDetails />} />
-                      <Route path="/systems" element={<ConsoleLibrary />} />
+                      <Route path="/systems" element={<ConsoleVault />} />
                       <Route path="/systems/brand/:name" element={<ManufacturerDetail />} />
                       <Route path="/systems/:slug" element={<ConsoleSpecs />} />
-                      <Route path="/arena" element={<ConsoleComparer />} />
-                      <Route path="/chrono" element={<Timeline />} />
-                      <Route path="/login" element={<AuthSection />} />
-                      <Route path="/signup" element={<AuthSection />} />
-                      <Route path="/recovery" element={<AuthSection />} />
+                      <Route path="/arena" element={<VsMode />} />
+                      <Route path="/chrono" element={<HistoryLine />} />
+                      <Route path="/login" element={<AuthPage />} />
+                      <Route path="/signup" element={<AuthPage />} />
+                      <Route path="/recovery" element={<AuthPage />} />
                       <Route path="/admin" element={<AdminPortal />} />
-                      <Route path="/sitemap" element={<HtmlSitemap />} />
+                      <Route path="/sitemap" element={<SystemMap />} />
                       <Route path="*" element={<NotFound />} />
                   </Routes>
               </ErrorBoundary>
