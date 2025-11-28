@@ -290,10 +290,10 @@ const AppContent = () => {
           <nav className="flex-1 overflow-y-auto py-4 custom-scrollbar">
               <SidebarItem to="/" icon={IconHome} label="DASHBOARD" exact />
               <SidebarItem to="/news" icon={IconNews} label="SIGNALS" />
-              <SidebarItem to="/games" icon={IconGames} label="GAME DB" />
-              <SidebarItem to="/consoles" icon={IconDatabase} label="HARDWARE" />
-              <SidebarItem to="/comparer" icon={IconVS} label="VS. MODE" />
-              <SidebarItem to="/timeline" icon={IconTimeline} label="TIMELINE" />
+              <SidebarItem to="/games" icon={IconGames} label="ARCHIVE" />
+              <SidebarItem to="/consoles" icon={IconDatabase} label="SYSTEMS" />
+              <SidebarItem to="/comparer" icon={IconVS} label="ARENA" />
+              <SidebarItem to="/timeline" icon={IconTimeline} label="CHRONO" />
               
               <div className="my-4 border-t border-retro-grid mx-4"></div>
               
@@ -345,9 +345,9 @@ const AppContent = () => {
       {/* MOBILE BOTTOM NAV */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-retro-dark border-t border-retro-grid z-50 flex items-center justify-around px-2 pb-safe">
           <MobileNavItem to="/" icon={IconHome} label="HOME" exact />
-          <MobileNavItem to="/games" icon={IconGames} label="GAMES" />
+          <MobileNavItem to="/games" icon={IconGames} label="ARCHIVE" />
           <MobileNavItem to="/consoles" icon={IconDatabase} label="SYSTEMS" />
-          <MobileNavItem to="/login" icon={IconLogin} label={user ? "ME" : "LOGIN"} />
+          <MobileNavItem to="/comparer" icon={IconVS} label="ARENA" />
       </div>
       
       <FooterStatus crtEnabled={crtEnabled} onToggleCrt={toggleCrt} />

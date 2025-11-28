@@ -40,147 +40,6 @@ export const BRAND_THEMES: Record<string, { color: string, bg: string, hover: st
         bg: 'bg-teal-900/20',
         hover: 'hover:bg-teal-900/40'
     },
-    'Coleco': {
-        color: 'text-indigo-400 border-indigo-400 shadow-[0_0_20px_rgba(129,140,248,0.3)]',
-        bg: 'bg-indigo-900/20',
-        hover: 'hover:bg-indigo-900/40'
-    },
-    'Mattel': {
-        color: 'text-red-600 border-red-600 shadow-[0_0_20px_rgba(220,38,38,0.3)]',
-        bg: 'bg-red-900/10',
-        hover: 'hover:bg-red-900/30'
-    },
-    'Magnavox': {
-        color: 'text-amber-500 border-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.3)]',
-        bg: 'bg-amber-900/20',
-        hover: 'hover:bg-amber-900/40'
-    },
-    '3DO': {
-        color: 'text-gray-200 border-gray-200 shadow-[0_0_20px_rgba(229,231,235,0.3)]',
-        bg: 'bg-gray-800/40',
-        hover: 'hover:bg-gray-700/60'
-    },
-    'Bandai': {
-        color: 'text-rose-400 border-rose-400 shadow-[0_0_20px_rgba(251,113,133,0.3)]',
-        bg: 'bg-rose-900/20',
-        hover: 'hover:bg-rose-900/40'
-    },
-    'GCE': {
-        color: 'text-blue-300 border-blue-300 shadow-[0_0_20px_rgba(147,197,253,0.3)]',
-        bg: 'bg-blue-900/30',
-        hover: 'hover:bg-blue-900/50'
-    },
-    'Commodore': {
-        color: 'text-blue-200 border-blue-200 shadow-[0_0_20px_rgba(191,219,254,0.3)]',
-        bg: 'bg-blue-900/20',
-        hover: 'hover:bg-blue-800/40'
-    },
-    'Panasonic': {
-        color: 'text-blue-600 border-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.3)]',
-        bg: 'bg-blue-900/20',
-        hover: 'hover:bg-blue-900/40'
-    },
-    'Amstrad': {
-        color: 'text-gray-400 border-gray-400 shadow-[0_0_20px_rgba(156,163,175,0.3)]',
-        bg: 'bg-gray-800/30',
-        hover: 'hover:bg-gray-700/50'
-    },
-    'Fairchild': {
-        color: 'text-yellow-600 border-yellow-600 shadow-[0_0_20px_rgba(202,138,4,0.3)]',
-        bg: 'bg-yellow-900/10',
-        hover: 'hover:bg-yellow-900/30'
-    },
-    'Bally': {
-        color: 'text-red-400 border-red-400 shadow-[0_0_20px_rgba(248,113,113,0.3)]',
-        bg: 'bg-red-900/20',
-        hover: 'hover:bg-red-800/40'
-    },
-    'Epoch': {
-        color: 'text-red-500 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]',
-        bg: 'bg-red-950/30',
-        hover: 'hover:bg-red-900/50'
-    },
-    'Casio': {
-        color: 'text-pink-400 border-pink-400 shadow-[0_0_20px_rgba(244,114,182,0.3)]',
-        bg: 'bg-pink-900/20',
-        hover: 'hover:bg-pink-900/40'
-    },
-    // MODERN HANDHELDS
-    'Valve': {
-        color: 'text-blue-400 border-blue-400 shadow-[0_0_20px_rgba(96,165,250,0.3)]',
-        bg: 'bg-slate-900/50',
-        hover: 'hover:bg-slate-800/60'
-    },
-    'Retroid': {
-        color: 'text-orange-400 border-orange-400 shadow-[0_0_20px_rgba(251,146,60,0.3)]',
-        bg: 'bg-orange-900/20',
-        hover: 'hover:bg-orange-800/40'
-    },
-    'Anbernic': {
-        color: 'text-gray-300 border-gray-300 shadow-[0_0_20px_rgba(209,213,219,0.3)]',
-        bg: 'bg-gray-800/30',
-        hover: 'hover:bg-gray-700/50'
-    },
-    'Analogue': {
-        color: 'text-white border-white shadow-[0_0_20px_rgba(255,255,255,0.2)]',
-        bg: 'bg-black',
-        hover: 'hover:bg-gray-900'
-    },
-    'Panic': {
-        color: 'text-yellow-300 border-yellow-300 shadow-[0_0_20px_rgba(253,224,71,0.3)]',
-        bg: 'bg-yellow-900/20',
-        hover: 'hover:bg-yellow-800/40'
-    },
-    'Ayaneo': {
-        color: 'text-cyan-400 border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.3)]',
-        bg: 'bg-cyan-900/20',
-        hover: 'hover:bg-cyan-800/40'
-    },
-    'Ayn': {
-        color: 'text-sky-300 border-sky-300 shadow-[0_0_20px_rgba(125,211,252,0.3)]',
-        bg: 'bg-sky-900/20',
-        hover: 'hover:bg-sky-800/40'
-    },
-    'Powkiddy': {
-        color: 'text-red-300 border-red-300 shadow-[0_0_20px_rgba(252,165,165,0.3)]',
-        bg: 'bg-red-900/10',
-        hover: 'hover:bg-red-900/30'
-    },
-    'Miyoo': {
-        color: 'text-purple-300 border-purple-300 shadow-[0_0_20px_rgba(216,180,254,0.3)]',
-        bg: 'bg-purple-900/20',
-        hover: 'hover:bg-purple-800/40'
-    },
-    'GPD': {
-        color: 'text-blue-500 border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.3)]',
-        bg: 'bg-blue-900/20',
-        hover: 'hover:bg-blue-800/40'
-    },
-    'Asus': {
-        color: 'text-red-600 border-red-600 shadow-[0_0_20px_rgba(220,38,38,0.3)]',
-        bg: 'bg-red-950/40',
-        hover: 'hover:bg-red-900/60'
-    },
-    'Lenovo': {
-        color: 'text-indigo-500 border-indigo-500 shadow-[0_0_20px_rgba(99,102,241,0.3)]',
-        bg: 'bg-indigo-900/20',
-        hover: 'hover:bg-indigo-800/40'
-    },
-    'MSI': {
-        color: 'text-red-500 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]',
-        bg: 'bg-red-900/20',
-        hover: 'hover:bg-red-800/40'
-    },
-    'Evercade': {
-        color: 'text-white border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]',
-        bg: 'bg-red-900/30',
-        hover: 'hover:bg-red-800/50'
-    },
-    'Logitech': {
-        color: 'text-teal-300 border-teal-300 shadow-[0_0_20px_rgba(94,234,212,0.3)]',
-        bg: 'bg-teal-900/20',
-        hover: 'hover:bg-teal-800/40'
-    }
 };
 
 export const getBrandTheme = (brand: string) => {
@@ -269,8 +128,6 @@ export const searchDatabase = async (query: string): Promise<SearchResult[]> => 
     if (!query || query.length < 2) return [];
 
     try {
-        // Optimized search using 'global_search_index' view
-        // Fallbacks to legacy method if view does not exist yet
         const { data, error } = await supabase
             .from('global_search_index')
             .select('*')
@@ -288,8 +145,6 @@ export const searchDatabase = async (query: string): Promise<SearchResult[]> => 
             image: item.image
         }));
     } catch (e) {
-        // Fallback for when View doesn't exist yet
-        // This ensures the app doesn't break if the SQL hasn't been run
         try {
             const { data: consoles } = await supabase
                 .from('consoles')
@@ -328,7 +183,6 @@ export const searchDatabase = async (query: string): Promise<SearchResult[]> => 
             }
             return results;
         } catch (legacyError) {
-             console.error("All search methods failed", legacyError);
              return [];
         }
     }
@@ -338,10 +192,8 @@ export const fetchManufacturers = async (): Promise<string[]> => {
     try {
         const { data, error } = await supabase.from('manufacturers').select('name').order('name');
         if (error) throw error;
-        // Strictly type the map to avoid implicit any
         return data.map((m: { name: string }) => m.name);
-    } catch (e: unknown) {
-        console.warn("Falling back to unique console values due to error:", e);
+    } catch (e) {
         const { data } = await supabase.from('consoles').select('manufacturer');
         const brands = Array.from(new Set((data || []).map((d: { manufacturer: string }) => d.manufacturer))).sort();
         return brands as string[];
@@ -359,9 +211,6 @@ export const fetchManufacturerProfile = async (name: string): Promise<Manufactur
         if (error || !data) throw error;
         return data as ManufacturerProfile;
     } catch (e) {
-        console.warn(`Manufacturer fetch failed for ${name}, utilizing fallback.`);
-        
-        // Safe case-insensitive fallback lookup
         const fallbackKey = Object.keys(FALLBACK_MANUFACTURERS).find(k => k.toLowerCase() === name.toLowerCase());
         const fallbackData = fallbackKey ? FALLBACK_MANUFACTURERS[fallbackKey] : undefined;
         
@@ -408,7 +257,6 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
         return { data: data || [], count: count || 0 };
 
     } catch (e) {
-        console.error("Filter fetch failed", e);
         return { data: [], count: 0 };
     }
 };
@@ -453,8 +301,6 @@ const parseSpecValue = (val: string | undefined): number => {
     if (clean.includes('kb') || clean.includes('kilobyte')) return num / 1024;
     if (clean.includes('gb') || clean.includes('gigabyte')) return num * 1024;
     if (clean.includes('tb') || clean.includes('terabyte')) return num * 1024 * 1024;
-    if (clean.includes('byte')) return num / 1024 / 1024; // Raw bytes
-
     // Normalize Speed to MHz
     if (clean.includes('ghz')) return num * 1000;
     
@@ -472,8 +318,8 @@ const parsePrice = (priceStr?: string): number => {
 const parseSales = (salesStr?: string): number => {
     if (!salesStr) return 0;
     const clean = salesStr.toLowerCase().replace(/[^0-9.]/g, '');
-    // If just a number like "60000000", divide by million
     const num = parseFloat(clean);
+    // Heuristic: if number is huge (e.g. 60000000), assume raw count, else assume millions
     if (num > 1000) return num / 1000000;
     return num || 0;
 };
@@ -494,7 +340,6 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
         
         if(!cA || !cB) return null;
 
-        // PARSE VALUES
         const yearA = cA.release_year;
         const yearB = cB.release_year;
         
@@ -510,10 +355,9 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
         const ramA = parseSpecValue(cA.ram);
         const ramB = parseSpecValue(cB.ram);
 
-        // GENERATE COMPARISON POINTS
         const points: ComparisonPoint[] = [];
 
-        // 1. Generation / Year
+        // 1. Generation
         points.push({
             feature: 'Legacy',
             consoleAValue: `${cA.release_year} (Gen ${cA.generation})`,
@@ -523,10 +367,10 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
             bScore: cB.generation > cA.generation ? 100 : (cA.generation === cB.generation ? 50 : 30)
         });
 
-        // 2. Sales Performance
+        // 2. Sales
         const salesScore = calculateScore(salesA, salesB);
         points.push({
-            feature: 'Market (Units Sold)',
+            feature: 'Market (Millions Sold)',
             consoleAValue: cA.units_sold || 'Unknown',
             consoleBValue: cB.units_sold || 'Unknown',
             winner: salesA > salesB ? 'A' : (salesB > salesA ? 'B' : 'Tie'),
@@ -534,30 +378,29 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
             bScore: salesScore.b
         });
 
-        // 3. Launch Price (Lower is better usually, but for power comparison higher usually means more tech)
-        // Here we highlight the CHEAPER option as the "Winner" for value
+        // 3. Price (Cheaper wins?) No, typically for "Specs" higher price implies more power, 
+        // but for "Value" lower is better. Let's just compare raw magnitude for the bar.
         points.push({
             feature: 'Launch Cost',
             consoleAValue: cA.launch_price || 'Unknown',
             consoleBValue: cB.launch_price || 'Unknown',
             winner: (priceA > 0 && priceB > 0) ? (priceA < priceB ? 'A' : (priceB < priceA ? 'B' : 'Tie')) : 'Tie',
-            // For visual bars, we might inverse logic or just show magnitude. Let's show magnitude of price.
             aScore: calculateScore(priceA, priceB).a,
             bScore: calculateScore(priceA, priceB).b
         });
 
-        // 4. CPU Speed (Rough Estimate)
+        // 4. CPU
         const cpuScore = calculateScore(cpuA, cpuB);
         points.push({
             feature: 'Processing Power',
-            consoleAValue: cA.cpu ? (cA.cpu.length > 20 ? 'Custom CPU' : cA.cpu) : 'Unknown',
-            consoleBValue: cB.cpu ? (cB.cpu.length > 20 ? 'Custom CPU' : cB.cpu) : 'Unknown',
+            consoleAValue: cA.cpu || 'Unknown',
+            consoleBValue: cB.cpu || 'Unknown',
             winner: cpuA > cpuB ? 'A' : (cpuB > cpuA ? 'B' : 'Tie'),
             aScore: cpuScore.a,
             bScore: cpuScore.b
         });
 
-        // 5. Memory
+        // 5. RAM
         const ramScore = calculateScore(ramA, ramB);
         points.push({
             feature: 'Memory (RAM)',
@@ -571,11 +414,12 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
         return {
             consoleA: cA.name,
             consoleB: cB.name,
+            consoleAImage: cA.image_url,
+            consoleBImage: cB.image_url,
             summary: `${cA.manufacturer} faces off against ${cB.manufacturer}.`,
             points: points
         }
     } catch(e) {
-        console.error("Comparison Error", e);
         return null;
     }
 }

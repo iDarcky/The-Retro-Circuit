@@ -28,7 +28,6 @@ const LandingPage: FC = () => {
         <div className="absolute -top-4 left-4 bg-retro-pink text-retro-dark font-pixel text-xs px-3 py-1 z-20 rotate-3 shadow-lg border-2 border-white">
           FEATURED HIT
         </div>
-        {/* We reuse the GameOfTheWeek component but wrap it to fit the dashboard layout */}
         <div className="transform hover:scale-[1.01] transition-transform duration-500">
             <GameOfTheWeek />
         </div>
@@ -55,8 +54,8 @@ const LandingPage: FC = () => {
                     <Link to="/comparer" className="block">
                         <div className="group border-2 border-retro-grid hover:border-retro-neon bg-black p-4 flex items-center justify-between transition-all">
                             <div>
-                                <div className="font-pixel text-sm text-white group-hover:text-retro-neon">VS. COMPARER</div>
-                                <div className="font-mono text-xs text-gray-500">Battle of specs</div>
+                                <div className="font-pixel text-sm text-white group-hover:text-retro-neon">THE ARENA</div>
+                                <div className="font-mono text-xs text-gray-500">Spec Showdown</div>
                             </div>
                             <svg className="w-6 h-6 text-retro-grid group-hover:text-retro-neon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                         </div>
@@ -65,8 +64,8 @@ const LandingPage: FC = () => {
                     <Link to="/consoles" className="block">
                         <div className="group border-2 border-retro-grid hover:border-retro-pink bg-black p-4 flex items-center justify-between transition-all">
                             <div>
-                                <div className="font-pixel text-sm text-white group-hover:text-retro-pink">CONSOLE DB</div>
-                                <div className="font-mono text-xs text-gray-500">Full hardware specs</div>
+                                <div className="font-pixel text-sm text-white group-hover:text-retro-pink">SYSTEM DB</div>
+                                <div className="font-mono text-xs text-gray-500">Hardware Archive</div>
                             </div>
                             <svg className="w-6 h-6 text-retro-grid group-hover:text-retro-pink" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
                         </div>

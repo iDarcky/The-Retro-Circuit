@@ -1,18 +1,20 @@
 
 import { z } from 'zod';
 
+export type NewsCategory = 'Hardware' | 'Software' | 'Industry' | 'Rumor' | 'Mods' | 'Events' | 'Homebrew';
+
 export interface NewsItem {
   headline: string;
   date: string;
   summary: string;
-  category: 'Hardware' | 'Software' | 'Industry' | 'Rumor';
+  category: NewsCategory;
 }
 
 export const NewsItemSchema = z.object({
   headline: z.string().min(5, "Headline too short"),
   date: z.string().optional(),
   summary: z.string().min(10, "Summary too short"),
-  category: z.enum(['Hardware', 'Software', 'Industry', 'Rumor']),
+  category: z.enum(['Hardware', 'Software', 'Industry', 'Rumor', 'Mods', 'Events', 'Homebrew']),
 });
 
 export interface ComparisonPoint {
@@ -29,6 +31,8 @@ export interface ComparisonResult {
   consoleB: string;
   summary: string;
   points: ComparisonPoint[];
+  consoleAImage?: string;
+  consoleBImage?: string;
 }
 
 export interface GameOfTheWeekData {

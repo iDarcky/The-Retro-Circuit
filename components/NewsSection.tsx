@@ -1,7 +1,7 @@
 
 import { useEffect, useState, useCallback, type FC, type FormEvent } from 'react';
 import { fetchRetroNews, addNewsItem, fetchConsoleList, fetchGameList } from '../services/geminiService';
-import { NewsItem } from '../types';
+import { NewsItem, NewsCategory } from '../types';
 import Button from './Button';
 import { Link } from 'react-router-dom';
 import RetroLoader from './RetroLoader';
@@ -11,8 +11,6 @@ interface NewsSectionProps {
   showAddForm?: boolean;
   compact?: boolean;
 }
-
-type NewsCategory = 'Hardware' | 'Software' | 'Industry' | 'Rumor';
 
 const NewsSection: FC<NewsSectionProps> = ({ 
   limit, 
@@ -28,13 +26,11 @@ const NewsSection: FC<NewsSectionProps> = ({
   const [totalCount, setTotalCount] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   
-  // Reference Data for Auto-Linking
   const [referenceData, setReferenceData] = useState<{
       consoles: {name: string, slug: string}[],
       games: {title: string, slug: string, id: string}[]
   }>({ consoles: [], games: [] });
   
-  // 10 is divisible by 2 (md:grid-cols-2) and 1 (sm:grid-cols-1)
   const ITEMS_PER_PAGE = compact ? (limit || 3) : 10; 
 
   // Form State
@@ -64,7 +60,6 @@ const NewsSection: FC<NewsSectionProps> = ({
     loadNews(page, selectedCategory);
   }, [page, selectedCategory, loadNews]);
 
-  // Fetch reference data for auto-linking in the background
   useEffect(() => {
       const loadRefs = async () => {
           try {
@@ -79,7 +74,7 @@ const NewsSection: FC<NewsSectionProps> = ({
 
   const handleCategoryChange = (category: string) => {
       setSelectedCategory(category);
-      setPage(1); // Reset to first page on filter change
+      setPage(1);
   };
 
   const handleTransmit = async (e: FormEvent) => {
@@ -97,7 +92,6 @@ const NewsSection: FC<NewsSectionProps> = ({
       const success = await addNewsItem(newItem);
       
       if (success) {
-          // Reset and Reload
           setNewHeadline('');
           setNewSummary('');
           setShowTransmitter(false);
@@ -109,23 +103,18 @@ const NewsSection: FC<NewsSectionProps> = ({
       setSubmitting(false);
   };
 
-  // Helper to find related entities in text
   const getRelatedLinks = (text: string) => {
       const lowerText = text.toLowerCase();
       const matches: { type: 'GAME' | 'CONSOLE', label: string, to: string }[] = [];
 
-      // Check Consoles
       referenceData.consoles.forEach(c => {
-          // Escape special regex chars in name
           const safeName = c.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').toLowerCase();
-          // Use word boundaries to avoid partial matches (e.g. "NES" in "JONES")
           const regex = new RegExp(`\\b${safeName}\\b`, 'i');
           if (regex.test(lowerText)) {
               matches.push({ type: 'CONSOLE', label: c.name, to: `/consoles/${c.slug}` });
           }
       });
 
-      // Check Games
       referenceData.games.forEach(g => {
           const safeTitle = g.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').toLowerCase();
           const regex = new RegExp(`\\b${safeTitle}\\b`, 'i');
@@ -139,13 +128,15 @@ const NewsSection: FC<NewsSectionProps> = ({
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
-  // Style helpers for tags and filters
   const getCategoryColor = (cat: string) => {
       switch(cat) {
           case 'Hardware': return 'text-retro-blue border-retro-blue hover:bg-retro-blue hover:text-retro-dark';
           case 'Software': return 'text-retro-pink border-retro-pink hover:bg-retro-pink hover:text-retro-dark';
           case 'Industry': return 'text-retro-neon border-retro-neon hover:bg-retro-neon hover:text-retro-dark';
           case 'Rumor': return 'text-yellow-400 border-yellow-400 hover:bg-yellow-400 hover:text-retro-dark';
+          case 'Mods': return 'text-purple-400 border-purple-400 hover:bg-purple-400 hover:text-retro-dark';
+          case 'Events': return 'text-orange-400 border-orange-400 hover:bg-orange-400 hover:text-retro-dark';
+          case 'Homebrew': return 'text-green-400 border-green-400 hover:bg-green-400 hover:text-retro-dark';
           default: return 'text-gray-400 border-gray-400 hover:bg-gray-400 hover:text-retro-dark';
       }
   };
@@ -156,18 +147,21 @@ const NewsSection: FC<NewsSectionProps> = ({
         case 'Software': return 'bg-retro-pink text-retro-dark';
         case 'Industry': return 'bg-retro-neon text-retro-dark';
         case 'Rumor': return 'bg-yellow-400 text-retro-dark';
+        case 'Mods': return 'bg-purple-400 text-retro-dark';
+        case 'Events': return 'bg-orange-400 text-retro-dark';
+        case 'Homebrew': return 'bg-green-400 text-retro-dark';
         default: return 'bg-gray-400 text-retro-dark';
     }
-};
+  };
 
   return (
     <div className={`w-full ${compact ? '' : 'max-w-6xl mx-auto p-4'}`}>
       <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b-2 border-retro-grid pb-4 gap-4">
         <div>
           <h2 className={`${compact ? 'text-xl' : 'text-3xl'} font-pixel text-retro-neon mb-2 drop-shadow-[2px_2px_0_rgba(255,0,255,0.5)]`}>
-            {compact ? 'LATEST SIGNALS' : 'CIRCUIT FEED'}
+            {compact ? 'LATEST SIGNALS' : 'INCOMING SIGNALS'}
           </h2>
-          {!compact && <p className="font-mono text-gray-400">Latest signals from the golden age.</p>}
+          {!compact && <p className="font-mono text-gray-400">Encrypted transmission stream.</p>}
         </div>
         <div className="flex flex-wrap gap-2">
             {showAddForm && (
@@ -190,7 +184,6 @@ const NewsSection: FC<NewsSectionProps> = ({
         </div>
       </div>
 
-      {/* FILTER BAR (Only in Full View) */}
       {!compact && (
           <div className="flex flex-wrap gap-3 mb-8">
               <button 
@@ -201,21 +194,22 @@ const NewsSection: FC<NewsSectionProps> = ({
                       : 'text-gray-400 border-gray-600 hover:border-white hover:text-white'
                   }`}
               >
-                  ALL SIGNALS
+                  ALL
               </button>
-              {['Hardware', 'Software', 'Industry', 'Rumor'].map(cat => {
+              {['Hardware', 'Software', 'Industry', 'Rumor', 'Mods', 'Events', 'Homebrew'].map(cat => {
                   const isActive = selectedCategory === cat;
                   const colors = getCategoryColor(cat);
-                  // Split color string to get base border/text vs active bg logic
-                  // Simplified: if active, invert colors manually based on category
                   let activeClass = '';
                   if (isActive) {
                       if (cat === 'Hardware') activeClass = 'bg-retro-blue text-retro-dark border-retro-blue';
                       else if (cat === 'Software') activeClass = 'bg-retro-pink text-retro-dark border-retro-pink';
                       else if (cat === 'Industry') activeClass = 'bg-retro-neon text-retro-dark border-retro-neon';
                       else if (cat === 'Rumor') activeClass = 'bg-yellow-400 text-retro-dark border-yellow-400';
+                      else if (cat === 'Mods') activeClass = 'bg-purple-400 text-retro-dark border-purple-400';
+                      else if (cat === 'Events') activeClass = 'bg-orange-400 text-retro-dark border-orange-400';
+                      else if (cat === 'Homebrew') activeClass = 'bg-green-400 text-retro-dark border-green-400';
                   } else {
-                      activeClass = colors; // Use the hover classes defined in helper
+                      activeClass = colors;
                   }
 
                   return (
@@ -256,6 +250,9 @@ const NewsSection: FC<NewsSectionProps> = ({
                             <option value="Software">SOFTWARE</option>
                             <option value="Industry">INDUSTRY</option>
                             <option value="Rumor">RUMOR</option>
+                            <option value="Mods">MODS</option>
+                            <option value="Events">EVENTS</option>
+                            <option value="Homebrew">HOMEBREW</option>
                         </select>
                     </div>
                   </div>
@@ -281,19 +278,11 @@ const NewsSection: FC<NewsSectionProps> = ({
       {error && (
         <div className="p-8 border-2 border-retro-pink text-retro-pink font-mono mb-6 bg-retro-pink/10 text-center">
           <h3 className="text-xl font-bold mb-2">ERROR: {error}</h3>
-          <p className="text-sm opacity-75">Ensure your Supabase project is active and the 'news' table exists.</p>
         </div>
       )}
 
       {loading ? (
-        <div className={`grid grid-cols-1 ${compact ? '' : 'md:grid-cols-2'} gap-6`}>
-            {[1, 2].map((i) => (
-                <div key={i} className="h-32 border border-retro-grid bg-retro-grid/20 animate-pulse rounded p-4">
-                    <div className="h-4 bg-retro-grid/50 w-3/4 mb-4"></div>
-                    <div className="h-24 bg-retro-grid/30 w-full"></div>
-                </div>
-            ))}
-        </div>
+        <RetroLoader />
       ) : news.length === 0 && !error ? (
          <div className="text-center py-12 border border-retro-grid border-dashed text-gray-500 font-mono">
              <div className="mb-4">NO SIGNAL FOUND FOR THIS FREQUENCY.</div>
@@ -319,7 +308,6 @@ const NewsSection: FC<NewsSectionProps> = ({
                             if(!compact) handleCategoryChange(item.category);
                         }}
                         className={`inline-block px-2 py-0.5 text-[10px] font-bold font-mono mb-2 uppercase ${getTagStyle(item.category)} ${!compact ? 'hover:opacity-80 cursor-pointer' : 'cursor-default'}`}
-                        title={!compact ? "Filter by this category" : ""}
                     >
                         {item.category}
                     </button>
@@ -331,7 +319,6 @@ const NewsSection: FC<NewsSectionProps> = ({
                     {item.summary}
                 </p>
 
-                {/* Related Links */}
                 {relatedLinks.length > 0 && (
                     <div className="mt-4 flex flex-wrap gap-2">
                         {relatedLinks.map(link => (
@@ -350,13 +337,9 @@ const NewsSection: FC<NewsSectionProps> = ({
                         ))}
                     </div>
                 )}
-
-                <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-retro-pink via-retro-neon to-retro-blue opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </article>
             )})}
             </div>
-
-            {/* Pagination Controls (Only show in full mode) */}
             {!compact && totalPages > 1 && (
                  <div className="flex justify-center items-center gap-4 py-8 border-t border-retro-grid/30 mt-8">
                      <Button 
