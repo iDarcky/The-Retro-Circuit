@@ -53,7 +53,7 @@ const GamesList: FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             {games.map((game, idx) => (
                 <Link 
-                to={`/games/${game.slug || game.id}`} 
+                to={`/archive/${game.slug || game.id}`} 
                 key={`${game.id}-${idx}`} 
                 className="group border-4 border-retro-grid bg-retro-dark relative overflow-hidden hover:border-retro-pink transition-all duration-300 block"
                 >

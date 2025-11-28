@@ -51,7 +51,7 @@ const LandingPage: FC = () => {
                     SYSTEM TOOLS
                 </h3>
                 <div className="grid gap-4">
-                    <Link to="/comparer" className="block">
+                    <Link to="/arena" className="block">
                         <div className="group border-2 border-retro-grid hover:border-retro-neon bg-black p-4 flex items-center justify-between transition-all">
                             <div>
                                 <div className="font-pixel text-sm text-white group-hover:text-retro-neon">THE ARENA</div>
@@ -61,7 +61,7 @@ const LandingPage: FC = () => {
                         </div>
                     </Link>
 
-                    <Link to="/consoles" className="block">
+                    <Link to="/systems" className="block">
                         <div className="group border-2 border-retro-grid hover:border-retro-pink bg-black p-4 flex items-center justify-between transition-all">
                             <div>
                                 <div className="font-pixel text-sm text-white group-hover:text-retro-pink">SYSTEM DB</div>

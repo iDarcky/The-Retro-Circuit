@@ -1,8 +1,14 @@
+
 {
   "redirects": [
-    { "source": "/Consoles.html", "destination": "/consoles", "permanent": true },
-    { "source": "/Games.html", "destination": "/games", "permanent": true },
-    { "source": "/News.html", "destination": "/news", "permanent": true }
+    { "source": "/Consoles.html", "destination": "/systems", "permanent": true },
+    { "source": "/Games.html", "destination": "/archive", "permanent": true },
+    { "source": "/News.html", "destination": "/signals", "permanent": true },
+    { "source": "/news", "destination": "/signals", "permanent": true },
+    { "source": "/games", "destination": "/archive", "permanent": true },
+    { "source": "/consoles", "destination": "/systems", "permanent": true },
+    { "source": "/comparer", "destination": "/arena", "permanent": true },
+    { "source": "/timeline", "destination": "/chrono", "permanent": true }
   ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }

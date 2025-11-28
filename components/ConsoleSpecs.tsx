@@ -65,7 +65,7 @@ const ConsoleSpecs: FC = () => {
 
   const handleCompare = () => {
       if (!consoleData) return;
-      navigate(`/comparer?preselect=${consoleData.slug}`);
+      navigate(`/arena?preselect=${consoleData.slug}`);
   };
 
   if (loading) return <RetroLoader />;
@@ -76,7 +76,7 @@ const ConsoleSpecs: FC = () => {
         <SEOHead title="Unknown Hardware" description="Hardware specification not found." />
         <h2 className="font-pixel text-retro-pink text-2xl mb-4">ERROR 404</h2>
         <p className="font-mono text-gray-400 mb-8">CONSOLE DATA NOT FOUND IN ARCHIVE.</p>
-        <Link to="/consoles">
+        <Link to="/systems">
           <Button variant="secondary">RETURN TO DATABASE</Button>
         </Link>
       </div>
@@ -125,7 +125,7 @@ const ConsoleSpecs: FC = () => {
                     <span className="font-mono text-[10px] text-retro-blue border border-retro-blue px-2 py-0.5 rounded-sm">
                         {consoleData.type.toUpperCase()}
                     </span>
-                    <Link to={`/consoles/brand/${consoleData.manufacturer}`} className="font-mono text-[10px] text-gray-400 hover:text-white border-b border-gray-600 hover:border-white transition-colors">
+                    <Link to={`/systems/brand/${consoleData.manufacturer}`} className="font-mono text-[10px] text-gray-400 hover:text-white border-b border-gray-600 hover:border-white transition-colors">
                         {consoleData.manufacturer.toUpperCase()}
                     </Link>
                 </div>
@@ -262,11 +262,11 @@ const ConsoleSpecs: FC = () => {
             <div className="border-t border-retro-grid p-6 bg-black/20">
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="font-pixel text-sm text-retro-neon">TOP TITLES</h3>
-                    <Link to="/games" className="text-[10px] font-mono text-retro-blue hover:text-white uppercase">See All Games &gt;</Link>
+                    <Link to="/archive" className="text-[10px] font-mono text-retro-blue hover:text-white uppercase">See All Games &gt;</Link>
                 </div>
                 <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x">
                     {games.map(game => (
-                        <Link to={`/games/${game.slug || game.id}`} key={game.id} className="snap-start flex-shrink-0 w-32 group">
+                        <Link to={`/archive/${game.slug || game.id}`} key={game.id} className="snap-start flex-shrink-0 w-32 group">
                             <div className="aspect-[3/4] bg-black border border-retro-grid mb-2 overflow-hidden relative">
                                 {game.image ? (
                                     <img src={game.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />

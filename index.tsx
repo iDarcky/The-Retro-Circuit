@@ -289,11 +289,11 @@ const AppContent = () => {
 
           <nav className="flex-1 overflow-y-auto py-4 custom-scrollbar">
               <SidebarItem to="/" icon={IconHome} label="DASHBOARD" exact />
-              <SidebarItem to="/news" icon={IconNews} label="SIGNALS" />
-              <SidebarItem to="/games" icon={IconGames} label="ARCHIVE" />
-              <SidebarItem to="/consoles" icon={IconDatabase} label="SYSTEMS" />
-              <SidebarItem to="/comparer" icon={IconVS} label="ARENA" />
-              <SidebarItem to="/timeline" icon={IconTimeline} label="CHRONO" />
+              <SidebarItem to="/signals" icon={IconNews} label="SIGNALS" />
+              <SidebarItem to="/archive" icon={IconGames} label="ARCHIVE" />
+              <SidebarItem to="/systems" icon={IconDatabase} label="SYSTEMS" />
+              <SidebarItem to="/arena" icon={IconVS} label="ARENA" />
+              <SidebarItem to="/chrono" icon={IconTimeline} label="CHRONO" />
               
               <div className="my-4 border-t border-retro-grid mx-4"></div>
               
@@ -321,14 +321,14 @@ const AppContent = () => {
               <ErrorBoundary>
                   <Routes>
                       <Route path="/" element={<LandingPage />} />
-                      <Route path="/news" element={<NewsSection />} />
-                      <Route path="/games" element={<GamesList />} />
-                      <Route path="/games/:slug" element={<GameDetails />} />
-                      <Route path="/consoles" element={<ConsoleLibrary />} />
-                      <Route path="/consoles/brand/:name" element={<ManufacturerDetail />} />
-                      <Route path="/consoles/:slug" element={<ConsoleSpecs />} />
-                      <Route path="/comparer" element={<ConsoleComparer />} />
-                      <Route path="/timeline" element={<Timeline />} />
+                      <Route path="/signals" element={<NewsSection />} />
+                      <Route path="/archive" element={<GamesList />} />
+                      <Route path="/archive/:slug" element={<GameDetails />} />
+                      <Route path="/systems" element={<ConsoleLibrary />} />
+                      <Route path="/systems/brand/:name" element={<ManufacturerDetail />} />
+                      <Route path="/systems/:slug" element={<ConsoleSpecs />} />
+                      <Route path="/arena" element={<ConsoleComparer />} />
+                      <Route path="/chrono" element={<Timeline />} />
                       <Route path="/login" element={<AuthSection />} />
                       <Route path="/signup" element={<AuthSection />} />
                       <Route path="/recovery" element={<AuthSection />} />
@@ -345,9 +345,9 @@ const AppContent = () => {
       {/* MOBILE BOTTOM NAV */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-retro-dark border-t border-retro-grid z-50 flex items-center justify-around px-2 pb-safe">
           <MobileNavItem to="/" icon={IconHome} label="HOME" exact />
-          <MobileNavItem to="/games" icon={IconGames} label="ARCHIVE" />
-          <MobileNavItem to="/consoles" icon={IconDatabase} label="SYSTEMS" />
-          <MobileNavItem to="/comparer" icon={IconVS} label="ARENA" />
+          <MobileNavItem to="/archive" icon={IconGames} label="ARCHIVE" />
+          <MobileNavItem to="/systems" icon={IconDatabase} label="SYSTEMS" />
+          <MobileNavItem to="/arena" icon={IconVS} label="ARENA" />
       </div>
       
       <FooterStatus crtEnabled={crtEnabled} onToggleCrt={toggleCrt} />

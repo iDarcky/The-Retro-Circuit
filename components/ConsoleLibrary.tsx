@@ -83,7 +83,7 @@ const ConsoleLibrary: FC = () => {
       {/* HEADER */}
       <div className="text-center mb-8 border-b border-retro-grid pb-4">
         <h2 className="text-3xl font-pixel text-retro-neon mb-2 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
-          HARDWARE DATABASE
+          SYSTEMS DATABASE
         </h2>
         <div className="flex justify-center gap-4">
             <button 
@@ -110,7 +110,7 @@ const ConsoleLibrary: FC = () => {
                     return (
                         <Link 
                             key={brand}
-                            to={`/consoles/brand/${brand}`}
+                            to={`/systems/brand/${brand}`}
                             className={`group border-4 bg-retro-dark p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${theme.color} ${theme.hover}`}
                         >
                             <div className="w-20 h-20 border-2 border-current rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -149,7 +149,7 @@ const ConsoleLibrary: FC = () => {
                                   {filters.manufacturer}
                                   <button onClick={() => { setFilters(prev => ({...prev, manufacturer: null})); setViewMode('BRAND'); }} className="text-red-500 hover:text-white">✕</button>
                               </div>
-                              <Link to={`/consoles/brand/${filters.manufacturer}`} className="text-[10px] font-mono text-retro-blue hover:text-white mt-1 block">
+                              <Link to={`/systems/brand/${filters.manufacturer}`} className="text-[10px] font-mono text-retro-blue hover:text-white mt-1 block">
                                   [ VIEW CORP DATA ]
                               </Link>
                           </div>
@@ -223,7 +223,7 @@ const ConsoleLibrary: FC = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {consoles.map((console, idx) => (
                                 <Link 
-                                    to={`/consoles/${console.slug}`} 
+                                    to={`/systems/${console.slug}`} 
                                     key={`${console.id}-${idx}`}
                                     className="group block border border-retro-grid bg-retro-dark relative overflow-hidden hover:border-retro-blue transition-all"
                                 >

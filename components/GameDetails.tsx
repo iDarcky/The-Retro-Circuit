@@ -1,3 +1,4 @@
+
 import { useEffect, useState, type FC } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchGameBySlug } from '../services/geminiService';
@@ -31,7 +32,7 @@ const GameDetails: FC = () => {
         <SEOHead title="Game Not Found" description="The requested game cartridge could not be located in our archives." />
         <h2 className="font-pixel text-retro-pink text-2xl mb-4">ERROR 404</h2>
         <p className="font-mono text-gray-400 mb-8">GAME CARTRIDGE NOT FOUND.</p>
-        <Link to="/games">
+        <Link to="/archive">
           <Button variant="secondary">RETURN TO ARCHIVE</Button>
         </Link>
       </div>
@@ -50,7 +51,7 @@ const GameDetails: FC = () => {
     "name": game.title,
     "description": game.content.substring(0, 160) + "...",
     "genre": [game.genre],
-    "gamePlatform": game.console_slug ? `https://theretrocircuit.com/consoles/${game.console_slug}` : "Retro Console",
+    "gamePlatform": game.console_slug ? `https://theretrocircuit.com/systems/${game.console_slug}` : "Retro Console",
     "publisher": game.developer,
     "author": {
       "@type": "Organization",
@@ -81,7 +82,7 @@ const GameDetails: FC = () => {
       {/* Header */}
       <div className="mb-8 border-b-4 border-retro-grid pb-6">
         <div className="flex justify-between items-start mb-4">
-           <Link to="/games" className="inline-block text-xs font-mono text-retro-blue hover:text-retro-neon transition-colors">
+           <Link to="/archive" className="inline-block text-xs font-mono text-retro-blue hover:text-retro-neon transition-colors">
               &lt; BACK TO DATABASE
            </Link>
            {/* Actions */}
@@ -130,7 +131,7 @@ const GameDetails: FC = () => {
                     <span className="bg-retro-blue/10 px-2 py-1 border border-retro-blue">{game.year}</span>
                     <span className="bg-retro-blue/10 px-2 py-1 border border-retro-blue">{game.genre}</span>
                     {game.console_slug && (
-                        <Link to={`/consoles/${game.console_slug}`} className="bg-retro-neon/10 px-2 py-1 border border-retro-neon text-retro-neon hover:bg-retro-neon hover:text-black transition-colors">
+                        <Link to={`/systems/${game.console_slug}`} className="bg-retro-neon/10 px-2 py-1 border border-retro-neon text-retro-neon hover:bg-retro-neon hover:text-black transition-colors">
                             PLATFORM &gt;
                         </Link>
                     )}

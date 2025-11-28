@@ -111,7 +111,7 @@ const NewsSection: FC<NewsSectionProps> = ({
           const safeName = c.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').toLowerCase();
           const regex = new RegExp(`\\b${safeName}\\b`, 'i');
           if (regex.test(lowerText)) {
-              matches.push({ type: 'CONSOLE', label: c.name, to: `/consoles/${c.slug}` });
+              matches.push({ type: 'CONSOLE', label: c.name, to: `/systems/${c.slug}` });
           }
       });
 
@@ -119,7 +119,7 @@ const NewsSection: FC<NewsSectionProps> = ({
           const safeTitle = g.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').toLowerCase();
           const regex = new RegExp(`\\b${safeTitle}\\b`, 'i');
           if (regex.test(lowerText)) {
-              matches.push({ type: 'GAME', label: g.title, to: `/games/${g.slug || g.id}` });
+              matches.push({ type: 'GAME', label: g.title, to: `/archive/${g.slug || g.id}` });
           }
       });
 
@@ -175,7 +175,7 @@ const NewsSection: FC<NewsSectionProps> = ({
               </Button>
             )}
             {compact && (
-               <Link to="/news">
+               <Link to="/signals">
                  <button className="font-mono text-xs text-retro-blue hover:text-retro-neon border border-retro-blue hover:border-retro-neon px-3 py-2 transition-colors uppercase">
                    View Archive
                  </button>

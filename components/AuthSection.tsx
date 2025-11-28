@@ -1,3 +1,4 @@
+
 import { useState, useEffect, type FC, type FormEvent } from 'react';
 import { retroAuth, fetchUserCollection } from '../services/geminiService';
 import { supabase } from '../services/supabaseClient';
@@ -145,14 +146,14 @@ const AuthSection: FC = () => {
                             <div className="text-center py-12 border-2 border-dashed border-gray-800 text-gray-600 font-mono">
                                 NO ITEMS IN INVENTORY.
                                 <br />
-                                <Link to="/games" className="text-retro-neon underline mt-2 inline-block">BROWSE GAMES</Link>
+                                <Link to="/archive" className="text-retro-neon underline mt-2 inline-block">BROWSE GAMES</Link>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {collection.map((item) => (
                                     <Link 
                                         key={item.id} 
-                                        to={item.item_type === 'GAME' ? `/games/${item.item_id}` : `/consoles/${item.item_id}`}
+                                        to={item.item_type === 'GAME' ? `/archive/${item.item_id}` : `/systems/${item.item_id}`}
                                         className="flex items-center gap-3 p-3 border border-retro-grid bg-black/40 hover:bg-retro-grid/20 transition-colors group"
                                     >
                                         <div className="w-12 h-12 bg-black flex-shrink-0 flex items-center justify-center border border-gray-800">

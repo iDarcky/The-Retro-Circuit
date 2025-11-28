@@ -43,18 +43,18 @@ const HtmlSitemap: FC = () => {
                     <h2 className="font-pixel text-xl text-white mb-4">SECTORS</h2>
                     <ul className="space-y-2 font-mono text-sm">
                         <li><Link to="/" className="text-retro-blue hover:text-white hover:underline">Dashboard</Link></li>
-                        <li><Link to="/news" className="text-retro-blue hover:text-white hover:underline">News Feed</Link></li>
-                        <li><Link to="/games" className="text-retro-blue hover:text-white hover:underline">Game Database</Link></li>
-                        <li><Link to="/consoles" className="text-retro-blue hover:text-white hover:underline">Hardware Database</Link></li>
-                        <li><Link to="/comparer" className="text-retro-blue hover:text-white hover:underline">VS. Mode</Link></li>
-                        <li><Link to="/timeline" className="text-retro-blue hover:text-white hover:underline">Timeline</Link></li>
+                        <li><Link to="/signals" className="text-retro-blue hover:text-white hover:underline">Signals (News)</Link></li>
+                        <li><Link to="/archive" className="text-retro-blue hover:text-white hover:underline">Archive (Games)</Link></li>
+                        <li><Link to="/systems" className="text-retro-blue hover:text-white hover:underline">Systems (Consoles)</Link></li>
+                        <li><Link to="/arena" className="text-retro-blue hover:text-white hover:underline">The Arena (VS Mode)</Link></li>
+                        <li><Link to="/chrono" className="text-retro-blue hover:text-white hover:underline">Chrono (Timeline)</Link></li>
                     </ul>
 
                     <h2 className="font-pixel text-xl text-white mt-8 mb-4">MANUFACTURERS</h2>
                     <ul className="space-y-2 font-mono text-sm">
                         {brands.map(b => (
                             <li key={b}>
-                                <Link to={`/consoles/brand/${b}`} className="text-gray-400 hover:text-retro-pink hover:underline">
+                                <Link to={`/systems/brand/${b}`} className="text-gray-400 hover:text-retro-pink hover:underline">
                                     {b}
                                 </Link>
                             </li>
@@ -68,7 +68,7 @@ const HtmlSitemap: FC = () => {
                     <ul className="space-y-2 font-mono text-sm max-h-[80vh] overflow-y-auto custom-scrollbar pr-2">
                         {consoles.map(c => (
                             <li key={c.slug}>
-                                <Link to={`/consoles/${c.slug}`} className="text-gray-400 hover:text-retro-neon hover:underline">
+                                <Link to={`/systems/${c.slug}`} className="text-gray-400 hover:text-retro-neon hover:underline">
                                     {c.name}
                                 </Link>
                             </li>
@@ -82,7 +82,7 @@ const HtmlSitemap: FC = () => {
                     <ul className="space-y-2 font-mono text-sm max-h-[80vh] overflow-y-auto custom-scrollbar pr-2">
                         {games.map(g => (
                             <li key={g.id}>
-                                <Link to={`/games/${g.slug || g.id}`} className="text-gray-400 hover:text-retro-neon hover:underline">
+                                <Link to={`/archive/${g.slug || g.id}`} className="text-gray-400 hover:text-retro-neon hover:underline">
                                     {g.title}
                                 </Link>
                             </li>
