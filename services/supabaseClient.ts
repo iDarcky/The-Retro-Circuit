@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 const getEnvVar = (key: string): string | undefined => {
   // @ts-ignore
   const val = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env[key] : undefined;
-  return val;
+  return typeof val === 'string' ? val : undefined;
 };
 
 // Retrieve environment variables
