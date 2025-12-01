@@ -1,6 +1,5 @@
-
 import { useEffect, useState, type FC } from 'react';
-import { fetchGameOfTheWeek } from '../services/geminiService';
+import { fetchGameOfTheWeek } from '../services/dataService';
 import { GameOfTheWeekData } from '../types';
 import Button from './ui/Button';
 import { Link } from 'react-router-dom';

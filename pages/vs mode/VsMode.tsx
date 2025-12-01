@@ -1,10 +1,10 @@
 
 import { useState, useEffect, type FC } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { compareConsoles, fetchConsoleList } from '../services/geminiService';
-import { ComparisonResult } from '../types';
-import Button from '../components/ui/Button';
-import SEOHead from '../components/ui/SEOHead';
+import { compareConsoles, fetchConsoleList } from '../../services/dataService';
+import { ComparisonResult } from '../../types';
+import Button from '../../components/ui/Button';
+import SEOHead from '../../components/ui/SEOHead';
 
 const StatBar = ({ value, color, align }: { value: number, color: string, align: 'left' | 'right' }) => {
     const safeValue = isNaN(value) ? 0 : Math.min(100, Math.max(0, value));

@@ -1,5 +1,7 @@
+
 import { useEffect, useState, type FC, type FormEvent } from 'react';
-import { retroAuth, addGame, addConsole, addNewsItem, fetchConsoleList } from '../../services/geminiService';
+import { retroAuth } from '../../services/authService';
+import { addGame, addConsole, addNewsItem, fetchConsoleList } from '../../services/dataService';
 import Button from '../../components/ui/Button';
 import { ConsoleDetails, GameOfTheWeekData, NewsItem, NewsItemSchema, GameSchema, ConsoleSchema } from '../../types';
 

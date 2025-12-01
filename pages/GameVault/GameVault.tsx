@@ -1,9 +1,9 @@
 
 import { useEffect, useState, useCallback, type FC } from 'react';
-import { fetchGamesPaginated } from '../services/geminiService';
-import { GameOfTheWeekData } from '../types';
-import Button from '../components/ui/Button';
-import RetroLoader from '../components/ui/RetroLoader';
+import { fetchGamesPaginated } from '../../services/dataService';
+import { GameOfTheWeekData } from '../../types';
+import Button from '../../components/ui/Button';
+import RetroLoader from '../../components/ui/RetroLoader';
 import { Link } from 'react-router-dom';
 
 const GameVault: FC = () => {

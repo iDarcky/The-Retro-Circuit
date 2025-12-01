@@ -1,9 +1,9 @@
 
 import { type FC } from 'react';
 import { Link } from 'react-router-dom';
-import GameOfTheWeek from '../components/GameOfTheWeek';
-import SignalFeed from './SignalFeed';
-import SEOHead from '../components/ui/SEOHead';
+import GameOfTheWeek from '../../components/GameOfTheWeek';
+import SignalFeed from '../SignalFeed/SignalFeed';
+import SEOHead from '../../components/ui/SEOHead';
 
 const ControlRoom: FC = () => {
   return (

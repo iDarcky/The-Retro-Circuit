@@ -1,7 +1,7 @@
 
 import { useEffect, useState, type FC } from 'react';
-import { fetchTimelineData } from '../services/geminiService';
-import { TimelineEvent } from '../types';
+import { fetchTimelineData } from '../../services/dataService';
+import { TimelineEvent } from '../../types';
 
 const HistoryLine: FC = () => {
   const [events, setEvents] = useState<TimelineEvent[]>([]);

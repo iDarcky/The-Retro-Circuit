@@ -1,11 +1,13 @@
 import { useState, useEffect, type FC, type FormEvent } from 'react';
-import { retroAuth, fetchUserCollection } from '../../services/geminiService';
+import { fetchUserCollection } from '../../services/dataService';
+import { retroAuth } from '../../services/authService';
 import { supabase } from '../../services/supabaseClient';
 import Button from '../../components/ui/Button';
 import { useNavigate, Link } from 'react-router-dom';
 import AvatarSelector from '../../components/ui/AvatarSelector';
 import { RETRO_AVATARS } from '../../utils/avatars';
 import { UserCollectionItem } from '../../types';
+import { User } from '@supabase/supabase-js';
 
 type AuthMode = 'LOGIN' | 'SIGNUP' | 'RECOVERY' | 'UPDATE_PASSWORD' | 'PROFILE';
 
@@ -17,7 +19,7 @@ const AuthPage: FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [avatarId, setAvatarId] = useState('pilot');
     
     // Collection State

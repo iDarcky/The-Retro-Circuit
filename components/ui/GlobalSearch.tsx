@@ -1,7 +1,6 @@
-
 import { useState, useEffect, useRef, type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { searchDatabase } from '../../services/geminiService';
+import { searchDatabase } from '../../services/dataService';
 import { SearchResult } from '../../types';
 import { useSound } from './SoundContext';
 
