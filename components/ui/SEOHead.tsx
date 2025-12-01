@@ -1,6 +1,7 @@
+'use client';
 
 import { useEffect, type FC } from 'react';
-import { useLocation } from 'react-router-dom';
+import { usePathname } from 'next/navigation';
 
 interface SEOHeadProps {
   title: string;
@@ -11,12 +12,12 @@ interface SEOHeadProps {
 }
 
 const SEOHead: FC<SEOHeadProps> = ({ title, description, type = 'website', image, structuredData }) => {
-  const location = useLocation();
+  const pathname = usePathname();
   
   // Clean URL: Remove trailing slash to ensure consistency (e.g., /games/ and /games are treated as /games)
-  const cleanPath = location.pathname.endsWith('/') && location.pathname.length > 1 
-    ? location.pathname.slice(0, -1) 
-    : location.pathname;
+  const cleanPath = pathname && pathname.endsWith('/') && pathname.length > 1 
+    ? pathname.slice(0, -1) 
+    : pathname || '';
     
   const canonicalUrl = `https://theretrocircuit.com${cleanPath}`;
   const defaultImage = 'https://theretrocircuit.com/og-image.jpg';

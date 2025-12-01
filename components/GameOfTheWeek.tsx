@@ -1,8 +1,10 @@
+'use client';
+
 import { useEffect, useState, type FC } from 'react';
 import { fetchGameOfTheWeek } from '../services/dataService';
 import { GameOfTheWeekData } from '../types';
 import Button from './ui/Button';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 const GameOfTheWeek: FC = () => {
   const [game, setGame] = useState<GameOfTheWeekData | null>(null);
@@ -58,7 +60,7 @@ const GameOfTheWeek: FC = () => {
             <div className="p-8 md:p-12">
                 <div className="flex flex-col md:flex-row justify-between items-start border-b-2 border-retro-grid pb-6 mb-6">
                     <div>
-                        <Link to={`/archive/${game.slug || game.id}`} className="block hover:opacity-80 transition-opacity">
+                        <Link href={`/archive/${game.slug || game.id}`} className="block hover:opacity-80 transition-opacity">
                             <h1 className="text-4xl md:text-5xl font-pixel text-retro-blue mb-2 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] hover:text-retro-neon transition-colors">
                                 {game.title}
                             </h1>
@@ -87,8 +89,10 @@ const GameOfTheWeek: FC = () => {
                             {game.whyItMatters}
                         </p>
                         <div className="mt-6 pt-6 border-t border-retro-grid text-center">
-                             <Link to={`/archive/${game.slug || game.id}`}>
-                                <Button className="w-full">READ FULL REPORT</Button>
+                             <Link href={`/archive/${game.slug || game.id}`}>
+                                <div className="w-full inline-block">
+                                  <Button className="w-full">READ FULL REPORT</Button>
+                                </div>
                              </Link>
                         </div>
                     </div>

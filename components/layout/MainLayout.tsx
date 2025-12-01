@@ -1,11 +1,13 @@
+'use client';
+
 import { useState, useEffect, type FC, type ReactNode } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useSound } from '../ui/SoundContext';
 import { retroAuth } from '../../services/authService';
 import { checkDatabaseConnection } from '../../services/dataService';
 import { supabase, isSupabaseConfigured } from '../../services/supabaseClient';
 import GlobalSearch from '../ui/GlobalSearch';
-import SEOHead from '../ui/SEOHead';
 import { User } from '@supabase/supabase-js';
 import { 
   IconNews, IconDatabase, IconVS, IconGames, IconTimeline, 
@@ -15,13 +17,13 @@ import {
 // --- HELPER COMPONENTS ---
 
 const SidebarItem = ({ to, icon: Icon, label, exact = false }: { to: string, icon: any, label: string, exact?: boolean }) => {
-  const location = useLocation();
-  const isActive = exact ? location.pathname === to : location.pathname.startsWith(to);
+  const pathname = usePathname();
+  const isActive = exact ? pathname === to : pathname.startsWith(to);
   const { playHover, playClick } = useSound();
 
   return (
     <Link 
-      to={to} 
+      href={to} 
       className={`group flex items-center px-4 py-3 font-mono transition-all duration-200 border-l-4 ${
         isActive 
           ? 'border-retro-neon bg-retro-grid/50 text-white shadow-[inset_0_0_10px_rgba(0,255,157,0.2)]' 
@@ -39,13 +41,13 @@ const SidebarItem = ({ to, icon: Icon, label, exact = false }: { to: string, ico
 };
 
 const MobileNavItem = ({ to, icon: Icon, label, exact = false }: { to: string, icon: any, label: string, exact?: boolean }) => {
-    const location = useLocation();
-    const isActive = exact ? location.pathname === to : location.pathname.startsWith(to);
+    const pathname = usePathname();
+    const isActive = exact ? pathname === to : pathname.startsWith(to);
     const { playClick } = useSound();
 
     return (
         <Link 
-            to={to}
+            href={to}
             onClick={playClick}
             className={`flex flex-col items-center justify-center flex-1 h-full transition-all active:scale-95 rounded-xl mx-1 ${isActive ? 'text-retro-neon bg-retro-neon/10 shadow-[0_0_10px_rgba(0,255,157,0.2)]' : 'text-gray-500 hover:text-gray-300'}`}
         >
@@ -93,7 +95,7 @@ const FooterStatus = ({ crtEnabled, onToggleCrt }: { crtEnabled: boolean, onTogg
                         }`}></span>
                         {dbStatus === 'CHECKING' ? 'ESTABLISHING UPLINK...' : `DATABASE ${dbStatus}`}
                     </span>
-                    <Link to="/sitemap" className="text-gray-500 hover:text-retro-blue ml-4 border-l border-gray-700 pl-4">
+                    <Link href="/sitemap" className="text-gray-500 hover:text-retro-blue ml-4 border-l border-gray-700 pl-4">
                         [ SYSTEM MAP ]
                     </Link>
                 </div>
@@ -123,7 +125,7 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false);
   const [crtEnabled, setCrtEnabled] = useState(true);
-  const location = useLocation();
+  const pathname = usePathname();
   const { enabled: soundEnabled, toggleSound } = useSound();
 
   const toggleCrt = () => {
@@ -139,18 +141,12 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
     // Scroll the main content container to top on route change
     const mainContainer = document.querySelector('main');
     if (mainContainer) mainContainer.scrollTo(0, 0);
-  }, [location.pathname]);
-
-  useEffect(() => {
-    if (location.hash.includes('type=recovery')) {
-        sessionStorage.setItem('retro_recovery_pending', 'true');
-    }
-  }, [location]);
+  }, [pathname]);
 
   useEffect(() => {
       setMobileSearchOpen(false);
       setMobileSettingsOpen(false);
-  }, [location]);
+  }, [pathname]);
 
   useEffect(() => {
       if (!isSupabaseConfigured) return;
@@ -176,11 +172,10 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
 
   return (
     <div className="flex flex-col md:flex-row h-screen pt-16 md:pt-0 bg-retro-dark relative overflow-hidden">
-      <SEOHead title="Gateway to the Golden Age" description="Comparing retro consoles and games." />
-
+      
       {/* MOBILE HEADER */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-retro-dark border-b border-retro-grid z-[60] flex items-center justify-between px-4 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
-        <Link to="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
             <img src="/logo.png" alt="The Retro Circuit" className="h-10 w-auto object-contain drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]" />
         </Link>
         <div className="flex gap-4 items-center">
@@ -200,7 +195,7 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
             >
                 <IconSettings className="w-5 h-5" />
             </button>
-            {isAdmin && <Link to="/admin" className="p-2 text-retro-pink"><IconLock className="w-5 h-5" /></Link>}
+            {isAdmin && <Link href="/admin" className="p-2 text-retro-pink"><IconLock className="w-5 h-5" /></Link>}
         </div>
       </div>
 
@@ -236,7 +231,7 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
                     </div>
 
                     <div className="pt-6 border-t border-retro-grid">
-                        <Link to="/sitemap" onClick={() => setMobileSettingsOpen(false)} className="block font-mono text-xs text-gray-500 hover:text-white mb-2">
+                        <Link href="/sitemap" onClick={() => setMobileSettingsOpen(false)} className="block font-mono text-xs text-gray-500 hover:text-white mb-2">
                             [ SYSTEM MAP ]
                         </Link>
                          <div className="font-mono text-[10px] text-gray-600">
@@ -251,7 +246,7 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       {/* DESKTOP SIDEBAR */}
       <aside className="hidden md:flex flex-col w-64 bg-retro-dark border-r border-retro-grid h-full z-50 flex-shrink-0 pb-8">
           <div className="p-6 border-b border-retro-grid">
-             <Link to="/" className="block group">
+             <Link href="/" className="block group">
                 <img src="/logo.png" alt="Retro Circuit" className="w-full h-auto mb-2 opacity-80 group-hover:opacity-100 transition-opacity" />
                 <div className="font-pixel text-center text-xs text-retro-neon tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">EST. 198X</div>
              </Link>

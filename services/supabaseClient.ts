@@ -1,16 +1,9 @@
-
 import { createClient } from '@supabase/supabase-js';
 
-// Helper function to safely get environment variables
-const getEnvVar = (key: string): string | undefined => {
-  // @ts-ignore
-  const val = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env[key] : undefined;
-  return typeof val === 'string' ? val : undefined;
-};
-
-// Retrieve environment variables
-const envUrl = getEnvVar('VITE_SUPABASE_URL');
-const envKey = getEnvVar('VITE_SUPABASE_ANON_KEY');
+// Retrieve environment variables for Next.js
+// Next.js exposes vars starting with NEXT_PUBLIC_ to the browser
+const envUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const envKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 // Check configuration status
 export const isSupabaseConfigured = !!(envUrl && envKey);

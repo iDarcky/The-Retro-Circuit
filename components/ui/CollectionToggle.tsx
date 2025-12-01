@@ -1,9 +1,11 @@
+'use client';
+
 import { useEffect, useState, type FC } from 'react';
+import { useRouter } from 'next/navigation';
 import { addToCollection, fetchUserCollection, removeFromCollection } from '../../services/dataService';
 import { retroAuth } from '../../services/authService';
 import { UserCollectionItem } from '../../types';
 import Button from './Button';
-import { useNavigate } from 'react-router-dom';
 
 interface CollectionToggleProps {
     itemId: string;
@@ -15,7 +17,7 @@ interface CollectionToggleProps {
 const CollectionToggle: FC<CollectionToggleProps> = ({ itemId, itemType, itemName, itemImage }) => {
     const [status, setStatus] = useState<'OWN' | 'WANT' | null>(null);
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
+    const router = useRouter();
 
     useEffect(() => {
         const checkStatus = async () => {
@@ -34,7 +36,7 @@ const CollectionToggle: FC<CollectionToggleProps> = ({ itemId, itemType, itemNam
         const user = await retroAuth.getUser();
         
         if (!user) {
-            navigate('/login');
+            router.push('/login');
             return;
         }
 

@@ -1,5 +1,7 @@
+'use client';
+
 import { useState, useEffect, useRef, type FC } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { searchDatabase } from '../../services/dataService';
 import { SearchResult } from '../../types';
 import { useSound } from './SoundContext';
@@ -10,7 +12,7 @@ const GlobalSearch: FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
-    const navigate = useNavigate();
+    const router = useRouter();
     const { playHover, playClick } = useSound();
 
     // Close on click outside
@@ -45,7 +47,7 @@ const GlobalSearch: FC = () => {
     const handleSelect = (result: SearchResult) => {
         playClick();
         const path = result.type === 'GAME' ? `/archive/${result.slug}` : `/systems/${result.slug}`;
-        navigate(path);
+        router.push(path);
         setIsOpen(false);
         setQuery('');
     };
