@@ -1,15 +1,29 @@
-
-'use client';
-
-import { useEffect, useState, type FC, type ReactNode } from 'react';
-import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { fetchConsoleBySlug, fetchGamesForConsole } from '../../../services/dataService';
+import { createClient } from '../../../utils/supabase/server';
 import { ConsoleDetails, GameOfTheWeekData } from '../../../types';
 import Button from '../../../components/ui/Button';
-import RetroLoader from '../../../components/ui/RetroLoader';
 import CollectionToggle from '../../../components/ui/CollectionToggle';
-import SEOHead from '../../../components/ui/SEOHead';
+import { Metadata } from 'next';
+import { ReactNode } from 'react';
+
+type Props = {
+  params: { slug: string }
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const supabase = createClient();
+    const { data } = await supabase.from('consoles').select('name, intro_text, image_url, manufacturer').eq('slug', params.slug).single();
+    
+    if (!data) return { title: 'Unknown Hardware' };
+  
+    return {
+      title: `${data.name} Specs`,
+      description: data.intro_text.substring(0, 160),
+      openGraph: {
+        images: data.image_url ? [data.image_url] : []
+      }
+    };
+}
 
 // Helper component for table rows
 const SpecRow = ({ label, value, highlight = false }: { label: string, value?: string, highlight?: boolean }) => {
@@ -38,46 +52,36 @@ const SpecSection = ({ title, children }: { title: string, children: ReactNode }
     </div>
 );
 
-export default function ConsoleSpecsPage() {
-  const params = useParams();
-  const slug = params?.slug as string;
-  const router = useRouter();
-  const [consoleData, setConsoleData] = useState<ConsoleDetails | null>(null);
-  const [games, setGames] = useState<GameOfTheWeekData[]>([]);
-  const [loading, setLoading] = useState(true);
+export default async function ConsoleSpecsPage({ params }: Props) {
+  const supabase = createClient();
+  
+  // Parallel Fetching
+  const [consoleRes, gamesRes] = await Promise.all([
+    supabase.from('consoles').select('*').eq('slug', params.slug).single(),
+    supabase.from('games').select('*').eq('console_slug', params.slug).order('year', { ascending: true })
+  ]);
 
-  useEffect(() => {
-    const loadData = async () => {
-      if (!slug) return;
-      setLoading(true);
-      const data = await fetchConsoleBySlug(slug);
-      setConsoleData(data);
-      if (data) {
-          const gameList = await fetchGamesForConsole(slug);
-          setGames(gameList);
-      }
-      setLoading(false);
-    };
-    loadData();
-  }, [slug]);
-
-  const handleEbaySearch = () => {
-      if (!consoleData) return;
-      const query = encodeURIComponent(`${consoleData.name} console`);
-      window.open(`https://www.ebay.com/sch/i.html?_nkw=${query}`, '_blank');
-  };
-
-  const handleCompare = () => {
-      if (!consoleData) return;
-      router.push(`/arena?preselect=${consoleData.slug}`);
-  };
-
-  if (loading) return <RetroLoader />;
+  const consoleData: ConsoleDetails | null = consoleRes.data;
+  const games = (gamesRes.data || []) as any[];
+  
+  // Map games to type
+  const mappedGames: GameOfTheWeekData[] = games.map(g => ({
+    id: g.id,
+    slug: g.slug,
+    title: g.title,
+    developer: g.developer,
+    year: g.year,
+    genre: g.genre,
+    content: g.content,
+    whyItMatters: g.why_it_matters,
+    rating: g.rating,
+    image: g.image,
+    console_slug: g.console_slug
+  }));
 
   if (!consoleData) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
-        <SEOHead title="Unknown Hardware" description="Hardware specification not found." />
         <h2 className="font-pixel text-retro-pink text-2xl mb-4">ERROR 404</h2>
         <p className="font-mono text-gray-400 mb-8">CONSOLE DATA NOT FOUND IN ARCHIVE.</p>
         <Link href="/systems">
@@ -87,6 +91,8 @@ export default function ConsoleSpecsPage() {
     );
   }
 
+  const ebayQuery = encodeURIComponent(`${consoleData.name} console`);
+  
   // Schema for Product (Hardware)
   const productSchema = {
     "@context": "https://schema.org/",
@@ -108,12 +114,9 @@ export default function ConsoleSpecsPage() {
 
   return (
     <div className="w-full max-w-6xl mx-auto p-0 md:p-4">
-      <SEOHead 
-        title={`${consoleData.name} Specs & History`} 
-        description={`Full specifications, history, and market data for the ${consoleData.manufacturer} ${consoleData.name}. Released in ${consoleData.release_year}.`}
-        image={consoleData.image_url}
-        type="product"
-        structuredData={productSchema}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
       />
 
       {/* Main Container - GSM Arena Style Sheet */}
@@ -139,14 +142,22 @@ export default function ConsoleSpecsPage() {
                 </h1>
 
                 <div className="flex flex-wrap gap-3 mt-2">
-                    <button onClick={handleEbaySearch} className="flex items-center gap-2 bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-500 px-3 py-1 font-mono text-xs transition-colors">
+                    <a 
+                        href={`https://www.ebay.com/sch/i.html?_nkw=${ebayQuery}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-500 px-3 py-1 font-mono text-xs transition-colors h-fit"
+                    >
                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                          FIND MARKET VALUE
-                    </button>
-                    <button onClick={handleCompare} className="flex items-center gap-2 bg-retro-pink/20 hover:bg-retro-pink text-retro-pink hover:text-black border border-retro-pink px-3 py-1 font-mono text-xs transition-colors">
+                    </a>
+                    <Link 
+                        href={`/arena?preselect=${consoleData.slug}`}
+                        className="flex items-center gap-2 bg-retro-pink/20 hover:bg-retro-pink text-retro-pink hover:text-black border border-retro-pink px-3 py-1 font-mono text-xs transition-colors h-fit"
+                    >
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                         COMPARE SPECS
-                    </button>
+                    </Link>
                     <div className="flex-1"></div>
                     <CollectionToggle 
                         itemId={consoleData.slug} 
@@ -220,14 +231,14 @@ export default function ConsoleSpecsPage() {
         </div>
 
         {/* RELATED GAMES FOOTER */}
-        {games.length > 0 && (
+        {mappedGames.length > 0 && (
             <div className="p-6 border-t border-retro-grid bg-retro-dark">
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="font-pixel text-retro-neon text-lg">NOTABLE GAMES</h3>
                     <Link href="/archive" className="font-mono text-xs text-retro-blue hover:text-white">VIEW FULL ARCHIVE &gt;</Link>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                    {games.slice(0, 6).map(game => (
+                    {mappedGames.slice(0, 6).map(game => (
                         <Link href={`/archive/${game.slug || game.id}`} key={game.id} className="group block">
                             <div className="aspect-[3/4] bg-black border border-retro-grid mb-2 overflow-hidden relative">
                                 {game.image ? (

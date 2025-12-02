@@ -1,60 +1,55 @@
-
-'use client';
-
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { fetchManufacturerProfile, fetchConsolesFiltered, getBrandTheme } from '../../../../services/dataService';
+import { createClient } from '../../../../utils/supabase/server';
 import { ConsoleDetails, ManufacturerProfile } from '../../../../types';
-import RetroLoader from '../../../../components/ui/RetroLoader';
 import Button from '../../../../components/ui/Button';
+import { getBrandTheme } from '../../../../services/dataService';
+import { Metadata } from 'next';
 
-export default function ManufacturerDetailPage() {
-    const params = useParams();
-    const name = decodeURIComponent(params?.name as string || '');
-    const [profile, setProfile] = useState<ManufacturerProfile | null>(null);
-    const [consoles, setConsoles] = useState<ConsoleDetails[]>([]);
-    const [loading, setLoading] = useState(true);
+type Props = {
+  params: { name: string }
+};
 
-    useEffect(() => {
-        const loadData = async () => {
-            if (!name) return;
-            
-            // Reset scroll position to top
-            window.scrollTo(0, 0);
-            
-            setLoading(true);
-            try {
-                // Fetch profile and all consoles for this manufacturer
-                const [profileData, consoleData] = await Promise.all([
-                    fetchManufacturerProfile(name),
-                    fetchConsolesFiltered({ 
-                        minYear: 1970, 
-                        maxYear: 2005, 
-                        generations: [], 
-                        types: [], 
-                        manufacturer: name 
-                    }, 1, 100) // Fetch up to 100 to show comprehensive list
-                ]);
-                setProfile(profileData);
-                setConsoles(consoleData.data);
-            } catch (e) {
-                console.error(e);
-            }
-            setLoading(false);
-        };
-        loadData();
-    }, [name]);
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const name = decodeURIComponent(params.name);
+    return {
+        title: `${name} - Corporate Profile`,
+        description: `Explore the history of ${name}, including their console releases, key franchises, and market impact.`,
+    };
+}
 
-    if (loading) return <RetroLoader />;
+// Fallback data if DB entry is missing
+const FALLBACK_MANUFACTURERS: Record<string, Partial<ManufacturerProfile>> = {
+    'Nintendo': { founded: '1889', origin: 'Kyoto, Japan', description: 'Legendary manufacturer responsible for Mario, Zelda, and the modernization of video games.' },
+    'Sega': { founded: '1940', origin: 'Tokyo, Japan', description: 'Arcade titan and former console giant. Creator of Sonic the Hedgehog.' },
+    'Sony': { founded: '1946', origin: 'Tokyo, Japan', description: 'Electronics giant that entered the market with PlayStation and dominated 3D gaming.' },
+    'Microsoft': { founded: '1975', origin: 'Redmond, USA', description: 'PC software giant that entered the console war with Xbox and Halo.' },
+    'Atari': { founded: '1972', origin: 'California, USA', description: 'The pioneer of the arcade and home console industry.' },
+};
 
+export default async function ManufacturerDetailPage({ params }: Props) {
+    const supabase = createClient();
+    const name = decodeURIComponent(params.name);
+
+    // Parallel Fetching
+    const [profileRes, consolesRes] = await Promise.all([
+        supabase.from('manufacturers').select('*').ilike('name', name).single(),
+        supabase.from('consoles').select('*').eq('manufacturer', name).order('release_year', { ascending: true })
+    ]);
+
+    let profile: ManufacturerProfile = profileRes.data;
+    const consoles: ConsoleDetails[] = consolesRes.data || [];
+
+    // Construct Fallback if profile missing from DB
     if (!profile) {
-        return (
-            <div className="text-center p-12">
-                <h2 className="text-2xl font-pixel text-retro-pink mb-4">DATA CORRUPTED</h2>
-                <Link href="/systems"><Button>RETURN TO DB</Button></Link>
-            </div>
-        );
+        const fallback = Object.entries(FALLBACK_MANUFACTURERS).find(([k]) => k.toLowerCase() === name.toLowerCase())?.[1];
+        profile = {
+            name: name,
+            founded: fallback?.founded || 'Unknown',
+            origin: fallback?.origin || 'Unknown',
+            description: fallback?.description || 'No corporate dossier available in archives.',
+            ceo: 'Unknown',
+            key_franchises: []
+        };
     }
 
     const theme = getBrandTheme(profile.name);
@@ -94,7 +89,7 @@ export default function ManufacturerDetailPage() {
                         <div className="mb-6">
                             <h4 className="font-pixel text-xs text-gray-500 mb-2">KEY FRANCHISES</h4>
                             <ul className="space-y-2">
-                                {profile.key_franchises.map((f: string) => (
+                                {profile.key_franchises?.map((f: string) => (
                                     <li key={f} className={`font-mono text-sm border-b border-gray-800 pb-1 ${themeColorClass}`}>
                                         {f}
                                     </li>

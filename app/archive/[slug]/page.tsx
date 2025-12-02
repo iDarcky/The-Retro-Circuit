@@ -1,34 +1,34 @@
-'use client';
-
-import { useEffect, useState, type FC } from 'react';
-import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { fetchGameBySlug } from '../../../services/dataService';
+import { createClient } from '../../../utils/supabase/server';
 import { GameOfTheWeekData } from '../../../types';
 import Button from '../../../components/ui/Button';
-import RetroLoader from '../../../components/ui/RetroLoader';
 import CollectionToggle from '../../../components/ui/CollectionToggle';
+import { Metadata } from 'next';
 
-const GameDetails: FC = () => {
-  const params = useParams();
-  const slug = params?.slug as string;
-  const [game, setGame] = useState<GameOfTheWeekData | null>(null);
-  const [loading, setLoading] = useState(true);
+type Props = {
+  params: { slug: string }
+};
 
-  useEffect(() => {
-    const loadGame = async () => {
-      if (!slug) return;
-      setLoading(true);
-      const data = await fetchGameBySlug(slug);
-      setGame(data);
-      setLoading(false);
-    };
-    loadGame();
-  }, [slug]);
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const supabase = createClient();
+  const { data } = await supabase.from('games').select('title, content, image').eq('slug', params.slug).single();
+  
+  if (!data) return { title: 'Game Not Found' };
 
-  if (loading) return <RetroLoader />;
+  return {
+    title: `${data.title} Review`,
+    description: data.content.substring(0, 160),
+    openGraph: {
+      images: data.image ? [data.image] : []
+    }
+  };
+}
 
-  if (!game) {
+export default async function GameDetails({ params }: Props) {
+  const supabase = createClient();
+  const { data } = await supabase.from('games').select('*').eq('slug', params.slug).single();
+  
+  if (!data) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <h2 className="font-pixel text-retro-pink text-2xl mb-4">ERROR 404</h2>
@@ -40,15 +40,46 @@ const GameDetails: FC = () => {
     );
   }
 
-  const handleEbaySearch = () => {
-      const query = encodeURIComponent(`${game.title} ${game.developer} game`);
-      window.open(`https://www.ebay.com/sch/i.html?_nkw=${query}`, '_blank');
+  // Map DB data to App Type
+  const game: GameOfTheWeekData = {
+      id: data.id,
+      slug: data.slug,
+      title: data.title,
+      developer: data.developer,
+      year: data.year,
+      genre: data.genre,
+      content: data.content,
+      whyItMatters: data.why_it_matters,
+      rating: data.rating,
+      image: data.image,
+      console_slug: data.console_slug
   };
 
   const safeRating = Math.min(5, Math.max(0, Math.round(game.rating || 5)));
+  const ebayQuery = encodeURIComponent(`${game.title} ${game.developer} game`);
+
+  // JSON-LD Schema
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": game.title,
+    "genre": game.genre,
+    "datePublished": game.year,
+    "author": {
+      "@type": "Organization",
+      "name": game.developer
+    },
+    "image": game.image,
+    "description": game.content.substring(0, 160)
+  };
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+
       {/* Header */}
       <div className="mb-8 border-b-4 border-retro-grid pb-6">
         <div className="flex justify-between items-start mb-4">
@@ -65,16 +96,18 @@ const GameDetails: FC = () => {
                     itemImage={game.image}
                 />
              </div>
-             <button 
-                onClick={handleEbaySearch}
-                className="bg-blue-600/20 border border-blue-500 text-blue-400 hover:bg-blue-600 hover:text-white px-3 py-1 font-mono text-xs transition-colors flex items-center gap-2"
+             <a 
+                href={`https://www.ebay.com/sch/i.html?_nkw=${ebayQuery}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-blue-600/20 border border-blue-500 text-blue-400 hover:bg-blue-600 hover:text-white px-3 py-1 font-mono text-xs transition-colors flex items-center gap-2 h-fit"
                 title="Search on eBay"
              >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 SEARCH EBAY
-             </button>
+             </a>
            </div>
         </div>
         
@@ -137,8 +170,5 @@ const GameDetails: FC = () => {
             </div>
         </div>
       </div>
-    </div>
-  );
-};
-
-export default GameDetails;
+    );
+}
