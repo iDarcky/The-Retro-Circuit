@@ -49,10 +49,12 @@ const MobileNavItem = ({ to, icon: Icon, label, exact = false }: { to: string, i
         <Link 
             href={to}
             onClick={playClick}
-            className={`flex flex-col items-center justify-center flex-1 h-full transition-all active:scale-95 rounded-xl mx-1 ${isActive ? 'text-retro-neon bg-retro-neon/10 shadow-[0_0_10px_rgba(0,255,157,0.2)]' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`flex flex-col items-center justify-center w-full h-full transition-all active:scale-90 rounded-xl py-1 ${isActive ? 'text-retro-neon' : 'text-gray-400 hover:text-gray-200'}`}
         >
-            <Icon className={`w-5 h-5 mb-1 ${isActive ? 'text-retro-neon drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]' : ''}`} />
-            <span className="text-[9px] font-pixel tracking-tighter text-center leading-tight">{label}</span>
+            <div className={`p-1.5 rounded-full transition-all ${isActive ? 'bg-retro-neon/20 shadow-[0_0_8px_rgba(0,255,157,0.4)]' : ''}`}>
+                <Icon className={`w-5 h-5 ${isActive ? 'fill-current' : ''}`} />
+            </div>
+            <span className="text-[8px] font-pixel tracking-tighter text-center mt-1 leading-none">{label}</span>
         </Link>
     );
 };
@@ -174,7 +176,7 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
     <div className="flex flex-col md:flex-row h-screen pt-16 md:pt-0 bg-retro-dark relative overflow-hidden">
       
       {/* MOBILE HEADER */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-retro-dark border-b border-retro-grid z-[60] flex items-center justify-between px-4 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
+      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-retro-dark/90 backdrop-blur-md border-b border-retro-grid z-[60] flex items-center justify-between px-4 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
         <Link href="/" className="flex items-center gap-2">
             <img src="/logo.png" alt="The Retro Circuit" className="h-10 w-auto object-contain drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]" />
         </Link>
@@ -283,15 +285,17 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
 
           {children}
 
-          <div className="h-16 md:h-8"></div>
+          <div className="h-24 md:h-8"></div>
       </main>
 
-      {/* MOBILE BOTTOM NAV */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-retro-dark border-t border-retro-grid z-50 flex items-center justify-around px-2 pb-safe">
-          <MobileNavItem to="/" icon={IconHome} label="CONTROL" exact />
-          <MobileNavItem to="/archive" icon={IconGames} label="GAME VAULT" />
-          <MobileNavItem to="/systems" icon={IconDatabase} label="CONSOLE VAULT" />
-          <MobileNavItem to="/arena" icon={IconVS} label="VS MODE" />
+      {/* MOBILE BOTTOM NAV - FLOATING DOCK STYLE */}
+      <div className="md:hidden fixed bottom-6 left-4 right-4 h-16 bg-retro-dark/80 backdrop-blur-md border border-retro-grid/50 rounded-2xl z-50 flex items-center justify-around px-1 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+          <MobileNavItem to="/" icon={IconHome} label="HOME" exact />
+          <MobileNavItem to="/signals" icon={IconNews} label="NEWS" />
+          <MobileNavItem to="/archive" icon={IconGames} label="GAMES" />
+          <MobileNavItem to="/systems" icon={IconDatabase} label="SYSTEMS" />
+          <MobileNavItem to="/arena" icon={IconVS} label="VS" />
+          <MobileNavItem to="/chrono" icon={IconTimeline} label="TIME" />
       </div>
       
       <FooterStatus crtEnabled={crtEnabled} onToggleCrt={toggleCrt} />
