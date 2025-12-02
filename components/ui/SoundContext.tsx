@@ -93,7 +93,6 @@ export const SoundProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const playBoot = () => {
      if (!audioCtxRef.current) return;
      // THX-style rising sound (simplified)
-     const now = audioCtxRef.current.currentTime;
      playTone(110, 'sawtooth', 1.5, 0.1); // Bass
      setTimeout(() => playTone(220, 'square', 1.0, 0.05), 200);
      setTimeout(() => playTone(440, 'square', 1.0, 0.05), 400);
