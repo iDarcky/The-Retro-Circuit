@@ -4,12 +4,12 @@
 import { useEffect, useState, type FC, type ReactNode } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { fetchConsoleBySlug, fetchGamesForConsole } from '../../services/dataService';
-import { ConsoleDetails, GameOfTheWeekData } from '../../types';
-import Button from '../../components/ui/Button';
-import RetroLoader from '../../components/ui/RetroLoader';
-import CollectionToggle from '../../components/ui/CollectionToggle';
-import SEOHead from '../../components/ui/SEOHead';
+import { fetchConsoleBySlug, fetchGamesForConsole } from '../../../services/dataService';
+import { ConsoleDetails, GameOfTheWeekData } from '../../../types';
+import Button from '../../../components/ui/Button';
+import RetroLoader from '../../../components/ui/RetroLoader';
+import CollectionToggle from '../../../components/ui/CollectionToggle';
+import SEOHead from '../../../components/ui/SEOHead';
 
 // Helper component for table rows
 const SpecRow = ({ label, value, highlight = false }: { label: string, value?: string, highlight?: boolean }) => {
