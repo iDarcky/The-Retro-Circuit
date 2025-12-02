@@ -1,1 +1,0 @@
-// This file is deprecated. Supabase clients are now in lib/supabase/

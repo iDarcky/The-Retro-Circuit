@@ -1,1 +1,0 @@
-// This file is deprecated. API logic has been moved to lib/api.ts and lib/compare.ts

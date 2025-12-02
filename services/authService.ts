@@ -1,1 +1,0 @@
-// This file is deprecated. Auth logic has been moved to lib/auth.ts

@@ -1,1 +1,0 @@
-// This file is deprecated. Avatars are now in data/avatars.tsx
