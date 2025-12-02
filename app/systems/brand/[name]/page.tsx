@@ -1,7 +1,7 @@
+
 import Link from 'next/link';
 import { createClient } from '../../../../utils/supabase/server';
 import { ConsoleDetails, ManufacturerProfile } from '../../../../types';
-import Button from '../../../../components/ui/Button';
 import { getBrandTheme } from '../../../../services/dataService';
 import { Metadata } from 'next';
 
