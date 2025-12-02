@@ -4,10 +4,10 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { fetchManufacturerProfile, fetchConsolesFiltered, getBrandTheme } from '../../../services/dataService';
-import { ConsoleDetails, ManufacturerProfile } from '../../../types';
-import RetroLoader from '../../../components/ui/RetroLoader';
-import Button from '../../../components/ui/Button';
+import { fetchManufacturerProfile, fetchConsolesFiltered, getBrandTheme } from '../../../../services/dataService';
+import { ConsoleDetails, ManufacturerProfile } from '../../../../types';
+import RetroLoader from '../../../../components/ui/RetroLoader';
+import Button from '../../../../components/ui/Button';
 
 export default function ManufacturerDetailPage() {
     const params = useParams();

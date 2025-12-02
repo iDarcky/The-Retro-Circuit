@@ -1,4 +1,5 @@
-import RetroLoader from '@/components/ui/RetroLoader';
+
+import RetroLoader from '../components/ui/RetroLoader';
 
 export default function Loading() {
   return <RetroLoader />;
