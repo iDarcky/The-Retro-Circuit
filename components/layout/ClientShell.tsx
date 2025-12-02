@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, type FC, type ReactNode } from 'react';
-import { usePathname } from 'next/navigation';
 import BootSequence from '../ui/BootSequence';
 import { SoundProvider } from '../ui/SoundContext';
 import MainLayout from './MainLayout';
@@ -13,7 +12,6 @@ interface ClientShellProps {
 const ClientShell: FC<ClientShellProps> = ({ children }) => {
   const [bootComplete, setBootComplete] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
