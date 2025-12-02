@@ -261,8 +261,14 @@ export default function AdminPortalPage() {
                 {activeTab === 'CONSOLE' && (
                     <form onSubmit={handleSubmitConsole} className="space-y-4 grid grid-cols-2 gap-4">
                         <input className="bg-black border border-gray-700 p-2" placeholder="Name" value={consoleName} onChange={e => setConsoleName(e.target.value)} />
+                        <input className="bg-black border border-gray-700 p-2" placeholder="Slug (optional)" value={consoleSlug} onChange={e => setConsoleSlug(e.target.value)} />
                         <input className="bg-black border border-gray-700 p-2" placeholder="Manufacturer" value={consoleManu} onChange={e => setConsoleManu(e.target.value)} />
                         <input className="bg-black border border-gray-700 p-2" placeholder="Year" value={consoleYear} onChange={e => setConsoleYear(e.target.value)} />
+                        <select className="bg-black border border-gray-700 p-2" value={consoleType} onChange={e => setConsoleType(e.target.value)}>
+                            <option value="Home">Home Console</option>
+                            <option value="Handheld">Handheld</option>
+                            <option value="Hybrid">Hybrid</option>
+                        </select>
                         <input className="bg-black border border-gray-700 p-2" placeholder="Generation" value={consoleGen} onChange={e => setConsoleGen(e.target.value)} />
                         <input className="bg-black border border-gray-700 p-2 col-span-2" placeholder="Image URL" value={consoleImage} onChange={e => setConsoleImage(e.target.value)} />
                         <textarea className="bg-black border border-gray-700 p-2 col-span-2 h-20" placeholder="Intro Text" value={consoleIntro} onChange={e => setConsoleIntro(e.target.value)} />
