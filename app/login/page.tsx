@@ -1,17 +1,16 @@
-
 'use client';
 
 import { useState, useEffect, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { fetchUserCollection } from '../../services/dataService';
-import { retroAuth } from '../../services/authService';
-import { supabase } from '../../services/supabaseClient';
+import { fetchUserCollection } from '../../lib/api';
+import { retroAuth } from '../../lib/auth';
+import { supabase } from '../../lib/supabase/singleton';
 import Button from '../../components/ui/Button';
 import AvatarSelector from '../../components/ui/AvatarSelector';
-import { RETRO_AVATARS } from '../../utils/avatars';
-import { UserCollectionItem } from '../../types';
-import { User } from '@supabase/supabase-js';
+import { RETRO_AVATARS } from '../../data/avatars';
+import { UserCollectionItem } from '../../lib/types';
+import type { User } from '@supabase/supabase-js';
 
 type AuthMode = 'LOGIN' | 'SIGNUP' | 'RECOVERY' | 'UPDATE_PASSWORD' | 'PROFILE';
 

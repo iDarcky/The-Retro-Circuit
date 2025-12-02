@@ -2,8 +2,9 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { fetchManufacturers, fetchConsolesFiltered, getBrandTheme } from '../../services/dataService';
-import { ConsoleDetails, ConsoleFilterState } from '../../types';
+import { fetchManufacturers, fetchConsolesFiltered } from '../../lib/api';
+import { getBrandTheme } from '../../data/static';
+import { ConsoleDetails, ConsoleFilterState } from '../../lib/types';
 import RetroLoader from '../../components/ui/RetroLoader';
 import Button from '../../components/ui/Button';
 
@@ -56,13 +57,9 @@ export default function ConsoleVaultPage() {
       }
   }, [page, viewMode, filters, loadConsoles]); 
 
-  // Reset page when filters change
-  useEffect(() => {
-      setPage(1);
-  }, [filters]);
-
   const handleFilterChange = (key: keyof ConsoleFilterState, value: any) => {
       setFilters(prev => ({ ...prev, [key]: value }));
+      setPage(1); // Reset to first page on filter change
   };
 
   const toggleArrayFilter = (key: 'generations' | 'types', value: any) => {
@@ -74,6 +71,12 @@ export default function ConsoleVaultPage() {
               return { ...prev, [key]: [...arr, value] };
           }
       });
+      setPage(1); // Reset to first page on filter change
+  };
+
+  const switchToListView = () => {
+      setViewMode('LIST');
+      setPage(1);
   };
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
@@ -94,7 +97,7 @@ export default function ConsoleVaultPage() {
                 DIRECTORY MODE
             </button>
             <button 
-                onClick={() => setViewMode('LIST')}
+                onClick={switchToListView}
                 className={`font-mono text-xs px-3 py-1 transition-colors ${viewMode === 'LIST' ? 'bg-retro-neon text-black' : 'text-gray-500 hover:text-white'}`}
             >
                 ADVANCED SEARCH
@@ -123,7 +126,7 @@ export default function ConsoleVaultPage() {
                     );
                 })}
                  <button 
-                    onClick={() => setViewMode('LIST')}
+                    onClick={switchToListView}
                     className="group border-4 border-dashed border-gray-600 bg-retro-dark p-8 flex flex-col items-center justify-center gap-4 hover:border-retro-pink hover:text-retro-pink transition-colors text-gray-500"
                 >
                     <span className="font-pixel text-lg">VIEW ALL</span>

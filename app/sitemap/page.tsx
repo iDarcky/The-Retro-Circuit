@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { fetchConsoleList, fetchGameList, fetchManufacturers } from '../../services/dataService';
+import { fetchConsoleList, fetchGameList, fetchManufacturers } from '../../lib/api';
 
 export const metadata = {
   title: 'System Directory | Site Map',

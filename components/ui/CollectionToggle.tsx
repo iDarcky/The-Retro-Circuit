@@ -2,9 +2,9 @@
 
 import { useEffect, useState, type FC } from 'react';
 import { useRouter } from 'next/navigation';
-import { addToCollection, fetchUserCollection, removeFromCollection } from '../../services/dataService';
-import { retroAuth } from '../../services/authService';
-import { UserCollectionItem } from '../../types';
+import { addToCollection, fetchUserCollection, removeFromCollection } from '../../lib/api';
+import { retroAuth } from '../../lib/auth';
+import { UserCollectionItem } from '../../lib/types';
 import Button from './Button';
 
 interface CollectionToggleProps {

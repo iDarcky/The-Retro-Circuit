@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import GameOfTheWeek from '../components/GameOfTheWeek';
-import { fetchRetroNews, fetchGameOfTheWeek } from '../services/dataService';
-import { NewsItem } from '../types';
+import { fetchRetroNews, fetchGameOfTheWeek } from '../lib/api';
+import { NewsItem } from '../lib/types';
 
 // -- Mini Signal Feed Component (Presentation Only) --
 const DashboardSignalFeed = ({ news }: { news: NewsItem[] }) => {

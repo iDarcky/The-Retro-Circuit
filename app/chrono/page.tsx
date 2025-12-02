@@ -1,7 +1,7 @@
 
-import { createClient } from '../../utils/supabase/server';
+import { createClient } from '../../lib/supabase/server';
 import TimelineClient from '../../components/TimelineClient';
-import { TimelineEvent } from '../../types';
+import { TimelineEvent } from '../../lib/types';
 
 export const metadata = {
   title: 'History Line | Video Game Timeline',
@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 export default async function HistoryLinePage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data } = await supabase.from('timeline').select('*').order('year', { ascending: true });
   
   // In case of error (e.g. table missing), return empty array

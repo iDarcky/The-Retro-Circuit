@@ -1,8 +1,8 @@
 
 import Link from 'next/link';
-import { createClient } from '../../../../utils/supabase/server';
-import { ConsoleDetails, ManufacturerProfile } from '../../../../types';
-import { getBrandTheme } from '../../../../services/dataService';
+import { createClient } from '../../../../lib/supabase/server';
+import { ConsoleDetails, ManufacturerProfile } from '../../../../lib/types';
+import { getBrandTheme } from '../../../../data/static';
 import { Metadata } from 'next';
 
 type Props = {
@@ -27,7 +27,7 @@ const FALLBACK_MANUFACTURERS: Record<string, Partial<ManufacturerProfile>> = {
 };
 
 export default async function ManufacturerDetailPage({ params }: Props) {
-    const supabase = createClient();
+    const supabase = await createClient();
     const name = decodeURIComponent(params.name);
 
     // Parallel Fetching

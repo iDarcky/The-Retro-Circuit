@@ -1,7 +1,7 @@
 'use client';
 
 import { type FC } from 'react';
-import { RETRO_AVATARS } from '../../utils/avatars';
+import { RETRO_AVATARS } from '../../data/avatars';
 
 interface AvatarSelectorProps {
     selectedId: string;

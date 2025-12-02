@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState, useCallback, type FC } from 'react';
-import { fetchGamesPaginated } from '../../services/dataService';
-import { GameOfTheWeekData } from '../../types';
+import { fetchGamesPaginated } from '../../lib/api';
+import { GameOfTheWeekData } from '../../lib/types';
 import Button from '../../components/ui/Button';
 import RetroLoader from '../../components/ui/RetroLoader';
 import Link from 'next/link';

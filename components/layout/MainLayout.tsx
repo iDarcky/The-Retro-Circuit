@@ -4,11 +4,11 @@ import { useState, useEffect, type FC, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSound } from '../ui/SoundContext';
-import { retroAuth } from '../../services/authService';
-import { checkDatabaseConnection } from '../../services/dataService';
-import { supabase, isSupabaseConfigured } from '../../services/supabaseClient';
+import { retroAuth } from '../../lib/auth';
+import { checkDatabaseConnection } from '../../lib/api';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase/singleton';
 import GlobalSearch from '../ui/GlobalSearch';
-import { User } from '@supabase/supabase-js';
+import type { User } from '@supabase/supabase-js';
 import { 
   IconNews, IconDatabase, IconVS, IconGames, IconTimeline, 
   IconLogin, IconHome, IconLock, IconSettings 
@@ -49,7 +49,7 @@ const MobileNavItem = ({ to, icon: Icon, label, exact = false }: { to: string, i
         <Link 
             href={to}
             onClick={playClick}
-            className={`flex flex-col items-center justify-center w-full h-full transition-all active:scale-90 rounded-xl py-1 ${isActive ? 'text-retro-neon' : 'text-gray-400 hover:text-gray-200'}`}
+            className={`flex flex-col items-center justify-center min-w-[60px] h-full transition-all active:scale-90 rounded-xl py-1 ${isActive ? 'text-retro-neon' : 'text-gray-400 hover:text-gray-200'}`}
         >
             <div className={`p-1.5 rounded-full transition-all ${isActive ? 'bg-retro-neon/20 shadow-[0_0_8px_rgba(0,255,157,0.4)]' : ''}`}>
                 <Icon className={`w-5 h-5 ${isActive ? 'fill-current' : ''}`} />
@@ -201,6 +201,13 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
         </div>
       </div>
 
+      {/* MOBILE SEARCH OVERLAY */}
+      {mobileSearchOpen && (
+        <div className="md:hidden fixed top-16 left-0 right-0 bg-retro-dark z-[55] border-b border-retro-grid p-4 animate-[slideDown_0.2s_ease-out]">
+            <GlobalSearch />
+        </div>
+      )}
+
       {/* MOBILE SETTINGS MENU */}
       {mobileSettingsOpen && (
           <>
@@ -249,56 +256,64 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       <aside className="hidden md:flex flex-col w-64 bg-retro-dark border-r border-retro-grid h-full z-50 flex-shrink-0 pb-8">
           <div className="p-6 border-b border-retro-grid">
              <Link href="/" className="block group">
-                <img src="/logo.png" alt="Retro Circuit" className="w-full h-auto mb-2 opacity-80 group-hover:opacity-100 transition-opacity" />
-                <div className="font-pixel text-center text-xs text-retro-neon tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">EST. 198X</div>
+                <img src="/logo.png" alt="The Retro Circuit" className="h-12 w-auto object-contain drop-shadow-[0_0_8px_rgba(0,255,157,0.6)] group-hover:drop-shadow-[0_0_12px_rgba(0,255,157,1)] transition-all" />
              </Link>
           </div>
-
-          <nav className="flex-1 overflow-y-auto py-4 custom-scrollbar">
-              <SidebarItem to="/" icon={IconHome} label="CONTROL ROOM" exact />
-              <SidebarItem to="/signals" icon={IconNews} label="SIGNAL FEED" />
-              <SidebarItem to="/archive" icon={IconGames} label="GAME VAULT" />
-              <SidebarItem to="/systems" icon={IconDatabase} label="CONSOLE VAULT" />
-              <SidebarItem to="/arena" icon={IconVS} label="VS MODE" />
-              <SidebarItem to="/chrono" icon={IconTimeline} label="HISTORY LINE" />
-              
-              <div className="my-4 border-t border-retro-grid mx-4"></div>
-              
-              <SidebarItem to={user ? "/login" : "/login"} icon={IconLogin} label={user ? "ID CARD" : "LOGIN"} />
-              {isAdmin && <SidebarItem to="/admin" icon={IconLock} label="ROOT ACCESS" />}
-          </nav>
           
-          <div className="p-4 border-t border-retro-grid bg-black/20">
-              <GlobalSearch />
+          <div className="flex-1 py-6 overflow-y-auto custom-scrollbar">
+             <nav className="space-y-1">
+                <SidebarItem to="/" icon={IconHome} label="CONTROL ROOM" exact />
+                <SidebarItem to="/signals" icon={IconNews} label="SIGNAL FEED" />
+                <SidebarItem to="/archive" icon={IconGames} label="GAME VAULT" />
+                <SidebarItem to="/systems" icon={IconDatabase} label="CONSOLE VAULT" />
+                <SidebarItem to="/arena" icon={IconVS} label="VS MODE" />
+                <SidebarItem to="/chrono" icon={IconTimeline} label="HISTORY LINE" />
+             </nav>
+          </div>
+
+          <div className="px-4 pt-4 border-t border-retro-grid bg-black/20">
+             <div className="mb-4">
+                 <GlobalSearch />
+             </div>
+             
+             {user ? (
+                 <Link href="/login" className="flex items-center p-2 border border-gray-700 bg-gray-900 hover:border-retro-blue group transition-colors">
+                     <div className="w-8 h-8 bg-retro-blue/20 flex items-center justify-center border border-retro-blue mr-3">
+                         <span className="font-pixel text-xs text-retro-blue">{user.email?.[0].toUpperCase()}</span>
+                     </div>
+                     <div className="overflow-hidden">
+                         <div className="font-mono text-[10px] text-gray-400">OPERATOR</div>
+                         <div className="font-pixel text-[10px] text-white truncate w-32 group-hover:text-retro-blue">
+                            {user.user_metadata?.username || 'UNKNOWN'}
+                         </div>
+                     </div>
+                 </Link>
+             ) : (
+                 <Link href="/login" className="block w-full border border-retro-grid p-2 text-center font-mono text-xs text-gray-400 hover:text-white hover:border-white hover:bg-white/5 transition-all">
+                     [ INITIATE LOGIN ]
+                 </Link>
+             )}
           </div>
       </aside>
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 h-full relative z-10 overflow-y-auto overflow-x-hidden custom-scrollbar">
-          <div className="md:hidden p-4">
-              {mobileSearchOpen && (
-                  <div className="mb-4 animate-[slideDown_0.2s_ease-out]">
-                      <GlobalSearch />
-                  </div>
-              )}
-          </div>
-
+      <main className="flex-1 overflow-y-auto relative p-4 pb-24 md:pb-8 scroll-smooth custom-scrollbar">
           {children}
-
-          <div className="h-24 md:h-8"></div>
       </main>
 
-      {/* MOBILE BOTTOM NAV - FLOATING DOCK STYLE */}
-      <div className="md:hidden fixed bottom-6 left-4 right-4 h-16 bg-retro-dark/80 backdrop-blur-md border border-retro-grid/50 rounded-2xl z-50 flex items-center justify-around px-1 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
-          <MobileNavItem to="/" icon={IconHome} label="HOME" exact />
-          <MobileNavItem to="/signals" icon={IconNews} label="NEWS" />
-          <MobileNavItem to="/archive" icon={IconGames} label="GAMES" />
-          <MobileNavItem to="/systems" icon={IconDatabase} label="SYSTEMS" />
-          <MobileNavItem to="/arena" icon={IconVS} label="VS" />
-          <MobileNavItem to="/chrono" icon={IconTimeline} label="TIME" />
-      </div>
-      
       <FooterStatus crtEnabled={crtEnabled} onToggleCrt={toggleCrt} />
+
+      {/* MOBILE NAV BOTTOM (Floating Glass Style) */}
+      <div className="md:hidden fixed bottom-6 left-4 right-4 h-16 bg-retro-dark/90 backdrop-blur-xl border border-retro-grid/50 z-[60] rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex items-center justify-between px-2 overflow-x-auto no-scrollbar">
+         <MobileNavItem to="/" icon={IconHome} label="HOME" exact />
+         <MobileNavItem to="/signals" icon={IconNews} label="NEWS" />
+         <MobileNavItem to="/archive" icon={IconGames} label="GAMES" />
+         <MobileNavItem to="/systems" icon={IconDatabase} label="SYSTEMS" />
+         <MobileNavItem to="/arena" icon={IconVS} label="VS" />
+         <MobileNavItem to="/chrono" icon={IconTimeline} label="TIMELINE" />
+         <MobileNavItem to="/login" icon={IconLogin} label={user ? "PROFILE" : "LOGIN"} />
+      </div>
+
     </div>
   );
 };

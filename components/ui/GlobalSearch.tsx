@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef, type FC } from 'react';
 import { useRouter } from 'next/navigation';
-import { searchDatabase } from '../../services/dataService';
-import { SearchResult } from '../../types';
+import { searchDatabase } from '../../lib/api';
+import { SearchResult } from '../../lib/types';
 import { useSound } from './SoundContext';
 
 const GlobalSearch: FC = () => {

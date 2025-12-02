@@ -1,5 +1,5 @@
 import { type FC } from 'react';
-import { GameOfTheWeekData } from '../types';
+import { GameOfTheWeekData } from '../lib/types';
 import Button from './ui/Button';
 import Link from 'next/link';
 

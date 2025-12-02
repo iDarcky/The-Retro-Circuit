@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState, type FormEvent } from 'react';
-import { retroAuth } from '../../services/authService';
-import { addGame, addConsole, addNewsItem, fetchConsoleList } from '../../services/dataService';
+import { retroAuth } from '../../lib/auth';
+import { addGame, addConsole, addNewsItem, fetchConsoleList } from '../../lib/api';
 import Button from '../../components/ui/Button';
-import { ConsoleDetails, GameOfTheWeekData, NewsItem, NewsItemSchema, GameSchema, ConsoleSchema } from '../../types';
+import { ConsoleDetails, GameOfTheWeekData, NewsItem, NewsItemSchema, GameSchema, ConsoleSchema } from '../../lib/types';
 
 type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE';
 

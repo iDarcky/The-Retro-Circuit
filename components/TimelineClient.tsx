@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type FC } from 'react';
-import { TimelineEvent } from '../types';
+import { TimelineEvent } from '../lib/types';
 
 interface TimelineClientProps {
   events: TimelineEvent[];

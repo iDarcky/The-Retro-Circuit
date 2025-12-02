@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Press_Start_2P, Share_Tech_Mono } from "next/font/google";
-import "./globals.css";
+import "../styles/globals.css";
 import ClientShell from "../components/layout/ClientShell";
 
 // Load fonts via Next.js to prevent Layout Shift

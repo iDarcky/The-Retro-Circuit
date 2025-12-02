@@ -2,8 +2,8 @@
 
 import { useState, useCallback, type FormEvent, type FC } from 'react';
 import Link from 'next/link';
-import { fetchRetroNews, addNewsItem } from '../services/dataService';
-import { NewsItem, NewsCategory } from '../types';
+import { fetchRetroNews, addNewsItem } from '../lib/api';
+import { NewsItem, NewsCategory } from '../lib/types';
 import Button from './ui/Button';
 import RetroLoader from './ui/RetroLoader';
 

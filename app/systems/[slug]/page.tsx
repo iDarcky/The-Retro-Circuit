@@ -1,6 +1,7 @@
+
 import Link from 'next/link';
-import { createClient } from '../../../utils/supabase/server';
-import { ConsoleDetails, GameOfTheWeekData } from '../../../types';
+import { createClient } from '../../../lib/supabase/server';
+import { ConsoleDetails, GameOfTheWeekData } from '../../../lib/types';
 import Button from '../../../components/ui/Button';
 import CollectionToggle from '../../../components/ui/CollectionToggle';
 import { Metadata } from 'next';
@@ -11,7 +12,7 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data } = await supabase.from('consoles').select('name, intro_text, image_url, manufacturer').eq('slug', params.slug).single();
     
     if (!data) return { title: 'Unknown Hardware' };
@@ -53,7 +54,7 @@ const SpecSection = ({ title, children }: { title: string, children: ReactNode }
 );
 
 export default async function ConsoleSpecsPage({ params }: Props) {
-  const supabase = createClient();
+  const supabase = await createClient();
   
   // Parallel Fetching
   const [consoleRes, gamesRes] = await Promise.all([
@@ -81,182 +82,143 @@ export default async function ConsoleSpecsPage({ params }: Props) {
 
   if (!consoleData) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
-        <h2 className="font-pixel text-retro-pink text-2xl mb-4">ERROR 404</h2>
-        <p className="font-mono text-gray-400 mb-8">CONSOLE DATA NOT FOUND IN ARCHIVE.</p>
-        <Link href="/systems">
-          <Button variant="secondary">RETURN TO DATABASE</Button>
-        </Link>
-      </div>
+        <div className="flex flex-col items-center justify-center min-h-[50vh]">
+            <h2 className="font-pixel text-retro-pink text-2xl mb-4">ERROR 404</h2>
+            <p className="font-mono text-gray-400 mb-8">SYSTEM ARCHIVE NOT FOUND.</p>
+            <Link href="/systems">
+                <Button variant="secondary">RETURN TO VAULT</Button>
+            </Link>
+        </div>
     );
   }
 
-  const ebayQuery = encodeURIComponent(`${consoleData.name} console`);
-  
-  // Schema for Product (Hardware)
-  const productSchema = {
-    "@context": "https://schema.org/",
-    "@type": "Product",
-    "name": consoleData.name,
-    "image": consoleData.image_url,
-    "description": consoleData.intro_text.substring(0, 160),
-    "brand": {
-      "@type": "Brand",
-      "name": consoleData.manufacturer
-    },
-    "releaseDate": consoleData.release_year.toString(),
-    "manufacturer": {
-      "@type": "Organization",
-      "name": consoleData.manufacturer
-    },
-    "category": "Video Game Consoles"
-  };
-
   return (
-    <div className="w-full max-w-6xl mx-auto p-0 md:p-4">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
-      />
-
-      {/* Main Container - GSM Arena Style Sheet */}
-      <div className="bg-retro-dark md:border border-retro-grid shadow-2xl overflow-hidden">
-        
-        {/* HEADER SECTION */}
-        <div className="p-6 border-b border-retro-grid relative bg-gradient-to-r from-retro-dark to-retro-grid/10">
-            <div className="flex flex-col gap-4">
-                <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <span className="font-mono text-[10px] text-black bg-retro-neon px-2 py-0.5 font-bold rounded-sm">
-                        GEN {consoleData.generation}
-                    </span>
-                    <span className="font-mono text-[10px] text-retro-blue border border-retro-blue px-2 py-0.5 rounded-sm">
-                        {consoleData.type.toUpperCase()}
-                    </span>
-                    <Link href={`/systems/brand/${consoleData.manufacturer}`} className="font-mono text-[10px] text-gray-400 hover:text-white border-b border-gray-600 hover:border-white transition-colors">
+    <div className="w-full max-w-6xl mx-auto p-4">
+        {/* Navigation & Actions */}
+        <div className="mb-8 flex justify-between items-start border-b-4 border-retro-grid pb-6">
+            <div>
+                 <Link href="/systems" className="inline-block text-xs font-mono text-retro-blue hover:text-retro-neon transition-colors mb-2">
+                    &lt; BACK TO CONSOLE VAULT
+                 </Link>
+                 <h1 className="text-4xl md:text-6xl font-pixel text-white drop-shadow-[4px_4px_0_rgba(0,255,157,0.5)] leading-tight uppercase">
+                    {consoleData.name}
+                 </h1>
+                 <div className="flex gap-4 font-mono text-sm text-gray-400 mt-2">
+                    <Link href={`/systems/brand/${consoleData.manufacturer}`} className="hover:text-retro-neon transition-colors">
                         {consoleData.manufacturer.toUpperCase()}
                     </Link>
-                </div>
-                
-                <h1 className="font-pixel text-3xl md:text-5xl text-white drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">
-                    {consoleData.name}
-                </h1>
-
-                <div className="flex flex-wrap gap-3 mt-2">
-                    <a 
-                        href={`https://www.ebay.com/sch/i.html?_nkw=${ebayQuery}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-500 px-3 py-1 font-mono text-xs transition-colors h-fit"
-                    >
-                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                         FIND MARKET VALUE
-                    </a>
-                    <Link 
-                        href={`/arena?preselect=${consoleData.slug}`}
-                        className="flex items-center gap-2 bg-retro-pink/20 hover:bg-retro-pink text-retro-pink hover:text-black border border-retro-pink px-3 py-1 font-mono text-xs transition-colors h-fit"
-                    >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                        COMPARE SPECS
-                    </Link>
-                    <div className="flex-1"></div>
-                    <CollectionToggle 
-                        itemId={consoleData.slug} 
-                        itemType="CONSOLE" 
-                        itemName={consoleData.name}
-                        itemImage={consoleData.image_url} 
-                    />
-                </div>
+                    <span>//</span>
+                    <span>{consoleData.release_year}</span>
+                    <span>//</span>
+                    <span>GEN {consoleData.generation}</span>
+                 </div>
+            </div>
+            <div className="mt-6 md:mt-0">
+                <CollectionToggle 
+                    itemId={consoleData.slug} 
+                    itemType="CONSOLE" 
+                    itemName={consoleData.name} 
+                    itemImage={consoleData.image_url}
+                />
             </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row">
-            {/* LEFT COLUMN: IMAGE & INTRO */}
-            <div className="lg:w-1/3 bg-black/40 border-r border-retro-grid p-6 flex flex-col gap-6">
-                <div className="aspect-square bg-transparent flex items-center justify-center p-4 border border-retro-grid/30 relative group">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+            {/* Left Column: Image & Intro */}
+            <div className="lg:col-span-1 space-y-8">
+                <div className="bg-black border-2 border-retro-grid p-6 flex items-center justify-center min-h-[300px] relative shadow-[0_0_20px_rgba(0,0,0,0.5)]">
                     {consoleData.image_url ? (
-                        <img src={consoleData.image_url} alt={consoleData.name} className="max-w-full max-h-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] group-hover:scale-105 transition-transform duration-300" />
+                        <img src={consoleData.image_url} alt={consoleData.name} className="max-w-full max-h-[300px] object-contain drop-shadow-lg" />
                     ) : (
-                        <div className="text-retro-grid font-pixel text-4xl opacity-20">NO IMAGE</div>
+                        <div className="text-retro-grid font-pixel text-4xl">?</div>
                     )}
+                    {/* Badge */}
+                    <div className="absolute top-4 left-4 bg-retro-neon text-black text-xs font-bold px-2 py-1 transform -rotate-2">
+                        {consoleData.type.toUpperCase()}
+                    </div>
                 </div>
 
-                <div className="bg-retro-grid/5 p-4 border border-retro-grid/20">
-                    <h3 className="font-pixel text-xs text-retro-blue mb-2">SYSTEM BRIEF</h3>
-                    <p className="font-mono text-sm text-gray-400 leading-relaxed whitespace-pre-line">
+                <div className="bg-retro-dark border border-retro-grid p-6">
+                    <h3 className="font-pixel text-xs text-retro-blue mb-4">SYSTEM OVERVIEW</h3>
+                    <p className="font-mono text-gray-300 leading-relaxed text-sm">
                         {consoleData.intro_text}
                     </p>
                 </div>
             </div>
 
-            {/* RIGHT COLUMN: SPECS TABLES */}
-            <div className="lg:w-2/3 bg-retro-dark">
-                
-                <SpecSection title="Launch & Market">
-                    <SpecRow label="Release Date" value={`${consoleData.release_year}`} highlight />
-                    <SpecRow label="Discontinued" value={consoleData.discontinued_date || "N/A"} />
-                    <SpecRow label="Launch Price" value={consoleData.launch_price} />
-                    <SpecRow label="Units Sold" value={consoleData.units_sold} highlight />
-                    <SpecRow label="Adjusted Price" value={consoleData.inflation_price ? `${consoleData.inflation_price} (Inflation Adj.)` : undefined} />
-                </SpecSection>
+            {/* Right Column: Specs */}
+            <div className="lg:col-span-2">
+                <div className="bg-retro-dark border-2 border-retro-grid">
+                    <div className="bg-retro-grid/20 px-6 py-4 border-b border-retro-grid flex justify-between items-center">
+                        <h2 className="font-pixel text-lg text-white">TECHNICAL SPECIFICATIONS</h2>
+                        <span className="font-mono text-xs text-retro-neon animate-pulse">● DECLASSIFIED</span>
+                    </div>
+                    
+                    <div className="p-0">
+                        <SpecSection title="Processing Unit">
+                            <SpecRow label="CPU" value={consoleData.cpu} highlight />
+                            <SpecRow label="GPU" value={consoleData.gpu} />
+                            <SpecRow label="Memory (RAM)" value={consoleData.ram} />
+                        </SpecSection>
 
-                <SpecSection title="Internal Hardware">
-                    <SpecRow label="CPU" value={consoleData.cpu} highlight />
-                    <SpecRow label="GPU" value={consoleData.gpu} />
-                    <SpecRow label="Memory (RAM)" value={consoleData.ram} />
-                    <SpecRow label="Media Type" value={consoleData.media} />
-                    <SpecRow label="Storage" value={consoleData.storage} />
-                    <SpecRow label="Audio Chip" value={consoleData.audio} />
-                </SpecSection>
+                        <SpecSection title="Media & Storage">
+                            <SpecRow label="Media Type" value={consoleData.media} />
+                            <SpecRow label="Internal Storage" value={consoleData.storage} />
+                        </SpecSection>
 
-                <SpecSection title="Body & Display">
-                    <SpecRow label="Dimensions" value={consoleData.dimensions} />
-                    <SpecRow label="Weight" value={consoleData.weight} />
-                    <SpecRow label="Casing" value={consoleData.casing} />
-                    <SpecRow label="Display Type" value={consoleData.display_type} />
-                    <SpecRow label="Resolution" value={consoleData.resolution} />
-                </SpecSection>
+                        <SpecSection title="Audio / Video">
+                            <SpecRow label="Max Resolution" value={consoleData.resolution} />
+                            <SpecRow label="Audio Chip" value={consoleData.audio} />
+                            {consoleData.display_type && <SpecRow label="Display" value={consoleData.display_type} />}
+                        </SpecSection>
 
-                <SpecSection title="Connectivity & Power">
-                    <SpecRow label="I/O Ports" value={consoleData.ports?.join(', ')} />
-                    <SpecRow label="Connectivity" value={consoleData.connectivity} />
-                    <SpecRow label="Power Supply" value={consoleData.power_supply} />
-                    <SpecRow label="Battery Life" value={consoleData.battery_life} />
-                </SpecSection>
+                         <SpecSection title="Physical & I/O">
+                            {consoleData.dimensions && <SpecRow label="Dimensions" value={consoleData.dimensions} />}
+                            {consoleData.weight && <SpecRow label="Weight" value={consoleData.weight} />}
+                            {consoleData.ports && <SpecRow label="Ports" value={consoleData.ports.join(', ')} />}
+                            {consoleData.connectivity && <SpecRow label="Connectivity" value={consoleData.connectivity} />}
+                            {consoleData.power_supply && <SpecRow label="Power" value={consoleData.power_supply} />}
+                            {consoleData.battery_life && <SpecRow label="Battery Life" value={consoleData.battery_life} />}
+                        </SpecSection>
 
-                <SpecSection title="Software Library">
-                    <SpecRow label="Best Selling Game" value={consoleData.best_selling_game} highlight />
-                </SpecSection>
-
+                        <SpecSection title="Market Data">
+                            <SpecRow label="Units Sold" value={consoleData.units_sold} highlight />
+                            <SpecRow label="Launch Price" value={consoleData.launch_price} />
+                            <SpecRow label="Inflation Adj." value={consoleData.inflation_price} />
+                            <SpecRow label="Best Seller" value={consoleData.best_selling_game} />
+                        </SpecSection>
+                    </div>
+                </div>
             </div>
         </div>
 
-        {/* RELATED GAMES FOOTER */}
+        {/* Linked Games Section */}
         {mappedGames.length > 0 && (
-            <div className="p-6 border-t border-retro-grid bg-retro-dark">
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-pixel text-retro-neon text-lg">NOTABLE GAMES</h3>
-                    <Link href="/archive" className="font-mono text-xs text-retro-blue hover:text-white">VIEW FULL ARCHIVE &gt;</Link>
-                </div>
+            <div className="mt-16 pt-8 border-t-2 border-retro-grid">
+                <h3 className="font-pixel text-2xl text-retro-pink mb-6">NOTABLE SOFTWARE LIBRARY</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                    {mappedGames.slice(0, 6).map(game => (
-                        <Link href={`/archive/${game.slug || game.id}`} key={game.id} className="group block">
-                            <div className="aspect-[3/4] bg-black border border-retro-grid mb-2 overflow-hidden relative">
+                    {mappedGames.map((game) => (
+                        <Link 
+                            key={game.id} 
+                            href={`/archive/${game.slug || game.id}`}
+                            className="group block bg-black border border-retro-grid hover:border-retro-pink transition-all"
+                        >
+                            <div className="aspect-[3/4] overflow-hidden relative">
                                 {game.image ? (
-                                    <img src={game.image} className="w-full h-full object-cover group-hover:opacity-75 transition-opacity" />
+                                    <img src={game.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-retro-grid text-xs font-pixel">IMG</div>
+                                    <div className="w-full h-full flex items-center justify-center text-gray-700 font-pixel text-xs text-center p-2">NO COVER</div>
                                 )}
                             </div>
-                            <div className="font-pixel text-[10px] text-gray-400 group-hover:text-retro-neon truncate">
-                                {game.title}
+                            <div className="p-2">
+                                <div className="font-pixel text-[10px] text-white truncate group-hover:text-retro-pink">{game.title}</div>
+                                <div className="font-mono text-[10px] text-gray-500">{game.year}</div>
                             </div>
                         </Link>
                     ))}
                 </div>
             </div>
         )}
-
-      </div>
     </div>
   );
 }

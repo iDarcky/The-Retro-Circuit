@@ -1,4 +1,4 @@
-import { fetchRetroNews, fetchConsoleList, fetchGameList } from '../../services/dataService';
+import { fetchRetroNews, fetchConsoleList, fetchGameList } from '../../lib/api';
 import SignalFeedClient from '../../components/SignalFeedClient';
 
 export const metadata = {

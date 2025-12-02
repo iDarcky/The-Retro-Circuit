@@ -1,7 +1,7 @@
 
 import Link from 'next/link';
-import { createClient } from '../../../utils/supabase/server';
-import { GameOfTheWeekData } from '../../../types';
+import { createClient } from '../../../lib/supabase/server';
+import { GameOfTheWeekData } from '../../../lib/types';
 import Button from '../../../components/ui/Button';
 import CollectionToggle from '../../../components/ui/CollectionToggle';
 import { Metadata } from 'next';
@@ -11,7 +11,7 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data } = await supabase.from('games').select('title, content, image').eq('slug', params.slug).single();
   
   if (!data) return { title: 'Game Not Found' };
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function GameDetails({ params }: Props) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data } = await supabase.from('games').select('*').eq('slug', params.slug).single();
   
   if (!data) {

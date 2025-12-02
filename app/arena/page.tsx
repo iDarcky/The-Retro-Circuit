@@ -2,8 +2,9 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { compareConsoles, fetchConsoleList } from '../../services/dataService';
-import { ComparisonResult } from '../../types';
+import { compareConsoles } from '../../lib/compare';
+import { fetchConsoleList } from '../../lib/api';
+import { ComparisonResult } from '../../lib/types';
 import Button from '../../components/ui/Button';
 import SEOHead from '../../components/ui/SEOHead';
 
