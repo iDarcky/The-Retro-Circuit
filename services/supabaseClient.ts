@@ -1,4 +1,5 @@
 import { createClient } from '../utils/supabase/client';
+import { createClient as createFallbackClient } from '@supabase/supabase-js';
 
 // Retrieve environment variables for Next.js
 const envUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -11,4 +12,4 @@ export const isSupabaseConfigured = !!(envUrl && envKey);
 // We use a singleton pattern here so the app shares one client instance
 export const supabase = isSupabaseConfigured 
   ? createClient()
-  : require('@supabase/supabase-js').createClient('https://placeholder.supabase.co', 'placeholder-key');
+  : createFallbackClient('https://placeholder.supabase.co', 'placeholder-key');

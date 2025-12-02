@@ -1,4 +1,3 @@
-
 {
   "redirects": [
     { "source": "/Consoles.html", "destination": "/systems", "permanent": true },
@@ -9,8 +8,5 @@
     { "source": "/consoles", "destination": "/systems", "permanent": true },
     { "source": "/comparer", "destination": "/arena", "permanent": true },
     { "source": "/timeline", "destination": "/chrono", "permanent": true }
-  ],
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
