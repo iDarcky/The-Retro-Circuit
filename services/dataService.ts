@@ -402,7 +402,8 @@ export const addGame = async (game: GameOfTheWeekData): Promise<boolean> => {
 
 export const addConsole = async (consoleData: ConsoleDetails): Promise<boolean> => {
     try {
-        const { id, ...data } = consoleData;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id: _id, ...data } = consoleData;
         const { error } = await supabase.from('consoles').insert([data]);
         if (error) throw error;
         return true;
@@ -429,7 +430,8 @@ export const addToCollection = async (item: UserCollectionItem): Promise<boolean
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return false;
         
-        const { id, ...itemData } = item;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id: _id, ...itemData } = item;
         const payload = { ...itemData, user_id: user.id };
 
         const { error } = await supabase.from('user_collections').upsert(payload, { onConflict: 'user_id, item_id' });
