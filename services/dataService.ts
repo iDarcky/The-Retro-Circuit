@@ -295,9 +295,6 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
         const { data: cB } = await supabase.from('consoles').select('*').eq('slug', slugB).single();
         
         if(!cA || !cB) return null;
-
-        const yearA = cA.release_year;
-        const yearB = cB.release_year;
         
         const priceA = parsePrice(cA.launch_price);
         const priceB = parsePrice(cB.launch_price);
