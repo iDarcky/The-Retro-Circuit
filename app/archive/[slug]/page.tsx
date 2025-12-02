@@ -57,7 +57,8 @@ export default async function GameDetails({ params }: Props) {
   };
 
   const safeRating = Math.min(5, Math.max(0, Math.round(game.rating || 5)));
-  const ebayQuery = encodeURIComponent(`${game.title} ${game.developer} game`);
+  // Use explicit string concatenation to avoid template literal parser edge cases
+  const ebayQuery = encodeURIComponent(game.title + ' ' + game.developer + ' game');
 
   // JSON-LD Schema
   const structuredData = {
@@ -81,13 +82,11 @@ export default async function GameDetails({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
-      {/* Header */}
       <div className="mb-8 border-b-4 border-retro-grid pb-6">
         <div className="flex justify-between items-start mb-4">
            <Link href="/archive" className="inline-block text-xs font-mono text-retro-blue hover:text-retro-neon transition-colors">
               &lt; BACK TO DATABASE
            </Link>
-           {/* Actions */}
            <div className="flex gap-2">
              <div className="w-48">
                 <CollectionToggle 
@@ -171,5 +170,6 @@ export default async function GameDetails({ params }: Props) {
             </div>
         </div>
       </div>
-    );
+    </div>
+  );
 }
