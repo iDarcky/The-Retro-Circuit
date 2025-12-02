@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { compareConsoles, fetchConsoleList } from '../../services/dataService';
 import { ComparisonResult } from '../../types';
@@ -20,7 +20,7 @@ const StatBar = ({ value, color, align }: { value: number, color: string, align:
     );
 };
 
-export default function VsModePage() {
+function VsModeContent() {
   const searchParams = useSearchParams();
   const [consoleA, setConsoleA] = useState('');
   const [consoleB, setConsoleB] = useState('');
@@ -214,4 +214,12 @@ export default function VsModePage() {
       )}
     </div>
   );
+}
+
+export default function VsModePage() {
+    return (
+        <Suspense fallback={<div className="p-10 text-center font-mono text-retro-neon">LOADING ARENA MODULES...</div>}>
+            <VsModeContent />
+        </Suspense>
+    );
 }

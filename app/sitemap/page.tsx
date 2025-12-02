@@ -1,39 +1,20 @@
-
-'use client';
-
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { fetchConsoleList, fetchGameList, fetchManufacturers } from '../../services/dataService';
-import RetroLoader from '../../components/ui/RetroLoader';
-import SEOHead from '../../components/ui/SEOHead';
 
-export default function SitemapPage() {
-    const [consoles, setConsoles] = useState<{name: string, slug: string}[]>([]);
-    const [games, setGames] = useState<{title: string, slug: string, id: string}[]>([]);
-    const [brands, setBrands] = useState<string[]>([]);
-    const [loading, setLoading] = useState(true);
+export const metadata = {
+  title: 'System Directory | Site Map',
+  description: 'Complete directory of all retro games, consoles, and manufacturers archived on The Retro Circuit.',
+};
 
-    useEffect(() => {
-        const load = async () => {
-            const [c, g, b] = await Promise.all([
-                fetchConsoleList(),
-                fetchGameList(),
-                fetchManufacturers()
-            ]);
-            setConsoles(c);
-            setGames(g);
-            setBrands(b);
-            setLoading(false);
-        };
-        load();
-    }, []);
-
-    if (loading) return <RetroLoader />;
+export default async function SitemapPage() {
+    const [consoles, games, brands] = await Promise.all([
+        fetchConsoleList(),
+        fetchGameList(),
+        fetchManufacturers()
+    ]);
 
     return (
         <div className="w-full max-w-6xl mx-auto p-4">
-            <SEOHead title="Site Map" description="Directory of all retro games, consoles, and manufacturers on The Retro Circuit." />
-            
             <h1 className="text-3xl font-pixel text-retro-neon mb-8 border-b-2 border-retro-grid pb-4">
                 SYSTEM DIRECTORY (SITEMAP)
             </h1>
