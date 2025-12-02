@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import BootSequence from '../ui/BootSequence';
 import { SoundProvider } from '../ui/SoundContext';
 import MainLayout from './MainLayout';
-import RetroLoader from '../ui/RetroLoader';
 
 interface ClientShellProps {
   children: ReactNode;
