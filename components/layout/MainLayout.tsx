@@ -160,7 +160,7 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       
       checkAuth();
 
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
           const u = session?.user || null;
           setUser(u);
           const isA = await retroAuth.isAdmin();

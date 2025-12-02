@@ -74,7 +74,7 @@ export const SoundProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
         osc.start();
         osc.stop(audioCtxRef.current.currentTime + duration);
-    } catch (e) {
+    } catch {
         // Ignore audio errors
     }
   };

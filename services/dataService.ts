@@ -73,7 +73,7 @@ export const checkDatabaseConnection = async (): Promise<boolean> => {
     try {
         const { error } = await supabase.from('consoles').select('*', { count: 'exact', head: true });
         return !error;
-    } catch (e) {
+    } catch {
         return false;
     }
 };
@@ -100,7 +100,7 @@ export const searchDatabase = async (query: string): Promise<SearchResult[]> => 
             subtitle: item.subtitle,
             image: item.image
         }));
-    } catch (e) {
+    } catch {
         try {
             const { data: consoles } = await supabase
                 .from('consoles')
@@ -138,7 +138,7 @@ export const searchDatabase = async (query: string): Promise<SearchResult[]> => 
                 }));
             }
             return results;
-        } catch (legacyError) {
+        } catch {
              return [];
         }
     }
@@ -149,7 +149,7 @@ export const fetchManufacturers = async (): Promise<string[]> => {
         const { data, error } = await supabase.from('manufacturers').select('name').order('name');
         if (error) throw error;
         return data.map((m: { name: string }) => m.name);
-    } catch (e) {
+    } catch {
         const { data } = await supabase.from('consoles').select('manufacturer');
         const brands = Array.from(new Set((data || []).map((d: { manufacturer: string }) => d.manufacturer))).sort();
         return brands as string[];
@@ -166,7 +166,7 @@ export const fetchManufacturerProfile = async (name: string): Promise<Manufactur
         
         if (error || !data) throw error;
         return data as ManufacturerProfile;
-    } catch (e) {
+    } catch {
         const fallbackKey = Object.keys(FALLBACK_MANUFACTURERS).find(k => k.toLowerCase() === name.toLowerCase());
         const fallbackData = fallbackKey ? FALLBACK_MANUFACTURERS[fallbackKey] : undefined;
         
@@ -212,7 +212,7 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
         if (error) throw error;
         return { data: data || [], count: count || 0 };
 
-    } catch (e) {
+    } catch {
         return { data: [], count: 0 };
     }
 };
@@ -239,7 +239,7 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
         const { data, error } = await supabase.from('consoles').select('*').eq('slug', slug).single();
         if (error) throw error;
         return data as ConsoleDetails;
-    } catch (e) {
+    } catch {
         return null;
     }
 };
@@ -375,7 +375,7 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
             summary: `${cA.manufacturer} faces off against ${cB.manufacturer}.`,
             points: points
         }
-    } catch(e) {
+    } catch {
         return null;
     }
 }
@@ -398,7 +398,7 @@ export const addGame = async (game: GameOfTheWeekData): Promise<boolean> => {
         }]);
         if (error) throw error;
         return true;
-    } catch (e) {
+    } catch {
         return false;
     }
 };
@@ -409,7 +409,7 @@ export const addConsole = async (consoleData: ConsoleDetails): Promise<boolean> 
         const { error } = await supabase.from('consoles').insert([data]);
         if (error) throw error;
         return true;
-    } catch (e) {
+    } catch {
         return false;
     }
 };
@@ -422,7 +422,7 @@ export const fetchUserCollection = async (): Promise<UserCollectionItem[]> => {
         const { data, error } = await supabase.from('user_collections').select('*').eq('user_id', user.id);
         if (error) throw error;
         return data || [];
-    } catch (e) {
+    } catch {
         return [];
     }
 };
@@ -437,7 +437,7 @@ export const addToCollection = async (item: UserCollectionItem): Promise<boolean
 
         const { error } = await supabase.from('user_collections').upsert(payload, { onConflict: 'user_id, item_id' });
         return !error;
-    } catch (e) {
+    } catch {
         return false;
     }
 };
@@ -448,7 +448,7 @@ export const removeFromCollection = async (itemId: string): Promise<boolean> => 
         if (!user) return false;
         const { error } = await supabase.from('user_collections').delete().match({ user_id: user.id, item_id: itemId });
         return !error;
-    } catch (e) {
+    } catch {
         return false;
     }
 };
@@ -473,7 +473,7 @@ export const fetchRetroNews = async (page: number = 1, limit: number = 20, categ
         if (error) throw error;
         
         return { data: data as NewsItem[], count: count || 0 };
-    } catch (e) {
+    } catch {
         return { data: [], count: 0 };
     }
 };
@@ -487,7 +487,7 @@ export const addNewsItem = async (item: NewsItem): Promise<boolean> => {
             date: item.date || new Date().toISOString()
         }]);
         return !error;
-    } catch (err) {
+    } catch {
         return false;
     }
 };
@@ -523,7 +523,7 @@ export const fetchGamesPaginated = async (page: number = 1, limit: number = 9): 
             data: mappedData, 
             count: count || 0 
         };
-    } catch (e) {
+    } catch {
         return { data: [], count: 0 };
     }
 };
@@ -532,7 +532,7 @@ export const fetchAllGames = async (): Promise<GameOfTheWeekData[]> => {
     try {
         const { data } = await fetchGamesPaginated(1, 100);
         return data;
-    } catch (e) {
+    } catch {
         return [];
     }
 };
@@ -555,7 +555,7 @@ export const fetchGameBySlug = async (slug: string): Promise<GameOfTheWeekData |
             image: data.image,
             console_slug: data.console_slug
         };
-    } catch (e) {
+    } catch {
         return null;
     }
 };
@@ -583,7 +583,7 @@ export const fetchGamesForConsole = async (consoleSlug: string): Promise<GameOfT
             image: g.image,
             console_slug: g.console_slug
         }));
-    } catch (e) {
+    } catch {
         return [];
     }
 };
@@ -606,7 +606,7 @@ export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData | null> =>
           image: data.image,
           console_slug: data.console_slug
       };
-  } catch (e) {
+  } catch {
       return null;
   }
 };
@@ -616,7 +616,7 @@ export const fetchTimelineData = async (): Promise<TimelineEvent[]> => {
         const { data, error } = await supabase.from('timeline').select('*').order('year', { ascending: true });
         if (error) throw error;
         return data || [];
-    } catch (e) {
+    } catch {
         return [];
     }
 };

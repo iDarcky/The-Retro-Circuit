@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, type FormEvent } from 'react';
@@ -175,7 +174,7 @@ export default function AdminPortalPage() {
                 setConsoleName('');
             }
             else setErrorMsg("REGISTRATION FAILED - CHECK DB CONNECTION");
-        } catch (err) {
+        } catch {
             setErrorMsg("INVALID JSON IN SPECS FIELD");
         }
         setLoading(false);
