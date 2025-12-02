@@ -1,28 +1,10 @@
-'use client';
-
-import { type FC } from 'react';
 import Link from 'next/link';
 import GameOfTheWeek from '../components/GameOfTheWeek';
-import { useEffect, useState } from 'react';
-import { fetchRetroNews } from '../services/dataService';
+import { fetchRetroNews, fetchGameOfTheWeek } from '../services/dataService';
 import { NewsItem } from '../types';
 
-// -- Mini Signal Feed Component for Dashboard --
-const DashboardSignalFeed = () => {
-  const [news, setNews] = useState<NewsItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const load = async () => {
-      const { data } = await fetchRetroNews(1, 3);
-      setNews(data);
-      setLoading(false);
-    }
-    load();
-  }, []);
-
-  if (loading) return <div className="text-xs font-mono text-retro-neon animate-pulse">LOADING SIGNALS...</div>;
-
+// -- Mini Signal Feed Component (Presentation Only) --
+const DashboardSignalFeed = ({ news }: { news: NewsItem[] }) => {
   return (
     <div className="space-y-4">
        <div className="flex justify-between items-center mb-4">
@@ -31,23 +13,33 @@ const DashboardSignalFeed = () => {
               VIEW ALL
           </Link>
        </div>
-       {news.map((item, i) => (
-          <div key={i} className="border-b border-retro-grid pb-4 last:border-0">
-              <div className="flex justify-between text-[10px] text-gray-500 mb-1 font-mono">
-                  <span>{new Date(item.date).toLocaleDateString()}</span>
-                  <span className="text-retro-pink">{item.category}</span>
-              </div>
-              <Link href="/signals" className="font-mono text-sm text-white hover:text-retro-neon font-bold block mb-1">
-                  {item.headline}
-              </Link>
-              <p className="text-xs text-gray-400 line-clamp-2 font-mono">{item.summary}</p>
-          </div>
-       ))}
+       {news.length === 0 ? (
+          <div className="text-xs font-mono text-gray-500">NO SIGNALS DETECTED.</div>
+       ) : (
+          news.map((item, i) => (
+            <div key={i} className="border-b border-retro-grid pb-4 last:border-0">
+                <div className="flex justify-between text-[10px] text-gray-500 mb-1 font-mono">
+                    <span>{new Date(item.date).toLocaleDateString()}</span>
+                    <span className="text-retro-pink">{item.category}</span>
+                </div>
+                <Link href="/signals" className="font-mono text-sm text-white hover:text-retro-neon font-bold block mb-1">
+                    {item.headline}
+                </Link>
+                <p className="text-xs text-gray-400 line-clamp-2 font-mono">{item.summary}</p>
+            </div>
+          ))
+       )}
     </div>
   );
 };
 
-const ControlRoom: FC = () => {
+export default async function ControlRoomPage() {
+  // Parallel Data Fetching on the Server
+  const [gameOfTheWeek, newsData] = await Promise.all([
+    fetchGameOfTheWeek(),
+    fetchRetroNews(1, 3)
+  ]);
+
   return (
     <div className="w-full max-w-7xl mx-auto p-4 space-y-12">
       
@@ -67,7 +59,7 @@ const ControlRoom: FC = () => {
           FEATURED HIT
         </div>
         <div className="transform hover:scale-[1.01] transition-transform duration-500">
-            <GameOfTheWeek />
+            <GameOfTheWeek game={gameOfTheWeek} />
         </div>
       </section>
 
@@ -77,7 +69,7 @@ const ControlRoom: FC = () => {
         {/* Left Column: Latest News Widget */}
         <div className="lg:col-span-2">
            <div className="bg-retro-dark/50 border border-retro-grid p-6 h-full">
-              <DashboardSignalFeed />
+              <DashboardSignalFeed news={newsData.data} />
            </div>
         </div>
 
@@ -127,6 +119,4 @@ const ControlRoom: FC = () => {
       </div>
     </div>
   );
-};
-
-export default ControlRoom;
+}

@@ -1,51 +1,20 @@
-'use client';
-
-import { useEffect, useState, type FC } from 'react';
-import { fetchGameOfTheWeek } from '../services/dataService';
+import { type FC } from 'react';
 import { GameOfTheWeekData } from '../types';
 import Button from './ui/Button';
 import Link from 'next/link';
 
-const GameOfTheWeek: FC = () => {
-  const [game, setGame] = useState<GameOfTheWeekData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [attempted, setAttempted] = useState(false);
+interface GameOfTheWeekProps {
+  game: GameOfTheWeekData | null;
+}
 
-  const loadGame = async () => {
-    setLoading(true);
-    const data = await fetchGameOfTheWeek();
-    setGame(data);
-    setLoading(false);
-    setAttempted(true);
-  };
-
-  useEffect(() => {
-    loadGame();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="w-full max-w-4xl mx-auto p-4 text-center">
-        <div className="animate-pulse border-4 border-retro-grid p-12 bg-retro-dark">
-            <h2 className="text-2xl font-pixel text-retro-neon mb-4">LOADING CARTRIDGE...</h2>
-            <div className="h-4 bg-retro-grid w-3/4 mx-auto mb-2"></div>
-            <div className="h-4 bg-retro-grid w-1/2 mx-auto mb-6"></div>
-            <div className="w-32 h-32 bg-retro-grid/20 mx-auto border border-retro-grid animate-bounce"></div>
-        </div>
-      </div>
-    );
-  }
-
+const GameOfTheWeek: FC<GameOfTheWeekProps> = ({ game }) => {
   if (!game) {
     return (
         <div className="w-full max-w-4xl mx-auto p-4 flex flex-col items-center justify-center py-20 border-2 border-retro-grid bg-retro-dark/50">
             <h3 className="font-pixel text-retro-pink mb-4">NO GAME CARTRIDGE DETECTED</h3>
             <p className="font-mono text-gray-500 mb-8 text-center max-w-md">
-                {attempted 
-                    ? "Could not retrieve Game of the Week from the database. Please check if the 'game_of_the_week' table exists and has data." 
-                    : "Initialize system to load game."}
+                Could not retrieve Game of the Week from the database. Please check if the 'game_of_the_week' table exists and has data.
             </p>
-            <Button onClick={loadGame} variant="secondary">RETRY LOAD</Button>
         </div>
     )
   }
