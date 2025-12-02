@@ -44,7 +44,7 @@ const SignalFeedClient: FC<SignalFeedClientProps> = ({ initialNews, initialCount
       const { data, count } = await fetchRetroNews(pageNum, ITEMS_PER_PAGE, category);
       setNews(data); 
       setTotalCount(count);
-    } catch (e) {
+    } catch {
       setError("NO CONNECTION TO MAINFRAME. CHECK SUPABASE CONFIG.");
     } finally {
       setLoading(false);
