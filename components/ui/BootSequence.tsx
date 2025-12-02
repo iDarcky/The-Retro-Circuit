@@ -26,7 +26,7 @@ const BootSequence: FC<BootSequenceProps> = ({ onComplete }) => {
     // Attempt to trigger boot sound (might require interaction first in some browsers, but we try)
     playBoot();
 
-    sequence.forEach((line, index) => {
+    sequence.forEach((line) => {
       // Randomize typing speed slightly
       delay += 400 + Math.random() * 300;
       
