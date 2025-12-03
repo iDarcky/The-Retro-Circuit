@@ -55,37 +55,41 @@ export default async function ManufacturerDetailPage({ params }: Props) {
     return (
         <div className="w-full max-w-7xl mx-auto p-4 animate-[fadeIn_0.5s_ease-in-out]">
             {/* Header / Dossier */}
-            <div className={`border-l-8 ${theme.color} bg-retro-dark p-8 mb-8 shadow-lg`}>
-                <div className="flex flex-col md:flex-row justify-between items-end border-b border-gray-800 pb-6 mb-6">
+            <div className={`border-l-8 ${theme.color} bg-retro-dark p-6 md:p-8 mb-8 shadow-lg`}>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-gray-800 pb-6 mb-6 gap-6 md:gap-0">
                     <div>
-                        <div className="flex gap-2 mb-2">
+                        <div className="flex gap-2 mb-2 items-center">
                              <Link href="/console" className="font-mono text-xs text-gray-500 hover:text-white">&lt; HARDWARE DB</Link>
                              <div className={`font-mono text-xs border inline-block px-2 py-0.5 ${theme.color}`}>CONFIDENTIAL</div>
                         </div>
-                        <h1 className={`text-5xl md:text-7xl font-pixel ${themeColorClass} opacity-90 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]`}>
+                        <h1 className={`text-4xl md:text-5xl lg:text-7xl font-pixel ${themeColorClass} opacity-90 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] break-words`}>
                             {profile.name}
                         </h1>
                         {profile.website && (
-                             <a href={profile.website} target="_blank" className="font-mono text-xs text-gray-500 hover:text-white mt-2 inline-block">
-                                 [ {profile.website.replace('https://', '')} ]
+                             <a href={profile.website} target="_blank" className="font-mono text-xs text-gray-500 hover:text-white mt-2 inline-block break-all">
+                                 [ {profile.website.replace('https://', '').replace('http://', '')} ]
                              </a>
                         )}
                     </div>
-                    <div className="text-right mt-4 md:mt-0">
+                    <div className="text-left md:text-right flex flex-row md:flex-col items-center md:items-end gap-4 md:gap-0 w-full md:w-auto">
                         {profile.image_url && (
-                            <img src={profile.image_url} className="h-16 w-auto object-contain mb-4 ml-auto" />
+                            <img src={profile.image_url} className="h-12 md:h-16 w-auto object-contain mb-0 md:mb-4 ml-0 md:ml-auto" />
                         )}
-                        <div className="font-mono text-gray-500 text-xs">FOUNDED</div>
-                        <div className="font-pixel text-white text-lg">{profile.founded_year}</div>
-                        <div className="font-mono text-gray-500 text-xs mt-2">ORIGIN</div>
-                        <div className="font-pixel text-white text-lg">{profile.country}</div>
+                        <div className="flex flex-col md:items-end">
+                            <div className="font-mono text-gray-500 text-xs">FOUNDED</div>
+                            <div className="font-pixel text-white text-lg">{profile.founded_year}</div>
+                        </div>
+                        <div className="flex flex-col md:items-end">
+                            <div className="font-mono text-gray-500 text-xs mt-0 md:mt-2">ORIGIN</div>
+                            <div className="font-pixel text-white text-lg">{profile.country}</div>
+                        </div>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="md:col-span-2">
                         <h3 className={`font-pixel text-lg mb-4 ${themeColorClass}`}>CORPORATE HISTORY</h3>
-                        <p className="font-mono text-gray-300 text-lg leading-relaxed border-l-2 border-gray-700 pl-4 whitespace-pre-line">
+                        <p className="font-mono text-gray-300 text-base md:text-lg leading-relaxed border-l-2 border-gray-700 pl-4 whitespace-pre-line">
                             {profile.description}
                         </p>
                     </div>
@@ -108,7 +112,7 @@ export default async function ManufacturerDetailPage({ params }: Props) {
             {/* Hardware Grid */}
             <div className="mb-12">
                 <div className="flex items-center gap-4 mb-6">
-                    <h3 className={`font-pixel text-2xl ${themeColorClass}`}>KNOWN HARDWARE UNITS</h3>
+                    <h3 className={`font-pixel text-xl md:text-2xl ${themeColorClass}`}>KNOWN HARDWARE UNITS</h3>
                     <div className="flex-1 h-px bg-gray-800"></div>
                 </div>
                 

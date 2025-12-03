@@ -23,12 +23,13 @@ export default function AdminPortalPage() {
 
     // Manufacturer Form
     const [manuName, setManuName] = useState('');
+    const [manuSlug, setManuSlug] = useState('');
     const [manuFounded, setManuFounded] = useState('');
-    const [manuOrigin, setManuOrigin] = useState('');
+    const [manuCountry, setManuCountry] = useState(''); // DB: country
     const [manuWebsite, setManuWebsite] = useState('');
     const [manuDesc, setManuDesc] = useState('');
     const [manuFranchises, setManuFranchises] = useState('');
-    const [manuLogo, setManuLogo] = useState('');
+    const [manuImage, setManuImage] = useState(''); // DB: image_url
 
     // Game Form
     const [gameTitle, setGameTitle] = useState('');
@@ -103,18 +104,18 @@ export default function AdminPortalPage() {
         setMessage(null);
         setErrorMsg(null);
         
-        // Generate slug from name
-        const slug = manuName.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '');
+        // Generate slug from name if not provided
+        const finalSlug = manuSlug || manuName.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '');
 
         const raw = {
             name: manuName,
             founded_year: manuFounded,
-            country: manuOrigin, // Updated from origin_country
+            country: manuCountry,
             website: manuWebsite,
             description: manuDesc,
             key_franchises: manuFranchises,
-            image_url: manuLogo, // Updated from logo_url
-            slug
+            image_url: manuImage,
+            slug: finalSlug
         };
         const result = ManufacturerSchema.safeParse(raw);
         if (!result.success) { setErrorMsg(result.error.issues[0].message); return; }
@@ -123,7 +124,7 @@ export default function AdminPortalPage() {
         if (await addManufacturer(result.data as Omit<Manufacturer, 'id'>)) {
             setMessage("CORPORATION REGISTERED");
             setManufacturers(await fetchManufacturers()); // Refresh list
-            setManuName(''); setManuDesc('');
+            setManuName(''); setManuDesc(''); setManuSlug(''); setManuImage(''); setManuCountry('');
         } else setErrorMsg("REGISTRATION FAILED");
         setLoading(false);
     }
@@ -245,21 +246,26 @@ export default function AdminPortalPage() {
                 )}
 
                 {activeTab === 'MANUFACTURER' && (
-                    <form onSubmit={handleSubmitManufacturer} className="space-y-4 grid grid-cols-2 gap-4">
+                    <form onSubmit={handleSubmitManufacturer} className="space-y-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                         <input className="bg-black border border-gray-700 p-2" placeholder="Name (e.g. Nintendo)" value={manuName} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuName(e.target.value)} required />
-                        <input className="bg-black border border-gray-700 p-2" placeholder="Founded (e.g. 1889)" value={manuFounded} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuFounded(e.target.value)} required />
-                        <input className="bg-black border border-gray-700 p-2" placeholder="Origin (e.g. Kyoto, Japan)" value={manuOrigin} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuOrigin(e.target.value)} required />
-                        <input className="bg-black border border-gray-700 p-2" placeholder="Website" value={manuWebsite} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuWebsite(e.target.value)} />
-                        <input className="bg-black border border-gray-700 p-2" placeholder="Logo URL" value={manuLogo} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuLogo(e.target.value)} />
-                        <input className="bg-black border border-gray-700 p-2" placeholder="Key Franchises (comma separated)" value={manuFranchises} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuFranchises(e.target.value)} />
-                        <textarea className="bg-black border border-gray-700 p-2 col-span-2 h-32" placeholder="Description" value={manuDesc} onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setManuDesc(e.target.value)} required />
-                        <div className="col-span-2"><Button type="submit">REGISTER ENTITY</Button></div>
+                        <input className="bg-black border border-gray-700 p-2" placeholder="Slug (optional)" value={manuSlug} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuSlug(e.target.value)} />
+                        
+                        <input type="number" className="bg-black border border-gray-700 p-2" placeholder="Founded Year (e.g. 1889)" value={manuFounded} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuFounded(e.target.value)} required />
+                        <input className="bg-black border border-gray-700 p-2" placeholder="Country (e.g. Japan)" value={manuCountry} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuCountry(e.target.value)} required />
+                        
+                        <input className="bg-black border border-gray-700 p-2" placeholder="Website URL" value={manuWebsite} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuWebsite(e.target.value)} />
+                        <input className="bg-black border border-gray-700 p-2" placeholder="Image URL (Logo)" value={manuImage} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuImage(e.target.value)} />
+                        
+                        <input className="bg-black border border-gray-700 p-2 md:col-span-2" placeholder="Key Franchises (comma separated)" value={manuFranchises} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuFranchises(e.target.value)} />
+                        
+                        <textarea className="bg-black border border-gray-700 p-2 md:col-span-2 h-32" placeholder="Description" value={manuDesc} onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setManuDesc(e.target.value)} required />
+                        <div className="md:col-span-2"><Button type="submit">REGISTER ENTITY</Button></div>
                     </form>
                 )}
 
                 {activeTab === 'GAME' && (
                     <form onSubmit={handleSubmitGame} className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <input className="bg-black border border-gray-700 p-2" placeholder="Title" value={gameTitle} onChange={(e: ChangeEvent<HTMLInputElement>) => setGameTitle(e.target.value)} required />
                             <input className="bg-black border border-gray-700 p-2" placeholder="Slug (optional)" value={gameSlug} onChange={(e: ChangeEvent<HTMLInputElement>) => setGameSlug(e.target.value)} />
                             <input className="bg-black border border-gray-700 p-2" placeholder="Developer" value={gameDev} onChange={(e: ChangeEvent<HTMLInputElement>) => setGameDev(e.target.value)} required />
@@ -271,7 +277,7 @@ export default function AdminPortalPage() {
                                 <input type="number" min="1" max="5" className="bg-black border border-gray-700 p-2 w-20 text-center" placeholder="Rate 1-5" value={gameRating} onChange={(e: ChangeEvent<HTMLInputElement>) => setGameRating(e.target.value)} />
                             </div>
 
-                            <input className="bg-black border border-gray-700 p-2 col-span-2" placeholder="Image URL" value={gameImage} onChange={(e: ChangeEvent<HTMLInputElement>) => setGameImage(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-2 md:col-span-2" placeholder="Image URL" value={gameImage} onChange={(e: ChangeEvent<HTMLInputElement>) => setGameImage(e.target.value)} />
                         </div>
                         <textarea className="w-full bg-black border border-gray-700 p-2 h-32" placeholder="Review Content" value={gameContent} onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setGameContent(e.target.value)} required />
                         <textarea className="w-full bg-black border border-gray-700 p-2 h-20" placeholder="Why It Matters" value={gameMatter} onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setGameMatter(e.target.value)} required />
@@ -282,7 +288,7 @@ export default function AdminPortalPage() {
                 {activeTab === 'CONSOLE' && (
                     <form onSubmit={handleSubmitConsole} className="space-y-4">
                          <h3 className="text-retro-neon border-b border-gray-700 pb-2 mb-4">I. IDENTITY</h3>
-                         <div className="grid grid-cols-2 gap-4">
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <select className="bg-black border border-gray-700 p-2" value={consoleManuId} onChange={(e: ChangeEvent<HTMLSelectElement>) => setConsoleManuId(e.target.value)} required>
                                 <option value="">-- Select Manufacturer --</option>
                                 {manufacturers.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
@@ -309,12 +315,12 @@ export default function AdminPortalPage() {
                                 <option value="Hybrid">Hybrid</option>
                                 <option value="Micro Console">Micro Console</option>
                             </select>
-                            <input className="bg-black border border-gray-700 p-2 col-span-2" placeholder="Image URL" value={consoleImage} onChange={(e: ChangeEvent<HTMLInputElement>) => setConsoleImage(e.target.value)} />
-                            <textarea className="bg-black border border-gray-700 p-2 col-span-2 h-20" placeholder="Intro Description" value={consoleIntro} onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setConsoleIntro(e.target.value)} required />
+                            <input className="bg-black border border-gray-700 p-2 md:col-span-2" placeholder="Image URL" value={consoleImage} onChange={(e: ChangeEvent<HTMLInputElement>) => setConsoleImage(e.target.value)} />
+                            <textarea className="bg-black border border-gray-700 p-2 md:col-span-2 h-20" placeholder="Intro Description" value={consoleIntro} onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setConsoleIntro(e.target.value)} required />
                         </div>
 
                         <h3 className="text-retro-neon border-b border-gray-700 pb-2 mb-4 mt-8">II. TECHNICAL SPECS</h3>
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <input className="bg-black border border-gray-700 p-2" placeholder="CPU" value={specCpu} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecCpu(e.target.value)} />
                             <input className="bg-black border border-gray-700 p-2" placeholder="GPU" value={specGpu} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecGpu(e.target.value)} />
                             <input className="bg-black border border-gray-700 p-2" placeholder="RAM" value={specRam} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecRam(e.target.value)} />
@@ -331,7 +337,7 @@ export default function AdminPortalPage() {
                         </div>
 
                         <h3 className="text-retro-neon border-b border-gray-700 pb-2 mb-4 mt-8">III. COMMERCIAL DATA</h3>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <input className="bg-black border border-gray-700 p-2" placeholder="Launch Price" value={specPrice} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecPrice(e.target.value)} />
                             <input className="bg-black border border-gray-700 p-2" placeholder="Inflation Adj. Price" value={specInflation} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecInflation(e.target.value)} />
                             <input className="bg-black border border-gray-700 p-2" placeholder="Units Sold" value={specSold} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecSold(e.target.value)} />
