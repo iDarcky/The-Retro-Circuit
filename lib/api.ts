@@ -152,7 +152,7 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
 export const addConsole = async (
     consoleData: Omit<ConsoleDetails, 'id' | 'manufacturer' | 'specs'>, 
     specsData: ConsoleSpecs
-): Promise<boolean> => {
+): Promise<{ success: boolean, message?: string }> => {
     try {
         // 1. Insert Console
         const { data: newConsole, error: consoleError } = await supabase
@@ -161,19 +161,25 @@ export const addConsole = async (
             .select('id')
             .single();
 
-        if (consoleError || !newConsole) throw consoleError;
+        if (consoleError || !newConsole) {
+            return { success: false, message: consoleError?.message || "Failed to create console record" };
+        }
 
         // 2. Insert Specs (Linked to Console ID)
         const { error: specsError } = await supabase
             .from('console_specs')
             .insert([{ ...specsData, console_id: newConsole.id }]);
 
-        if (specsError) throw specsError; 
+        if (specsError) {
+             // Optional: Cleanup console if specs fail
+             await supabase.from('consoles').delete().eq('id', newConsole.id);
+             return { success: false, message: `Specs Error: ${specsError.message}` };
+        }
 
-        return true;
-    } catch (e) {
+        return { success: true };
+    } catch (e: any) {
         console.error(e);
-        return false;
+        return { success: false, message: e.message || "Unknown Exception" };
     }
 };
 

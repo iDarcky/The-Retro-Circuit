@@ -165,10 +165,13 @@ export default function AdminPortalPage() {
         if(!specsResult.success) { setErrorMsg(specsResult.error.issues[0].message); return; }
 
         setLoading(true);
-        if (await addConsole(consoleResult.data as any, specsResult.data as any)) {
+        const response = await addConsole(consoleResult.data as any, specsResult.data as any);
+        if (response.success) {
             setMessage("HARDWARE & SPECS REGISTERED");
             setConsoleName('');
-        } else setErrorMsg("REGISTRATION FAILED");
+        } else {
+            setErrorMsg(`REGISTRATION FAILED: ${response.message}`);
+        }
         setLoading(false);
     };
 
