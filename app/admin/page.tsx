@@ -131,7 +131,7 @@ export default function AdminPortalPage() {
         // 1. Validate Base Data
         const rawConsole = {
             name: consoleName,
-            slug: consoleSlug || consoleName.toLowerCase().replace(/ /g, '-'),
+            slug: consoleSlug || consoleName.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, ''),
             manufacturer_id: consoleManuId,
             release_year: consoleYear,
             form_factor: consoleType,
@@ -159,6 +159,35 @@ export default function AdminPortalPage() {
             setMessage("HARDWARE & SPECS REGISTERED");
             setConsoleName('');
         } else setErrorMsg("REGISTRATION FAILED");
+        setLoading(false);
+    };
+
+    const handleSubmitGame = async (e: FormEvent) => {
+        e.preventDefault();
+        setMessage(null);
+        setErrorMsg(null);
+        
+        const raw = {
+            title: gameTitle,
+            slug: gameSlug || gameTitle.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, ''),
+            developer: gameDev,
+            year: gameYear,
+            genre: gameGenre,
+            content: gameContent,
+            whyItMatters: gameMatter,
+            rating: 5,
+            image: gameImage,
+            console_slug: gameConsoleSlug || undefined
+        };
+        
+        const result = GameSchema.safeParse(raw);
+        if (!result.success) { setErrorMsg(result.error.issues[0].message); return; }
+        
+        setLoading(true);
+        if (await addGame(result.data)) {
+            setMessage("GAME ARCHIVED");
+            setGameTitle(''); setGameContent(''); setGameMatter('');
+        } else setErrorMsg("ARCHIVAL FAILED");
         setLoading(false);
     };
 
@@ -220,6 +249,23 @@ export default function AdminPortalPage() {
                         <input className="bg-black border border-gray-700 p-2" placeholder="Key Franchises (comma separated)" value={manuFranchises} onChange={e => setManuFranchises(e.target.value)} />
                         <textarea className="bg-black border border-gray-700 p-2 col-span-2 h-32" placeholder="Description" value={manuDesc} onChange={e => setManuDesc(e.target.value)} required />
                         <div className="col-span-2"><Button type="submit">REGISTER ENTITY</Button></div>
+                    </form>
+                )}
+
+                {activeTab === 'GAME' && (
+                    <form onSubmit={handleSubmitGame} className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Title" value={gameTitle} onChange={e => setGameTitle(e.target.value)} required />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Slug (optional)" value={gameSlug} onChange={e => setGameSlug(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Developer" value={gameDev} onChange={e => setGameDev(e.target.value)} required />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Year" value={gameYear} onChange={e => setGameYear(e.target.value)} required />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Genre" value={gameGenre} onChange={e => setGameGenre(e.target.value)} required />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Console Slug (e.g. snes)" value={gameConsoleSlug} onChange={e => setGameConsoleSlug(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-2 col-span-2" placeholder="Image URL" value={gameImage} onChange={e => setGameImage(e.target.value)} />
+                        </div>
+                        <textarea className="w-full bg-black border border-gray-700 p-2 h-32" placeholder="Review Content" value={gameContent} onChange={e => setGameContent(e.target.value)} required />
+                        <textarea className="w-full bg-black border border-gray-700 p-2 h-20" placeholder="Why It Matters" value={gameMatter} onChange={e => setGameMatter(e.target.value)} required />
+                        <Button type="submit">ARCHIVE GAME</Button>
                     </form>
                 )}
 
