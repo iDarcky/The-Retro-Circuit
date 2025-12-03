@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, type FC, type ReactNode } from 'react';
@@ -8,6 +9,7 @@ import { retroAuth } from '../../lib/auth';
 import { checkDatabaseConnection } from '../../lib/api';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase/singleton';
 import GlobalSearch from '../ui/GlobalSearch';
+import Logo from '../ui/Logo';
 import type { User } from '@supabase/supabase-js';
 import { 
   IconNews, IconDatabase, IconVS, IconGames, IconTimeline, 
@@ -111,8 +113,8 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       {/* DESKTOP SIDEBAR */}
       <aside className="hidden md:flex flex-col w-64 border-r border-retro-grid bg-retro-dark/95 backdrop-blur z-20 h-screen sticky top-0">
         <div className="p-6 border-b border-retro-grid flex items-center justify-center">
-             <div className="w-12 h-12 bg-retro-neon rounded-full flex items-center justify-center animate-pulse shadow-[0_0_20px_rgba(0,255,157,0.4)]">
-                <IconHome className="w-8 h-8 text-retro-dark" />
+             <div className="relative group">
+                <Logo className="w-12 h-12 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)] transition-transform group-hover:scale-105" />
              </div>
              <div className="ml-3">
                  <h1 className="font-pixel text-sm text-white leading-none">RETRO</h1>
@@ -154,7 +156,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         
         {/* Status Footer */}
         <div className="p-2 bg-black text-[10px] font-mono text-center flex justify-between items-center px-4 text-gray-600">
-            <span>v1.0.4</span>
+            <span>v1.0.5</span>
             {isAdmin && (
                 <span className={`flex items-center gap-1 ${dbStatus === 'ONLINE' ? 'text-retro-neon' : 'text-red-500'}`}>
                     <span className={`w-2 h-2 rounded-full ${dbStatus === 'ONLINE' ? 'bg-retro-neon' : 'bg-red-500'} animate-pulse`}></span>
@@ -167,9 +169,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       {/* MOBILE HEADER */}
       <header className="md:hidden h-16 border-b border-retro-grid bg-retro-dark/95 backdrop-blur z-20 flex items-center justify-between px-4 sticky top-0">
          <div className="flex items-center">
-             <div className="w-8 h-8 bg-retro-neon rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(0,255,157,0.4)]">
-                <IconHome className="w-5 h-5 text-retro-dark" />
-             </div>
+             <Logo className="w-8 h-8 drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]" />
              <span className="ml-2 font-pixel text-xs text-white">RETRO CIRCUIT</span>
          </div>
          <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="p-2 text-retro-neon">
