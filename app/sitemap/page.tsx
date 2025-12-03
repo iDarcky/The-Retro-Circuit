@@ -37,7 +37,7 @@ export default async function SitemapPage() {
                     <ul className="space-y-2 font-mono text-sm">
                         {brands.map(b => (
                             <li key={b.id}>
-                                <Link href={`/console/brand/${b.name}`} className="text-gray-400 hover:text-retro-pink hover:underline">
+                                <Link href={`/console/brand/${b.slug}`} className="text-gray-400 hover:text-retro-pink hover:underline">
                                     {b.name}
                                 </Link>
                             </li>

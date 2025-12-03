@@ -118,7 +118,7 @@ export default function ConsoleVaultPage() {
                     return (
                         <Link 
                             key={manu.id}
-                            href={`/console/brand/${manu.name}`}
+                            href={`/console/brand/${manu.slug}`}
                             className={`group border-4 p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${theme.color} ${theme.bg} ${theme.hover}`}
                         >
                             {manu.image_url ? (

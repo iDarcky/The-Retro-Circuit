@@ -1,5 +1,5 @@
 import { supabase } from "./supabase/singleton";
-import { NewsItem, GameOfTheWeekData, TimelineEvent, UserCollectionItem, SearchResult, Manufacturer, ConsoleDetails, ConsoleFilterState, ConsoleSpecs } from "./types";
+import { NewsItem, GameOfTheWeekData, UserCollectionItem, SearchResult, Manufacturer, ConsoleDetails, ConsoleFilterState, ConsoleSpecs } from "./types";
 
 export const checkDatabaseConnection = async (): Promise<boolean> => {
     try {

@@ -8,22 +8,30 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props) {
-    const name = decodeURIComponent(params.name);
+    const supabase = await createClient();
+    const { data: profile } = await supabase
+        .from('manufacturer')
+        .select('name')
+        .eq('slug', params.name)
+        .single();
+        
+    const titleName = profile?.name || decodeURIComponent(params.name);
+    
     return {
-        title: `${name} - Corporate Profile`,
-        description: `Explore the history of ${name}, including their console releases, key franchises, and market impact.`,
+        title: `${titleName} - Corporate Profile`,
+        description: `Explore the history of ${titleName}, including their console releases, key franchises, and market impact.`,
     };
 }
 
 export default async function ManufacturerDetailPage({ params }: Props) {
     const supabase = await createClient();
-    const name = decodeURIComponent(params.name);
+    const slug = params.name; // Route param 'name' matches the slug from the URL
 
     // 1. Fetch Profile
     const { data: profile } = await supabase
         .from('manufacturer')
         .select('*')
-        .ilike('name', name)
+        .eq('slug', slug)
         .single();
     
     // 2. Fetch Consoles associated with this Manufacturer ID
