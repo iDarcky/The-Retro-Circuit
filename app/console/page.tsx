@@ -118,7 +118,7 @@ export default function ConsoleVaultPage() {
                     return (
                         <Link 
                             key={manu.id}
-                            href={`/systems/brand/${manu.name}`} // Keep using name for URL niceness, though ID is better internally
+                            href={`/console/brand/${manu.name}`}
                             className={`group border-4 p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${theme.color} ${theme.bg} ${theme.hover}`}
                         >
                             {manu.logo_url ? (
@@ -232,7 +232,7 @@ export default function ConsoleVaultPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {consoles.map((console, idx) => (
                                 <Link 
-                                    href={`/systems/${console.slug}`} 
+                                    href={`/console/${console.slug}`} 
                                     key={`${console.id}-${idx}`}
                                     className="group block border border-retro-grid bg-retro-dark relative overflow-hidden hover:border-retro-blue transition-all"
                                 >

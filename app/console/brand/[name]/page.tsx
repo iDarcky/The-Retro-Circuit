@@ -52,7 +52,7 @@ export default async function ManufacturerDetailPage({ params }: Props) {
                 <div className="flex flex-col md:flex-row justify-between items-end border-b border-gray-800 pb-6 mb-6">
                     <div>
                         <div className="flex gap-2 mb-2">
-                             <Link href="/systems" className="font-mono text-xs text-gray-500 hover:text-white">&lt; HARDWARE DB</Link>
+                             <Link href="/console" className="font-mono text-xs text-gray-500 hover:text-white">&lt; HARDWARE DB</Link>
                              <div className={`font-mono text-xs border inline-block px-2 py-0.5 ${theme.color}`}>CONFIDENTIAL</div>
                         </div>
                         <h1 className={`text-5xl md:text-7xl font-pixel ${themeColorClass} opacity-90 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]`}>
@@ -109,7 +109,7 @@ export default async function ManufacturerDetailPage({ params }: Props) {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {consoles.map((console) => (
                             <Link 
-                                href={`/systems/${console.slug}`} 
+                                href={`/console/${console.slug}`} 
                                 key={console.id}
                                 className={`group block border border-retro-grid bg-retro-dark relative overflow-hidden transition-all ${theme.hover}`}
                             >

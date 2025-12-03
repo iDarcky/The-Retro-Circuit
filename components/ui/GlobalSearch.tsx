@@ -46,7 +46,7 @@ const GlobalSearch: FC = () => {
 
     const handleSelect = (result: SearchResult) => {
         playClick();
-        const path = result.type === 'GAME' ? `/archive/${result.slug}` : `/systems/${result.slug}`;
+        const path = result.type === 'GAME' ? `/archive/${result.slug}` : `/console/${result.slug}`;
         router.push(path);
         setIsOpen(false);
         setQuery('');

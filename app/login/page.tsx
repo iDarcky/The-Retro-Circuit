@@ -157,7 +157,7 @@ export default function LoginPage() {
                                 {collection.map((item) => (
                                     <Link 
                                         key={item.id} 
-                                        href={item.item_type === 'GAME' ? `/archive/${item.item_id}` : `/systems/${item.item_id}`}
+                                        href={item.item_type === 'GAME' ? `/archive/${item.item_id}` : `/console/${item.item_id}`}
                                         className="flex items-center gap-3 p-3 border border-retro-grid bg-black/40 hover:bg-retro-grid/20 transition-colors group"
                                     >
                                         <div className="w-12 h-12 bg-black flex-shrink-0 flex items-center justify-center border border-gray-800">

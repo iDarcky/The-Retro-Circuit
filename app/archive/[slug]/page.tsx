@@ -134,7 +134,7 @@ export default async function GameDetails({ params }: Props) {
                     <span className="bg-retro-blue/10 px-2 py-1 border border-retro-blue">{game.year}</span>
                     <span className="bg-retro-blue/10 px-2 py-1 border border-retro-blue">{game.genre}</span>
                     {game.console_slug && (
-                        <Link href={`/systems/${game.console_slug}`} className="bg-retro-neon/10 px-2 py-1 border border-retro-neon text-retro-neon hover:bg-retro-neon hover:text-black transition-colors">
+                        <Link href={`/console/${game.console_slug}`} className="bg-retro-neon/10 px-2 py-1 border border-retro-neon text-retro-neon hover:bg-retro-neon hover:text-black transition-colors">
                             PLATFORM &gt;
                         </Link>
                     )}

@@ -91,7 +91,7 @@ export default async function ControlRoomPage() {
                         </div>
                     </Link>
 
-                    <Link href="/systems" className="block">
+                    <Link href="/console" className="block">
                         <div className="group border-2 border-retro-grid hover:border-retro-pink bg-black p-4 flex items-center justify-between transition-all">
                             <div>
                                 <div className="font-pixel text-sm text-white group-hover:text-retro-pink">CONSOLE VAULT</div>

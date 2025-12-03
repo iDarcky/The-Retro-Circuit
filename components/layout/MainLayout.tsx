@@ -49,270 +49,156 @@ const MobileNavItem = ({ to, icon: Icon, label, exact = false }: { to: string, i
         <Link 
             href={to}
             onClick={playClick}
-            className={`flex flex-col items-center justify-center min-w-[60px] h-full transition-all active:scale-90 rounded-xl py-1 ${isActive ? 'text-retro-neon' : 'text-gray-400 hover:text-gray-200'}`}
+            className={`flex flex-col items-center justify-center p-2 ${isActive ? 'text-retro-neon' : 'text-gray-500'}`}
         >
-            <div className={`p-1.5 rounded-full transition-all ${isActive ? 'bg-retro-neon/20 shadow-[0_0_8px_rgba(0,255,157,0.4)]' : ''}`}>
-                <Icon className={`w-5 h-5 ${isActive ? 'fill-current' : ''}`} />
-            </div>
-            <span className="text-[8px] font-pixel tracking-tighter text-center mt-1 leading-none">{label}</span>
+            <Icon className="w-6 h-6 mb-1" />
+            <span className="text-[10px] font-mono">{label}</span>
         </Link>
-    );
-};
-
-const FooterStatus = ({ crtEnabled, onToggleCrt }: { crtEnabled: boolean, onToggleCrt: () => void }) => {
-    const [dbStatus, setDbStatus] = useState<'CHECKING' | 'ONLINE' | 'OFFLINE'>('CHECKING');
-    const { enabled, toggleSound } = useSound();
-
-    useEffect(() => {
-        const check = async () => {
-            if (!isSupabaseConfigured) {
-                setDbStatus('OFFLINE');
-                return;
-            }
-            const isConnected = await checkDatabaseConnection();
-            setDbStatus(isConnected ? 'ONLINE' : 'OFFLINE');
-        };
-        check();
-        const interval = setInterval(check, 30000); // Check every 30s
-        return () => clearInterval(interval);
-    }, []);
-
-    return (
-        <footer className={`hidden md:flex fixed bottom-0 left-0 right-0 ${!isSupabaseConfigured ? 'h-auto pb-1' : 'h-8'} bg-retro-dark border-t border-retro-grid flex-col justify-end z-[60] font-mono`}>
-            {!isSupabaseConfigured && (
-                <div className="w-full bg-retro-pink text-black text-center text-[10px] py-1 font-bold animate-pulse mb-1">
-                    ⚠ SYSTEM ALERT: DATABASE DISCONNECTED (MISSING .ENV CONFIG)
-                </div>
-            )}
-            <div className="flex items-center justify-between px-4 h-8 text-[10px]">
-                <div className="flex items-center space-x-4">
-                    <span className="text-gray-500">SYSTEM STATUS:</span>
-                    <span className={`flex items-center ${
-                        dbStatus === 'ONLINE' ? 'text-retro-neon' : 
-                        dbStatus === 'OFFLINE' ? 'text-retro-pink animate-pulse' : 'text-yellow-400'
-                    }`}>
-                        <span className={`w-2 h-2 rounded-full mr-2 ${
-                            dbStatus === 'ONLINE' ? 'bg-retro-neon' : 
-                            dbStatus === 'OFFLINE' ? 'bg-retro-pink' : 'bg-yellow-400'
-                        }`}></span>
-                        {dbStatus === 'CHECKING' ? 'ESTABLISHING UPLINK...' : `DATABASE ${dbStatus}`}
-                    </span>
-                    <Link href="/sitemap" className="text-gray-500 hover:text-retro-blue ml-4 border-l border-gray-700 pl-4">
-                        [ SYSTEM MAP ]
-                    </Link>
-                </div>
-                
-                <div className="flex items-center space-x-4">
-                    <button onClick={onToggleCrt} className="text-retro-blue hover:text-white border border-retro-blue px-2 transition-colors">
-                        {crtEnabled ? 'DISABLE CRT FX' : 'ENABLE CRT FX'}
-                    </button>
-                    <button onClick={toggleSound} className="text-retro-pink hover:text-white border border-retro-pink px-2 transition-colors">
-                        {enabled ? 'MUTE AUDIO' : 'ENABLE AUDIO'}
-                    </button>
-                </div>
-            </div>
-        </footer>
     );
 };
 
 // --- MAIN LAYOUT ---
 
-interface MainLayoutProps {
-    children: ReactNode;
-}
-
-const MainLayout: FC<MainLayoutProps> = ({ children }) => {
-  const [isAdmin, setIsAdmin] = useState(false);
+const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [dbStatus, setDbStatus] = useState<'CONNECTING' | 'ONLINE' | 'OFFLINE'>('CONNECTING');
   const [user, setUser] = useState<User | null>(null);
-  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-  const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false);
-  const [crtEnabled, setCrtEnabled] = useState(true);
-  const pathname = usePathname();
-  const { enabled: soundEnabled, toggleSound } = useSound();
-
-  const toggleCrt = () => {
-    const next = !crtEnabled;
-    setCrtEnabled(next);
-    const scanlines = document.querySelector('.scanlines');
-    const flicker = document.querySelector('.crt-flicker');
-    if (scanlines) scanlines.classList.toggle('hidden', !next);
-    if (flicker) flicker.classList.toggle('hidden', !next);
-  };
 
   useEffect(() => {
-    // Scroll the main content container to top on route change
-    const mainContainer = document.querySelector('main');
-    if (mainContainer) mainContainer.scrollTo(0, 0);
-  }, [pathname]);
+    const init = async () => {
+        // Check DB
+        if (!isSupabaseConfigured) {
+            setDbStatus('OFFLINE');
+        } else {
+            const connected = await checkDatabaseConnection();
+            setDbStatus(connected ? 'ONLINE' : 'OFFLINE');
+        }
 
-  useEffect(() => {
-      setMobileSearchOpen(false);
-      setMobileSettingsOpen(false);
-  }, [pathname]);
+        // Check Auth
+        const currentUser = await retroAuth.getUser();
+        setUser(currentUser);
 
-  useEffect(() => {
-      if (!isSupabaseConfigured) return;
+        // Listen for Auth Changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user || null);
+        });
 
-      const checkAuth = async () => {
-          const isA = await retroAuth.isAdmin();
-          const u = await retroAuth.getUser();
-          setIsAdmin(isA);
-          setUser(u);
-      };
-      
-      checkAuth();
-
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-          const u = session?.user || null;
-          setUser(u);
-          const isA = await retroAuth.isAdmin();
-          setIsAdmin(isA);
-      });
-
-      return () => subscription.unsubscribe();
+        return () => subscription.unsubscribe();
+    };
+    init();
   }, []);
 
   return (
-    <div className="flex flex-col md:flex-row h-screen pt-16 md:pt-0 bg-retro-dark relative overflow-hidden">
+    <div className="min-h-screen flex flex-col md:flex-row relative overflow-hidden bg-retro-dark">
       
-      {/* MOBILE HEADER */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-retro-dark/90 backdrop-blur-md border-b border-retro-grid z-[60] flex items-center justify-between px-4 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
-        <Link href="/" className="flex items-center gap-2">
-            <img src="/logo.png" alt="The Retro Circuit" className="h-10 w-auto object-contain drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]" />
-        </Link>
-        <div className="flex gap-4 items-center">
-            <button 
-                onClick={() => { setMobileSearchOpen(!mobileSearchOpen); setMobileSettingsOpen(false); }}
-                className={`p-2 transition-colors ${mobileSearchOpen ? 'text-retro-neon' : 'text-gray-400'}`}
-                aria-label="Search"
-            >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-            </button>
-            <button
-                onClick={() => { setMobileSettingsOpen(!mobileSettingsOpen); setMobileSearchOpen(false); }}
-                className={`p-2 transition-colors ${mobileSettingsOpen ? 'text-retro-neon' : 'text-gray-400'}`}
-                aria-label="Settings"
-            >
-                <IconSettings className="w-5 h-5" />
-            </button>
-            {isAdmin && <Link href="/admin" className="p-2 text-retro-pink"><IconLock className="w-5 h-5" /></Link>}
-        </div>
+      {/* BACKGROUND GRID */}
+      <div className="absolute inset-0 z-0 pointer-events-none" 
+           style={{ 
+             backgroundImage: 'linear-gradient(rgba(42, 42, 64, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(42, 42, 64, 0.5) 1px, transparent 1px)', 
+             backgroundSize: '40px 40px',
+             opacity: 0.2
+           }}>
       </div>
-
-      {/* MOBILE SEARCH OVERLAY */}
-      {mobileSearchOpen && (
-        <div className="md:hidden fixed top-16 left-0 right-0 bg-retro-dark z-[55] border-b border-retro-grid p-4 animate-[slideDown_0.2s_ease-out]">
-            <GlobalSearch />
-        </div>
-      )}
-
-      {/* MOBILE SETTINGS MENU */}
-      {mobileSettingsOpen && (
-          <>
-            <div 
-                className="fixed inset-0 z-[55] bg-black/60 backdrop-blur-[2px] md:hidden"
-                onClick={() => setMobileSettingsOpen(false)}
-            />
-            <div className="md:hidden fixed top-16 right-0 w-72 bg-retro-dark border-l border-b border-retro-grid z-[60] p-6 shadow-[0_0_50px_rgba(0,0,0,0.8)] animate-[slideDown_0.2s_ease-out]">
-                <div className="space-y-6">
-                    <div>
-                        <div className="font-pixel text-xs text-gray-500 mb-2">VISUAL FX</div>
-                        <button 
-                            onClick={() => { toggleCrt(); setMobileSettingsOpen(false); }}
-                            className={`w-full border px-4 py-2 font-mono text-sm flex justify-between items-center ${crtEnabled ? 'border-retro-neon text-retro-neon' : 'border-gray-600 text-gray-400'}`}
-                        >
-                            <span>CRT SCANLINES</span>
-                            <span>{crtEnabled ? 'ON' : 'OFF'}</span>
-                        </button>
-                    </div>
-
-                    <div>
-                        <div className="font-pixel text-xs text-gray-500 mb-2">AUDIO</div>
-                        <button 
-                            onClick={() => { toggleSound(); setMobileSettingsOpen(false); }}
-                            className={`w-full border px-4 py-2 font-mono text-sm flex justify-between items-center ${soundEnabled ? 'border-retro-pink text-retro-pink' : 'border-gray-600 text-gray-400'}`}
-                        >
-                            <span>SYSTEM SOUND</span>
-                            <span>{soundEnabled ? 'ON' : 'OFF'}</span>
-                        </button>
-                    </div>
-
-                    <div className="pt-6 border-t border-retro-grid">
-                        <Link href="/sitemap" onClick={() => setMobileSettingsOpen(false)} className="block font-mono text-xs text-gray-500 hover:text-white mb-2">
-                            [ SYSTEM MAP ]
-                        </Link>
-                         <div className="font-mono text-[10px] text-gray-600">
-                            v1.0.4 // RETRO-CIRCUIT
-                        </div>
-                    </div>
-                </div>
-            </div>
-          </>
-      )}
 
       {/* DESKTOP SIDEBAR */}
-      <aside className="hidden md:flex flex-col w-64 bg-retro-dark border-r border-retro-grid h-full z-50 flex-shrink-0 pb-8">
-          <div className="p-6 border-b border-retro-grid">
-             <Link href="/" className="block group">
-                <img src="/logo.png" alt="The Retro Circuit" className="h-12 w-auto object-contain drop-shadow-[0_0_8px_rgba(0,255,157,0.6)] group-hover:drop-shadow-[0_0_12px_rgba(0,255,157,1)] transition-all" />
-             </Link>
-          </div>
-          
-          <div className="flex-1 py-6 overflow-y-auto custom-scrollbar">
-             <nav className="space-y-1">
-                <SidebarItem to="/" icon={IconHome} label="CONTROL ROOM" exact />
-                <SidebarItem to="/signals" icon={IconNews} label="SIGNAL FEED" />
-                <SidebarItem to="/archive" icon={IconGames} label="GAME VAULT" />
-                <SidebarItem to="/systems" icon={IconDatabase} label="CONSOLE VAULT" />
-                <SidebarItem to="/arena" icon={IconVS} label="VS MODE" />
-                <SidebarItem to="/chrono" icon={IconTimeline} label="HISTORY LINE" />
-             </nav>
-          </div>
-
-          <div className="px-4 pt-4 border-t border-retro-grid bg-black/20">
-             <div className="mb-4">
-                 <GlobalSearch />
+      <aside className="hidden md:flex flex-col w-64 border-r border-retro-grid bg-retro-dark/95 backdrop-blur z-20 h-screen sticky top-0">
+        <div className="p-6 border-b border-retro-grid flex items-center justify-center">
+             <div className="w-12 h-12 bg-retro-neon rounded-full flex items-center justify-center animate-pulse shadow-[0_0_20px_rgba(0,255,157,0.4)]">
+                <IconHome className="w-8 h-8 text-retro-dark" />
              </div>
-             
-             {user ? (
-                 <Link href="/login" className="flex items-center p-2 border border-gray-700 bg-gray-900 hover:border-retro-blue group transition-colors">
-                     <div className="w-8 h-8 bg-retro-blue/20 flex items-center justify-center border border-retro-blue mr-3">
-                         <span className="font-pixel text-xs text-retro-blue">{user.email?.[0].toUpperCase()}</span>
-                     </div>
-                     <div className="overflow-hidden">
-                         <div className="font-mono text-[10px] text-gray-400">OPERATOR</div>
-                         <div className="font-pixel text-[10px] text-white truncate w-32 group-hover:text-retro-blue">
-                            {user.user_metadata?.username || 'UNKNOWN'}
-                         </div>
-                     </div>
-                 </Link>
-             ) : (
-                 <Link href="/login" className="block w-full border border-retro-grid p-2 text-center font-mono text-xs text-gray-400 hover:text-white hover:border-white hover:bg-white/5 transition-all">
-                     [ INITIATE LOGIN ]
-                 </Link>
-             )}
-          </div>
+             <div className="ml-3">
+                 <h1 className="font-pixel text-sm text-white leading-none">RETRO</h1>
+                 <h1 className="font-pixel text-sm text-retro-neon leading-none">CIRCUIT</h1>
+             </div>
+        </div>
+
+        <nav className="flex-1 py-6 space-y-2 overflow-y-auto custom-scrollbar">
+           <div className="px-6 mb-2 text-xs font-mono text-gray-600 uppercase">Mainframe</div>
+           <SidebarItem to="/" icon={IconHome} label="CONTROL ROOM" exact />
+           <SidebarItem to="/signals" icon={IconNews} label="SIGNALS" />
+           
+           <div className="px-6 mt-6 mb-2 text-xs font-mono text-gray-600 uppercase">Database</div>
+           <SidebarItem to="/console" icon={IconDatabase} label="CONSOLES" />
+           <SidebarItem to="/archive" icon={IconGames} label="GAME VAULT" />
+           <SidebarItem to="/chrono" icon={IconTimeline} label="TIMELINE" />
+           
+           <div className="px-6 mt-6 mb-2 text-xs font-mono text-gray-600 uppercase">Tools</div>
+           <SidebarItem to="/arena" icon={IconVS} label="VS MODE" />
+        </nav>
+
+        <div className="p-4 border-t border-retro-grid">
+            {user ? (
+                <Link href="/login" className="flex items-center gap-3 p-2 hover:bg-white/5 rounded transition-colors group">
+                    <div className="w-8 h-8 rounded bg-retro-blue/20 border border-retro-blue flex items-center justify-center group-hover:bg-retro-blue group-hover:text-black transition-colors">
+                        <IconSettings className="w-4 h-4" />
+                    </div>
+                    <div>
+                        <div className="text-[10px] font-mono text-gray-400">OPERATOR</div>
+                        <div className="text-xs font-pixel text-retro-blue truncate w-32">{user.user_metadata?.username || 'USER'}</div>
+                    </div>
+                </Link>
+            ) : (
+                <Link href="/login" className="block w-full border border-retro-grid hover:border-retro-neon text-gray-400 hover:text-retro-neon p-2 text-center font-mono text-xs transition-all">
+                    [ ACCESS TERMINAL ]
+                </Link>
+            )}
+        </div>
+        
+        {/* Status Footer */}
+        <div className="p-2 bg-black text-[10px] font-mono text-center flex justify-between items-center px-4 text-gray-600">
+            <span>v1.0.4</span>
+            <span className={`flex items-center gap-1 ${dbStatus === 'ONLINE' ? 'text-retro-neon' : 'text-red-500'}`}>
+                <span className={`w-2 h-2 rounded-full ${dbStatus === 'ONLINE' ? 'bg-retro-neon' : 'bg-red-500'} animate-pulse`}></span>
+                {dbStatus === 'ONLINE' ? 'DATABASE ONLINE' : 'OFFLINE'}
+            </span>
+        </div>
       </aside>
 
-      {/* MAIN CONTENT */}
-      <main className="flex-1 overflow-y-auto relative p-4 pb-24 md:pb-8 scroll-smooth custom-scrollbar">
-          {children}
+      {/* MOBILE HEADER */}
+      <header className="md:hidden h-16 border-b border-retro-grid bg-retro-dark/95 backdrop-blur z-20 flex items-center justify-between px-4 sticky top-0">
+         <div className="flex items-center">
+             <div className="w-8 h-8 bg-retro-neon rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(0,255,157,0.4)]">
+                <IconHome className="w-5 h-5 text-retro-dark" />
+             </div>
+             <span className="ml-2 font-pixel text-xs text-white">RETRO CIRCUIT</span>
+         </div>
+         <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="p-2 text-retro-neon">
+             {isSidebarOpen ? 'CLOSE' : 'MENU'}
+         </button>
+      </header>
+
+      {/* MOBILE MENU OVERLAY */}
+      {isSidebarOpen && (
+          <div className="md:hidden fixed inset-0 z-10 bg-black/95 pt-20 px-4 pb-safe animate-fadeIn">
+              <nav className="space-y-4">
+                  <Link href="/" onClick={() => setSidebarOpen(false)} className="block p-4 border border-retro-grid text-retro-neon font-pixel text-center hover:bg-retro-neon hover:text-black">CONTROL ROOM</Link>
+                  <Link href="/console" onClick={() => setSidebarOpen(false)} className="block p-4 border border-retro-grid text-white font-pixel text-center hover:border-retro-blue hover:text-retro-blue">CONSOLES</Link>
+                  <Link href="/archive" onClick={() => setSidebarOpen(false)} className="block p-4 border border-retro-grid text-white font-pixel text-center hover:border-retro-pink hover:text-retro-pink">GAMES</Link>
+                  <Link href="/arena" onClick={() => setSidebarOpen(false)} className="block p-4 border border-retro-grid text-white font-pixel text-center hover:border-yellow-400 hover:text-yellow-400">VS MODE</Link>
+                  <Link href="/login" onClick={() => setSidebarOpen(false)} className="block p-4 border border-retro-grid text-gray-400 font-pixel text-center hover:bg-white hover:text-black">MY ACCOUNT</Link>
+              </nav>
+          </div>
+      )}
+
+      {/* MAIN CONTENT AREA */}
+      <main className="flex-1 relative z-10 flex flex-col h-[calc(100vh-64px)] md:h-screen overflow-hidden">
+        {/* Global Search Bar */}
+        <GlobalSearch />
+        
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar bg-retro-dark/80 pb-20 md:pb-0">
+             {children}
+        </div>
+
+        {/* Mobile Bottom Nav */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-retro-dark border-t border-retro-grid grid grid-cols-5 items-center pb-safe z-30">
+            <MobileNavItem to="/" icon={IconHome} label="Home" exact />
+            <MobileNavItem to="/signals" icon={IconNews} label="News" />
+            <MobileNavItem to="/console" icon={IconDatabase} label="Sys" />
+            <MobileNavItem to="/archive" icon={IconGames} label="Games" />
+            <MobileNavItem to="/login" icon={IconLogin} label="Acct" />
+        </div>
       </main>
-
-      <FooterStatus crtEnabled={crtEnabled} onToggleCrt={toggleCrt} />
-
-      {/* MOBILE NAV BOTTOM (Floating Glass Style) */}
-      <div className="md:hidden fixed bottom-6 left-4 right-4 h-16 bg-retro-dark/90 backdrop-blur-xl border border-retro-grid/50 z-[60] rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex items-center justify-between px-2 overflow-x-auto no-scrollbar">
-         <MobileNavItem to="/" icon={IconHome} label="HOME" exact />
-         <MobileNavItem to="/signals" icon={IconNews} label="NEWS" />
-         <MobileNavItem to="/archive" icon={IconGames} label="GAMES" />
-         <MobileNavItem to="/systems" icon={IconDatabase} label="SYSTEMS" />
-         <MobileNavItem to="/arena" icon={IconVS} label="VS" />
-         <MobileNavItem to="/chrono" icon={IconTimeline} label="TIMELINE" />
-         <MobileNavItem to="/login" icon={IconLogin} label={user ? "PROFILE" : "LOGIN"} />
-      </div>
 
     </div>
   );

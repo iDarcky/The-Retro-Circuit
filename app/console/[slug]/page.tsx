@@ -88,7 +88,7 @@ export default async function ConsoleSpecsPage({ params }: Props) {
         <div className="flex flex-col items-center justify-center min-h-[50vh]">
             <h2 className="font-pixel text-retro-pink text-2xl mb-4">ERROR 404</h2>
             <p className="font-mono text-gray-400 mb-8">SYSTEM ARCHIVE NOT FOUND.</p>
-            <Link href="/systems">
+            <Link href="/console">
                 <Button variant="secondary">RETURN TO VAULT</Button>
             </Link>
         </div>
@@ -102,14 +102,14 @@ export default async function ConsoleSpecsPage({ params }: Props) {
         {/* Navigation & Actions */}
         <div className="mb-8 flex justify-between items-start border-b-4 border-retro-grid pb-6">
             <div>
-                 <Link href="/systems" className="inline-block text-xs font-mono text-retro-blue hover:text-retro-neon transition-colors mb-2">
+                 <Link href="/console" className="inline-block text-xs font-mono text-retro-blue hover:text-retro-neon transition-colors mb-2">
                     &lt; BACK TO CONSOLE VAULT
                  </Link>
                  <h1 className="text-4xl md:text-6xl font-pixel text-white drop-shadow-[4px_4px_0_rgba(0,255,157,0.5)] leading-tight uppercase">
                     {consoleData.name}
                  </h1>
                  <div className="flex gap-4 font-mono text-sm text-gray-400 mt-2">
-                    <Link href={`/systems/brand/${consoleData.manufacturer?.name}`} className="hover:text-retro-neon transition-colors">
+                    <Link href={`/console/brand/${consoleData.manufacturer?.name}`} className="hover:text-retro-neon transition-colors">
                         {consoleData.manufacturer?.name.toUpperCase()}
                     </Link>
                     <span>//</span>

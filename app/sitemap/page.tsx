@@ -28,7 +28,7 @@ export default async function SitemapPage() {
                         <li><Link href="/" className="text-retro-blue hover:text-white hover:underline">Control Room</Link></li>
                         <li><Link href="/signals" className="text-retro-blue hover:text-white hover:underline">Signal Feed</Link></li>
                         <li><Link href="/archive" className="text-retro-blue hover:text-white hover:underline">Game Vault</Link></li>
-                        <li><Link href="/systems" className="text-retro-blue hover:text-white hover:underline">Console Vault</Link></li>
+                        <li><Link href="/console" className="text-retro-blue hover:text-white hover:underline">Console Vault</Link></li>
                         <li><Link href="/arena" className="text-retro-blue hover:text-white hover:underline">VS Mode</Link></li>
                         <li><Link href="/chrono" className="text-retro-blue hover:text-white hover:underline">History Line</Link></li>
                     </ul>
@@ -37,7 +37,7 @@ export default async function SitemapPage() {
                     <ul className="space-y-2 font-mono text-sm">
                         {brands.map(b => (
                             <li key={b.id}>
-                                <Link href={`/systems/brand/${b.name}`} className="text-gray-400 hover:text-retro-pink hover:underline">
+                                <Link href={`/console/brand/${b.name}`} className="text-gray-400 hover:text-retro-pink hover:underline">
                                     {b.name}
                                 </Link>
                             </li>
@@ -51,7 +51,7 @@ export default async function SitemapPage() {
                     <ul className="space-y-2 font-mono text-sm max-h-[80vh] overflow-y-auto custom-scrollbar pr-2">
                         {consoles.map(c => (
                             <li key={c.slug}>
-                                <Link href={`/systems/${c.slug}`} className="text-gray-400 hover:text-retro-neon hover:underline">
+                                <Link href={`/console/${c.slug}`} className="text-gray-400 hover:text-retro-neon hover:underline">
                                     {c.name}
                                 </Link>
                             </li>
