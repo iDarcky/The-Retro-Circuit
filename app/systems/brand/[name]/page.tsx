@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { createClient } from '../../../../lib/supabase/server';
-import { ConsoleDetails, Manufacturer } from '../../../../lib/types';
+import { ConsoleDetails } from '../../../../lib/types';
 import { getBrandTheme } from '../../../../data/static';
 import { Metadata } from 'next';
 
