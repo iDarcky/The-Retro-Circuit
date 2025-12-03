@@ -79,6 +79,14 @@ export interface UserCollectionItem {
   item_image?: string;
 }
 
+export interface UserProfile {
+  id: string;
+  username: string;
+  role: 'user' | 'admin';
+  avatar_id: string;
+  updated_at?: string;
+}
+
 export interface ManufacturerProfile {
   name: string;
   founded: string;

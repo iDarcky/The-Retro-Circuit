@@ -1,4 +1,5 @@
 import { supabase } from "./supabase/singleton";
+import { UserProfile } from "./types";
 
 export const retroAuth = {
     signIn: async (email: string, password: string) => {
@@ -30,15 +31,27 @@ export const retroAuth = {
         return data.user;
     },
     updateAvatar: async (avatarId: string) => {
+        // We update both the auth metadata (fast access) and the profile table (persistence)
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+             await supabase.from('profiles').update({ avatar_id: avatarId }).eq('id', user.id);
+        }
+        
         return await supabase.auth.updateUser({
             data: { avatar_id: avatarId }
         });
     },
     isAdmin: async (): Promise<boolean> => {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user || !user.email) return false;
+        if (!user) return false;
         
-        const { data } = await supabase.from('admins').select('email').eq('email', user.email).single();
-        return !!data;
+        // Updated to check 'profiles' table for role='admin'
+        const { data } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+            
+        return (data as UserProfile)?.role === 'admin';
     }
 };

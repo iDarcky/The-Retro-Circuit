@@ -62,9 +62,23 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
 
   // 3. Protect Admin Routes
-  // If the user is trying to access /admin and is NOT logged in, redirect to login.
-  if (request.nextUrl.pathname.startsWith('/admin') && !user) {
-    return NextResponse.redirect(new URL('/login', request.url));
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    // Check Authentication
+    if (!user) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+
+    // Check Authorization (Role) via profiles table
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    // If no profile or role is not 'admin', redirect to home
+    if (!profile || profile.role !== 'admin') {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
   }
 
   return response;
