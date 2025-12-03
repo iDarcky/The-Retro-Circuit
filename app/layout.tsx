@@ -25,6 +25,7 @@ export const viewport = {
 };
 
 export const metadata = {
+  metadataBase: new URL('https://theretrocircuit.com'),
   title: "The Retro Circuit | Retro Gaming Database & Comparisons",
   description: "The ultimate retro gaming database. Compare console specs, read classic game reviews, and view the complete timeline of video game history.",
   keywords: ["retro gaming", "console specs", "video game database", "retro reviews", "console comparison"],
@@ -32,6 +33,15 @@ export const metadata = {
     icon: '/logo.svg',
   },
   manifest: '/manifest.json',
+  openGraph: {
+    siteName: 'The Retro Circuit',
+    type: 'website',
+    locale: 'en_US',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  }
 };
 
 export default function RootLayout({
