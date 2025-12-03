@@ -80,67 +80,105 @@ export interface UserCollectionItem {
 }
 
 export interface ManufacturerProfile {
-  id?: string;
   name: string;
   founded: string;
   origin: string;
-  description: string;
-  ceo: string;
+  ceo?: string;
   key_franchises: string[];
+  description: string;
 }
 
-// Phase 2: GSMArena-style Deep Specs
-export interface ConsoleDetails {
+// -- NEW DB STRUCTURE TYPES --
+
+export interface Manufacturer {
   id: string;
   name: string;
-  slug: string;
-  manufacturer: string;
-  release_year: number;
-  release_date?: string;
-  discontinued_date?: string;
-  type: string; // 'Home', 'Handheld', 'Hybrid'
-  generation: number;
-  intro_text: string;
-  image_url?: string;
-  
-  // Body & Design
-  dimensions?: string; // e.g., "260 x 190 x 65 mm"
-  weight?: string; // e.g., "1.5 kg"
-  casing?: string;
-  
-  // Specs
+  founded_year: string;
+  origin_country: string;
+  website?: string;
+  description: string;
+  key_franchises: string[];
+  logo_url?: string;
+}
+
+export const ManufacturerSchema = z.object({
+  name: z.string().min(1, "Name required"),
+  founded_year: z.string(),
+  origin_country: z.string(),
+  website: z.string().optional(),
+  description: z.string().min(10),
+  key_franchises: z.string().transform(str => str.split(',').map(s => s.trim())), // Input as comma string, convert to array
+  logo_url: z.string().optional()
+});
+
+export interface ConsoleSpecs {
   cpu?: string;
   gpu?: string;
   ram?: string;
-  media?: string;
-  audio?: string;
-  resolution?: string;
-  display_type?: string;
   storage?: string;
-
-  // Market
-  units_sold?: string;
-  launch_price?: string;
-  inflation_price?: string;
-  best_selling_game?: string;
-
-  // I/O
-  ports?: string[];
-  power_supply?: string;
-  battery_life?: string;
+  display_type?: string;
+  resolution?: string;
+  media?: string;
+  ports?: string;
   connectivity?: string;
+  dimensions?: string;
+  weight?: string;
+  battery_life?: string;
+  power_supply?: string;
+  launch_price?: string;
+  launch_price_inflation?: string;
+  units_sold?: string;
+  best_selling_game?: string;
+}
+
+export interface Console {
+  id: string;
+  manufacturer_id: string;
+  name: string;
+  slug: string;
+  release_year: number;
+  generation: string;
+  form_factor: string; // Home, Handheld, Hybrid
+  image_url?: string;
+  description: string;
+}
+
+// Joined Type for UI
+export interface ConsoleDetails extends Console {
+  manufacturer: Manufacturer; // Joined
+  specs: ConsoleSpecs; // Joined
 }
 
 export const ConsoleSchema = z.object({
   name: z.string().min(1, "Name required"),
   slug: z.string().optional(),
-  manufacturer: z.string().min(1, "Manufacturer required"),
+  manufacturer_id: z.string().uuid("Invalid Manufacturer"),
   release_year: z.coerce.number().int().min(1970).max(2030),
-  type: z.string().min(1),
-  generation: z.coerce.number().int().min(1).max(10),
-  intro_text: z.string().min(10),
-  image_url: z.string().url("Invalid URL").optional().or(z.literal('')),
-  // Dynamic specs are kept flexible
+  generation: z.string(),
+  form_factor: z.string(),
+  image_url: z.string().optional(),
+  description: z.string().min(10),
+  // Specs are passed as a separate object in admin, but validated loosely here or separately
+});
+
+export const ConsoleSpecsSchema = z.object({
+  cpu: z.string().optional(),
+  gpu: z.string().optional(),
+  ram: z.string().optional(),
+  storage: z.string().optional(),
+  display_type: z.string().optional(),
+  resolution: z.string().optional(),
+  media: z.string().optional(),
+  ports: z.string().optional(),
+  connectivity: z.string().optional(),
+  dimensions: z.string().optional(),
+  weight: z.string().optional(),
+  battery_life: z.string().optional(),
+  power_supply: z.string().optional(),
+  launch_price: z.string().optional(),
+  launch_price_inflation: z.string().optional(),
+  units_sold: z.string().optional(),
+  best_selling_game: z.string().optional(),
 });
 
 // Search & Filter Types
@@ -156,7 +194,7 @@ export interface SearchResult {
 export interface ConsoleFilterState {
   minYear: number;
   maxYear: number;
-  generations: number[];
-  types: string[]; // Home, Handheld
-  manufacturer?: string | null;
+  generations: string[]; // Changed to string for flexibility
+  form_factors: string[]; // Changed from 'types' to match DB 'form_factor'
+  manufacturer_id?: string | null;
 }

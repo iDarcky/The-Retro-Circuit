@@ -36,9 +36,9 @@ export default async function SitemapPage() {
                     <h2 className="font-pixel text-xl text-white mt-8 mb-4">MANUFACTURERS</h2>
                     <ul className="space-y-2 font-mono text-sm">
                         {brands.map(b => (
-                            <li key={b}>
-                                <Link href={`/systems/brand/${b}`} className="text-gray-400 hover:text-retro-pink hover:underline">
-                                    {b}
+                            <li key={b.id}>
+                                <Link href={`/systems/brand/${b.name}`} className="text-gray-400 hover:text-retro-pink hover:underline">
+                                    {b.name}
                                 </Link>
                             </li>
                         ))}

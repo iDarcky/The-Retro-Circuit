@@ -1,4 +1,3 @@
-
 import Link from 'next/link';
 import { createClient } from '../../../lib/supabase/server';
 import { ConsoleDetails, GameOfTheWeekData } from '../../../lib/types';
@@ -13,13 +12,13 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const supabase = await createClient();
-    const { data } = await supabase.from('consoles').select('name, intro_text, image_url, manufacturer').eq('slug', params.slug).single();
+    const { data } = await supabase.from('consoles').select('name, description, image_url, manufacturer:manufacturers(name)').eq('slug', params.slug).single();
     
     if (!data) return { title: 'Unknown Hardware' };
   
     return {
       title: `${data.name} Specs`,
-      description: data.intro_text.substring(0, 160),
+      description: data.description?.substring(0, 160) || 'Specs unavailable.',
       openGraph: {
         images: data.image_url ? [data.image_url] : []
       }
@@ -56,9 +55,13 @@ const SpecSection = ({ title, children }: { title: string, children: ReactNode }
 export default async function ConsoleSpecsPage({ params }: Props) {
   const supabase = await createClient();
   
-  // Parallel Fetching
+  // Parallel Fetching with Joins
   const [consoleRes, gamesRes] = await Promise.all([
-    supabase.from('consoles').select('*').eq('slug', params.slug).single(),
+    supabase
+        .from('consoles')
+        .select('*, manufacturer:manufacturers(*), specs:console_specs(*)')
+        .eq('slug', params.slug)
+        .single(),
     supabase.from('games').select('*').eq('console_slug', params.slug).order('year', { ascending: true })
   ]);
 
@@ -92,6 +95,8 @@ export default async function ConsoleSpecsPage({ params }: Props) {
     );
   }
 
+  const specs = consoleData.specs || {};
+
   return (
     <div className="w-full max-w-6xl mx-auto p-4">
         {/* Navigation & Actions */}
@@ -104,13 +109,13 @@ export default async function ConsoleSpecsPage({ params }: Props) {
                     {consoleData.name}
                  </h1>
                  <div className="flex gap-4 font-mono text-sm text-gray-400 mt-2">
-                    <Link href={`/systems/brand/${consoleData.manufacturer}`} className="hover:text-retro-neon transition-colors">
-                        {consoleData.manufacturer.toUpperCase()}
+                    <Link href={`/systems/brand/${consoleData.manufacturer?.name}`} className="hover:text-retro-neon transition-colors">
+                        {consoleData.manufacturer?.name.toUpperCase()}
                     </Link>
                     <span>//</span>
                     <span>{consoleData.release_year}</span>
                     <span>//</span>
-                    <span>GEN {consoleData.generation}</span>
+                    <span>{consoleData.generation}</span>
                  </div>
             </div>
             <div className="mt-6 md:mt-0">
@@ -134,14 +139,14 @@ export default async function ConsoleSpecsPage({ params }: Props) {
                     )}
                     {/* Badge */}
                     <div className="absolute top-4 left-4 bg-retro-neon text-black text-xs font-bold px-2 py-1 transform -rotate-2">
-                        {consoleData.type.toUpperCase()}
+                        {consoleData.form_factor?.toUpperCase()}
                     </div>
                 </div>
 
                 <div className="bg-retro-dark border border-retro-grid p-6">
                     <h3 className="font-pixel text-xs text-retro-blue mb-4">SYSTEM OVERVIEW</h3>
                     <p className="font-mono text-gray-300 leading-relaxed text-sm">
-                        {consoleData.intro_text}
+                        {consoleData.description}
                     </p>
                 </div>
             </div>
@@ -156,36 +161,35 @@ export default async function ConsoleSpecsPage({ params }: Props) {
                     
                     <div className="p-0">
                         <SpecSection title="Processing Unit">
-                            <SpecRow label="CPU" value={consoleData.cpu} highlight />
-                            <SpecRow label="GPU" value={consoleData.gpu} />
-                            <SpecRow label="Memory (RAM)" value={consoleData.ram} />
+                            <SpecRow label="CPU" value={specs.cpu} highlight />
+                            <SpecRow label="GPU" value={specs.gpu} />
+                            <SpecRow label="Memory (RAM)" value={specs.ram} />
                         </SpecSection>
 
                         <SpecSection title="Media & Storage">
-                            <SpecRow label="Media Type" value={consoleData.media} />
-                            <SpecRow label="Internal Storage" value={consoleData.storage} />
+                            <SpecRow label="Media Type" value={specs.media} />
+                            <SpecRow label="Internal Storage" value={specs.storage} />
                         </SpecSection>
 
                         <SpecSection title="Audio / Video">
-                            <SpecRow label="Max Resolution" value={consoleData.resolution} />
-                            <SpecRow label="Audio Chip" value={consoleData.audio} />
-                            {consoleData.display_type && <SpecRow label="Display" value={consoleData.display_type} />}
+                            <SpecRow label="Max Resolution" value={specs.resolution} />
+                            <SpecRow label="Display" value={specs.display_type} />
                         </SpecSection>
 
                          <SpecSection title="Physical & I/O">
-                            {consoleData.dimensions && <SpecRow label="Dimensions" value={consoleData.dimensions} />}
-                            {consoleData.weight && <SpecRow label="Weight" value={consoleData.weight} />}
-                            {consoleData.ports && <SpecRow label="Ports" value={consoleData.ports.join(', ')} />}
-                            {consoleData.connectivity && <SpecRow label="Connectivity" value={consoleData.connectivity} />}
-                            {consoleData.power_supply && <SpecRow label="Power" value={consoleData.power_supply} />}
-                            {consoleData.battery_life && <SpecRow label="Battery Life" value={consoleData.battery_life} />}
+                            {specs.dimensions && <SpecRow label="Dimensions" value={specs.dimensions} />}
+                            {specs.weight && <SpecRow label="Weight" value={specs.weight} />}
+                            {specs.ports && <SpecRow label="Ports" value={specs.ports} />}
+                            {specs.connectivity && <SpecRow label="Connectivity" value={specs.connectivity} />}
+                            {specs.power_supply && <SpecRow label="Power" value={specs.power_supply} />}
+                            {specs.battery_life && <SpecRow label="Battery Life" value={specs.battery_life} />}
                         </SpecSection>
 
                         <SpecSection title="Market Data">
-                            <SpecRow label="Units Sold" value={consoleData.units_sold} highlight />
-                            <SpecRow label="Launch Price" value={consoleData.launch_price} />
-                            <SpecRow label="Inflation Adj." value={consoleData.inflation_price} />
-                            <SpecRow label="Best Seller" value={consoleData.best_selling_game} />
+                            <SpecRow label="Units Sold" value={specs.units_sold} highlight />
+                            <SpecRow label="Launch Price" value={specs.launch_price} />
+                            <SpecRow label="Inflation Adj." value={specs.launch_price_inflation} />
+                            <SpecRow label="Best Seller" value={specs.best_selling_game} />
                         </SpecSection>
                     </div>
                 </div>

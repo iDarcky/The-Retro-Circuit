@@ -4,13 +4,13 @@ import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { fetchManufacturers, fetchConsolesFiltered } from '../../lib/api';
 import { getBrandTheme } from '../../data/static';
-import { ConsoleDetails, ConsoleFilterState } from '../../lib/types';
+import { ConsoleDetails, ConsoleFilterState, Manufacturer } from '../../lib/types';
 import RetroLoader from '../../components/ui/RetroLoader';
 import Button from '../../components/ui/Button';
 
 export default function ConsoleVaultPage() {
   const [consoles, setConsoles] = useState<ConsoleDetails[]>([]);
-  const [brands, setBrands] = useState<string[]>([]);
+  const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'BRAND' | 'LIST'>('BRAND');
   
@@ -24,16 +24,16 @@ export default function ConsoleVaultPage() {
       minYear: 1970,
       maxYear: 2005,
       generations: [],
-      types: [],
-      manufacturer: null
+      form_factors: [],
+      manufacturer_id: null
   });
 
   // Initial Load (Brands)
   useEffect(() => {
     const init = async () => {
         setLoading(true);
-        const uniqueBrands = await fetchManufacturers();
-        setBrands(uniqueBrands);
+        const manus = await fetchManufacturers();
+        setManufacturers(manus);
         setLoading(false);
     };
     init();
@@ -62,9 +62,9 @@ export default function ConsoleVaultPage() {
       setPage(1); // Reset to first page on filter change
   };
 
-  const toggleArrayFilter = (key: 'generations' | 'types', value: any) => {
+  const toggleArrayFilter = (key: 'generations' | 'form_factors', value: string) => {
       setFilters(prev => {
-          const arr = prev[key] as any[];
+          const arr = prev[key] as string[];
           if (arr.includes(value)) {
               return { ...prev, [key]: arr.filter(i => i !== value) };
           } else {
@@ -81,6 +81,10 @@ export default function ConsoleVaultPage() {
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
+  const getSelectedManuName = () => {
+      return manufacturers.find(m => m.id === filters.manufacturer_id)?.name || 'Unknown';
+  };
+
   return (
     <div className="w-full max-w-7xl mx-auto p-4">
       
@@ -91,7 +95,7 @@ export default function ConsoleVaultPage() {
         </h2>
         <div className="flex justify-center gap-4">
             <button 
-                onClick={() => { setViewMode('BRAND'); setFilters({ minYear: 1970, maxYear: 2005, generations: [], types: [], manufacturer: null }); }}
+                onClick={() => { setViewMode('BRAND'); setFilters({ minYear: 1970, maxYear: 2005, generations: [], form_factors: [], manufacturer_id: null }); }}
                 className={`font-mono text-xs px-3 py-1 transition-colors ${viewMode === 'BRAND' ? 'bg-retro-neon text-black' : 'text-gray-500 hover:text-white'}`}
             >
                 DIRECTORY MODE
@@ -109,18 +113,22 @@ export default function ConsoleVaultPage() {
       {viewMode === 'BRAND' && (
           loading ? <RetroLoader /> : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {brands.map((brand) => {
-                    const theme = getBrandTheme(brand);
+                {manufacturers.map((manu) => {
+                    const theme = getBrandTheme(manu.name);
                     return (
                         <Link 
-                            key={brand}
-                            href={`/systems/brand/${brand}`}
+                            key={manu.id}
+                            href={`/systems/brand/${manu.name}`} // Keep using name for URL niceness, though ID is better internally
                             className={`group border-4 p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${theme.color} ${theme.bg} ${theme.hover}`}
                         >
-                            <div className="w-20 h-20 border-2 border-current rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span className="font-pixel text-2xl">{brand[0]}</span>
-                            </div>
-                            <span className="font-pixel text-xl tracking-widest uppercase">{brand}</span>
+                            {manu.logo_url ? (
+                                <img src={manu.logo_url} className="h-16 w-auto object-contain" />
+                            ) : (
+                                <div className="w-20 h-20 border-2 border-current rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <span className="font-pixel text-2xl">{manu.name[0]}</span>
+                                </div>
+                            )}
+                            <span className="font-pixel text-xl tracking-widest uppercase">{manu.name}</span>
                             <span className="font-mono text-xs opacity-75">ACCESS FOLDER &gt;</span>
                         </Link>
                     );
@@ -146,16 +154,13 @@ export default function ConsoleVaultPage() {
                       <h3 className="font-pixel text-xs text-retro-blue mb-4 border-b border-retro-grid pb-2">FILTERS</h3>
                       
                       {/* Brand Reset */}
-                      {filters.manufacturer && (
+                      {filters.manufacturer_id && (
                           <div className="mb-4">
                               <span className="text-xs font-mono text-gray-500 block">MANUFACTURER</span>
                               <div className="flex justify-between items-center text-retro-neon font-bold font-mono">
-                                  {filters.manufacturer}
-                                  <button onClick={() => { setFilters(prev => ({...prev, manufacturer: null})); setViewMode('BRAND'); }} className="text-red-500 hover:text-white">✕</button>
+                                  {getSelectedManuName()}
+                                  <button onClick={() => { setFilters(prev => ({...prev, manufacturer_id: null})); setViewMode('BRAND'); }} className="text-red-500 hover:text-white">✕</button>
                               </div>
-                              <Link href={`/systems/brand/${filters.manufacturer}`} className="text-[10px] font-mono text-retro-blue hover:text-white mt-1 block">
-                                  [ VIEW CORP DATA ]
-                              </Link>
                           </div>
                       )}
 
@@ -182,28 +187,28 @@ export default function ConsoleVaultPage() {
                       <div className="mb-6">
                           <label className="text-xs font-mono text-gray-500 block mb-2">GENERATION</label>
                           <div className="grid grid-cols-2 gap-2">
-                              {[3, 4, 5, 6].map(gen => (
+                              {['3rd Gen', '4th Gen', '5th Gen', '6th Gen'].map(gen => (
                                   <button
                                     key={gen}
                                     onClick={() => toggleArrayFilter('generations', gen)}
-                                    className={`text-xs font-mono border px-2 py-1 ${filters.generations.includes(gen) ? 'bg-retro-neon text-black border-retro-neon' : 'border-gray-700 text-gray-400'}`}
+                                    className={`text-[10px] font-mono border px-2 py-1 ${filters.generations.includes(gen) ? 'bg-retro-neon text-black border-retro-neon' : 'border-gray-700 text-gray-400'}`}
                                   >
-                                      GEN {gen}
+                                      {gen}
                                   </button>
                               ))}
                           </div>
                       </div>
 
-                       {/* Type */}
+                       {/* Form Factor */}
                        <div className="mb-6">
-                          <label className="text-xs font-mono text-gray-500 block mb-2">TYPE</label>
+                          <label className="text-xs font-mono text-gray-500 block mb-2">FORM FACTOR</label>
                           <div className="space-y-2">
-                              {['Home', 'Handheld'].map(type => (
+                              {['Home Console', 'Handheld', 'Hybrid', 'Micro Console'].map(type => (
                                   <label key={type} className="flex items-center gap-2 font-mono text-xs text-gray-300 cursor-pointer">
                                       <input 
                                         type="checkbox" 
-                                        checked={filters.types.includes(type)}
-                                        onChange={() => toggleArrayFilter('types', type)}
+                                        checked={filters.form_factors.includes(type)}
+                                        onChange={() => toggleArrayFilter('form_factors', type)}
                                         className="accent-retro-pink"
                                       />
                                       {type.toUpperCase()}
@@ -241,7 +246,7 @@ export default function ConsoleVaultPage() {
                                     <div className="p-3 border-t border-retro-grid">
                                         <div className="flex justify-between text-[10px] font-mono text-gray-500 mb-1">
                                             <span>{console.release_year}</span>
-                                            <span>GEN {console.generation}</span>
+                                            <span>{console.manufacturer?.name}</span>
                                         </div>
                                         <h3 className="font-pixel text-xs text-white group-hover:text-retro-neon truncate">
                                             {console.name}

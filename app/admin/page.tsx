@@ -2,11 +2,11 @@
 
 import { useEffect, useState, type FormEvent } from 'react';
 import { retroAuth } from '../../lib/auth';
-import { addGame, addConsole, addNewsItem, fetchConsoleList } from '../../lib/api';
+import { addGame, addConsole, addNewsItem, fetchManufacturers, addManufacturer } from '../../lib/api';
 import Button from '../../components/ui/Button';
-import { ConsoleDetails, GameOfTheWeekData, NewsItem, NewsItemSchema, GameSchema, ConsoleSchema } from '../../lib/types';
+import { NewsItem, NewsItemSchema, GameSchema, ConsoleSchema, ConsoleSpecsSchema, Manufacturer, ManufacturerSchema } from '../../lib/types';
 
-type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE';
+type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE' | 'MANUFACTURER';
 
 export default function AdminPortalPage() {
     const [isAdmin, setIsAdmin] = useState(false);
@@ -14,14 +14,23 @@ export default function AdminPortalPage() {
     const [activeTab, setActiveTab] = useState<AdminTab>('NEWS');
     const [message, setMessage] = useState<string | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
-    const [availableConsoles, setAvailableConsoles] = useState<{name: string, slug: string}[]>([]);
+    const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
 
-    // News Form State
+    // News Form
     const [newsHeadline, setNewsHeadline] = useState('');
     const [newsSummary, setNewsSummary] = useState('');
     const [newsCategory, setNewsCategory] = useState<NewsItem['category']>('Hardware');
 
-    // Game Form State
+    // Manufacturer Form
+    const [manuName, setManuName] = useState('');
+    const [manuFounded, setManuFounded] = useState('');
+    const [manuOrigin, setManuOrigin] = useState('');
+    const [manuWebsite, setManuWebsite] = useState('');
+    const [manuDesc, setManuDesc] = useState('');
+    const [manuFranchises, setManuFranchises] = useState('');
+    const [manuLogo, setManuLogo] = useState('');
+
+    // Game Form
     const [gameTitle, setGameTitle] = useState('');
     const [gameSlug, setGameSlug] = useState('');
     const [gameDev, setGameDev] = useState('');
@@ -32,151 +41,124 @@ export default function AdminPortalPage() {
     const [gameImage, setGameImage] = useState('');
     const [gameConsoleSlug, setGameConsoleSlug] = useState('');
 
-    // Console Form State
+    // Console Form
     const [consoleName, setConsoleName] = useState('');
     const [consoleSlug, setConsoleSlug] = useState('');
-    const [consoleManu, setConsoleManu] = useState('');
+    const [consoleManuId, setConsoleManuId] = useState('');
     const [consoleYear, setConsoleYear] = useState('1990');
-    const [consoleType, setConsoleType] = useState('Home');
-    const [consoleGen, setConsoleGen] = useState('4');
+    const [consoleType, setConsoleType] = useState('Home Console');
+    const [consoleGen, setConsoleGen] = useState('4th Gen');
     const [consoleIntro, setConsoleIntro] = useState('');
     const [consoleImage, setConsoleImage] = useState('');
-    const [consoleSpecs, setConsoleSpecs] = useState('{}'); // JSON string for specs
+    
+    // Console Specs Form
+    const [specCpu, setSpecCpu] = useState('');
+    const [specGpu, setSpecGpu] = useState('');
+    const [specRam, setSpecRam] = useState('');
+    const [specStorage, setSpecStorage] = useState('');
+    const [specMedia, setSpecMedia] = useState('');
+    const [specRes, setSpecRes] = useState('');
+    const [specDisplay, setSpecDisplay] = useState('');
+    const [specPorts, setSpecPorts] = useState('');
+    const [specConn, setSpecConn] = useState('');
+    const [specDim, setSpecDim] = useState('');
+    const [specWeight, setSpecWeight] = useState('');
+    const [specBattery, setSpecBattery] = useState('');
+    const [specPower, setSpecPower] = useState('');
+    const [specPrice, setSpecPrice] = useState('');
+    const [specInflation, setSpecInflation] = useState('');
+    const [specSold, setSpecSold] = useState('');
+    const [specBestGame, setSpecBestGame] = useState('');
 
     useEffect(() => {
         const check = async () => {
             const admin = await retroAuth.isAdmin();
             setIsAdmin(admin);
             if (admin) {
-                const consoles = await fetchConsoleList();
-                setAvailableConsoles(consoles);
+                const manus = await fetchManufacturers();
+                setManufacturers(manus);
             }
             setLoading(false);
         };
         check();
     }, []);
 
-    const fillSpecTemplate = () => {
-        const template = {
-            release_date: "YYYY-MM-DD",
-            discontinued_date: "YYYY-MM-DD",
-            dimensions: "00 x 00 x 00 mm",
-            weight: "000g",
-            casing: "Material description",
-            cpu: "Processor Name",
-            gpu: "Graphics Chip",
-            ram: "0 KB/MB",
-            media: "Cartridge/CD/Digital",
-            audio: "Sound Chip Details",
-            resolution: "000x000",
-            display_type: "N/A or LCD Type",
-            storage: "Internal Capacity",
-            units_sold: "00 million",
-            launch_price: "$000",
-            inflation_price: "$000",
-            best_selling_game: "Game Title",
-            ports: ["Port 1", "Port 2"],
-            power_supply: "Battery or Adapter",
-            battery_life: "00 hours",
-            connectivity: "N/A or Wi-Fi/Link Cable"
-        };
-        setConsoleSpecs(JSON.stringify(template, null, 4));
-    };
-
     const handleSubmitNews = async (e: FormEvent) => {
         e.preventDefault();
         setMessage(null);
         setErrorMsg(null);
-
-        // Validation
-        const rawData = { headline: newsHeadline, summary: newsSummary, category: newsCategory };
-        const result = NewsItemSchema.safeParse(rawData);
-        
-        if (!result.success) {
-            setErrorMsg(result.error.issues.map(i => i.message).join(', '));
-            return;
-        }
-
+        const result = NewsItemSchema.safeParse({ headline: newsHeadline, summary: newsSummary, category: newsCategory });
+        if (!result.success) { setErrorMsg(result.error.issues[0].message); return; }
         setLoading(true);
-        const item: NewsItem = { ...result.data, date: new Date().toISOString() };
-        const success = await addNewsItem(item);
-        if (success) {
-            setMessage("NEWS UPLINK SUCCESSFUL");
+        if (await addNewsItem({ ...result.data, date: new Date().toISOString() })) {
+            setMessage("NEWS TRANSMITTED");
             setNewsHeadline(''); setNewsSummary('');
-        } else setErrorMsg("TRANSMISSION FAILED - CHECK DB CONNECTION");
+        } else setErrorMsg("TRANSMISSION FAILED");
         setLoading(false);
     };
 
-    const handleSubmitGame = async (e: FormEvent) => {
+    const handleSubmitManufacturer = async (e: FormEvent) => {
         e.preventDefault();
         setMessage(null);
         setErrorMsg(null);
-
-        // Validation
-        const rawData = {
-            title: gameTitle,
-            slug: gameSlug || gameTitle.toLowerCase().replace(/ /g, '-'),
-            developer: gameDev,
-            year: gameYear,
-            genre: gameGenre,
-            content: gameContent,
-            whyItMatters: gameMatter,
-            rating: 5,
-            image: gameImage,
-            console_slug: gameConsoleSlug || undefined
+        
+        const raw = {
+            name: manuName,
+            founded_year: manuFounded,
+            origin_country: manuOrigin,
+            website: manuWebsite,
+            description: manuDesc,
+            key_franchises: manuFranchises,
+            logo_url: manuLogo
         };
-
-        const result = GameSchema.safeParse(rawData);
-        if (!result.success) {
-             setErrorMsg(result.error.issues.map(i => `${String(i.path[0])}: ${i.message}`).join(', '));
-             return;
-        }
-
+        const result = ManufacturerSchema.safeParse(raw);
+        if (!result.success) { setErrorMsg(result.error.issues[0].message); return; }
+        
         setLoading(true);
-        const success = await addGame(result.data as GameOfTheWeekData);
-        if (success) {
-            setMessage("GAME ARCHIVED SUCCESSFULLY");
-            setGameTitle(''); setGameContent('');
-        } else setErrorMsg("ARCHIVE FAILED - CHECK DB CONNECTION");
+        if (await addManufacturer(result.data as Omit<Manufacturer, 'id'>)) {
+            setMessage("CORPORATION REGISTERED");
+            setManufacturers(await fetchManufacturers()); // Refresh list
+            setManuName(''); setManuDesc('');
+        } else setErrorMsg("REGISTRATION FAILED");
         setLoading(false);
-    };
+    }
 
     const handleSubmitConsole = async (e: FormEvent) => {
         e.preventDefault();
         setMessage(null);
         setErrorMsg(null);
 
-        try {
-            const specs = JSON.parse(consoleSpecs);
-            const rawData = {
-                id: '', 
-                name: consoleName,
-                slug: consoleSlug || consoleName.toLowerCase().replace(/ /g, '-'),
-                manufacturer: consoleManu,
-                release_year: consoleYear, // string from input, z.coerce handles it
-                type: consoleType,
-                generation: consoleGen, // string from input, z.coerce handles it
-                intro_text: consoleIntro,
-                image_url: consoleImage,
-                ...specs
-            };
+        // 1. Validate Base Data
+        const rawConsole = {
+            name: consoleName,
+            slug: consoleSlug || consoleName.toLowerCase().replace(/ /g, '-'),
+            manufacturer_id: consoleManuId,
+            release_year: consoleYear,
+            form_factor: consoleType,
+            generation: consoleGen,
+            description: consoleIntro,
+            image_url: consoleImage,
+        };
+        const consoleResult = ConsoleSchema.safeParse(rawConsole);
+        if (!consoleResult.success) { setErrorMsg(consoleResult.error.issues[0].message); return; }
 
-            const result = ConsoleSchema.safeParse(rawData);
-            if (!result.success) {
-                setErrorMsg(result.error.issues.map(i => `${String(i.path[0])}: ${i.message}`).join(', '));
-                return;
-            }
+        // 2. Validate Specs
+        const rawSpecs = {
+            cpu: specCpu, gpu: specGpu, ram: specRam, storage: specStorage,
+            display_type: specDisplay, resolution: specRes, media: specMedia,
+            ports: specPorts, connectivity: specConn, dimensions: specDim,
+            weight: specWeight, battery_life: specBattery, power_supply: specPower,
+            launch_price: specPrice, launch_price_inflation: specInflation,
+            units_sold: specSold, best_selling_game: specBestGame
+        };
+        const specsResult = ConsoleSpecsSchema.safeParse(rawSpecs);
+        if(!specsResult.success) { setErrorMsg(specsResult.error.issues[0].message); return; }
 
-            setLoading(true);
-            const success = await addConsole(result.data as ConsoleDetails);
-            if (success) {
-                setMessage("HARDWARE REGISTERED");
-                setConsoleName('');
-            }
-            else setErrorMsg("REGISTRATION FAILED - CHECK DB CONNECTION");
-        } catch {
-            setErrorMsg("INVALID JSON IN SPECS FIELD");
-        }
+        setLoading(true);
+        if (await addConsole(consoleResult.data as any, specsResult.data as any)) {
+            setMessage("HARDWARE & SPECS REGISTERED");
+            setConsoleName('');
+        } else setErrorMsg("REGISTRATION FAILED");
         setLoading(false);
     };
 
@@ -192,26 +174,17 @@ export default function AdminPortalPage() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-4 font-mono text-gray-300">
+        <div className="max-w-5xl mx-auto p-4 font-mono text-gray-300">
             <div className="border-b-4 border-retro-neon pb-4 mb-8 flex justify-between items-end">
                 <h1 className="text-4xl font-pixel text-retro-neon">ROOT TERMINAL</h1>
                 <div className="text-xs text-retro-blue">ADMIN_MODE_ACTIVE</div>
             </div>
 
-            {message && (
-                <div className="bg-retro-grid border border-retro-neon text-retro-neon p-4 mb-6 animate-pulse">
-                    &gt; {message}
-                </div>
-            )}
-            
-            {errorMsg && (
-                <div className="bg-red-900/30 border border-red-500 text-red-400 p-4 mb-6">
-                    ⚠ ERROR: {errorMsg}
-                </div>
-            )}
+            {message && <div className="bg-retro-grid border border-retro-neon text-retro-neon p-4 mb-6 animate-pulse">&gt; {message}</div>}
+            {errorMsg && <div className="bg-red-900/30 border border-red-500 text-red-400 p-4 mb-6">⚠ ERROR: {errorMsg}</div>}
 
-            <div className="flex gap-4 mb-8">
-                {(['NEWS', 'GAME', 'CONSOLE'] as AdminTab[]).map(tab => (
+            <div className="flex gap-4 mb-8 flex-wrap">
+                {(['NEWS', 'GAME', 'CONSOLE', 'MANUFACTURER'] as AdminTab[]).map(tab => (
                     <button
                         key={tab}
                         onClick={() => { setActiveTab(tab); setMessage(null); setErrorMsg(null); }}
@@ -237,51 +210,67 @@ export default function AdminPortalPage() {
                     </form>
                 )}
 
-                {activeTab === 'GAME' && (
-                    <form onSubmit={handleSubmitGame} className="space-y-4 grid grid-cols-2 gap-4">
-                        <input className="bg-black border border-gray-700 p-2 col-span-2" placeholder="Title" value={gameTitle} onChange={e => setGameTitle(e.target.value)} />
-                        <input className="bg-black border border-gray-700 p-2" placeholder="Slug (optional)" value={gameSlug} onChange={e => setGameSlug(e.target.value)} />
-                        <select className="bg-black border border-gray-700 p-2" value={gameConsoleSlug} onChange={e => setGameConsoleSlug(e.target.value)}>
-                            <option value="">-- Link Console (Optional) --</option>
-                            {availableConsoles.map(c => (
-                                <option key={c.slug} value={c.slug}>{c.name}</option>
-                            ))}
-                        </select>
-                        <input className="bg-black border border-gray-700 p-2" placeholder="Developer" value={gameDev} onChange={e => setGameDev(e.target.value)} />
-                        <input className="bg-black border border-gray-700 p-2" placeholder="Year" value={gameYear} onChange={e => setGameYear(e.target.value)} />
-                        <input className="bg-black border border-gray-700 p-2" placeholder="Genre" value={gameGenre} onChange={e => setGameGenre(e.target.value)} />
-                        <input className="bg-black border border-gray-700 p-2 col-span-2" placeholder="Image URL" value={gameImage} onChange={e => setGameImage(e.target.value)} />
-                        <textarea className="bg-black border border-gray-700 p-2 col-span-2 h-32" placeholder="Main Content" value={gameContent} onChange={e => setGameContent(e.target.value)} />
-                        <textarea className="bg-black border border-gray-700 p-2 col-span-2 h-20" placeholder="Why It Matters" value={gameMatter} onChange={e => setGameMatter(e.target.value)} />
-                        <div className="col-span-2"><Button type="submit">ARCHIVE GAME</Button></div>
+                {activeTab === 'MANUFACTURER' && (
+                    <form onSubmit={handleSubmitManufacturer} className="space-y-4 grid grid-cols-2 gap-4">
+                        <input className="bg-black border border-gray-700 p-2" placeholder="Name (e.g. Nintendo)" value={manuName} onChange={e => setManuName(e.target.value)} required />
+                        <input className="bg-black border border-gray-700 p-2" placeholder="Founded (e.g. 1889)" value={manuFounded} onChange={e => setManuFounded(e.target.value)} required />
+                        <input className="bg-black border border-gray-700 p-2" placeholder="Origin (e.g. Kyoto, Japan)" value={manuOrigin} onChange={e => setManuOrigin(e.target.value)} required />
+                        <input className="bg-black border border-gray-700 p-2" placeholder="Website" value={manuWebsite} onChange={e => setManuWebsite(e.target.value)} />
+                        <input className="bg-black border border-gray-700 p-2" placeholder="Logo URL" value={manuLogo} onChange={e => setManuLogo(e.target.value)} />
+                        <input className="bg-black border border-gray-700 p-2" placeholder="Key Franchises (comma separated)" value={manuFranchises} onChange={e => setManuFranchises(e.target.value)} />
+                        <textarea className="bg-black border border-gray-700 p-2 col-span-2 h-32" placeholder="Description" value={manuDesc} onChange={e => setManuDesc(e.target.value)} required />
+                        <div className="col-span-2"><Button type="submit">REGISTER ENTITY</Button></div>
                     </form>
                 )}
 
                 {activeTab === 'CONSOLE' && (
-                    <form onSubmit={handleSubmitConsole} className="space-y-4 grid grid-cols-2 gap-4">
-                        <input className="bg-black border border-gray-700 p-2" placeholder="Name" value={consoleName} onChange={e => setConsoleName(e.target.value)} />
-                        <input className="bg-black border border-gray-700 p-2" placeholder="Slug (optional)" value={consoleSlug} onChange={e => setConsoleSlug(e.target.value)} />
-                        <input className="bg-black border border-gray-700 p-2" placeholder="Manufacturer" value={consoleManu} onChange={e => setConsoleManu(e.target.value)} />
-                        <input className="bg-black border border-gray-700 p-2" placeholder="Year" value={consoleYear} onChange={e => setConsoleYear(e.target.value)} />
-                        <select className="bg-black border border-gray-700 p-2" value={consoleType} onChange={e => setConsoleType(e.target.value)}>
-                            <option value="Home">Home Console</option>
-                            <option value="Handheld">Handheld</option>
-                            <option value="Hybrid">Hybrid</option>
-                        </select>
-                        <input className="bg-black border border-gray-700 p-2" placeholder="Generation" value={consoleGen} onChange={e => setConsoleGen(e.target.value)} />
-                        <input className="bg-black border border-gray-700 p-2 col-span-2" placeholder="Image URL" value={consoleImage} onChange={e => setConsoleImage(e.target.value)} />
-                        <textarea className="bg-black border border-gray-700 p-2 col-span-2 h-20" placeholder="Intro Text" value={consoleIntro} onChange={e => setConsoleIntro(e.target.value)} />
-                        <div className="col-span-2">
-                            <div className="flex justify-between items-end mb-2">
-                                <label className="text-xs text-retro-neon block">ADDITIONAL SPECS (JSON)</label>
-                                <button type="button" onClick={fillSpecTemplate} className="text-[10px] text-retro-blue hover:text-white border border-retro-blue px-2 py-1">
-                                    LOAD TEMPLATE
-                                </button>
-                            </div>
-                            <textarea className="bg-black border border-gray-700 p-2 w-full h-64 font-mono text-xs" value={consoleSpecs} onChange={e => setConsoleSpecs(e.target.value)} 
-                            placeholder='{ "cpu": "...", "ram": "..." }' />
+                    <form onSubmit={handleSubmitConsole} className="space-y-4">
+                         <h3 className="text-retro-neon border-b border-gray-700 pb-2 mb-4">I. IDENTITY</h3>
+                         <div className="grid grid-cols-2 gap-4">
+                            <select className="bg-black border border-gray-700 p-2" value={consoleManuId} onChange={e => setConsoleManuId(e.target.value)} required>
+                                <option value="">-- Select Manufacturer --</option>
+                                {manufacturers.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                            </select>
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Console Name" value={consoleName} onChange={e => setConsoleName(e.target.value)} required />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Slug (optional)" value={consoleSlug} onChange={e => setConsoleSlug(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Release Year" value={consoleYear} onChange={e => setConsoleYear(e.target.value)} required />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Generation (e.g. 6th Gen)" value={consoleGen} onChange={e => setConsoleGen(e.target.value)} required />
+                            <select className="bg-black border border-gray-700 p-2" value={consoleType} onChange={e => setConsoleType(e.target.value)}>
+                                <option value="Home Console">Home Console</option>
+                                <option value="Handheld">Handheld</option>
+                                <option value="Hybrid">Hybrid</option>
+                                <option value="Micro Console">Micro Console</option>
+                            </select>
+                            <input className="bg-black border border-gray-700 p-2 col-span-2" placeholder="Image URL" value={consoleImage} onChange={e => setConsoleImage(e.target.value)} />
+                            <textarea className="bg-black border border-gray-700 p-2 col-span-2 h-20" placeholder="Intro Description" value={consoleIntro} onChange={e => setConsoleIntro(e.target.value)} required />
                         </div>
-                        <div className="col-span-2"><Button type="submit">REGISTER HARDWARE</Button></div>
+
+                        <h3 className="text-retro-neon border-b border-gray-700 pb-2 mb-4 mt-8">II. TECHNICAL SPECS</h3>
+                        <div className="grid grid-cols-3 gap-4">
+                            <input className="bg-black border border-gray-700 p-2" placeholder="CPU" value={specCpu} onChange={e => setSpecCpu(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="GPU" value={specGpu} onChange={e => setSpecGpu(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="RAM" value={specRam} onChange={e => setSpecRam(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Storage" value={specStorage} onChange={e => setSpecStorage(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Display Type" value={specDisplay} onChange={e => setSpecDisplay(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Resolution" value={specRes} onChange={e => setSpecRes(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Media" value={specMedia} onChange={e => setSpecMedia(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Ports" value={specPorts} onChange={e => setSpecPorts(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Connectivity" value={specConn} onChange={e => setSpecConn(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Dimensions" value={specDim} onChange={e => setSpecDim(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Weight" value={specWeight} onChange={e => setSpecWeight(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Battery Life" value={specBattery} onChange={e => setSpecBattery(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Power Supply" value={specPower} onChange={e => setSpecPower(e.target.value)} />
+                        </div>
+
+                        <h3 className="text-retro-neon border-b border-gray-700 pb-2 mb-4 mt-8">III. COMMERCIAL DATA</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Launch Price" value={specPrice} onChange={e => setSpecPrice(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Inflation Adj. Price" value={specInflation} onChange={e => setSpecInflation(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Units Sold" value={specSold} onChange={e => setSpecSold(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-2" placeholder="Best Selling Game" value={specBestGame} onChange={e => setSpecBestGame(e.target.value)} />
+                        </div>
+
+                        <div className="mt-8"><Button type="submit">REGISTER HARDWARE</Button></div>
                     </form>
                 )}
             </div>

@@ -1,7 +1,6 @@
-
 import Link from 'next/link';
 import { createClient } from '../../../../lib/supabase/server';
-import { ConsoleDetails, ManufacturerProfile } from '../../../../lib/types';
+import { ConsoleDetails, Manufacturer } from '../../../../lib/types';
 import { getBrandTheme } from '../../../../data/static';
 import { Metadata } from 'next';
 
@@ -17,39 +16,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
-// Fallback data if DB entry is missing
-const FALLBACK_MANUFACTURERS: Record<string, Partial<ManufacturerProfile>> = {
-    'Nintendo': { founded: '1889', origin: 'Kyoto, Japan', description: 'Legendary manufacturer responsible for Mario, Zelda, and the modernization of video games.' },
-    'Sega': { founded: '1940', origin: 'Tokyo, Japan', description: 'Arcade titan and former console giant. Creator of Sonic the Hedgehog.' },
-    'Sony': { founded: '1946', origin: 'Tokyo, Japan', description: 'Electronics giant that entered the market with PlayStation and dominated 3D gaming.' },
-    'Microsoft': { founded: '1975', origin: 'Redmond, USA', description: 'PC software giant that entered the console war with Xbox and Halo.' },
-    'Atari': { founded: '1972', origin: 'California, USA', description: 'The pioneer of the arcade and home console industry.' },
-};
-
 export default async function ManufacturerDetailPage({ params }: Props) {
     const supabase = await createClient();
     const name = decodeURIComponent(params.name);
 
-    // Parallel Fetching
-    const [profileRes, consolesRes] = await Promise.all([
-        supabase.from('manufacturers').select('*').ilike('name', name).single(),
-        supabase.from('consoles').select('*').eq('manufacturer', name).order('release_year', { ascending: true })
-    ]);
+    // 1. Fetch Profile
+    const { data: profile } = await supabase
+        .from('manufacturers')
+        .select('*')
+        .ilike('name', name)
+        .single();
+    
+    // 2. Fetch Consoles associated with this Manufacturer ID
+    let consoles: ConsoleDetails[] = [];
+    if (profile) {
+        const { data } = await supabase
+            .from('consoles')
+            .select('*, manufacturer:manufacturers(*), specs:console_specs(*)')
+            .eq('manufacturer_id', profile.id)
+            .order('release_year', { ascending: true });
+        consoles = (data as any) || [];
+    }
 
-    let profile: ManufacturerProfile = profileRes.data;
-    const consoles: ConsoleDetails[] = consolesRes.data || [];
-
-    // Construct Fallback if profile missing from DB
     if (!profile) {
-        const fallback = Object.entries(FALLBACK_MANUFACTURERS).find(([k]) => k.toLowerCase() === name.toLowerCase())?.[1];
-        profile = {
-            name: name,
-            founded: fallback?.founded || 'Unknown',
-            origin: fallback?.origin || 'Unknown',
-            description: fallback?.description || 'No corporate dossier available in archives.',
-            ceo: 'Unknown',
-            key_franchises: []
-        };
+        return <div className="p-12 text-center font-mono text-gray-500">CORPORATE ENTITY NOT FOUND IN DATABASE.</div>;
     }
 
     const theme = getBrandTheme(profile.name);
@@ -68,12 +58,20 @@ export default async function ManufacturerDetailPage({ params }: Props) {
                         <h1 className={`text-5xl md:text-7xl font-pixel ${themeColorClass} opacity-90 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]`}>
                             {profile.name}
                         </h1>
+                        {profile.website && (
+                             <a href={profile.website} target="_blank" className="font-mono text-xs text-gray-500 hover:text-white mt-2 inline-block">
+                                 [ {profile.website.replace('https://', '')} ]
+                             </a>
+                        )}
                     </div>
                     <div className="text-right mt-4 md:mt-0">
+                        {profile.logo_url && (
+                            <img src={profile.logo_url} className="h-16 w-auto object-contain mb-4 ml-auto" />
+                        )}
                         <div className="font-mono text-gray-500 text-xs">FOUNDED</div>
-                        <div className="font-pixel text-white text-lg">{profile.founded}</div>
+                        <div className="font-pixel text-white text-lg">{profile.founded_year}</div>
                         <div className="font-mono text-gray-500 text-xs mt-2">ORIGIN</div>
-                        <div className="font-pixel text-white text-lg">{profile.origin}</div>
+                        <div className="font-pixel text-white text-lg">{profile.origin_country}</div>
                     </div>
                 </div>
 
@@ -95,10 +93,6 @@ export default async function ManufacturerDetailPage({ params }: Props) {
                                     </li>
                                 ))}
                             </ul>
-                        </div>
-                        <div>
-                            <h4 className="font-pixel text-xs text-gray-500 mb-2">CURRENT CEO</h4>
-                            <div className="font-mono text-white text-sm">{profile.ceo}</div>
                         </div>
                     </div>
                 </div>
@@ -129,7 +123,7 @@ export default async function ManufacturerDetailPage({ params }: Props) {
                                 <div className="p-3 border-t border-retro-grid">
                                     <div className="flex justify-between text-[10px] font-mono text-gray-500 mb-1">
                                         <span>{console.release_year}</span>
-                                        <span>GEN {console.generation}</span>
+                                        <span>{console.generation}</span>
                                     </div>
                                     <h3 className="font-pixel text-xs text-white group-hover:text-retro-neon truncate">
                                         {console.name}
