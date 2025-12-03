@@ -121,8 +121,8 @@ export default function ConsoleVaultPage() {
                             href={`/console/brand/${manu.name}`}
                             className={`group border-4 p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${theme.color} ${theme.bg} ${theme.hover}`}
                         >
-                            {manu.logo_url ? (
-                                <img src={manu.logo_url} className="h-16 w-auto object-contain" />
+                            {manu.image_url ? (
+                                <img src={manu.image_url} className="h-16 w-auto object-contain" />
                             ) : (
                                 <div className="w-20 h-20 border-2 border-current rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <span className="font-pixel text-2xl">{manu.name[0]}</span>

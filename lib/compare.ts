@@ -45,13 +45,13 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
     try {
         const { data: cA } = await supabase
             .from('consoles')
-            .select('*, manufacturer:manufacturers(*), specs:console_specs(*)')
+            .select('*, manufacturer:manufacturer(*), specs:console_specs(*)')
             .eq('slug', slugA)
             .single();
 
         const { data: cB } = await supabase
             .from('consoles')
-            .select('*, manufacturer:manufacturers(*), specs:console_specs(*)')
+            .select('*, manufacturer:manufacturer(*), specs:console_specs(*)')
             .eq('slug', slugB)
             .single();
         

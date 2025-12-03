@@ -3,16 +3,15 @@ import { createClient } from '../../../lib/supabase/server';
 import { ConsoleDetails, GameOfTheWeekData } from '../../../lib/types';
 import Button from '../../../components/ui/Button';
 import CollectionToggle from '../../../components/ui/CollectionToggle';
-import { Metadata } from 'next';
 import { ReactNode } from 'react';
 
 type Props = {
   params: { slug: string }
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: Props) {
     const supabase = await createClient();
-    const { data } = await supabase.from('consoles').select('name, description, image_url, manufacturer:manufacturers(name)').eq('slug', params.slug).single();
+    const { data } = await supabase.from('consoles').select('name, description, image_url, manufacturer:manufacturer(name)').eq('slug', params.slug).single();
     
     if (!data) return { title: 'Unknown Hardware' };
   
@@ -59,7 +58,7 @@ export default async function ConsoleSpecsPage({ params }: Props) {
   const [consoleRes, gamesRes] = await Promise.all([
     supabase
         .from('consoles')
-        .select('*, manufacturer:manufacturers(*), specs:console_specs(*)')
+        .select('*, manufacturer:manufacturer(*), specs:console_specs(*)')
         .eq('slug', params.slug)
         .single(),
     supabase.from('games').select('*').eq('console_slug', params.slug).order('year', { ascending: true })

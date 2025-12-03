@@ -1,4 +1,3 @@
-import type { Metadata, Viewport } from "next";
 import { Press_Start_2P, Share_Tech_Mono } from "next/font/google";
 import "../styles/globals.css";
 import ClientShell from "../components/layout/ClientShell";
@@ -16,7 +15,7 @@ const shareTech = Share_Tech_Mono({
   variable: '--font-share-tech'
 });
 
-export const viewport: Viewport = {
+export const viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -24,7 +23,7 @@ export const viewport: Viewport = {
   themeColor: "#0f0f1b",
 };
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "The Retro Circuit | Retro Gaming Database & Comparisons",
   description: "The ultimate retro gaming database. Compare console specs, read classic game reviews, and view the complete timeline of video game history.",
   keywords: ["retro gaming", "console specs", "video game database", "retro reviews", "console comparison"],

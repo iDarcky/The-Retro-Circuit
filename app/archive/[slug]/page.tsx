@@ -1,16 +1,14 @@
-
 import Link from 'next/link';
 import { createClient } from '../../../lib/supabase/server';
 import { GameOfTheWeekData } from '../../../lib/types';
 import Button from '../../../components/ui/Button';
 import CollectionToggle from '../../../components/ui/CollectionToggle';
-import { Metadata } from 'next';
 
 type Props = {
   params: { slug: string }
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: Props) {
   const supabase = await createClient();
   const { data } = await supabase.from('games').select('title, content, image').eq('slug', params.slug).single();
   

@@ -2,13 +2,12 @@ import Link from 'next/link';
 import { createClient } from '../../../../lib/supabase/server';
 import { ConsoleDetails } from '../../../../lib/types';
 import { getBrandTheme } from '../../../../data/static';
-import { Metadata } from 'next';
 
 type Props = {
   params: { name: string }
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: Props) {
     const name = decodeURIComponent(params.name);
     return {
         title: `${name} - Corporate Profile`,
@@ -22,7 +21,7 @@ export default async function ManufacturerDetailPage({ params }: Props) {
 
     // 1. Fetch Profile
     const { data: profile } = await supabase
-        .from('manufacturers')
+        .from('manufacturer')
         .select('*')
         .ilike('name', name)
         .single();
@@ -32,7 +31,7 @@ export default async function ManufacturerDetailPage({ params }: Props) {
     if (profile) {
         const { data } = await supabase
             .from('consoles')
-            .select('*, manufacturer:manufacturers(*), specs:console_specs(*)')
+            .select('*, manufacturer:manufacturer(*), specs:console_specs(*)')
             .eq('manufacturer_id', profile.id)
             .order('release_year', { ascending: true });
         consoles = (data as any) || [];
@@ -65,13 +64,13 @@ export default async function ManufacturerDetailPage({ params }: Props) {
                         )}
                     </div>
                     <div className="text-right mt-4 md:mt-0">
-                        {profile.logo_url && (
-                            <img src={profile.logo_url} className="h-16 w-auto object-contain mb-4 ml-auto" />
+                        {profile.image_url && (
+                            <img src={profile.image_url} className="h-16 w-auto object-contain mb-4 ml-auto" />
                         )}
                         <div className="font-mono text-gray-500 text-xs">FOUNDED</div>
                         <div className="font-pixel text-white text-lg">{profile.founded_year}</div>
                         <div className="font-mono text-gray-500 text-xs mt-2">ORIGIN</div>
-                        <div className="font-pixel text-white text-lg">{profile.origin_country}</div>
+                        <div className="font-pixel text-white text-lg">{profile.country}</div>
                     </div>
                 </div>
 
@@ -87,9 +86,9 @@ export default async function ManufacturerDetailPage({ params }: Props) {
                         <div className="mb-6">
                             <h4 className="font-pixel text-xs text-gray-500 mb-2">KEY FRANCHISES</h4>
                             <ul className="space-y-2">
-                                {profile.key_franchises?.map((f: string) => (
-                                    <li key={f} className={`font-mono text-sm border-b border-gray-800 pb-1 ${themeColorClass}`}>
-                                        {f}
+                                {(profile.key_franchises || "").split(',').map((f: string) => (
+                                    <li key={f.trim()} className={`font-mono text-sm border-b border-gray-800 pb-1 ${themeColorClass}`}>
+                                        {f.trim()}
                                     </li>
                                 ))}
                             </ul>

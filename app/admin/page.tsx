@@ -103,14 +103,18 @@ export default function AdminPortalPage() {
         setMessage(null);
         setErrorMsg(null);
         
+        // Generate slug from name
+        const slug = manuName.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '');
+
         const raw = {
             name: manuName,
             founded_year: manuFounded,
-            origin_country: manuOrigin,
+            country: manuOrigin, // Updated from origin_country
             website: manuWebsite,
             description: manuDesc,
             key_franchises: manuFranchises,
-            logo_url: manuLogo
+            image_url: manuLogo, // Updated from logo_url
+            slug
         };
         const result = ManufacturerSchema.safeParse(raw);
         if (!result.success) { setErrorMsg(result.error.issues[0].message); return; }

@@ -101,22 +101,24 @@ export interface ManufacturerProfile {
 export interface Manufacturer {
   id: string;
   name: string;
-  founded_year: string;
-  origin_country: string;
+  founded_year: number; // Changed to number
+  country: string;      // Changed from origin_country
   website?: string;
   description: string;
-  key_franchises: string[];
-  logo_url?: string;
+  key_franchises: string; // Changed to string (comma separated in DB)
+  image_url?: string;     // Changed from logo_url
+  slug: string;           // Added slug
 }
 
 export const ManufacturerSchema = z.object({
   name: z.string().min(1, "Name required"),
-  founded_year: z.string(),
-  origin_country: z.string(),
+  founded_year: z.coerce.number().int(), // Coerce string input to number
+  country: z.string().min(1, "Country required"),
   website: z.string().optional(),
   description: z.string().min(10),
-  key_franchises: z.string().transform(str => str.split(',').map(s => s.trim())), // Input as comma string, convert to array
-  logo_url: z.string().optional()
+  key_franchises: z.string(), // Keep as string for DB insertion
+  image_url: z.string().optional(),
+  slug: z.string().optional()
 });
 
 export interface ConsoleSpecs {
