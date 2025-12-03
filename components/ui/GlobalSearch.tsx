@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, type FC } from 'react';
+import { useState, useEffect, useRef, type FC, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { searchDatabase } from '../../lib/api';
 import { SearchResult } from '../../lib/types';
@@ -58,7 +58,7 @@ const GlobalSearch: FC = () => {
                 <input
                     type="text"
                     value={query}
-                    onChange={(e) => setQuery(e.target.value)}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
                     onFocus={() => query.length >= 2 && setIsOpen(true)}
                     placeholder="SEARCH DATABASE..."
                     className="w-full bg-black/50 border border-retro-grid text-retro-neon font-mono text-sm px-3 py-2 pl-9 focus:border-retro-neon focus:outline-none placeholder-gray-600 transition-colors"

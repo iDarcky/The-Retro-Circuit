@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, type ChangeEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { compareConsoles } from '../../lib/compare';
 import { fetchConsoleList } from '../../lib/api';
@@ -98,7 +98,7 @@ function VsModeContent() {
 
               <select
                 value={consoleA}
-                onChange={(e) => setConsoleA(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) => setConsoleA(e.target.value)}
                 className="w-full bg-black border border-retro-grid text-white p-3 font-mono focus:border-retro-neon focus:outline-none appearance-none cursor-pointer uppercase skew-x-[2deg] text-center hover:bg-white/10"
               >
                 <option value="">SELECT SYSTEM...</option>
@@ -131,7 +131,7 @@ function VsModeContent() {
 
               <select
                 value={consoleB}
-                onChange={(e) => setConsoleB(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) => setConsoleB(e.target.value)}
                 className="w-full bg-black border border-retro-grid text-white p-3 font-mono focus:border-retro-pink focus:outline-none appearance-none cursor-pointer uppercase skew-x-[-2deg] text-center hover:bg-white/10"
               >
                 <option value="">SELECT SYSTEM...</option>

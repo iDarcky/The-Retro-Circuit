@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { fetchUserCollection } from '../../lib/api';
@@ -103,6 +103,7 @@ export default function LoginPage() {
                 
                 if (adminCheck) {
                     // Admin Redirect: Use window.location to force full refresh and ensure middleware cookies are set
+                    // We avoid router.push here to ensure a hard navigation triggers the middleware check on the new route
                     window.location.href = "/admin";
                     return;
                 }
@@ -254,7 +255,7 @@ export default function LoginPage() {
                                 type="text" 
                                 required 
                                 value={username}
-                                onChange={e => setUsername(e.target.value)}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
                                 className="w-full bg-black border border-retro-grid p-3 text-white font-mono focus:border-retro-neon outline-none transition-colors"
                                 placeholder="ENTER USERNAME"
                             />
@@ -268,7 +269,7 @@ export default function LoginPage() {
                                 type="email" 
                                 required 
                                 value={email}
-                                onChange={e => setEmail(e.target.value)}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                                 className="w-full bg-black border border-retro-grid p-3 text-white font-mono focus:border-retro-neon outline-none transition-colors"
                                 placeholder="USER@EXAMPLE.COM"
                             />
@@ -282,7 +283,7 @@ export default function LoginPage() {
                                 type="password" 
                                 required 
                                 value={password}
-                                onChange={e => setPassword(e.target.value)}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                                 className="w-full bg-black border border-retro-grid p-3 text-white font-mono focus:border-retro-neon outline-none transition-colors"
                                 placeholder="••••••••"
                             />

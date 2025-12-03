@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, type ChangeEvent } from 'react';
 import Link from 'next/link';
 import { fetchManufacturers, fetchConsolesFiltered } from '../../lib/api';
 import { getBrandTheme } from '../../data/static';
@@ -171,13 +171,13 @@ export default function ConsoleVaultPage() {
                               <input 
                                 type="number" 
                                 value={filters.minYear} 
-                                onChange={(e) => handleFilterChange('minYear', parseInt(e.target.value))}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => handleFilterChange('minYear', parseInt(e.target.value))}
                                 className="w-1/2 bg-black border border-retro-grid px-2 py-1 text-white font-mono text-sm"
                               />
                               <input 
                                 type="number" 
                                 value={filters.maxYear} 
-                                onChange={(e) => handleFilterChange('maxYear', parseInt(e.target.value))}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => handleFilterChange('maxYear', parseInt(e.target.value))}
                                 className="w-1/2 bg-black border border-retro-grid px-2 py-1 text-white font-mono text-sm"
                               />
                           </div>

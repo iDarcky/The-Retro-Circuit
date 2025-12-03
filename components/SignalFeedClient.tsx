@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, type FormEvent, type FC } from 'react';
+import { useState, useCallback, type FormEvent, type FC, type ChangeEvent } from 'react';
 import Link from 'next/link';
 import { fetchRetroNews, addNewsItem } from '../lib/api';
 import { NewsItem, NewsCategory } from '../lib/types';
@@ -91,7 +91,7 @@ const SignalFeedClient: FC<SignalFeedClientProps> = ({ initialNews, initialCount
           const safeName = c.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').toLowerCase();
           const regex = new RegExp(`\\b${safeName}\\b`, 'i');
           if (regex.test(lowerText)) {
-              matches.push({ type: 'CONSOLE', label: c.name, to: `/systems/${c.slug}` });
+              matches.push({ type: 'CONSOLE', label: c.name, to: `/console/${c.slug}` });
           }
       });
 
@@ -200,7 +200,7 @@ const SignalFeedClient: FC<SignalFeedClientProps> = ({ initialNews, initialCount
                       <label className="block font-mono text-xs text-retro-blue mb-1">HEADLINE</label>
                       <input 
                         value={newHeadline}
-                        onChange={e => setNewHeadline(e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setNewHeadline(e.target.value)}
                         className="w-full bg-black/50 border border-retro-grid p-2 text-white font-mono focus:border-retro-neon outline-none"
                         placeholder="ENTER HEADLINE..."
                       />
@@ -210,7 +210,7 @@ const SignalFeedClient: FC<SignalFeedClientProps> = ({ initialNews, initialCount
                         <label className="block font-mono text-xs text-retro-blue mb-1">CATEGORY</label>
                         <select 
                             value={newCategory}
-                            onChange={(e) => setNewCategory(e.target.value as any)}
+                            onChange={(e: ChangeEvent<HTMLSelectElement>) => setNewCategory(e.target.value as any)}
                             className="w-full bg-black/50 border border-retro-grid p-2 text-white font-mono focus:border-retro-neon outline-none"
                         >
                             <option value="Hardware">HARDWARE</option>
@@ -227,7 +227,7 @@ const SignalFeedClient: FC<SignalFeedClientProps> = ({ initialNews, initialCount
                       <label className="block font-mono text-xs text-retro-blue mb-1">SUMMARY</label>
                       <textarea 
                         value={newSummary}
-                        onChange={e => setNewSummary(e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setNewSummary(e.target.value)}
                         rows={3}
                         className="w-full bg-black/50 border border-retro-grid p-2 text-white font-mono focus:border-retro-neon outline-none"
                         placeholder="ENTER SIGNAL DATA..."
@@ -244,93 +244,82 @@ const SignalFeedClient: FC<SignalFeedClientProps> = ({ initialNews, initialCount
 
       {error && (
         <div className="p-8 border-2 border-retro-pink text-retro-pink font-mono mb-6 bg-retro-pink/10 text-center">
-          <h3 className="text-xl font-bold mb-2">ERROR: {error}</h3>
+            SYSTEM FAILURE: {error}
         </div>
       )}
 
-      {loading ? (
-        <RetroLoader />
-      ) : news.length === 0 && !error ? (
-         <div className="text-center py-12 border border-retro-grid border-dashed text-gray-500 font-mono">
-             <div className="mb-4">NO SIGNAL FOUND FOR THIS FREQUENCY.</div>
-             {selectedCategory !== 'ALL' && (
-                 <button onClick={() => handleCategoryChange('ALL')} className="text-retro-blue underline text-xs">RESET FREQUENCY</button>
-             )}
-         </div>
+      {loading && !news.length ? (
+           <RetroLoader />
+      ) : news.length === 0 ? (
+          <div className="text-center font-mono text-gray-500 py-12 border-2 border-dashed border-gray-800">
+              NO SIGNALS FOUND ON THIS FREQUENCY.
+          </div>
       ) : (
-        <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {news.map((item, index) => {
-                const relatedLinks = getRelatedLinks(`${item.headline} ${item.summary}`);
-                
-                return (
-                <article key={`${index}-${item.date}`} className="group relative border-2 border-retro-grid bg-retro-dark hover:border-retro-neon transition-colors duration-300 p-6 overflow-hidden flex flex-col h-full">
-                <div className="absolute top-0 right-0 bg-retro-grid text-retro-neon text-xs font-mono px-2 py-1">
-                    {new Date(item.date).toLocaleDateString()}
-                </div>
-                <div className="mb-3">
-                    <button 
-                        onClick={(e) => {
-                            e.preventDefault();
-                            handleCategoryChange(item.category);
-                        }}
-                        className={`inline-block px-2 py-0.5 text-[10px] font-bold font-mono mb-2 uppercase ${getTagStyle(item.category)} hover:opacity-80 cursor-pointer`}
-                    >
-                        {item.category}
-                    </button>
-                    <h3 className="text-xl font-bold font-mono text-retro-blue group-hover:text-retro-neon transition-colors leading-tight">
-                    {item.headline}
-                    </h3>
-                </div>
-                <p className="text-gray-400 font-mono text-sm leading-relaxed border-l-2 border-retro-grid pl-4 flex-grow">
-                    {item.summary}
-                </p>
+          <div className="space-y-6">
+              {news.map((item, idx) => {
+                  const links = getRelatedLinks(item.summary + " " + item.headline);
+                  const tagStyle = getTagStyle(item.category);
 
-                {relatedLinks.length > 0 && (
-                    <div className="mt-4 flex flex-wrap gap-2">
-                        {relatedLinks.map(link => (
-                            <Link 
-                                key={link.to} 
-                                href={link.to}
-                                className={`text-[10px] font-mono border px-2 py-0.5 transition-colors flex items-center gap-1
-                                    ${link.type === 'CONSOLE' 
-                                        ? 'border-retro-blue text-retro-blue hover:bg-retro-blue hover:text-black' 
-                                        : 'border-retro-pink text-retro-pink hover:bg-retro-pink hover:text-black'
-                                    }`}
-                            >
-                                <span className="opacity-75">{link.type === 'CONSOLE' ? 'HARDWARE:' : 'GAME:'}</span>
-                                <span className="font-bold">{link.label}</span>
-                            </Link>
-                        ))}
+                  return (
+                    <div key={idx} className="bg-retro-dark border border-retro-grid p-6 relative overflow-hidden group hover:border-retro-neon transition-all">
+                        <div className="absolute top-0 right-0 p-2 opacity-50 font-mono text-xs text-gray-600">
+                             {new Date(item.date).toLocaleDateString()}
+                        </div>
+                        
+                        <div className="flex items-start gap-4 mb-2">
+                            <span className={`font-mono text-[10px] px-2 py-0.5 rounded font-bold uppercase ${tagStyle}`}>
+                                {item.category}
+                            </span>
+                        </div>
+
+                        <h3 className="font-pixel text-lg text-white mb-2 group-hover:text-retro-neon transition-colors">
+                            {item.headline}
+                        </h3>
+                        <p className="font-mono text-gray-400 text-sm leading-relaxed mb-4">
+                            {item.summary}
+                        </p>
+
+                        {links.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-retro-grid/30">
+                                <span className="font-mono text-[10px] text-gray-500 pt-1">DETECTED REFERENCES:</span>
+                                {links.map((link, i) => (
+                                    <Link key={i} href={link.to} className="font-mono text-[10px] border border-retro-blue text-retro-blue px-2 py-0.5 hover:bg-retro-blue hover:text-black transition-colors">
+                                        {link.label}
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
                     </div>
-                )}
-                </article>
-            )})}
+                  );
+              })}
+          </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-4 py-8 border-t border-retro-grid/30 mt-8">
+            <Button 
+                variant="secondary" 
+                onClick={() => { setPage(p => p - 1); loadNews(page - 1, selectedCategory); }}
+                disabled={page === 1}
+                className="text-xs"
+            >
+                &lt; PREV
+            </Button>
+            
+            <div className="font-pixel text-xs text-retro-neon bg-retro-grid/20 px-4 py-2 rounded">
+                PAGE {page} OF {totalPages}
             </div>
-            {totalPages > 1 && (
-                 <div className="flex justify-center items-center gap-4 py-8 border-t border-retro-grid/30 mt-8">
-                     <Button 
-                         variant="secondary" 
-                         onClick={() => setPage(p => Math.max(1, p - 1))}
-                         disabled={page === 1}
-                     >
-                         &lt; PREV
-                     </Button>
-                     
-                     <div className="font-pixel text-xs text-retro-neon bg-retro-grid/20 px-4 py-2 rounded">
-                         PAGE {page} OF {totalPages}
-                     </div>
- 
-                     <Button 
-                         variant="secondary" 
-                         onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                         disabled={page >= totalPages}
-                     >
-                         NEXT &gt;
-                     </Button>
-                 </div>
-            )}
-        </>
+
+            <Button 
+                variant="secondary" 
+                onClick={() => { setPage(p => p + 1); loadNews(page + 1, selectedCategory); }}
+                disabled={page >= totalPages}
+                className="text-xs"
+            >
+                NEXT &gt;
+            </Button>
+        </div>
       )}
     </div>
   );
