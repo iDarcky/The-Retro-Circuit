@@ -11,7 +11,7 @@ import GlobalSearch from '../ui/GlobalSearch';
 import type { User } from '@supabase/supabase-js';
 import { 
   IconNews, IconDatabase, IconVS, IconGames, IconTimeline, 
-  IconLogin, IconHome, IconLock, IconSettings 
+  IconLogin, IconHome, IconSettings 
 } from '../ui/Icons';
 
 // --- HELPER COMPONENTS ---
