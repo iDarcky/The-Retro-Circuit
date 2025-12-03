@@ -63,6 +63,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [dbStatus, setDbStatus] = useState<'CONNECTING' | 'ONLINE' | 'OFFLINE'>('CONNECTING');
   const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -77,10 +78,17 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         // Check Auth
         const currentUser = await retroAuth.getUser();
         setUser(currentUser);
+        
+        // Check Admin Status
+        const adminStatus = await retroAuth.isAdmin();
+        setIsAdmin(adminStatus);
 
         // Listen for Auth Changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
             setUser(session?.user || null);
+            // Re-verify admin status on auth change
+            const newAdminStatus = await retroAuth.isAdmin();
+            setIsAdmin(newAdminStatus);
         });
 
         return () => subscription.unsubscribe();
@@ -147,10 +155,12 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         {/* Status Footer */}
         <div className="p-2 bg-black text-[10px] font-mono text-center flex justify-between items-center px-4 text-gray-600">
             <span>v1.0.4</span>
-            <span className={`flex items-center gap-1 ${dbStatus === 'ONLINE' ? 'text-retro-neon' : 'text-red-500'}`}>
-                <span className={`w-2 h-2 rounded-full ${dbStatus === 'ONLINE' ? 'bg-retro-neon' : 'bg-red-500'} animate-pulse`}></span>
-                {dbStatus === 'ONLINE' ? 'DATABASE ONLINE' : 'OFFLINE'}
-            </span>
+            {isAdmin && (
+                <span className={`flex items-center gap-1 ${dbStatus === 'ONLINE' ? 'text-retro-neon' : 'text-red-500'}`}>
+                    <span className={`w-2 h-2 rounded-full ${dbStatus === 'ONLINE' ? 'bg-retro-neon' : 'bg-red-500'} animate-pulse`}></span>
+                    {dbStatus === 'ONLINE' ? 'DATABASE ONLINE' : 'OFFLINE'}
+                </span>
+            )}
         </div>
       </aside>
 

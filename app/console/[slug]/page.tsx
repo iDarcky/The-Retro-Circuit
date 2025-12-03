@@ -40,7 +40,7 @@ const SpecRow = ({ label, value, highlight = false }: { label: string, value?: s
 };
 
 // Helper component for sections
-const SpecSection = ({ title, children }: { title: string, children: ReactNode }) => (
+const SpecSection = ({ title, children }: { title: string, children?: ReactNode }) => (
     <div className="mb-0 border-b border-retro-grid last:border-0">
         <h3 className="bg-retro-grid/20 text-retro-blue font-pixel text-xs px-4 py-2 uppercase tracking-wider border-b border-retro-grid/30">
             {title}

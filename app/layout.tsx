@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { Press_Start_2P, Share_Tech_Mono } from "next/font/google";
 import "../styles/globals.css";
 import ClientShell from "../components/layout/ClientShell";
@@ -28,7 +29,7 @@ export const metadata = {
   description: "The ultimate retro gaming database. Compare console specs, read classic game reviews, and view the complete timeline of video game history.",
   keywords: ["retro gaming", "console specs", "video game database", "retro reviews", "console comparison"],
   icons: {
-    icon: '/logo.png',
+    icon: '/logo.svg',
   },
   manifest: '/manifest.json',
 };
@@ -36,7 +37,7 @@ export const metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="en">
