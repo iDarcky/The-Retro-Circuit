@@ -66,6 +66,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const [dbStatus, setDbStatus] = useState<'CONNECTING' | 'ONLINE' | 'OFFLINE'>('CONNECTING');
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [customLogo, setCustomLogo] = useState<string | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -84,6 +85,10 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         // Check Admin Status
         const adminStatus = await retroAuth.isAdmin();
         setIsAdmin(adminStatus);
+        
+        // Check Custom Logo (Local Setting)
+        const savedLogo = localStorage.getItem('retro_custom_logo');
+        if (savedLogo) setCustomLogo(savedLogo);
 
         // Listen for Auth Changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
@@ -114,7 +119,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       <aside className="hidden md:flex flex-col w-64 border-r border-retro-grid bg-retro-dark/95 backdrop-blur z-20 h-screen sticky top-0">
         <div className="p-6 border-b border-retro-grid flex items-center justify-center">
              <div className="relative group">
-                <Logo className="w-12 h-12 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)] transition-transform group-hover:scale-105" />
+                <Logo src={customLogo} className="w-12 h-12 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)] transition-transform group-hover:scale-105" />
              </div>
              <div className="ml-3">
                  <h1 className="font-pixel text-sm text-white leading-none">RETRO</h1>
@@ -156,7 +161,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         
         {/* Status Footer */}
         <div className="p-2 bg-black text-[10px] font-mono text-center flex justify-between items-center px-4 text-gray-600">
-            <span>v1.0.5</span>
+            <span>v1.0.6</span>
             {isAdmin && (
                 <span className={`flex items-center gap-1 ${dbStatus === 'ONLINE' ? 'text-retro-neon' : 'text-red-500'}`}>
                     <span className={`w-2 h-2 rounded-full ${dbStatus === 'ONLINE' ? 'bg-retro-neon' : 'bg-red-500'} animate-pulse`}></span>
@@ -169,7 +174,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       {/* MOBILE HEADER */}
       <header className="md:hidden h-16 border-b border-retro-grid bg-retro-dark/95 backdrop-blur z-20 flex items-center justify-between px-4 sticky top-0">
          <div className="flex items-center">
-             <Logo className="w-8 h-8 drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]" />
+             <Logo src={customLogo} className="w-8 h-8 drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]" />
              <span className="ml-2 font-pixel text-xs text-white">RETRO CIRCUIT</span>
          </div>
          <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="p-2 text-retro-neon">

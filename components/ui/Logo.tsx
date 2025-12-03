@@ -4,9 +4,23 @@ import { type FC } from 'react';
 interface LogoProps {
   className?: string;
   animate?: boolean;
+  src?: string | null;
+  alt?: string;
 }
 
-const Logo: FC<LogoProps> = ({ className = "w-12 h-12", animate = true }) => {
+const Logo: FC<LogoProps> = ({ className = "w-12 h-12", animate = true, src, alt = "Logo" }) => {
+  if (src) {
+    return (
+      <div className={`${className} relative flex items-center justify-center`}>
+        <img 
+          src={src} 
+          alt={alt} 
+          className="w-full h-full object-contain drop-shadow-[0_0_10px_rgba(0,255,157,0.3)]" 
+        />
+      </div>
+    );
+  }
+
   return (
     <svg className={className} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* Circuit Traces - Outer */}

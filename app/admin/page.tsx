@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState, type FormEvent, type ChangeEvent } from 'react';
@@ -6,7 +7,7 @@ import { addGame, addConsole, addNewsItem, fetchManufacturers, addManufacturer }
 import Button from '../../components/ui/Button';
 import { NewsItem, NewsItemSchema, GameSchema, ConsoleSchema, ConsoleSpecsSchema, Manufacturer, ManufacturerSchema } from '../../lib/types';
 
-type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE' | 'MANUFACTURER';
+type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE' | 'MANUFACTURER' | 'SETTINGS';
 
 export default function AdminPortalPage() {
     const [isAdmin, setIsAdmin] = useState(false);
@@ -72,6 +73,9 @@ export default function AdminPortalPage() {
     const [specSold, setSpecSold] = useState('');
     const [specBestGame, setSpecBestGame] = useState('');
 
+    // Settings
+    const [customLogo, setCustomLogo] = useState<string | null>(null);
+
     useEffect(() => {
         const check = async () => {
             const admin = await retroAuth.isAdmin();
@@ -79,6 +83,8 @@ export default function AdminPortalPage() {
             if (admin) {
                 const manus = await fetchManufacturers();
                 setManufacturers(manus);
+                const savedLogo = localStorage.getItem('retro_custom_logo');
+                if (savedLogo) setCustomLogo(savedLogo);
             }
             setLoading(false);
         };
@@ -204,6 +210,30 @@ export default function AdminPortalPage() {
         setLoading(false);
     };
 
+    const handleLogoUpload = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = reader.result as string;
+                setCustomLogo(base64String);
+                localStorage.setItem('retro_custom_logo', base64String);
+                setMessage("LOGO UPDATED SUCCESSFULLY. (Local Override)");
+                window.dispatchEvent(new Event('storage')); // Notify app
+                // Force reload to ensure main layout picks it up if in same context
+                setTimeout(() => window.location.reload(), 1000);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const clearLogo = () => {
+        localStorage.removeItem('retro_custom_logo');
+        setCustomLogo(null);
+        setMessage("LOGO RESET TO DEFAULT.");
+        setTimeout(() => window.location.reload(), 500);
+    };
+
     if (loading) return <div className="p-10 text-center font-mono text-retro-neon">VERIFYING CLEARANCE...</div>;
 
     if (!isAdmin) {
@@ -228,28 +258,18 @@ export default function AdminPortalPage() {
                 <div className="bg-red-900/30 border border-red-500 text-red-400 p-4 mb-6 shadow-[0_0_10px_rgba(239,68,68,0.2)]">
                     <div className="font-bold mb-1">⚠ ERROR</div>
                     <div className="break-words">{errorMsg}</div>
-                    {errorMsg.toLowerCase().includes('policy') && (
-                        <div className="mt-4 text-xs text-white bg-red-800/50 p-3 font-mono border-l-4 border-white">
-                            <strong>DATABASE PERMISSION ERROR DETECTED</strong><br/>
-                            You need to enable Row Level Security (RLS) policies for the 'manufacturer' table.<br/>
-                            Run this in Supabase SQL Editor to secure it for ADMINS ONLY:<br/>
-                            <code className="text-yellow-300 block mt-2 p-2 bg-black/50 select-all whitespace-pre-wrap">
-                                create policy "Enable insert for admins only" on manufacturer for insert to authenticated with check (exists (select 1 from profiles where profiles.id = auth.uid() and profiles.role = 'admin'));
-                            </code>
-                        </div>
-                    )}
                 </div>
             )}
 
             {/* Navigation Tabs */}
             <div className="flex gap-2 md:gap-4 mb-8 overflow-x-auto pb-2 scrollbar-hide">
-                {(['NEWS', 'GAME', 'CONSOLE', 'MANUFACTURER'] as AdminTab[]).map(tab => (
+                {(['NEWS', 'GAME', 'CONSOLE', 'MANUFACTURER', 'SETTINGS'] as AdminTab[]).map(tab => (
                     <button
                         key={tab}
                         onClick={() => { setActiveTab(tab); setMessage(null); setErrorMsg(null); }}
                         className={`flex-shrink-0 px-6 py-3 border-2 transition-all font-pixel text-xs md:text-sm ${activeTab === tab ? 'border-retro-neon text-retro-neon bg-retro-neon/10 shadow-[0_0_15px_rgba(0,255,157,0.2)]' : 'border-gray-700 text-gray-500 hover:border-gray-500'}`}
                     >
-                        ADD {tab}
+                        {tab === 'SETTINGS' ? 'SYSTEM SETTINGS' : `ADD ${tab}`}
                     </button>
                 ))}
             </div>
@@ -401,6 +421,49 @@ export default function AdminPortalPage() {
 
                         <div className="flex justify-end pt-4"><Button type="submit">REGISTER HARDWARE</Button></div>
                     </form>
+                )}
+
+                {activeTab === 'SETTINGS' && (
+                    <div className="space-y-6 animate-fadeIn">
+                        <div className="text-xs text-retro-neon border-b border-gray-700 pb-2 mb-4 font-bold uppercase tracking-widest">Global Assets</div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                            <div className="space-y-4">
+                                <label className="block text-sm font-bold mb-2 text-retro-blue">CUSTOM LOGO UPLOAD</label>
+                                <p className="text-xs text-gray-500 mb-4">Upload a PNG or JPG to override the default SVG logo. This change is currently applied via Local Overrides (Browser Storage) for immediate preview.</p>
+                                
+                                <input 
+                                    type="file" 
+                                    accept="image/*"
+                                    onChange={handleLogoUpload}
+                                    className="block w-full text-sm text-gray-500
+                                      file:mr-4 file:py-2 file:px-4
+                                      file:border-0
+                                      file:text-xs file:font-mono
+                                      file:bg-retro-grid file:text-retro-neon
+                                      hover:file:bg-retro-neon hover:file:text-black
+                                    "
+                                />
+
+                                {customLogo && (
+                                    <div className="mt-4">
+                                        <Button variant="danger" onClick={clearLogo} className="text-xs">
+                                            RESET TO DEFAULT LOGO
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="bg-black/50 border border-gray-700 p-8 flex flex-col items-center justify-center min-h-[200px]">
+                                <p className="text-[10px] text-gray-500 mb-4 uppercase tracking-widest">Preview</p>
+                                {customLogo ? (
+                                    <img src={customLogo} alt="Logo Preview" className="h-24 w-auto object-contain" />
+                                ) : (
+                                    <div className="text-gray-600 font-pixel text-sm">NO CUSTOM LOGO</div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
                 )}
             </div>
         </div>
