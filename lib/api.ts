@@ -40,23 +40,28 @@ export const searchDatabase = async (query: string): Promise<SearchResult[]> => 
 export const fetchManufacturers = async (): Promise<Manufacturer[]> => {
     try {
         const { data, error } = await supabase.from('manufacturer').select('*').order('name');
-        if (error) throw error;
+        if (error) {
+            console.error('Fetch Manufacturers Error:', error);
+            throw error;
+        }
         return data as Manufacturer[];
-    } catch {
+    } catch (e) {
+        console.error(e);
         return [];
     }
 };
 
 export const fetchManufacturerProfile = async (nameOrId: string): Promise<Manufacturer | null> => {
     try {
-        // Try searching by ID or Name
+        // Try searching by ID or Name/Slug
         let query = supabase.from('manufacturer').select('*');
         
         // Simple check if it looks like a UUID
         if (nameOrId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
              query = query.eq('id', nameOrId);
         } else {
-             query = query.ilike('name', nameOrId);
+             // Search by slug first (more reliable), then name
+             query = query.or(`slug.eq.${nameOrId},name.ilike.${nameOrId}`);
         }
         
         const { data, error } = await query.single();
@@ -67,12 +72,17 @@ export const fetchManufacturerProfile = async (nameOrId: string): Promise<Manufa
     }
 };
 
-export const addManufacturer = async (manu: Omit<Manufacturer, 'id'>): Promise<boolean> => {
+export const addManufacturer = async (manu: Omit<Manufacturer, 'id'>): Promise<{ success: boolean, message?: string }> => {
     try {
         const { error } = await supabase.from('manufacturer').insert([manu]);
-        return !error;
-    } catch {
-        return false;
+        if (error) {
+            console.error('Add Manufacturer Error:', error);
+            return { success: false, message: error.message };
+        }
+        return { success: true };
+    } catch (e: any) {
+        console.error('Add Manufacturer Exception:', e);
+        return { success: false, message: e.message || "Unknown error occurred" };
     }
 }
 
@@ -81,7 +91,7 @@ export const addManufacturer = async (manu: Omit<Manufacturer, 'id'>): Promise<b
 export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: number = 1, limit: number = 20): Promise<{ data: ConsoleDetails[], count: number }> => {
     try {
         // JOIN: Select console fields, join manufacturer, join specs
-        // Note: 'manufacturer' alias is used for the join.
+        // Note: 'manufacturer' alias must match the table name or relationship
         let query = supabase.from('consoles')
             .select('*, manufacturer:manufacturer(*), specs:console_specs(*)', { count: 'exact' })
             .order('release_year', { ascending: true });
@@ -113,7 +123,8 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
         if (error) throw error;
         return { data: (data as any) || [], count: count || 0 };
 
-    } catch {
+    } catch (e) {
+        console.error('Fetch Consoles Error:', e);
         return { data: [], count: 0 };
     }
 };
@@ -160,7 +171,8 @@ export const addConsole = async (
         if (specsError) throw specsError; 
 
         return true;
-    } catch {
+    } catch (e) {
+        console.error(e);
         return false;
     }
 };
