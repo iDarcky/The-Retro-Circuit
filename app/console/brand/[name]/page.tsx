@@ -56,31 +56,43 @@ export default async function ManufacturerDetailPage({ params }: Props) {
         <div className="w-full max-w-7xl mx-auto p-4 animate-[fadeIn_0.5s_ease-in-out]">
             {/* Header / Dossier */}
             <div className={`border-l-8 ${theme.color} bg-retro-dark p-6 md:p-8 mb-8 shadow-lg`}>
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-gray-800 pb-6 mb-6 gap-6 md:gap-0">
-                    <div>
-                        <div className="flex gap-2 mb-2 items-center">
+                <div className="flex flex-col md:flex-row justify-between items-start border-b border-gray-800 pb-6 mb-6 gap-6">
+                    {/* Left Column: Title & Identity */}
+                    <div className="flex-1 w-full">
+                        <div className="flex flex-wrap gap-2 mb-2 items-center justify-between md:justify-start">
                              <Link href="/console" className="font-mono text-xs text-gray-500 hover:text-white">&lt; HARDWARE DB</Link>
                              <div className={`font-mono text-xs border inline-block px-2 py-0.5 ${theme.color}`}>CONFIDENTIAL</div>
                         </div>
-                        <h1 className={`text-4xl md:text-5xl lg:text-7xl font-pixel ${themeColorClass} opacity-90 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] break-words`}>
-                            {profile.name}
-                        </h1>
+                        
+                        <div className="flex items-center gap-4 mt-4">
+                            {profile.image_url && (
+                                <div className="bg-black/20 p-2 border border-gray-700 rounded md:hidden">
+                                     <img src={profile.image_url} className="h-12 w-auto object-contain" />
+                                </div>
+                            )}
+                            <h1 className={`text-3xl sm:text-4xl md:text-6xl font-pixel ${themeColorClass} opacity-90 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] break-words leading-tight`}>
+                                {profile.name}
+                            </h1>
+                        </div>
+
                         {profile.website && (
                              <a href={profile.website} target="_blank" className="font-mono text-xs text-gray-500 hover:text-white mt-2 inline-block break-all">
                                  [ {profile.website.replace('https://', '').replace('http://', '')} ]
                              </a>
                         )}
                     </div>
-                    <div className="text-left md:text-right flex flex-row md:flex-col items-center md:items-end gap-4 md:gap-0 w-full md:w-auto">
+
+                    {/* Right Column: Stats & Logo (Desktop) */}
+                    <div className="flex flex-row md:flex-col items-center md:items-end justify-between w-full md:w-auto gap-4 md:gap-2">
                         {profile.image_url && (
-                            <img src={profile.image_url} className="h-12 md:h-16 w-auto object-contain mb-0 md:mb-4 ml-0 md:ml-auto" />
+                            <img src={profile.image_url} className="hidden md:block h-20 lg:h-24 w-auto object-contain mb-4" />
                         )}
                         <div className="flex flex-col md:items-end">
-                            <div className="font-mono text-gray-500 text-xs">FOUNDED</div>
+                            <div className="font-mono text-gray-500 text-[10px] uppercase">FOUNDED</div>
                             <div className="font-pixel text-white text-lg">{profile.founded_year}</div>
                         </div>
                         <div className="flex flex-col md:items-end">
-                            <div className="font-mono text-gray-500 text-xs mt-0 md:mt-2">ORIGIN</div>
+                            <div className="font-mono text-gray-500 text-[10px] uppercase">HQ ORIGIN</div>
                             <div className="font-pixel text-white text-lg">{profile.country}</div>
                         </div>
                     </div>
@@ -89,21 +101,21 @@ export default async function ManufacturerDetailPage({ params }: Props) {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="md:col-span-2">
                         <h3 className={`font-pixel text-lg mb-4 ${themeColorClass}`}>CORPORATE HISTORY</h3>
-                        <p className="font-mono text-gray-300 text-base md:text-lg leading-relaxed border-l-2 border-gray-700 pl-4 whitespace-pre-line">
+                        <p className="font-mono text-gray-300 text-sm md:text-base leading-relaxed border-l-2 border-gray-700 pl-4 whitespace-pre-line">
                             {profile.description}
                         </p>
                     </div>
                     
-                    <div className={`bg-black/30 p-6 border border-gray-800`}>
-                        <div className="mb-6">
-                            <h4 className="font-pixel text-xs text-gray-500 mb-2">KEY FRANCHISES</h4>
-                            <ul className="space-y-2">
+                    <div className={`bg-black/30 p-6 border border-gray-800 h-fit`}>
+                        <div className="mb-0">
+                            <h4 className="font-pixel text-xs text-gray-500 mb-4 border-b border-gray-800 pb-2">KEY FRANCHISES</h4>
+                            <div className="flex flex-wrap gap-2">
                                 {(profile.key_franchises || "").split(',').map((f: string) => (
-                                    <li key={f.trim()} className={`font-mono text-sm border-b border-gray-800 pb-1 ${themeColorClass}`}>
+                                    <span key={f.trim()} className={`font-mono text-xs border px-2 py-1 ${theme.color} bg-black/50`}>
                                         {f.trim()}
-                                    </li>
+                                    </span>
                                 ))}
-                            </ul>
+                            </div>
                         </div>
                     </div>
                 </div>

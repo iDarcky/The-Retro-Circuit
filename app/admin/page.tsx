@@ -220,23 +220,40 @@ export default function AdminPortalPage() {
             </div>
 
             {message && <div className="bg-retro-grid border border-retro-neon text-retro-neon p-4 mb-6 animate-pulse shadow-[0_0_10px_rgba(0,255,157,0.2)]">&gt; {message}</div>}
-            {errorMsg && <div className="bg-red-900/30 border border-red-500 text-red-400 p-4 mb-6 shadow-[0_0_10px_rgba(239,68,68,0.2)]">⚠ ERROR: {errorMsg}</div>}
+            
+            {errorMsg && (
+                <div className="bg-red-900/30 border border-red-500 text-red-400 p-4 mb-6 shadow-[0_0_10px_rgba(239,68,68,0.2)]">
+                    <div className="font-bold mb-1">⚠ ERROR</div>
+                    <div className="break-words">{errorMsg}</div>
+                    {errorMsg.toLowerCase().includes('policy') && (
+                        <div className="mt-4 text-xs text-white bg-red-800/50 p-3 font-mono border-l-4 border-white">
+                            <strong>DATABASE PERMISSION ERROR DETECTED</strong><br/>
+                            You need to enable Row Level Security (RLS) policies for the 'manufacturer' table.<br/>
+                            Run this in Supabase SQL Editor:<br/>
+                            <code className="text-yellow-300 block mt-2 p-2 bg-black/50 select-all">
+                                create policy "Enable insert for authenticated users only" on manufacturer for insert to authenticated with check (true);
+                            </code>
+                        </div>
+                    )}
+                </div>
+            )}
 
-            <div className="flex gap-2 md:gap-4 mb-8 flex-wrap">
+            {/* Navigation Tabs */}
+            <div className="flex gap-2 md:gap-4 mb-8 overflow-x-auto pb-2 scrollbar-hide">
                 {(['NEWS', 'GAME', 'CONSOLE', 'MANUFACTURER'] as AdminTab[]).map(tab => (
                     <button
                         key={tab}
                         onClick={() => { setActiveTab(tab); setMessage(null); setErrorMsg(null); }}
-                        className={`flex-1 md:flex-none px-4 py-2 border-2 transition-all ${activeTab === tab ? 'border-retro-neon text-retro-neon bg-retro-neon/10' : 'border-gray-700 text-gray-500 hover:border-gray-500'}`}
+                        className={`flex-shrink-0 px-6 py-3 border-2 transition-all font-pixel text-xs md:text-sm ${activeTab === tab ? 'border-retro-neon text-retro-neon bg-retro-neon/10 shadow-[0_0_15px_rgba(0,255,157,0.2)]' : 'border-gray-700 text-gray-500 hover:border-gray-500'}`}
                     >
                         ADD {tab}
                     </button>
                 ))}
             </div>
 
-            <div className="border-2 border-retro-grid p-4 md:p-8 bg-retro-dark shadow-xl">
+            <div className="border-2 border-retro-grid p-4 md:p-8 bg-retro-dark shadow-xl min-h-[500px]">
                 {activeTab === 'NEWS' && (
-                    <form onSubmit={handleSubmitNews} className="space-y-4">
+                    <form onSubmit={handleSubmitNews} className="space-y-4 max-w-2xl">
                         <input className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Headline" value={newsHeadline} onChange={(e: ChangeEvent<HTMLInputElement>) => setNewsHeadline(e.target.value)} />
                         <select className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" value={newsCategory} onChange={(e: ChangeEvent<HTMLSelectElement>) => setNewsCategory(e.target.value as NewsItem['category'])}>
                             <option value="Hardware">Hardware</option>
@@ -250,24 +267,53 @@ export default function AdminPortalPage() {
                 )}
 
                 {activeTab === 'MANUFACTURER' && (
-                    <form onSubmit={handleSubmitManufacturer} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="md:col-span-2 text-xs text-gray-500 mb-2 font-bold uppercase border-b border-gray-800 pb-1">Entity Details</div>
+                    <form onSubmit={handleSubmitManufacturer} className="space-y-8 animate-fadeIn">
                         
-                        <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Name (e.g. Nintendo)" value={manuName} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuName(e.target.value)} required />
-                        <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Slug (auto-generated if empty)" value={manuSlug} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuSlug(e.target.value)} />
+                        {/* Section I */}
+                        <div>
+                            <div className="text-xs text-retro-neon border-b border-gray-700 pb-2 mb-4 font-bold uppercase tracking-widest">I. Corporate Identity</div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Name (e.g. Nintendo)" value={manuName} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuName(e.target.value)} required />
+                                <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Slug (auto-generated if empty)" value={manuSlug} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuSlug(e.target.value)} />
+                                <div className="md:col-span-1">
+                                    <label className="text-[10px] text-gray-500 mb-1 block">FOUNDED YEAR</label>
+                                    <input type="number" className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="e.g. 1889" value={manuFounded} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuFounded(e.target.value)} required />
+                                </div>
+                                <div className="md:col-span-1">
+                                    <label className="text-[10px] text-gray-500 mb-1 block">COUNTRY</label>
+                                    <input className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="e.g. Japan" value={manuCountry} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuCountry(e.target.value)} required />
+                                </div>
+                            </div>
+                        </div>
                         
-                        <input type="number" className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Founded Year (e.g. 1889)" value={manuFounded} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuFounded(e.target.value)} required />
-                        <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Country (e.g. Japan)" value={manuCountry} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuCountry(e.target.value)} required />
+                        {/* Section II */}
+                        <div>
+                            <div className="text-xs text-retro-neon border-b border-gray-700 pb-2 mb-4 font-bold uppercase tracking-widest">II. Assets & Presence</div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                                <div className="space-y-4">
+                                    <input type="url" className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Website URL (https://...)" value={manuWebsite} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuWebsite(e.target.value)} />
+                                    <input type="url" className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Image URL (Logo)" value={manuImage} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuImage(e.target.value)} />
+                                    <input className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Key Franchises (comma separated)" value={manuFranchises} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuFranchises(e.target.value)} />
+                                </div>
+                                {/* Image Preview */}
+                                <div className="bg-black/50 border border-gray-700 h-40 md:h-full min-h-[160px] flex flex-col items-center justify-center p-4">
+                                    {manuImage ? (
+                                        <img src={manuImage} alt="Preview" className="max-h-24 w-auto object-contain mb-2" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                                    ) : (
+                                        <div className="text-gray-600 font-pixel text-xs text-center">NO IMAGE<br/>SIGNAL</div>
+                                    )}
+                                    <div className="text-[10px] text-retro-blue mt-2">PREVIEW MONITOR</div>
+                                </div>
+                            </div>
+                        </div>
                         
-                        <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Website URL" value={manuWebsite} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuWebsite(e.target.value)} />
-                        <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Image URL (Logo)" value={manuImage} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuImage(e.target.value)} />
+                        {/* Section III */}
+                        <div>
+                             <div className="text-xs text-retro-neon border-b border-gray-700 pb-2 mb-4 font-bold uppercase tracking-widest">III. Dossier</div>
+                             <textarea className="w-full bg-black border border-gray-700 p-3 h-32 focus:border-retro-neon outline-none font-mono text-sm" placeholder="Company History and Description..." value={manuDesc} onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setManuDesc(e.target.value)} required />
+                        </div>
                         
-                        <input className="bg-black border border-gray-700 p-3 md:col-span-2 focus:border-retro-neon outline-none" placeholder="Key Franchises (comma separated)" value={manuFranchises} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuFranchises(e.target.value)} />
-                        
-                        <div className="md:col-span-2 text-xs text-gray-500 mt-4 mb-2 font-bold uppercase border-b border-gray-800 pb-1">Dossier</div>
-                        <textarea className="bg-black border border-gray-700 p-3 md:col-span-2 h-32 focus:border-retro-neon outline-none" placeholder="Description" value={manuDesc} onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setManuDesc(e.target.value)} required />
-                        
-                        <div className="md:col-span-2 flex justify-end mt-4"><Button type="submit">REGISTER ENTITY</Button></div>
+                        <div className="flex justify-end pt-4"><Button type="submit">REGISTER ENTITY</Button></div>
                     </form>
                 )}
 
@@ -344,17 +390,12 @@ export default function AdminPortalPage() {
                             <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Weight" value={specWeight} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecWeight(e.target.value)} />
                             <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Battery Life" value={specBattery} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecBattery(e.target.value)} />
                             <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Power Supply" value={specPower} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecPower(e.target.value)} />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="md:col-span-2 text-xs text-retro-neon border-b border-gray-700 pb-2 mb-2 font-bold uppercase">III. COMMERCIAL DATA</div>
                             <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Launch Price" value={specPrice} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecPrice(e.target.value)} />
-                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Inflation Adj. Price" value={specInflation} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecInflation(e.target.value)} />
                             <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Units Sold" value={specSold} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecSold(e.target.value)} />
                             <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Best Selling Game" value={specBestGame} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecBestGame(e.target.value)} />
                         </div>
 
-                        <div className="flex justify-end mt-8"><Button type="submit">REGISTER HARDWARE</Button></div>
+                        <div className="flex justify-end pt-4"><Button type="submit">REGISTER HARDWARE</Button></div>
                     </form>
                 )}
             </div>

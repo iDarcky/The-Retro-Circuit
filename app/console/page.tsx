@@ -119,23 +119,25 @@ export default function ConsoleVaultPage() {
                         <Link 
                             key={manu.id}
                             href={`/console/brand/${manu.slug}`}
-                            className={`group border-4 p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${theme.color} ${theme.bg} ${theme.hover}`}
+                            className={`group border-4 p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 min-h-[200px] hover:-translate-y-1 ${theme.color} ${theme.bg} ${theme.hover}`}
                         >
                             {manu.image_url ? (
-                                <img src={manu.image_url} className="h-16 w-auto object-contain" />
+                                <img src={manu.image_url} className="h-20 w-auto object-contain drop-shadow-lg" alt={manu.name} />
                             ) : (
                                 <div className="w-20 h-20 border-2 border-current rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <span className="font-pixel text-2xl">{manu.name[0]}</span>
                                 </div>
                             )}
-                            <span className="font-pixel text-xl tracking-widest uppercase">{manu.name}</span>
-                            <span className="font-mono text-xs opacity-75">ACCESS FOLDER &gt;</span>
+                            <div className="text-center">
+                                <div className="font-pixel text-xl tracking-widest uppercase mb-1">{manu.name}</div>
+                                <div className="font-mono text-xs opacity-75">ACCESS FOLDER &gt;</div>
+                            </div>
                         </Link>
                     );
                 })}
                  <button 
                     onClick={switchToListView}
-                    className="group border-4 border-dashed border-gray-600 bg-retro-dark p-8 flex flex-col items-center justify-center gap-4 hover:border-retro-pink hover:text-retro-pink transition-colors text-gray-500"
+                    className="group border-4 border-dashed border-gray-600 bg-retro-dark p-8 flex flex-col items-center justify-center gap-4 hover:border-retro-pink hover:text-retro-pink transition-colors text-gray-500 min-h-[200px]"
                 >
                     <span className="font-pixel text-lg">VIEW ALL</span>
                     <span className="font-mono text-xs">APPLY FILTERS</span>
@@ -150,7 +152,7 @@ export default function ConsoleVaultPage() {
               
               {/* FILTER SIDEBAR */}
               <div className="lg:w-64 flex-shrink-0 space-y-6">
-                  <div className="bg-retro-dark border border-retro-grid p-4">
+                  <div className="bg-retro-dark border border-retro-grid p-4 sticky top-4">
                       <h3 className="font-pixel text-xs text-retro-blue mb-4 border-b border-retro-grid pb-2">FILTERS</h3>
                       
                       {/* Brand Reset */}
@@ -191,7 +193,7 @@ export default function ConsoleVaultPage() {
                                   <button
                                     key={gen}
                                     onClick={() => toggleArrayFilter('generations', gen)}
-                                    className={`text-[10px] font-mono border px-2 py-1 ${filters.generations.includes(gen) ? 'bg-retro-neon text-black border-retro-neon' : 'border-gray-700 text-gray-400'}`}
+                                    className={`text-[10px] font-mono border px-2 py-1 transition-colors ${filters.generations.includes(gen) ? 'bg-retro-neon text-black border-retro-neon' : 'border-gray-700 text-gray-400 hover:border-gray-500'}`}
                                   >
                                       {gen}
                                   </button>
@@ -204,7 +206,7 @@ export default function ConsoleVaultPage() {
                           <label className="text-xs font-mono text-gray-500 block mb-2">FORM FACTOR</label>
                           <div className="space-y-2">
                               {['Home Console', 'Handheld', 'Hybrid', 'Micro Console'].map(type => (
-                                  <label key={type} className="flex items-center gap-2 font-mono text-xs text-gray-300 cursor-pointer">
+                                  <label key={type} className="flex items-center gap-2 font-mono text-xs text-gray-300 cursor-pointer hover:text-white">
                                       <input 
                                         type="checkbox" 
                                         checked={filters.form_factors.includes(type)}
@@ -238,7 +240,7 @@ export default function ConsoleVaultPage() {
                                 >
                                     <div className="h-32 bg-black/40 flex items-center justify-center p-4 relative">
                                         {console.image_url ? (
-                                            <img src={console.image_url} className="max-h-full object-contain" />
+                                            <img src={console.image_url} className="max-h-full object-contain group-hover:scale-105 transition-transform" />
                                         ) : (
                                             <span className="font-pixel text-gray-700 text-4xl">?</span>
                                         )}
