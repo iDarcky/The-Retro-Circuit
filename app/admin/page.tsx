@@ -229,9 +229,9 @@ export default function AdminPortalPage() {
                         <div className="mt-4 text-xs text-white bg-red-800/50 p-3 font-mono border-l-4 border-white">
                             <strong>DATABASE PERMISSION ERROR DETECTED</strong><br/>
                             You need to enable Row Level Security (RLS) policies for the 'manufacturer' table.<br/>
-                            Run this in Supabase SQL Editor:<br/>
-                            <code className="text-yellow-300 block mt-2 p-2 bg-black/50 select-all">
-                                create policy "Enable insert for authenticated users only" on manufacturer for insert to authenticated with check (true);
+                            Run this in Supabase SQL Editor to secure it for ADMINS ONLY:<br/>
+                            <code className="text-yellow-300 block mt-2 p-2 bg-black/50 select-all whitespace-pre-wrap">
+                                create policy "Enable insert for admins only" on manufacturer for insert to authenticated with check (exists (select 1 from profiles where profiles.id = auth.uid() and profiles.role = 'admin'));
                             </code>
                         </div>
                     )}
