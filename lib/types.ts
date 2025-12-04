@@ -144,25 +144,46 @@ export const MANUFACTURER_FORM_FIELDS = [
   { label: 'Description', key: 'description', type: 'textarea', required: true },
 ];
 
-// Table: consoles & console_specs & console_variant
-export interface ConsoleSpecs {
-  cpu?: string;
-  gpu?: string;
-  ram?: string;
-  storage?: string;
-  display_type?: string;
-  resolution?: string;
+// Table: console (updated from previous prompt)
+export interface ConsoleDetails {
+  id: string;
+  name: string;
+  slug: string;
+  manufacturer_id: string;
+  release_year: string; // Stored as Text in previous prompt schema, likely Integer in real DB but let's stick to string if needed or coerse
+  generation?: string;
+  form_factor?: string;
   media?: string;
-  ports?: string;
-  connectivity?: string;
-  dimensions?: string;
-  weight?: string;
-  battery_life?: string;
-  power_supply?: string;
-  launch_price?: string;
-  launch_price_inflation?: string;
+  description?: string; // Implicitly mapped to 'intro' or added
+  image_url?: string;
   units_sold?: string;
   best_selling_game?: string;
+  
+  // Relations
+  manufacturer?: Manufacturer;
+  specs: ConsoleSpecs;
+  variants?: ConsoleVariant[];
+}
+
+// Table: console_specs
+// Purpose: Shared technical architecture and physical controls. 1:1 relationship with consoles.
+export interface ConsoleSpecs {
+  id?: string;
+  console_id?: string;
+  cpu_model?: string;
+  gpu_model?: string;
+  cpu_cores?: number;
+  gpu_cores?: number;
+  os?: string;
+  display_type?: string;
+  max_resolution_output?: string;
+  ports?: string;
+  connectivity?: string;
+  input_layout?: string;
+  dpad_type?: string;
+  analog_stick_type?: string;
+  shoulder_buttons?: string;
+  has_back_buttons?: boolean;
 }
 
 export interface ConsoleVariant extends ConsoleSpecs {
@@ -174,42 +195,39 @@ export interface ConsoleVariant extends ConsoleSpecs {
   image_url?: string;
 }
 
-export interface ConsoleDetails {
-  id: string;
-  name: string;
-  slug: string;
-  manufacturer_id: string;
-  release_year: string;
-  generation?: string;
-  form_factor?: string;
-  description?: string;
-  image_url?: string;
-  
-  // Relations
-  manufacturer?: Manufacturer;
-  specs: ConsoleSpecs;
-  variants?: ConsoleVariant[];
-}
-
 export const ConsoleSpecsSchema = z.object({
-  cpu: z.string().optional(),
-  gpu: z.string().optional(),
-  ram: z.string().optional(),
-  storage: z.string().optional(),
+  cpu_model: z.string().optional(),
+  gpu_model: z.string().optional(),
+  cpu_cores: z.coerce.number().optional(),
+  gpu_cores: z.coerce.number().optional(),
+  os: z.string().optional(),
   display_type: z.string().optional(),
-  resolution: z.string().optional(),
-  media: z.string().optional(),
+  max_resolution_output: z.string().optional(),
   ports: z.string().optional(),
   connectivity: z.string().optional(),
-  dimensions: z.string().optional(),
-  weight: z.string().optional(),
-  battery_life: z.string().optional(),
-  power_supply: z.string().optional(),
-  launch_price: z.string().optional(),
-  launch_price_inflation: z.string().optional(),
-  units_sold: z.string().optional(),
-  best_selling_game: z.string().optional(),
+  input_layout: z.string().optional(),
+  dpad_type: z.string().optional(),
+  analog_stick_type: z.string().optional(),
+  shoulder_buttons: z.string().optional(),
+  has_back_buttons: z.boolean().optional(),
 });
+
+export const CONSOLE_SPECS_FORM_FIELDS = [
+    { label: 'CPU Model', key: 'cpu_model', type: 'text' },
+    { label: 'CPU Cores', key: 'cpu_cores', type: 'number' },
+    { label: 'GPU Model', key: 'gpu_model', type: 'text' },
+    { label: 'GPU Cores', key: 'gpu_cores', type: 'number' },
+    { label: 'Operating System', key: 'os', type: 'text' },
+    { label: 'Display Type', key: 'display_type', type: 'text' },
+    { label: 'Max Output Res', key: 'max_resolution_output', type: 'text' },
+    { label: 'Ports', key: 'ports', type: 'text' },
+    { label: 'Connectivity', key: 'connectivity', type: 'text' },
+    { label: 'Input Layout', key: 'input_layout', type: 'text' },
+    { label: 'D-Pad Type', key: 'dpad_type', type: 'text' },
+    { label: 'Analog Sticks', key: 'analog_stick_type', type: 'text' },
+    { label: 'Shoulder Buttons', key: 'shoulder_buttons', type: 'text' },
+    { label: 'Back Buttons', key: 'has_back_buttons', type: 'checkbox' },
+];
 
 export const ConsoleSchema = z.object({
   id: z.string().optional(),
@@ -219,7 +237,10 @@ export const ConsoleSchema = z.object({
   release_year: z.string().regex(/^\d{4}$/),
   generation: z.string().optional(),
   form_factor: z.string().optional(),
-  description: z.string().optional(),
+  media: z.string().optional(),
+  units_sold: z.string().optional(),
+  best_selling_game: z.string().optional(),
+  description: z.string().optional(), // 'intro'
   image_url: z.string().url().optional().or(z.literal('')),
 });
 
@@ -238,8 +259,11 @@ export const CONSOLE_FORM_FIELDS = [
   { label: 'Release Year', key: 'release_year', type: 'number', required: true },
   { label: 'Generation', key: 'generation', type: 'text', required: false },
   { label: 'Form Factor', key: 'form_factor', type: 'text', required: false },
+  { label: 'Media Type', key: 'media', type: 'text', required: false },
+  { label: 'Units Sold', key: 'units_sold', type: 'text', required: false },
+  { label: 'Best Selling Game', key: 'best_selling_game', type: 'text', required: false },
   { label: 'Image URL', key: 'image_url', type: 'url', required: false },
-  { label: 'Description', key: 'description', type: 'textarea', required: true },
+  { label: 'Description', key: 'description', type: 'textarea', required: false },
 ];
 
 export interface ConsoleFilterState {

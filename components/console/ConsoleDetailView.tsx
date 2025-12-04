@@ -13,15 +13,21 @@ interface ConsoleDetailViewProps {
 }
 
 // Helper component for table rows
-const SpecRow = ({ label, value, highlight = false }: { label: string, value?: string, highlight?: boolean }) => {
-    if (!value) return null;
+const SpecRow = ({ label, value, highlight = false }: { label: string, value?: string | number | boolean, highlight?: boolean }) => {
+    if (value === undefined || value === null || value === '') return null;
+    
+    let displayValue = value;
+    if (typeof value === 'boolean') {
+        displayValue = value ? 'YES' : 'NO';
+    }
+
     return (
         <tr className="border-b border-retro-grid/50 last:border-0 hover:bg-white/5 transition-colors">
             <td className="py-3 px-2 md:px-4 font-mono text-xs uppercase text-gray-400 w-1/3 md:w-1/4 align-top">
                 {label}
             </td>
             <td className={`py-3 px-2 md:px-4 font-mono text-sm ${highlight ? 'text-retro-neon font-bold' : 'text-gray-200'}`}>
-                {value}
+                {displayValue}
             </td>
         </tr>
     );
@@ -179,36 +185,36 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                         
                         <div className="p-0">
                             {/* Pass merged specs to display */}
-                            <SpecSection title="Processing Unit">
-                                <SpecRow label="CPU" value={mergedSpecs.cpu} highlight />
-                                <SpecRow label="GPU" value={mergedSpecs.gpu} />
-                                <SpecRow label="Memory (RAM)" value={mergedSpecs.ram} />
+                            <SpecSection title="Processing & OS">
+                                <SpecRow label="CPU Model" value={mergedSpecs.cpu_model} highlight />
+                                <SpecRow label="CPU Cores" value={mergedSpecs.cpu_cores} />
+                                <SpecRow label="GPU Model" value={mergedSpecs.gpu_model} />
+                                <SpecRow label="GPU Cores" value={mergedSpecs.gpu_cores} />
+                                <SpecRow label="Operating System" value={mergedSpecs.os} />
                             </SpecSection>
 
-                            <SpecSection title="Media & Storage">
-                                <SpecRow label="Media Type" value={mergedSpecs.media} />
-                                <SpecRow label="Internal Storage" value={mergedSpecs.storage} />
+                            <SpecSection title="Display & Output">
+                                <SpecRow label="Max Output" value={mergedSpecs.max_resolution_output} highlight />
+                                <SpecRow label="Display Type" value={mergedSpecs.display_type} />
+                                <SpecRow label="Media Type" value={consoleData.media} />
                             </SpecSection>
 
-                            <SpecSection title="Audio / Video">
-                                <SpecRow label="Max Resolution" value={mergedSpecs.resolution} />
-                                <SpecRow label="Display" value={mergedSpecs.display_type} />
+                             <SpecSection title="Connectivity & Ports">
+                                <SpecRow label="Ports" value={mergedSpecs.ports} />
+                                <SpecRow label="Wireless / Net" value={mergedSpecs.connectivity} />
                             </SpecSection>
 
-                             <SpecSection title="Physical & I/O">
-                                {mergedSpecs.dimensions && <SpecRow label="Dimensions" value={mergedSpecs.dimensions} />}
-                                {mergedSpecs.weight && <SpecRow label="Weight" value={mergedSpecs.weight} />}
-                                {mergedSpecs.ports && <SpecRow label="Ports" value={mergedSpecs.ports} />}
-                                {mergedSpecs.connectivity && <SpecRow label="Connectivity" value={mergedSpecs.connectivity} />}
-                                {mergedSpecs.power_supply && <SpecRow label="Power" value={mergedSpecs.power_supply} />}
-                                {mergedSpecs.battery_life && <SpecRow label="Battery Life" value={mergedSpecs.battery_life} />}
+                            <SpecSection title="Input / Controller">
+                                <SpecRow label="Input Layout" value={mergedSpecs.input_layout} />
+                                <SpecRow label="D-Pad" value={mergedSpecs.dpad_type} />
+                                <SpecRow label="Analog Sticks" value={mergedSpecs.analog_stick_type} />
+                                <SpecRow label="Shoulder Btns" value={mergedSpecs.shoulder_buttons} />
+                                <SpecRow label="Rear Buttons" value={mergedSpecs.has_back_buttons} />
                             </SpecSection>
 
                             <SpecSection title="Market Data">
-                                <SpecRow label="Units Sold" value={mergedSpecs.units_sold} highlight />
-                                <SpecRow label="Launch Price" value={mergedSpecs.launch_price} />
-                                <SpecRow label="Inflation Adj." value={mergedSpecs.launch_price_inflation} />
-                                <SpecRow label="Best Seller" value={mergedSpecs.best_selling_game} />
+                                <SpecRow label="Units Sold" value={consoleData.units_sold} highlight />
+                                <SpecRow label="Best Seller" value={consoleData.best_selling_game} />
                             </SpecSection>
                         </div>
                     </div>

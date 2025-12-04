@@ -154,6 +154,35 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
     }
 };
 
+// Task 1: Fetch specs for a single console
+export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs | null> => {
+    try {
+        const { data, error } = await supabase
+            .from('console_specs')
+            .select('*')
+            .eq('console_id', consoleId)
+            .single();
+        if (error) throw error;
+        return data as ConsoleSpecs;
+    } catch {
+        return null;
+    }
+};
+
+export const getConsolesByManufacturer = async (manufacturerId: string): Promise<ConsoleDetails[]> => {
+    try {
+        const { data, error } = await supabase
+            .from('consoles')
+            .select('*')
+            .eq('manufacturer_id', manufacturerId);
+        
+        if (error) throw error;
+        return data as ConsoleDetails[];
+    } catch {
+        return [];
+    }
+}
+
 export const addConsole = async (
     consoleData: Omit<ConsoleDetails, 'id' | 'manufacturer' | 'specs' | 'variants'>, 
     specsData: ConsoleSpecs

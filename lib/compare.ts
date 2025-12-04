@@ -1,3 +1,4 @@
+
 import { ComparisonResult, ComparisonPoint } from "./types";
 import { supabase } from "./supabase/singleton";
 
@@ -7,7 +8,7 @@ const parseSpecValue = (val: string | undefined): number => {
     const clean = val.toLowerCase().replace(/,/g, '');
     const num = parseFloat(clean.match(/[0-9.]+/)?.[0] || '0');
     
-    // Normalize Memory/Storage to MB
+    // Normalize Memory/Storage to MB (Logic preserved, though fields might not exist in new schema)
     if (clean.includes('kb') || clean.includes('kilobyte')) return num / 1024;
     if (clean.includes('gb') || clean.includes('gigabyte')) return num * 1024;
     if (clean.includes('tb') || clean.includes('terabyte')) return num * 1024 * 1024;
@@ -15,12 +16,6 @@ const parseSpecValue = (val: string | undefined): number => {
     if (clean.includes('ghz')) return num * 1000;
     
     return num;
-};
-
-const parsePrice = (priceStr?: string): number => {
-    if (!priceStr) return 0;
-    const clean = priceStr.replace(/[^0-9.]/g, '');
-    return parseFloat(clean) || 0;
 };
 
 const parseSales = (salesStr?: string): number => {
@@ -62,21 +57,17 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
         const manuA = cA.manufacturer || { name: 'Unknown' };
         const manuB = cB.manufacturer || { name: 'Unknown' };
         
-        const priceA = parsePrice(specsA.launch_price);
-        const priceB = parsePrice(specsB.launch_price);
+        // Use Console-level Units Sold (as per new schema)
+        const salesA = parseSales(cA.units_sold);
+        const salesB = parseSales(cB.units_sold);
         
-        const salesA = parseSales(specsA.units_sold);
-        const salesB = parseSales(specsB.units_sold);
-        
-        const cpuA = parseSpecValue(specsA.cpu);
-        const cpuB = parseSpecValue(specsB.cpu);
-        
-        const ramA = parseSpecValue(specsA.ram);
-        const ramB = parseSpecValue(specsB.ram);
+        // Use new Spec fields
+        const cpuA = parseSpecValue(specsA.cpu_model); // Approximation based on text
+        const cpuB = parseSpecValue(specsB.cpu_model);
 
         const points: ComparisonPoint[] = [];
 
-        // 1. Generation (String comparison fallback if parsing fails)
+        // 1. Generation
         points.push({
             feature: 'Legacy',
             consoleAValue: `${cA.release_year} (${cA.generation})`,
@@ -90,43 +81,40 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
         const salesScore = calculateScore(salesA, salesB);
         points.push({
             feature: 'Market (Millions Sold)',
-            consoleAValue: specsA.units_sold || 'Unknown',
-            consoleBValue: specsB.units_sold || 'Unknown',
+            consoleAValue: cA.units_sold || 'Unknown',
+            consoleBValue: cB.units_sold || 'Unknown',
             winner: salesA > salesB ? 'A' : (salesB > salesA ? 'B' : 'Tie'),
             aScore: salesScore.a,
             bScore: salesScore.b
         });
 
-        // 3. Price
+        // 3. CPU Cores (Numeric comparison)
+        const coresA = specsA.cpu_cores || 0;
+        const coresB = specsB.cpu_cores || 0;
+        const coreScore = calculateScore(coresA, coresB);
         points.push({
-            feature: 'Launch Cost',
-            consoleAValue: specsA.launch_price || 'Unknown',
-            consoleBValue: specsB.launch_price || 'Unknown',
-            winner: (priceA > 0 && priceB > 0) ? (priceA < priceB ? 'A' : (priceB < priceA ? 'B' : 'Tie')) : 'Tie',
-            aScore: calculateScore(priceA, priceB).a,
-            bScore: calculateScore(priceA, priceB).b
+            feature: 'CPU Cores',
+            consoleAValue: specsA.cpu_cores ? `${specsA.cpu_cores}` : 'Unknown',
+            consoleBValue: specsB.cpu_cores ? `${specsB.cpu_cores}` : 'Unknown',
+            winner: coresA > coresB ? 'A' : (coresB > coresA ? 'B' : 'Tie'),
+            aScore: coreScore.a,
+            bScore: coreScore.b
         });
 
-        // 4. CPU
-        const cpuScore = calculateScore(cpuA, cpuB);
+        // 4. Processing Power (Text)
         points.push({
-            feature: 'Processing Power',
-            consoleAValue: specsA.cpu || 'Unknown',
-            consoleBValue: specsB.cpu || 'Unknown',
-            winner: cpuA > cpuB ? 'A' : (cpuB > cpuA ? 'B' : 'Tie'),
-            aScore: cpuScore.a,
-            bScore: cpuScore.b
+            feature: 'CPU Model',
+            consoleAValue: specsA.cpu_model || 'Unknown',
+            consoleBValue: specsB.cpu_model || 'Unknown',
+            winner: 'Tie', // Hard to compare text programmatically
         });
 
-        // 5. RAM
-        const ramScore = calculateScore(ramA, ramB);
+        // 5. Output
         points.push({
-            feature: 'Memory (RAM)',
-            consoleAValue: specsA.ram || 'Unknown',
-            consoleBValue: specsB.ram || 'Unknown',
-            winner: ramA > ramB ? 'A' : (ramB > ramA ? 'B' : 'Tie'),
-            aScore: ramScore.a,
-            bScore: ramScore.b
+            feature: 'Max Resolution',
+            consoleAValue: specsA.max_resolution_output || 'Unknown',
+            consoleBValue: specsB.max_resolution_output || 'Unknown',
+            winner: 'Tie',
         });
 
         return {
