@@ -15,22 +15,11 @@ export const searchDatabase = async (query: string): Promise<SearchResult[]> => 
     if (!query || query.length < 2) return [];
 
     try {
-        // Split query into individual terms for flexible "fuzzy-like" matching
         const terms = query.trim().split(/\s+/).filter(t => t.length > 0);
-        
-        let dbQuery = supabase
-            .from('global_search_index')
-            .select('*');
-
-        // Chain ILIKE filters
-        terms.forEach(term => {
-            dbQuery = dbQuery.ilike('title', `%${term}%`);
-        });
-
+        let dbQuery = supabase.from('global_search_index').select('*');
+        terms.forEach(term => { dbQuery = dbQuery.ilike('title', `%${term}%`); });
         const { data, error } = await dbQuery.limit(10);
-
         if (error) throw error;
-
         return (data || []).map((item: any) => ({
             type: item.type as 'GAME' | 'CONSOLE',
             id: item.id,
@@ -49,10 +38,7 @@ export const searchDatabase = async (query: string): Promise<SearchResult[]> => 
 export const fetchManufacturers = async (): Promise<Manufacturer[]> => {
     try {
         const { data, error } = await supabase.from('manufacturer').select('*').order('name');
-        if (error) {
-            console.error('Fetch Manufacturers Error:', error);
-            throw error;
-        }
+        if (error) throw error;
         return data as Manufacturer[];
     } catch (e) {
         console.error(e);
@@ -60,15 +46,9 @@ export const fetchManufacturers = async (): Promise<Manufacturer[]> => {
     }
 };
 
-// Task 1: Function to fetch a single manufacturer by slug
 export const getManufacturerBySlug = async (slug: string): Promise<Manufacturer | null> => {
     try {
-        const { data, error } = await supabase
-            .from('manufacturer')
-            .select('*')
-            .eq('slug', slug)
-            .single();
-
+        const { data, error } = await supabase.from('manufacturer').select('*').eq('slug', slug).single();
         if (error) throw error;
         return data as Manufacturer;
     } catch {
@@ -76,17 +56,10 @@ export const getManufacturerBySlug = async (slug: string): Promise<Manufacturer 
     }
 };
 
-// Deprecated alias kept for backward compatibility if needed, or can be removed if not used elsewhere
-export const fetchManufacturerProfile = async (nameOrId: string): Promise<Manufacturer | null> => {
-    return getManufacturerBySlug(nameOrId);
-};
-
 export const addManufacturer = async (manu: Omit<Manufacturer, 'id'>): Promise<{ success: boolean, message?: string }> => {
     try {
         const { error } = await supabase.from('manufacturer').insert([manu]);
-        if (error) {
-            return { success: false, message: error.message };
-        }
+        if (error) return { success: false, message: error.message };
         return { success: true };
     } catch (e: any) {
         return { success: false, message: e.message || "Unknown error occurred" };
@@ -98,28 +71,14 @@ export const addManufacturer = async (manu: Omit<Manufacturer, 'id'>): Promise<{
 export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: number = 1, limit: number = 20): Promise<{ data: ConsoleDetails[], count: number }> => {
     try {
         let query = supabase.from('consoles')
-            .select('*, manufacturer:manufacturer(*), specs:console_specs(*), variants:console_variant(*)', { count: 'exact' })
+            .select('*, manufacturer:manufacturer(*), specs:console_specs(*), variants:console_variants(*)', { count: 'exact' })
             .order('release_year', { ascending: true });
 
-        if (filters.manufacturer_id) {
-            query = query.eq('manufacturer_id', filters.manufacturer_id);
-        }
-        
-        if (filters.minYear > 1970) {
-            query = query.gte('release_year', filters.minYear);
-        }
-        
-        if (filters.maxYear < 2005) {
-            query = query.lte('release_year', filters.maxYear);
-        }
-
-        if (filters.generations.length > 0) {
-            query = query.in('generation', filters.generations);
-        }
-
-        if (filters.form_factors.length > 0) {
-            query = query.in('form_factor', filters.form_factors);
-        }
+        if (filters.manufacturer_id) query = query.eq('manufacturer_id', filters.manufacturer_id);
+        if (filters.minYear > 1970) query = query.gte('release_year', filters.minYear);
+        if (filters.maxYear < 2005) query = query.lte('release_year', filters.maxYear);
+        if (filters.generations.length > 0) query = query.in('generation', filters.generations);
+        if (filters.form_factors.length > 0) query = query.in('form_factor', filters.form_factors);
 
         const from = (page - 1) * limit;
         const to = from + limit - 1;
@@ -143,7 +102,7 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
     try {
         const { data, error } = await supabase
             .from('consoles')
-            .select('*, manufacturer:manufacturer(*), specs:console_specs(*), variants:console_variant(*)')
+            .select('*, manufacturer:manufacturer(*), specs:console_specs(*), variants:console_variants(*)')
             .eq('slug', slug)
             .single();
             
@@ -154,14 +113,9 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
     }
 };
 
-// Task 1: Fetch specs for a single console
 export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs | null> => {
     try {
-        const { data, error } = await supabase
-            .from('console_specs')
-            .select('*')
-            .eq('console_id', consoleId)
-            .single();
+        const { data, error } = await supabase.from('console_specs').select('*').eq('console_id', consoleId).single();
         if (error) throw error;
         return data as ConsoleSpecs;
     } catch {
@@ -169,13 +123,23 @@ export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs |
     }
 };
 
-export const getConsolesByManufacturer = async (manufacturerId: string): Promise<ConsoleDetails[]> => {
+export const getVariantsByConsole = async (consoleId: string): Promise<ConsoleVariant[]> => {
     try {
         const { data, error } = await supabase
-            .from('consoles')
+            .from('console_variants')
             .select('*')
-            .eq('manufacturer_id', manufacturerId);
-        
+            .eq('console_id', consoleId)
+            .order('is_default', { ascending: false }); // Defaults first
+        if (error) throw error;
+        return data as ConsoleVariant[];
+    } catch {
+        return [];
+    }
+};
+
+export const getConsolesByManufacturer = async (manufacturerId: string): Promise<ConsoleDetails[]> => {
+    try {
+        const { data, error } = await supabase.from('consoles').select('*').eq('manufacturer_id', manufacturerId);
         if (error) throw error;
         return data as ConsoleDetails[];
     } catch {
@@ -188,25 +152,14 @@ export const addConsole = async (
     specsData: ConsoleSpecs
 ): Promise<{ success: boolean, message?: string }> => {
     try {
-        const { data: newConsole, error: consoleError } = await supabase
-            .from('consoles')
-            .insert([consoleData])
-            .select('id')
-            .single();
+        const { data: newConsole, error: consoleError } = await supabase.from('consoles').insert([consoleData]).select('id').single();
+        if (consoleError || !newConsole) return { success: false, message: consoleError?.message || "Failed to create console record" };
 
-        if (consoleError || !newConsole) {
-            return { success: false, message: consoleError?.message || "Failed to create console record" };
-        }
-
-        const { error: specsError } = await supabase
-            .from('console_specs')
-            .insert([{ ...specsData, console_id: newConsole.id }]);
-
+        const { error: specsError } = await supabase.from('console_specs').insert([{ ...specsData, console_id: newConsole.id }]);
         if (specsError) {
              await supabase.from('consoles').delete().eq('id', newConsole.id);
              return { success: false, message: `Specs Error: ${specsError.message}` };
         }
-
         return { success: true };
     } catch (e: any) {
         return { success: false, message: e.message || "Unknown Exception" };
@@ -215,7 +168,7 @@ export const addConsole = async (
 
 export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>): Promise<{ success: boolean, message?: string }> => {
     try {
-        const { error } = await supabase.from('console_variant').insert([variantData]);
+        const { error } = await supabase.from('console_variants').insert([variantData]);
         if (error) return { success: false, message: error.message };
         return { success: true };
     } catch (e: any) {
@@ -254,7 +207,6 @@ export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData | null> =>
     try {
         const { data, error } = await supabase.from('games').select('*').limit(1).maybeSingle();
         if (error || !data) return null;
-
         return {
             id: data.id,
             slug: data.slug,
@@ -277,15 +229,8 @@ export const fetchGamesPaginated = async (page: number = 1, limit: number = 12):
     try {
         const from = (page - 1) * limit;
         const to = from + limit - 1;
-        
-        const { data, count, error } = await supabase
-            .from('games')
-            .select('*', { count: 'exact' })
-            .order('year', { ascending: false })
-            .range(from, to);
-
+        const { data, count, error } = await supabase.from('games').select('*', { count: 'exact' }).order('year', { ascending: false }).range(from, to);
         if (error) throw error;
-
         const mapped = (data || []).map((g: any) => ({
             id: g.id,
             slug: g.slug,
@@ -299,7 +244,6 @@ export const fetchGamesPaginated = async (page: number = 1, limit: number = 12):
             image: g.image,
             console_slug: g.console_slug
         }));
-
         return { data: mapped, count: count || 0 };
     } catch {
         return { data: [], count: 0 };
@@ -312,20 +256,10 @@ export const fetchRetroNews = async (page: number = 1, limit: number = 5, catego
     try {
         const from = (page - 1) * limit;
         const to = from + limit - 1;
-
-        let query = supabase
-            .from('news')
-            .select('*', { count: 'exact' })
-            .order('date', { ascending: false });
-
-        if (category && category !== 'ALL') {
-            query = query.eq('category', category);
-        }
-
+        let query = supabase.from('news').select('*', { count: 'exact' }).order('date', { ascending: false });
+        if (category && category !== 'ALL') query = query.eq('category', category);
         const { data, count, error } = await query.range(from, to);
-
         if (error) throw error;
-
         return { data: (data as NewsItem[]) || [], count: count || 0 };
     } catch {
         return { data: [], count: 0 };
@@ -356,12 +290,7 @@ export const removeFromCollection = async (itemId: string): Promise<boolean> => 
     try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return false;
-
-        const { error } = await supabase
-            .from('user_collections')
-            .delete()
-            .match({ user_id: user.id, item_id: itemId });
-            
+        const { error } = await supabase.from('user_collections').delete().match({ user_id: user.id, item_id: itemId });
         return !error;
     } catch {
         return false;
@@ -372,12 +301,7 @@ export const fetchUserCollection = async (): Promise<UserCollectionItem[]> => {
     try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return [];
-
-        const { data, error } = await supabase
-            .from('user_collections')
-            .select('*')
-            .eq('user_id', user.id);
-            
+        const { data, error } = await supabase.from('user_collections').select('*').eq('user_id', user.id);
         if (error) throw error;
         return data as UserCollectionItem[];
     } catch {

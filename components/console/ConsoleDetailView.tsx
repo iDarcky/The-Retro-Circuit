@@ -4,7 +4,7 @@
 import { useState, useEffect, type FC, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ConsoleDetails, ConsoleSpecs, GameOfTheWeekData } from '../../lib/types';
+import { ConsoleDetails, ConsoleSpecs, ConsoleVariant, GameOfTheWeekData } from '../../lib/types';
 import CollectionToggle from '../ui/CollectionToggle';
 
 interface ConsoleDetailViewProps {
@@ -13,13 +13,12 @@ interface ConsoleDetailViewProps {
 }
 
 // Helper component for table rows
-const SpecRow = ({ label, value, highlight = false }: { label: string, value?: string | number | boolean, highlight?: boolean }) => {
+const SpecRow = ({ label, value, highlight = false, unit = '' }: { label: string, value?: string | number | boolean, highlight?: boolean, unit?: string }) => {
     if (value === undefined || value === null || value === '') return null;
     
     let displayValue = value;
-    if (typeof value === 'boolean') {
-        displayValue = value ? 'YES' : 'NO';
-    }
+    if (typeof value === 'boolean') displayValue = value ? 'YES' : 'NO';
+    if (unit && typeof value === 'number') displayValue = `${value} ${unit}`;
 
     return (
         <tr className="border-b border-retro-grid/50 last:border-0 hover:bg-white/5 transition-colors">
@@ -33,7 +32,6 @@ const SpecRow = ({ label, value, highlight = false }: { label: string, value?: s
     );
 };
 
-// Helper component for sections
 const SpecSection = ({ title, children }: { title: string, children?: ReactNode }) => (
     <div className="mb-0 border-b border-retro-grid last:border-0">
         <h3 className="bg-retro-grid/20 text-retro-blue font-pixel text-xs px-4 py-2 uppercase tracking-wider border-b border-retro-grid/30">
@@ -49,13 +47,14 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
     const router = useRouter();
     const searchParams = useSearchParams();
     const [selectedVariantId, setSelectedVariantId] = useState<string>('base');
-    const [mergedSpecs, setMergedSpecs] = useState<ConsoleSpecs>(consoleData.specs);
     
-    // Determine which variants are available
+    // Create a "Merged" spec object type that covers both Base Specs and Variant Specs
+    type MergedSpecs = ConsoleSpecs & Partial<ConsoleVariant>;
+    const [mergedSpecs, setMergedSpecs] = useState<MergedSpecs>(consoleData.specs);
+    
     const variants = consoleData.variants || [];
     const hasVariants = variants.length > 0;
 
-    // Handle URL param for initial state
     useEffect(() => {
         const variantSlug = searchParams?.get('variant');
         if (variantSlug) {
@@ -64,15 +63,13 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
         }
     }, [searchParams, variants]);
 
-    // Update specs when variant changes
     useEffect(() => {
         if (selectedVariantId === 'base') {
             setMergedSpecs(consoleData.specs);
         } else {
             const variant = variants.find(v => v.id === selectedVariantId);
             if (variant) {
-                // Merge base specs with variant overrides.
-                // We use spread to ensure even fields missing in baseSpecs are picked up from the variant.
+                // Merge base architecture (specs) with variant specific performance numbers
                 setMergedSpecs({ ...consoleData.specs, ...variant });
             }
         }
@@ -80,8 +77,6 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
 
     const handleVariantChange = (id: string) => {
         setSelectedVariantId(id);
-        
-        // Update URL without full reload
         const params = new URLSearchParams(searchParams?.toString());
         if (id === 'base') {
             params.delete('variant');
@@ -92,13 +87,11 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
         router.replace(`?${params.toString()}`, { scroll: false });
     };
 
-    const currentImage = selectedVariantId === 'base' 
-        ? consoleData.image_url 
-        : (variants.find(v => v.id === selectedVariantId)?.image_url || consoleData.image_url);
-
-    const currentYear = selectedVariantId === 'base'
-        ? consoleData.release_year
-        : (variants.find(v => v.id === selectedVariantId)?.release_year || consoleData.release_year);
+    const currentVariant = variants.find(v => v.id === selectedVariantId);
+    
+    // Image Priority: Variant Image -> Console Image
+    const currentImage = currentVariant?.image_url || consoleData.image_url;
+    const currentYear = currentVariant?.release_year || consoleData.release_year;
 
     return (
         <div className="w-full max-w-6xl mx-auto p-4">
@@ -132,7 +125,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-                {/* Left Column: Image, Variants, Intro */}
+                {/* Left Column */}
                 <div className="lg:col-span-1 space-y-8">
                     <div className="bg-black border-2 border-retro-grid p-6 flex items-center justify-center min-h-[300px] relative shadow-[0_0_20px_rgba(0,0,0,0.5)]">
                         {currentImage ? (
@@ -140,13 +133,11 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                         ) : (
                             <div className="text-retro-grid font-pixel text-4xl">?</div>
                         )}
-                        {/* Badge */}
                         <div className="absolute top-4 left-4 bg-retro-neon text-black text-xs font-bold px-2 py-1 transform -rotate-2">
                             {consoleData.form_factor?.toUpperCase()}
                         </div>
                     </div>
 
-                    {/* Variant Selector */}
                     {hasVariants && (
                         <div className="bg-retro-grid/10 border border-retro-blue p-4">
                             <label className="block font-pixel text-xs text-retro-blue mb-2">SELECT MODEL / VARIANT</label>
@@ -158,7 +149,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                                 <option value="base">ORIGINAL / BASE MODEL</option>
                                 {variants.map(v => (
                                     <option key={v.id} value={v.id}>
-                                        {v.name.toUpperCase()} ({v.release_year})
+                                        {v.variant_name} ({v.release_year})
                                     </option>
                                 ))}
                             </select>
@@ -178,44 +169,78 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                     <div className="bg-retro-dark border-2 border-retro-grid">
                         <div className="bg-retro-grid/20 px-6 py-4 border-b border-retro-grid flex justify-between items-center">
                             <h2 className="font-pixel text-lg text-white">
-                                {selectedVariantId === 'base' ? 'TECHNICAL SPECIFICATIONS' : `${variants.find(v => v.id === selectedVariantId)?.name.toUpperCase()} SPECS`}
+                                {selectedVariantId === 'base' ? 'TECHNICAL SPECIFICATIONS' : `${currentVariant?.variant_name.toUpperCase()} SPECS`}
                             </h2>
                             <span className="font-mono text-xs text-retro-neon animate-pulse">● DECLASSIFIED</span>
                         </div>
                         
                         <div className="p-0">
-                            {/* Pass merged specs to display */}
-                            <SpecSection title="Processing & OS">
+                            {/* Architecture (Base Specs) */}
+                            <SpecSection title="Architecture">
                                 <SpecRow label="CPU Model" value={mergedSpecs.cpu_model} highlight />
                                 <SpecRow label="CPU Cores" value={mergedSpecs.cpu_cores} />
                                 <SpecRow label="GPU Model" value={mergedSpecs.gpu_model} />
                                 <SpecRow label="GPU Cores" value={mergedSpecs.gpu_cores} />
                                 <SpecRow label="Operating System" value={mergedSpecs.os} />
                             </SpecSection>
+                            
+                            {/* Performance (Variant Specific) */}
+                            {(mergedSpecs.cpu_clock_mhz || mergedSpecs.ram_gb || mergedSpecs.storage_gb) && (
+                                <SpecSection title="Performance">
+                                    <SpecRow label="CPU Clock" value={mergedSpecs.cpu_clock_mhz} unit="MHz" />
+                                    <SpecRow label="GPU Clock" value={mergedSpecs.gpu_clock_mhz} unit="MHz" />
+                                    <SpecRow label="RAM" value={mergedSpecs.ram_gb ? `${mergedSpecs.ram_gb} GB` : undefined} highlight />
+                                    <SpecRow label="RAM Type" value={mergedSpecs.ram_type} />
+                                </SpecSection>
+                            )}
+                            
+                            {/* Storage (Variant Specific) */}
+                            {(mergedSpecs.storage_gb || mergedSpecs.storage_type) && (
+                                <SpecSection title="Storage">
+                                    <SpecRow label="Internal" value={mergedSpecs.storage_gb ? `${mergedSpecs.storage_gb} GB` : undefined} />
+                                    <SpecRow label="Type" value={mergedSpecs.storage_type} />
+                                    <SpecRow label="Expandable" value={mergedSpecs.storage_expandable} />
+                                    <SpecRow label="Physical Media" value={consoleData.media} />
+                                </SpecSection>
+                            )}
 
-                            <SpecSection title="Display & Output">
-                                <SpecRow label="Max Output" value={mergedSpecs.max_resolution_output} highlight />
-                                <SpecRow label="Display Type" value={mergedSpecs.display_type} />
-                                <SpecRow label="Media Type" value={consoleData.media} />
-                            </SpecSection>
+                            {/* Display (Variant Specific) */}
+                            {(mergedSpecs.screen_size_inch || mergedSpecs.max_resolution_output) && (
+                                <SpecSection title="Display & Output">
+                                    <SpecRow label="Max Output" value={mergedSpecs.max_resolution_output} highlight />
+                                    <SpecRow label="Display Type" value={mergedSpecs.display_type} />
+                                    <SpecRow label="Screen Size" value={mergedSpecs.screen_size_inch} unit="inch" />
+                                    <SpecRow label="Resolution" value={mergedSpecs.screen_resolution_x ? `${mergedSpecs.screen_resolution_x} x ${mergedSpecs.screen_resolution_y}` : undefined} />
+                                    <SpecRow label="PPI" value={mergedSpecs.resolution_pixel_density} />
+                                </SpecSection>
+                            )}
+                            
+                            {(mergedSpecs.second_screen_size) && (
+                                <SpecSection title="Second Screen">
+                                    <SpecRow label="Size" value={mergedSpecs.second_screen_size} unit="inch" />
+                                    <SpecRow label="Resolution" value={`${mergedSpecs.second_screen_resolution_x} x ${mergedSpecs.second_screen_resolution_y}`} />
+                                    <SpecRow label="Type" value={mergedSpecs.second_screen_type} />
+                                </SpecSection>
+                            )}
 
-                             <SpecSection title="Connectivity & Ports">
+                             <SpecSection title="Controls & IO">
                                 <SpecRow label="Ports" value={mergedSpecs.ports} />
-                                <SpecRow label="Wireless / Net" value={mergedSpecs.connectivity} />
-                            </SpecSection>
-
-                            <SpecSection title="Input / Controller">
+                                <SpecRow label="Connectivity" value={mergedSpecs.connectivity} />
                                 <SpecRow label="Input Layout" value={mergedSpecs.input_layout} />
                                 <SpecRow label="D-Pad" value={mergedSpecs.dpad_type} />
-                                <SpecRow label="Analog Sticks" value={mergedSpecs.analog_stick_type} />
+                                <SpecRow label="Sticks" value={mergedSpecs.analog_stick_type} />
                                 <SpecRow label="Shoulder Btns" value={mergedSpecs.shoulder_buttons} />
-                                <SpecRow label="Rear Buttons" value={mergedSpecs.has_back_buttons} />
+                                <SpecRow label="Back Btns" value={mergedSpecs.has_back_buttons} />
                             </SpecSection>
-
-                            <SpecSection title="Market Data">
-                                <SpecRow label="Units Sold" value={consoleData.units_sold} highlight />
-                                <SpecRow label="Best Seller" value={consoleData.best_selling_game} />
-                            </SpecSection>
+                            
+                            {(mergedSpecs.weight_g || mergedSpecs.battery_mah || mergedSpecs.price_launch_usd) && (
+                                <SpecSection title="Physical & Market">
+                                    <SpecRow label="Weight" value={mergedSpecs.weight_g} unit="g" />
+                                    <SpecRow label="Battery" value={mergedSpecs.battery_mah} unit="mAh" />
+                                    <SpecRow label="Launch Price" value={mergedSpecs.price_launch_usd ? `$${mergedSpecs.price_launch_usd}` : undefined} />
+                                    <SpecRow label="Units Sold" value={consoleData.units_sold} highlight />
+                                </SpecSection>
+                            )}
                         </div>
                     </div>
                 </div>

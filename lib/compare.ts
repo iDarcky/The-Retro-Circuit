@@ -1,30 +1,17 @@
 
-import { ComparisonResult, ComparisonPoint } from "./types";
+import { ComparisonResult, ComparisonPoint, ConsoleDetails } from "./types";
 import { supabase } from "./supabase/singleton";
 
-// Helper to extract numbers from messy spec strings
-const parseSpecValue = (val: string | undefined): number => {
-    if (!val) return 0;
-    const clean = val.toLowerCase().replace(/,/g, '');
-    const num = parseFloat(clean.match(/[0-9.]+/)?.[0] || '0');
+const getBestVariantSpec = (console: any, field: string): number => {
+    // If variants exist, grab the highest value for this field (e.g., PS4 Pro RAM vs PS4 RAM)
+    // Actually, for fairness, usually we compare base models, but let's grab the default variant if available
+    const variants = console.variants || [];
+    const defaultVariant = variants.find((v: any) => v.is_default) || variants[0];
     
-    // Normalize Memory/Storage to MB (Logic preserved, though fields might not exist in new schema)
-    if (clean.includes('kb') || clean.includes('kilobyte')) return num / 1024;
-    if (clean.includes('gb') || clean.includes('gigabyte')) return num * 1024;
-    if (clean.includes('tb') || clean.includes('terabyte')) return num * 1024 * 1024;
-    // Normalize Speed to MHz
-    if (clean.includes('ghz')) return num * 1000;
-    
-    return num;
-};
-
-const parseSales = (salesStr?: string): number => {
-    if (!salesStr) return 0;
-    const clean = salesStr.toLowerCase().replace(/[^0-9.]/g, '');
-    const num = parseFloat(clean);
-    // Heuristic: if number is huge (e.g. 60000000), assume raw count, else assume millions
-    if (num > 1000) return num / 1000000;
-    return num || 0;
+    if (defaultVariant && defaultVariant[field] !== undefined && defaultVariant[field] !== null) {
+        return Number(defaultVariant[field]);
+    }
+    return 0;
 };
 
 const calculateScore = (valA: number, valB: number): { a: number, b: number } => {
@@ -36,40 +23,41 @@ const calculateScore = (valA: number, valB: number): { a: number, b: number } =>
     };
 };
 
+const parseSales = (salesStr?: string): number => {
+    if (!salesStr) return 0;
+    const clean = salesStr.toLowerCase().replace(/[^0-9.]/g, '');
+    const num = parseFloat(clean);
+    if (num > 1000) return num / 1000000;
+    return num || 0;
+};
+
 export const compareConsoles = async (slugA: string, slugB: string): Promise<ComparisonResult | null> => {
     try {
+        // Fetch consoles with variants
         const { data: cA } = await supabase
             .from('consoles')
-            .select('*, manufacturer:manufacturer(*), specs:console_specs(*)')
+            .select('*, manufacturer:manufacturer(*), specs:console_specs(*), variants:console_variants(*)')
             .eq('slug', slugA)
             .single();
 
         const { data: cB } = await supabase
             .from('consoles')
-            .select('*, manufacturer:manufacturer(*), specs:console_specs(*)')
+            .select('*, manufacturer:manufacturer(*), specs:console_specs(*), variants:console_variants(*)')
             .eq('slug', slugB)
             .single();
         
         if(!cA || !cB) return null;
 
-        const specsA = cA.specs || {};
-        const specsB = cB.specs || {};
+        const specsA = (Array.isArray(cA.specs) ? cA.specs[0] : cA.specs) || {};
+        const specsB = (Array.isArray(cB.specs) ? cB.specs[0] : cB.specs) || {};
         const manuA = cA.manufacturer || { name: 'Unknown' };
         const manuB = cB.manufacturer || { name: 'Unknown' };
         
-        // Use Console-level Units Sold (as per new schema)
-        const salesA = parseSales(cA.units_sold);
-        const salesB = parseSales(cB.units_sold);
-        
-        // Use new Spec fields
-        const cpuA = parseSpecValue(specsA.cpu_model); // Approximation based on text
-        const cpuB = parseSpecValue(specsB.cpu_model);
-
         const points: ComparisonPoint[] = [];
 
         // 1. Generation
         points.push({
-            feature: 'Legacy',
+            feature: 'Generation',
             consoleAValue: `${cA.release_year} (${cA.generation})`,
             consoleBValue: `${cB.release_year} (${cB.generation})`,
             winner: cA.release_year < cB.release_year ? 'A' : (cB.release_year < cA.release_year ? 'B' : 'Tie'),
@@ -78,6 +66,8 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
         });
 
         // 2. Sales
+        const salesA = parseSales(cA.units_sold);
+        const salesB = parseSales(cB.units_sold);
         const salesScore = calculateScore(salesA, salesB);
         points.push({
             feature: 'Market (Millions Sold)',
@@ -88,28 +78,48 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
             bScore: salesScore.b
         });
 
-        // 3. CPU Cores (Numeric comparison)
+        // 3. CPU Cores (Base Arch)
         const coresA = specsA.cpu_cores || 0;
         const coresB = specsB.cpu_cores || 0;
         const coreScore = calculateScore(coresA, coresB);
         points.push({
             feature: 'CPU Cores',
-            consoleAValue: specsA.cpu_cores ? `${specsA.cpu_cores}` : 'Unknown',
-            consoleBValue: specsB.cpu_cores ? `${specsB.cpu_cores}` : 'Unknown',
+            consoleAValue: coresA ? `${coresA}` : 'Unknown',
+            consoleBValue: coresB ? `${coresB}` : 'Unknown',
             winner: coresA > coresB ? 'A' : (coresB > coresA ? 'B' : 'Tie'),
             aScore: coreScore.a,
             bScore: coreScore.b
         });
 
-        // 4. Processing Power (Text)
+        // 4. RAM (Variant Level)
+        const ramA = getBestVariantSpec(cA, 'ram_gb');
+        const ramB = getBestVariantSpec(cB, 'ram_gb');
+        const ramScore = calculateScore(ramA, ramB);
+        
         points.push({
-            feature: 'CPU Model',
-            consoleAValue: specsA.cpu_model || 'Unknown',
-            consoleBValue: specsB.cpu_model || 'Unknown',
-            winner: 'Tie', // Hard to compare text programmatically
+            feature: 'System RAM',
+            consoleAValue: ramA ? `${ramA} GB` : 'Unknown',
+            consoleBValue: ramB ? `${ramB} GB` : 'Unknown',
+            winner: ramA > ramB ? 'A' : (ramB > ramA ? 'B' : 'Tie'),
+            aScore: ramScore.a,
+            bScore: ramScore.b
         });
 
-        // 5. Output
+        // 5. CPU Clock (Variant Level)
+        const clockA = getBestVariantSpec(cA, 'cpu_clock_mhz');
+        const clockB = getBestVariantSpec(cB, 'cpu_clock_mhz');
+        const clockScore = calculateScore(clockA, clockB);
+
+        points.push({
+            feature: 'CPU Speed',
+            consoleAValue: clockA ? `${clockA} MHz` : 'Unknown',
+            consoleBValue: clockB ? `${clockB} MHz` : 'Unknown',
+            winner: clockA > clockB ? 'A' : (clockB > clockA ? 'B' : 'Tie'),
+            aScore: clockScore.a,
+            bScore: clockScore.b
+        });
+
+        // 6. Output (Base Arch)
         points.push({
             feature: 'Max Resolution',
             consoleAValue: specsA.max_resolution_output || 'Unknown',
