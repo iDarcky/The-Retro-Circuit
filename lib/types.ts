@@ -1,3 +1,4 @@
+
 import { z } from 'zod';
 
 export type NewsCategory = 'Hardware' | 'Software' | 'Industry' | 'Rumor' | 'Mods' | 'Events' | 'Homebrew';
@@ -101,22 +102,22 @@ export interface ManufacturerProfile {
 export interface Manufacturer {
   id: string;
   name: string;
-  founded_year: number; // Changed to number
-  country: string;      // Changed from origin_country
+  founded_year: number;
+  country: string;
   website?: string;
   description: string;
-  key_franchises: string; // Changed to string (comma separated in DB)
-  image_url?: string;     // Changed from logo_url
-  slug: string;           // Added slug
+  key_franchises: string;
+  image_url?: string;
+  slug: string;
 }
 
 export const ManufacturerSchema = z.object({
   name: z.string().min(1, "Name required"),
-  founded_year: z.coerce.number().int(), // Coerce string input to number
+  founded_year: z.coerce.number().int(),
   country: z.string().min(1, "Country required"),
   website: z.string().optional(),
   description: z.string().min(10),
-  key_franchises: z.string(), // Keep as string for DB insertion
+  key_franchises: z.string(),
   image_url: z.string().optional(),
   slug: z.string().optional()
 });
@@ -141,6 +142,15 @@ export interface ConsoleSpecs {
   best_selling_game?: string;
 }
 
+export interface ConsoleVariant extends ConsoleSpecs {
+    id: string;
+    console_id: string;
+    name: string; // e.g., "Slim", "Pro"
+    slug: string;
+    release_year: number;
+    image_url?: string;
+}
+
 export interface Console {
   id: string;
   manufacturer_id: string;
@@ -155,8 +165,9 @@ export interface Console {
 
 // Joined Type for UI
 export interface ConsoleDetails extends Console {
-  manufacturer: Manufacturer; // Joined
-  specs: ConsoleSpecs; // Joined
+  manufacturer: Manufacturer;
+  specs: ConsoleSpecs;
+  variants: ConsoleVariant[]; // Joined variants
 }
 
 export const ConsoleSchema = z.object({
@@ -168,7 +179,6 @@ export const ConsoleSchema = z.object({
   form_factor: z.string(),
   image_url: z.string().optional(),
   description: z.string().min(10),
-  // Specs are passed as a separate object in admin, but validated loosely here or separately
 });
 
 export const ConsoleSpecsSchema = z.object({
@@ -191,6 +201,14 @@ export const ConsoleSpecsSchema = z.object({
   best_selling_game: z.string().optional(),
 });
 
+export const ConsoleVariantSchema = ConsoleSpecsSchema.extend({
+    console_id: z.string().uuid(),
+    name: z.string().min(1, "Variant Name Required"),
+    slug: z.string().optional(),
+    release_year: z.coerce.number().int().min(1970).max(2030),
+    image_url: z.string().optional(),
+});
+
 // Search & Filter Types
 export interface SearchResult {
   type: 'GAME' | 'CONSOLE';
@@ -204,7 +222,7 @@ export interface SearchResult {
 export interface ConsoleFilterState {
   minYear: number;
   maxYear: number;
-  generations: string[]; // Changed to string for flexibility
-  form_factors: string[]; // Changed from 'types' to match DB 'form_factor'
+  generations: string[];
+  form_factors: string[];
   manufacturer_id?: string | null;
 }

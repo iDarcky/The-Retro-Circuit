@@ -3,11 +3,11 @@
 
 import { useEffect, useState, type FormEvent, type ChangeEvent } from 'react';
 import { retroAuth } from '../../lib/auth';
-import { addGame, addConsole, addNewsItem, fetchManufacturers, addManufacturer } from '../../lib/api';
+import { addGame, addConsole, addNewsItem, fetchManufacturers, addManufacturer, fetchConsoleList, addConsoleVariant } from '../../lib/api';
 import Button from '../../components/ui/Button';
-import { NewsItem, NewsItemSchema, GameSchema, ConsoleSchema, ConsoleSpecsSchema, Manufacturer, ManufacturerSchema } from '../../lib/types';
+import { NewsItem, NewsItemSchema, GameSchema, ConsoleSchema, ConsoleSpecsSchema, Manufacturer, ManufacturerSchema, ConsoleVariantSchema } from '../../lib/types';
 
-type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE' | 'MANUFACTURER' | 'SETTINGS';
+type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE' | 'VARIANTS' | 'MANUFACTURER' | 'SETTINGS';
 
 export default function AdminPortalPage() {
     const [isAdmin, setIsAdmin] = useState(false);
@@ -16,6 +16,7 @@ export default function AdminPortalPage() {
     const [message, setMessage] = useState<string | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
+    const [consoleList, setConsoleList] = useState<{name: string, id: string}[]>([]);
 
     // News Form
     const [newsHeadline, setNewsHeadline] = useState('');
@@ -54,7 +55,14 @@ export default function AdminPortalPage() {
     const [consoleIntro, setConsoleIntro] = useState('');
     const [consoleImage, setConsoleImage] = useState('');
     
-    // Console Specs Form
+    // Variant Form
+    const [variantConsoleId, setVariantConsoleId] = useState('');
+    const [variantName, setVariantName] = useState('');
+    const [variantSlug, setVariantSlug] = useState('');
+    const [variantYear, setVariantYear] = useState('1990');
+    const [variantImage, setVariantImage] = useState('');
+
+    // Shared Specs Form (Used for Base Console & Variants)
     const [specCpu, setSpecCpu] = useState('');
     const [specGpu, setSpecGpu] = useState('');
     const [specRam, setSpecRam] = useState('');
@@ -83,6 +91,8 @@ export default function AdminPortalPage() {
             if (admin) {
                 const manus = await fetchManufacturers();
                 setManufacturers(manus);
+                const consoles = await fetchConsoleList();
+                setConsoleList(consoles as any);
                 const savedLogo = localStorage.getItem('retro_custom_logo');
                 if (savedLogo) setCustomLogo(savedLogo);
             }
@@ -90,6 +100,14 @@ export default function AdminPortalPage() {
         };
         check();
     }, []);
+
+    const clearSpecs = () => {
+        setSpecCpu(''); setSpecGpu(''); setSpecRam(''); setSpecStorage('');
+        setSpecMedia(''); setSpecRes(''); setSpecDisplay(''); setSpecPorts('');
+        setSpecConn(''); setSpecDim(''); setSpecWeight(''); setSpecBattery('');
+        setSpecPower(''); setSpecPrice(''); setSpecInflation(''); setSpecSold('');
+        setSpecBestGame('');
+    };
 
     const handleSubmitNews = async (e: FormEvent) => {
         e.preventDefault();
@@ -110,7 +128,6 @@ export default function AdminPortalPage() {
         setMessage(null);
         setErrorMsg(null);
         
-        // Generate slug from name if not provided
         const finalSlug = manuSlug || manuName.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '');
 
         const raw = {
@@ -174,9 +191,46 @@ export default function AdminPortalPage() {
         const response = await addConsole(consoleResult.data as any, specsResult.data as any);
         if (response.success) {
             setMessage("HARDWARE & SPECS REGISTERED");
-            setConsoleName('');
+            setConsoleName(''); clearSpecs();
+            setConsoleList(await fetchConsoleList() as any);
         } else {
             setErrorMsg(`REGISTRATION FAILED: ${response.message}`);
+        }
+        setLoading(false);
+    };
+
+    const handleSubmitVariant = async (e: FormEvent) => {
+        e.preventDefault();
+        setMessage(null);
+        setErrorMsg(null);
+
+        const finalSlug = variantSlug || variantName.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '');
+
+        const rawVariant = {
+            console_id: variantConsoleId,
+            name: variantName,
+            slug: finalSlug,
+            release_year: variantYear,
+            image_url: variantImage,
+            // Specs Overrides
+            cpu: specCpu || undefined, gpu: specGpu || undefined, ram: specRam || undefined, storage: specStorage || undefined,
+            display_type: specDisplay || undefined, resolution: specRes || undefined, media: specMedia || undefined,
+            ports: specPorts || undefined, connectivity: specConn || undefined, dimensions: specDim || undefined,
+            weight: specWeight || undefined, battery_life: specBattery || undefined, power_supply: specPower || undefined,
+            launch_price: specPrice || undefined, launch_price_inflation: specInflation || undefined,
+            units_sold: specSold || undefined, best_selling_game: specBestGame || undefined
+        };
+
+        const result = ConsoleVariantSchema.safeParse(rawVariant);
+        if (!result.success) { setErrorMsg(result.error.issues[0].message); return; }
+
+        setLoading(true);
+        const response = await addConsoleVariant(result.data as any);
+        if (response.success) {
+            setMessage("VARIANT MODEL REGISTERED");
+            setVariantName(''); setVariantSlug(''); setVariantImage(''); clearSpecs();
+        } else {
+            setErrorMsg(`VARIANT FAILED: ${response.message}`);
         }
         setLoading(false);
     };
@@ -220,7 +274,6 @@ export default function AdminPortalPage() {
                 localStorage.setItem('retro_custom_logo', base64String);
                 setMessage("LOGO UPDATED SUCCESSFULLY. (Local Override)");
                 window.dispatchEvent(new Event('storage')); // Notify app
-                // Force reload to ensure main layout picks it up if in same context
                 setTimeout(() => window.location.reload(), 1000);
             };
             reader.readAsDataURL(file);
@@ -245,6 +298,28 @@ export default function AdminPortalPage() {
         );
     }
 
+    const SpecInputs = () => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="CPU" value={specCpu} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecCpu(e.target.value)} />
+            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="GPU" value={specGpu} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecGpu(e.target.value)} />
+            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="RAM" value={specRam} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecRam(e.target.value)} />
+            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Storage" value={specStorage} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecStorage(e.target.value)} />
+            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Display Type" value={specDisplay} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecDisplay(e.target.value)} />
+            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Resolution" value={specRes} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecRes(e.target.value)} />
+            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Media" value={specMedia} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecMedia(e.target.value)} />
+            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Ports" value={specPorts} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecPorts(e.target.value)} />
+            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Connectivity" value={specConn} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecConn(e.target.value)} />
+            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Dimensions" value={specDim} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecDim(e.target.value)} />
+            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Weight" value={specWeight} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecWeight(e.target.value)} />
+            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Battery Life" value={specBattery} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecBattery(e.target.value)} />
+            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Power Supply" value={specPower} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecPower(e.target.value)} />
+            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Launch Price" value={specPrice} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecPrice(e.target.value)} />
+            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Inflation Adj." value={specInflation} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecInflation(e.target.value)} />
+            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Units Sold" value={specSold} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecSold(e.target.value)} />
+            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Best Selling Game" value={specBestGame} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecBestGame(e.target.value)} />
+        </div>
+    );
+
     return (
         <div className="w-full max-w-7xl mx-auto p-4 font-mono text-gray-300">
             <div className="border-b-4 border-retro-neon pb-4 mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
@@ -263,13 +338,13 @@ export default function AdminPortalPage() {
 
             {/* Navigation Tabs */}
             <div className="flex gap-2 md:gap-4 mb-8 overflow-x-auto pb-2 scrollbar-hide">
-                {(['NEWS', 'GAME', 'CONSOLE', 'MANUFACTURER', 'SETTINGS'] as AdminTab[]).map(tab => (
+                {(['NEWS', 'GAME', 'MANUFACTURER', 'CONSOLE', 'VARIANTS', 'SETTINGS'] as AdminTab[]).map(tab => (
                     <button
                         key={tab}
                         onClick={() => { setActiveTab(tab); setMessage(null); setErrorMsg(null); }}
                         className={`flex-shrink-0 px-6 py-3 border-2 transition-all font-pixel text-xs md:text-sm ${activeTab === tab ? 'border-retro-neon text-retro-neon bg-retro-neon/10 shadow-[0_0_15px_rgba(0,255,157,0.2)]' : 'border-gray-700 text-gray-500 hover:border-gray-500'}`}
                     >
-                        {tab === 'SETTINGS' ? 'SYSTEM SETTINGS' : `ADD ${tab}`}
+                        {tab === 'SETTINGS' ? 'SETTINGS' : `ADD ${tab}`}
                     </button>
                 ))}
             </div>
@@ -291,8 +366,6 @@ export default function AdminPortalPage() {
 
                 {activeTab === 'MANUFACTURER' && (
                     <form onSubmit={handleSubmitManufacturer} className="space-y-8 animate-fadeIn">
-                        
-                        {/* Section I */}
                         <div>
                             <div className="text-xs text-retro-neon border-b border-gray-700 pb-2 mb-4 font-bold uppercase tracking-widest">I. Corporate Identity</div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -308,8 +381,6 @@ export default function AdminPortalPage() {
                                 </div>
                             </div>
                         </div>
-                        
-                        {/* Section II */}
                         <div>
                             <div className="text-xs text-retro-neon border-b border-gray-700 pb-2 mb-4 font-bold uppercase tracking-widest">II. Assets & Presence</div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
@@ -318,24 +389,19 @@ export default function AdminPortalPage() {
                                     <input type="url" className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Image URL (Logo)" value={manuImage} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuImage(e.target.value)} />
                                     <input className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Key Franchises (comma separated)" value={manuFranchises} onChange={(e: ChangeEvent<HTMLInputElement>) => setManuFranchises(e.target.value)} />
                                 </div>
-                                {/* Image Preview */}
                                 <div className="bg-black/50 border border-gray-700 h-40 md:h-full min-h-[160px] flex flex-col items-center justify-center p-4">
                                     {manuImage ? (
                                         <img src={manuImage} alt="Preview" className="max-h-24 w-auto object-contain mb-2" onError={(e) => (e.currentTarget.style.display = 'none')} />
                                     ) : (
                                         <div className="text-gray-600 font-pixel text-xs text-center">NO IMAGE<br/>SIGNAL</div>
                                     )}
-                                    <div className="text-[10px] text-retro-blue mt-2">PREVIEW MONITOR</div>
                                 </div>
                             </div>
                         </div>
-                        
-                        {/* Section III */}
                         <div>
                              <div className="text-xs text-retro-neon border-b border-gray-700 pb-2 mb-4 font-bold uppercase tracking-widest">III. Dossier</div>
                              <textarea className="w-full bg-black border border-gray-700 p-3 h-32 focus:border-retro-neon outline-none font-mono text-sm" placeholder="Company History and Description..." value={manuDesc} onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setManuDesc(e.target.value)} required />
                         </div>
-                        
                         <div className="flex justify-end pt-4"><Button type="submit">REGISTER ENTITY</Button></div>
                     </form>
                 )}
@@ -397,29 +463,40 @@ export default function AdminPortalPage() {
                             <textarea className="bg-black border border-gray-700 p-3 md:col-span-2 h-20 focus:border-retro-neon outline-none" placeholder="Intro Description" value={consoleIntro} onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setConsoleIntro(e.target.value)} required />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div className="md:col-span-2 lg:col-span-3 text-xs text-retro-neon border-b border-gray-700 pb-2 mb-2 font-bold uppercase">II. TECHNICAL SPECS</div>
-                            
-                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="CPU" value={specCpu} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecCpu(e.target.value)} />
-                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="GPU" value={specGpu} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecGpu(e.target.value)} />
-                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="RAM" value={specRam} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecRam(e.target.value)} />
-                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Storage" value={specStorage} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecStorage(e.target.value)} />
-                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Display Type" value={specDisplay} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecDisplay(e.target.value)} />
-                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Resolution" value={specRes} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecRes(e.target.value)} />
-                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Media" value={specMedia} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecMedia(e.target.value)} />
-                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Ports" value={specPorts} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecPorts(e.target.value)} />
-                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Connectivity" value={specConn} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecConn(e.target.value)} />
-                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Dimensions" value={specDim} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecDim(e.target.value)} />
-                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Weight" value={specWeight} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecWeight(e.target.value)} />
-                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Battery Life" value={specBattery} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecBattery(e.target.value)} />
-                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Power Supply" value={specPower} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecPower(e.target.value)} />
-                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Launch Price" value={specPrice} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecPrice(e.target.value)} />
-                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Inflation Adj. Price" value={specInflation} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecInflation(e.target.value)} />
-                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Units Sold" value={specSold} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecSold(e.target.value)} />
-                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Best Selling Game" value={specBestGame} onChange={(e: ChangeEvent<HTMLInputElement>) => setSpecBestGame(e.target.value)} />
-                        </div>
+                        <div className="md:col-span-2 lg:col-span-3 text-xs text-retro-neon border-b border-gray-700 pb-2 mb-2 font-bold uppercase">II. BASE SPECIFICATIONS</div>
+                        <SpecInputs />
 
                         <div className="flex justify-end pt-4"><Button type="submit">REGISTER HARDWARE</Button></div>
+                    </form>
+                )}
+
+                {activeTab === 'VARIANTS' && (
+                    <form onSubmit={handleSubmitVariant} className="space-y-6">
+                        <div className="bg-retro-grid/10 p-4 border border-retro-grid mb-6">
+                            <h3 className="text-sm font-bold text-retro-blue mb-2">INSTRUCTIONS</h3>
+                            <p className="text-xs text-gray-400">
+                                Variants override base specs. Only fill in fields that differ from the main console model (e.g., storage capacity, smaller dimensions, different ports).
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="md:col-span-2 text-xs text-retro-neon border-b border-retro-grid pb-2 mb-2 font-bold uppercase">I. VARIANT IDENTITY</div>
+                            
+                            <select className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none md:col-span-2" value={variantConsoleId} onChange={(e: ChangeEvent<HTMLSelectElement>) => setVariantConsoleId(e.target.value)} required>
+                                <option value="">-- Select Parent Console --</option>
+                                {consoleList.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                            </select>
+
+                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Variant Name (e.g. Slim, Pro)" value={variantName} onChange={(e: ChangeEvent<HTMLInputElement>) => setVariantName(e.target.value)} required />
+                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Slug (optional)" value={variantSlug} onChange={(e: ChangeEvent<HTMLInputElement>) => setVariantSlug(e.target.value)} />
+                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Release Year" value={variantYear} onChange={(e: ChangeEvent<HTMLInputElement>) => setVariantYear(e.target.value)} required />
+                            <input className="bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none" placeholder="Image URL (Optional)" value={variantImage} onChange={(e: ChangeEvent<HTMLInputElement>) => setVariantImage(e.target.value)} />
+                        </div>
+
+                        <div className="md:col-span-2 lg:col-span-3 text-xs text-retro-neon border-b border-retro-grid pb-2 mb-2 font-bold uppercase">II. SPEC OVERRIDES</div>
+                        <SpecInputs />
+
+                        <div className="flex justify-end pt-4"><Button type="submit">REGISTER VARIANT</Button></div>
                     </form>
                 )}
 
@@ -430,19 +507,11 @@ export default function AdminPortalPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
                             <div className="space-y-4">
                                 <label className="block text-sm font-bold mb-2 text-retro-blue">CUSTOM LOGO UPLOAD</label>
-                                <p className="text-xs text-gray-500 mb-4">Upload a PNG or JPG to override the default SVG logo. This change is currently applied via Local Overrides (Browser Storage) for immediate preview.</p>
-                                
                                 <input 
                                     type="file" 
                                     accept="image/*"
                                     onChange={handleLogoUpload}
-                                    className="block w-full text-sm text-gray-500
-                                      file:mr-4 file:py-2 file:px-4
-                                      file:border-0
-                                      file:text-xs file:font-mono
-                                      file:bg-retro-grid file:text-retro-neon
-                                      hover:file:bg-retro-neon hover:file:text-black
-                                    "
+                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-xs file:font-mono file:bg-retro-grid file:text-retro-neon hover:file:bg-retro-neon hover:file:text-black"
                                 />
 
                                 {customLogo && (

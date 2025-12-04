@@ -1,5 +1,6 @@
+
 import { supabase } from "./supabase/singleton";
-import { NewsItem, GameOfTheWeekData, UserCollectionItem, SearchResult, Manufacturer, ConsoleDetails, ConsoleFilterState, ConsoleSpecs } from "./types";
+import { NewsItem, GameOfTheWeekData, UserCollectionItem, SearchResult, Manufacturer, ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant } from "./types";
 
 export const checkDatabaseConnection = async (): Promise<boolean> => {
     try {
@@ -15,14 +16,13 @@ export const searchDatabase = async (query: string): Promise<SearchResult[]> => 
 
     try {
         // Split query into individual terms for flexible "fuzzy-like" matching
-        // This allows "mario kart" and "kart mario" to both match "Mario Kart"
         const terms = query.trim().split(/\s+/).filter(t => t.length > 0);
         
         let dbQuery = supabase
             .from('global_search_index')
             .select('*');
 
-        // Chain ILIKE filters: ALL terms must appear in the title (AND logic)
+        // Chain ILIKE filters
         terms.forEach(term => {
             dbQuery = dbQuery.ilike('title', `%${term}%`);
         });
@@ -62,17 +62,12 @@ export const fetchManufacturers = async (): Promise<Manufacturer[]> => {
 
 export const fetchManufacturerProfile = async (nameOrId: string): Promise<Manufacturer | null> => {
     try {
-        // Try searching by ID or Name/Slug
         let query = supabase.from('manufacturer').select('*');
-        
-        // Simple check if it looks like a UUID
         if (nameOrId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
              query = query.eq('id', nameOrId);
         } else {
-             // Search by slug first (more reliable), then name
              query = query.or(`slug.eq.${nameOrId},name.ilike.${nameOrId}`);
         }
-        
         const { data, error } = await query.single();
         if (error || !data) throw error;
         return data as Manufacturer;
@@ -85,12 +80,10 @@ export const addManufacturer = async (manu: Omit<Manufacturer, 'id'>): Promise<{
     try {
         const { error } = await supabase.from('manufacturer').insert([manu]);
         if (error) {
-            console.error('Add Manufacturer Error:', error);
             return { success: false, message: error.message };
         }
         return { success: true };
     } catch (e: any) {
-        console.error('Add Manufacturer Exception:', e);
         return { success: false, message: e.message || "Unknown error occurred" };
     }
 }
@@ -99,10 +92,8 @@ export const addManufacturer = async (manu: Omit<Manufacturer, 'id'>): Promise<{
 
 export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: number = 1, limit: number = 20): Promise<{ data: ConsoleDetails[], count: number }> => {
     try {
-        // JOIN: Select console fields, join manufacturer, join specs
-        // Note: 'manufacturer' alias must match the table name or relationship
         let query = supabase.from('consoles')
-            .select('*, manufacturer:manufacturer(*), specs:console_specs(*)', { count: 'exact' })
+            .select('*, manufacturer:manufacturer(*), specs:console_specs(*), variants:console_variant(*)', { count: 'exact' })
             .order('release_year', { ascending: true });
 
         if (filters.manufacturer_id) {
@@ -138,8 +129,8 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
     }
 };
 
-export const fetchConsoleList = async (): Promise<{name: string, slug: string}[]> => {
-    const { data } = await supabase.from('consoles').select('name, slug').order('name');
+export const fetchConsoleList = async (): Promise<{name: string, slug: string, id: string}[]> => {
+    const { data } = await supabase.from('consoles').select('id, name, slug').order('name');
     return data || [];
 };
 
@@ -147,7 +138,7 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
     try {
         const { data, error } = await supabase
             .from('consoles')
-            .select('*, manufacturer:manufacturer(*), specs:console_specs(*)')
+            .select('*, manufacturer:manufacturer(*), specs:console_specs(*), variants:console_variant(*)')
             .eq('slug', slug)
             .single();
             
@@ -159,11 +150,10 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
 };
 
 export const addConsole = async (
-    consoleData: Omit<ConsoleDetails, 'id' | 'manufacturer' | 'specs'>, 
+    consoleData: Omit<ConsoleDetails, 'id' | 'manufacturer' | 'specs' | 'variants'>, 
     specsData: ConsoleSpecs
 ): Promise<{ success: boolean, message?: string }> => {
     try {
-        // 1. Insert Console
         const { data: newConsole, error: consoleError } = await supabase
             .from('consoles')
             .insert([consoleData])
@@ -174,23 +164,30 @@ export const addConsole = async (
             return { success: false, message: consoleError?.message || "Failed to create console record" };
         }
 
-        // 2. Insert Specs (Linked to Console ID)
         const { error: specsError } = await supabase
             .from('console_specs')
             .insert([{ ...specsData, console_id: newConsole.id }]);
 
         if (specsError) {
-             // Optional: Cleanup console if specs fail
              await supabase.from('consoles').delete().eq('id', newConsole.id);
              return { success: false, message: `Specs Error: ${specsError.message}` };
         }
 
         return { success: true };
     } catch (e: any) {
-        console.error(e);
         return { success: false, message: e.message || "Unknown Exception" };
     }
 };
+
+export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>): Promise<{ success: boolean, message?: string }> => {
+    try {
+        const { error } = await supabase.from('console_variant').insert([variantData]);
+        if (error) return { success: false, message: error.message };
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, message: e.message };
+    }
+}
 
 // -- GAMES & OTHERS --
 
@@ -221,10 +218,7 @@ export const addGame = async (game: GameOfTheWeekData): Promise<boolean> => {
 
 export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData | null> => {
     try {
-        // Fetch random game or specific one from a 'featured' table
-        // For now, we just pick a random one from 'games'
         const { data, error } = await supabase.from('games').select('*').limit(1).maybeSingle();
-        
         if (error || !data) return null;
 
         return {
@@ -253,7 +247,7 @@ export const fetchGamesPaginated = async (page: number = 1, limit: number = 12):
         const { data, count, error } = await supabase
             .from('games')
             .select('*', { count: 'exact' })
-            .order('year', { ascending: false }) // Newest first by default
+            .order('year', { ascending: false })
             .range(from, to);
 
         if (error) throw error;
