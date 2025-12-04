@@ -1,7 +1,6 @@
-
 import Link from 'next/link';
 import { createClient } from '../../../lib/supabase/server';
-import { ConsoleDetails, GameOfTheWeekData } from '../../../lib/types';
+import { GameOfTheWeekData } from '../../../lib/types';
 import Button from '../../../components/ui/Button';
 import CollectionToggle from '../../../components/ui/CollectionToggle';
 import { ReactNode } from 'react';
