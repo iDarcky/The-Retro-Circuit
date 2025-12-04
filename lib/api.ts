@@ -14,11 +14,20 @@ export const searchDatabase = async (query: string): Promise<SearchResult[]> => 
     if (!query || query.length < 2) return [];
 
     try {
-        const { data, error } = await supabase
+        // Split query into individual terms for flexible "fuzzy-like" matching
+        // This allows "mario kart" and "kart mario" to both match "Mario Kart"
+        const terms = query.trim().split(/\s+/).filter(t => t.length > 0);
+        
+        let dbQuery = supabase
             .from('global_search_index')
-            .select('*')
-            .ilike('title', `%${query}%`)
-            .limit(10);
+            .select('*');
+
+        // Chain ILIKE filters: ALL terms must appear in the title (AND logic)
+        terms.forEach(term => {
+            dbQuery = dbQuery.ilike('title', `%${term}%`);
+        });
+
+        const { data, error } = await dbQuery.limit(10);
 
         if (error) throw error;
 

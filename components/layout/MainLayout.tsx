@@ -78,13 +78,19 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
             setDbStatus(connected ? 'ONLINE' : 'OFFLINE');
         }
 
-        // Check Auth
-        const currentUser = await retroAuth.getUser();
-        setUser(currentUser);
-        
-        // Check Admin Status
-        const adminStatus = await retroAuth.isAdmin();
-        setIsAdmin(adminStatus);
+        // Check Auth - Fast Local Check first to prevent flash
+        const session = await retroAuth.getSession();
+        if (session?.user) {
+            setUser(session.user);
+            const adminStatus = await retroAuth.isAdmin();
+            setIsAdmin(adminStatus);
+        } else {
+            // Fallback to server verification if no local session found immediately
+            const currentUser = await retroAuth.getUser();
+            setUser(currentUser);
+            const adminStatus = await retroAuth.isAdmin();
+            setIsAdmin(adminStatus);
+        }
         
         // Check Custom Logo (Local Setting)
         const savedLogo = localStorage.getItem('retro_custom_logo');
@@ -161,7 +167,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         
         {/* Status Footer */}
         <div className="p-2 bg-black text-[10px] font-mono text-center flex justify-between items-center px-4 text-gray-600">
-            <span>v1.0.6</span>
+            <span>v1.0.7</span>
             {isAdmin && (
                 <span className={`flex items-center gap-1 ${dbStatus === 'ONLINE' ? 'text-retro-neon' : 'text-red-500'}`}>
                     <span className={`w-2 h-2 rounded-full ${dbStatus === 'ONLINE' ? 'bg-retro-neon' : 'bg-red-500'} animate-pulse`}></span>

@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { createClient } from '../../../lib/supabase/server';
 import { ConsoleDetails, GameOfTheWeekData } from '../../../lib/types';
@@ -64,7 +65,7 @@ export default async function ConsoleSpecsPage({ params }: Props) {
     supabase.from('games').select('*').eq('console_slug', params.slug).order('year', { ascending: true })
   ]);
 
-  const consoleData: ConsoleDetails | null = consoleRes.data;
+  const consoleData: any = consoleRes.data;
   const games = (gamesRes.data || []) as any[];
   
   // Map games to type
@@ -94,7 +95,9 @@ export default async function ConsoleSpecsPage({ params }: Props) {
     );
   }
 
-  const specs = consoleData.specs || {};
+  // Handle specs whether it returns as an array (common with Supabase joins) or a single object
+  const rawSpecs = consoleData.specs;
+  const specs = Array.isArray(rawSpecs) ? (rawSpecs[0] || {}) : (rawSpecs || {});
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4">

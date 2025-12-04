@@ -26,6 +26,10 @@ export const retroAuth = {
     signOut: async () => {
         return await supabase.auth.signOut();
     },
+    getSession: async () => {
+        const { data } = await supabase.auth.getSession();
+        return data.session;
+    },
     getUser: async () => {
         const { data } = await supabase.auth.getUser();
         return data.user;

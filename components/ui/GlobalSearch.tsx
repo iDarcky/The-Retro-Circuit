@@ -39,7 +39,7 @@ const GlobalSearch: FC = () => {
                 setResults([]);
                 setIsOpen(false);
             }
-        }, 500);
+        }, 300); // Reduced delay for faster suggestions
 
         return () => clearTimeout(delaySearch);
     }, [query]);
@@ -63,9 +63,13 @@ const GlobalSearch: FC = () => {
                     placeholder="SEARCH DATABASE..."
                     className="w-full bg-black/50 border border-retro-grid text-retro-neon font-mono text-sm px-3 py-2 pl-9 focus:border-retro-neon focus:outline-none placeholder-gray-600 transition-colors"
                 />
-                <svg className="w-4 h-4 text-gray-500 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+                {loading ? (
+                    <div className="absolute left-3 top-2.5 w-4 h-4 border-2 border-retro-neon border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                    <svg className="w-4 h-4 text-gray-500 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                )}
             </div>
 
             {isOpen && (
