@@ -9,6 +9,57 @@ import { NewsItem, NewsItemSchema, GameSchema, ConsoleSchema, ConsoleSpecsSchema
 
 type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE' | 'VARIANTS' | 'MANUFACTURER' | 'SETTINGS';
 
+// Extracted Component to prevent re-render focus loss
+const RenderInput = ({ field, value, onChange }: { 
+    field: { label: string, key: string, type: string, required?: boolean, step?: string },
+    value: any,
+    onChange: (key: string, val: any) => void
+}) => {
+    const val = value || (field.type === 'checkbox' ? false : '');
+    
+    if (field.type === 'textarea') {
+        return (
+            <div className="col-span-1 md:col-span-2">
+                <label className="text-[10px] text-gray-500 mb-1 block uppercase">{field.label}</label>
+                <textarea 
+                    className="w-full bg-black border border-gray-700 p-3 h-24 focus:border-retro-neon outline-none font-mono text-sm"
+                    value={val}
+                    onChange={(e) => onChange(field.key, e.target.value)}
+                    required={field.required}
+                />
+            </div>
+        );
+    }
+
+    if (field.type === 'checkbox') {
+            return (
+            <div className="flex items-center gap-3 border border-gray-800 p-3 bg-black">
+                <input 
+                    type="checkbox"
+                    className="accent-retro-neon w-4 h-4"
+                    checked={!!val}
+                    onChange={(e) => onChange(field.key, e.target.checked)}
+                />
+                <label className="text-xs text-gray-300 uppercase cursor-pointer" onClick={() => onChange(field.key, !val)}>{field.label}</label>
+            </div>
+        );
+    }
+
+    return (
+        <div>
+            <label className="text-[10px] text-gray-500 mb-1 block uppercase">{field.label}</label>
+            <input 
+                type={field.type}
+                step={field.step}
+                className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none text-white font-mono"
+                value={val}
+                onChange={(e) => onChange(field.key, e.target.value)}
+                required={field.required}
+            />
+        </div>
+    );
+};
+
 export default function AdminPortalPage() {
     const [isAdmin, setIsAdmin] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -183,54 +234,6 @@ export default function AdminPortalPage() {
         }
     };
 
-    // --- RENDER HELPERS ---
-    
-    const RenderInput = ({ field }: { field: { label: string, key: string, type: string, required?: boolean, step?: string } }) => {
-        const val = formData[field.key] || (field.type === 'checkbox' ? false : '');
-        
-        if (field.type === 'textarea') {
-            return (
-                <div key={field.key} className="col-span-1 md:col-span-2">
-                    <label className="text-[10px] text-gray-500 mb-1 block uppercase">{field.label}</label>
-                    <textarea 
-                        className="w-full bg-black border border-gray-700 p-3 h-24 focus:border-retro-neon outline-none font-mono text-sm"
-                        value={val}
-                        onChange={(e) => handleInputChange(field.key, e.target.value)}
-                        required={field.required}
-                    />
-                </div>
-            );
-        }
-
-        if (field.type === 'checkbox') {
-             return (
-                <div key={field.key} className="flex items-center gap-3 border border-gray-800 p-3 bg-black">
-                    <input 
-                        type="checkbox"
-                        className="accent-retro-neon w-4 h-4"
-                        checked={!!val}
-                        onChange={(e) => handleInputChange(field.key, e.target.checked)}
-                    />
-                    <label className="text-xs text-gray-300 uppercase cursor-pointer" onClick={() => handleInputChange(field.key, !val)}>{field.label}</label>
-                </div>
-            );
-        }
-
-        return (
-            <div key={field.key}>
-                <label className="text-[10px] text-gray-500 mb-1 block uppercase">{field.label}</label>
-                <input 
-                    type={field.type}
-                    step={field.step}
-                    className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none text-white font-mono"
-                    value={val}
-                    onChange={(e) => handleInputChange(field.key, e.target.value)}
-                    required={field.required}
-                />
-            </div>
-        );
-    };
-
     if (loading) return <div className="p-10 text-center font-mono text-retro-neon">VERIFYING CLEARANCE...</div>;
 
     if (!isAdmin) {
@@ -292,7 +295,9 @@ export default function AdminPortalPage() {
                 {activeTab === 'MANUFACTURER' && (
                     <form onSubmit={handleSubmitManufacturer} className="space-y-6">
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {MANUFACTURER_FORM_FIELDS.map(field => <RenderInput key={field.key} field={field} />)}
+                            {MANUFACTURER_FORM_FIELDS.map(field => (
+                                <RenderInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} />
+                            ))}
                          </div>
                          <div className="flex justify-end pt-4"><Button type="submit">REGISTER ENTITY</Button></div>
                     </form>
@@ -316,14 +321,18 @@ export default function AdminPortalPage() {
                                 </select>
                              </div>
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {CONSOLE_FORM_FIELDS.map(field => <RenderInput key={field.key} field={field} />)}
+                                {CONSOLE_FORM_FIELDS.map(field => (
+                                    <RenderInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} />
+                                ))}
                              </div>
                         </div>
 
                         <div>
                             <div className="text-xs text-retro-neon border-b border-gray-700 pb-2 mb-4 font-bold uppercase">II. Base Specifications</div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {CONSOLE_SPECS_FORM_FIELDS.map(field => <RenderInput key={field.key} field={field} />)}
+                                {CONSOLE_SPECS_FORM_FIELDS.map(field => (
+                                    <RenderInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} />
+                                ))}
                             </div>
                         </div>
                         <div className="flex justify-end pt-4"><Button type="submit">REGISTER HARDWARE</Button></div>
@@ -357,7 +366,9 @@ export default function AdminPortalPage() {
                             <div key={idx} className="bg-black/30 p-4 border border-gray-800">
                                 <div className="text-xs text-retro-neon border-b border-gray-700 pb-2 mb-4 font-bold uppercase">{group.title}</div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {group.fields.map(field => <RenderInput key={field.key} field={field} />)}
+                                    {group.fields.map(field => (
+                                        <RenderInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} />
+                                    ))}
                                 </div>
                             </div>
                         ))}
@@ -370,25 +381,29 @@ export default function AdminPortalPage() {
                 {activeTab === 'GAME' && (
                      <form onSubmit={handleSubmitGame} className="space-y-4">
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                             <RenderInput field={{ label: 'Title', key: 'title', type: 'text', required: true }} />
-                             <RenderInput field={{ label: 'Slug (opt)', key: 'slug', type: 'text' }} />
-                             <RenderInput field={{ label: 'Developer', key: 'developer', type: 'text', required: true }} />
-                             <RenderInput field={{ label: 'Year', key: 'year', type: 'text', required: true }} />
-                             <RenderInput field={{ label: 'Genre', key: 'genre', type: 'text', required: true }} />
+                             <RenderInput field={{ label: 'Title', key: 'title', type: 'text', required: true }} value={formData.title} onChange={handleInputChange} />
+                             <RenderInput field={{ label: 'Slug (opt)', key: 'slug', type: 'text' }} value={formData.slug} onChange={handleInputChange} />
+                             <RenderInput field={{ label: 'Developer', key: 'developer', type: 'text', required: true }} value={formData.developer} onChange={handleInputChange} />
+                             <RenderInput field={{ label: 'Year', key: 'year', type: 'text', required: true }} value={formData.year} onChange={handleInputChange} />
+                             <RenderInput field={{ label: 'Genre', key: 'genre', type: 'text', required: true }} value={formData.genre} onChange={handleInputChange} />
                              
                              <div className="flex gap-2">
-                                <div className="flex-1"><RenderInput field={{ label: 'Console Slug', key: 'console_slug', type: 'text' }} /></div>
-                                <div className="w-24"><RenderInput field={{ label: 'Rating (1-5)', key: 'rating', type: 'number' }} /></div>
+                                <div className="flex-1">
+                                    <RenderInput field={{ label: 'Console Slug', key: 'console_slug', type: 'text' }} value={formData.console_slug} onChange={handleInputChange} />
+                                </div>
+                                <div className="w-24">
+                                    <RenderInput field={{ label: 'Rating (1-5)', key: 'rating', type: 'number' }} value={formData.rating} onChange={handleInputChange} />
+                                </div>
                              </div>
                              
                              <div className="md:col-span-2">
-                                <RenderInput field={{ label: 'Image URL', key: 'image', type: 'url' }} />
+                                <RenderInput field={{ label: 'Image URL', key: 'image', type: 'url' }} value={formData.image} onChange={handleInputChange} />
                              </div>
                              <div className="md:col-span-2">
-                                 <RenderInput field={{ label: 'Review Content', key: 'content', type: 'textarea', required: true }} />
+                                 <RenderInput field={{ label: 'Review Content', key: 'content', type: 'textarea', required: true }} value={formData.content} onChange={handleInputChange} />
                              </div>
                              <div className="md:col-span-2">
-                                 <RenderInput field={{ label: 'Why It Matters', key: 'whyItMatters', type: 'textarea', required: true }} />
+                                 <RenderInput field={{ label: 'Why It Matters', key: 'whyItMatters', type: 'textarea', required: true }} value={formData.whyItMatters} onChange={handleInputChange} />
                              </div>
                          </div>
                          <div className="flex justify-end"><Button type="submit">ARCHIVE GAME</Button></div>
