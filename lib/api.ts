@@ -60,20 +60,25 @@ export const fetchManufacturers = async (): Promise<Manufacturer[]> => {
     }
 };
 
-export const fetchManufacturerProfile = async (nameOrId: string): Promise<Manufacturer | null> => {
+// Task 1: Function to fetch a single manufacturer by slug
+export const getManufacturerBySlug = async (slug: string): Promise<Manufacturer | null> => {
     try {
-        let query = supabase.from('manufacturer').select('*');
-        if (nameOrId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
-             query = query.eq('id', nameOrId);
-        } else {
-             query = query.or(`slug.eq.${nameOrId},name.ilike.${nameOrId}`);
-        }
-        const { data, error } = await query.single();
-        if (error || !data) throw error;
+        const { data, error } = await supabase
+            .from('manufacturer')
+            .select('*')
+            .eq('slug', slug)
+            .single();
+
+        if (error) throw error;
         return data as Manufacturer;
     } catch {
         return null;
     }
+};
+
+// Deprecated alias kept for backward compatibility if needed, or can be removed if not used elsewhere
+export const fetchManufacturerProfile = async (nameOrId: string): Promise<Manufacturer | null> => {
+    return getManufacturerBySlug(nameOrId);
 };
 
 export const addManufacturer = async (manu: Omit<Manufacturer, 'id'>): Promise<{ success: boolean, message?: string }> => {

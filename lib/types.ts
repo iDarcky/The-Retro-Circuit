@@ -99,17 +99,30 @@ export interface ManufacturerProfile {
 
 // -- NEW DB STRUCTURE TYPES --
 
+// Task 2: TypeScript Interface matching Supabase Schema
 export interface Manufacturer {
-  id: string;
-  name: string;
-  founded_year: number;
-  country: string;
-  website?: string;
-  description: string;
-  key_franchises: string;
-  image_url?: string;
-  slug: string;
+  id: string;             // UUID
+  name: string;           // Required Text
+  slug: string;           // Unique Required Text
+  description: string;    // Multiline Text
+  country: string;        // Text
+  founded_year: number;   // Integer
+  website?: string;       // Text (URL)
+  key_franchises: string; // Text (Comma-separated)
+  image_url?: string;     // Text (URL)
 }
+
+// Task 2: Form Field Configuration
+export const MANUFACTURER_FORM_FIELDS = [
+  { label: 'Company Name', key: 'name', type: 'text', required: true },
+  { label: 'Slug (Unique)', key: 'slug', type: 'text', required: true },
+  { label: 'Founded Year', key: 'founded_year', type: 'number', required: true },
+  { label: 'Country', key: 'country', type: 'text', required: true },
+  { label: 'Website URL', key: 'website', type: 'url', required: false },
+  { label: 'Logo / Image URL', key: 'image_url', type: 'url', required: false },
+  { label: 'Key Franchises', key: 'key_franchises', type: 'text', required: false, placeholder: 'Mario, Zelda, Metroid' },
+  { label: 'Description', key: 'description', type: 'textarea', required: true },
+] as const;
 
 export const ManufacturerSchema = z.object({
   name: z.string().min(1, "Name required"),

@@ -77,6 +77,7 @@ export default function LoginPage() {
                 setUser(null);
                 setMode('LOGIN');
                 setIsAdmin(false);
+                setCollection([]);
             }
         });
         return () => subscription.unsubscribe();
@@ -97,19 +98,14 @@ export default function LoginPage() {
                 const { error } = await retroAuth.signIn(email, password);
                 if (error) throw error;
 
-                // 2. Check Admin Status specifically for redirection
-                // We re-fetch user here to ensure we have the latest token claims if needed
+                // 2. Refresh Admin Status but DO NOT REDIRECT
                 const adminCheck = await retroAuth.isAdmin();
+                setIsAdmin(adminCheck);
                 
-                if (adminCheck) {
-                    // Admin Redirect: Use window.location to force full refresh and ensure middleware cookies are set
-                    // We avoid router.push here to ensure a hard navigation triggers the middleware check on the new route
-                    window.location.href = "/admin";
-                    return;
-                }
+                // 3. Set Success Message
+                setMessage({ type: 'success', text: 'ACCESS GRANTED. INITIALIZING PROFILE...' });
                 
-                // Normal User: Stay on profile
-                setMessage({ type: 'success', text: 'ACCESS GRANTED.' });
+                // Mode switch happens automatically via onAuthStateChange listener
 
             } else if (mode === 'RECOVERY') {
                 const { error } = await retroAuth.resetPassword(email);

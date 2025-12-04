@@ -69,44 +69,47 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const [customLogo, setCustomLogo] = useState<string | null>(null);
 
   useEffect(() => {
+    // 1. Setup Auth Listener Immediately
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+        setUser(session?.user || null);
+        // Re-verify admin status on auth change
+        const newAdminStatus = await retroAuth.isAdmin();
+        setIsAdmin(newAdminStatus);
+    });
+
+    // 2. Perform Async Initialization
     const init = async () => {
-        // Check DB
+        // Auth: Check local session first (Fast)
+        const session = await retroAuth.getSession();
+        if (session?.user) {
+            setUser(session.user);
+            // Non-blocking admin check
+            retroAuth.isAdmin().then(setIsAdmin);
+        } else {
+            // Server fallback (Slower but accurate)
+            const currentUser = await retroAuth.getUser();
+            setUser(currentUser);
+            if (currentUser) {
+                retroAuth.isAdmin().then(setIsAdmin);
+            }
+        }
+        
+        // Logo: Check Local Storage
+        const savedLogo = localStorage.getItem('retro_custom_logo');
+        if (savedLogo) setCustomLogo(savedLogo);
+
+        // DB Connection: Perform last as it can be slow
         if (!isSupabaseConfigured) {
             setDbStatus('OFFLINE');
         } else {
             const connected = await checkDatabaseConnection();
             setDbStatus(connected ? 'ONLINE' : 'OFFLINE');
         }
-
-        // Check Auth - Fast Local Check first to prevent flash
-        const session = await retroAuth.getSession();
-        if (session?.user) {
-            setUser(session.user);
-            const adminStatus = await retroAuth.isAdmin();
-            setIsAdmin(adminStatus);
-        } else {
-            // Fallback to server verification if no local session found immediately
-            const currentUser = await retroAuth.getUser();
-            setUser(currentUser);
-            const adminStatus = await retroAuth.isAdmin();
-            setIsAdmin(adminStatus);
-        }
-        
-        // Check Custom Logo (Local Setting)
-        const savedLogo = localStorage.getItem('retro_custom_logo');
-        if (savedLogo) setCustomLogo(savedLogo);
-
-        // Listen for Auth Changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-            setUser(session?.user || null);
-            // Re-verify admin status on auth change
-            const newAdminStatus = await retroAuth.isAdmin();
-            setIsAdmin(newAdminStatus);
-        });
-
-        return () => subscription.unsubscribe();
     };
+
     init();
+
+    return () => subscription.unsubscribe();
   }, []);
 
   return (
