@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useEffect, useState, type FormEvent, type ChangeEvent } from 'react';
+import { useEffect, useState, type FormEvent, type ChangeEvent, type FC } from 'react';
 import { retroAuth } from '../../lib/auth';
 import { addGame, addConsole, addNewsItem, fetchManufacturers, addManufacturer, fetchConsoleList, addConsoleVariant } from '../../lib/api';
 import Button from '../../components/ui/Button';
@@ -9,12 +8,14 @@ import { NewsItem, NewsItemSchema, GameSchema, ConsoleSchema, ConsoleSpecsSchema
 
 type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE' | 'VARIANTS' | 'MANUFACTURER' | 'SETTINGS';
 
+interface RenderInputProps {
+    field: { label: string, key: string, type: string, required?: boolean, step?: string };
+    value: any;
+    onChange: (key: string, val: any) => void;
+}
+
 // Extracted Component to prevent re-render focus loss
-const RenderInput = ({ field, value, onChange }: { 
-    field: { label: string, key: string, type: string, required?: boolean, step?: string },
-    value: any,
-    onChange: (key: string, val: any) => void
-}) => {
+const RenderInput: FC<RenderInputProps> = ({ field, value, onChange }) => {
     const val = value || (field.type === 'checkbox' ? false : '');
     
     if (field.type === 'textarea') {
