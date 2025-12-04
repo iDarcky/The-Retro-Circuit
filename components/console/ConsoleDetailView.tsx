@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, type FC, type ReactNode } from 'react';
@@ -66,8 +67,6 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
             if (variant) {
                 // Merge base specs with variant overrides.
                 // We use spread to ensure even fields missing in baseSpecs are picked up from the variant.
-                // Since ConsoleVariant extends ConsoleSpecs, this is type-safe for usage, 
-                // though it includes extra ID/Name fields which we simply ignore during render.
                 setMergedSpecs({ ...consoleData.specs, ...variant });
             }
         }
