@@ -85,7 +85,16 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
 
         const { data, count, error } = await query.range(from, to);
         if (error) throw error;
-        return { data: (data as any) || [], count: count || 0 };
+
+        // Normalize specs (handle array vs object)
+        const normalizedData = (data || []).map((item: any) => {
+            if (Array.isArray(item.specs)) {
+                item.specs = item.specs[0] || {};
+            }
+            return item;
+        });
+
+        return { data: normalizedData as ConsoleDetails[], count: count || 0 };
 
     } catch (e) {
         console.error('Fetch Consoles Error:', e);
@@ -107,7 +116,14 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
             .single();
             
         if (error) throw error;
-        return data as ConsoleDetails;
+
+        // Normalize specs from array to object if necessary
+        const rawData: any = data;
+        if (rawData && Array.isArray(rawData.specs)) {
+            rawData.specs = rawData.specs[0] || {};
+        }
+
+        return rawData as ConsoleDetails;
     } catch {
         return null;
     }
@@ -181,6 +197,34 @@ export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>)
 export const fetchGameList = async (): Promise<{title: string, slug: string, id: string}[]> => {
     const { data } = await supabase.from('games').select('title, slug, id').order('title');
     return data || [];
+};
+
+export const fetchGamesByConsole = async (consoleSlug: string): Promise<GameOfTheWeekData[]> => {
+    try {
+        const { data, error } = await supabase
+            .from('games')
+            .select('*')
+            .eq('console_slug', consoleSlug)
+            .order('year', { ascending: true });
+            
+        if (error) throw error;
+
+        return (data || []).map((g: any) => ({
+            id: g.id,
+            slug: g.slug,
+            title: g.title,
+            developer: g.developer,
+            year: g.year,
+            genre: g.genre,
+            content: g.content,
+            whyItMatters: g.why_it_matters,
+            rating: g.rating,
+            image: g.image,
+            console_slug: g.console_slug
+        }));
+    } catch {
+        return [];
+    }
 };
 
 export const addGame = async (game: GameOfTheWeekData): Promise<boolean> => {

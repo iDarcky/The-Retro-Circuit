@@ -1,7 +1,7 @@
 
 import Link from 'next/link';
 import { createClient } from '../../../lib/supabase/server';
-import { GameOfTheWeekData } from '../../../lib/types';
+import { fetchConsoleBySlug, fetchGamesByConsole } from '../../../lib/api';
 import Button from '../../../components/ui/Button';
 import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
 
@@ -25,35 +25,11 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function ConsoleSpecsPage({ params }: Props) {
-  const supabase = await createClient();
-  
-  // Parallel Fetching with Joins (Include Variants)
-  const [consoleRes, gamesRes] = await Promise.all([
-    supabase
-        .from('consoles')
-        .select('*, manufacturer:manufacturer(*), specs:console_specs(*), variants:console_variant(*)')
-        .eq('slug', params.slug)
-        .single(),
-    supabase.from('games').select('*').eq('console_slug', params.slug).order('year', { ascending: true })
+  // Parallel Fetching using API helpers
+  const [consoleData, games] = await Promise.all([
+    fetchConsoleBySlug(params.slug),
+    fetchGamesByConsole(params.slug)
   ]);
-
-  const consoleData: any = consoleRes.data;
-  const games = (gamesRes.data || []) as any[];
-  
-  // Map games to type
-  const mappedGames: GameOfTheWeekData[] = games.map(g => ({
-    id: g.id,
-    slug: g.slug,
-    title: g.title,
-    developer: g.developer,
-    year: g.year,
-    genre: g.genre,
-    content: g.content,
-    whyItMatters: g.why_it_matters,
-    rating: g.rating,
-    image: g.image,
-    console_slug: g.console_slug
-  }));
 
   if (!consoleData) {
     return (
@@ -67,10 +43,5 @@ export default async function ConsoleSpecsPage({ params }: Props) {
     );
   }
 
-  // Handle specs structure for the client view
-  const rawSpecs = consoleData.specs;
-  // If specs is an array (join), extract first item. If object, use as is.
-  consoleData.specs = Array.isArray(rawSpecs) ? (rawSpecs[0] || {}) : (rawSpecs || {});
-
-  return <ConsoleDetailView consoleData={consoleData} games={mappedGames} />;
+  return <ConsoleDetailView consoleData={consoleData} games={games} />;
 }

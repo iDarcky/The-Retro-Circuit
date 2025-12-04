@@ -1,5 +1,5 @@
 
-import { ComparisonResult, ComparisonPoint, ConsoleDetails } from "./types";
+import { ComparisonResult, ComparisonPoint } from "./types";
 import { supabase } from "./supabase/singleton";
 
 const getBestVariantSpec = (console: any, field: string): number => {
