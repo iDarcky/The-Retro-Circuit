@@ -14,7 +14,8 @@
     "react-dom": "^18.2.0",
     "@supabase/supabase-js": "^2.39.0",
     "@supabase/ssr": "^0.1.0",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "@vercel/analytics": "^1.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

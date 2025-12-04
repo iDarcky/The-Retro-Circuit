@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { Press_Start_2P, Share_Tech_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import "../styles/globals.css";
 import ClientShell from "../components/layout/ClientShell";
 
@@ -60,6 +61,7 @@ export default function RootLayout({
         <ClientShell>
             {children}
         </ClientShell>
+        <Analytics />
       </body>
     </html>
   );

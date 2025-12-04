@@ -1,11 +1,9 @@
-
 'use client';
 
 import { useState, useEffect, type FC, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ConsoleDetails, ConsoleSpecs, GameOfTheWeekData } from '../../lib/types';
-import Button from '../ui/Button';
 import CollectionToggle from '../ui/CollectionToggle';
 
 interface ConsoleDetailViewProps {
@@ -66,21 +64,11 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
         } else {
             const variant = variants.find(v => v.id === selectedVariantId);
             if (variant) {
-                // Merge base specs with variant overrides
-                // Note: We use the spread operator to override. Undefined fields in variant won't override base if they aren't in the object,
-                // but our DB returns nulls. We need to filter nulls/undefined from variant before merging if we want partial overrides.
-                // However, our logic below prefers defined variant values.
-                
-                const newSpecs = { ...consoleData.specs };
-                
-                // Helper to override only if value exists
-                const override = (key: keyof ConsoleSpecs) => {
-                    if (variant[key]) newSpecs[key] = variant[key];
-                };
-
-                (Object.keys(newSpecs) as Array<keyof ConsoleSpecs>).forEach(override);
-                
-                setMergedSpecs(newSpecs);
+                // Merge base specs with variant overrides.
+                // We use spread to ensure even fields missing in baseSpecs are picked up from the variant.
+                // Since ConsoleVariant extends ConsoleSpecs, this is type-safe for usage, 
+                // though it includes extra ID/Name fields which we simply ignore during render.
+                setMergedSpecs({ ...consoleData.specs, ...variant });
             }
         }
     }, [selectedVariantId, consoleData.specs, variants]);
