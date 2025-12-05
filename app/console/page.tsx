@@ -1,9 +1,9 @@
+
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { fetchManufacturers, fetchConsolesFiltered } from '../../lib/api';
-import { getBrandTheme } from '../../data/static';
 import { ConsoleDetails, ConsoleFilterState, Manufacturer } from '../../lib/types';
 import RetroLoader from '../../components/ui/RetroLoader';
 import Button from '../../components/ui/Button';
@@ -12,7 +12,6 @@ export default function ConsoleVaultPage() {
   const [consoles, setConsoles] = useState<ConsoleDetails[]>([]);
   const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<'FABRICATOR' | 'LIST'>('FABRICATOR');
   
   // Pagination State for List View
   const [page, setPage] = useState(1);
@@ -28,13 +27,13 @@ export default function ConsoleVaultPage() {
       manufacturer_id: null
   });
 
-  // Initial Load (Fabricators)
+  // Initial Load (Manufacturers for filter)
   useEffect(() => {
     const init = async () => {
         setLoading(true);
         const manus = await fetchManufacturers();
         setManufacturers(manus);
-        setLoading(false);
+        // Consoles loaded via effect on filters/page below
     };
     init();
   }, []);
@@ -50,10 +49,8 @@ export default function ConsoleVaultPage() {
   }, [filters]);
 
   useEffect(() => {
-      if (viewMode === 'LIST') {
-          loadConsoles(page);
-      }
-  }, [viewMode, page, loadConsoles]);
+      loadConsoles(page);
+  }, [page, loadConsoles]);
 
   const handleFilterChange = (key: keyof ConsoleFilterState, value: any) => {
       setFilters(prev => ({ ...prev, [key]: value }));
@@ -76,77 +73,10 @@ export default function ConsoleVaultPage() {
             <p className="font-mono text-gray-400">CLASSIFIED HARDWARE DATABASE</p>
         </div>
 
-        {/* View Toggle */}
-        <div className="flex justify-center mb-8 border-b border-retro-grid pb-1">
-            <button 
-                onClick={() => setViewMode('FABRICATOR')}
-                className={`px-6 py-2 font-pixel text-xs md:text-sm transition-all border-b-2 ${
-                    viewMode === 'FABRICATOR' 
-                    ? 'border-retro-neon text-retro-neon' 
-                    : 'border-transparent text-gray-500 hover:text-gray-300'
-                }`}
-            >
-                BROWSE BY FABRICATOR
-            </button>
-            <button 
-                onClick={() => setViewMode('LIST')}
-                className={`px-6 py-2 font-pixel text-xs md:text-sm transition-all border-b-2 ${
-                    viewMode === 'LIST' 
-                    ? 'border-retro-neon text-retro-neon' 
-                    : 'border-transparent text-gray-500 hover:text-gray-300'
-                }`}
-            >
-                MASTER LIST (ALL)
-            </button>
-        </div>
-
-        {loading && <RetroLoader />}
-
-        {!loading && viewMode === 'FABRICATOR' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fadeIn">
-                {manufacturers.map((brand) => {
-                    const theme = getBrandTheme(brand.name);
-                    return (
-                        <Link 
-                            href={`/fabricators/${brand.slug}`} 
-                            key={brand.id}
-                            className={`group border-2 ${theme.color.split(' ')[1]} bg-retro-dark p-6 relative overflow-hidden transition-all hover:scale-[1.02]`}
-                        >
-                            <div className={`absolute top-0 right-0 p-2 font-mono text-[10px] ${theme.color.split(' ')[0]} border-b border-l border-gray-800`}>
-                                EST. {brand.founded_year}
-                            </div>
-                            
-                            <div className="h-20 mb-4 flex items-center justify-start">
-                                {brand.image_url ? (
-                                    <img src={brand.image_url} alt={brand.name} className="h-16 w-auto object-contain" />
-                                ) : (
-                                    <h3 className={`font-pixel text-2xl ${theme.color.split(' ')[0]}`}>{brand.name}</h3>
-                                )}
-                            </div>
-                            
-                            <div className="h-px w-full bg-gray-800 mb-4 group-hover:bg-retro-grid transition-colors"></div>
-                            
-                            <p className="font-mono text-gray-400 text-xs line-clamp-2 mb-4">
-                                {brand.description}
-                            </p>
-
-                            <div className="flex flex-wrap gap-2">
-                                {(brand.key_franchises || '').split(',').slice(0, 3).map((f, i) => (
-                                    <span key={i} className="text-[10px] font-mono bg-black border border-gray-800 px-2 py-1 text-gray-500">
-                                        {f.trim()}
-                                    </span>
-                                ))}
-                            </div>
-                        </Link>
-                    );
-                })}
-            </div>
-        )}
-
-        {!loading && viewMode === 'LIST' && (
+        {loading && consoles.length === 0 ? <RetroLoader /> : (
             <div className="animate-fadeIn">
                 {/* Filters */}
-                <div className="bg-retro-dark border border-retro-grid p-4 mb-8 flex flex-wrap gap-4 items-end">
+                <div className="bg-retro-dark border border-retro-grid p-4 mb-8 flex flex-wrap gap-4 items-end shadow-[0_0_15px_rgba(0,0,0,0.3)]">
                     <div>
                         <label className="block text-[10px] font-mono text-gray-500 mb-1">FABRICATOR</label>
                         <select 
