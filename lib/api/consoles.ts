@@ -4,13 +4,17 @@ import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant } from
 export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: number = 1, limit: number = 20): Promise<{ data: ConsoleDetails[], count: number }> => {
     try {
         // Query variants instead of legacy console_specs
+        // We use "nullsFirst" to ensure new consoles (which have null release_year until variants are populated) show up at the top
         let query = supabase.from('consoles')
             .select('*, manufacturer:manufacturer(*), variants:console_variants(*)', { count: 'exact' })
-            .order('release_year', { ascending: true });
+            .order('release_year', { ascending: false, nullsFirst: true });
 
         if (filters.manufacturer_id) query = query.eq('manufacturer_id', filters.manufacturer_id);
+        
+        // Simple year filtering
         if (filters.minYear > 1970) query = query.gte('release_year', filters.minYear);
-        if (filters.maxYear < 2005) query = query.lte('release_year', filters.maxYear);
+        if (filters.maxYear < new Date().getFullYear()) query = query.lte('release_year', filters.maxYear);
+        
         if (filters.generations.length > 0) query = query.in('generation', filters.generations);
         if (filters.form_factors.length > 0) query = query.in('form_factor', filters.form_factors);
 
@@ -18,7 +22,11 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
         const to = from + limit - 1;
 
         const { data, count, error } = await query.range(from, to);
-        if (error) throw error;
+        
+        if (error) {
+            console.error('[API] fetchConsolesFiltered Error:', error);
+            throw error;
+        }
 
         // Normalize data: Populate 'specs' and missing root fields from the default variant
         const normalizedData = (data || []).map((item: any) => {
@@ -43,7 +51,7 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
         return { data: normalizedData as ConsoleDetails[], count: count || 0 };
 
     } catch (e) {
-        console.error('Fetch Consoles Error:', e);
+        console.error('Fetch Consoles Exception:', e);
         return { data: [], count: 0 };
     }
 };

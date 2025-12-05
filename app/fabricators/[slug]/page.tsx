@@ -45,10 +45,10 @@ export default async function FabricatorDetailPage({ params }: Props) {
     if (profile) {
         const { data } = await supabase
             .from('consoles')
-            // UPDATED: Fetch variants, remove specs
+            // UPDATED: Fetch variants, remove specs. Use nullsFirst to show dateless (new) consoles at top or bottom consistently.
             .select('*, manufacturer:manufacturer(*), variants:console_variants(*)')
             .eq('manufacturer_id', profile.id)
-            .order('release_year', { ascending: true });
+            .order('release_year', { ascending: false, nullsFirst: true });
         
         // Normalize data
         consoles = ((data as any) || []).map((c: any) => {
@@ -167,7 +167,7 @@ export default async function FabricatorDetailPage({ params }: Props) {
                                 </div>
                                 <div className="p-3 border-t border-retro-grid">
                                     <div className="flex justify-between text-[10px] font-mono text-gray-500 mb-1">
-                                        <span>{console.release_year}</span>
+                                        <span>{console.release_year || 'TBA'}</span>
                                         <span>{console.generation}</span>
                                     </div>
                                     <h3 className="font-pixel text-xs text-white group-hover:text-retro-neon truncate">
