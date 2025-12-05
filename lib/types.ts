@@ -144,14 +144,14 @@ export const MANUFACTURER_FORM_FIELDS = [
   { label: 'Description', key: 'description', type: 'textarea', required: true },
 ];
 
-// Table: console_specs
+// Table: console_specs (Legacy / Shared Specs)
 export interface ConsoleSpecs {
   id?: string;
   console_id?: string;
   cpu_model?: string;
   gpu_model?: string;
   cpu_cores?: number;
-  cpu_threads?: number; // New Field
+  cpu_threads?: number; 
   gpu_cores?: number;
   os?: string;
   display_type?: string;
@@ -163,8 +163,6 @@ export interface ConsoleSpecs {
   analog_stick_type?: string;
   shoulder_buttons?: string;
   has_back_buttons?: boolean;
-  
-  // New Modern Fields
   tdp_range_w?: string;
   display_tech?: string;
   audio_speakers?: string;
@@ -177,7 +175,7 @@ export const ConsoleSpecsSchema = z.object({
   cpu_model: z.string().optional(),
   gpu_model: z.string().optional(),
   cpu_cores: z.coerce.number().optional(),
-  cpu_threads: z.coerce.number().optional(), // New Field
+  cpu_threads: z.coerce.number().optional(),
   gpu_cores: z.coerce.number().optional(),
   os: z.string().optional(),
   display_type: z.string().optional(),
@@ -189,8 +187,6 @@ export const ConsoleSpecsSchema = z.object({
   analog_stick_type: z.string().optional(),
   shoulder_buttons: z.string().optional(),
   has_back_buttons: z.boolean().optional(),
-  
-  // New Fields Schema
   tdp_range_w: z.string().optional(),
   display_tech: z.string().optional(),
   audio_speakers: z.string().optional(),
@@ -198,46 +194,6 @@ export const ConsoleSpecsSchema = z.object({
   haptics: z.string().optional(),
   gyro: z.boolean().optional(),
 });
-
-// Replaced flat list with Groups for Admin UI
-export const CONSOLE_SPECS_FORM_GROUPS = [
-    {
-        title: "Core Architecture",
-        fields: [
-            { label: 'CPU Model', key: 'cpu_model', type: 'text' },
-            { label: 'CPU Cores', key: 'cpu_cores', type: 'number' },
-            { label: 'CPU Threads', key: 'cpu_threads', type: 'number' },
-            { label: 'GPU Model', key: 'gpu_model', type: 'text' },
-            { label: 'GPU Cores', key: 'gpu_cores', type: 'number' },
-            { label: 'Operating System', key: 'os', type: 'text' },
-        ]
-    },
-    {
-        title: "Multimedia & Tech",
-        fields: [
-            { label: 'TDP Range (e.g. 9-30W)', key: 'tdp_range_w', type: 'text' },
-            { label: 'Display Type (Base)', key: 'display_type', type: 'text' },
-            { label: 'Display Tech (e.g. FreeSync)', key: 'display_tech', type: 'text' },
-            { label: 'Max Output Res', key: 'max_resolution_output', type: 'text' },
-            { label: 'Audio Speakers', key: 'audio_speakers', type: 'text' },
-            { label: 'Audio Tech', key: 'audio_tech', type: 'text' },
-            { label: 'Haptics Type', key: 'haptics', type: 'text' },
-            { label: 'Has Gyroscope?', key: 'gyro', type: 'checkbox' },
-        ]
-    },
-    {
-        title: "Inputs & Connectivity",
-        fields: [
-            { label: 'Ports', key: 'ports', type: 'text' },
-            { label: 'Connectivity', key: 'connectivity', type: 'text' },
-            { label: 'Input Layout', key: 'input_layout', type: 'text' },
-            { label: 'D-Pad Type', key: 'dpad_type', type: 'text' },
-            { label: 'Analog Sticks', key: 'analog_stick_type', type: 'text' },
-            { label: 'Shoulder Buttons', key: 'shoulder_buttons', type: 'text' },
-            { label: 'Back Buttons', key: 'has_back_buttons', type: 'checkbox' },
-        ]
-    }
-];
 
 // Table: console_variants
 export interface ConsoleVariant {
@@ -248,27 +204,36 @@ export interface ConsoleVariant {
   release_year?: number;
   is_default: boolean;
   
+  // Core Tech (Migrated from Specs for Variant-First workflow)
+  cpu_model?: string;
+  gpu_model?: string;
+  os?: string;
+
   // Performance & Physical
   price_launch_usd?: number;
   ram_gb?: number;
   ram_type?: string;
-  ram_speed_mhz?: number; // New
+  ram_speed_mhz?: number;
   storage_gb?: number;
   storage_type?: string;
   storage_expandable?: boolean;
   
+  // Display
   screen_size_inch?: number;
   screen_resolution_x?: number;
   screen_resolution_y?: number;
+  display_type?: string;
   resolution_pixel_density?: number;
-  refresh_rate_hz?: number; // New
-  brightness_nits?: number; // New
+  refresh_rate_hz?: number; 
+  brightness_nits?: number; 
   
+  // Power
   weight_g?: number;
   battery_mah?: number;
-  battery_wh?: number; // New
+  battery_wh?: number; 
   cpu_clock_mhz?: number;
   gpu_clock_mhz?: number;
+  tdp_range_w?: string;
   
   screen_count?: number;
   second_screen_size?: number;
@@ -276,7 +241,7 @@ export interface ConsoleVariant {
   second_screen_resolution_y?: number;
   second_screen_type?: string;
 
-  image_url?: string; // Optional convenience field
+  image_url?: string; 
 }
 
 export const ConsoleVariantSchema = z.object({
@@ -286,10 +251,15 @@ export const ConsoleVariantSchema = z.object({
   release_year: z.coerce.number().optional(),
   is_default: z.boolean().optional(),
   
+  // Core
+  cpu_model: z.string().optional(),
+  gpu_model: z.string().optional(),
+  os: z.string().optional(),
+
   price_launch_usd: z.coerce.number().optional(),
   ram_gb: z.coerce.number().optional(),
   ram_type: z.string().optional(),
-  ram_speed_mhz: z.coerce.number().optional(), // New
+  ram_speed_mhz: z.coerce.number().optional(),
   storage_gb: z.coerce.number().optional(),
   storage_type: z.string().optional(),
   storage_expandable: z.boolean().optional(),
@@ -297,15 +267,17 @@ export const ConsoleVariantSchema = z.object({
   screen_size_inch: z.coerce.number().optional(),
   screen_resolution_x: z.coerce.number().optional(),
   screen_resolution_y: z.coerce.number().optional(),
+  display_type: z.string().optional(),
   resolution_pixel_density: z.coerce.number().optional(),
-  refresh_rate_hz: z.coerce.number().optional(), // New
-  brightness_nits: z.coerce.number().optional(), // New
+  refresh_rate_hz: z.coerce.number().optional(), 
+  brightness_nits: z.coerce.number().optional(), 
   
   weight_g: z.coerce.number().optional(),
   battery_mah: z.coerce.number().optional(),
-  battery_wh: z.coerce.number().optional(), // New
+  battery_wh: z.coerce.number().optional(), 
   cpu_clock_mhz: z.coerce.number().optional(),
   gpu_clock_mhz: z.coerce.number().optional(),
+  tdp_range_w: z.string().optional(),
   
   screen_count: z.coerce.number().default(1),
   second_screen_size: z.coerce.number().optional(),
@@ -318,21 +290,25 @@ export const ConsoleVariantSchema = z.object({
 
 export const VARIANT_FORM_GROUPS = [
     {
-        title: "Identity",
+        title: "Identity & Core",
         fields: [
             { label: 'Variant Name', key: 'variant_name', type: 'text', required: true },
             { label: 'Slug (Optional)', key: 'slug', type: 'text' },
             { label: 'Release Year', key: 'release_year', type: 'number' },
+            { label: 'Launch Price ($)', key: 'price_launch_usd', type: 'number' },
             { label: 'Is Default Model?', key: 'is_default', type: 'checkbox' },
             { label: 'Image URL', key: 'image_url', type: 'url' },
-            { label: 'Launch Price ($)', key: 'price_launch_usd', type: 'number' },
         ]
     },
     {
-        title: "Performance",
+        title: "Silicon & OS",
         fields: [
+            { label: 'CPU Model', key: 'cpu_model', type: 'text' },
             { label: 'CPU Clock (MHz)', key: 'cpu_clock_mhz', type: 'number' },
+            { label: 'GPU Model', key: 'gpu_model', type: 'text' },
             { label: 'GPU Clock (MHz)', key: 'gpu_clock_mhz', type: 'number' },
+            { label: 'Operating System', key: 'os', type: 'text' },
+            { label: 'TDP Range', key: 'tdp_range_w', type: 'text' },
         ]
     },
     {
@@ -340,29 +316,30 @@ export const VARIANT_FORM_GROUPS = [
         fields: [
             { label: 'RAM Size (GB)', key: 'ram_gb', type: 'number' },
             { label: 'RAM Tech', key: 'ram_type', type: 'text' },
-            { label: 'RAM Speed (MHz/MT/s)', key: 'ram_speed_mhz', type: 'number' },
+            { label: 'RAM Speed (MHz)', key: 'ram_speed_mhz', type: 'number' },
             { label: 'Storage (GB)', key: 'storage_gb', type: 'number' },
             { label: 'Storage Type', key: 'storage_type', type: 'text' },
             { label: 'Expandable?', key: 'storage_expandable', type: 'checkbox' },
         ]
     },
     {
-        title: "Primary Display",
+        title: "Display Technology",
         fields: [
             { label: 'Screen Size (inch)', key: 'screen_size_inch', type: 'number', step: '0.1' },
+            { label: 'Display Type', key: 'display_type', type: 'text' },
             { label: 'Res X', key: 'screen_resolution_x', type: 'number' },
             { label: 'Res Y', key: 'screen_resolution_y', type: 'number' },
-            { label: 'PPI', key: 'resolution_pixel_density', type: 'number' },
             { label: 'Refresh Rate (Hz)', key: 'refresh_rate_hz', type: 'number' },
             { label: 'Brightness (nits)', key: 'brightness_nits', type: 'number' },
+            { label: 'PPI', key: 'resolution_pixel_density', type: 'number' },
         ]
     },
     {
-        title: "Physical & Power",
+        title: "Power & Physical",
         fields: [
-            { label: 'Weight (g)', key: 'weight_g', type: 'number' },
             { label: 'Battery (mAh)', key: 'battery_mah', type: 'number' },
             { label: 'Battery (Wh)', key: 'battery_wh', type: 'number', step: '0.1' },
+            { label: 'Weight (g)', key: 'weight_g', type: 'number' },
         ]
     },
     {

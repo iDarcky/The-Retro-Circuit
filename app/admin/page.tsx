@@ -21,10 +21,13 @@ export default function AdminPortalPage() {
     const [message, setMessage] = useState<string | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     
-    // Shared Data needed by multiple forms
+    // Shared Data
     const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
     const [consoleList, setConsoleList] = useState<{name: string, id: string}[]>([]);
     const [customLogo, setCustomLogo] = useState<string | null>(null);
+
+    // State for Variant-First Workflow
+    const [newlyCreatedConsoleId, setNewlyCreatedConsoleId] = useState<string | null>(null);
 
     useEffect(() => {
         const check = async () => {
@@ -60,12 +63,30 @@ export default function AdminPortalPage() {
     }, []);
 
     const handleSuccess = (msg: string) => {
-        console.log('[AdminPage] Action Success:', msg);
-        setMessage(msg);
+        if (msg) {
+            console.log('[AdminPage] Action Success:', msg);
+            setMessage(msg);
+        }
         setErrorMsg(null);
         // Refresh lists if needed based on active tab
         if (activeTab === 'FABRICATOR') fetchManufacturers().then(setManufacturers);
         if (activeTab === 'CONSOLE') fetchConsoleList().then(list => setConsoleList(list as any));
+    };
+
+    // Special handler for Console Creation to switch tabs
+    const handleConsoleCreated = (consoleId: string, consoleName: string) => {
+        // Refresh list so the new console appears in the dropdown
+        fetchConsoleList().then(list => setConsoleList(list as any));
+        
+        // Set the ID for pre-selection
+        setNewlyCreatedConsoleId(consoleId);
+        
+        // Switch Tab
+        setActiveTab('VARIANTS');
+        
+        // Show Success Message
+        setMessage(`CONSOLE '${consoleName}' INITIALIZED. ADD FIRST VARIANT SPECS.`);
+        setErrorMsg(null);
     };
 
     const handleError = (msg: string) => {
@@ -79,6 +100,10 @@ export default function AdminPortalPage() {
         setActiveTab(tab);
         setMessage(null);
         setErrorMsg(null);
+        // Clear new console selection when manually changing tabs to avoid confusion
+        if (tab !== 'VARIANTS') {
+            setNewlyCreatedConsoleId(null);
+        }
     };
 
     if (loading) return <div className="p-10 text-center font-mono text-retro-neon">VERIFYING CLEARANCE...</div>;
@@ -124,8 +149,22 @@ export default function AdminPortalPage() {
             <div className="border-2 border-retro-grid p-4 md:p-8 bg-retro-dark shadow-xl min-h-[500px]">
                 {activeTab === 'NEWS' && <NewsForm onSuccess={handleSuccess} onError={handleError} />}
                 {activeTab === 'FABRICATOR' && <ManufacturerForm onSuccess={handleSuccess} onError={handleError} />}
-                {activeTab === 'CONSOLE' && <ConsoleForm manufacturers={manufacturers} onSuccess={handleSuccess} onError={handleError} />}
-                {activeTab === 'VARIANTS' && <VariantForm consoleList={consoleList} onSuccess={handleSuccess} onError={handleError} />}
+                {activeTab === 'CONSOLE' && (
+                    <ConsoleForm 
+                        manufacturers={manufacturers} 
+                        onSuccess={handleSuccess} 
+                        onConsoleCreated={handleConsoleCreated}
+                        onError={handleError} 
+                    />
+                )}
+                {activeTab === 'VARIANTS' && (
+                    <VariantForm 
+                        consoleList={consoleList} 
+                        preSelectedConsoleId={newlyCreatedConsoleId}
+                        onSuccess={handleSuccess} 
+                        onError={handleError} 
+                    />
+                )}
                 {activeTab === 'GAME' && <GameForm onSuccess={handleSuccess} onError={handleError} />}
                 {activeTab === 'SETTINGS' && <SettingsForm customLogo={customLogo} onLogoUpdate={setCustomLogo} onSuccess={handleSuccess} />}
             </div>

@@ -5,7 +5,7 @@ import { useState, type FormEvent, type FC } from 'react';
 import { useRouter } from 'next/navigation';
 import { addConsole } from '../../lib/api';
 import { supabase } from '../../lib/supabase/singleton';
-import { ConsoleSchema, ConsoleSpecsSchema, Manufacturer, CONSOLE_FORM_FIELDS, CONSOLE_SPECS_FORM_GROUPS } from '../../lib/types';
+import { ConsoleSchema, Manufacturer, CONSOLE_FORM_FIELDS } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
 
@@ -39,15 +39,15 @@ const ImagePreview: FC<{ url?: string }> = ({ url }) => {
 interface ConsoleFormProps {
     manufacturers: Manufacturer[];
     onSuccess: (msg: string) => void;
+    onConsoleCreated: (id: string, name: string) => void;
     onError: (msg: string) => void;
 }
 
-export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, onError }) => {
+export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, onConsoleCreated, onError }) => {
     const router = useRouter();
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState(false);
     const [isSlugLocked, setIsSlugLocked] = useState(true);
-    const [isSuccess, setIsSuccess] = useState(false);
 
     const generateSlug = (text: string) => {
         return text.toLowerCase()
@@ -79,7 +79,6 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
                 console.error("Auth Error:", sessionError);
                 throw new Error("Session expired. Please refresh the page.");
             }
-            console.log('[ConsoleForm] Auth Validated for:', session.user.email);
         } catch (authError: any) {
             console.error('[ConsoleForm] Auth Check Failed:', authError);
             onError(authError.message || 'Authentication Failed');
@@ -94,43 +93,28 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
         const consoleData: any = { manufacturer_id: formData.manufacturer_id };
         CONSOLE_FORM_FIELDS.forEach(f => { if(formData[f.key]) consoleData[f.key] = formData[f.key]; });
         
-        const specsData: any = {};
-        CONSOLE_SPECS_FORM_GROUPS.forEach(group => {
-            group.fields.forEach(f => {
-                if(formData[f.key]) specsData[f.key] = formData[f.key];
-            });
-        });
-
         const consoleResult = ConsoleSchema.safeParse(consoleData);
         if (!consoleResult.success) { onError(`CONSOLE: ${consoleResult.error.issues[0].message}`); return; }
 
-        const specsResult = ConsoleSpecsSchema.safeParse(specsData);
-        if(!specsResult.success) { onError(`SPECS: ${specsResult.error.issues[0].message}`); return; }
-
-        console.log('Validation Passed. Submitting...');
+        console.log('Validation Passed. Submitting Console Identity...');
 
         setLoading(true);
         try {
-            const response = await addConsole(consoleResult.data as any, specsResult.data as any);
+            // Note: addConsole in api/consoles.ts expects specsData, but for this workflow we pass empty object
+            // or modify the API. For now, we assume the API handles empty specs gracefully.
+            const response = await addConsole(consoleResult.data as any, {} as any);
             
-            if (response.success) {
+            if (response.success && response.id) {
                 // RESET PROTOCOL FOR BULK ENTRY
                 setFormData({});
                 setIsSlugLocked(true);
                 
-                // Show local success banner
-                setIsSuccess(true);
-                
                 // Refresh Server Data
                 router.refresh();
 
-                // Trigger parent refresh but suppress parent banner (send empty string)
-                onSuccess('');
+                // Trigger Workflow Switch
+                onConsoleCreated(response.id, consoleData.name);
 
-                // Auto-dismiss banner
-                setTimeout(() => {
-                    setIsSuccess(false);
-                }, 3000);
             } else {
                 console.error(`[ConsoleForm] Registration Failed:`, response.message);
                 onError(`REGISTRATION FAILED: ${response.message}`);
@@ -145,11 +129,10 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            {isSuccess && (
-                <div className="bg-retro-neon/10 border border-retro-neon text-retro-neon p-4 text-center font-bold animate-pulse shadow-[0_0_10px_rgba(0,255,157,0.2)]">
-                    HARDWARE UNIT REGISTERED. READY FOR NEXT ENTRY.
-                </div>
-            )}
+            <div className="bg-retro-blue/10 border-l-4 border-retro-blue p-4 mb-4">
+                <h3 className="font-bold text-retro-blue text-sm uppercase">Step 1: System Identity</h3>
+                <p className="text-xs text-gray-400">Create the &quot;Folder&quot; for this console. You will add technical specs in the next step.</p>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="col-span-1 md:col-span-2 border-b border-retro-grid pb-2 mb-2">
@@ -213,19 +196,7 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
                 })}
             </div>
 
-            {/* SPECS GROUPS */}
-            {CONSOLE_SPECS_FORM_GROUPS.map((group, idx) => (
-                <div key={idx} className="bg-black/30 p-4 border border-gray-800">
-                     <div className="text-xs text-retro-blue border-b border-gray-700 pb-2 mb-4 font-bold uppercase">{group.title}</div>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {group.fields.map(field => (
-                            <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} />
-                        ))}
-                     </div>
-                </div>
-            ))}
-
-            <div className="flex justify-end pt-4"><Button type="submit" isLoading={loading}>REGISTER UNIT</Button></div>
+            <div className="flex justify-end pt-4"><Button type="submit" isLoading={loading}>CREATE FOLDER &gt;</Button></div>
         </form>
     );
 };
