@@ -1,3 +1,4 @@
+
 import { supabase } from "../supabase/singleton";
 import { Manufacturer } from "../types";
 
@@ -24,10 +25,20 @@ export const getManufacturerBySlug = async (slug: string): Promise<Manufacturer 
 
 export const addManufacturer = async (manu: Omit<Manufacturer, 'id'>): Promise<{ success: boolean, message?: string }> => {
     try {
-        const { error } = await supabase.from('manufacturer').insert([manu]);
-        if (error) return { success: false, message: error.message };
+        console.log('[API] Inserting Manufacturer:', manu);
+        
+        // We use select() to get the inserted data back, useful for debugging even if not used
+        const { data, error } = await supabase.from('manufacturer').insert([manu]).select();
+        
+        console.log('Supabase raw response:', { data, error });
+
+        if (error) {
+            console.error('CRITICAL SUPABASE ERROR:', error.message, error.details, error.hint);
+            return { success: false, message: error.message };
+        }
         return { success: true };
     } catch (e: any) {
+        console.error('[API] Exception in addManufacturer:', e);
         return { success: false, message: e.message || "Unknown error occurred" };
     }
 }
