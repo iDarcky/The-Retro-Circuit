@@ -174,6 +174,7 @@ export interface ConsoleVariant {
   gpu_model?: string;
   gpu_architecture?: string; 
   gpu_cores?: number;
+  gpu_core_unit?: string; // NEW
   gpu_clock_mhz?: number;
   gpu_teraflops?: number; 
   os?: string;
@@ -265,6 +266,7 @@ export const ConsoleVariantSchema = z.object({
   gpu_model: z.string().optional().or(z.literal('')),
   gpu_architecture: z.string().optional().or(z.literal('')),
   gpu_cores: z.coerce.number().optional(),
+  gpu_core_unit: z.string().optional().or(z.literal('')),
   gpu_clock_mhz: z.coerce.number().optional(),
   gpu_teraflops: z.coerce.number().optional(),
   os: z.string().optional().or(z.literal('')),
@@ -361,6 +363,7 @@ export const VARIANT_FORM_GROUPS = [
             
             { label: 'GPU Model', key: 'gpu_model', type: 'text', width: 'full' },
             { label: 'GPU Cores', key: 'gpu_cores', type: 'number', width: 'half' },
+            { label: 'GPU Core Type', key: 'gpu_core_unit', type: 'text', width: 'half' },
             { label: 'GPU Clock (MHz)', key: 'gpu_clock_mhz', type: 'number', width: 'half' },
             { label: 'GPU TFLOPS', key: 'gpu_teraflops', type: 'number', step: '0.01', width: 'half' },
             { label: 'GPU Arch', key: 'gpu_architecture', type: 'text', width: 'half' },
