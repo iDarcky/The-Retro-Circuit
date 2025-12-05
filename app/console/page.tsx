@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, type ChangeEvent } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { fetchManufacturers, fetchConsolesFiltered } from '../../lib/api';
 import { getBrandTheme } from '../../data/static';
