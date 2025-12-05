@@ -1,7 +1,7 @@
-
 'use client';
 
 import { useState, type FormEvent, type FC, type KeyboardEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import { addManufacturer } from '../../lib/api';
 import { retroAuth } from '../../lib/auth';
 import { Manufacturer, ManufacturerSchema, MANUFACTURER_FORM_FIELDS } from '../../lib/types';
@@ -41,9 +41,11 @@ interface ManufacturerFormProps {
 }
 
 export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError }) => {
+    const router = useRouter();
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState(false);
     const [isSlugLocked, setIsSlugLocked] = useState(true);
+    const [isSuccess, setIsSuccess] = useState(false);
 
     // Franchise Tag State
     const [franchises, setFranchises] = useState<string[]>([]);
@@ -123,11 +125,25 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
             console.log('[ManufacturerForm] API Response:', response);
 
             if (response.success) {
-                onSuccess("CORPORATION REGISTERED");
+                // RESET PROTOCOL FOR BULK ENTRY
                 setFormData({});
                 setFranchises([]);
                 setFranchiseInput('');
                 setIsSlugLocked(true);
+                
+                // Show local success banner
+                setIsSuccess(true);
+                
+                // Refresh Server Data
+                router.refresh();
+                
+                // Trigger parent refresh but suppress parent banner (send empty string)
+                onSuccess(''); 
+
+                // Auto-dismiss banner
+                setTimeout(() => {
+                    setIsSuccess(false);
+                }, 3000);
             } else {
                 console.error(`[ManufacturerForm] Registration Failed:`, response.message);
                 onError(`REGISTRATION FAILED: ${response.message}`);
@@ -142,6 +158,12 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
+            {isSuccess && (
+                <div className="bg-retro-neon/10 border border-retro-neon text-retro-neon p-4 text-center font-bold animate-pulse shadow-[0_0_10px_rgba(0,255,157,0.2)]">
+                    CORPORATION REGISTERED. READY FOR NEXT ENTRY.
+                </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {MANUFACTURER_FORM_FIELDS.map(field => {
                 if (field.key === 'slug') {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type FormEvent, type FC } from 'react';
+import { useRouter } from 'next/navigation';
 import { addConsole } from '../../lib/api';
 import { ConsoleSchema, ConsoleSpecsSchema, Manufacturer, CONSOLE_FORM_FIELDS, CONSOLE_SPECS_FORM_FIELDS } from '../../lib/types';
 import Button from '../ui/Button';
@@ -40,9 +41,11 @@ interface ConsoleFormProps {
 }
 
 export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, onError }) => {
+    const router = useRouter();
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState(false);
     const [isSlugLocked, setIsSlugLocked] = useState(true);
+    const [isSuccess, setIsSuccess] = useState(false);
 
     const generateSlug = (text: string) => {
         return text.toLowerCase()
@@ -86,9 +89,23 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
         setLoading(true);
         const response = await addConsole(consoleResult.data as any, specsResult.data as any);
         if (response.success) {
-            onSuccess("HARDWARE & SPECS REGISTERED");
+            // RESET PROTOCOL FOR BULK ENTRY
             setFormData({});
             setIsSlugLocked(true);
+            
+            // Show local success banner
+            setIsSuccess(true);
+            
+            // Refresh Server Data
+            router.refresh();
+
+            // Trigger parent refresh but suppress parent banner (send empty string)
+            onSuccess(''); 
+
+            // Auto-dismiss banner
+            setTimeout(() => {
+                setIsSuccess(false);
+            }, 3000);
         } else {
             onError(`REGISTRATION FAILED: ${response.message}`);
         }
@@ -97,6 +114,12 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
+            {isSuccess && (
+                <div className="bg-retro-neon/10 border border-retro-neon text-retro-neon p-4 text-center font-bold animate-pulse shadow-[0_0_10px_rgba(0,255,157,0.2)]">
+                    HARDWARE REGISTERED. READY FOR NEXT ENTRY.
+                </div>
+            )}
+
             <div className="mb-8">
                     <div className="text-xs text-retro-neon border-b border-gray-700 pb-2 mb-4 font-bold uppercase">I. Identity</div>
                     <div className="mb-4">
