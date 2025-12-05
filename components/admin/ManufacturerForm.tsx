@@ -1,7 +1,9 @@
+
 'use client';
 
 import { useState, type FormEvent, type FC, type KeyboardEvent } from 'react';
 import { addManufacturer } from '../../lib/api';
+import { retroAuth } from '../../lib/auth';
 import { Manufacturer, ManufacturerSchema, MANUFACTURER_FORM_FIELDS } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
@@ -84,6 +86,21 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         
+        // --- DIAGNOSTIC LOGGING START ---
+        console.log('[ManufacturerForm] Attempting Submission...');
+        try {
+            const currentUser = await retroAuth.getUser();
+            const currentSession = await retroAuth.getSession();
+            console.log('[ManufacturerForm] Current User ID:', currentUser?.id || 'NULL');
+            console.log('[ManufacturerForm] Session Active:', !!currentSession);
+            if (currentSession) {
+                console.log('[ManufacturerForm] Session Expires At:', new Date(currentSession.expires_at! * 1000).toLocaleString());
+            }
+        } catch (debugErr) {
+            console.error('[ManufacturerForm] Auth Check Failed during submit:', debugErr);
+        }
+        // --- DIAGNOSTIC LOGGING END ---
+
         // Final safety check: Auto-generate slug if missing
         if (!formData.slug && formData.name) {
              formData.slug = generateSlug(formData.name);
@@ -107,6 +124,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
             setFranchiseInput('');
             setIsSlugLocked(true);
         } else {
+            console.error(`[ManufacturerForm] Registration Failed:`, response.message);
             onError(`REGISTRATION FAILED: ${response.message}`);
         }
         setLoading(false);

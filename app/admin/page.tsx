@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -27,19 +28,31 @@ export default function AdminPortalPage() {
 
     useEffect(() => {
         const check = async () => {
-            const admin = await retroAuth.isAdmin();
-            setIsAdmin(admin);
-            if (admin) {
-                // Fetch initial data
-                const [manus, consoles] = await Promise.all([
-                    fetchManufacturers(),
-                    fetchConsoleList()
-                ]);
-                setManufacturers(manus);
-                setConsoleList(consoles as any);
+            console.log('[AdminPage] Initializing Admin Portal...');
+            try {
+                const admin = await retroAuth.isAdmin();
+                console.log('[AdminPage] Admin Check Result:', admin);
+                setIsAdmin(admin);
                 
-                const savedLogo = localStorage.getItem('retro_custom_logo');
-                if (savedLogo) setCustomLogo(savedLogo);
+                if (admin) {
+                    const user = await retroAuth.getUser();
+                    console.log('[AdminPage] Authenticated User:', user?.email);
+
+                    // Fetch initial data
+                    const [manus, consoles] = await Promise.all([
+                        fetchManufacturers(),
+                        fetchConsoleList()
+                    ]);
+                    setManufacturers(manus);
+                    setConsoleList(consoles as any);
+                    
+                    const savedLogo = localStorage.getItem('retro_custom_logo');
+                    if (savedLogo) setCustomLogo(savedLogo);
+                } else {
+                    console.warn('[AdminPage] User is not an admin.');
+                }
+            } catch (e) {
+                console.error('[AdminPage] Initialization Error:', e);
             }
             setLoading(false);
         };
@@ -47,6 +60,7 @@ export default function AdminPortalPage() {
     }, []);
 
     const handleSuccess = (msg: string) => {
+        console.log('[AdminPage] Action Success:', msg);
         setMessage(msg);
         setErrorMsg(null);
         // Refresh lists if needed based on active tab
@@ -55,11 +69,13 @@ export default function AdminPortalPage() {
     };
 
     const handleError = (msg: string) => {
+        console.error('[AdminPage] Action Error:', msg);
         setErrorMsg(msg);
         setMessage(null);
     };
 
     const handleTabChange = (tab: AdminTab) => {
+        console.log('[AdminPage] Tab Changed to:', tab);
         setActiveTab(tab);
         setMessage(null);
         setErrorMsg(null);
