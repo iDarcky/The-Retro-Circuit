@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, type FormEvent, type FC, useEffect } from 'react';
@@ -13,10 +14,19 @@ interface VariantFormProps {
     onError: (msg: string) => void;
 }
 
+// Chevron Icons for Accordion
+const ChevronDown = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>;
+const ChevronUp = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>;
+
 export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedConsoleId, onSuccess, onError }) => {
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
+    
+    // Accordion State: Track which sections are open (Identity open by default)
+    const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+        "IDENTITY & ORIGIN": true
+    });
     
     // Template System State
     const [existingVariants, setExistingVariants] = useState<ConsoleVariant[]>([]);
@@ -44,6 +54,10 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         fetchTemplates();
     }, [formData.console_id]);
 
+    const toggleSection = (title: string) => {
+        setOpenSections(prev => ({ ...prev, [title]: !prev[title] }));
+    };
+
     const handleTemplateSelect = (variantId: string) => {
         setSelectedTemplate(variantId);
         // Clear any previous validation errors when loading a fresh template
@@ -60,6 +74,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 slug, 
                 is_default, 
                 price_launch_usd, 
+                model_no,
                 // We keep image_url as a base, but everything else is copied
                 ...specs 
             } = template;
@@ -72,6 +87,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 slug: '',
                 is_default: false,
                 price_launch_usd: '', 
+                model_no: '',
                 image_url: template.image_url // Carry over image, easy to change if needed
             }));
         }
@@ -95,7 +111,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         const rawVariant = { ...formData };
         
         // Automate slug generation
-        if (rawVariant.variant_name) {
+        if (rawVariant.variant_name && !rawVariant.slug) {
             rawVariant.slug = rawVariant.variant_name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
         }
 
@@ -103,12 +119,26 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         if (!result.success) { 
             // Map errors to fields
             const newErrors: Record<string, string> = {};
+            let errorGroup = "";
+            
             result.error.issues.forEach(issue => {
                 if (issue.path.length > 0) {
-                    newErrors[issue.path[0].toString()] = issue.message;
+                    const fieldKey = issue.path[0].toString();
+                    newErrors[fieldKey] = issue.message;
+                    
+                    // Auto-expand the section containing the first error
+                    if (!errorGroup) {
+                         const group = VARIANT_FORM_GROUPS.find(g => g.fields.some(f => f.key === fieldKey));
+                         if (group) errorGroup = group.title;
+                    }
                 }
             });
+            
             setFieldErrors(newErrors);
+            if (errorGroup) {
+                setOpenSections(prev => ({ ...prev, [errorGroup]: true }));
+            }
+            
             onError("VALIDATION FAILED. CHECK HIGHLIGHTED FIELDS."); 
             return; 
         }
@@ -120,7 +150,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             onSuccess(mode === 'CLONE' ? "VARIANT SAVED. FORM PRESERVED FOR NEXT MODEL." : "VARIANT MODEL REGISTERED");
             setFieldErrors({});
             
-            // Refresh templates list immediately (so the one we just made is available)
+            // Refresh templates list immediately
             if (rawVariant.console_id) {
                 const updatedVariants = await getVariantsByConsole(rawVariant.console_id);
                 setExistingVariants(updatedVariants);
@@ -130,13 +160,15 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 // Clear Form, but keep the parent console selected for convenience
                 setFormData({ console_id: rawVariant.console_id });
                 setSelectedTemplate('');
+                setOpenSections({ "IDENTITY & ORIGIN": true }); // Reset view
             } else {
                 // Clone Mode: Keep data, reset Identity fields
                 setFormData(prev => ({ 
                     ...prev, 
                     variant_name: '', // Clear name to force re-entry
                     slug: '',
-                    is_default: false // Assuming clone isn't default
+                    is_default: false, // Assuming clone isn't default
+                    model_no: ''
                 }));
                 // Focus the name input
                 setTimeout(() => {
@@ -151,7 +183,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     };
 
     return (
-        <form className="space-y-8">
+        <form className="space-y-6">
             <div className="bg-retro-pink/10 border-l-4 border-retro-pink p-4 mb-4">
                 <h3 className="font-bold text-retro-pink text-sm uppercase">Step 2: Technical Specifications</h3>
                 <p className="text-xs text-gray-400">
@@ -159,7 +191,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 </p>
             </div>
 
-            <div className="mb-4 space-y-6">
+            <div className="mb-8 space-y-6">
                 <div>
                     <label className={`text-[10px] mb-1 block uppercase ${fieldErrors.console_id ? 'text-retro-pink' : 'text-gray-500'}`}>Parent Console</label>
                     <select 
@@ -200,33 +232,73 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 )}
             </div>
 
-            {VARIANT_FORM_GROUPS.map((group, idx) => (
-                <div key={idx} className="bg-black/30 p-4 border border-gray-800">
-                    <div className="text-xs text-retro-neon border-b border-gray-700 pb-2 mb-4 font-bold uppercase">{group.title}</div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {group.fields.map(field => {
-                            // Hack to target focus
-                            if (field.key === 'variant_name') {
-                                return (
-                                    <div key={field.key}>
-                                        <label className={`text-[10px] mb-1 block uppercase ${fieldErrors[field.key] ? 'text-retro-pink' : 'text-gray-500'}`}>{field.label}</label>
-                                        <input 
-                                            name="variant_name_focus_target"
-                                            type="text"
-                                            className={`w-full bg-black border p-3 outline-none text-white font-mono ${fieldErrors[field.key] ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'}`}
-                                            value={formData[field.key] || ''}
-                                            onChange={(e) => handleInputChange(field.key, e.target.value)}
-                                            required={(field as any).required}
-                                        />
-                                        {fieldErrors[field.key] && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors[field.key]}</div>}
-                                    </div>
-                                )
-                            }
-                            return <AdminInput key={field.key} field={field as any} value={formData[field.key]} onChange={handleInputChange} error={fieldErrors[field.key]} />
-                        })}
-                    </div>
-                </div>
-            ))}
+            {/* FORM SECTIONS (ACCORDIONS) */}
+            <div className="space-y-4">
+                {VARIANT_FORM_GROUPS.map((group, idx) => {
+                    const isOpen = openSections[group.title];
+                    const hasError = group.fields.some(f => fieldErrors[f.key]);
+
+                    return (
+                        <div key={idx} className={`border ${hasError ? 'border-retro-pink' : 'border-retro-grid'} bg-black/50 transition-colors`}>
+                            {/* Header */}
+                            <button
+                                type="button"
+                                onClick={() => toggleSection(group.title)}
+                                className={`w-full flex justify-between items-center p-4 text-left transition-colors ${
+                                    isOpen 
+                                    ? `bg-retro-neon/10 text-retro-neon border-b ${hasError ? 'border-retro-pink' : 'border-retro-neon'}`
+                                    : `hover:bg-white/5 ${hasError ? 'text-retro-pink' : 'text-gray-400'}`
+                                }`}
+                            >
+                                <span className="font-bold font-mono text-xs uppercase tracking-widest flex items-center gap-2">
+                                    {hasError && <span className="text-retro-pink animate-pulse">!</span>}
+                                    {group.title}
+                                </span>
+                                {isOpen ? <ChevronUp /> : <ChevronDown />}
+                            </button>
+
+                            {/* Body */}
+                            {isOpen && (
+                                <div className="p-4 grid grid-cols-2 gap-4 animate-fadeIn">
+                                    {group.fields.map(field => {
+                                        // Layout Logic
+                                        const colSpan = (field as any).width === 'full' ? 'col-span-2' : 'col-span-1';
+                                        
+                                        // Special Focus Hack for Name
+                                        if (field.key === 'variant_name') {
+                                            return (
+                                                <div key={field.key} className={colSpan}>
+                                                    <label className={`text-[10px] mb-1 block uppercase ${fieldErrors[field.key] ? 'text-retro-pink' : 'text-gray-500'}`}>{field.label}</label>
+                                                    <input 
+                                                        name="variant_name_focus_target"
+                                                        type="text"
+                                                        className={`w-full bg-black border p-3 outline-none text-white font-mono ${fieldErrors[field.key] ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'}`}
+                                                        value={formData[field.key] || ''}
+                                                        onChange={(e) => handleInputChange(field.key, e.target.value)}
+                                                        required={(field as any).required}
+                                                    />
+                                                    {fieldErrors[field.key] && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors[field.key]}</div>}
+                                                </div>
+                                            )
+                                        }
+
+                                        return (
+                                            <div key={field.key} className={colSpan}>
+                                                <AdminInput 
+                                                    field={field as any} 
+                                                    value={formData[field.key]} 
+                                                    onChange={handleInputChange} 
+                                                    error={fieldErrors[field.key]} 
+                                                />
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
             
             <div className="flex justify-end gap-4 pt-4 border-t border-retro-grid sticky bottom-0 bg-retro-dark p-4 z-10 border-t shadow-lg">
                 <Button 
