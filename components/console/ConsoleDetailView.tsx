@@ -130,7 +130,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                         {consoleData.name}
                      </h1>
                      <div className="flex gap-4 font-mono text-sm text-gray-400 mt-2">
-                        <Link href={`/console/brand/${consoleData.manufacturer?.slug}`} className="hover:text-retro-neon transition-colors">
+                        <Link href={`/fabricators/${consoleData.manufacturer?.slug}`} className="hover:text-retro-neon transition-colors">
                             {consoleData.manufacturer?.name.toUpperCase()}
                         </Link>
                         <span>//</span>

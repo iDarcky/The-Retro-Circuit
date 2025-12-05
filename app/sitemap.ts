@@ -1,7 +1,6 @@
-import { MetadataRoute } from 'next';
 import { fetchConsoleList, fetchGameList, fetchManufacturers } from '../lib/api';
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export default async function sitemap() {
   const baseUrl = 'https://theretrocircuit.com';
 
   // Parallel data fetching for performance
@@ -45,7 +44,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 4. Dynamic Manufacturer Pages
   const brandRoutes = manufacturers.map((m) => ({
-    url: `${baseUrl}/console/brand/${m.slug}`,
+    url: `${baseUrl}/fabricators/${m.slug}`,
     lastModified: new Date(),
     changeFrequency: 'monthly' as const,
     priority: 0.7,

@@ -13,7 +13,7 @@ import Logo from '../ui/Logo';
 import type { User } from '@supabase/supabase-js';
 import { 
   IconNews, IconDatabase, IconVS, IconGames, IconTimeline, 
-  IconLogin, IconHome, IconSettings 
+  IconLogin, IconHome, IconSettings, IconChip
 } from '../ui/Icons';
 
 // --- HELPER COMPONENTS ---
@@ -143,6 +143,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
            
            <div className="px-6 mt-6 mb-2 text-xs font-mono text-gray-600 uppercase">Database</div>
            <SidebarItem to="/console" icon={IconDatabase} label="CONSOLES" />
+           <SidebarItem to="/fabricators" icon={IconChip} label="FABRICATORS" />
            <SidebarItem to="/archive" icon={IconGames} label="GAME VAULT" />
            <SidebarItem to="/chrono" icon={IconTimeline} label="TIMELINE" />
            
@@ -197,6 +198,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
               <nav className="space-y-4">
                   <Link href="/" onClick={() => setSidebarOpen(false)} className="block p-4 border border-retro-grid text-retro-neon font-pixel text-center hover:bg-retro-neon hover:text-black">CONTROL ROOM</Link>
                   <Link href="/console" onClick={() => setSidebarOpen(false)} className="block p-4 border border-retro-grid text-white font-pixel text-center hover:border-retro-blue hover:text-retro-blue">CONSOLES</Link>
+                  <Link href="/fabricators" onClick={() => setSidebarOpen(false)} className="block p-4 border border-retro-grid text-white font-pixel text-center hover:border-retro-neon hover:text-retro-neon">FABRICATORS</Link>
                   <Link href="/archive" onClick={() => setSidebarOpen(false)} className="block p-4 border border-retro-grid text-white font-pixel text-center hover:border-retro-pink hover:text-retro-pink">GAMES</Link>
                   <Link href="/arena" onClick={() => setSidebarOpen(false)} className="block p-4 border border-retro-grid text-white font-pixel text-center hover:border-yellow-400 hover:text-yellow-400">VS MODE</Link>
                   <Link href="/login" onClick={() => setSidebarOpen(false)} className="block p-4 border border-retro-grid text-gray-400 font-pixel text-center hover:bg-white hover:text-black">MY ACCOUNT</Link>
