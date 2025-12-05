@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, type FC, type ReactNode } from 'react';
@@ -176,40 +175,14 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                 {/* Right Column: Specs */}
                 <div className="lg:col-span-2">
                     {/* Variant Deck */}
-                    {hasVariants && (
-                        <div className="mb-6">
-                            <h3 className="font-pixel text-xs text-retro-blue mb-3 uppercase flex items-center gap-2">
-                                <span className="w-2 h-2 bg-retro-blue animate-pulse"></span>
-                                Available Configurations
-                            </h3>
-                            <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x touch-pan-x">
-                                {/* Base Card */}
-                                <button
-                                    onClick={() => handleVariantChange('base')}
-                                    className={`
-                                        min-w-[150px] md:min-w-[180px] p-4 border-2 text-left flex flex-col justify-between transition-all duration-200 snap-start
-                                        ${selectedVariantId === 'base' 
-                                            ? 'border-retro-neon bg-retro-neon/10 opacity-100 shadow-[0_0_15px_rgba(0,255,157,0.3)] scale-[1.02]' 
-                                            : 'border-retro-grid bg-black opacity-60 hover:opacity-100 hover:border-retro-blue'
-                                        }
-                                    `}
-                                >
-                                    <div className={`font-bold font-mono text-sm mb-2 ${selectedVariantId === 'base' ? 'text-white' : 'text-gray-300'}`}>BASE MODEL</div>
-                                    <div className="space-y-1">
-                                        {(consoleData.specs as any).screen_size_inch && (
-                                            <div className="font-mono text-xs text-gray-400">{(consoleData.specs as any).screen_size_inch}" Screen</div>
-                                        )}
-                                        {(consoleData.specs as any).price_launch_usd && (
-                                            <div className="font-mono text-xs text-retro-neon">${(consoleData.specs as any).price_launch_usd}</div>
-                                        )}
-                                        {!(consoleData.specs as any).screen_size_inch && !(consoleData.specs as any).price_launch_usd && (
-                                            <div className="font-mono text-[10px] text-gray-500">Standard Specs</div>
-                                        )}
-                                    </div>
-                                </button>
-
-                                {/* Variant Cards */}
-                                {variants.map(v => (
+                    <div className="mb-6">
+                        <h3 className="font-pixel text-xs text-retro-blue mb-3 uppercase flex items-center gap-2">
+                            <span className="w-2 h-2 bg-retro-blue animate-pulse"></span>
+                            Available Configurations
+                        </h3>
+                        <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x touch-pan-x">
+                            {variants.length > 0 ? (
+                                variants.map(v => (
                                     <button
                                         key={v.id}
                                         onClick={() => handleVariantChange(v.id)}
@@ -236,10 +209,14 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                                             )}
                                         </div>
                                     </button>
-                                ))}
-                            </div>
+                                ))
+                            ) : (
+                                <div className="w-full p-4 border-2 border-dashed border-gray-800 text-center font-mono text-xs text-gray-500">
+                                    No Configurations Found
+                                </div>
+                            )}
                         </div>
-                    )}
+                    </div>
 
                     <div className="bg-retro-dark border-2 border-retro-grid relative">
                         {/* Decorative Corner */}
