@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import Link from 'next/link';
 import { createClient } from '../../../lib/supabase/server';
 import { ConsoleDetails } from '../../../lib/types';
@@ -21,6 +23,10 @@ export async function generateMetadata({ params }: Props) {
         title: `AUTHORIZED FABRICATOR: ${titleName}`,
         description: `Explore the history of ${titleName}, including their console releases, key franchises, and market impact.`,
     };
+}
+
+export async function generateStaticParams() {
+    return []; // Disable static param generation to enforce dynamic fetching
 }
 
 export default async function FabricatorDetailPage({ params }: Props) {
