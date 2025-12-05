@@ -11,7 +11,7 @@ import { VariantForm } from '../../components/admin/VariantForm';
 import { GameForm } from '../../components/admin/GameForm';
 import { SettingsForm } from '../../components/admin/SettingsForm';
 
-type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE' | 'VARIANTS' | 'MANUFACTURER' | 'SETTINGS';
+type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE' | 'VARIANTS' | 'FABRICATOR' | 'SETTINGS';
 
 export default function AdminPortalPage() {
     const [isAdmin, setIsAdmin] = useState(false);
@@ -50,7 +50,7 @@ export default function AdminPortalPage() {
         setMessage(msg);
         setErrorMsg(null);
         // Refresh lists if needed based on active tab
-        if (activeTab === 'MANUFACTURER') fetchManufacturers().then(setManufacturers);
+        if (activeTab === 'FABRICATOR') fetchManufacturers().then(setManufacturers);
         if (activeTab === 'CONSOLE') fetchConsoleList().then(list => setConsoleList(list as any));
     };
 
@@ -94,7 +94,7 @@ export default function AdminPortalPage() {
 
             {/* Navigation Tabs */}
             <div className="flex gap-2 md:gap-4 mb-8 overflow-x-auto pb-2 scrollbar-hide">
-                {(['NEWS', 'MANUFACTURER', 'CONSOLE', 'VARIANTS', 'GAME', 'SETTINGS'] as AdminTab[]).map(tab => (
+                {(['NEWS', 'FABRICATOR', 'CONSOLE', 'VARIANTS', 'GAME', 'SETTINGS'] as AdminTab[]).map(tab => (
                     <button
                         key={tab}
                         onClick={() => handleTabChange(tab)}
@@ -107,7 +107,7 @@ export default function AdminPortalPage() {
 
             <div className="border-2 border-retro-grid p-4 md:p-8 bg-retro-dark shadow-xl min-h-[500px]">
                 {activeTab === 'NEWS' && <NewsForm onSuccess={handleSuccess} onError={handleError} />}
-                {activeTab === 'MANUFACTURER' && <ManufacturerForm onSuccess={handleSuccess} onError={handleError} />}
+                {activeTab === 'FABRICATOR' && <ManufacturerForm onSuccess={handleSuccess} onError={handleError} />}
                 {activeTab === 'CONSOLE' && <ConsoleForm manufacturers={manufacturers} onSuccess={handleSuccess} onError={handleError} />}
                 {activeTab === 'VARIANTS' && <VariantForm consoleList={consoleList} onSuccess={handleSuccess} onError={handleError} />}
                 {activeTab === 'GAME' && <GameForm onSuccess={handleSuccess} onError={handleError} />}

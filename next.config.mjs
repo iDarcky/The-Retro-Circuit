@@ -9,6 +9,15 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/console/brand/:slug',
+        destination: '/fabricators/:slug',
+        permanent: true,
+      },
+    ]
+  },
 };
 
 export default nextConfig;

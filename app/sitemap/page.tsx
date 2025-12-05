@@ -33,11 +33,11 @@ export default async function SitemapPage() {
                         <li><Link href="/chrono" className="text-retro-blue hover:text-white hover:underline">History Line</Link></li>
                     </ul>
 
-                    <h2 className="font-pixel text-xl text-white mt-8 mb-4">MANUFACTURERS</h2>
+                    <h2 className="font-pixel text-xl text-white mt-8 mb-4">FABRICATORS</h2>
                     <ul className="space-y-2 font-mono text-sm">
                         {brands.map(b => (
                             <li key={b.id}>
-                                <Link href={`/console/brand/${b.slug}`} className="text-gray-400 hover:text-retro-pink hover:underline">
+                                <Link href={`/fabricators/${b.slug}`} className="text-gray-400 hover:text-retro-pink hover:underline">
                                     {b.name}
                                 </Link>
                             </li>

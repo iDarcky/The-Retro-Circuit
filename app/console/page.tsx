@@ -12,7 +12,7 @@ export default function ConsoleVaultPage() {
   const [consoles, setConsoles] = useState<ConsoleDetails[]>([]);
   const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<'BRAND' | 'LIST'>('BRAND');
+  const [viewMode, setViewMode] = useState<'FABRICATOR' | 'LIST'>('FABRICATOR');
   
   // Pagination State for List View
   const [page, setPage] = useState(1);
@@ -28,7 +28,7 @@ export default function ConsoleVaultPage() {
       manufacturer_id: null
   });
 
-  // Initial Load (Brands)
+  // Initial Load (Fabricators)
   useEffect(() => {
     const init = async () => {
         setLoading(true);
@@ -44,251 +44,200 @@ export default function ConsoleVaultPage() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       
       const { data, count } = await fetchConsolesFiltered(filters, pageNum, ITEMS_PER_PAGE);
-      
       setConsoles(data);
       setTotalCount(count);
       setLoading(false);
   }, [filters]);
 
-  // Handle Filter/View Changes
   useEffect(() => {
       if (viewMode === 'LIST') {
           loadConsoles(page);
       }
-  }, [page, viewMode, filters, loadConsoles]); 
+  }, [viewMode, page, loadConsoles]);
 
   const handleFilterChange = (key: keyof ConsoleFilterState, value: any) => {
       setFilters(prev => ({ ...prev, [key]: value }));
-      setPage(1); // Reset to first page on filter change
+      setPage(1); // Reset to page 1 on filter change
   };
 
-  const toggleArrayFilter = (key: 'generations' | 'form_factors', value: string) => {
-      setFilters(prev => {
-          const arr = prev[key] as string[];
-          if (arr.includes(value)) {
-              return { ...prev, [key]: arr.filter(i => i !== value) };
-          } else {
-              return { ...prev, [key]: [...arr, value] };
-          }
-      });
-      setPage(1); // Reset to first page on filter change
-  };
-
-  const switchToListView = () => {
-      setViewMode('LIST');
-      setPage(1);
+  const applyFilters = () => {
+      loadConsoles(1);
   };
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
-  const getSelectedManuName = () => {
-      return manufacturers.find(m => m.id === filters.manufacturer_id)?.name || 'Unknown';
-  };
-
   return (
     <div className="w-full max-w-7xl mx-auto p-4">
-      
-      {/* HEADER */}
-      <div className="text-center mb-8 border-b border-retro-grid pb-4">
-        <h2 className="text-3xl font-pixel text-retro-neon mb-2 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
-          CONSOLE VAULT
-        </h2>
-        <div className="flex justify-center gap-4">
+        {/* Header */}
+        <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-5xl font-pixel text-retro-neon mb-4 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
+                CONSOLE VAULT
+            </h2>
+            <p className="font-mono text-gray-400">CLASSIFIED HARDWARE DATABASE</p>
+        </div>
+
+        {/* View Toggle */}
+        <div className="flex justify-center mb-8 border-b border-retro-grid pb-1">
             <button 
-                onClick={() => { setViewMode('BRAND'); setFilters({ minYear: 1970, maxYear: 2005, generations: [], form_factors: [], manufacturer_id: null }); }}
-                className={`font-mono text-xs px-3 py-1 transition-colors ${viewMode === 'BRAND' ? 'bg-retro-neon text-black' : 'text-gray-500 hover:text-white'}`}
+                onClick={() => setViewMode('FABRICATOR')}
+                className={`px-6 py-2 font-pixel text-xs md:text-sm transition-all border-b-2 ${
+                    viewMode === 'FABRICATOR' 
+                    ? 'border-retro-neon text-retro-neon' 
+                    : 'border-transparent text-gray-500 hover:text-gray-300'
+                }`}
             >
-                DIRECTORY MODE
+                BROWSE BY FABRICATOR
             </button>
             <button 
-                onClick={switchToListView}
-                className={`font-mono text-xs px-3 py-1 transition-colors ${viewMode === 'LIST' ? 'bg-retro-neon text-black' : 'text-gray-500 hover:text-white'}`}
+                onClick={() => setViewMode('LIST')}
+                className={`px-6 py-2 font-pixel text-xs md:text-sm transition-all border-b-2 ${
+                    viewMode === 'LIST' 
+                    ? 'border-retro-neon text-retro-neon' 
+                    : 'border-transparent text-gray-500 hover:text-gray-300'
+                }`}
             >
-                ADVANCED SEARCH
+                MASTER LIST (ALL)
             </button>
         </div>
-      </div>
 
-      {/* VIEW: BRAND DIRECTORY */}
-      {viewMode === 'BRAND' && (
-          loading ? <RetroLoader /> : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {manufacturers.map((manu) => {
-                    const theme = getBrandTheme(manu.name);
+        {loading && <RetroLoader />}
+
+        {!loading && viewMode === 'FABRICATOR' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fadeIn">
+                {manufacturers.map((brand) => {
+                    const theme = getBrandTheme(brand.name);
                     return (
                         <Link 
-                            key={manu.id}
-                            href={`/console/brand/${manu.slug}`}
-                            className={`group border-4 p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 min-h-[200px] hover:-translate-y-1 ${theme.color} ${theme.bg} ${theme.hover}`}
+                            href={`/fabricators/${brand.slug}`} 
+                            key={brand.id}
+                            className={`group border-2 ${theme.color.split(' ')[1]} bg-retro-dark p-6 relative overflow-hidden transition-all hover:scale-[1.02]`}
                         >
-                            {manu.image_url ? (
-                                <img src={manu.image_url} className="h-20 w-auto object-contain drop-shadow-lg" alt={manu.name} />
-                            ) : (
-                                <div className="w-20 h-20 border-2 border-current rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <span className="font-pixel text-2xl">{manu.name[0]}</span>
-                                </div>
-                            )}
-                            <div className="text-center">
-                                <div className="font-pixel text-xl tracking-widest uppercase mb-1">{manu.name}</div>
-                                <div className="font-mono text-xs opacity-75">ACCESS FOLDER &gt;</div>
+                            <div className={`absolute top-0 right-0 p-2 font-mono text-[10px] ${theme.color.split(' ')[0]} border-b border-l border-gray-800`}>
+                                EST. {brand.founded_year}
+                            </div>
+                            
+                            <div className="h-20 mb-4 flex items-center justify-start">
+                                {brand.image_url ? (
+                                    <img src={brand.image_url} alt={brand.name} className="h-16 w-auto object-contain" />
+                                ) : (
+                                    <h3 className={`font-pixel text-2xl ${theme.color.split(' ')[0]}`}>{brand.name}</h3>
+                                )}
+                            </div>
+                            
+                            <div className="h-px w-full bg-gray-800 mb-4 group-hover:bg-retro-grid transition-colors"></div>
+                            
+                            <p className="font-mono text-gray-400 text-xs line-clamp-2 mb-4">
+                                {brand.description}
+                            </p>
+
+                            <div className="flex flex-wrap gap-2">
+                                {(brand.key_franchises || '').split(',').slice(0, 3).map((f, i) => (
+                                    <span key={i} className="text-[10px] font-mono bg-black border border-gray-800 px-2 py-1 text-gray-500">
+                                        {f.trim()}
+                                    </span>
+                                ))}
                             </div>
                         </Link>
                     );
                 })}
-                 <button 
-                    onClick={switchToListView}
-                    className="group border-4 border-dashed border-gray-600 bg-retro-dark p-8 flex flex-col items-center justify-center gap-4 hover:border-retro-pink hover:text-retro-pink transition-colors text-gray-500 min-h-[200px]"
-                >
-                    <span className="font-pixel text-lg">VIEW ALL</span>
-                    <span className="font-mono text-xs">APPLY FILTERS</span>
-                </button>
             </div>
-          )
-      )}
+        )}
 
-      {/* VIEW: LIST WITH FILTERS */}
-      {viewMode === 'LIST' && (
-          <div className="flex flex-col lg:flex-row gap-8 animate-[fadeIn_0.5s_ease-in-out]">
-              
-              {/* FILTER SIDEBAR */}
-              <div className="lg:w-64 flex-shrink-0 space-y-6">
-                  <div className="bg-retro-dark border border-retro-grid p-4 sticky top-4">
-                      <h3 className="font-pixel text-xs text-retro-blue mb-4 border-b border-retro-grid pb-2">FILTERS</h3>
-                      
-                      {/* Brand Reset */}
-                      {filters.manufacturer_id && (
-                          <div className="mb-4">
-                              <span className="text-xs font-mono text-gray-500 block">MANUFACTURER</span>
-                              <div className="flex justify-between items-center text-retro-neon font-bold font-mono">
-                                  {getSelectedManuName()}
-                                  <button onClick={() => { setFilters(prev => ({...prev, manufacturer_id: null})); setViewMode('BRAND'); }} className="text-red-500 hover:text-white">✕</button>
-                              </div>
-                          </div>
-                      )}
-
-                      {/* Year Range */}
-                      <div className="mb-6">
-                          <label className="text-xs font-mono text-gray-500 block mb-2">RELEASE YEAR</label>
-                          <div className="flex gap-2">
-                              <input 
+        {!loading && viewMode === 'LIST' && (
+            <div className="animate-fadeIn">
+                {/* Filters */}
+                <div className="bg-retro-dark border border-retro-grid p-4 mb-8 flex flex-wrap gap-4 items-end">
+                    <div>
+                        <label className="block text-[10px] font-mono text-gray-500 mb-1">FABRICATOR</label>
+                        <select 
+                            className="bg-black border border-gray-700 text-white font-mono text-xs p-2 focus:border-retro-neon outline-none"
+                            value={filters.manufacturer_id || ''}
+                            onChange={(e) => handleFilterChange('manufacturer_id', e.target.value || null)}
+                        >
+                            <option value="">ALL FABRICATORS</option>
+                            {manufacturers.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-[10px] font-mono text-gray-500 mb-1">RELEASE YEAR ({filters.minYear} - {filters.maxYear})</label>
+                        <div className="flex gap-2">
+                             <input 
                                 type="number" 
-                                value={filters.minYear} 
-                                onChange={(e: ChangeEvent<HTMLInputElement>) => handleFilterChange('minYear', parseInt(e.target.value))}
-                                className="w-1/2 bg-black border border-retro-grid px-2 py-1 text-white font-mono text-sm"
-                              />
-                              <input 
+                                className="bg-black border border-gray-700 text-white font-mono text-xs p-2 w-20"
+                                value={filters.minYear}
+                                onChange={(e) => handleFilterChange('minYear', parseInt(e.target.value))}
+                             />
+                             <input 
                                 type="number" 
-                                value={filters.maxYear} 
-                                onChange={(e: ChangeEvent<HTMLInputElement>) => handleFilterChange('maxYear', parseInt(e.target.value))}
-                                className="w-1/2 bg-black border border-retro-grid px-2 py-1 text-white font-mono text-sm"
-                              />
-                          </div>
-                      </div>
+                                className="bg-black border border-gray-700 text-white font-mono text-xs p-2 w-20"
+                                value={filters.maxYear}
+                                onChange={(e) => handleFilterChange('maxYear', parseInt(e.target.value))}
+                             />
+                        </div>
+                    </div>
+                    <div className="flex-1 flex justify-end">
+                        <Button onClick={applyFilters} className="text-xs">UPDATE SCAN</Button>
+                    </div>
+                </div>
 
-                      {/* Generation */}
-                      <div className="mb-6">
-                          <label className="text-xs font-mono text-gray-500 block mb-2">GENERATION</label>
-                          <div className="grid grid-cols-2 gap-2">
-                              {['3rd Gen', '4th Gen', '5th Gen', '6th Gen'].map(gen => (
-                                  <button
-                                    key={gen}
-                                    onClick={() => toggleArrayFilter('generations', gen)}
-                                    className={`text-[10px] font-mono border px-2 py-1 transition-colors ${filters.generations.includes(gen) ? 'bg-retro-neon text-black border-retro-neon' : 'border-gray-700 text-gray-400 hover:border-gray-500'}`}
-                                  >
-                                      {gen}
-                                  </button>
-                              ))}
-                          </div>
-                      </div>
-
-                       {/* Form Factor */}
-                       <div className="mb-6">
-                          <label className="text-xs font-mono text-gray-500 block mb-2">FORM FACTOR</label>
-                          <div className="space-y-2">
-                              {['Home Console', 'Handheld', 'Hybrid', 'Micro Console'].map(type => (
-                                  <label key={type} className="flex items-center gap-2 font-mono text-xs text-gray-300 cursor-pointer hover:text-white">
-                                      <input 
-                                        type="checkbox" 
-                                        checked={filters.form_factors.includes(type)}
-                                        onChange={() => toggleArrayFilter('form_factors', type)}
-                                        className="accent-retro-pink"
-                                      />
-                                      {type.toUpperCase()}
-                                  </label>
-                              ))}
-                          </div>
-                      </div>
-                  </div>
-              </div>
-
-              {/* RESULTS GRID */}
-              <div className="flex-1">
-                  {loading ? (
-                       <RetroLoader />
-                  ) : consoles.length === 0 ? (
-                      <div className="text-center p-12 border-2 border-dashed border-gray-700 font-mono text-gray-500">
-                          NO HARDWARE MATCHES FILTERS.
-                      </div>
-                  ) : (
-                    <>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {consoles.map((console, idx) => (
-                                <Link 
-                                    href={`/console/${console.slug}`} 
-                                    key={`${console.id}-${idx}`}
-                                    className="group block border border-retro-grid bg-retro-dark relative overflow-hidden hover:border-retro-blue transition-all"
-                                >
-                                    <div className="h-32 bg-black/40 flex items-center justify-center p-4 relative">
-                                        {console.image_url ? (
-                                            <img src={console.image_url} className="max-h-full object-contain group-hover:scale-105 transition-transform" />
-                                        ) : (
-                                            <span className="font-pixel text-gray-700 text-4xl">?</span>
-                                        )}
+                {/* Results */}
+                {consoles.length === 0 ? (
+                    <div className="p-12 border-2 border-dashed border-gray-800 text-center font-mono text-gray-500">
+                        NO HARDWARE FOUND MATCHING PARAMETERS.
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                        {consoles.map(console => (
+                            <Link 
+                                href={`/console/${console.slug}`} 
+                                key={console.id}
+                                className="group block bg-black border border-retro-grid hover:border-retro-neon transition-all relative overflow-hidden"
+                            >
+                                <div className="aspect-video bg-gray-900/50 relative flex items-center justify-center p-4">
+                                     {console.image_url ? (
+                                         <img src={console.image_url} alt={console.name} className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform" />
+                                     ) : (
+                                         <span className="font-pixel text-gray-700 text-2xl">?</span>
+                                     )}
+                                </div>
+                                <div className="p-4 border-t border-retro-grid">
+                                    <h3 className="font-pixel text-xs text-white group-hover:text-retro-neon mb-1">{console.name}</h3>
+                                    <div className="flex justify-between items-center text-[10px] font-mono text-gray-500">
+                                        <span>{console.manufacturer?.name}</span>
+                                        <span>{console.release_year}</span>
                                     </div>
-                                    <div className="p-3 border-t border-retro-grid">
-                                        <div className="flex justify-between text-[10px] font-mono text-gray-500 mb-1">
-                                            <span>{console.release_year}</span>
-                                            <span>{console.manufacturer?.name}</span>
-                                        </div>
-                                        <h3 className="font-pixel text-xs text-white group-hover:text-retro-neon truncate">
-                                            {console.name}
-                                        </h3>
-                                    </div>
-                                </Link>
-                            ))}
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                )}
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <div className="flex justify-center items-center gap-4 py-8 border-t border-retro-grid/30">
+                        <Button 
+                            variant="secondary" 
+                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                            disabled={page === 1}
+                        >
+                            &lt; PREV
+                        </Button>
+                        
+                        <div className="font-pixel text-xs text-retro-neon bg-retro-grid/20 px-4 py-2 rounded">
+                            PAGE {page} OF {totalPages}
                         </div>
 
-                        {/* Pagination Controls */}
-                        {totalPages > 1 && (
-                            <div className="flex justify-center items-center gap-4 py-8 border-t border-retro-grid/30 mt-8">
-                                <Button 
-                                    variant="secondary" 
-                                    onClick={() => setPage(p => Math.max(1, p - 1))}
-                                    disabled={page === 1}
-                                    className="text-xs"
-                                >
-                                    &lt; PREV
-                                </Button>
-                                
-                                <div className="font-pixel text-xs text-retro-neon bg-retro-grid/20 px-4 py-2 rounded">
-                                    PAGE {page} OF {totalPages}
-                                </div>
-
-                                <Button 
-                                    variant="secondary" 
-                                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                                    disabled={page >= totalPages}
-                                    className="text-xs"
-                                >
-                                    NEXT &gt;
-                                </Button>
-                            </div>
-                        )}
-                    </>
-                  )}
-              </div>
-          </div>
-      )}
+                        <Button 
+                            variant="secondary" 
+                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                            disabled={page >= totalPages}
+                        >
+                            NEXT &gt;
+                        </Button>
+                    </div>
+                )}
+            </div>
+        )}
     </div>
   );
 }
