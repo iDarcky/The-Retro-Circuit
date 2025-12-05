@@ -103,10 +103,23 @@ function AdminPortalContent() {
 
     return (
         <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn">
-            <h1 className="text-3xl font-pixel text-retro-neon mb-8 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)] flex items-center gap-4">
-                MAINFRAME CONTROL
-                <span className="text-xs font-mono bg-retro-neon text-black px-2 py-1">ADMIN ACCESS</span>
-            </h1>
+            
+            {/* RESTORED HEADER AESTHETIC */}
+            <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b-2 border-retro-grid pb-6 gap-4">
+                <div>
+                    <h1 className="text-4xl md:text-6xl font-pixel text-retro-neon mb-2 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
+                        ROOT TERMINAL
+                    </h1>
+                    <p className="font-mono text-xs text-gray-500 tracking-widest">
+                        // SECURE DATABASE CONNECTION ESTABLISHED
+                    </p>
+                </div>
+                <div className="bg-black border border-cyan-400 px-3 py-1 shadow-[0_0_10px_rgba(34,211,238,0.2)]">
+                    <span className="font-pixel text-[10px] text-cyan-400 tracking-widest animate-pulse">
+                        ADMIN_MODE_ACTIVE
+                    </span>
+                </div>
+            </div>
 
             {/* Messages */}
             {message && (
