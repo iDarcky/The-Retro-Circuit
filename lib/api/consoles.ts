@@ -1,11 +1,11 @@
-
 import { supabase } from "../supabase/singleton";
 import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant } from "../types";
 
 export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: number = 1, limit: number = 20): Promise<{ data: ConsoleDetails[], count: number }> => {
     try {
+        // Query variants instead of legacy console_specs
         let query = supabase.from('consoles')
-            .select('*, manufacturer:manufacturer(*), specs:console_specs(*), variants:console_variants(*)', { count: 'exact' })
+            .select('*, manufacturer:manufacturer(*), variants:console_variants(*)', { count: 'exact' })
             .order('release_year', { ascending: true });
 
         if (filters.manufacturer_id) query = query.eq('manufacturer_id', filters.manufacturer_id);
@@ -20,11 +20,23 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
         const { data, count, error } = await query.range(from, to);
         if (error) throw error;
 
-        // Normalize specs (handle array vs object)
+        // Normalize data: Populate 'specs' and missing root fields from the default variant
         const normalizedData = (data || []).map((item: any) => {
-            if (Array.isArray(item.specs)) {
-                item.specs = item.specs[0] || {};
+            const variants = item.variants || [];
+            // Prioritize default variant, else take the first one
+            const defaultVariant = variants.find((v: any) => v.is_default) || variants[0];
+            
+            if (defaultVariant) {
+                // If console 'folder' lacks info, pull from variant
+                if (!item.release_year) item.release_year = defaultVariant.release_year;
+                if (!item.image_url) item.image_url = defaultVariant.image_url;
+                
+                // Populate legacy 'specs' property so older components don't crash
+                item.specs = defaultVariant;
+            } else {
+                item.specs = {};
             }
+            
             return item;
         });
 
@@ -45,16 +57,24 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
     try {
         const { data, error } = await supabase
             .from('consoles')
-            .select('*, manufacturer:manufacturer(*), specs:console_specs(*), variants:console_variants(*)')
+            .select('*, manufacturer:manufacturer(*), variants:console_variants(*)')
             .eq('slug', slug)
             .single();
             
         if (error) throw error;
 
-        // Normalize specs from array to object if necessary
         const rawData: any = data;
-        if (rawData && Array.isArray(rawData.specs)) {
-            rawData.specs = rawData.specs[0] || {};
+        const variants = rawData.variants || [];
+        const defaultVariant = variants.find((v: any) => v.is_default) || variants[0];
+
+        // Backfill specs and display properties from variant if needed
+        rawData.specs = defaultVariant || {};
+        
+        if (!rawData.image_url && defaultVariant?.image_url) {
+            rawData.image_url = defaultVariant.image_url;
+        }
+        if (!rawData.release_year && defaultVariant?.release_year) {
+             rawData.release_year = defaultVariant.release_year;
         }
 
         return rawData as ConsoleDetails;
@@ -64,10 +84,27 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
 };
 
 export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs | null> => {
+    // Legacy support: Fetch from console_variants since console_specs is deprecated
     try {
-        const { data, error } = await supabase.from('console_specs').select('*').eq('console_id', consoleId).single();
-        if (error) throw error;
-        return data as ConsoleSpecs;
+        // Try to find default variant first
+        const { data, error } = await supabase
+            .from('console_variants')
+            .select('*')
+            .eq('console_id', consoleId)
+            .eq('is_default', true)
+            .maybeSingle();
+            
+        if (data) return data as ConsoleSpecs;
+
+        // Fallback to any variant
+        const { data: anyVar } = await supabase
+            .from('console_variants')
+            .select('*')
+            .eq('console_id', consoleId)
+            .limit(1)
+            .maybeSingle();
+            
+        return anyVar as ConsoleSpecs;
     } catch {
         return null;
     }
@@ -89,9 +126,21 @@ export const getVariantsByConsole = async (consoleId: string): Promise<ConsoleVa
 
 export const getConsolesByManufacturer = async (manufacturerId: string): Promise<ConsoleDetails[]> => {
     try {
-        const { data, error } = await supabase.from('consoles').select('*').eq('manufacturer_id', manufacturerId);
+        const { data, error } = await supabase
+            .from('consoles')
+            .select('*, variants:console_variants(*)')
+            .eq('manufacturer_id', manufacturerId);
+            
         if (error) throw error;
-        return data as ConsoleDetails[];
+        
+        // Normalize
+        return (data || []).map((item: any) => {
+             const variants = item.variants || [];
+             const defaultVariant = variants.find((v: any) => v.is_default) || variants[0];
+             item.specs = defaultVariant || {};
+             if (defaultVariant && !item.image_url) item.image_url = defaultVariant.image_url;
+             return item;
+        }) as ConsoleDetails[];
     } catch {
         return [];
     }

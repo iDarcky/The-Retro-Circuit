@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function ManufacturerDetailPage({ params }: Props) {
     const supabase = await createClient();
-    const slug = params.name; // Route param 'name' matches the slug from the URL
+    const slug = params.name; 
 
     // 1. Fetch Profile
     const { data: profile } = await supabase
@@ -34,15 +34,24 @@ export default async function ManufacturerDetailPage({ params }: Props) {
         .eq('slug', slug)
         .single();
     
-    // 2. Fetch Consoles associated with this Manufacturer ID
+    // 2. Fetch Consoles
     let consoles: ConsoleDetails[] = [];
     if (profile) {
         const { data } = await supabase
             .from('consoles')
-            .select('*, manufacturer:manufacturer(*), specs:console_specs(*)')
+            // UPDATED
+            .select('*, manufacturer:manufacturer(*), variants:console_variants(*)')
             .eq('manufacturer_id', profile.id)
             .order('release_year', { ascending: true });
-        consoles = (data as any) || [];
+
+        // Normalize
+        consoles = ((data as any) || []).map((c: any) => {
+             const variants = c.variants || [];
+             const defaultVar = variants.find((v: any) => v.is_default) || variants[0];
+             if (!c.image_url && defaultVar?.image_url) c.image_url = defaultVar.image_url;
+             if (!c.release_year && defaultVar?.release_year) c.release_year = defaultVar.release_year;
+             return c;
+        });
     }
 
     if (!profile) {
@@ -50,14 +59,13 @@ export default async function ManufacturerDetailPage({ params }: Props) {
     }
 
     const theme = getBrandTheme(profile.name);
-    const themeColorClass = theme.color.split(' ')[0]; // Extract text color class
+    const themeColorClass = theme.color.split(' ')[0]; 
 
     return (
         <div className="w-full max-w-7xl mx-auto p-4 animate-[fadeIn_0.5s_ease-in-out]">
-            {/* Header / Dossier */}
+            {/* Header */}
             <div className={`border-l-8 ${theme.color} bg-retro-dark p-6 md:p-8 mb-8 shadow-lg`}>
                 <div className="flex flex-col md:flex-row justify-between items-start border-b border-gray-800 pb-6 mb-6 gap-6">
-                    {/* Left Column: Title & Identity */}
                     <div className="flex-1 w-full">
                         <div className="flex flex-wrap gap-2 mb-2 items-center justify-between md:justify-start">
                              <Link href="/console" className="font-mono text-xs text-gray-500 hover:text-white">&lt; HARDWARE DB</Link>
@@ -82,7 +90,6 @@ export default async function ManufacturerDetailPage({ params }: Props) {
                         )}
                     </div>
 
-                    {/* Right Column: Stats & Logo (Desktop) */}
                     <div className="flex flex-row md:flex-col items-center md:items-end justify-between w-full md:w-auto gap-4 md:gap-2">
                         {profile.image_url && (
                             <img src={profile.image_url} className="hidden md:block h-20 lg:h-24 w-auto object-contain mb-4" />

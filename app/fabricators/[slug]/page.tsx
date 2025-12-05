@@ -45,10 +45,24 @@ export default async function FabricatorDetailPage({ params }: Props) {
     if (profile) {
         const { data } = await supabase
             .from('consoles')
-            .select('*, manufacturer:manufacturer(*), specs:console_specs(*)')
+            // UPDATED: Fetch variants, remove specs
+            .select('*, manufacturer:manufacturer(*), variants:console_variants(*)')
             .eq('manufacturer_id', profile.id)
             .order('release_year', { ascending: true });
-        consoles = (data as any) || [];
+        
+        // Normalize data
+        consoles = ((data as any) || []).map((c: any) => {
+             const variants = c.variants || [];
+             const defaultVar = variants.find((v: any) => v.is_default) || variants[0];
+             // Polyfill image if missing
+             if (!c.image_url && defaultVar?.image_url) {
+                 c.image_url = defaultVar.image_url;
+             }
+             if (!c.release_year && defaultVar?.release_year) {
+                 c.release_year = defaultVar.release_year;
+             }
+             return c;
+        });
     }
 
     if (!profile) {
