@@ -1,7 +1,8 @@
-
 import Link from 'next/link';
 import { fetchManufacturers } from '../../lib/api';
 import { getBrandTheme } from '../../data/static';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: 'Fabricators | Manufacturer Database',
