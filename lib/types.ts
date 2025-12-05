@@ -335,9 +335,9 @@ export const VARIANT_FORM_GROUPS = [
     {
         title: "Memory & Storage",
         fields: [
-            { label: 'RAM (GB)', key: 'ram_gb', type: 'number' },
-            { label: 'RAM Type', key: 'ram_type', type: 'text' },
-            { label: 'RAM Speed (MHz)', key: 'ram_speed_mhz', type: 'number' },
+            { label: 'RAM Size (GB)', key: 'ram_gb', type: 'number' },
+            { label: 'RAM Tech', key: 'ram_type', type: 'text' },
+            { label: 'RAM Speed (MHz/MT/s)', key: 'ram_speed_mhz', type: 'number' },
             { label: 'Storage (GB)', key: 'storage_gb', type: 'number' },
             { label: 'Storage Type', key: 'storage_type', type: 'text' },
             { label: 'Expandable?', key: 'storage_expandable', type: 'checkbox' },
