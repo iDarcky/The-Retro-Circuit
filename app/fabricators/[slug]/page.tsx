@@ -43,12 +43,37 @@ export default async function FabricatorDetailPage({ params }: Props) {
     // 2. Fetch Consoles associated with this Manufacturer ID
     let consoles: ConsoleDetails[] = [];
     if (profile) {
-        const { data } = await supabase
+        // Query by name first to ensure we get everything, regardless of NULL release years in parent table
+        const { data, error } = await supabase
             .from('consoles')
-            .select('*, manufacturer:manufacturer(*), specs:console_specs(*)')
+            .select('*, manufacturer:manufacturer(*), variants:console_variants(*)')
             .eq('manufacturer_id', profile.id)
-            .order('release_year', { ascending: true });
-        consoles = (data as any) || [];
+            .order('name', { ascending: true });
+        
+        if (error) {
+            console.error('[FabricatorPage] Console Fetch Error:', error.message);
+        }
+
+        // Normalize & Backfill data from variants
+        consoles = ((data as any) || []).map((c: any) => {
+             const variants = c.variants || [];
+             const defaultVar = variants.find((v: any) => v.is_default) || variants[0];
+             // Polyfill image if missing
+             if (!c.image_url && defaultVar?.image_url) {
+                 c.image_url = defaultVar.image_url;
+             }
+             if (!c.release_year && defaultVar?.release_year) {
+                 c.release_year = defaultVar.release_year;
+             }
+             return c;
+        });
+
+        // Manual Sort: Newest First (handling TBA/Nulls at top)
+        consoles.sort((a, b) => {
+            const yA = Number(a.release_year) || 9999;
+            const yB = Number(b.release_year) || 9999;
+            return yB - yA;
+        });
     }
 
     if (!profile) {
@@ -153,7 +178,7 @@ export default async function FabricatorDetailPage({ params }: Props) {
                                 </div>
                                 <div className="p-3 border-t border-retro-grid">
                                     <div className="flex justify-between text-[10px] font-mono text-gray-500 mb-1">
-                                        <span>{console.release_year}</span>
+                                        <span>{console.release_year || 'TBA'}</span>
                                         <span>{console.generation}</span>
                                     </div>
                                     <h3 className="font-pixel text-xs text-white group-hover:text-retro-neon truncate">

@@ -33,34 +33,42 @@ const parseSales = (salesStr?: string): number => {
 
 export const compareConsoles = async (slugA: string, slugB: string): Promise<ComparisonResult | null> => {
     try {
-        // Fetch consoles with variants
+        // Fetch consoles with variants, removal of console_specs dependency
         const { data: cA } = await supabase
             .from('consoles')
-            .select('*, manufacturer:manufacturer(*), specs:console_specs(*), variants:console_variants(*)')
+            .select('*, manufacturer:manufacturer(*), variants:console_variants(*)')
             .eq('slug', slugA)
             .single();
 
         const { data: cB } = await supabase
             .from('consoles')
-            .select('*, manufacturer:manufacturer(*), specs:console_specs(*), variants:console_variants(*)')
+            .select('*, manufacturer:manufacturer(*), variants:console_variants(*)')
             .eq('slug', slugB)
             .single();
         
         if(!cA || !cB) return null;
 
-        const specsA = (Array.isArray(cA.specs) ? cA.specs[0] : cA.specs) || {};
-        const specsB = (Array.isArray(cB.specs) ? cB.specs[0] : cB.specs) || {};
         const manuA = cA.manufacturer || { name: 'Unknown' };
         const manuB = cB.manufacturer || { name: 'Unknown' };
         
+        // Extract specs from default variant or first variant
+        const variantsA = cA.variants || [];
+        const specsA = variantsA.find((v: any) => v.is_default) || variantsA[0] || {};
+        
+        const variantsB = cB.variants || [];
+        const specsB = variantsB.find((v: any) => v.is_default) || variantsB[0] || {};
+        
         const points: ComparisonPoint[] = [];
 
-        // 1. Generation
+        // 1. Generation (Prioritize variant release year if available)
+        const yearA = specsA.release_year || cA.release_year;
+        const yearB = specsB.release_year || cB.release_year;
+
         points.push({
             feature: 'Generation',
-            consoleAValue: `${cA.release_year} (${cA.generation})`,
-            consoleBValue: `${cB.release_year} (${cB.generation})`,
-            winner: cA.release_year < cB.release_year ? 'A' : (cB.release_year < cA.release_year ? 'B' : 'Tie'),
+            consoleAValue: `${yearA} (${cA.generation || 'N/A'})`,
+            consoleBValue: `${yearB} (${cB.generation || 'N/A'})`,
+            winner: yearA < yearB ? 'A' : (yearB < yearA ? 'B' : 'Tie'),
             aScore: 50,
             bScore: 50
         });
@@ -78,7 +86,7 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
             bScore: salesScore.b
         });
 
-        // 3. CPU Cores (Base Arch)
+        // 3. CPU Cores (Variant Level)
         const coresA = specsA.cpu_cores || 0;
         const coresB = specsB.cpu_cores || 0;
         const coreScore = calculateScore(coresA, coresB);
@@ -119,19 +127,29 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
             bScore: clockScore.b
         });
 
-        // 6. Output (Base Arch)
+        // 6. Output (Variant Level - screen resolution as proxy for output capability in handheld context)
+        // Or if 'max_resolution_output' exists on variant? ConsoleVariant schema doesn't show it explicitly, 
+        // but let's assume we compare screen or just list N/A if missing.
+        // For handhelds, screen resolution is key.
+        const resA = specsA.screen_resolution_x ? `${specsA.screen_resolution_x}x${specsA.screen_resolution_y}` : 'Unknown';
+        const resB = specsB.screen_resolution_x ? `${specsB.screen_resolution_x}x${specsB.screen_resolution_y}` : 'Unknown';
+        
         points.push({
-            feature: 'Max Resolution',
-            consoleAValue: specsA.max_resolution_output || 'Unknown',
-            consoleBValue: specsB.max_resolution_output || 'Unknown',
+            feature: 'Resolution',
+            consoleAValue: resA,
+            consoleBValue: resB,
             winner: 'Tie',
         });
+
+        // Use variant image if available, else console image
+        const imgA = specsA.image_url || cA.image_url;
+        const imgB = specsB.image_url || cB.image_url;
 
         return {
             consoleA: cA.name,
             consoleB: cB.name,
-            consoleAImage: cA.image_url,
-            consoleBImage: cB.image_url,
+            consoleAImage: imgA,
+            consoleBImage: imgB,
             summary: `${manuA.name} faces off against ${manuB.name}.`,
             points: points
         }

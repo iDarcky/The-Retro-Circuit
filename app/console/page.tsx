@@ -22,7 +22,7 @@ export default function ConsoleVaultPage() {
   // Filter State
   const [filters, setFilters] = useState<ConsoleFilterState>({
       minYear: 1970,
-      maxYear: 2005,
+      maxYear: new Date().getFullYear(), // Updated to current year
       generations: [],
       form_factors: [],
       manufacturer_id: null
@@ -135,7 +135,7 @@ export default function ConsoleVaultPage() {
                                     <h3 className="font-pixel text-xs text-white group-hover:text-retro-neon mb-1">{console.name}</h3>
                                     <div className="flex justify-between items-center text-[10px] font-mono text-gray-500">
                                         <span>{console.manufacturer?.name}</span>
-                                        <span>{console.release_year}</span>
+                                        <span>{console.release_year || 'TBA'}</span>
                                     </div>
                                 </div>
                             </Link>
