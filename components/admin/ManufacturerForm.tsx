@@ -86,20 +86,15 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         
-        // --- DIAGNOSTIC LOGGING START ---
-        console.log('[ManufacturerForm] Attempting Submission...');
+        // --- DEBUG LOGGING ---
+        console.log('Starting Fabricator submission...');
+        
         try {
             const currentUser = await retroAuth.getUser();
-            const currentSession = await retroAuth.getSession();
             console.log('[ManufacturerForm] Current User ID:', currentUser?.id || 'NULL');
-            console.log('[ManufacturerForm] Session Active:', !!currentSession);
-            if (currentSession) {
-                console.log('[ManufacturerForm] Session Expires At:', new Date(currentSession.expires_at! * 1000).toLocaleString());
-            }
         } catch (debugErr) {
             console.error('[ManufacturerForm] Auth Check Failed during submit:', debugErr);
         }
-        // --- DIAGNOSTIC LOGGING END ---
 
         // Final safety check: Auto-generate slug if missing
         if (!formData.slug && formData.name) {
@@ -112,22 +107,37 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
             submissionData.key_franchises = franchises.join(', ');
         }
 
+        // --- PAYLOAD LOGGING ---
+        console.log('Submitting payload:', submissionData);
+
         const result = ManufacturerSchema.safeParse(submissionData);
-        if (!result.success) { onError(result.error.issues[0].message); return; }
+        if (!result.success) { 
+            console.warn('Validation Failed:', result.error.issues);
+            onError(result.error.issues[0].message); 
+            return; 
+        }
         
         setLoading(true);
-        const response = await addManufacturer(result.data as Omit<Manufacturer, 'id'>);
-        if (response.success) {
-            onSuccess("CORPORATION REGISTERED");
-            setFormData({});
-            setFranchises([]);
-            setFranchiseInput('');
-            setIsSlugLocked(true);
-        } else {
-            console.error(`[ManufacturerForm] Registration Failed:`, response.message);
-            onError(`REGISTRATION FAILED: ${response.message}`);
+        try {
+            const response = await addManufacturer(result.data as Omit<Manufacturer, 'id'>);
+            console.log('[ManufacturerForm] API Response:', response);
+
+            if (response.success) {
+                onSuccess("CORPORATION REGISTERED");
+                setFormData({});
+                setFranchises([]);
+                setFranchiseInput('');
+                setIsSlugLocked(true);
+            } else {
+                console.error(`[ManufacturerForm] Registration Failed:`, response.message);
+                onError(`REGISTRATION FAILED: ${response.message}`);
+            }
+        } catch (err: any) {
+            console.error('[ManufacturerForm] Critical Exception:', err);
+            onError(`SYSTEM ERROR: ${err.message}`);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     return (
