@@ -87,7 +87,7 @@ export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs |
     // Legacy support: Fetch from console_variants since console_specs is deprecated
     try {
         // Try to find default variant first
-        const { data, error } = await supabase
+        const { data } = await supabase
             .from('console_variants')
             .select('*')
             .eq('console_id', consoleId)
