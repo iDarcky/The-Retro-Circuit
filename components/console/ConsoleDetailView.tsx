@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, type FC, type ReactNode } from 'react';
@@ -59,7 +58,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
             if (variant) return variant.id;
         }
 
-        // 2. Default Variant or First Variant
+        // 2. Default Variant
         if (hasVariants) {
             const defaultVar = variants.find(v => v.is_default);
             return defaultVar ? defaultVar.id : variants[0].id;
@@ -70,16 +69,25 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
 
     const [selectedVariantId, setSelectedVariantId] = useState<string>(getInitialVariantId);
     
-    // Create a "Merged" spec object type that covers both Base Specs and Variant Specs
-    type MergedSpecs = ConsoleSpecs & Partial<ConsoleVariant>;
+    // Create a "Merged" spec object type that prioritizes ConsoleVariant fields
+    // We treat ConsoleSpecs as a legacy fallback
+    type MergedSpecs = Partial<ConsoleSpecs> & Partial<ConsoleVariant>;
 
-    const getInitialSpecs = (varId: string): MergedSpecs => {
-        if (varId === 'base') return consoleData.specs;
-        const v = variants.find(x => x.id === varId);
-        return v ? { ...consoleData.specs, ...v } : consoleData.specs;
+    const getMergedSpecs = (varId: string): MergedSpecs => {
+        const baseSpecs = consoleData.specs || {};
+        
+        if (varId === 'base') {
+            return baseSpecs;
+        }
+
+        const variant = variants.find(x => x.id === varId);
+        if (!variant) return baseSpecs;
+
+        // Spread base specs first, then overwrite with variant data
+        return { ...baseSpecs, ...variant };
     };
 
-    const [mergedSpecs, setMergedSpecs] = useState<MergedSpecs>(() => getInitialSpecs(getInitialVariantId()));
+    const [mergedSpecs, setMergedSpecs] = useState<MergedSpecs>(() => getMergedSpecs(getInitialVariantId()));
 
     useEffect(() => {
         const variantSlug = searchParams?.get('variant');
@@ -90,15 +98,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
     }, [searchParams, variants, hasVariants]);
 
     useEffect(() => {
-        if (selectedVariantId === 'base') {
-            setMergedSpecs(consoleData.specs);
-        } else {
-            const variant = variants.find(v => v.id === selectedVariantId);
-            if (variant) {
-                // Merge base architecture (specs) with variant specific performance numbers
-                setMergedSpecs({ ...consoleData.specs, ...variant });
-            }
-        }
+        setMergedSpecs(getMergedSpecs(selectedVariantId));
     }, [selectedVariantId, consoleData.specs, variants]);
 
     const handleVariantChange = (id: string) => {
@@ -231,86 +231,66 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                         </div>
                         
                         <div className="p-0">
-                            {/* Architecture (Base Specs) */}
-                            <SpecSection title="Architecture">
+                            {/* Architecture */}
+                            <SpecSection title="Silicon Core">
                                 <SpecRow label="CPU Model" value={mergedSpecs.cpu_model} highlight />
                                 <SpecRow label="CPU Cores" value={mergedSpecs.cpu_cores} />
                                 <SpecRow label="CPU Threads" value={mergedSpecs.cpu_threads} />
+                                <SpecRow label="CPU Clock" value={mergedSpecs.cpu_clock_mhz} unit="MHz" />
                                 <SpecRow label="GPU Model" value={mergedSpecs.gpu_model} />
                                 <SpecRow label="GPU Cores" value={mergedSpecs.gpu_cores} />
-                                <SpecRow label="Operating System" value={mergedSpecs.os} />
-                                <SpecRow label="TDP Range" value={mergedSpecs.tdp_range_w} />
+                                <SpecRow label="GPU Clock" value={mergedSpecs.gpu_clock_mhz} unit="MHz" />
+                                <SpecRow label="OS" value={mergedSpecs.os} />
+                                <SpecRow label="TDP" value={mergedSpecs.tdp_range_w} />
                             </SpecSection>
                             
-                            {/* Performance (Variant Specific) */}
-                            {(mergedSpecs.cpu_clock_mhz || mergedSpecs.ram_gb || mergedSpecs.storage_gb) && (
-                                <SpecSection title="Performance">
-                                    <SpecRow label="CPU Clock" value={mergedSpecs.cpu_clock_mhz} unit="MHz" />
-                                    <SpecRow label="GPU Clock" value={mergedSpecs.gpu_clock_mhz} unit="MHz" />
-                                    <SpecRow label="RAM" value={mergedSpecs.ram_gb ? `${mergedSpecs.ram_gb} GB` : undefined} highlight />
-                                    <SpecRow label="RAM Type" value={mergedSpecs.ram_type} />
-                                    <SpecRow label="RAM Speed" value={mergedSpecs.ram_speed_mhz} unit="MHz" />
-                                </SpecSection>
-                            )}
-                            
-                            {/* Storage (Variant Specific) */}
-                            {(mergedSpecs.storage_gb || mergedSpecs.storage_type) && (
-                                <SpecSection title="Storage">
-                                    <SpecRow label="Internal" value={mergedSpecs.storage_gb ? `${mergedSpecs.storage_gb} GB` : undefined} />
-                                    <SpecRow label="Type" value={mergedSpecs.storage_type} />
-                                    <SpecRow label="Expandable" value={mergedSpecs.storage_expandable} />
-                                    <SpecRow label="Physical Media" value={consoleData.media} />
-                                </SpecSection>
-                            )}
+                            {/* Memory */}
+                            <SpecSection title="Memory & Storage">
+                                <SpecRow label="RAM" value={mergedSpecs.ram_gb ? `${mergedSpecs.ram_gb} GB` : undefined} highlight />
+                                <SpecRow label="RAM Type" value={mergedSpecs.ram_type} />
+                                <SpecRow label="RAM Speed" value={mergedSpecs.ram_speed_mhz} unit="MHz" />
+                                <SpecRow label="Storage" value={mergedSpecs.storage_gb ? `${mergedSpecs.storage_gb} GB` : undefined} />
+                                <SpecRow label="Storage Type" value={mergedSpecs.storage_type} />
+                                <SpecRow label="SD Slot" value={mergedSpecs.storage_expandable} />
+                            </SpecSection>
 
-                            {/* Display (Variant Specific) */}
-                            {(mergedSpecs.screen_size_inch || mergedSpecs.max_resolution_output) && (
-                                <SpecSection title="Display & Output">
-                                    <SpecRow label="Max Output" value={mergedSpecs.max_resolution_output} highlight />
-                                    <SpecRow label="Display Type" value={mergedSpecs.display_type} />
-                                    <SpecRow label="Display Tech" value={mergedSpecs.display_tech} />
-                                    <SpecRow label="Screen Size" value={mergedSpecs.screen_size_inch} unit="inch" />
-                                    <SpecRow label="Resolution" value={mergedSpecs.screen_resolution_x ? `${mergedSpecs.screen_resolution_x} x ${mergedSpecs.screen_resolution_y}` : undefined} />
-                                    <SpecRow label="Refresh Rate" value={mergedSpecs.refresh_rate_hz} unit="Hz" />
-                                    <SpecRow label="Brightness" value={mergedSpecs.brightness_nits} unit="nits" />
-                                    <SpecRow label="PPI" value={mergedSpecs.resolution_pixel_density} />
-                                </SpecSection>
-                            )}
+                            {/* Display */}
+                            <SpecSection title="Display">
+                                <SpecRow label="Screen Size" value={mergedSpecs.screen_size_inch} unit="inch" />
+                                <SpecRow label="Resolution" value={mergedSpecs.screen_resolution_x ? `${mergedSpecs.screen_resolution_x} x ${mergedSpecs.screen_resolution_y}` : undefined} />
+                                <SpecRow label="Panel Type" value={mergedSpecs.display_type} />
+                                <SpecRow label="Tech" value={mergedSpecs.display_tech} />
+                                <SpecRow label="Refresh Rate" value={mergedSpecs.refresh_rate_hz} unit="Hz" highlight />
+                                <SpecRow label="Brightness" value={mergedSpecs.brightness_nits} unit="nits" />
+                                <SpecRow label="PPI" value={mergedSpecs.resolution_pixel_density} />
+                            </SpecSection>
                             
-                            {(mergedSpecs.second_screen_size) && (
-                                <SpecSection title="Second Screen">
-                                    <SpecRow label="Size" value={mergedSpecs.second_screen_size} unit="inch" />
-                                    <SpecRow label="Resolution" value={`${mergedSpecs.second_screen_resolution_x} x ${mergedSpecs.second_screen_resolution_y}`} />
-                                    <SpecRow label="Type" value={mergedSpecs.second_screen_type} />
-                                </SpecSection>
-                            )}
-                            
-                            <SpecSection title="Multimedia & Immersion">
-                                <SpecRow label="Audio Speakers" value={mergedSpecs.audio_speakers} />
+                            {/* Controls & IO */}
+                            <SpecSection title="Controls & Connectivity">
+                                <SpecRow label="Layout" value={mergedSpecs.input_layout} />
+                                <SpecRow label="D-Pad" value={mergedSpecs.dpad_type} />
+                                <SpecRow label="Sticks" value={mergedSpecs.analog_stick_type} />
+                                <SpecRow label="Triggers" value={mergedSpecs.shoulder_buttons} />
+                                <SpecRow label="Back Btns" value={mergedSpecs.has_back_buttons} />
+                                <SpecRow label="Ports" value={mergedSpecs.ports} />
+                                <SpecRow label="Wireless" value={mergedSpecs.connectivity} />
+                            </SpecSection>
+
+                            {/* Multimedia */}
+                            <SpecSection title="Multimedia">
+                                <SpecRow label="Speakers" value={mergedSpecs.audio_speakers} />
                                 <SpecRow label="Audio Tech" value={mergedSpecs.audio_tech} />
                                 <SpecRow label="Haptics" value={mergedSpecs.haptics} />
                                 <SpecRow label="Gyroscope" value={mergedSpecs.gyro} />
                             </SpecSection>
-
-                             <SpecSection title="Controls & IO">
-                                <SpecRow label="Ports" value={mergedSpecs.ports} />
-                                <SpecRow label="Connectivity" value={mergedSpecs.connectivity} />
-                                <SpecRow label="Input Layout" value={mergedSpecs.input_layout} />
-                                <SpecRow label="D-Pad" value={mergedSpecs.dpad_type} />
-                                <SpecRow label="Sticks" value={mergedSpecs.analog_stick_type} />
-                                <SpecRow label="Shoulder Btns" value={mergedSpecs.shoulder_buttons} />
-                                <SpecRow label="Back Btns" value={mergedSpecs.has_back_buttons} />
-                            </SpecSection>
                             
-                            {(mergedSpecs.weight_g || mergedSpecs.battery_mah || mergedSpecs.price_launch_usd) && (
-                                <SpecSection title="Physical & Market">
-                                    <SpecRow label="Weight" value={mergedSpecs.weight_g} unit="g" />
-                                    <SpecRow label="Battery (mAh)" value={mergedSpecs.battery_mah} unit="mAh" />
-                                    <SpecRow label="Battery (Wh)" value={mergedSpecs.battery_wh} unit="Wh" />
-                                    <SpecRow label="Launch Price" value={mergedSpecs.price_launch_usd ? `$${mergedSpecs.price_launch_usd}` : undefined} />
-                                    <SpecRow label="Units Sold" value={consoleData.units_sold} highlight />
-                                </SpecSection>
-                            )}
+                            {/* Power & Physical */}
+                            <SpecSection title="Power & Physical">
+                                <SpecRow label="Battery" value={mergedSpecs.battery_mah ? `${mergedSpecs.battery_mah} mAh` : undefined} />
+                                <SpecRow label="Capacity" value={mergedSpecs.battery_wh ? `${mergedSpecs.battery_wh} Wh` : undefined} />
+                                <SpecRow label="Weight" value={mergedSpecs.weight_g} unit="g" />
+                                <SpecRow label="Launch Price" value={mergedSpecs.price_launch_usd ? `$${mergedSpecs.price_launch_usd}` : undefined} highlight />
+                            </SpecSection>
                         </div>
                     </div>
                 </div>
