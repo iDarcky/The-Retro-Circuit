@@ -3,6 +3,7 @@ import { Press_Start_2P, Share_Tech_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "../styles/globals.css";
 import ClientShell from "../components/layout/ClientShell";
+import AuthSync from "../components/AuthSync";
 
 // Load fonts via Next.js to prevent Layout Shift
 const pressStart = Press_Start_2P({ 
@@ -57,6 +58,9 @@ export default function RootLayout({
         <div className="scanlines"></div>
         <div className="crt-flicker"></div>
         
+        {/* Auth Synchronization */}
+        <AuthSync />
+
         {/* Main Application Shell */}
         <ClientShell>
             {children}
