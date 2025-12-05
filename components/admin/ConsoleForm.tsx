@@ -38,12 +38,11 @@ const ImagePreview: FC<{ url?: string }> = ({ url }) => {
 
 interface ConsoleFormProps {
     manufacturers: Manufacturer[];
-    onSuccess: (msg: string) => void;
     onConsoleCreated: (id: string, name: string) => void;
     onError: (msg: string) => void;
 }
 
-export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, onConsoleCreated, onError }) => {
+export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onConsoleCreated, onError }) => {
     const router = useRouter();
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState(false);
@@ -71,17 +70,12 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         
-        // --- AUTH CHECK ---
+        // --- SIMPLE AUTH CHECK (Variant-First Protocol) ---
         console.log('Starting Console submission...');
-        try {
-            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-            if (sessionError || !session) {
-                console.error("Auth Error:", sessionError);
-                throw new Error("Session expired. Please refresh the page.");
-            }
-        } catch (authError: any) {
-            console.error('[ConsoleForm] Auth Check Failed:', authError);
-            onError(authError.message || 'Authentication Failed');
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError || !session) {
+            console.error("Auth Error:", sessionError);
+            onError("Session expired. Please refresh the page.");
             return;
         }
         
@@ -96,23 +90,22 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
         const consoleResult = ConsoleSchema.safeParse(consoleData);
         if (!consoleResult.success) { onError(`CONSOLE: ${consoleResult.error.issues[0].message}`); return; }
 
-        console.log('Validation Passed. Submitting Console Identity...');
+        console.log('Validation Passed. Creating Console Folder...');
 
         setLoading(true);
         try {
-            // Note: addConsole in api/consoles.ts expects specsData, but for this workflow we pass empty object
-            // or modify the API. For now, we assume the API handles empty specs gracefully.
-            const response = await addConsole(consoleResult.data as any, {} as any);
+            // New Workflow: We do NOT send specs here. Just the folder identity.
+            const response = await addConsole(consoleResult.data as any);
             
             if (response.success && response.id) {
-                // RESET PROTOCOL FOR BULK ENTRY
-                setFormData({});
+                // DO NOT RESET FORM. 
+                // The user wants to see what they just made as they move to the next tab.
                 setIsSlugLocked(true);
                 
-                // Refresh Server Data
+                // Refresh Server Data so the ID is valid for the next step
                 router.refresh();
 
-                // Trigger Workflow Switch
+                // Trigger Workflow Switch -> This will change the tab to 'ADD VARIANTS'
                 onConsoleCreated(response.id, consoleData.name);
 
             } else {
@@ -130,12 +123,12 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="bg-retro-blue/10 border-l-4 border-retro-blue p-4 mb-4">
-                <h3 className="font-bold text-retro-blue text-sm uppercase">Step 1: System Identity</h3>
-                <p className="text-xs text-gray-400">Create the &quot;Folder&quot; for this console. You will add technical specs in the next step.</p>
+                <h3 className="font-bold text-retro-blue text-sm uppercase">Step 1: System Identity (The Folder)</h3>
+                <p className="text-xs text-gray-400">Create the container for this console. You will add technical specs (Variants) in the next step.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="col-span-1 md:col-span-2 border-b border-retro-grid pb-2 mb-2">
+                <div className="col-span-1 md:col-span-2 border-b border-retro-grid pb-4 mb-4">
                     <label className="text-[10px] text-gray-500 mb-1 block uppercase">Manufacturer (Required)</label>
                     <select 
                         className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none text-white font-mono"
@@ -196,7 +189,7 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
                 })}
             </div>
 
-            <div className="flex justify-end pt-4"><Button type="submit" isLoading={loading}>CREATE FOLDER &gt;</Button></div>
+            <div className="flex justify-end pt-4"><Button type="submit" isLoading={loading}>CREATE FOLDER & START SPECS &gt;</Button></div>
         </form>
     );
 };

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, type FormEvent, type FC, useEffect, useRef } from 'react';
@@ -46,17 +47,18 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         const response = await addConsoleVariant(result.data as any);
         
         if (response.success) {
-            onSuccess(mode === 'CLONE' ? "VARIANT SAVED. FORM PRESERVED FOR CLONING." : "VARIANT MODEL REGISTERED");
+            onSuccess(mode === 'CLONE' ? "VARIANT SAVED. FORM PRESERVED FOR NEXT MODEL." : "VARIANT MODEL REGISTERED");
             
             if (mode === 'SAVE') {
                 // Clear Form, but keep the parent console selected for convenience
                 setFormData({ console_id: rawVariant.console_id });
             } else {
-                // Clone Mode: Keep data, append 'Copy' to name/slug to force user to change it, and focus name
+                // Clone Mode: Keep data, reset Identity fields
                 setFormData(prev => ({ 
                     ...prev, 
                     variant_name: '', // Clear name to force re-entry
-                    slug: '' 
+                    slug: '',
+                    is_default: false // Assuming clone isn't default
                 }));
                 // Focus the name input
                 setTimeout(() => {
@@ -87,7 +89,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     onChange={(e) => handleInputChange('console_id', e.target.value)}
                     required
                 >
-                    <option value="">-- Select Console --</option>
+                    <option value="">-- Select Console Folder --</option>
                     {consoleList.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
             </div>
@@ -119,7 +121,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 </div>
             ))}
             
-            <div className="flex justify-end gap-4 pt-4 border-t border-retro-grid">
+            <div className="flex justify-end gap-4 pt-4 border-t border-retro-grid sticky bottom-0 bg-retro-dark p-4 z-10 border-t">
                 <Button 
                     type="button" 
                     variant="secondary" 
@@ -134,7 +136,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     onClick={(e) => handleSubmit(e, 'SAVE')} 
                     isLoading={loading}
                 >
-                    REGISTER VARIANT
+                    REGISTER UNIT
                 </Button>
             </div>
         </form>
