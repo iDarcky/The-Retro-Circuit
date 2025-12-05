@@ -43,6 +43,7 @@ interface ManufacturerFormProps {
 export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError }) => {
     const router = useRouter();
     const [formData, setFormData] = useState<Record<string, any>>({});
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
     const [isSlugLocked, setIsSlugLocked] = useState(true);
     const [isSuccess, setIsSuccess] = useState(false);
@@ -68,6 +69,14 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
             }
             return newData;
         });
+
+        if (fieldErrors[key]) {
+            setFieldErrors(prev => {
+                const next = { ...prev };
+                delete next[key];
+                return next;
+            });
+        }
     };
 
     const handleFranchiseKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -123,7 +132,15 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
         };
 
         const result = ManufacturerSchema.safeParse(rawData);
-        if (!result.success) { onError(result.error.issues[0].message); return; }
+        if (!result.success) { 
+             const newErrors: Record<string, string> = {};
+             result.error.issues.forEach(issue => {
+                 if (issue.path.length > 0) newErrors[issue.path[0].toString()] = issue.message;
+             });
+             setFieldErrors(newErrors);
+             onError("VALIDATION FAILED. CHECK HIGHLIGHTED FIELDS."); 
+             return; 
+        }
 
         setLoading(true);
         try {
@@ -135,6 +152,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
                 setFranchises([]);
                 setFranchiseInput('');
                 setIsSlugLocked(true);
+                setFieldErrors({});
 
                 // Show local success banner
                 setIsSuccess(true);
@@ -174,7 +192,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
                     if (field.key === 'slug') {
                         return (
                             <div key={field.key}>
-                                <label className="text-[10px] text-gray-500 mb-1 block uppercase flex justify-between items-center">
+                                <label className={`text-[10px] mb-1 block uppercase flex justify-between items-center ${fieldErrors.slug ? 'text-retro-pink' : 'text-gray-500'}`}>
                                     {field.label}
                                     <button 
                                         type="button" 
@@ -190,13 +208,14 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
                                     className={`w-full border p-3 font-mono outline-none transition-colors ${
                                         isSlugLocked 
                                         ? 'bg-gray-900/50 border-gray-800 text-gray-500 cursor-not-allowed' 
-                                        : 'bg-black border-retro-neon text-white focus:border-retro-blue'
+                                        : `bg-black text-white ${fieldErrors.slug ? 'border-retro-pink' : 'border-retro-neon focus:border-retro-blue'}`
                                     }`}
                                     value={formData[field.key] || ''}
                                     onChange={(e) => handleInputChange(field.key, e.target.value)}
                                     readOnly={isSlugLocked}
                                     required={field.required}
                                 />
+                                {fieldErrors.slug && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors.slug}</div>}
                             </div>
                         );
                     }
@@ -232,13 +251,14 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
                                     field={field} 
                                     value={formData[field.key]} 
                                     onChange={handleInputChange} 
+                                    error={fieldErrors.image_url}
                                 />
                                 <ImagePreview url={formData[field.key]} key={formData[field.key]} />
                             </div>
                         );
                     }
 
-                    return <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} />;
+                    return <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} error={fieldErrors[field.key]} />;
                 })}
             </div>
             <div className="flex justify-end pt-4"><Button type="submit" isLoading={loading}>REGISTER FABRICATOR</Button></div>

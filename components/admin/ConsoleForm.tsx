@@ -45,6 +45,7 @@ interface ConsoleFormProps {
 export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onConsoleCreated, onError }) => {
     const router = useRouter();
     const [formData, setFormData] = useState<Record<string, any>>({});
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
     const [isSlugLocked, setIsSlugLocked] = useState(true);
 
@@ -65,6 +66,14 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onConsoleCrea
             }
             return newData;
         });
+
+        if (fieldErrors[key]) {
+            setFieldErrors(prev => {
+                const next = { ...prev };
+                delete next[key];
+                return next;
+            });
+        }
     };
 
     const handleSubmit = async (e: FormEvent) => {
@@ -88,7 +97,15 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onConsoleCrea
         CONSOLE_FORM_FIELDS.forEach(f => { if(formData[f.key]) consoleData[f.key] = formData[f.key]; });
         
         const consoleResult = ConsoleSchema.safeParse(consoleData);
-        if (!consoleResult.success) { onError(`CONSOLE: ${consoleResult.error.issues[0].message}`); return; }
+        if (!consoleResult.success) { 
+             const newErrors: Record<string, string> = {};
+             consoleResult.error.issues.forEach(issue => {
+                 if (issue.path.length > 0) newErrors[issue.path[0].toString()] = issue.message;
+             });
+             setFieldErrors(newErrors);
+             onError("VALIDATION FAILED. CHECK HIGHLIGHTED FIELDS."); 
+             return; 
+        }
 
         console.log('Validation Passed. Creating Console Folder...');
 
@@ -101,6 +118,7 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onConsoleCrea
                 // DO NOT RESET FORM. 
                 // The user wants to see what they just made as they move to the next tab.
                 setIsSlugLocked(true);
+                setFieldErrors({});
                 
                 // Refresh Server Data so the ID is valid for the next step
                 router.refresh();
@@ -129,9 +147,9 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onConsoleCrea
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="col-span-1 md:col-span-2 border-b border-retro-grid pb-4 mb-4">
-                    <label className="text-[10px] text-gray-500 mb-1 block uppercase">Manufacturer (Required)</label>
+                    <label className={`text-[10px] mb-1 block uppercase ${fieldErrors.manufacturer_id ? 'text-retro-pink' : 'text-gray-500'}`}>Manufacturer (Required)</label>
                     <select 
-                        className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none text-white font-mono"
+                        className={`w-full bg-black border p-3 outline-none text-white font-mono ${fieldErrors.manufacturer_id ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'}`}
                         value={formData.manufacturer_id || ''}
                         onChange={(e) => handleInputChange('manufacturer_id', e.target.value)}
                         required
@@ -139,13 +157,14 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onConsoleCrea
                         <option value="">-- Select Fabricator --</option>
                         {manufacturers.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
                     </select>
+                    {fieldErrors.manufacturer_id && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors.manufacturer_id}</div>}
                 </div>
 
                 {CONSOLE_FORM_FIELDS.map(field => {
                      if (field.key === 'slug') {
                         return (
                             <div key={field.key}>
-                                <label className="text-[10px] text-gray-500 mb-1 block uppercase flex justify-between items-center">
+                                <label className={`text-[10px] mb-1 block uppercase flex justify-between items-center ${fieldErrors.slug ? 'text-retro-pink' : 'text-gray-500'}`}>
                                     {field.label}
                                     <button 
                                         type="button" 
@@ -161,13 +180,14 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onConsoleCrea
                                     className={`w-full border p-3 font-mono outline-none transition-colors ${
                                         isSlugLocked 
                                         ? 'bg-gray-900/50 border-gray-800 text-gray-500 cursor-not-allowed' 
-                                        : 'bg-black border-retro-neon text-white focus:border-retro-blue'
+                                        : `bg-black text-white ${fieldErrors.slug ? 'border-retro-pink' : 'border-retro-neon focus:border-retro-blue'}`
                                     }`}
                                     value={formData[field.key] || ''}
                                     onChange={(e) => handleInputChange(field.key, e.target.value)}
                                     readOnly={isSlugLocked}
                                     required={field.required}
                                 />
+                                {fieldErrors.slug && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors.slug}</div>}
                             </div>
                         );
                     }
@@ -179,13 +199,14 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onConsoleCrea
                                     field={field} 
                                     value={formData[field.key]} 
                                     onChange={handleInputChange} 
+                                    error={fieldErrors.image_url}
                                 />
                                 <ImagePreview url={formData[field.key]} key={formData[field.key]} />
                             </div>
                         );
                     }
 
-                    return <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} />;
+                    return <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} error={fieldErrors[field.key]} />;
                 })}
             </div>
 

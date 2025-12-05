@@ -162,15 +162,20 @@ export interface ConsoleVariant {
   release_year?: number;
   is_default: boolean;
   image_url?: string; 
+  model_no?: string; // NEW
 
   // Core Tech
   cpu_model?: string;
+  cpu_architecture?: string; 
+  cpu_process_node?: string; 
   cpu_cores?: number;
   cpu_threads?: number;
   cpu_clock_mhz?: number;
   gpu_model?: string;
+  gpu_architecture?: string; 
   gpu_cores?: number;
   gpu_clock_mhz?: number;
+  gpu_teraflops?: number; 
   os?: string;
   tdp_range_w?: string;
 
@@ -188,9 +193,18 @@ export interface ConsoleVariant {
   screen_resolution_y?: number;
   display_type?: string; // e.g. OLED, LCD
   display_tech?: string; // e.g. VRR, FreeSync
+  touchscreen?: boolean; 
+  aspect_ratio?: string; 
   resolution_pixel_density?: number;
+  ppi?: number; 
   refresh_rate_hz?: number; 
   brightness_nits?: number; 
+
+  // Dual Screen
+  second_screen_size?: number;
+  second_screen_resolution_x?: number;
+  second_screen_resolution_y?: number;
+  second_screen_touch?: boolean;
   
   // Controls & IO
   input_layout?: string;
@@ -199,19 +213,35 @@ export interface ConsoleVariant {
   shoulder_buttons?: string;
   has_back_buttons?: boolean;
   ports?: string;
+  charging_port?: string; 
   connectivity?: string;
+  wireless_connectivity?: string; 
+  cellular_connectivity?: string; 
+  video_out?: string; 
 
   // Multimedia
   audio_speakers?: string;
   audio_tech?: string;
+  headphone_jack?: string; 
+  microphone?: boolean; 
+  camera?: string; 
   haptics?: string;
   gyro?: boolean;
+  biometrics?: string; 
 
   // Power & Physical
   weight_g?: number;
   battery_mah?: number;
   battery_wh?: number; 
+  charging_speed_w?: number; 
+  body_material?: string; 
+  colors?: string; 
+  cooling?: string; 
+  dimensions?: string; // NEW
   
+  // Software
+  ui_skin?: string;
+
   // Misc
   price_launch_usd?: number;
 }
@@ -223,15 +253,20 @@ export const ConsoleVariantSchema = z.object({
   release_year: z.coerce.number().optional(),
   is_default: z.boolean().optional(),
   image_url: z.string().url().optional().or(z.literal('')),
+  model_no: z.string().optional(),
   
   // Core
   cpu_model: z.string().optional(),
+  cpu_architecture: z.string().optional(),
+  cpu_process_node: z.string().optional(),
   cpu_cores: z.coerce.number().optional(),
   cpu_threads: z.coerce.number().optional(),
   cpu_clock_mhz: z.coerce.number().optional(),
   gpu_model: z.string().optional(),
+  gpu_architecture: z.string().optional(),
   gpu_cores: z.coerce.number().optional(),
   gpu_clock_mhz: z.coerce.number().optional(),
+  gpu_teraflops: z.coerce.number().optional(),
   os: z.string().optional(),
   tdp_range_w: z.string().optional(),
 
@@ -242,7 +277,7 @@ export const ConsoleVariantSchema = z.object({
   ram_speed_mhz: z.coerce.number().optional(),
   storage_gb: z.coerce.number().optional(),
   storage_type: z.string().optional(),
-  storage_expandable: z.boolean().optional(),
+  storage_expandable: z.boolean().optional().default(false),
   
   // Display
   screen_size_inch: z.coerce.number().optional(),
@@ -250,107 +285,172 @@ export const ConsoleVariantSchema = z.object({
   screen_resolution_y: z.coerce.number().optional(),
   display_type: z.string().optional(),
   display_tech: z.string().optional(),
+  touchscreen: z.boolean().optional().default(false),
+  aspect_ratio: z.string().optional(),
   resolution_pixel_density: z.coerce.number().optional(),
+  ppi: z.coerce.number().optional(),
   refresh_rate_hz: z.coerce.number().optional(), 
   brightness_nits: z.coerce.number().optional(), 
+
+  // Dual Screen
+  second_screen_size: z.coerce.number().optional(),
+  second_screen_resolution_x: z.coerce.number().optional(),
+  second_screen_resolution_y: z.coerce.number().optional(),
+  second_screen_touch: z.boolean().optional().default(false),
   
-  // Controls
+  // Controls & Connectivity
   input_layout: z.string().optional(),
   dpad_type: z.string().optional(),
   analog_stick_type: z.string().optional(),
   shoulder_buttons: z.string().optional(),
-  has_back_buttons: z.boolean().optional(),
+  has_back_buttons: z.boolean().optional().default(false),
   ports: z.string().optional(),
+  charging_port: z.string().optional(),
   connectivity: z.string().optional(),
+  wireless_connectivity: z.string().optional(),
+  cellular_connectivity: z.string().optional(),
+  video_out: z.string().optional(),
 
   // Multimedia
   audio_speakers: z.string().optional(),
   audio_tech: z.string().optional(),
+  headphone_jack: z.string().optional(),
+  microphone: z.boolean().optional().default(false),
+  camera: z.string().optional(),
   haptics: z.string().optional(),
-  gyro: z.boolean().optional(),
+  gyro: z.boolean().optional().default(false),
+  biometrics: z.string().optional(),
 
-  // Power
+  // Power & Physical
   weight_g: z.coerce.number().optional(),
   battery_mah: z.coerce.number().optional(),
   battery_wh: z.coerce.number().optional(), 
+  charging_speed_w: z.coerce.number().optional(),
+  body_material: z.string().optional(),
+  colors: z.string().optional(),
+  cooling: z.string().optional(),
+  dimensions: z.string().optional(),
+
+  // Software
+  ui_skin: z.string().optional(),
 });
 
+// Defines the layout for the Admin UI Form
 export const VARIANT_FORM_GROUPS = [
     {
-        title: "Identity & Market",
+        title: "IDENTITY & ORIGIN",
         fields: [
-            { label: 'Variant Name (e.g. Pro)', key: 'variant_name', type: 'text', required: true },
-            { label: 'Release Year', key: 'release_year', type: 'number' },
-            { label: 'Launch Price ($)', key: 'price_launch_usd', type: 'number' },
-            { label: 'Is Default Model?', key: 'is_default', type: 'checkbox' },
-            { label: 'Image URL', key: 'image_url', type: 'url' },
+            { label: 'Variant Name (e.g. Pro)', key: 'variant_name', type: 'text', required: true, width: 'full' },
+            { label: 'Release Year', key: 'release_year', type: 'number', width: 'half' },
+            { label: 'Launch Price ($)', key: 'price_launch_usd', type: 'number', width: 'half' },
+            { label: 'Model No.', key: 'model_no', type: 'text', width: 'half' },
+            { label: 'Slug (Auto)', key: 'slug', type: 'text', width: 'half' },
+            { label: 'Is Default?', key: 'is_default', type: 'checkbox', width: 'full' },
+            { label: 'Image URL', key: 'image_url', type: 'url', width: 'full' },
         ]
     },
     {
-        title: "Silicon Core",
+        title: "SILICON ARCHITECTURE",
         fields: [
-            { label: 'CPU Model', key: 'cpu_model', type: 'text' },
-            { label: 'GPU Model', key: 'gpu_model', type: 'text' },
-            { label: 'CPU Cores', key: 'cpu_cores', type: 'number' },
-            { label: 'CPU Threads', key: 'cpu_threads', type: 'number' },
-            { label: 'CPU Clock (MHz)', key: 'cpu_clock_mhz', type: 'number' },
-            { label: 'GPU Cores', key: 'gpu_cores', type: 'number' },
-            { label: 'GPU Clock (MHz)', key: 'gpu_clock_mhz', type: 'number' },
-            { label: 'OS', key: 'os', type: 'text' },
-            { label: 'TDP Range', key: 'tdp_range_w', type: 'text' },
+            { label: 'CPU Model', key: 'cpu_model', type: 'text', width: 'full' },
+            { label: 'CPU Cores', key: 'cpu_cores', type: 'number', width: 'half' },
+            { label: 'CPU Threads', key: 'cpu_threads', type: 'number', width: 'half' },
+            { label: 'CPU Clock (MHz)', key: 'cpu_clock_mhz', type: 'number', width: 'half' },
+            { label: 'Process Node (nm)', key: 'cpu_process_node', type: 'text', width: 'half' },
+            { label: 'CPU Architecture', key: 'cpu_architecture', type: 'text', width: 'full' },
+            
+            { label: 'GPU Model', key: 'gpu_model', type: 'text', width: 'full' },
+            { label: 'GPU Cores', key: 'gpu_cores', type: 'number', width: 'half' },
+            { label: 'GPU Clock (MHz)', key: 'gpu_clock_mhz', type: 'number', width: 'half' },
+            { label: 'GPU TFLOPS', key: 'gpu_teraflops', type: 'number', step: '0.01', width: 'half' },
+            { label: 'GPU Arch', key: 'gpu_architecture', type: 'text', width: 'half' },
         ]
     },
     {
-        title: "Memory & Storage",
+        title: "VISUAL INTERFACE",
         fields: [
-            { label: 'RAM Size (GB)', key: 'ram_gb', type: 'number' },
-            { label: 'RAM Tech (LPDDR5)', key: 'ram_type', type: 'text' },
-            { label: 'RAM Speed (MHz)', key: 'ram_speed_mhz', type: 'number' },
-            { label: 'Storage (GB)', key: 'storage_gb', type: 'number' },
-            { label: 'Storage Type', key: 'storage_type', type: 'text' },
-            { label: 'SD Slot?', key: 'storage_expandable', type: 'checkbox' },
+            { label: 'Screen Size (inch)', key: 'screen_size_inch', type: 'number', step: '0.1', width: 'half' },
+            { label: 'Aspect Ratio', key: 'aspect_ratio', type: 'text', width: 'half' },
+            { label: 'Resolution X', key: 'screen_resolution_x', type: 'number', width: 'half' },
+            { label: 'Resolution Y', key: 'screen_resolution_y', type: 'number', width: 'half' },
+            { label: 'Panel Type', key: 'display_type', type: 'text', width: 'half' },
+            { label: 'Display Tech', key: 'display_tech', type: 'text', width: 'half' },
+            { label: 'Refresh (Hz)', key: 'refresh_rate_hz', type: 'number', width: 'half' },
+            { label: 'Brightness (nits)', key: 'brightness_nits', type: 'number', width: 'half' },
+            { label: 'PPI', key: 'ppi', type: 'number', width: 'half' },
+            { label: 'Touchscreen?', key: 'touchscreen', type: 'checkbox', width: 'half' },
+            
+            // Dual Screen
+            { label: '2nd Screen (inch)', key: 'second_screen_size', type: 'number', step: '0.1', width: 'half' },
+            { label: '2nd Screen Touch?', key: 'second_screen_touch', type: 'checkbox', width: 'half' },
+            { label: '2nd Res X', key: 'second_screen_resolution_x', type: 'number', width: 'half' },
+            { label: '2nd Res Y', key: 'second_screen_resolution_y', type: 'number', width: 'half' },
         ]
     },
     {
-        title: "Display Technology",
+        title: "MEMORY MATRIX",
         fields: [
-            { label: 'Screen Size (inch)', key: 'screen_size_inch', type: 'number', step: '0.1' },
-            { label: 'Resolution X', key: 'screen_resolution_x', type: 'number' },
-            { label: 'Resolution Y', key: 'screen_resolution_y', type: 'number' },
-            { label: 'Panel Type (OLED)', key: 'display_type', type: 'text' },
-            { label: 'Tech (VRR)', key: 'display_tech', type: 'text' },
-            { label: 'Refresh (Hz)', key: 'refresh_rate_hz', type: 'number' },
-            { label: 'Nits', key: 'brightness_nits', type: 'number' },
-            { label: 'PPI', key: 'resolution_pixel_density', type: 'number' },
+            { label: 'RAM Size (GB)', key: 'ram_gb', type: 'number', width: 'half' },
+            { label: 'RAM Speed (MHz)', key: 'ram_speed_mhz', type: 'number', width: 'half' },
+            { label: 'RAM Type', key: 'ram_type', type: 'text', width: 'full' },
+            
+            { label: 'Storage (GB)', key: 'storage_gb', type: 'number', width: 'half' },
+            { label: 'SD Expandable?', key: 'storage_expandable', type: 'checkbox', width: 'half' },
+            { label: 'Storage Type', key: 'storage_type', type: 'text', width: 'full' },
         ]
     },
     {
-        title: "Controls & IO",
+        title: "CONTROL DECK",
         fields: [
-            { label: 'Input Layout', key: 'input_layout', type: 'text' },
-            { label: 'D-Pad Style', key: 'dpad_type', type: 'text' },
-            { label: 'Sticks (Hall Effect)', key: 'analog_stick_type', type: 'text' },
-            { label: 'Triggers', key: 'shoulder_buttons', type: 'text' },
-            { label: 'Back Buttons?', key: 'has_back_buttons', type: 'checkbox' },
-            { label: 'Ports', key: 'ports', type: 'text' },
-            { label: 'Connectivity', key: 'connectivity', type: 'text' },
+            { label: 'Input Layout', key: 'input_layout', type: 'text', width: 'half' },
+            { label: 'D-Pad Style', key: 'dpad_type', type: 'text', width: 'half' },
+            { label: 'Analog Sticks', key: 'analog_stick_type', type: 'text', width: 'half' },
+            { label: 'Triggers', key: 'shoulder_buttons', type: 'text', width: 'half' },
+            { label: 'Back Buttons?', key: 'has_back_buttons', type: 'checkbox', width: 'full' },
+            { label: 'Haptics', key: 'haptics', type: 'text', width: 'half' },
+            { label: 'Gyroscope?', key: 'gyro', type: 'checkbox', width: 'half' },
         ]
     },
     {
-        title: "Multimedia & Immersion",
+        title: "I/O & CONNECTIVITY",
         fields: [
-            { label: 'Speakers', key: 'audio_speakers', type: 'text' },
-            { label: 'Audio Tech', key: 'audio_tech', type: 'text' },
-            { label: 'Haptics', key: 'haptics', type: 'text' },
-            { label: 'Gyroscope?', key: 'gyro', type: 'checkbox' },
+            { label: 'Ports (Legacy)', key: 'ports', type: 'textarea', width: 'full' },
+            { label: 'Charging Port', key: 'charging_port', type: 'text', width: 'full' },
+            { label: 'Wireless', key: 'wireless_connectivity', type: 'text', width: 'full' },
+            { label: 'Cellular', key: 'cellular_connectivity', type: 'text', width: 'half' },
+            { label: 'Video Out', key: 'video_out', type: 'text', width: 'half' },
         ]
     },
     {
-        title: "Power & Physical",
+        title: "AUDIO & SENSORS",
         fields: [
-            { label: 'Battery (mAh)', key: 'battery_mah', type: 'number' },
-            { label: 'Battery (Wh)', key: 'battery_wh', type: 'number', step: '0.1' },
-            { label: 'Weight (g)', key: 'weight_g', type: 'number' },
+            { label: 'Speakers', key: 'audio_speakers', type: 'text', width: 'half' },
+            { label: 'Audio Tech', key: 'audio_tech', type: 'text', width: 'half' },
+            { label: 'Headphone Jack', key: 'headphone_jack', type: 'text', width: 'half' },
+            { label: 'Microphone?', key: 'microphone', type: 'checkbox', width: 'half' },
+            { label: 'Camera', key: 'camera', type: 'text', width: 'full' },
+            { label: 'Biometrics', key: 'biometrics', type: 'text', width: 'full' },
+        ]
+    },
+    {
+        title: "POWER & CHASSIS",
+        fields: [
+            { label: 'Battery (mAh)', key: 'battery_mah', type: 'number', width: 'half' },
+            { label: 'Battery (Wh)', key: 'battery_wh', type: 'number', step: '0.1', width: 'half' },
+            { label: 'Charging (W)', key: 'charging_speed_w', type: 'number', width: 'half' },
+            { label: 'TDP Range', key: 'tdp_range_w', type: 'text', width: 'half' },
+            { label: 'Weight (g)', key: 'weight_g', type: 'number', width: 'half' },
+            { label: 'Dimensions', key: 'dimensions', type: 'text', width: 'half' },
+            { label: 'Materials', key: 'body_material', type: 'text', width: 'full' },
+            { label: 'Colors', key: 'colors', type: 'text', width: 'full' },
+            { label: 'Cooling', key: 'cooling', type: 'text', width: 'full' },
+        ]
+    },
+    {
+        title: "SOFTWARE",
+        fields: [
+            { label: 'Operating System', key: 'os', type: 'text', width: 'half' },
+            { label: 'UI Skin / Launcher', key: 'ui_skin', type: 'text', width: 'half' },
         ]
     }
 ];
