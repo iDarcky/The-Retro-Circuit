@@ -174,6 +174,7 @@ export interface ConsoleVariant {
   gpu_model?: string;
   gpu_architecture?: string; 
   gpu_cores?: number;
+  gpu_core_unit?: string; // NEW
   gpu_clock_mhz?: number;
   gpu_teraflops?: number; 
   os?: string;
@@ -255,38 +256,39 @@ export const ConsoleVariantSchema = z.object({
   image_url: z.string().url().optional().or(z.literal('')),
   model_no: z.string().optional(),
   
-  // Core
-  cpu_model: z.string().optional(),
-  cpu_architecture: z.string().optional(),
-  cpu_process_node: z.string().optional(),
+  // Core - All Optional strings
+  cpu_model: z.string().optional().or(z.literal('')),
+  cpu_architecture: z.string().optional().or(z.literal('')),
+  cpu_process_node: z.string().optional().or(z.literal('')),
   cpu_cores: z.coerce.number().optional(),
   cpu_threads: z.coerce.number().optional(),
   cpu_clock_mhz: z.coerce.number().optional(),
-  gpu_model: z.string().optional(),
-  gpu_architecture: z.string().optional(),
+  gpu_model: z.string().optional().or(z.literal('')),
+  gpu_architecture: z.string().optional().or(z.literal('')),
   gpu_cores: z.coerce.number().optional(),
+  gpu_core_unit: z.string().optional().or(z.literal('')),
   gpu_clock_mhz: z.coerce.number().optional(),
   gpu_teraflops: z.coerce.number().optional(),
-  os: z.string().optional(),
-  tdp_range_w: z.string().optional(),
+  os: z.string().optional().or(z.literal('')),
+  tdp_range_w: z.string().optional().or(z.literal('')),
 
   // Memory
   price_launch_usd: z.coerce.number().optional(),
   ram_gb: z.coerce.number().optional(),
-  ram_type: z.string().optional(),
+  ram_type: z.string().optional().or(z.literal('')),
   ram_speed_mhz: z.coerce.number().optional(),
   storage_gb: z.coerce.number().optional(),
-  storage_type: z.string().optional(),
+  storage_type: z.string().optional().or(z.literal('')),
   storage_expandable: z.boolean().optional().default(false),
   
   // Display
   screen_size_inch: z.coerce.number().optional(),
   screen_resolution_x: z.coerce.number().optional(),
   screen_resolution_y: z.coerce.number().optional(),
-  display_type: z.string().optional(),
-  display_tech: z.string().optional(),
+  display_type: z.string().optional().or(z.literal('')),
+  display_tech: z.string().optional().or(z.literal('')),
   touchscreen: z.boolean().optional().default(false),
-  aspect_ratio: z.string().optional(),
+  aspect_ratio: z.string().optional().or(z.literal('')),
   resolution_pixel_density: z.coerce.number().optional(),
   ppi: z.coerce.number().optional(),
   refresh_rate_hz: z.coerce.number().optional(), 
@@ -299,40 +301,40 @@ export const ConsoleVariantSchema = z.object({
   second_screen_touch: z.boolean().optional().default(false),
   
   // Controls & Connectivity
-  input_layout: z.string().optional(),
-  dpad_type: z.string().optional(),
-  analog_stick_type: z.string().optional(),
-  shoulder_buttons: z.string().optional(),
+  input_layout: z.string().optional().or(z.literal('')),
+  dpad_type: z.string().optional().or(z.literal('')),
+  analog_stick_type: z.string().optional().or(z.literal('')),
+  shoulder_buttons: z.string().optional().or(z.literal('')),
   has_back_buttons: z.boolean().optional().default(false),
-  ports: z.string().optional(),
-  charging_port: z.string().optional(),
-  connectivity: z.string().optional(),
-  wireless_connectivity: z.string().optional(),
-  cellular_connectivity: z.string().optional(),
-  video_out: z.string().optional(),
+  ports: z.string().optional().or(z.literal('')),
+  charging_port: z.string().optional().or(z.literal('')),
+  connectivity: z.string().optional().or(z.literal('')),
+  wireless_connectivity: z.string().optional().or(z.literal('')),
+  cellular_connectivity: z.string().optional().or(z.literal('')),
+  video_out: z.string().optional().or(z.literal('')),
 
   // Multimedia
-  audio_speakers: z.string().optional(),
-  audio_tech: z.string().optional(),
-  headphone_jack: z.string().optional(),
+  audio_speakers: z.string().optional().or(z.literal('')),
+  audio_tech: z.string().optional().or(z.literal('')),
+  headphone_jack: z.string().optional().or(z.literal('')),
   microphone: z.boolean().optional().default(false),
-  camera: z.string().optional(),
-  haptics: z.string().optional(),
+  camera: z.string().optional().or(z.literal('')),
+  haptics: z.string().optional().or(z.literal('')),
   gyro: z.boolean().optional().default(false),
-  biometrics: z.string().optional(),
+  biometrics: z.string().optional().or(z.literal('')),
 
   // Power & Physical
   weight_g: z.coerce.number().optional(),
   battery_mah: z.coerce.number().optional(),
   battery_wh: z.coerce.number().optional(), 
   charging_speed_w: z.coerce.number().optional(),
-  body_material: z.string().optional(),
-  colors: z.string().optional(),
-  cooling: z.string().optional(),
-  dimensions: z.string().optional(),
+  body_material: z.string().optional().or(z.literal('')),
+  colors: z.string().optional().or(z.literal('')),
+  cooling: z.string().optional().or(z.literal('')),
+  dimensions: z.string().optional().or(z.literal('')),
 
   // Software
-  ui_skin: z.string().optional(),
+  ui_skin: z.string().optional().or(z.literal('')),
 });
 
 // Defines the layout for the Admin UI Form
@@ -361,6 +363,7 @@ export const VARIANT_FORM_GROUPS = [
             
             { label: 'GPU Model', key: 'gpu_model', type: 'text', width: 'full' },
             { label: 'GPU Cores', key: 'gpu_cores', type: 'number', width: 'half' },
+            { label: 'GPU Core Type', key: 'gpu_core_unit', type: 'text', width: 'half' },
             { label: 'GPU Clock (MHz)', key: 'gpu_clock_mhz', type: 'number', width: 'half' },
             { label: 'GPU TFLOPS', key: 'gpu_teraflops', type: 'number', step: '0.01', width: 'half' },
             { label: 'GPU Arch', key: 'gpu_architecture', type: 'text', width: 'half' },
@@ -405,7 +408,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Input Layout', key: 'input_layout', type: 'text', width: 'half' },
             { label: 'D-Pad Style', key: 'dpad_type', type: 'text', width: 'half' },
             { label: 'Analog Sticks', key: 'analog_stick_type', type: 'text', width: 'half' },
-            { label: 'Triggers', key: 'shoulder_buttons', type: 'text', width: 'half' },
+            { label: 'Triggers (Shoulder)', key: 'shoulder_buttons', type: 'text', width: 'half' },
             { label: 'Back Buttons?', key: 'has_back_buttons', type: 'checkbox', width: 'full' },
             { label: 'Haptics', key: 'haptics', type: 'text', width: 'half' },
             { label: 'Gyroscope?', key: 'gyro', type: 'checkbox', width: 'half' },

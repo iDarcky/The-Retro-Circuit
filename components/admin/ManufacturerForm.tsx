@@ -97,28 +97,14 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         
-        // --- PARANOID AUTH START ---
-        console.log('Starting Fabricator submission with Paranoid Auth...');
-        try {
-            // 1. Force Refresh
-            const { error: refreshError } = await supabase.auth.refreshSession();
-            if (refreshError) {
-                console.warn('[ManufacturerForm] Session refresh warning:', refreshError);
-            }
-            
-            // 2. Verify Session Exists
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                throw new Error("Session Lost. Please Login Again.");
-            }
-            
-            console.log('[ManufacturerForm] Auth Validated for:', session.user.email);
-        } catch (authError: any) {
-            console.error('[ManufacturerForm] Auth Check Failed:', authError);
-            onError(authError.message || 'Authentication Failed');
+        // --- STANDARD AUTH CHECK ---
+        // Removed the aggressive refreshSession() which was causing logouts.
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError || !session) {
+            console.error("Auth Error:", sessionError);
+            onError("Session expired. Please refresh the page.");
             return;
         }
-        // --- PARANOID AUTH END ---
 
         // Auto-generate slug if missing
         if (!formData.slug && formData.name) {
@@ -175,6 +161,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
              console.error('[ManufacturerForm] Critical Exception:', err);
              onError(`SYSTEM ERROR: ${err.message}`);
         } finally {
+             // CRITICAL: Always reset loading state so button doesn't get stuck
              setLoading(false);
         }
     };
