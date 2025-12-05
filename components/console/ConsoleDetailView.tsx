@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ConsoleDetails, ConsoleSpecs, ConsoleVariant, GameOfTheWeekData } from '../../lib/types';
 import CollectionToggle from '../ui/CollectionToggle';
+import AdminEditTrigger from '../admin/AdminEditTrigger';
 
 interface ConsoleDetailViewProps {
   consoleData: ConsoleDetails;
@@ -132,7 +133,13 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
     // --- RENDER ---
 
     return (
-        <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn">
+        <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn relative">
+            
+            {/* ADMIN TRIGGER */}
+            {selectedVariantId !== 'base' && (
+                <AdminEditTrigger variantId={selectedVariantId} consoleId={consoleData.id} />
+            )}
+
             {/* TOP NAVIGATION & HEADER */}
             <div className="mb-8 flex flex-col md:flex-row justify-between items-start border-b-4 border-retro-grid pb-6 gap-6">
                 <div className="flex-1">

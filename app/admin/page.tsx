@@ -1,19 +1,22 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { retroAuth } from '../../lib/auth';
-import { fetchManufacturers, fetchConsoleList } from '../../lib/api';
-import { Manufacturer } from '../../lib/types';
+import { fetchManufacturers, fetchConsoleList, getVariantById } from '../../lib/api';
+import { Manufacturer, ConsoleVariant } from '../../lib/types';
 import { NewsForm } from '../../components/admin/NewsForm';
 import { ManufacturerForm } from '../../components/admin/ManufacturerForm';
 import { ConsoleForm } from '../../components/admin/ConsoleForm';
 import { VariantForm } from '../../components/admin/VariantForm';
 import { GameForm } from '../../components/admin/GameForm';
 import { SettingsForm } from '../../components/admin/SettingsForm';
+import Button from '../../components/ui/Button';
 
 type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE' | 'VARIANTS' | 'FABRICATOR' | 'SETTINGS';
 
-export default function AdminPortalPage() {
+function AdminPortalContent() {
+    const searchParams = useSearchParams();
     const [isAdmin, setIsAdmin] = useState(false);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<AdminTab>('NEWS');
@@ -25,12 +28,13 @@ export default function AdminPortalPage() {
     const [consoleList, setConsoleList] = useState<{name: string, id: string}[]>([]);
     const [customLogo, setCustomLogo] = useState<string | null>(null);
 
-    // State for Variant-First Workflow
+    // State for Variant-First Workflow & Edit Mode
     const [newlyCreatedConsoleId, setNewlyCreatedConsoleId] = useState<string | null>(null);
+    const [editingVariant, setEditingVariant] = useState<ConsoleVariant | null>(null);
 
+    // Initial Auth & Data Load
     useEffect(() => {
         const check = async () => {
-            console.log('[AdminPage] Initializing Admin Portal...');
             try {
                 const admin = await retroAuth.isAdmin();
                 setIsAdmin(admin);
@@ -46,147 +50,216 @@ export default function AdminPortalPage() {
                     
                     const savedLogo = localStorage.getItem('retro_custom_logo');
                     if (savedLogo) setCustomLogo(savedLogo);
+
+                    // --- CHECK FOR EDIT MODE IN URL ---
+                    const mode = searchParams?.get('mode');
+                    const variantId = searchParams?.get('variant_id');
+                    const consoleId = searchParams?.get('console_id');
+                    const tabParam = searchParams?.get('tab');
+                    
+                    if (mode === 'edit' && variantId) {
+                        const variantData = await getVariantById(variantId);
+                        if (variantData) {
+                            setEditingVariant(variantData);
+                            // If console_id wasn't in URL, use the one from the variant
+                            setNewlyCreatedConsoleId(consoleId || variantData.console_id); 
+                            setActiveTab('VARIANTS');
+                            setMessage(`EDIT MODE ACTIVE: ${variantData.variant_name}`);
+                        } else {
+                            setErrorMsg("FAILED TO FETCH VARIANT FOR EDITING.");
+                        }
+                    } else if (tabParam) {
+                        // Allow deep linking to tabs (e.g. from nav)
+                        if (['NEWS', 'GAME', 'CONSOLE', 'VARIANTS', 'FABRICATOR', 'SETTINGS'].includes(tabParam)) {
+                            setActiveTab(tabParam as AdminTab);
+                        }
+                    }
                 }
-            } catch (e) {
-                console.error('[AdminPage] Initialization Error:', e);
+            } catch (err) {
+                console.error("Admin Check Failed", err);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
         check();
-    }, []);
+    }, [searchParams]);
 
-    const handleSuccess = (msg: string) => {
-        if (msg) {
-            setMessage(msg);
-            setTimeout(() => setMessage(null), 5000);
-        }
-        setErrorMsg(null);
-        // Refresh lists if needed based on active tab
-        if (activeTab === 'FABRICATOR') fetchManufacturers().then(setManufacturers);
-        if (activeTab === 'CONSOLE') fetchConsoleList().then(list => setConsoleList(list as any));
-    };
-
-    // Special handler for Console Creation to switch tabs
     const handleConsoleCreated = (id: string, name: string) => {
-        console.log(`[AdminPage] Console Created: ${name} (${id}). Switching to Variants tab.`);
         setNewlyCreatedConsoleId(id);
-        
-        // Refresh the console list so the new ID is valid in the dropdown
-        fetchConsoleList().then(list => setConsoleList(list as any));
-
-        setMessage(`FOLDER "${name}" CREATED. PLEASE ADD TECHNICAL SPECS.`);
+        // Refresh list so the new console appears in dropdowns immediately
+        fetchConsoleList().then((list) => setConsoleList(list as any));
         setActiveTab('VARIANTS');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setMessage(`FOLDER CREATED: "${name}". NOW ADD SPECS.`);
     };
 
-    if (loading) return <div className="p-8 text-retro-neon font-mono animate-pulse">AUTHENTICATING...</div>;
-    if (!isAdmin) return <div className="p-8 text-retro-pink font-mono">ACCESS DENIED. ADMIN PRIVILEGES REQUIRED.</div>;
+    const handleLogoUpdate = (base64: string | null) => {
+        setCustomLogo(base64);
+    };
 
-    const tabs: {id: AdminTab, label: string}[] = [
-        { id: 'NEWS', label: 'SIGNALS' },
-        { id: 'FABRICATOR', label: 'FABRICATORS' },
-        { id: 'CONSOLE', label: 'ADD CONSOLE' },
-        { id: 'VARIANTS', label: 'ADD VARIANTS' },
-        { id: 'GAME', label: 'ARCHIVE GAME' },
-        { id: 'SETTINGS', label: 'SYSTEM' },
-    ];
+    if (loading) return <div className="p-8 text-center font-mono text-retro-neon">VERIFYING BIOMETRICS...</div>;
+    if (!isAdmin) return <div className="p-8 text-center font-mono text-retro-pink border-2 border-retro-pink m-8">ACCESS DENIED. ADMIN CLEARANCE REQUIRED.</div>;
+
+    const tabs: AdminTab[] = ['NEWS', 'GAME', 'CONSOLE', 'VARIANTS', 'FABRICATOR', 'SETTINGS'];
 
     return (
-        <div className="w-full max-w-7xl mx-auto p-4 min-h-screen">
-            {/* Header Section */}
-            <div className="flex justify-between items-start mb-8 border-b-2 border-green-500 pb-4">
+        <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn">
+            
+            {/* RESTORED HEADER AESTHETIC */}
+            <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b-2 border-retro-grid pb-6 gap-4">
                 <div>
                     <h1 className="text-4xl md:text-6xl font-pixel text-retro-neon mb-2 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
                         ROOT TERMINAL
                     </h1>
-                    <p className="font-mono text-xs text-gray-400 tracking-widest">
+                    <p className="font-mono text-xs text-gray-500 tracking-widest">
                         // SECURE DATABASE CONNECTION ESTABLISHED
                     </p>
                 </div>
-                
-                {/* System Status Badge */}
-                <div className="flex items-center gap-2 border border-cyan-400 bg-black px-3 py-1 shadow-[0_0_10px_rgba(34,211,238,0.3)] mt-2">
-                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                    <span className="font-mono text-[10px] text-cyan-400 tracking-wider">ADMIN_MODE_ACTIVE</span>
+                <div className="bg-black border border-cyan-400 px-3 py-1 shadow-[0_0_10px_rgba(34,211,238,0.2)]">
+                    <span className="font-pixel text-[10px] text-cyan-400 tracking-widest animate-pulse">
+                        ADMIN_MODE_ACTIVE
+                    </span>
                 </div>
             </div>
 
-            {/* Navigation Tabs */}
-            <div className="flex flex-wrap gap-4 mb-10">
+            {/* Messages */}
+            {message && (
+                <div className="bg-retro-neon/10 border border-retro-neon text-retro-neon p-4 mb-6 font-mono font-bold animate-pulse">
+                    &gt; {message}
+                </div>
+            )}
+            {errorMsg && (
+                <div className="bg-retro-pink/10 border border-retro-pink text-retro-pink p-4 mb-6 font-mono font-bold">
+                    &gt; ERROR: {errorMsg}
+                </div>
+            )}
+
+            {/* Tab Navigation */}
+            <div className="flex flex-wrap gap-2 mb-8 border-b border-retro-grid pb-1">
                 {tabs.map(tab => (
                     <button
-                        key={tab.id}
-                        onClick={() => { setActiveTab(tab.id); setMessage(null); setErrorMsg(null); }}
-                        className={`px-6 py-3 font-mono text-xs uppercase tracking-widest transition-all duration-200 border-2 ${
-                            activeTab === tab.id 
-                            ? 'bg-retro-neon border-retro-neon text-black font-bold shadow-[0_0_15px_rgba(0,255,157,0.6)] transform -translate-y-1 z-10' 
-                            : 'bg-black border-retro-grid text-gray-500 hover:border-retro-blue hover:text-retro-blue hover:shadow-[0_0_10px_rgba(0,255,255,0.3)]'
+                        key={tab}
+                        onClick={() => {
+                            setActiveTab(tab);
+                            setMessage(null);
+                            setErrorMsg(null);
+                            // Clear edit mode when switching tabs manually
+                            if (editingVariant && tab !== 'VARIANTS') {
+                                setEditingVariant(null);
+                                window.history.replaceState(null, '', '/admin'); // Clean URL
+                            }
+                        }}
+                        className={`font-mono text-sm px-4 py-2 border-t border-l border-r transition-all ${
+                            activeTab === tab 
+                            ? 'bg-retro-dark text-retro-neon border-retro-neon -mb-[1px] font-bold' 
+                            : 'bg-black text-gray-500 border-gray-800 hover:text-white hover:bg-white/5'
                         }`}
                     >
-                        {tab.label}
+                        {tab === 'VARIANTS' && editingVariant ? 'EDIT VARIANT' : tab}
                     </button>
                 ))}
             </div>
 
-            {/* Notifications */}
-            {message && (
-                <div className="mb-6 p-4 border-l-4 border-retro-neon bg-retro-neon/5 text-retro-neon font-mono text-sm shadow-[0_0_10px_rgba(0,255,157,0.1)] flex items-center">
-                    <span className="mr-2 animate-pulse">▶</span> {message}
-                </div>
-            )}
-            {errorMsg && (
-                <div className="mb-6 p-4 border-l-4 border-retro-pink bg-retro-pink/5 text-retro-pink font-mono text-sm shadow-[0_0_10px_rgba(255,0,255,0.1)] flex items-center">
-                    <span className="mr-2 animate-pulse">⚠</span> ERROR: {errorMsg}
-                </div>
-            )}
-
             {/* Content Area */}
-            <div className="bg-retro-dark border border-retro-grid p-8 relative shadow-2xl overflow-hidden min-h-[500px]">
-                {/* Decorative background elements for terminal feel */}
-                <div className="absolute top-0 right-0 p-2 opacity-20 pointer-events-none">
-                     <div className="w-16 h-16 border-t-2 border-r-2 border-retro-neon"></div>
+            <div className="bg-retro-dark border border-retro-grid p-6 min-h-[500px] shadow-lg relative">
+                
+                {/* Background Grid */}
+                <div className="absolute inset-0 pointer-events-none opacity-10 bg-[linear-gradient(rgba(0,255,157,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,157,0.1)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+                <div className="relative z-10">
+
+                    {activeTab === 'NEWS' && (
+                        <div>
+                            <h2 className="font-pixel text-xl text-white mb-6">TRANSMIT SIGNAL</h2>
+                            <NewsForm onSuccess={setMessage} onError={setErrorMsg} />
+                        </div>
+                    )}
+
+                    {activeTab === 'CONSOLE' && (
+                        <div>
+                            <h2 className="font-pixel text-xl text-white mb-6">NEW CONSOLE FOLDER</h2>
+                            <ConsoleForm 
+                                manufacturers={manufacturers} 
+                                onConsoleCreated={handleConsoleCreated}
+                                onError={setErrorMsg}
+                            />
+                        </div>
+                    )}
+
+                    {activeTab === 'VARIANTS' && (
+                        <div>
+                            <h2 className="font-pixel text-xl text-white mb-6">
+                                {editingVariant ? `EDITING: ${editingVariant.variant_name}` : 'HARDWARE SPECIFICATIONS'}
+                            </h2>
+                            <VariantForm 
+                                consoleList={consoleList} 
+                                preSelectedConsoleId={newlyCreatedConsoleId}
+                                initialData={editingVariant}
+                                onSuccess={(msg) => {
+                                    setMessage(msg);
+                                    if (editingVariant) {
+                                        // Exit edit mode on success
+                                        setTimeout(() => {
+                                            setEditingVariant(null);
+                                            window.history.replaceState(null, '', '/admin');
+                                            // Optional: Redirect back to public page could go here
+                                        }, 1500);
+                                    }
+                                }}
+                                onError={setErrorMsg}
+                            />
+                            {editingVariant && (
+                                <div className="mt-4 pt-4 border-t border-dashed border-gray-700">
+                                    <Button 
+                                        variant="secondary" 
+                                        onClick={() => {
+                                            setEditingVariant(null);
+                                            setNewlyCreatedConsoleId(null);
+                                            setMessage("EDIT MODE CANCELLED");
+                                            window.history.replaceState(null, '', '/admin');
+                                        }}
+                                        className="text-xs"
+                                    >
+                                        CANCEL EDITING
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {activeTab === 'FABRICATOR' && (
+                        <div>
+                            <h2 className="font-pixel text-xl text-white mb-6">REGISTER FABRICATOR</h2>
+                            <ManufacturerForm onSuccess={setMessage} onError={setErrorMsg} />
+                        </div>
+                    )}
+
+                    {activeTab === 'GAME' && (
+                        <div>
+                            <h2 className="font-pixel text-xl text-white mb-6">ARCHIVE GAME</h2>
+                            <GameForm onSuccess={setMessage} onError={setErrorMsg} />
+                        </div>
+                    )}
+
+                    {activeTab === 'SETTINGS' && (
+                        <div>
+                            <h2 className="font-pixel text-xl text-white mb-6">SYSTEM CONFIG</h2>
+                            <SettingsForm 
+                                customLogo={customLogo} 
+                                onLogoUpdate={handleLogoUpdate}
+                                onSuccess={setMessage} 
+                            />
+                        </div>
+                    )}
+
                 </div>
-                <div className="absolute bottom-0 left-0 p-2 opacity-20 pointer-events-none">
-                     <div className="w-16 h-16 border-b-2 border-l-2 border-retro-neon"></div>
-                </div>
-
-                {activeTab === 'NEWS' && (
-                    <NewsForm onSuccess={handleSuccess} onError={setErrorMsg} />
-                )}
-
-                {activeTab === 'FABRICATOR' && (
-                    <ManufacturerForm onSuccess={handleSuccess} onError={setErrorMsg} />
-                )}
-
-                {activeTab === 'CONSOLE' && (
-                    <ConsoleForm 
-                        manufacturers={manufacturers} 
-                        onConsoleCreated={handleConsoleCreated} 
-                        onError={setErrorMsg} 
-                    />
-                )}
-
-                {activeTab === 'VARIANTS' && (
-                    <VariantForm 
-                        consoleList={consoleList} 
-                        preSelectedConsoleId={newlyCreatedConsoleId}
-                        onSuccess={handleSuccess} 
-                        onError={setErrorMsg} 
-                    />
-                )}
-
-                {activeTab === 'GAME' && (
-                    <GameForm onSuccess={handleSuccess} onError={setErrorMsg} />
-                )}
-
-                {activeTab === 'SETTINGS' && (
-                    <SettingsForm 
-                        customLogo={customLogo} 
-                        onLogoUpdate={setCustomLogo} 
-                        onSuccess={handleSuccess} 
-                    />
-                )}
             </div>
         </div>
+    );
+}
+
+export default function AdminPortal() {
+    return (
+        <Suspense fallback={<div className="p-10 text-center font-mono text-retro-neon">LOADING ADMIN MODULES...</div>}>
+            <AdminPortalContent />
+        </Suspense>
     );
 }
