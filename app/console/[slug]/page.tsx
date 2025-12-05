@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
 import { createClient } from '../../../lib/supabase/server';
@@ -22,6 +23,10 @@ export async function generateMetadata({ params }: Props) {
         images: data.image_url ? [data.image_url] : []
       }
     };
+}
+
+export async function generateStaticParams() {
+    return []; // Disable static param generation to enforce dynamic fetching
 }
 
 export default async function ConsoleSpecsPage({ params }: Props) {
