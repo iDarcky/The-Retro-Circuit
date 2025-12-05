@@ -165,24 +165,6 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                         </div>
                     </div>
 
-                    {hasVariants && (
-                        <div className="bg-retro-grid/10 border border-retro-blue p-4">
-                            <label className="block font-pixel text-xs text-retro-blue mb-2">SELECT MODEL / VARIANT</label>
-                            <select 
-                                value={selectedVariantId}
-                                onChange={(e) => handleVariantChange(e.target.value)}
-                                className="w-full bg-black border border-retro-grid text-white p-2 font-mono text-sm focus:border-retro-neon outline-none"
-                            >
-                                <option value="base">ORIGINAL / BASE MODEL</option>
-                                {variants.map(v => (
-                                    <option key={v.id} value={v.id}>
-                                        {v.variant_name} ({v.release_year})
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    )}
-
                     <div className="bg-retro-dark border border-retro-grid p-6">
                         <h3 className="font-pixel text-xs text-retro-blue mb-4">SYSTEM OVERVIEW</h3>
                         <p className="font-mono text-gray-300 leading-relaxed text-sm">
@@ -193,7 +175,77 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
 
                 {/* Right Column: Specs */}
                 <div className="lg:col-span-2">
-                    <div className="bg-retro-dark border-2 border-retro-grid">
+                    {/* Variant Deck */}
+                    {hasVariants && (
+                        <div className="mb-6">
+                            <h3 className="font-pixel text-xs text-retro-blue mb-3 uppercase flex items-center gap-2">
+                                <span className="w-2 h-2 bg-retro-blue animate-pulse"></span>
+                                Available Configurations
+                            </h3>
+                            <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x touch-pan-x">
+                                {/* Base Card */}
+                                <button
+                                    onClick={() => handleVariantChange('base')}
+                                    className={`
+                                        min-w-[150px] md:min-w-[180px] p-4 border-2 text-left flex flex-col justify-between transition-all duration-200 snap-start
+                                        ${selectedVariantId === 'base' 
+                                            ? 'border-retro-neon bg-retro-neon/10 opacity-100 shadow-[0_0_15px_rgba(0,255,157,0.3)] scale-[1.02]' 
+                                            : 'border-retro-grid bg-black opacity-60 hover:opacity-100 hover:border-retro-blue'
+                                        }
+                                    `}
+                                >
+                                    <div className={`font-bold font-mono text-sm mb-2 ${selectedVariantId === 'base' ? 'text-white' : 'text-gray-300'}`}>BASE MODEL</div>
+                                    <div className="space-y-1">
+                                        {(consoleData.specs as any).screen_size_inch && (
+                                            <div className="font-mono text-xs text-gray-400">{(consoleData.specs as any).screen_size_inch}" Screen</div>
+                                        )}
+                                        {(consoleData.specs as any).price_launch_usd && (
+                                            <div className="font-mono text-xs text-retro-neon">${(consoleData.specs as any).price_launch_usd}</div>
+                                        )}
+                                        {!(consoleData.specs as any).screen_size_inch && !(consoleData.specs as any).price_launch_usd && (
+                                            <div className="font-mono text-[10px] text-gray-500">Standard Specs</div>
+                                        )}
+                                    </div>
+                                </button>
+
+                                {/* Variant Cards */}
+                                {variants.map(v => (
+                                    <button
+                                        key={v.id}
+                                        onClick={() => handleVariantChange(v.id)}
+                                        className={`
+                                            min-w-[150px] md:min-w-[180px] p-4 border-2 text-left flex flex-col justify-between transition-all duration-200 snap-start
+                                            ${selectedVariantId === v.id 
+                                                ? 'border-retro-neon bg-retro-neon/10 opacity-100 shadow-[0_0_15px_rgba(0,255,157,0.3)] scale-[1.02]' 
+                                                : 'border-retro-grid bg-black opacity-60 hover:opacity-100 hover:border-retro-blue'
+                                            }
+                                        `}
+                                    >
+                                        <div className={`font-bold font-mono text-sm mb-2 ${selectedVariantId === v.id ? 'text-white' : 'text-gray-300'}`}>
+                                            {v.variant_name}
+                                        </div>
+                                        <div className="space-y-1">
+                                            {v.screen_size_inch ? (
+                                                <div className="font-mono text-xs text-gray-400">{v.screen_size_inch}" Screen</div>
+                                            ) : null}
+                                            {v.price_launch_usd ? (
+                                                <div className="font-mono text-xs text-retro-neon">${v.price_launch_usd}</div>
+                                            ) : null}
+                                            {!v.screen_size_inch && !v.price_launch_usd && (
+                                                <div className="font-mono text-[10px] text-gray-500">Custom Spec</div>
+                                            )}
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="bg-retro-dark border-2 border-retro-grid relative">
+                        {/* Decorative Corner */}
+                        <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-retro-neon"></div>
+                        <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-retro-neon"></div>
+
                         <div className="bg-retro-grid/20 px-6 py-4 border-b border-retro-grid flex justify-between items-center">
                             <h2 className="font-pixel text-lg text-white">
                                 {selectedVariantId === 'base' ? 'TECHNICAL SPECIFICATIONS' : `${currentVariant?.variant_name.toUpperCase()} SPECS`}
