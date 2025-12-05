@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, type FormEvent, type FC } from 'react';
+import { useState, type FormEvent, type FC, type KeyboardEvent } from 'react';
 import { addManufacturer } from '../../lib/api';
 import { Manufacturer, ManufacturerSchema, MANUFACTURER_FORM_FIELDS } from '../../lib/types';
 import Button from '../ui/Button';
@@ -16,6 +15,10 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState(false);
     const [isSlugLocked, setIsSlugLocked] = useState(true);
+
+    // Franchise Tag State
+    const [franchises, setFranchises] = useState<string[]>([]);
+    const [franchiseInput, setFranchiseInput] = useState('');
 
     const generateSlug = (text: string) => {
         return text.toLowerCase()
@@ -36,6 +39,21 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
         });
     };
 
+    const handleFranchiseKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            const trimmed = franchiseInput.trim().replace(/,/g, ''); // Remove trailing comma if present
+            if (trimmed && !franchises.includes(trimmed)) {
+                setFranchises([...franchises, trimmed]);
+            }
+            setFranchiseInput('');
+        }
+    };
+
+    const removeFranchise = (tag: string) => {
+        setFranchises(franchises.filter(f => f !== tag));
+    };
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         
@@ -44,7 +62,13 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
              formData.slug = generateSlug(formData.name);
         }
 
-        const result = ManufacturerSchema.safeParse(formData);
+        // Prepare data with joined franchises
+        const submissionData = { ...formData };
+        if (franchises.length > 0) {
+            submissionData.key_franchises = franchises.join(', ');
+        }
+
+        const result = ManufacturerSchema.safeParse(submissionData);
         if (!result.success) { onError(result.error.issues[0].message); return; }
         
         setLoading(true);
@@ -52,6 +76,8 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
         if (response.success) {
             onSuccess("CORPORATION REGISTERED");
             setFormData({});
+            setFranchises([]);
+            setFranchiseInput('');
             setIsSlugLocked(true);
         } else {
             onError(`REGISTRATION FAILED: ${response.message}`);
@@ -92,6 +118,37 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
                         </div>
                     );
                 }
+
+                if (field.key === 'key_franchises') {
+                    return (
+                        <div key={field.key} className="col-span-1 md:col-span-2">
+                             <label className="text-[10px] text-gray-500 mb-1 block uppercase">{field.label}</label>
+                             <div className="w-full bg-black border border-gray-700 p-2 focus-within:border-retro-neon transition-colors flex flex-wrap gap-2 items-center min-h-[50px]">
+                                {franchises.map((tag) => (
+                                    <span key={tag} className="bg-retro-blue/20 text-retro-blue text-xs font-mono px-2 py-1 flex items-center gap-1 border border-retro-blue/50">
+                                        {tag}
+                                        <button 
+                                            type="button"
+                                            onClick={() => removeFranchise(tag)}
+                                            className="hover:text-white font-bold px-1"
+                                        >
+                                            ×
+                                        </button>
+                                    </span>
+                                ))}
+                                <input 
+                                    type="text"
+                                    className="bg-transparent text-white font-mono text-sm outline-none flex-1 min-w-[120px] p-1"
+                                    placeholder={franchises.length === 0 ? "Type franchise & press Enter..." : ""}
+                                    value={franchiseInput}
+                                    onChange={(e) => setFranchiseInput(e.target.value)}
+                                    onKeyDown={handleFranchiseKeyDown}
+                                />
+                             </div>
+                        </div>
+                    );
+                }
+
                 return (
                     <AdminInput 
                         key={field.key} 
