@@ -4,6 +4,7 @@ import { useState, type FormEvent, type FC, type KeyboardEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { addManufacturer } from '../../lib/api';
 import { retroAuth } from '../../lib/auth';
+import { supabase } from '../../lib/supabase/singleton';
 import { Manufacturer, ManufacturerSchema, MANUFACTURER_FORM_FIELDS } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
@@ -88,15 +89,28 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         
-        // --- DEBUG LOGGING ---
-        console.log('Starting Fabricator submission...');
-        
+        // --- PARANOID AUTH START ---
+        console.log('Starting Fabricator submission with Paranoid Auth...');
         try {
-            const currentUser = await retroAuth.getUser();
-            console.log('[ManufacturerForm] Current User ID:', currentUser?.id || 'NULL');
-        } catch (debugErr) {
-            console.error('[ManufacturerForm] Auth Check Failed during submit:', debugErr);
+            // 1. Force Refresh
+            const { error: refreshError } = await supabase.auth.refreshSession();
+            if (refreshError) {
+                console.warn('[ManufacturerForm] Session refresh warning:', refreshError);
+            }
+            
+            // 2. Verify Session Exists
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                throw new Error("Session Lost. Please Login Again.");
+            }
+            
+            console.log('[ManufacturerForm] Auth Validated for:', session.user.email);
+        } catch (authError: any) {
+            console.error('[ManufacturerForm] Auth Check Failed:', authError);
+            onError(authError.message || 'Authentication Failed');
+            return;
         }
+        // --- PARANOID AUTH END ---
 
         // Final safety check: Auto-generate slug if missing
         if (!formData.slug && formData.name) {

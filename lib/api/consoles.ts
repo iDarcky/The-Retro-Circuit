@@ -102,15 +102,21 @@ export const addConsole = async (
 ): Promise<{ success: boolean, message?: string }> => {
     try {
         const { data: newConsole, error: consoleError } = await supabase.from('consoles').insert([consoleData]).select('id').single();
-        if (consoleError || !newConsole) return { success: false, message: consoleError?.message || "Failed to create console record" };
+        if (consoleError) {
+             console.error('SUPABASE CONSOLE INSERT ERROR:', consoleError.code, consoleError.message, consoleError.details);
+             return { success: false, message: consoleError.message || "Failed to create console record" };
+        }
+        if (!newConsole) return { success: false, message: "No data returned from insert" };
 
         const { error: specsError } = await supabase.from('console_specs').insert([{ ...specsData, console_id: newConsole.id }]);
         if (specsError) {
+             console.error('SUPABASE SPECS INSERT ERROR:', specsError.code, specsError.message, specsError.details);
              await supabase.from('consoles').delete().eq('id', newConsole.id);
              return { success: false, message: `Specs Error: ${specsError.message}` };
         }
         return { success: true };
     } catch (e: any) {
+        console.error('EXCEPTION IN addConsole:', e);
         return { success: false, message: e.message || "Unknown Exception" };
     }
 };

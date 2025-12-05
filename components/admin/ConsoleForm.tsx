@@ -3,6 +3,7 @@
 import { useState, type FormEvent, type FC } from 'react';
 import { useRouter } from 'next/navigation';
 import { addConsole } from '../../lib/api';
+import { supabase } from '../../lib/supabase/singleton';
 import { ConsoleSchema, ConsoleSpecsSchema, Manufacturer, CONSOLE_FORM_FIELDS, CONSOLE_SPECS_FORM_FIELDS } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
@@ -69,6 +70,29 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         
+        // --- PARANOID AUTH START ---
+        console.log('Starting Console submission with Paranoid Auth...');
+        try {
+            // 1. Force Refresh
+            const { error: refreshError } = await supabase.auth.refreshSession();
+            if (refreshError) {
+                console.warn('[ConsoleForm] Session refresh warning:', refreshError);
+            }
+            
+            // 2. Verify Session Exists
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                throw new Error("Session Lost. Please Login Again.");
+            }
+            
+            console.log('[ConsoleForm] Auth Validated for:', session.user.email);
+        } catch (authError: any) {
+            console.error('[ConsoleForm] Auth Check Failed:', authError);
+            onError(authError.message || 'Authentication Failed');
+            return;
+        }
+        // --- PARANOID AUTH END ---
+        
         // Final safety check: Auto-generate slug if missing
         if (!formData.slug && formData.name) {
              formData.slug = generateSlug(formData.name);
@@ -87,29 +111,37 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
         if(!specsResult.success) { onError(`SPECS: ${specsResult.error.issues[0].message}`); return; }
 
         setLoading(true);
-        const response = await addConsole(consoleResult.data as any, specsResult.data as any);
-        if (response.success) {
-            // RESET PROTOCOL FOR BULK ENTRY
-            setFormData({});
-            setIsSlugLocked(true);
+        try {
+            const response = await addConsole(consoleResult.data as any, specsResult.data as any);
             
-            // Show local success banner
-            setIsSuccess(true);
-            
-            // Refresh Server Data
-            router.refresh();
+            if (response.success) {
+                // RESET PROTOCOL FOR BULK ENTRY
+                setFormData({});
+                setIsSlugLocked(true);
+                
+                // Show local success banner
+                setIsSuccess(true);
+                
+                // Refresh Server Data
+                router.refresh();
 
-            // Trigger parent refresh but suppress parent banner (send empty string)
-            onSuccess(''); 
+                // Trigger parent refresh but suppress parent banner (send empty string)
+                onSuccess(''); 
 
-            // Auto-dismiss banner
-            setTimeout(() => {
-                setIsSuccess(false);
-            }, 3000);
-        } else {
-            onError(`REGISTRATION FAILED: ${response.message}`);
+                // Auto-dismiss banner
+                setTimeout(() => {
+                    setIsSuccess(false);
+                }, 3000);
+            } else {
+                console.error(`[ConsoleForm] Registration Failed:`, response.message);
+                onError(`REGISTRATION FAILED: ${response.message}`);
+            }
+        } catch (err: any) {
+             console.error('[ConsoleForm] Critical Exception:', err);
+             onError(`SYSTEM ERROR: ${err.message}`);
+        } finally {
+             setLoading(false);
         }
-        setLoading(false);
     };
 
     return (
