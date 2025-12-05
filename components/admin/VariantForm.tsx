@@ -15,6 +15,7 @@ interface VariantFormProps {
 
 export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedConsoleId, onSuccess, onError }) => {
     const [formData, setFormData] = useState<Record<string, any>>({});
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
     
     // Template System State
@@ -45,6 +46,9 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
     const handleTemplateSelect = (variantId: string) => {
         setSelectedTemplate(variantId);
+        // Clear any previous validation errors when loading a fresh template
+        setFieldErrors({});
+        
         if (!variantId) return;
 
         const template = existingVariants.find(v => v.id === variantId);
@@ -75,6 +79,14 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
     const handleInputChange = (key: string, value: any) => {
         setFormData(prev => ({ ...prev, [key]: value }));
+        // Clear error for this field as user types
+        if (fieldErrors[key]) {
+            setFieldErrors(prev => {
+                const next = { ...prev };
+                delete next[key];
+                return next;
+            });
+        }
     };
 
     const handleSubmit = async (e: FormEvent, mode: 'SAVE' | 'CLONE' = 'SAVE') => {
@@ -88,13 +100,25 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         }
 
         const result = ConsoleVariantSchema.safeParse(rawVariant);
-        if (!result.success) { onError(result.error.issues[0].message); return; }
+        if (!result.success) { 
+            // Map errors to fields
+            const newErrors: Record<string, string> = {};
+            result.error.issues.forEach(issue => {
+                if (issue.path.length > 0) {
+                    newErrors[issue.path[0].toString()] = issue.message;
+                }
+            });
+            setFieldErrors(newErrors);
+            onError("VALIDATION FAILED. CHECK HIGHLIGHTED FIELDS."); 
+            return; 
+        }
 
         setLoading(true);
         const response = await addConsoleVariant(result.data as any);
         
         if (response.success) {
             onSuccess(mode === 'CLONE' ? "VARIANT SAVED. FORM PRESERVED FOR NEXT MODEL." : "VARIANT MODEL REGISTERED");
+            setFieldErrors({});
             
             // Refresh templates list immediately (so the one we just made is available)
             if (rawVariant.console_id) {
@@ -137,9 +161,9 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
             <div className="mb-4 space-y-6">
                 <div>
-                    <label className="text-[10px] text-gray-500 mb-1 block uppercase">Parent Console</label>
+                    <label className={`text-[10px] mb-1 block uppercase ${fieldErrors.console_id ? 'text-retro-pink' : 'text-gray-500'}`}>Parent Console</label>
                     <select 
-                        className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none text-white font-mono" 
+                        className={`w-full bg-black border p-3 outline-none text-white font-mono ${fieldErrors.console_id ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'}`}
                         value={formData.console_id || ''} 
                         onChange={(e) => handleInputChange('console_id', e.target.value)}
                         required
@@ -147,6 +171,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                         <option value="">-- Select Console Folder --</option>
                         {consoleList.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
+                    {fieldErrors.console_id && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors.console_id}</div>}
                 </div>
 
                 {/* TEMPLATE SYSTEM */}
@@ -184,19 +209,20 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                             if (field.key === 'variant_name') {
                                 return (
                                     <div key={field.key}>
-                                        <label className="text-[10px] text-gray-500 mb-1 block uppercase">{field.label}</label>
+                                        <label className={`text-[10px] mb-1 block uppercase ${fieldErrors[field.key] ? 'text-retro-pink' : 'text-gray-500'}`}>{field.label}</label>
                                         <input 
                                             name="variant_name_focus_target"
                                             type="text"
-                                            className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none text-white font-mono"
+                                            className={`w-full bg-black border p-3 outline-none text-white font-mono ${fieldErrors[field.key] ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'}`}
                                             value={formData[field.key] || ''}
                                             onChange={(e) => handleInputChange(field.key, e.target.value)}
                                             required={(field as any).required}
                                         />
+                                        {fieldErrors[field.key] && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors[field.key]}</div>}
                                     </div>
                                 )
                             }
-                            return <AdminInput key={field.key} field={field as any} value={formData[field.key]} onChange={handleInputChange} />
+                            return <AdminInput key={field.key} field={field as any} value={formData[field.key]} onChange={handleInputChange} error={fieldErrors[field.key]} />
                         })}
                     </div>
                 </div>
