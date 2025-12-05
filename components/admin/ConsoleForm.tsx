@@ -1,10 +1,11 @@
+
 'use client';
 
 import { useState, type FormEvent, type FC } from 'react';
 import { useRouter } from 'next/navigation';
 import { addConsole } from '../../lib/api';
 import { supabase } from '../../lib/supabase/singleton';
-import { ConsoleSchema, ConsoleSpecsSchema, Manufacturer, CONSOLE_FORM_FIELDS, CONSOLE_SPECS_FORM_FIELDS } from '../../lib/types';
+import { ConsoleSchema, ConsoleSpecsSchema, Manufacturer, CONSOLE_FORM_FIELDS, CONSOLE_SPECS_FORM_GROUPS } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
 
@@ -102,7 +103,11 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
         CONSOLE_FORM_FIELDS.forEach(f => { if(formData[f.key]) consoleData[f.key] = formData[f.key]; });
         
         const specsData: any = {};
-        CONSOLE_SPECS_FORM_FIELDS.forEach(f => { if(formData[f.key]) specsData[f.key] = formData[f.key]; });
+        CONSOLE_SPECS_FORM_GROUPS.forEach(group => {
+            group.fields.forEach(f => {
+                if(formData[f.key]) specsData[f.key] = formData[f.key];
+            });
+        });
 
         const consoleResult = ConsoleSchema.safeParse(consoleData);
         if (!consoleResult.success) { onError(`CONSOLE: ${consoleResult.error.issues[0].message}`); return; }
@@ -212,13 +217,20 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
 
                     return <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} />;
                 })}
-
-                <div className="col-span-1 md:col-span-2 text-retro-blue font-bold text-xs uppercase border-b border-gray-800 pb-2 mt-4 mb-2">Technical Specifications</div>
-
-                {CONSOLE_SPECS_FORM_FIELDS.map(field => (
-                    <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} />
-                ))}
             </div>
+
+            {/* SPECS GROUPS */}
+            {CONSOLE_SPECS_FORM_GROUPS.map((group, idx) => (
+                <div key={idx} className="bg-black/30 p-4 border border-gray-800">
+                     <div className="text-xs text-retro-blue border-b border-gray-700 pb-2 mb-4 font-bold uppercase">{group.title}</div>
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {group.fields.map(field => (
+                            <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} />
+                        ))}
+                     </div>
+                </div>
+            ))}
+
             <div className="flex justify-end pt-4"><Button type="submit" isLoading={loading}>REGISTER UNIT</Button></div>
         </form>
     );

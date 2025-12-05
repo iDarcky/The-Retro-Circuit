@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, type FC, type ReactNode } from 'react';
@@ -237,6 +238,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                                 <SpecRow label="GPU Model" value={mergedSpecs.gpu_model} />
                                 <SpecRow label="GPU Cores" value={mergedSpecs.gpu_cores} />
                                 <SpecRow label="Operating System" value={mergedSpecs.os} />
+                                <SpecRow label="TDP Range" value={mergedSpecs.tdp_range_w} />
                             </SpecSection>
                             
                             {/* Performance (Variant Specific) */}
@@ -246,6 +248,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                                     <SpecRow label="GPU Clock" value={mergedSpecs.gpu_clock_mhz} unit="MHz" />
                                     <SpecRow label="RAM" value={mergedSpecs.ram_gb ? `${mergedSpecs.ram_gb} GB` : undefined} highlight />
                                     <SpecRow label="RAM Type" value={mergedSpecs.ram_type} />
+                                    <SpecRow label="RAM Speed" value={mergedSpecs.ram_speed_mhz} unit="MHz" />
                                 </SpecSection>
                             )}
                             
@@ -264,8 +267,11 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                                 <SpecSection title="Display & Output">
                                     <SpecRow label="Max Output" value={mergedSpecs.max_resolution_output} highlight />
                                     <SpecRow label="Display Type" value={mergedSpecs.display_type} />
+                                    <SpecRow label="Display Tech" value={mergedSpecs.display_tech} />
                                     <SpecRow label="Screen Size" value={mergedSpecs.screen_size_inch} unit="inch" />
                                     <SpecRow label="Resolution" value={mergedSpecs.screen_resolution_x ? `${mergedSpecs.screen_resolution_x} x ${mergedSpecs.screen_resolution_y}` : undefined} />
+                                    <SpecRow label="Refresh Rate" value={mergedSpecs.refresh_rate_hz} unit="Hz" />
+                                    <SpecRow label="Brightness" value={mergedSpecs.brightness_nits} unit="nits" />
                                     <SpecRow label="PPI" value={mergedSpecs.resolution_pixel_density} />
                                 </SpecSection>
                             )}
@@ -277,6 +283,13 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                                     <SpecRow label="Type" value={mergedSpecs.second_screen_type} />
                                 </SpecSection>
                             )}
+                            
+                            <SpecSection title="Multimedia & Immersion">
+                                <SpecRow label="Audio Speakers" value={mergedSpecs.audio_speakers} />
+                                <SpecRow label="Audio Tech" value={mergedSpecs.audio_tech} />
+                                <SpecRow label="Haptics" value={mergedSpecs.haptics} />
+                                <SpecRow label="Gyroscope" value={mergedSpecs.gyro} />
+                            </SpecSection>
 
                              <SpecSection title="Controls & IO">
                                 <SpecRow label="Ports" value={mergedSpecs.ports} />
@@ -291,7 +304,8 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                             {(mergedSpecs.weight_g || mergedSpecs.battery_mah || mergedSpecs.price_launch_usd) && (
                                 <SpecSection title="Physical & Market">
                                     <SpecRow label="Weight" value={mergedSpecs.weight_g} unit="g" />
-                                    <SpecRow label="Battery" value={mergedSpecs.battery_mah} unit="mAh" />
+                                    <SpecRow label="Battery (mAh)" value={mergedSpecs.battery_mah} unit="mAh" />
+                                    <SpecRow label="Battery (Wh)" value={mergedSpecs.battery_wh} unit="Wh" />
                                     <SpecRow label="Launch Price" value={mergedSpecs.price_launch_usd ? `$${mergedSpecs.price_launch_usd}` : undefined} />
                                     <SpecRow label="Units Sold" value={consoleData.units_sold} highlight />
                                 </SpecSection>
