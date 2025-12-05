@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type FormEvent, type FC, useEffect } from 'react';
-import { addConsoleVariant, getVariantsByConsole } from '../../lib/api';
+import { addConsoleVariant, updateConsoleVariant, getVariantsByConsole } from '../../lib/api';
 import { ConsoleVariantSchema, VARIANT_FORM_GROUPS, ConsoleVariant } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
@@ -9,6 +9,7 @@ import { AdminInput } from './AdminInput';
 interface VariantFormProps {
     consoleList: {name: string, id: string}[];
     preSelectedConsoleId?: string | null;
+    initialData?: ConsoleVariant | null; // For Edit Mode
     onSuccess: (msg: string) => void;
     onError: (msg: string) => void;
 }
@@ -17,11 +18,14 @@ interface VariantFormProps {
 const ChevronDown = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>;
 const ChevronUp = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>;
 
-export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedConsoleId, onSuccess, onError }) => {
+export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedConsoleId, initialData, onSuccess, onError }) => {
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
     
+    // Edit Mode Detection
+    const isEditMode = !!initialData;
+
     // Accordion State: Track which sections are open (Identity open by default)
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({
         "IDENTITY & ORIGIN": true
@@ -31,12 +35,14 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     const [existingVariants, setExistingVariants] = useState<ConsoleVariant[]>([]);
     const [selectedTemplate, setSelectedTemplate] = useState<string>('');
     
-    // Sync pre-selected console when it changes (e.g. coming from ConsoleForm)
+    // Initialize form with initialData if present (Edit Mode)
     useEffect(() => {
-        if (preSelectedConsoleId) {
+        if (initialData) {
+            setFormData(initialData);
+        } else if (preSelectedConsoleId) {
             setFormData(prev => ({ ...prev, console_id: preSelectedConsoleId }));
         }
-    }, [preSelectedConsoleId]);
+    }, [initialData, preSelectedConsoleId]);
 
     // Fetch existing variants when parent console is selected (Load Template Logic)
     useEffect(() => {
@@ -58,6 +64,8 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     };
 
     const handleTemplateSelect = (variantId: string) => {
+        if (isEditMode) return; // Disable templates in edit mode to prevent accidental overwrites
+
         setSelectedTemplate(variantId);
         // Clear any previous validation errors when loading a fresh template
         setFieldErrors({});
@@ -144,10 +152,17 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
         setLoading(true);
         try {
-            const response = await addConsoleVariant(result.data as any);
+            let response;
+            if (isEditMode && initialData?.id) {
+                // UPDATE
+                response = await updateConsoleVariant(initialData.id, result.data as any);
+            } else {
+                // INSERT
+                response = await addConsoleVariant(result.data as any);
+            }
             
             if (response.success) {
-                onSuccess(mode === 'CLONE' ? "VARIANT SAVED. FORM PRESERVED FOR NEXT MODEL." : "VARIANT MODEL REGISTERED");
+                onSuccess(isEditMode ? "DATABASE UPDATED SUCCESSFULLY." : (mode === 'CLONE' ? "VARIANT SAVED. FORM PRESERVED FOR NEXT MODEL." : "VARIANT MODEL REGISTERED"));
                 setFieldErrors({});
                 
                 // Refresh templates list immediately
@@ -156,28 +171,30 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     setExistingVariants(updatedVariants);
                 }
 
-                if (mode === 'SAVE') {
-                    // Clear Form, but keep the parent console selected for convenience
-                    setFormData({ console_id: rawVariant.console_id });
-                    setSelectedTemplate('');
-                    setOpenSections({ "IDENTITY & ORIGIN": true }); // Reset view
-                } else {
-                    // Clone Mode: Keep data, reset Identity fields
-                    setFormData(prev => ({ 
-                        ...prev, 
-                        variant_name: '', // Clear name to force re-entry
-                        slug: '',
-                        is_default: false, // Assuming clone isn't default
-                        model_no: ''
-                    }));
-                    // Focus the name input
-                    setTimeout(() => {
-                        const nameInput = document.querySelector('input[name="variant_name_focus_target"]') as HTMLInputElement;
-                        if (nameInput) nameInput.focus();
-                    }, 100);
+                if (!isEditMode) {
+                    if (mode === 'SAVE') {
+                        // Clear Form, but keep the parent console selected for convenience
+                        setFormData({ console_id: rawVariant.console_id });
+                        setSelectedTemplate('');
+                        setOpenSections({ "IDENTITY & ORIGIN": true }); // Reset view
+                    } else {
+                        // Clone Mode: Keep data, reset Identity fields
+                        setFormData(prev => ({ 
+                            ...prev, 
+                            variant_name: '', // Clear name to force re-entry
+                            slug: '',
+                            is_default: false, // Assuming clone isn't default
+                            model_no: ''
+                        }));
+                        // Focus the name input
+                        setTimeout(() => {
+                            const nameInput = document.querySelector('input[name="variant_name_focus_target"]') as HTMLInputElement;
+                            if (nameInput) nameInput.focus();
+                        }, 100);
+                    }
                 }
             } else {
-                onError(`VARIANT FAILED: ${response.message}`);
+                onError(`OPERATION FAILED: ${response.message}`);
             }
         } catch (error: any) {
             console.error("Variant Submission Error:", error);
@@ -189,10 +206,15 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
     return (
         <form className="space-y-6">
-            <div className="bg-retro-pink/10 border-l-4 border-retro-pink p-4 mb-4">
-                <h3 className="font-bold text-retro-pink text-sm uppercase">Step 2: Technical Specifications</h3>
+            <div className={`border-l-4 p-4 mb-4 ${isEditMode ? 'bg-retro-neon/10 border-retro-neon' : 'bg-retro-pink/10 border-retro-pink'}`}>
+                <h3 className={`font-bold text-sm uppercase ${isEditMode ? 'text-retro-neon' : 'text-retro-pink'}`}>
+                    {isEditMode ? 'Edit Mode: Updating Existing Variant' : 'Step 2: Technical Specifications'}
+                </h3>
                 <p className="text-xs text-gray-400">
-                    Define the hardware. Create a &quot;Base Model&quot; first, then use &quot;Save & Clone&quot; (or Load Template) to quickly add Pro/Lite versions.
+                    {isEditMode 
+                        ? 'Modifying live database record. Changes will be reflected immediately.'
+                        : 'Define the hardware. Create a "Base Model" first, then use "Save & Clone" to quickly add Pro/Lite versions.'
+                    }
                 </p>
             </div>
 
@@ -200,10 +222,11 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 <div>
                     <label className={`text-[10px] mb-1 block uppercase ${fieldErrors.console_id ? 'text-retro-pink' : 'text-gray-500'}`}>Parent Console</label>
                     <select 
-                        className={`w-full bg-black border p-3 outline-none text-white font-mono ${fieldErrors.console_id ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'}`}
+                        className={`w-full bg-black border p-3 outline-none text-white font-mono ${fieldErrors.console_id ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'} ${isEditMode ? 'opacity-50 cursor-not-allowed' : ''}`}
                         value={formData.console_id || ''} 
                         onChange={(e) => handleInputChange('console_id', e.target.value)}
                         required
+                        disabled={isEditMode}
                     >
                         <option value="">-- Select Console Folder --</option>
                         {consoleList.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -211,8 +234,8 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     {fieldErrors.console_id && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors.console_id}</div>}
                 </div>
 
-                {/* TEMPLATE SYSTEM */}
-                {existingVariants.length > 0 && (
+                {/* TEMPLATE SYSTEM - Hidden in Edit Mode */}
+                {!isEditMode && existingVariants.length > 0 && (
                     <div className="p-4 border border-dashed border-retro-blue bg-retro-blue/5 animate-fadeIn">
                         <label className="text-[10px] text-retro-blue mb-2 block uppercase font-bold flex items-center gap-2">
                              <span className="w-2 h-2 bg-retro-blue rounded-full animate-pulse"></span>
@@ -306,21 +329,23 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             </div>
             
             <div className="flex justify-end gap-4 pt-4 border-t border-retro-grid sticky bottom-0 bg-retro-dark p-4 z-10 border-t shadow-lg">
-                <Button 
-                    type="button" 
-                    variant="secondary" 
-                    onClick={(e) => handleSubmit(e, 'CLONE')} 
-                    isLoading={loading}
-                    className="border-dashed"
-                >
-                    [ SAVE & CLONE ]
-                </Button>
+                {!isEditMode && (
+                    <Button 
+                        type="button" 
+                        variant="secondary" 
+                        onClick={(e) => handleSubmit(e, 'CLONE')} 
+                        isLoading={loading}
+                        className="border-dashed"
+                    >
+                        [ SAVE & CLONE ]
+                    </Button>
+                )}
                 <Button 
                     type="submit" 
                     onClick={(e) => handleSubmit(e, 'SAVE')} 
                     isLoading={loading}
                 >
-                    REGISTER UNIT
+                    {isEditMode ? 'UPDATE UNIT' : 'REGISTER UNIT'}
                 </Button>
             </div>
         </form>

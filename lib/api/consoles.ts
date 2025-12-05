@@ -148,6 +148,20 @@ export const getVariantsByConsole = async (consoleId: string): Promise<ConsoleVa
     }
 };
 
+export const getVariantById = async (variantId: string): Promise<ConsoleVariant | null> => {
+    try {
+        const { data, error } = await supabase
+            .from('console_variants')
+            .select('*')
+            .eq('id', variantId)
+            .single();
+        if (error) throw error;
+        return data as ConsoleVariant;
+    } catch {
+        return null;
+    }
+};
+
 export const getConsolesByManufacturer = async (manufacturerId: string): Promise<ConsoleDetails[]> => {
     try {
         const { data, error } = await supabase
@@ -197,4 +211,14 @@ export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>)
     } catch (e: any) {
         return { success: false, message: e.message };
     }
-}
+};
+
+export const updateConsoleVariant = async (id: string, variantData: Partial<ConsoleVariant>): Promise<{ success: boolean, message?: string }> => {
+    try {
+        const { error } = await supabase.from('console_variants').update(variantData).eq('id', id);
+        if (error) return { success: false, message: error.message };
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, message: e.message };
+    }
+};
