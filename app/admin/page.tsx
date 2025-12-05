@@ -10,7 +10,6 @@ import { ConsoleForm } from '../../components/admin/ConsoleForm';
 import { VariantForm } from '../../components/admin/VariantForm';
 import { GameForm } from '../../components/admin/GameForm';
 import { SettingsForm } from '../../components/admin/SettingsForm';
-import Button from '../../components/ui/Button';
 
 type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE' | 'VARIANTS' | 'FABRICATOR' | 'SETTINGS';
 
