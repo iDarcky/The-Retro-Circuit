@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, type FormEvent, type FC, useEffect, useRef } from 'react';
+import { useState, type FormEvent, type FC, useEffect } from 'react';
 import { addConsoleVariant } from '../../lib/api';
 import { ConsoleVariantSchema, VARIANT_FORM_GROUPS } from '../../lib/types';
 import Button from '../ui/Button';
@@ -18,9 +18,6 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState(false);
     
-    // Ref for the name input to focus it after cloning
-    const nameInputRef = useRef<HTMLInputElement>(null);
-
     // Sync pre-selected console when it changes
     useEffect(() => {
         if (preSelectedConsoleId) {
