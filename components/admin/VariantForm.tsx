@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, type FormEvent, type FC, useEffect } from 'react';
@@ -144,42 +143,48 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         }
 
         setLoading(true);
-        const response = await addConsoleVariant(result.data as any);
-        
-        if (response.success) {
-            onSuccess(mode === 'CLONE' ? "VARIANT SAVED. FORM PRESERVED FOR NEXT MODEL." : "VARIANT MODEL REGISTERED");
-            setFieldErrors({});
+        try {
+            const response = await addConsoleVariant(result.data as any);
             
-            // Refresh templates list immediately
-            if (rawVariant.console_id) {
-                const updatedVariants = await getVariantsByConsole(rawVariant.console_id);
-                setExistingVariants(updatedVariants);
-            }
+            if (response.success) {
+                onSuccess(mode === 'CLONE' ? "VARIANT SAVED. FORM PRESERVED FOR NEXT MODEL." : "VARIANT MODEL REGISTERED");
+                setFieldErrors({});
+                
+                // Refresh templates list immediately
+                if (rawVariant.console_id) {
+                    const updatedVariants = await getVariantsByConsole(rawVariant.console_id);
+                    setExistingVariants(updatedVariants);
+                }
 
-            if (mode === 'SAVE') {
-                // Clear Form, but keep the parent console selected for convenience
-                setFormData({ console_id: rawVariant.console_id });
-                setSelectedTemplate('');
-                setOpenSections({ "IDENTITY & ORIGIN": true }); // Reset view
+                if (mode === 'SAVE') {
+                    // Clear Form, but keep the parent console selected for convenience
+                    setFormData({ console_id: rawVariant.console_id });
+                    setSelectedTemplate('');
+                    setOpenSections({ "IDENTITY & ORIGIN": true }); // Reset view
+                } else {
+                    // Clone Mode: Keep data, reset Identity fields
+                    setFormData(prev => ({ 
+                        ...prev, 
+                        variant_name: '', // Clear name to force re-entry
+                        slug: '',
+                        is_default: false, // Assuming clone isn't default
+                        model_no: ''
+                    }));
+                    // Focus the name input
+                    setTimeout(() => {
+                        const nameInput = document.querySelector('input[name="variant_name_focus_target"]') as HTMLInputElement;
+                        if (nameInput) nameInput.focus();
+                    }, 100);
+                }
             } else {
-                // Clone Mode: Keep data, reset Identity fields
-                setFormData(prev => ({ 
-                    ...prev, 
-                    variant_name: '', // Clear name to force re-entry
-                    slug: '',
-                    is_default: false, // Assuming clone isn't default
-                    model_no: ''
-                }));
-                // Focus the name input
-                setTimeout(() => {
-                    const nameInput = document.querySelector('input[name="variant_name_focus_target"]') as HTMLInputElement;
-                    if (nameInput) nameInput.focus();
-                }, 100);
+                onError(`VARIANT FAILED: ${response.message}`);
             }
-        } else {
-            onError(`VARIANT FAILED: ${response.message}`);
+        } catch (error: any) {
+            console.error("Variant Submission Error:", error);
+            onError(`SYSTEM ERROR: ${error.message || 'Unknown Error'}`);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     return (
