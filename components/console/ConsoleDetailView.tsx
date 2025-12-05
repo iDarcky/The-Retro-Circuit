@@ -46,14 +46,41 @@ const SpecSection = ({ title, children }: { title: string, children?: ReactNode 
 const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [selectedVariantId, setSelectedVariantId] = useState<string>('base');
-    
-    // Create a "Merged" spec object type that covers both Base Specs and Variant Specs
-    type MergedSpecs = ConsoleSpecs & Partial<ConsoleVariant>;
-    const [mergedSpecs, setMergedSpecs] = useState<MergedSpecs>(consoleData.specs);
     
     const variants = consoleData.variants || [];
     const hasVariants = variants.length > 0;
+
+    // Helper: Determine initial selection logic
+    const getInitialVariantId = () => {
+        // 1. URL Param Priority
+        const variantSlug = searchParams?.get('variant');
+        if (variantSlug) {
+            const variant = variants.find(v => v.slug === variantSlug);
+            if (variant) return variant.id;
+        }
+
+        // 2. Default Variant or First Variant
+        if (hasVariants) {
+            const defaultVar = variants.find(v => v.is_default);
+            if (defaultVar) return defaultVar.id;
+            return variants[0].id; // Fallback to first
+        }
+
+        return 'base';
+    };
+
+    const [selectedVariantId, setSelectedVariantId] = useState<string>(getInitialVariantId);
+    
+    // Create a "Merged" spec object type that covers both Base Specs and Variant Specs
+    type MergedSpecs = ConsoleSpecs & Partial<ConsoleVariant>;
+
+    const getInitialSpecs = (varId: string): MergedSpecs => {
+        if (varId === 'base') return consoleData.specs;
+        const v = variants.find(x => x.id === varId);
+        return v ? { ...consoleData.specs, ...v } : consoleData.specs;
+    };
+
+    const [mergedSpecs, setMergedSpecs] = useState<MergedSpecs>(() => getInitialSpecs(getInitialVariantId()));
 
     useEffect(() => {
         const variantSlug = searchParams?.get('variant');
