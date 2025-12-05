@@ -151,6 +151,7 @@ export interface ConsoleSpecs {
   cpu_model?: string;
   gpu_model?: string;
   cpu_cores?: number;
+  cpu_threads?: number; // New Field
   gpu_cores?: number;
   os?: string;
   display_type?: string;
@@ -176,6 +177,7 @@ export const ConsoleSpecsSchema = z.object({
   cpu_model: z.string().optional(),
   gpu_model: z.string().optional(),
   cpu_cores: z.coerce.number().optional(),
+  cpu_threads: z.coerce.number().optional(), // New Field
   gpu_cores: z.coerce.number().optional(),
   os: z.string().optional(),
   display_type: z.string().optional(),
@@ -204,6 +206,7 @@ export const CONSOLE_SPECS_FORM_GROUPS = [
         fields: [
             { label: 'CPU Model', key: 'cpu_model', type: 'text' },
             { label: 'CPU Cores', key: 'cpu_cores', type: 'number' },
+            { label: 'CPU Threads', key: 'cpu_threads', type: 'number' },
             { label: 'GPU Model', key: 'gpu_model', type: 'text' },
             { label: 'GPU Cores', key: 'gpu_cores', type: 'number' },
             { label: 'Operating System', key: 'os', type: 'text' },
