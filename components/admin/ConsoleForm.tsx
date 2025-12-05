@@ -71,28 +71,20 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         
-        // --- PARANOID AUTH START ---
-        console.log('Starting Console submission with Paranoid Auth...');
+        // --- AUTH CHECK ---
+        console.log('Starting Console submission...');
         try {
-            // 1. Force Refresh
-            const { error: refreshError } = await supabase.auth.refreshSession();
-            if (refreshError) {
-                console.warn('[ConsoleForm] Session refresh warning:', refreshError);
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            if (sessionError || !session) {
+                console.error("Auth Error:", sessionError);
+                throw new Error("Session expired. Please refresh the page.");
             }
-            
-            // 2. Verify Session Exists
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                throw new Error("Session Lost. Please Login Again.");
-            }
-            
             console.log('[ConsoleForm] Auth Validated for:', session.user.email);
         } catch (authError: any) {
             console.error('[ConsoleForm] Auth Check Failed:', authError);
             onError(authError.message || 'Authentication Failed');
             return;
         }
-        // --- PARANOID AUTH END ---
         
         // Final safety check: Auto-generate slug if missing
         if (!formData.slug && formData.name) {
@@ -114,6 +106,8 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
 
         const specsResult = ConsoleSpecsSchema.safeParse(specsData);
         if(!specsResult.success) { onError(`SPECS: ${specsResult.error.issues[0].message}`); return; }
+
+        console.log('Validation Passed. Submitting...');
 
         setLoading(true);
         try {
