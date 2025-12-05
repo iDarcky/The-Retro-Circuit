@@ -3,33 +3,33 @@ import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant } from
 
 export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: number = 1, limit: number = 20): Promise<{ data: ConsoleDetails[], count: number }> => {
     try {
-        // Query variants instead of legacy console_specs
-        // We use "nullsFirst" to ensure new consoles (which have null release_year until variants are populated) show up at the top
+        // Query consoles. We sort by NAME by default in the DB to ensure we get a stable list
+        // regardless of whether 'release_year' is null or missing in the parent table.
         let query = supabase.from('consoles')
-            .select('*, manufacturer:manufacturer(*), variants:console_variants(*)', { count: 'exact' })
-            .order('release_year', { ascending: false, nullsFirst: true });
+            .select('*, manufacturer:manufacturer(*), variants:console_variants(*)', { count: 'exact' });
 
         if (filters.manufacturer_id) query = query.eq('manufacturer_id', filters.manufacturer_id);
         
-        // Simple year filtering
-        if (filters.minYear > 1970) query = query.gte('release_year', filters.minYear);
-        if (filters.maxYear < new Date().getFullYear()) query = query.lte('release_year', filters.maxYear);
-        
+        // We only apply DB-level year filtering if the years are set on the PARENT table.
+        // Since you refactored to variants, strict DB filtering on parent 'release_year' excludes new items.
+        // We will filter in-memory for accuracy if the parent table has NULLs.
         if (filters.generations.length > 0) query = query.in('generation', filters.generations);
         if (filters.form_factors.length > 0) query = query.in('form_factor', filters.form_factors);
 
+        // Pagination (fetch a bit more to handle in-memory filtering if needed, but for now strict range)
         const from = (page - 1) * limit;
         const to = from + limit - 1;
 
-        const { data, count, error } = await query.range(from, to);
+        // Perform query
+        const { data, count, error } = await query.order('name', { ascending: true }).range(from, to);
         
         if (error) {
-            console.error('[API] fetchConsolesFiltered Error:', error);
+            console.error('[API] fetchConsolesFiltered DB Error:', error.message);
             throw error;
         }
 
         // Normalize data: Populate 'specs' and missing root fields from the default variant
-        const normalizedData = (data || []).map((item: any) => {
+        let normalizedData = (data || []).map((item: any) => {
             const variants = item.variants || [];
             // Prioritize default variant, else take the first one
             const defaultVariant = variants.find((v: any) => v.is_default) || variants[0];
@@ -48,10 +48,26 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
             return item;
         });
 
+        // IN-MEMORY SORTING & FILTERING (Crucial for split schema)
+        // 1. Filter by Year (now that we've backfilled it from variants)
+        if (filters.minYear > 1970 || filters.maxYear < new Date().getFullYear()) {
+            normalizedData = normalizedData.filter((item: any) => {
+                const year = item.release_year || 9999; // Keep TBA items if looking for new
+                return year >= filters.minYear && year <= filters.maxYear;
+            });
+        }
+
+        // 2. Sort by Release Year Descending (Newest First)
+        normalizedData.sort((a: any, b: any) => {
+            const yearA = a.release_year || 9999;
+            const yearB = b.release_year || 9999;
+            return yearB - yearA; // Descending
+        });
+
         return { data: normalizedData as ConsoleDetails[], count: count || 0 };
 
     } catch (e) {
-        console.error('Fetch Consoles Exception:', e);
+        console.error('[API] Fetch Consoles Exception:', e);
         return { data: [], count: 0 };
     }
 };

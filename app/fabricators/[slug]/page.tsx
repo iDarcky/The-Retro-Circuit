@@ -43,14 +43,18 @@ export default async function FabricatorDetailPage({ params }: Props) {
     // 2. Fetch Consoles associated with this Manufacturer ID
     let consoles: ConsoleDetails[] = [];
     if (profile) {
-        const { data } = await supabase
+        // Query by name first to ensure we get everything, regardless of NULL release years in parent table
+        const { data, error } = await supabase
             .from('consoles')
-            // UPDATED: Fetch variants, remove specs. Use nullsFirst to show dateless (new) consoles at top or bottom consistently.
             .select('*, manufacturer:manufacturer(*), variants:console_variants(*)')
             .eq('manufacturer_id', profile.id)
-            .order('release_year', { ascending: false, nullsFirst: true });
+            .order('name', { ascending: true });
         
-        // Normalize data
+        if (error) {
+            console.error('[FabricatorPage] Console Fetch Error:', error.message);
+        }
+
+        // Normalize & Backfill data from variants
         consoles = ((data as any) || []).map((c: any) => {
              const variants = c.variants || [];
              const defaultVar = variants.find((v: any) => v.is_default) || variants[0];
@@ -62,6 +66,13 @@ export default async function FabricatorDetailPage({ params }: Props) {
                  c.release_year = defaultVar.release_year;
              }
              return c;
+        });
+
+        // Manual Sort: Newest First (handling TBA/Nulls at top)
+        consoles.sort((a, b) => {
+            const yA = Number(a.release_year) || 9999;
+            const yB = Number(b.release_year) || 9999;
+            return yB - yA;
         });
     }
 
