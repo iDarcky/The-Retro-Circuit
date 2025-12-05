@@ -280,7 +280,6 @@ export const VARIANT_FORM_GROUPS = [
         title: "Identity & Market",
         fields: [
             { label: 'Variant Name (e.g. Pro)', key: 'variant_name', type: 'text', required: true },
-            { label: 'Slug (Optional)', key: 'slug', type: 'text' },
             { label: 'Release Year', key: 'release_year', type: 'number' },
             { label: 'Launch Price ($)', key: 'price_launch_usd', type: 'number' },
             { label: 'Is Default Model?', key: 'is_default', type: 'checkbox' },
@@ -291,10 +290,10 @@ export const VARIANT_FORM_GROUPS = [
         title: "Silicon Core",
         fields: [
             { label: 'CPU Model', key: 'cpu_model', type: 'text' },
+            { label: 'GPU Model', key: 'gpu_model', type: 'text' },
             { label: 'CPU Cores', key: 'cpu_cores', type: 'number' },
             { label: 'CPU Threads', key: 'cpu_threads', type: 'number' },
             { label: 'CPU Clock (MHz)', key: 'cpu_clock_mhz', type: 'number' },
-            { label: 'GPU Model', key: 'gpu_model', type: 'text' },
             { label: 'GPU Cores', key: 'gpu_cores', type: 'number' },
             { label: 'GPU Clock (MHz)', key: 'gpu_clock_mhz', type: 'number' },
             { label: 'OS', key: 'os', type: 'text' },
@@ -362,7 +361,7 @@ export interface ConsoleDetails {
   name: string;
   slug: string;
   manufacturer_id: string;
-  release_year: string;
+  release_year?: string; // Optional now
   generation?: string;
   form_factor?: string;
   media?: string;
@@ -383,7 +382,7 @@ export const ConsoleSchema = z.object({
   name: z.string().min(1),
   slug: z.string().min(1),
   manufacturer_id: z.string().uuid(),
-  release_year: z.string().regex(/^\d{4}$/),
+  release_year: z.string().regex(/^\d{4}$/).optional(),
   generation: z.string().optional(),
   form_factor: z.string().optional(),
   media: z.string().optional(),
@@ -396,7 +395,7 @@ export const ConsoleSchema = z.object({
 export const CONSOLE_FORM_FIELDS = [
   { label: 'Console Name', key: 'name', type: 'text', required: true },
   { label: 'Slug (Unique)', key: 'slug', type: 'text', required: true },
-  { label: 'Release Year (Folder)', key: 'release_year', type: 'number', required: true },
+  // Release Year Removed for Folder Creation
   { label: 'Image URL (Main)', key: 'image_url', type: 'url', required: false },
   { label: 'Description', key: 'description', type: 'textarea', required: false },
 ];

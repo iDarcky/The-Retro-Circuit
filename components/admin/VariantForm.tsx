@@ -33,8 +33,10 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         e.preventDefault();
 
         const rawVariant = { ...formData };
-        if (!rawVariant.slug && rawVariant.variant_name) {
-             rawVariant.slug = rawVariant.variant_name.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '');
+        
+        // Automate slug generation
+        if (rawVariant.variant_name) {
+            rawVariant.slug = rawVariant.variant_name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
         }
 
         const result = ConsoleVariantSchema.safeParse(rawVariant);
