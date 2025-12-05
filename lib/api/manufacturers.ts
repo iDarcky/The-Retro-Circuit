@@ -33,7 +33,7 @@ export const addManufacturer = async (manu: Omit<Manufacturer, 'id'>): Promise<{
         console.log('Supabase raw response:', { data, error });
 
         if (error) {
-            console.error('CRITICAL SUPABASE ERROR:', error.message, error.details, error.hint);
+            console.error('CRITICAL SUPABASE ERROR:', error.code, error.message, error.details, error.hint);
             return { success: false, message: error.message };
         }
         return { success: true };

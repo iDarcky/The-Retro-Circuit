@@ -1,9 +1,11 @@
+
 'use client';
 
 import { useState, type FormEvent, type FC } from 'react';
 import { useRouter } from 'next/navigation';
 import { addConsole } from '../../lib/api';
-import { ConsoleSchema, ConsoleSpecsSchema, Manufacturer, CONSOLE_FORM_FIELDS, CONSOLE_SPECS_FORM_FIELDS } from '../../lib/types';
+import { supabase } from '../../lib/supabase/singleton';
+import { ConsoleSchema, ConsoleSpecsSchema, Manufacturer, CONSOLE_FORM_FIELDS, CONSOLE_SPECS_FORM_GROUPS } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
 
@@ -69,6 +71,29 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         
+        // --- PARANOID AUTH START ---
+        console.log('Starting Console submission with Paranoid Auth...');
+        try {
+            // 1. Force Refresh
+            const { error: refreshError } = await supabase.auth.refreshSession();
+            if (refreshError) {
+                console.warn('[ConsoleForm] Session refresh warning:', refreshError);
+            }
+            
+            // 2. Verify Session Exists
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                throw new Error("Session Lost. Please Login Again.");
+            }
+            
+            console.log('[ConsoleForm] Auth Validated for:', session.user.email);
+        } catch (authError: any) {
+            console.error('[ConsoleForm] Auth Check Failed:', authError);
+            onError(authError.message || 'Authentication Failed');
+            return;
+        }
+        // --- PARANOID AUTH END ---
+        
         // Final safety check: Auto-generate slug if missing
         if (!formData.slug && formData.name) {
              formData.slug = generateSlug(formData.name);
@@ -78,7 +103,11 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
         CONSOLE_FORM_FIELDS.forEach(f => { if(formData[f.key]) consoleData[f.key] = formData[f.key]; });
         
         const specsData: any = {};
-        CONSOLE_SPECS_FORM_FIELDS.forEach(f => { if(formData[f.key]) specsData[f.key] = formData[f.key]; });
+        CONSOLE_SPECS_FORM_GROUPS.forEach(group => {
+            group.fields.forEach(f => {
+                if(formData[f.key]) specsData[f.key] = formData[f.key];
+            });
+        });
 
         const consoleResult = ConsoleSchema.safeParse(consoleData);
         if (!consoleResult.success) { onError(`CONSOLE: ${consoleResult.error.issues[0].message}`); return; }
@@ -87,119 +116,122 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
         if(!specsResult.success) { onError(`SPECS: ${specsResult.error.issues[0].message}`); return; }
 
         setLoading(true);
-        const response = await addConsole(consoleResult.data as any, specsResult.data as any);
-        if (response.success) {
-            // RESET PROTOCOL FOR BULK ENTRY
-            setFormData({});
-            setIsSlugLocked(true);
+        try {
+            const response = await addConsole(consoleResult.data as any, specsResult.data as any);
             
-            // Show local success banner
-            setIsSuccess(true);
-            
-            // Refresh Server Data
-            router.refresh();
+            if (response.success) {
+                // RESET PROTOCOL FOR BULK ENTRY
+                setFormData({});
+                setIsSlugLocked(true);
+                
+                // Show local success banner
+                setIsSuccess(true);
+                
+                // Refresh Server Data
+                router.refresh();
 
-            // Trigger parent refresh but suppress parent banner (send empty string)
-            onSuccess(''); 
+                // Trigger parent refresh but suppress parent banner (send empty string)
+                onSuccess('');
 
-            // Auto-dismiss banner
-            setTimeout(() => {
-                setIsSuccess(false);
-            }, 3000);
-        } else {
-            onError(`REGISTRATION FAILED: ${response.message}`);
+                // Auto-dismiss banner
+                setTimeout(() => {
+                    setIsSuccess(false);
+                }, 3000);
+            } else {
+                console.error(`[ConsoleForm] Registration Failed:`, response.message);
+                onError(`REGISTRATION FAILED: ${response.message}`);
+            }
+        } catch (err: any) {
+             console.error('[ConsoleForm] Critical Exception:', err);
+             onError(`SYSTEM ERROR: ${err.message}`);
+        } finally {
+             setLoading(false);
         }
-        setLoading(false);
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             {isSuccess && (
                 <div className="bg-retro-neon/10 border border-retro-neon text-retro-neon p-4 text-center font-bold animate-pulse shadow-[0_0_10px_rgba(0,255,157,0.2)]">
-                    HARDWARE REGISTERED. READY FOR NEXT ENTRY.
+                    HARDWARE UNIT REGISTERED. READY FOR NEXT ENTRY.
                 </div>
             )}
 
-            <div className="mb-8">
-                    <div className="text-xs text-retro-neon border-b border-gray-700 pb-2 mb-4 font-bold uppercase">I. Identity</div>
-                    <div className="mb-4">
-                    <label className="text-[10px] text-gray-500 mb-1 block uppercase">Manufacturer</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="col-span-1 md:col-span-2 border-b border-retro-grid pb-2 mb-2">
+                    <label className="text-[10px] text-gray-500 mb-1 block uppercase">Manufacturer (Required)</label>
                     <select 
-                        className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none text-white font-mono" 
-                        value={formData.manufacturer_id || ''} 
+                        className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none text-white font-mono"
+                        value={formData.manufacturer_id || ''}
                         onChange={(e) => handleInputChange('manufacturer_id', e.target.value)}
                         required
                     >
-                        <option value="">-- Select Manufacturer --</option>
+                        <option value="">-- Select Fabricator --</option>
                         {manufacturers.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
                     </select>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {CONSOLE_FORM_FIELDS.map(field => {
-                        if (field.key === 'slug') {
-                            return (
-                                <div key={field.key}>
-                                    <label className="text-[10px] text-gray-500 mb-1 block uppercase flex justify-between items-center">
-                                        {field.label}
-                                        <button 
-                                            type="button" 
-                                            onClick={() => setIsSlugLocked(!isSlugLocked)} 
-                                            className="text-[10px] text-retro-blue hover:text-white underline cursor-pointer"
-                                            title={isSlugLocked ? "Unlock to edit manually" : "Lock to auto-generate from name"}
-                                        >
-                                            [{isSlugLocked ? 'UNLOCK' : 'LOCK'}]
-                                        </button>
-                                    </label>
-                                    <input 
-                                        type="text"
-                                        className={`w-full border p-3 font-mono outline-none transition-colors ${
-                                            isSlugLocked 
-                                            ? 'bg-gray-900/50 border-gray-800 text-gray-500 cursor-not-allowed' 
-                                            : 'bg-black border-retro-neon text-white focus:border-retro-blue'
-                                        }`}
-                                        value={formData[field.key] || ''}
-                                        onChange={(e) => handleInputChange(field.key, e.target.value)}
-                                        readOnly={isSlugLocked}
-                                        required={field.required}
-                                    />
-                                </div>
-                            );
-                        }
-                        
-                        if (field.key === 'image_url') {
-                            return (
-                                <div key={field.key}>
-                                    <AdminInput 
-                                        field={field} 
-                                        value={formData[field.key]} 
-                                        onChange={handleInputChange} 
-                                    />
-                                    <ImagePreview url={formData[field.key]} key={formData[field.key]} />
-                                </div>
-                            );
-                        }
-
-                        return (
-                            <AdminInput 
-                                key={field.key} 
-                                field={field} 
-                                value={formData[field.key]} 
-                                onChange={handleInputChange} 
-                            />
-                        );
-                    })}
-                    </div>
-            </div>
-
-            <div>
-                <div className="text-xs text-retro-neon border-b border-gray-700 pb-2 mb-4 font-bold uppercase">II. Base Specifications</div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {CONSOLE_SPECS_FORM_FIELDS.map(field => (
-                        <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} />
-                    ))}
                 </div>
+
+                {CONSOLE_FORM_FIELDS.map(field => {
+                     if (field.key === 'slug') {
+                        return (
+                            <div key={field.key}>
+                                <label className="text-[10px] text-gray-500 mb-1 block uppercase flex justify-between items-center">
+                                    {field.label}
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setIsSlugLocked(!isSlugLocked)} 
+                                        className="text-[10px] text-retro-blue hover:text-white underline cursor-pointer"
+                                        title={isSlugLocked ? "Unlock to edit manually" : "Lock to auto-generate from name"}
+                                    >
+                                        [{isSlugLocked ? 'UNLOCK' : 'LOCK'}]
+                                    </button>
+                                </label>
+                                <input 
+                                    type="text"
+                                    className={`w-full border p-3 font-mono outline-none transition-colors ${
+                                        isSlugLocked 
+                                        ? 'bg-gray-900/50 border-gray-800 text-gray-500 cursor-not-allowed' 
+                                        : 'bg-black border-retro-neon text-white focus:border-retro-blue'
+                                    }`}
+                                    value={formData[field.key] || ''}
+                                    onChange={(e) => handleInputChange(field.key, e.target.value)}
+                                    readOnly={isSlugLocked}
+                                    required={field.required}
+                                />
+                            </div>
+                        );
+                    }
+
+                    if (field.key === 'image_url') {
+                        return (
+                            <div key={field.key}>
+                                <AdminInput 
+                                    field={field} 
+                                    value={formData[field.key]} 
+                                    onChange={handleInputChange} 
+                                />
+                                <ImagePreview url={formData[field.key]} key={formData[field.key]} />
+                            </div>
+                        );
+                    }
+
+                    return <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} />;
+                })}
             </div>
-            <div className="flex justify-end pt-4"><Button type="submit" isLoading={loading}>REGISTER HARDWARE</Button></div>
+
+            {/* SPECS GROUPS */}
+            {CONSOLE_SPECS_FORM_GROUPS.map((group, idx) => (
+                <div key={idx} className="bg-black/30 p-4 border border-gray-800">
+                     <div className="text-xs text-retro-blue border-b border-gray-700 pb-2 mb-4 font-bold uppercase">{group.title}</div>
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {group.fields.map(field => (
+                            <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} />
+                        ))}
+                     </div>
+                </div>
+            ))}
+
+            <div className="flex justify-end pt-4"><Button type="submit" isLoading={loading}>REGISTER UNIT</Button></div>
         </form>
     );
 };

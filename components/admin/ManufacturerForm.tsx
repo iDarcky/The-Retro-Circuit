@@ -3,8 +3,8 @@
 import { useState, type FormEvent, type FC, type KeyboardEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { addManufacturer } from '../../lib/api';
-import { retroAuth } from '../../lib/auth';
-import { Manufacturer, ManufacturerSchema, MANUFACTURER_FORM_FIELDS } from '../../lib/types';
+import { supabase } from '../../lib/supabase/singleton';
+import { ManufacturerSchema, MANUFACTURER_FORM_FIELDS } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
 
@@ -88,55 +88,60 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         
-        // --- DEBUG LOGGING ---
-        console.log('Starting Fabricator submission...');
-        
+        // --- PARANOID AUTH START ---
+        console.log('Starting Fabricator submission with Paranoid Auth...');
         try {
-            const currentUser = await retroAuth.getUser();
-            console.log('[ManufacturerForm] Current User ID:', currentUser?.id || 'NULL');
-        } catch (debugErr) {
-            console.error('[ManufacturerForm] Auth Check Failed during submit:', debugErr);
+            // 1. Force Refresh
+            const { error: refreshError } = await supabase.auth.refreshSession();
+            if (refreshError) {
+                console.warn('[ManufacturerForm] Session refresh warning:', refreshError);
+            }
+            
+            // 2. Verify Session Exists
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                throw new Error("Session Lost. Please Login Again.");
+            }
+            
+            console.log('[ManufacturerForm] Auth Validated for:', session.user.email);
+        } catch (authError: any) {
+            console.error('[ManufacturerForm] Auth Check Failed:', authError);
+            onError(authError.message || 'Authentication Failed');
+            return;
         }
+        // --- PARANOID AUTH END ---
 
-        // Final safety check: Auto-generate slug if missing
+        // Auto-generate slug if missing
         if (!formData.slug && formData.name) {
              formData.slug = generateSlug(formData.name);
         }
 
-        // Prepare data with joined franchises
-        const submissionData = { ...formData };
-        if (franchises.length > 0) {
-            submissionData.key_franchises = franchises.join(', ');
-        }
+        const rawData = {
+            ...formData,
+            key_franchises: franchises.join(', '),
+            founded_year: Number(formData.founded_year)
+        };
 
-        // --- PAYLOAD LOGGING ---
-        console.log('Submitting payload:', submissionData);
+        const result = ManufacturerSchema.safeParse(rawData);
+        if (!result.success) { onError(result.error.issues[0].message); return; }
 
-        const result = ManufacturerSchema.safeParse(submissionData);
-        if (!result.success) { 
-            console.warn('Validation Failed:', result.error.issues);
-            onError(result.error.issues[0].message); 
-            return; 
-        }
-        
         setLoading(true);
         try {
-            const response = await addManufacturer(result.data as Omit<Manufacturer, 'id'>);
-            console.log('[ManufacturerForm] API Response:', response);
-
+            const response = await addManufacturer(result.data as any);
+            
             if (response.success) {
                 // RESET PROTOCOL FOR BULK ENTRY
                 setFormData({});
                 setFranchises([]);
                 setFranchiseInput('');
                 setIsSlugLocked(true);
-                
+
                 // Show local success banner
                 setIsSuccess(true);
-                
+
                 // Refresh Server Data
                 router.refresh();
-                
+
                 // Trigger parent refresh but suppress parent banner (send empty string)
                 onSuccess(''); 
 
@@ -149,10 +154,10 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
                 onError(`REGISTRATION FAILED: ${response.message}`);
             }
         } catch (err: any) {
-            console.error('[ManufacturerForm] Critical Exception:', err);
-            onError(`SYSTEM ERROR: ${err.message}`);
+             console.error('[ManufacturerForm] Critical Exception:', err);
+             onError(`SYSTEM ERROR: ${err.message}`);
         } finally {
-            setLoading(false);
+             setLoading(false);
         }
     };
 
@@ -160,96 +165,83 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
         <form onSubmit={handleSubmit} className="space-y-6">
             {isSuccess && (
                 <div className="bg-retro-neon/10 border border-retro-neon text-retro-neon p-4 text-center font-bold animate-pulse shadow-[0_0_10px_rgba(0,255,157,0.2)]">
-                    CORPORATION REGISTERED. READY FOR NEXT ENTRY.
+                    FABRICATOR REGISTERED. READY FOR NEXT ENTRY.
                 </div>
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {MANUFACTURER_FORM_FIELDS.map(field => {
-                if (field.key === 'slug') {
-                    return (
-                        <div key={field.key}>
-                            <label className="text-[10px] text-gray-500 mb-1 block uppercase flex justify-between items-center">
-                                {field.label}
-                                <button 
-                                    type="button" 
-                                    onClick={() => setIsSlugLocked(!isSlugLocked)} 
-                                    className="text-[10px] text-retro-blue hover:text-white underline cursor-pointer"
-                                    title={isSlugLocked ? "Unlock to edit manually" : "Lock to auto-generate from name"}
-                                >
-                                    [{isSlugLocked ? 'UNLOCK' : 'LOCK'}]
-                                </button>
-                            </label>
-                            <input 
-                                type="text"
-                                className={`w-full border p-3 font-mono outline-none transition-colors ${
-                                    isSlugLocked 
-                                    ? 'bg-gray-900/50 border-gray-800 text-gray-500 cursor-not-allowed' 
-                                    : 'bg-black border-retro-neon text-white focus:border-retro-blue'
-                                }`}
-                                value={formData[field.key] || ''}
-                                onChange={(e) => handleInputChange(field.key, e.target.value)}
-                                readOnly={isSlugLocked}
-                                required={field.required}
-                            />
-                        </div>
-                    );
-                }
-
-                if (field.key === 'key_franchises') {
-                    return (
-                        <div key={field.key} className="col-span-1 md:col-span-2">
-                             <label className="text-[10px] text-gray-500 mb-1 block uppercase">{field.label}</label>
-                             <div className="w-full bg-black border border-gray-700 p-2 focus-within:border-retro-neon transition-colors flex flex-wrap gap-2 items-center min-h-[50px]">
-                                {franchises.map((tag) => (
-                                    <span key={tag} className="bg-retro-blue/20 text-retro-blue text-xs font-mono px-2 py-1 flex items-center gap-1 border border-retro-blue/50">
-                                        {tag}
-                                        <button 
-                                            type="button"
-                                            onClick={() => removeFranchise(tag)}
-                                            className="hover:text-white font-bold px-1"
-                                        >
-                                            ×
-                                        </button>
-                                    </span>
-                                ))}
+                {MANUFACTURER_FORM_FIELDS.map(field => {
+                    if (field.key === 'slug') {
+                        return (
+                            <div key={field.key}>
+                                <label className="text-[10px] text-gray-500 mb-1 block uppercase flex justify-between items-center">
+                                    {field.label}
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setIsSlugLocked(!isSlugLocked)} 
+                                        className="text-[10px] text-retro-blue hover:text-white underline cursor-pointer"
+                                        title={isSlugLocked ? "Unlock to edit manually" : "Lock to auto-generate from name"}
+                                    >
+                                        [{isSlugLocked ? 'UNLOCK' : 'LOCK'}]
+                                    </button>
+                                </label>
                                 <input 
                                     type="text"
-                                    className="bg-transparent text-white font-mono text-sm outline-none flex-1 min-w-[120px] p-1"
-                                    placeholder={franchises.length === 0 ? "Type franchise & press Enter..." : ""}
-                                    value={franchiseInput}
-                                    onChange={(e) => setFranchiseInput(e.target.value)}
-                                    onKeyDown={handleFranchiseKeyDown}
+                                    className={`w-full border p-3 font-mono outline-none transition-colors ${
+                                        isSlugLocked 
+                                        ? 'bg-gray-900/50 border-gray-800 text-gray-500 cursor-not-allowed' 
+                                        : 'bg-black border-retro-neon text-white focus:border-retro-blue'
+                                    }`}
+                                    value={formData[field.key] || ''}
+                                    onChange={(e) => handleInputChange(field.key, e.target.value)}
+                                    readOnly={isSlugLocked}
+                                    required={field.required}
                                 />
-                             </div>
-                        </div>
-                    );
-                }
+                            </div>
+                        );
+                    }
+                    
+                    if (field.key === 'key_franchises') {
+                        return (
+                            <div key={field.key} className="col-span-1 md:col-span-2">
+                                <label className="text-[10px] text-gray-500 mb-1 block uppercase">{field.label}</label>
+                                <div className="w-full bg-black border border-gray-700 p-2 font-mono flex flex-wrap gap-2 min-h-[50px]">
+                                    {franchises.map(tag => (
+                                        <span key={tag} className="bg-retro-blue/20 text-retro-blue px-2 py-1 text-xs border border-retro-blue flex items-center gap-1">
+                                            {tag}
+                                            <button type="button" onClick={() => removeFranchise(tag)} className="hover:text-white font-bold">×</button>
+                                        </span>
+                                    ))}
+                                    <input 
+                                        type="text"
+                                        className="bg-transparent outline-none text-white flex-1 min-w-[120px]"
+                                        placeholder="Type & Enter..."
+                                        value={franchiseInput}
+                                        onChange={(e) => setFranchiseInput(e.target.value)}
+                                        onKeyDown={handleFranchiseKeyDown}
+                                    />
+                                </div>
+                            </div>
+                        );
+                    }
 
-                if (field.key === 'image_url') {
-                    return (
-                        <div key={field.key}>
-                            <AdminInput 
-                                field={field} 
-                                value={formData[field.key]} 
-                                onChange={handleInputChange} 
-                            />
-                            <ImagePreview url={formData[field.key]} key={formData[field.key]} />
-                        </div>
-                    );
-                }
+                    if (field.key === 'image_url') {
+                        return (
+                            <div key={field.key}>
+                                <AdminInput 
+                                    field={field} 
+                                    value={formData[field.key]} 
+                                    onChange={handleInputChange} 
+                                />
+                                <ImagePreview url={formData[field.key]} key={formData[field.key]} />
+                            </div>
+                        );
+                    }
 
-                return (
-                    <AdminInput 
-                        key={field.key} 
-                        field={field} 
-                        value={formData[field.key]} 
-                        onChange={handleInputChange} 
-                    />
-                );
-            })}
+                    return <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} />;
+                })}
             </div>
-            <div className="flex justify-end pt-4"><Button type="submit" isLoading={loading}>REGISTER ENTITY</Button></div>
+            <div className="flex justify-end pt-4"><Button type="submit" isLoading={loading}>REGISTER FABRICATOR</Button></div>
         </form>
     );
 };
