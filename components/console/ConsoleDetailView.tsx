@@ -53,7 +53,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
     const getInitialVariantId = () => {
         // 1. URL Param Priority
         const variantSlug = searchParams?.get('variant');
-        if (variantSlug) {
+        if (variantSlug && hasVariants) {
             const variant = variants.find(v => v.slug === variantSlug);
             if (variant) return variant.id;
         }
@@ -61,8 +61,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
         // 2. Default Variant or First Variant
         if (hasVariants) {
             const defaultVar = variants.find(v => v.is_default);
-            if (defaultVar) return defaultVar.id;
-            return variants[0].id; // Fallback to first
+            return defaultVar ? defaultVar.id : variants[0].id;
         }
 
         return 'base';
@@ -83,11 +82,11 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
 
     useEffect(() => {
         const variantSlug = searchParams?.get('variant');
-        if (variantSlug) {
+        if (variantSlug && hasVariants) {
             const variant = variants.find(v => v.slug === variantSlug);
             if (variant) setSelectedVariantId(variant.id);
         }
-    }, [searchParams, variants]);
+    }, [searchParams, variants, hasVariants]);
 
     useEffect(() => {
         if (selectedVariantId === 'base') {

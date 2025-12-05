@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, type FormEvent, type FC } from 'react';
@@ -6,6 +5,33 @@ import { addConsole } from '../../lib/api';
 import { ConsoleSchema, ConsoleSpecsSchema, Manufacturer, CONSOLE_FORM_FIELDS, CONSOLE_SPECS_FORM_FIELDS } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
+
+const ImagePreview: FC<{ url?: string }> = ({ url }) => {
+    const [error, setError] = useState(false);
+    
+    if (!url) return (
+        <div className="mt-2 h-24 bg-black/20 border border-dashed border-gray-800 flex items-center justify-center">
+            <span className="font-mono text-[10px] text-gray-600 uppercase">No Signal</span>
+        </div>
+    );
+
+    if (error) return (
+        <div className="mt-2 h-24 bg-red-900/10 border border-dashed border-red-900/50 flex items-center justify-center">
+            <span className="font-mono text-[10px] text-red-500 uppercase">Invalid Signal</span>
+        </div>
+    );
+
+    return (
+        <div className="mt-2 h-24 bg-black/40 border border-retro-grid flex items-center justify-center p-2">
+            <img 
+                src={url} 
+                className="h-full w-auto object-contain" 
+                onError={() => setError(true)} 
+                alt="Preview" 
+            />
+        </div>
+    );
+};
 
 interface ConsoleFormProps {
     manufacturers: Manufacturer[];
@@ -116,6 +142,20 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
                                 </div>
                             );
                         }
+                        
+                        if (field.key === 'image_url') {
+                            return (
+                                <div key={field.key}>
+                                    <AdminInput 
+                                        field={field} 
+                                        value={formData[field.key]} 
+                                        onChange={handleInputChange} 
+                                    />
+                                    <ImagePreview url={formData[field.key]} key={formData[field.key]} />
+                                </div>
+                            );
+                        }
+
                         return (
                             <AdminInput 
                                 key={field.key} 
