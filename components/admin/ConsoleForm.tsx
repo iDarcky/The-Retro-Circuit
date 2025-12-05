@@ -126,7 +126,7 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
                 router.refresh();
 
                 // Trigger parent refresh but suppress parent banner (send empty string)
-                onSuccess(''); 
+                onSuccess('');
 
                 // Auto-dismiss banner
                 setTimeout(() => {
@@ -148,90 +148,78 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
         <form onSubmit={handleSubmit} className="space-y-6">
             {isSuccess && (
                 <div className="bg-retro-neon/10 border border-retro-neon text-retro-neon p-4 text-center font-bold animate-pulse shadow-[0_0_10px_rgba(0,255,157,0.2)]">
-                    HARDWARE REGISTERED. READY FOR NEXT ENTRY.
+                    HARDWARE UNIT REGISTERED. READY FOR NEXT ENTRY.
                 </div>
             )}
 
-            <div className="mb-8">
-                    <div className="text-xs text-retro-neon border-b border-gray-700 pb-2 mb-4 font-bold uppercase">I. Identity</div>
-                    <div className="mb-4">
-                    <label className="text-[10px] text-gray-500 mb-1 block uppercase">Manufacturer</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="col-span-1 md:col-span-2 border-b border-retro-grid pb-2 mb-2">
+                    <label className="text-[10px] text-gray-500 mb-1 block uppercase">Manufacturer (Required)</label>
                     <select 
-                        className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none text-white font-mono" 
-                        value={formData.manufacturer_id || ''} 
+                        className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none text-white font-mono"
+                        value={formData.manufacturer_id || ''}
                         onChange={(e) => handleInputChange('manufacturer_id', e.target.value)}
                         required
                     >
-                        <option value="">-- Select Manufacturer --</option>
+                        <option value="">-- Select Fabricator --</option>
                         {manufacturers.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
                     </select>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {CONSOLE_FORM_FIELDS.map(field => {
-                        if (field.key === 'slug') {
-                            return (
-                                <div key={field.key}>
-                                    <label className="text-[10px] text-gray-500 mb-1 block uppercase flex justify-between items-center">
-                                        {field.label}
-                                        <button 
-                                            type="button" 
-                                            onClick={() => setIsSlugLocked(!isSlugLocked)} 
-                                            className="text-[10px] text-retro-blue hover:text-white underline cursor-pointer"
-                                            title={isSlugLocked ? "Unlock to edit manually" : "Lock to auto-generate from name"}
-                                        >
-                                            [{isSlugLocked ? 'UNLOCK' : 'LOCK'}]
-                                        </button>
-                                    </label>
-                                    <input 
-                                        type="text"
-                                        className={`w-full border p-3 font-mono outline-none transition-colors ${
-                                            isSlugLocked 
-                                            ? 'bg-gray-900/50 border-gray-800 text-gray-500 cursor-not-allowed' 
-                                            : 'bg-black border-retro-neon text-white focus:border-retro-blue'
-                                        }`}
-                                        value={formData[field.key] || ''}
-                                        onChange={(e) => handleInputChange(field.key, e.target.value)}
-                                        readOnly={isSlugLocked}
-                                        required={field.required}
-                                    />
-                                </div>
-                            );
-                        }
-                        
-                        if (field.key === 'image_url') {
-                            return (
-                                <div key={field.key}>
-                                    <AdminInput 
-                                        field={field} 
-                                        value={formData[field.key]} 
-                                        onChange={handleInputChange} 
-                                    />
-                                    <ImagePreview url={formData[field.key]} key={formData[field.key]} />
-                                </div>
-                            );
-                        }
-
-                        return (
-                            <AdminInput 
-                                key={field.key} 
-                                field={field} 
-                                value={formData[field.key]} 
-                                onChange={handleInputChange} 
-                            />
-                        );
-                    })}
-                    </div>
-            </div>
-
-            <div>
-                <div className="text-xs text-retro-neon border-b border-gray-700 pb-2 mb-4 font-bold uppercase">II. Base Specifications</div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {CONSOLE_SPECS_FORM_FIELDS.map(field => (
-                        <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} />
-                    ))}
                 </div>
+
+                {CONSOLE_FORM_FIELDS.map(field => {
+                     if (field.key === 'slug') {
+                        return (
+                            <div key={field.key}>
+                                <label className="text-[10px] text-gray-500 mb-1 block uppercase flex justify-between items-center">
+                                    {field.label}
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setIsSlugLocked(!isSlugLocked)} 
+                                        className="text-[10px] text-retro-blue hover:text-white underline cursor-pointer"
+                                        title={isSlugLocked ? "Unlock to edit manually" : "Lock to auto-generate from name"}
+                                    >
+                                        [{isSlugLocked ? 'UNLOCK' : 'LOCK'}]
+                                    </button>
+                                </label>
+                                <input 
+                                    type="text"
+                                    className={`w-full border p-3 font-mono outline-none transition-colors ${
+                                        isSlugLocked 
+                                        ? 'bg-gray-900/50 border-gray-800 text-gray-500 cursor-not-allowed' 
+                                        : 'bg-black border-retro-neon text-white focus:border-retro-blue'
+                                    }`}
+                                    value={formData[field.key] || ''}
+                                    onChange={(e) => handleInputChange(field.key, e.target.value)}
+                                    readOnly={isSlugLocked}
+                                    required={field.required}
+                                />
+                            </div>
+                        );
+                    }
+
+                    if (field.key === 'image_url') {
+                        return (
+                            <div key={field.key}>
+                                <AdminInput 
+                                    field={field} 
+                                    value={formData[field.key]} 
+                                    onChange={handleInputChange} 
+                                />
+                                <ImagePreview url={formData[field.key]} key={formData[field.key]} />
+                            </div>
+                        );
+                    }
+
+                    return <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} />;
+                })}
+
+                <div className="col-span-1 md:col-span-2 text-retro-blue font-bold text-xs uppercase border-b border-gray-800 pb-2 mt-4 mb-2">Technical Specifications</div>
+
+                {CONSOLE_SPECS_FORM_FIELDS.map(field => (
+                    <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} />
+                ))}
             </div>
-            <div className="flex justify-end pt-4"><Button type="submit" isLoading={loading}>REGISTER HARDWARE</Button></div>
+            <div className="flex justify-end pt-4"><Button type="submit" isLoading={loading}>REGISTER UNIT</Button></div>
         </form>
     );
 };
