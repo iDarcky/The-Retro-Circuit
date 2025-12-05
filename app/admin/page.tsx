@@ -35,7 +35,6 @@ function AdminPortalContent() {
     // Initial Auth & Data Load
     useEffect(() => {
         const check = async () => {
-            console.log('[AdminPage] Initializing Admin Portal...');
             try {
                 const admin = await retroAuth.isAdmin();
                 setIsAdmin(admin);
@@ -188,7 +187,7 @@ function AdminPortalContent() {
                                         setTimeout(() => {
                                             setEditingVariant(null);
                                             window.history.replaceState(null, '', '/admin');
-                                            // Optional: Redirect back to public page?
+                                            // Optional: Redirect back to public page could go here
                                         }, 1500);
                                     }
                                 }}
