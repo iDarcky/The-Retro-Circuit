@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, type FormEvent, type FC, useEffect } from 'react';
@@ -22,14 +21,14 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     const [existingVariants, setExistingVariants] = useState<ConsoleVariant[]>([]);
     const [selectedTemplate, setSelectedTemplate] = useState<string>('');
     
-    // Sync pre-selected console when it changes
+    // Sync pre-selected console when it changes (e.g. coming from ConsoleForm)
     useEffect(() => {
         if (preSelectedConsoleId) {
             setFormData(prev => ({ ...prev, console_id: preSelectedConsoleId }));
         }
     }, [preSelectedConsoleId]);
 
-    // Fetch existing variants when parent console is selected
+    // Fetch existing variants when parent console is selected (Load Template Logic)
     useEffect(() => {
         const fetchTemplates = async () => {
             const consoleId = formData.console_id;
@@ -50,25 +49,26 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
         const template = existingVariants.find(v => v.id === variantId);
         if (template) {
-            // Destructure to separate identity fields from specs
+            // Destructure to separate identity/unique fields from copyable specs
             const { 
-                id, // Remove ID
+                id, 
                 variant_name, 
                 slug, 
                 is_default, 
                 price_launch_usd, 
-                image_url, // Optional: Keep or clear image? Let's keep image for variants usually share design, but arguably clear it. User said "Clear name, slug, is_default, price".
+                // We keep image_url as a base, but everything else is copied
                 ...specs 
             } = template;
 
+            // Overwrite form data with template specs, but clear unique identity fields
             setFormData(prev => ({
                 ...specs,
-                console_id: prev.console_id, // Ensure we stay on the current parent
-                variant_name: '', // Reset identity
+                console_id: prev.console_id, // Lock to current parent
+                variant_name: '', // Force user to name the new variant
                 slug: '',
                 is_default: false,
-                price_launch_usd: '', // Reset price
-                image_url: image_url // Keep image as it might be useful, easy to clear if needed
+                price_launch_usd: '', 
+                image_url: template.image_url // Carry over image, easy to change if needed
             }));
         }
     };
@@ -96,7 +96,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         if (response.success) {
             onSuccess(mode === 'CLONE' ? "VARIANT SAVED. FORM PRESERVED FOR NEXT MODEL." : "VARIANT MODEL REGISTERED");
             
-            // Refresh templates list immediately
+            // Refresh templates list immediately (so the one we just made is available)
             if (rawVariant.console_id) {
                 const updatedVariants = await getVariantsByConsole(rawVariant.console_id);
                 setExistingVariants(updatedVariants);
@@ -131,7 +131,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             <div className="bg-retro-pink/10 border-l-4 border-retro-pink p-4 mb-4">
                 <h3 className="font-bold text-retro-pink text-sm uppercase">Step 2: Technical Specifications</h3>
                 <p className="text-xs text-gray-400">
-                    Define the hardware. Create a &quot;Base Model&quot; first, then use &quot;Save & Clone&quot; to quickly add Pro/Lite versions.
+                    Define the hardware. Create a &quot;Base Model&quot; first, then use &quot;Save & Clone&quot; (or Load Template) to quickly add Pro/Lite versions.
                 </p>
             </div>
 
@@ -202,7 +202,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 </div>
             ))}
             
-            <div className="flex justify-end gap-4 pt-4 border-t border-retro-grid sticky bottom-0 bg-retro-dark p-4 z-10 border-t">
+            <div className="flex justify-end gap-4 pt-4 border-t border-retro-grid sticky bottom-0 bg-retro-dark p-4 z-10 border-t shadow-lg">
                 <Button 
                     type="button" 
                     variant="secondary" 
