@@ -235,6 +235,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                             <SpecSection title="Architecture">
                                 <SpecRow label="CPU Model" value={mergedSpecs.cpu_model} highlight />
                                 <SpecRow label="CPU Cores" value={mergedSpecs.cpu_cores} />
+                                <SpecRow label="CPU Threads" value={mergedSpecs.cpu_threads} />
                                 <SpecRow label="GPU Model" value={mergedSpecs.gpu_model} />
                                 <SpecRow label="GPU Cores" value={mergedSpecs.gpu_cores} />
                                 <SpecRow label="Operating System" value={mergedSpecs.os} />
