@@ -16,16 +16,33 @@ interface ConsoleFormProps {
 export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, onError }) => {
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState(false);
+    const [isSlugLocked, setIsSlugLocked] = useState(true);
+
+    const generateSlug = (text: string) => {
+        return text.toLowerCase()
+            .replace(/\s+/g, '-')          // Replace spaces with hyphens
+            .replace(/[^a-z0-9-]/g, '')    // Remove special chars
+            .replace(/-+/g, '-');          // Collapse multiple hyphens
+    };
 
     const handleInputChange = (key: string, value: any) => {
-        setFormData(prev => ({ ...prev, [key]: value }));
+        setFormData(prev => {
+            const newData = { ...prev, [key]: value };
+            
+            // Auto-update slug if locked and editing name
+            if (key === 'name' && isSlugLocked) {
+                newData['slug'] = generateSlug(value);
+            }
+            return newData;
+        });
     };
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         
+        // Final safety check: Auto-generate slug if missing
         if (!formData.slug && formData.name) {
-             formData.slug = formData.name.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '');
+             formData.slug = generateSlug(formData.name);
         }
 
         const consoleData: any = { manufacturer_id: formData.manufacturer_id };
@@ -45,6 +62,7 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
         if (response.success) {
             onSuccess("HARDWARE & SPECS REGISTERED");
             setFormData({});
+            setIsSlugLocked(true);
         } else {
             onError(`REGISTRATION FAILED: ${response.message}`);
         }
@@ -68,9 +86,45 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onSuccess, on
                     </select>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {CONSOLE_FORM_FIELDS.map(field => (
-                        <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} />
-                    ))}
+                    {CONSOLE_FORM_FIELDS.map(field => {
+                        if (field.key === 'slug') {
+                            return (
+                                <div key={field.key}>
+                                    <label className="text-[10px] text-gray-500 mb-1 block uppercase flex justify-between items-center">
+                                        {field.label}
+                                        <button 
+                                            type="button" 
+                                            onClick={() => setIsSlugLocked(!isSlugLocked)} 
+                                            className="text-[10px] text-retro-blue hover:text-white underline cursor-pointer"
+                                            title={isSlugLocked ? "Unlock to edit manually" : "Lock to auto-generate from name"}
+                                        >
+                                            [{isSlugLocked ? 'UNLOCK' : 'LOCK'}]
+                                        </button>
+                                    </label>
+                                    <input 
+                                        type="text"
+                                        className={`w-full border p-3 font-mono outline-none transition-colors ${
+                                            isSlugLocked 
+                                            ? 'bg-gray-900/50 border-gray-800 text-gray-500 cursor-not-allowed' 
+                                            : 'bg-black border-retro-neon text-white focus:border-retro-blue'
+                                        }`}
+                                        value={formData[field.key] || ''}
+                                        onChange={(e) => handleInputChange(field.key, e.target.value)}
+                                        readOnly={isSlugLocked}
+                                        required={field.required}
+                                    />
+                                </div>
+                            );
+                        }
+                        return (
+                            <AdminInput 
+                                key={field.key} 
+                                field={field} 
+                                value={formData[field.key]} 
+                                onChange={handleInputChange} 
+                            />
+                        );
+                    })}
                     </div>
             </div>
 
