@@ -115,30 +115,31 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
            }}>
       </div>
 
-      {/* MOBILE HEADER */}
+      {/* MOBILE HEADER (z-40) */}
       <MobileTopBar 
         onMenuClick={() => setSidebarOpen(!isSidebarOpen)} 
         isSidebarOpen={isSidebarOpen}
         customLogo={customLogo}
       />
 
-      {/* MOBILE DRAWER BACKDROP */}
+      {/* MOBILE DRAWER BACKDROP (z-50) */}
       {isSidebarOpen && (
           <div 
-            className="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm animate-fadeIn"
+            className="md:hidden fixed inset-0 z-[50] bg-black/80 backdrop-blur-sm animate-fadeIn"
             onClick={() => setSidebarOpen(false)}
           />
       )}
 
       {/* SIDEBAR (Responsive Drawer: Right on Mobile, Left on Desktop) */}
+      {/* Mobile Z-Index must be > Backdrop (50) and > Bottom Nav (50) -> So we use 60 */}
       <aside className={`
-          flex flex-col h-screen z-50 transition-transform duration-300 ease-out shadow-[0_0_50px_rgba(0,0,0,0.5)]
+          flex flex-col h-screen transition-transform duration-300 ease-out shadow-[0_0_50px_rgba(0,0,0,0.5)]
           
-          /* Mobile: Fixed Right, Slide from Right, Neon Left Border */
-          fixed top-0 right-0 w-64 bg-black/95 backdrop-blur border-l border-retro-neon
+          /* Mobile: Fixed Right, Slide from Right, Neon Left Border, High Z-Index */
+          fixed top-0 right-0 w-72 bg-black border-l border-retro-neon z-[60]
           
-          /* Desktop: Sticky Left, Always Visible, Standard Border */
-          md:sticky md:top-0 md:left-0 md:right-auto md:w-64 md:bg-retro-dark/95 md:border-l-0 md:border-r md:border-retro-grid md:shadow-none
+          /* Desktop: Sticky Left, Always Visible, Standard Border, Normal Z-Index */
+          md:sticky md:top-0 md:left-0 md:right-auto md:w-64 md:bg-retro-dark/95 md:border-l-0 md:border-r md:border-retro-grid md:shadow-none md:z-auto
 
           /* Animation State Logic */
           ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}

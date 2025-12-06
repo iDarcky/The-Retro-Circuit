@@ -236,15 +236,15 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                             <span className="font-mono text-[10px] text-gray-500">{variants.length} CONFIGURATIONS FOUND</span>
                         </div>
                         
-                        {/* Scroll Container with Touch Improvements */}
-                        <div className="flex gap-4 overflow-x-auto py-4 custom-scrollbar snap-x snap-mandatory touch-pan-x">
+                        {/* Scroll Container with Touch Improvements (Grip Zone py-6, snap-x) */}
+                        <div className="flex gap-4 overflow-x-auto py-6 px-1 custom-scrollbar snap-x snap-mandatory touch-pan-x">
                             {variants.length > 0 ? (
                                 variants.map(v => (
                                     <button
                                         key={v.id}
                                         onClick={() => handleVariantChange(v.id)}
                                         className={`
-                                            min-w-[140px] md:min-w-[160px] p-3 md:p-4 border-2 text-left flex flex-col justify-between transition-all duration-200 snap-center relative group
+                                            min-w-[130px] md:min-w-[160px] p-2 md:p-4 border-2 text-left flex flex-col justify-between transition-all duration-200 snap-center relative group
                                             ${selectedVariantId === v.id 
                                                 ? 'border-retro-neon bg-retro-neon/10 shadow-[0_0_15px_rgba(0,255,157,0.2)]' 
                                                 : 'border-retro-grid bg-black hover:border-retro-blue hover:bg-white/5'
