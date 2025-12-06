@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, type FC, type ReactNode } from 'react';
@@ -289,7 +290,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                                     <div className="space-y-2">
                                         <div className="font-pixel text-[10px] text-gray-600 mb-1 border-b border-gray-800">GRAPHICS PROCESSING</div>
                                         <SpecField label="GPU Model" value={mergedSpecs.gpu_model} highlight />
-                                        <SpecField label="Core Count" value={mergedSpecs.gpu_cores} />
+                                        <SpecField label="Core Count" value={mergedSpecs.gpu_cores ? `${mergedSpecs.gpu_cores}${mergedSpecs.gpu_core_unit ? ` ${mergedSpecs.gpu_core_unit}` : ''}` : null} />
                                         <SpecField label="Clock Speed" value={mergedSpecs.gpu_clock_mhz} unit="MHz" />
                                         <SpecField label="Architecture" value={mergedSpecs.gpu_architecture} />
                                         {/* Highlight TFLOPS neon */}
@@ -303,6 +304,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                         <SpecCard title="Visual Interface">
                             <SpecField label="Panel Type" value={mergedSpecs.display_type} highlight />
                             <SpecField label="Size" value={mergedSpecs.screen_size_inch} unit='"' />
+                            <SpecField label="Aspect Ratio" value={mergedSpecs.aspect_ratio} />
                             <SpecField label="Resolution" value={mergedSpecs.screen_resolution_x ? `${mergedSpecs.screen_resolution_x} x ${mergedSpecs.screen_resolution_y}` : null} />
                             <SpecField label="Density" value={mergedSpecs.ppi} unit="PPI" />
                             <SpecField label="Refresh Rate" value={mergedSpecs.refresh_rate_hz} unit="Hz" highlight />
