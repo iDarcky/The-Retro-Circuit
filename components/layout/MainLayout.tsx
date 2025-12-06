@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, type FC, type ReactNode } from 'react';
@@ -146,11 +145,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       `}>
         <div className="p-6 border-b border-retro-grid flex items-center justify-center bg-black/20">
              <div className="relative group">
-                <Logo src={customLogo} className="w-12 h-12 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)] transition-transform group-hover:scale-105" />
-             </div>
-             <div className="ml-3">
-                 <h1 className="font-pixel text-sm text-white leading-none">RETRO</h1>
-                 <h1 className="font-pixel text-sm text-retro-neon leading-none">CIRCUIT</h1>
+                <Logo src={customLogo} className="h-12 w-auto drop-shadow-[0_0_10px_rgba(0,255,157,0.5)] transition-transform group-hover:scale-105" />
              </div>
         </div>
 

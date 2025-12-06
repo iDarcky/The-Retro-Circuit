@@ -32,7 +32,8 @@ export const metadata = {
   description: "The ultimate retro gaming database. Compare console specs, read classic game reviews, and view the complete timeline of video game history.",
   keywords: ["retro gaming", "console specs", "video game database", "retro reviews", "console comparison"],
   icons: {
-    icon: '/logo.svg',
+    icon: '/favicon.ico',
+    apple: '/logo.png',
   },
   manifest: '/manifest.json',
   openGraph: {
