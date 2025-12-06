@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, type FC, type ChangeEvent } from 'react';
@@ -6,14 +7,26 @@ import { searchDatabase } from '../../lib/api';
 import { SearchResult } from '../../lib/types';
 import { useSound } from './SoundContext';
 
-const GlobalSearch: FC = () => {
+interface GlobalSearchProps {
+    className?: string;
+    autoFocus?: boolean;
+}
+
+const GlobalSearch: FC<GlobalSearchProps> = ({ className = "", autoFocus = false }) => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
     const { playHover, playClick } = useSound();
+
+    useEffect(() => {
+        if (autoFocus && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [autoFocus]);
 
     // Close on click outside
     useEffect(() => {
@@ -53,9 +66,10 @@ const GlobalSearch: FC = () => {
     };
 
     return (
-        <div className="relative p-4 border-b border-retro-grid" ref={wrapperRef}>
+        <div className={`relative p-4 border-b border-retro-grid ${className}`} ref={wrapperRef}>
             <div className="relative">
                 <input
+                    ref={inputRef}
                     type="text"
                     value={query}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
