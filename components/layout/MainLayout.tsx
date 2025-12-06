@@ -200,7 +200,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 relative z-10 flex flex-col h-[calc(100vh-64px)] md:h-screen overflow-hidden">
+      <main className="flex-1 relative z-10 flex flex-col h-screen md:h-screen overflow-hidden pt-16 md:pt-0">
         {/* Global Search Bar (Hidden on mobile if search is toggled in TopBar, but we keep it here for desktop or generic use) */}
         <div className="hidden md:block">
             <GlobalSearch />
