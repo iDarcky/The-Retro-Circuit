@@ -226,8 +226,8 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                 {/* RIGHT COLUMN: VARIANT DECK & SPECS (lg:col-span-8) */}
                 <div className="lg:col-span-8">
                     
-                    {/* 1. VARIANT SELECTOR DECK */}
-                    <div className="mb-6">
+                    {/* 1. VARIANT SELECTOR DECK (SCROLLABLE) */}
+                    <div className="mb-6 relative">
                         <div className="flex items-center justify-between mb-3">
                             <h3 className="font-pixel text-xs text-retro-blue uppercase flex items-center gap-2">
                                 <span className="w-2 h-2 bg-retro-blue animate-pulse rounded-full"></span>
@@ -236,14 +236,15 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                             <span className="font-mono text-[10px] text-gray-500">{variants.length} CONFIGURATIONS FOUND</span>
                         </div>
                         
-                        <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x touch-pan-x">
+                        {/* Scroll Container with Touch Improvements */}
+                        <div className="flex gap-4 overflow-x-auto py-4 custom-scrollbar snap-x snap-mandatory touch-pan-x">
                             {variants.length > 0 ? (
                                 variants.map(v => (
                                     <button
                                         key={v.id}
                                         onClick={() => handleVariantChange(v.id)}
                                         className={`
-                                            min-w-[160px] p-4 border-2 text-left flex flex-col justify-between transition-all duration-200 snap-start relative group
+                                            min-w-[140px] md:min-w-[160px] p-3 md:p-4 border-2 text-left flex flex-col justify-between transition-all duration-200 snap-center relative group
                                             ${selectedVariantId === v.id 
                                                 ? 'border-retro-neon bg-retro-neon/10 shadow-[0_0_15px_rgba(0,255,157,0.2)]' 
                                                 : 'border-retro-grid bg-black hover:border-retro-blue hover:bg-white/5'
@@ -253,13 +254,13 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                                         {v.is_default && (
                                             <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-retro-neon" title="Default Model"></div>
                                         )}
-                                        <div className={`font-bold font-mono text-sm mb-2 uppercase ${selectedVariantId === v.id ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}>
+                                        <div className={`font-bold font-mono text-xs md:text-sm mb-2 uppercase ${selectedVariantId === v.id ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}>
                                             {v.variant_name}
                                         </div>
                                         <div className="space-y-0.5">
-                                            {v.cpu_model && <div className="font-mono text-[10px] text-gray-500 truncate">{v.cpu_model}</div>}
-                                            {v.ram_gb && <div className="font-mono text-[10px] text-gray-500">{v.ram_gb}GB RAM</div>}
-                                            {v.screen_size_inch && <div className="font-mono text-[10px] text-gray-500">{v.screen_size_inch}" Display</div>}
+                                            {v.cpu_model && <div className="font-mono text-[9px] md:text-[10px] text-gray-500 truncate">{v.cpu_model}</div>}
+                                            {v.ram_gb && <div className="font-mono text-[9px] md:text-[10px] text-gray-500">{v.ram_gb}GB RAM</div>}
+                                            {v.screen_size_inch && <div className="font-mono text-[9px] md:text-[10px] text-gray-500">{v.screen_size_inch}" Display</div>}
                                         </div>
                                     </button>
                                 ))

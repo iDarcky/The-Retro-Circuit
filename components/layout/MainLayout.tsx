@@ -130,14 +130,20 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
           />
       )}
 
-      {/* SIDEBAR (Responsive Drawer) */}
+      {/* SIDEBAR (Responsive Drawer: Right on Mobile, Left on Desktop) */}
       <aside className={`
-          flex flex-col w-64 border-r border-retro-grid bg-retro-dark/95 backdrop-blur z-50 h-screen
-          fixed top-0 left-0 transition-transform duration-300 ease-out shadow-[0_0_50px_rgba(0,0,0,0.5)]
-          md:sticky md:top-0 md:translate-x-0 md:z-20 md:shadow-none
-          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+          flex flex-col h-screen z-50 transition-transform duration-300 ease-out shadow-[0_0_50px_rgba(0,0,0,0.5)]
+          
+          /* Mobile: Fixed Right, Slide from Right, Neon Left Border */
+          fixed top-0 right-0 w-64 bg-black/95 backdrop-blur border-l border-retro-neon
+          
+          /* Desktop: Sticky Left, Always Visible, Standard Border */
+          md:sticky md:top-0 md:left-0 md:right-auto md:w-64 md:bg-retro-dark/95 md:border-l-0 md:border-r md:border-retro-grid md:shadow-none
+
+          /* Animation State Logic */
+          ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
       `}>
-        <div className="p-6 border-b border-retro-grid flex items-center justify-center">
+        <div className="p-6 border-b border-retro-grid flex items-center justify-center bg-black/20">
              <div className="relative group">
                 <Logo src={customLogo} className="w-12 h-12 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)] transition-transform group-hover:scale-105" />
              </div>
@@ -148,21 +154,21 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         </div>
 
         <nav className="flex-1 py-6 space-y-2 overflow-y-auto custom-scrollbar">
-           <div className="px-6 mb-2 text-xs font-mono text-gray-600 uppercase">Mainframe</div>
+           <div className="px-6 mb-2 text-xs font-mono text-retro-neon uppercase tracking-widest opacity-80">MAINFRAME</div>
            <SidebarItem to="/" icon={IconHome} label="CONTROL ROOM" exact />
            <SidebarItem to="/signals" icon={IconNews} label="SIGNALS" />
            
-           <div className="px-6 mt-6 mb-2 text-xs font-mono text-gray-600 uppercase">Database</div>
+           <div className="px-6 mt-6 mb-2 text-xs font-mono text-retro-blue uppercase tracking-widest opacity-80">DATABASE</div>
            <SidebarItem to="/console" icon={IconDatabase} label="CONSOLES" />
            <SidebarItem to="/fabricators" icon={IconChip} label="FABRICATORS" />
            <SidebarItem to="/archive" icon={IconGames} label="GAME VAULT" />
            <SidebarItem to="/chrono" icon={IconTimeline} label="TIMELINE" />
            
-           <div className="px-6 mt-6 mb-2 text-xs font-mono text-gray-600 uppercase">Tools</div>
+           <div className="px-6 mt-6 mb-2 text-xs font-mono text-retro-pink uppercase tracking-widest opacity-80">TOOLS</div>
            <SidebarItem to="/arena" icon={IconVS} label="VS MODE" />
         </nav>
 
-        <div className="p-4 border-t border-retro-grid">
+        <div className="p-4 border-t border-retro-grid bg-black/20">
             {user ? (
                 <Link href="/login" className="flex items-center gap-3 p-2 hover:bg-white/5 rounded transition-colors group">
                     <div className="w-8 h-8 rounded bg-retro-blue/20 border border-retro-blue flex items-center justify-center group-hover:bg-retro-blue group-hover:text-black transition-colors">
@@ -182,7 +188,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         
         {/* Status Footer */}
         <div className="p-2 bg-black text-[10px] font-mono text-center flex justify-between items-center px-4 text-gray-600">
-            <span>v1.0.8</span>
+            <span>v1.1.0</span>
             {isAdmin && (
                 <span className={`flex items-center gap-1 ${dbStatus === 'ONLINE' ? 'text-retro-neon' : 'text-red-500'}`}>
                     <span className={`w-2 h-2 rounded-full ${dbStatus === 'ONLINE' ? 'bg-retro-neon' : 'bg-red-500'} animate-pulse`}></span>
