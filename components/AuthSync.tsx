@@ -10,13 +10,11 @@ export default function AuthSync() {
 
   useEffect(() => {
     // Listen for auth changes (SignIn, SignOut, etc.)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, _session) => {
-      // Logic Update: Only refresh on sign out.
-      // We ignore SIGNED_IN or TOKEN_REFRESHED to prevent infinite refresh loops
-      // on pages that already loaded the session via SSR.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      // CRITICAL FIX: Strictly ignore SIGNED_IN and TOKEN_REFRESHED.
+      // Only refresh the server components when the user explicitly signs out.
       if (event === 'SIGNED_OUT') {
-        console.log(`[AuthSync] Auth event detected: ${event}. Refreshing server components...`);
-        // This re-fetches server components using the new cookies/session
+        console.log('[AuthSync] User signed out. Refreshing view...');
         router.refresh();
       }
     });
