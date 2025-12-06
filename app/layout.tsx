@@ -33,6 +33,7 @@ export const metadata = {
   keywords: ["retro gaming", "console specs", "video game database", "retro reviews", "console comparison"],
   icons: {
     icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
     apple: '/logo.png',
   },
   manifest: '/manifest.json',

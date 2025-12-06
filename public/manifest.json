@@ -8,7 +8,7 @@
   "description": "The ultimate retro gaming hardware database and news hub.",
   "icons": [
     {
-      "src": "logo.png",
+      "src": "/logo.png",
       "sizes": "any",
       "type": "image/png"
     }
