@@ -10,10 +10,11 @@ import { checkDatabaseConnection } from '../../lib/api';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase/singleton';
 import GlobalSearch from '../ui/GlobalSearch';
 import Logo from '../ui/Logo';
+import MobileBottomNav from './MobileBottomNav';
 import type { User } from '@supabase/supabase-js';
 import { 
   IconNews, IconDatabase, IconVS, IconGames, IconTimeline, 
-  IconLogin, IconHome, IconSettings, IconChip
+  IconHome, IconSettings, IconChip
 } from '../ui/Icons';
 
 // --- HELPER COMPONENTS ---
@@ -40,23 +41,6 @@ const SidebarItem = ({ to, icon: Icon, label, exact = false }: { to: string, ico
       <span className="tracking-widest text-sm">{label}</span>
     </Link>
   );
-};
-
-const MobileNavItem = ({ to, icon: Icon, label, exact = false }: { to: string, icon: any, label: string, exact?: boolean }) => {
-    const pathname = usePathname();
-    const isActive = exact ? pathname === to : pathname.startsWith(to);
-    const { playClick } = useSound();
-
-    return (
-        <Link 
-            href={to}
-            onClick={playClick}
-            className={`flex flex-col items-center justify-center p-2 ${isActive ? 'text-retro-neon' : 'text-gray-500'}`}
-        >
-            <Icon className="w-6 h-6 mb-1" />
-            <span className="text-[10px] font-mono">{label}</span>
-        </Link>
-    );
 };
 
 // --- MAIN LAYOUT ---
@@ -212,18 +196,12 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         <GlobalSearch />
         
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar bg-retro-dark/80 pb-20 md:pb-0">
+        <div className="flex-1 overflow-y-auto custom-scrollbar bg-retro-dark/80 pb-24 md:pb-0">
              {children}
         </div>
 
-        {/* Mobile Bottom Nav */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-retro-dark border-t border-retro-grid grid grid-cols-5 items-center pb-safe z-30">
-            <MobileNavItem to="/" icon={IconHome} label="Home" exact />
-            <MobileNavItem to="/signals" icon={IconNews} label="News" />
-            <MobileNavItem to="/console" icon={IconDatabase} label="Sys" />
-            <MobileNavItem to="/archive" icon={IconGames} label="Games" />
-            <MobileNavItem to="/login" icon={IconLogin} label="Acct" />
-        </div>
+        {/* Floating Mobile Bottom Dock */}
+        <MobileBottomNav />
       </main>
 
     </div>
