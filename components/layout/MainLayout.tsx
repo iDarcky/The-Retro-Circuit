@@ -104,7 +104,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
   }, [pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row relative overflow-hidden bg-retro-dark">
+    <div className="min-h-screen flex flex-col md:flex-row relative overflow-x-hidden bg-retro-dark">
       
       {/* BACKGROUND GRID */}
       <div className="absolute inset-0 z-0 pointer-events-none" 

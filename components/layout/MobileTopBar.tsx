@@ -17,7 +17,7 @@ const MobileTopBar: FC<MobileTopBarProps> = ({ onMenuClick, isSidebarOpen, custo
 
   return (
     <>
-      <header className="md:hidden sticky top-0 z-40 h-16 bg-retro-dark border-b border-retro-neon flex items-center justify-between px-4 shadow-lg">
+      <header className="md:hidden sticky top-0 z-50 h-16 bg-retro-dark border-b border-retro-neon flex items-center justify-between px-4 shadow-lg">
         {/* Left: Logo */}
         <div className="flex items-center gap-2">
             <Logo src={customLogo} className="w-8 h-8" />

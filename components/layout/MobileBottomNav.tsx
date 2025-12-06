@@ -1,3 +1,4 @@
+
 'use client';
 
 import { usePathname } from 'next/navigation';
@@ -18,7 +19,7 @@ const MobileBottomNav = () => {
     ];
 
     return (
-        <div className="md:hidden fixed bottom-4 left-4 right-4 h-16 backdrop-blur-md bg-black/80 border border-white/10 rounded-full shadow-[0_4px_30px_rgba(0,0,0,0.5)] z-50 flex items-center justify-around px-2 pb-safe-0">
+        <div className="md:hidden fixed bottom-4 left-4 right-4 h-16 backdrop-blur-xl bg-black/30 border border-white/10 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.1)] z-50 flex items-center justify-around px-2 pb-safe-0">
             {navItems.map((item) => {
                 const isActive = item.exact 
                     ? pathname === item.path 
