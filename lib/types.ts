@@ -247,94 +247,107 @@ export interface ConsoleVariant {
   price_launch_usd?: number;
 }
 
+// Helper: Converts empty strings/nulls to undefined for optional numbers
+const numericOptional = z.preprocess(
+  (val) => (val === "" || val === null || val === undefined ? undefined : Number(val)),
+  z.number().optional()
+);
+
+// Helper: Allows empty strings for optional text fields
+const stringOptional = z.string().optional().or(z.literal("")).transform(v => v === "" ? undefined : v);
+
 export const ConsoleVariantSchema = z.object({
   console_id: z.string().uuid(),
-  variant_name: z.string().min(1, "Name required"),
-  slug: z.string().optional(),
-  release_year: z.coerce.number().optional(),
-  is_default: z.boolean().optional(),
-  image_url: z.string().url().optional().or(z.literal('')),
-  model_no: z.string().optional(),
   
-  // Core - All Optional strings
-  cpu_model: z.string().optional().or(z.literal('')),
-  cpu_architecture: z.string().optional().or(z.literal('')),
-  cpu_process_node: z.string().optional().or(z.literal('')),
-  cpu_cores: z.coerce.number().optional(),
-  cpu_threads: z.coerce.number().optional(),
-  cpu_clock_mhz: z.coerce.number().optional(),
-  gpu_model: z.string().optional().or(z.literal('')),
-  gpu_architecture: z.string().optional().or(z.literal('')),
-  gpu_cores: z.coerce.number().optional(),
-  gpu_core_unit: z.string().optional().or(z.literal('')),
-  gpu_clock_mhz: z.coerce.number().optional(),
-  gpu_teraflops: z.coerce.number().optional(),
-  os: z.string().optional().or(z.literal('')),
-  tdp_range_w: z.string().optional().or(z.literal('')),
+  // -- REQUIRED IDENTITY FIELDS --
+  variant_name: z.string().min(1, "Variant Name is required"),
+  release_year: z.coerce.number({ invalid_type_error: "Year must be a number" }).min(1970).max(2100),
+  price_launch_usd: z.coerce.number().min(0),
+
+  // -- OPTIONAL FIELDS --
+  slug: stringOptional,
+  is_default: z.boolean().optional(),
+  image_url: z.string().url().optional().or(z.literal("")),
+  model_no: stringOptional,
+  
+  // Core
+  cpu_model: stringOptional,
+  cpu_architecture: stringOptional,
+  cpu_process_node: stringOptional,
+  cpu_cores: numericOptional,
+  cpu_threads: numericOptional,
+  cpu_clock_mhz: numericOptional,
+  gpu_model: stringOptional,
+  gpu_architecture: stringOptional,
+  gpu_cores: numericOptional,
+  gpu_core_unit: stringOptional,
+  gpu_clock_mhz: numericOptional,
+  gpu_teraflops: numericOptional,
+  os: stringOptional,
+  tdp_range_w: stringOptional,
 
   // Memory
-  price_launch_usd: z.coerce.number().optional(),
-  ram_gb: z.coerce.number().optional(),
-  ram_type: z.string().optional().or(z.literal('')),
-  ram_speed_mhz: z.coerce.number().optional(),
-  storage_gb: z.coerce.number().optional(),
-  storage_type: z.string().optional().or(z.literal('')),
+  ram_gb: numericOptional,
+  ram_type: stringOptional,
+  ram_speed_mhz: numericOptional,
+  storage_gb: numericOptional,
+  storage_type: stringOptional,
   storage_expandable: z.boolean().optional().default(false),
   
   // Display
-  screen_size_inch: z.coerce.number().optional(),
-  screen_resolution_x: z.coerce.number().optional(),
-  screen_resolution_y: z.coerce.number().optional(),
-  display_type: z.string().optional().or(z.literal('')),
-  display_tech: z.string().optional().or(z.literal('')),
+  screen_size_inch: numericOptional,
+  screen_resolution_x: numericOptional,
+  screen_resolution_y: numericOptional,
+  display_type: stringOptional,
+  display_tech: stringOptional,
   touchscreen: z.boolean().optional().default(false),
-  aspect_ratio: z.string().optional().or(z.literal('')),
-  resolution_pixel_density: z.coerce.number().optional(),
-  ppi: z.coerce.number().optional(),
-  refresh_rate_hz: z.coerce.number().optional(), 
-  brightness_nits: z.coerce.number().optional(), 
+  aspect_ratio: stringOptional,
+  resolution_pixel_density: numericOptional,
+  ppi: numericOptional,
+  refresh_rate_hz: numericOptional, 
+  brightness_nits: numericOptional, 
 
   // Dual Screen
-  second_screen_size: z.coerce.number().optional(),
-  second_screen_resolution_x: z.coerce.number().optional(),
-  second_screen_resolution_y: z.coerce.number().optional(),
+  second_screen_size: numericOptional,
+  second_screen_resolution_x: numericOptional,
+  second_screen_resolution_y: numericOptional,
   second_screen_touch: z.boolean().optional().default(false),
   
   // Controls & Connectivity
-  input_layout: z.string().optional().or(z.literal('')),
-  dpad_type: z.string().optional().or(z.literal('')),
-  analog_stick_type: z.string().optional().or(z.literal('')),
-  shoulder_buttons: z.string().optional().or(z.literal('')),
+  input_layout: stringOptional,
+  dpad_type: stringOptional,
+  analog_stick_type: stringOptional,
+  shoulder_buttons: stringOptional,
   has_back_buttons: z.boolean().optional().default(false),
-  ports: z.string().optional().or(z.literal('')),
-  charging_port: z.string().optional().or(z.literal('')),
-  connectivity: z.string().optional().or(z.literal('')),
-  wireless_connectivity: z.string().optional().or(z.literal('')),
-  cellular_connectivity: z.string().optional().or(z.literal('')),
-  video_out: z.string().optional().or(z.literal('')),
+  ports: stringOptional,
+  charging_port: stringOptional,
+  connectivity: stringOptional,
+  wireless_connectivity: stringOptional,
+  cellular_connectivity: stringOptional,
+  video_out: stringOptional,
 
   // Multimedia
-  audio_speakers: z.string().optional().or(z.literal('')),
-  audio_tech: z.string().optional().or(z.literal('')),
-  headphone_jack: z.string().optional().or(z.literal('')),
+  audio_speakers: stringOptional,
+  audio_tech: stringOptional,
+  headphone_jack: stringOptional,
   microphone: z.boolean().optional().default(false),
-  camera: z.string().optional().or(z.literal('')),
-  haptics: z.string().optional().or(z.literal('')),
+  camera: stringOptional,
+  haptics: stringOptional,
   gyro: z.boolean().optional().default(false),
-  biometrics: z.string().optional().or(z.literal('')),
+  biometrics: stringOptional,
 
   // Power & Physical
-  weight_g: z.coerce.number().optional(),
-  battery_mah: z.coerce.number().optional(),
-  battery_wh: z.coerce.number().optional(), 
-  charging_speed_w: z.coerce.number().optional(),
-  body_material: z.string().optional().or(z.literal('')),
-  colors: z.string().optional().or(z.literal('')),
-  cooling: z.string().optional().or(z.literal('')),
-  dimensions: z.string().optional().or(z.literal('')),
+  weight_g: numericOptional,
+  battery_mah: numericOptional,
+  battery_wh: numericOptional, 
+  charging_speed_w: numericOptional,
+  body_material: stringOptional,
+  colors: stringOptional,
+  cooling: stringOptional,
+  dimensions: stringOptional,
 
   // Software
-  ui_skin: z.string().optional().or(z.literal('')),
+  ui_skin: stringOptional,
 });
 
 // Defines the layout for the Admin UI Form
@@ -343,8 +356,8 @@ export const VARIANT_FORM_GROUPS = [
         title: "IDENTITY & ORIGIN",
         fields: [
             { label: 'Variant Name (e.g. Pro)', key: 'variant_name', type: 'text', required: true, width: 'full' },
-            { label: 'Release Year', key: 'release_year', type: 'number', width: 'half' },
-            { label: 'Launch Price ($)', key: 'price_launch_usd', type: 'number', width: 'half' },
+            { label: 'Release Year', key: 'release_year', type: 'number', required: true, width: 'half' },
+            { label: 'Launch Price ($)', key: 'price_launch_usd', type: 'number', required: true, width: 'half' },
             { label: 'Model No.', key: 'model_no', type: 'text', width: 'half' },
             { label: 'Slug (Auto)', key: 'slug', type: 'text', width: 'half' },
             { label: 'Is Default?', key: 'is_default', type: 'checkbox', width: 'full' },
