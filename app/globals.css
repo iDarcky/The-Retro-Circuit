@@ -33,6 +33,20 @@ body {
   animation: flicker 0.15s infinite;
 }
 
+/* Glitch Animation for 404 */
+@keyframes glitch-shake {
+  0% { transform: translate(0); }
+  25% { transform: translate(-2px, 2px); }
+  50% { transform: translate(2px, -2px); }
+  75% { transform: translate(-2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+.glitch-hover:hover {
+  animation: glitch-shake 0.2s cubic-bezier(.36,.07,.19,.97) both infinite;
+  text-shadow: 2px 2px 0px #00ff9d, -2px -2px 0px #00ffff;
+}
+
 @keyframes flicker {
   0% { opacity: 0.02; }
   50% { opacity: 0.05; }
