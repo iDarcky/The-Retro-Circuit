@@ -6,7 +6,6 @@ import { compareConsoles } from '../../lib/compare';
 import { fetchConsoleList } from '../../lib/api';
 import { ComparisonResult } from '../../lib/types';
 import Button from '../../components/ui/Button';
-import SEOHead from '../../components/ui/SEOHead';
 
 const StatBar = ({ value, color, align }: { value: number, color: string, align: 'left' | 'right' }) => {
     const safeValue = isNaN(value) ? 0 : Math.min(100, Math.max(0, value));
@@ -68,8 +67,7 @@ function VsModeContent() {
 
   return (
     <div className="w-full max-w-7xl mx-auto p-4">
-      <SEOHead title="The Arena - VS Mode" description="Compare retro console specifications in a head-to-head battle." />
-
+      
       {/* HEADER */}
       <div className="text-center mb-10">
         <h2 className="text-4xl md:text-6xl font-pixel text-retro-neon mb-4 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">

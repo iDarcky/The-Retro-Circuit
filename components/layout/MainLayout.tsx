@@ -10,10 +10,12 @@ import { checkDatabaseConnection } from '../../lib/api';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase/singleton';
 import GlobalSearch from '../ui/GlobalSearch';
 import Logo from '../ui/Logo';
+import MobileBottomNav from './MobileBottomNav';
+import MobileTopBar from './MobileTopBar';
 import type { User } from '@supabase/supabase-js';
 import { 
   IconNews, IconDatabase, IconVS, IconGames, IconTimeline, 
-  IconLogin, IconHome, IconSettings, IconChip
+  IconHome, IconSettings, IconChip
 } from '../ui/Icons';
 
 // --- HELPER COMPONENTS ---
@@ -40,23 +42,6 @@ const SidebarItem = ({ to, icon: Icon, label, exact = false }: { to: string, ico
       <span className="tracking-widest text-sm">{label}</span>
     </Link>
   );
-};
-
-const MobileNavItem = ({ to, icon: Icon, label, exact = false }: { to: string, icon: any, label: string, exact?: boolean }) => {
-    const pathname = usePathname();
-    const isActive = exact ? pathname === to : pathname.startsWith(to);
-    const { playClick } = useSound();
-
-    return (
-        <Link 
-            href={to}
-            onClick={playClick}
-            className={`flex flex-col items-center justify-center p-2 ${isActive ? 'text-retro-neon' : 'text-gray-500'}`}
-        >
-            <Icon className="w-6 h-6 mb-1" />
-            <span className="text-[10px] font-mono">{label}</span>
-        </Link>
-    );
 };
 
 // --- MAIN LAYOUT ---
@@ -112,6 +97,12 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Close sidebar on route change (mobile)
+  const pathname = usePathname();
+  useEffect(() => {
+      setSidebarOpen(false);
+  }, [pathname]);
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row relative overflow-hidden bg-retro-dark">
       
@@ -124,9 +115,35 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
            }}>
       </div>
 
-      {/* DESKTOP SIDEBAR */}
-      <aside className="hidden md:flex flex-col w-64 border-r border-retro-grid bg-retro-dark/95 backdrop-blur z-20 h-screen sticky top-0">
-        <div className="p-6 border-b border-retro-grid flex items-center justify-center">
+      {/* MOBILE HEADER */}
+      <MobileTopBar 
+        onMenuClick={() => setSidebarOpen(!isSidebarOpen)} 
+        isSidebarOpen={isSidebarOpen}
+        customLogo={customLogo}
+      />
+
+      {/* MOBILE DRAWER BACKDROP */}
+      {isSidebarOpen && (
+          <div 
+            className="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm animate-fadeIn"
+            onClick={() => setSidebarOpen(false)}
+          />
+      )}
+
+      {/* SIDEBAR (Responsive Drawer: Right on Mobile, Left on Desktop) */}
+      <aside className={`
+          flex flex-col h-screen z-50 transition-transform duration-300 ease-out shadow-[0_0_50px_rgba(0,0,0,0.5)]
+          
+          /* Mobile: Fixed Right, Slide from Right, Neon Left Border */
+          fixed top-0 right-0 w-64 bg-black/95 backdrop-blur border-l border-retro-neon
+          
+          /* Desktop: Sticky Left, Always Visible, Standard Border */
+          md:sticky md:top-0 md:left-0 md:right-auto md:w-64 md:bg-retro-dark/95 md:border-l-0 md:border-r md:border-retro-grid md:shadow-none
+
+          /* Animation State Logic */
+          ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
+      `}>
+        <div className="p-6 border-b border-retro-grid flex items-center justify-center bg-black/20">
              <div className="relative group">
                 <Logo src={customLogo} className="w-12 h-12 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)] transition-transform group-hover:scale-105" />
              </div>
@@ -137,21 +154,21 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         </div>
 
         <nav className="flex-1 py-6 space-y-2 overflow-y-auto custom-scrollbar">
-           <div className="px-6 mb-2 text-xs font-mono text-gray-600 uppercase">Mainframe</div>
+           <div className="px-6 mb-2 text-xs font-mono text-retro-neon uppercase tracking-widest opacity-80">MAINFRAME</div>
            <SidebarItem to="/" icon={IconHome} label="CONTROL ROOM" exact />
            <SidebarItem to="/signals" icon={IconNews} label="SIGNALS" />
            
-           <div className="px-6 mt-6 mb-2 text-xs font-mono text-gray-600 uppercase">Database</div>
+           <div className="px-6 mt-6 mb-2 text-xs font-mono text-retro-blue uppercase tracking-widest opacity-80">DATABASE</div>
            <SidebarItem to="/console" icon={IconDatabase} label="CONSOLES" />
            <SidebarItem to="/fabricators" icon={IconChip} label="FABRICATORS" />
            <SidebarItem to="/archive" icon={IconGames} label="GAME VAULT" />
            <SidebarItem to="/chrono" icon={IconTimeline} label="TIMELINE" />
            
-           <div className="px-6 mt-6 mb-2 text-xs font-mono text-gray-600 uppercase">Tools</div>
+           <div className="px-6 mt-6 mb-2 text-xs font-mono text-retro-pink uppercase tracking-widest opacity-80">TOOLS</div>
            <SidebarItem to="/arena" icon={IconVS} label="VS MODE" />
         </nav>
 
-        <div className="p-4 border-t border-retro-grid">
+        <div className="p-4 border-t border-retro-grid bg-black/20">
             {user ? (
                 <Link href="/login" className="flex items-center gap-3 p-2 hover:bg-white/5 rounded transition-colors group">
                     <div className="w-8 h-8 rounded bg-retro-blue/20 border border-retro-blue flex items-center justify-center group-hover:bg-retro-blue group-hover:text-black transition-colors">
@@ -171,59 +188,30 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         
         {/* Status Footer */}
         <div className="p-2 bg-black text-[10px] font-mono text-center flex justify-between items-center px-4 text-gray-600">
-            <span>v1.0.7</span>
+            <span>v1.1.0</span>
             {isAdmin && (
                 <span className={`flex items-center gap-1 ${dbStatus === 'ONLINE' ? 'text-retro-neon' : 'text-red-500'}`}>
                     <span className={`w-2 h-2 rounded-full ${dbStatus === 'ONLINE' ? 'bg-retro-neon' : 'bg-red-500'} animate-pulse`}></span>
-                    {dbStatus === 'ONLINE' ? 'DATABASE ONLINE' : 'OFFLINE'}
+                    {dbStatus === 'ONLINE' ? 'DB ONLINE' : 'OFFLINE'}
                 </span>
             )}
         </div>
       </aside>
 
-      {/* MOBILE HEADER */}
-      <header className="md:hidden h-16 border-b border-retro-grid bg-retro-dark/95 backdrop-blur z-20 flex items-center justify-between px-4 sticky top-0">
-         <div className="flex items-center">
-             <Logo src={customLogo} className="w-8 h-8 drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]" />
-             <span className="ml-2 font-pixel text-xs text-white">RETRO CIRCUIT</span>
-         </div>
-         <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="p-2 text-retro-neon">
-             {isSidebarOpen ? 'CLOSE' : 'MENU'}
-         </button>
-      </header>
-
-      {/* MOBILE MENU OVERLAY */}
-      {isSidebarOpen && (
-          <div className="md:hidden fixed inset-0 z-10 bg-black/95 pt-20 px-4 pb-safe animate-fadeIn">
-              <nav className="space-y-4">
-                  <Link href="/" onClick={() => setSidebarOpen(false)} className="block p-4 border border-retro-grid text-retro-neon font-pixel text-center hover:bg-retro-neon hover:text-black">CONTROL ROOM</Link>
-                  <Link href="/console" onClick={() => setSidebarOpen(false)} className="block p-4 border border-retro-grid text-white font-pixel text-center hover:border-retro-blue hover:text-retro-blue">CONSOLES</Link>
-                  <Link href="/fabricators" onClick={() => setSidebarOpen(false)} className="block p-4 border border-retro-grid text-white font-pixel text-center hover:border-retro-neon hover:text-retro-neon">FABRICATORS</Link>
-                  <Link href="/archive" onClick={() => setSidebarOpen(false)} className="block p-4 border border-retro-grid text-white font-pixel text-center hover:border-retro-pink hover:text-retro-pink">GAMES</Link>
-                  <Link href="/arena" onClick={() => setSidebarOpen(false)} className="block p-4 border border-retro-grid text-white font-pixel text-center hover:border-yellow-400 hover:text-yellow-400">VS MODE</Link>
-                  <Link href="/login" onClick={() => setSidebarOpen(false)} className="block p-4 border border-retro-grid text-gray-400 font-pixel text-center hover:bg-white hover:text-black">MY ACCOUNT</Link>
-              </nav>
-          </div>
-      )}
-
       {/* MAIN CONTENT AREA */}
       <main className="flex-1 relative z-10 flex flex-col h-[calc(100vh-64px)] md:h-screen overflow-hidden">
-        {/* Global Search Bar */}
-        <GlobalSearch />
+        {/* Global Search Bar (Hidden on mobile if search is toggled in TopBar, but we keep it here for desktop or generic use) */}
+        <div className="hidden md:block">
+            <GlobalSearch />
+        </div>
         
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar bg-retro-dark/80 pb-20 md:pb-0">
+        <div className="flex-1 overflow-y-auto custom-scrollbar bg-retro-dark/80 pb-24 md:pb-0">
              {children}
         </div>
 
-        {/* Mobile Bottom Nav */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-retro-dark border-t border-retro-grid grid grid-cols-5 items-center pb-safe z-30">
-            <MobileNavItem to="/" icon={IconHome} label="Home" exact />
-            <MobileNavItem to="/signals" icon={IconNews} label="News" />
-            <MobileNavItem to="/console" icon={IconDatabase} label="Sys" />
-            <MobileNavItem to="/archive" icon={IconGames} label="Games" />
-            <MobileNavItem to="/login" icon={IconLogin} label="Acct" />
-        </div>
+        {/* Floating Mobile Bottom Dock */}
+        <MobileBottomNav />
       </main>
 
     </div>
