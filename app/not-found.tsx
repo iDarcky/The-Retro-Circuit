@@ -39,7 +39,7 @@ export default function NotFound() {
         404
       </div>
       
-      <h2 className="font-pixel text-2xl text-white mb-8 tracking-widest">SIGNAL LOST</h2>
+      <h2 className="font-pixel text-2xl text-retro-pink mb-8 tracking-widest animate-[neon-pulse_3s_ease-in-out_infinite]">SIGNAL LOST</h2>
       
       {/* Terminal Log Output */}
       <div className="p-6 border-2 border-retro-grid bg-black/80 mb-10 w-full max-w-md shadow-[0_0_20px_rgba(0,0,0,0.5)] relative overflow-hidden">

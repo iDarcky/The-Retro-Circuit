@@ -47,6 +47,18 @@ body {
   text-shadow: 2px 2px 0px #00ff9d, -2px -2px 0px #00ffff;
 }
 
+/* Neon Pulse Animation */
+@keyframes neon-pulse {
+  0%, 100% {
+    text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 40px #ff00ff;
+    opacity: 1;
+  }
+  50% {
+    text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff;
+    opacity: 0.8;
+  }
+}
+
 @keyframes flicker {
   0% { opacity: 0.02; }
   50% { opacity: 0.05; }
