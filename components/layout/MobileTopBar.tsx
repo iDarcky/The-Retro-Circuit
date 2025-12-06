@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, type FC } from 'react';
@@ -17,11 +16,10 @@ const MobileTopBar: FC<MobileTopBarProps> = ({ onMenuClick, isSidebarOpen, custo
 
   return (
     <>
-      <header className="md:hidden sticky top-0 z-50 h-16 bg-retro-dark border-b border-retro-neon flex items-center justify-between px-4 shadow-lg">
+      <header className="fixed top-0 left-0 right-0 z-50 h-16 md:hidden bg-retro-dark/90 backdrop-blur-md border-b border-retro-neon flex items-center justify-between px-4 shadow-lg transition-all duration-300">
         {/* Left: Logo */}
-        <div className="flex items-center gap-2">
-            <Logo src={customLogo} className="w-8 h-8" />
-            <span className="font-pixel text-xs text-white tracking-wider">RETRO CIRCUIT</span>
+        <div className="flex items-center">
+            <Logo src={customLogo} className="h-8 w-auto" />
         </div>
 
         {/* Right: Actions */}
