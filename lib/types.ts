@@ -147,14 +147,14 @@ export const MANUFACTURER_FORM_FIELDS = [
 export const ConsoleSchema = z.object({
     manufacturer_id: z.string().min(1, "Manufacturer is required"),
     name: z.string().min(1, "Console Name is required"),
-    slug: z.string().optional(),
-    description: z.string().optional(),
-    type: z.enum(['Home', 'Handheld', 'Hybrid', 'Microconsole', 'Computer']).optional(),
-    generation: z.string().optional(),
-    release_year: z.coerce.number().optional(), // Kept for legacy, but variants override
-    units_sold: z.string().optional(),
-    image_url: z.string().optional(),
-    form_factor: z.string().optional(),
+    slug: z.string().optional().or(z.literal('')),
+    description: z.string().optional().or(z.literal('')),
+    type: z.preprocess((val) => (val === '' || val === null ? undefined : val), z.enum(['Home', 'Handheld', 'Hybrid', 'Microconsole', 'Computer']).optional()),
+    generation: z.string().optional().or(z.literal('')),
+    release_year: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()), 
+    units_sold: z.string().optional().or(z.literal('')),
+    image_url: z.string().optional().or(z.literal('')),
+    form_factor: z.string().optional().or(z.literal('')),
 });
 
 export const CONSOLE_FORM_FIELDS = [
@@ -299,13 +299,13 @@ export const ConsoleVariantSchema = z.object({
   id: z.string().optional(),
   console_id: z.string().min(1, "Parent Console ID Required"),
   variant_name: z.string().min(1, "Variant Name Required"),
-  slug: z.string().optional(),
+  slug: z.string().optional().or(z.literal('')),
   
   // Booleans with preprocessing to handle nulls
   is_default: z.preprocess((val) => val === true || val === 'true', z.boolean().default(false)),
   
-  // Strict Identity Fields
-  release_year: z.coerce.number().min(1970, "Valid Year Required").max(2100),
+  // Relaxed Identity Fields (Optional for Legacy/Drafts)
+  release_year: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
   price_launch_usd: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
 
   // Optional Identity
@@ -397,8 +397,8 @@ export const VARIANT_FORM_GROUPS = [
         title: "IDENTITY & ORIGIN",
         fields: [
             { label: 'Variant Name (e.g. "OLED Model")', key: 'variant_name', type: 'text', required: true, width: 'full' },
-            { label: 'Release Year', key: 'release_year', type: 'number', required: true },
-            { label: 'Launch Price ($)', key: 'price_launch_usd', type: 'number', required: true },
+            { label: 'Release Year', key: 'release_year', type: 'number', required: false },
+            { label: 'Launch Price ($)', key: 'price_launch_usd', type: 'number', required: false },
             { label: 'Is Default/Base Model?', key: 'is_default', type: 'checkbox', required: false },
             { label: 'Model No.', key: 'model_no', type: 'text', required: false },
             { label: 'Image URL', key: 'image_url', type: 'url', required: false, width: 'full' },
@@ -454,6 +454,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Input Layout', key: 'input_layout', type: 'text', required: false },
             { label: 'D-Pad Style', key: 'dpad_type', type: 'text', required: false },
             { label: 'Analog Sticks', key: 'analog_stick_type', type: 'text', required: false },
+            { label: 'Shoulder Buttons', key: 'shoulder_buttons', type: 'text', required: false },
             { label: 'Wireless (WiFi/BT)', key: 'wireless_connectivity', type: 'text', required: false },
             { label: 'Ports / IO', key: 'ports', type: 'text', required: false },
             { label: 'Video Out Capable', key: 'video_out', type: 'text', required: false },
