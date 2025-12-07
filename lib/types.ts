@@ -162,13 +162,7 @@ export const ConsoleSchema = z.object({
 export const CONSOLE_FORM_FIELDS = [
     { label: 'Console Name', key: 'name', type: 'text', required: true },
     { label: 'Slug (Auto)', key: 'slug', type: 'text', required: false },
-    { label: 'Type', key: 'type', type: 'text', required: false }, // Should be dropdown ideally
-    { label: 'Generation', key: 'generation', type: 'text', required: false },
-    { label: 'Form Factor', key: 'form_factor', type: 'text', required: false },
-    { label: 'Legacy Release Year', key: 'release_year', type: 'number', required: false },
-    { label: 'Lifetime Sales', key: 'units_sold', type: 'text', required: false },
     { label: 'Description', key: 'description', type: 'textarea', required: false },
-    { label: 'Main Image URL', key: 'image_url', type: 'url', required: false },
 ];
 
 export interface ConsoleFilterState {
