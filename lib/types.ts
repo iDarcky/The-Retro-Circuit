@@ -61,15 +61,15 @@ export interface GameOfTheWeekData {
 export const GameSchema = z.object({
   id: z.string().optional(),
   slug: z.string().optional(),
-  title: z.string().min(2, "Title is required"),
-  developer: z.string().min(2, "Developer is required"),
-  year: z.string().regex(/^\d{4}$/, "Year must be 4 digits"),
-  genre: z.string().min(2, "Genre is required"),
-  content: z.string().min(20, "Content must be substantial"),
-  whyItMatters: z.string().min(10, "Field is required"),
-  rating: z.number().min(1).max(5).default(5),
-  image: z.string().url("Invalid Image URL").optional().or(z.literal('')),
-  console_slug: z.string().optional(),
+  title: z.string().min(1, "Title is required"),
+  developer: z.string().min(1, "Developer is required"),
+  year: z.string().min(4, "Year must be 4 digits"),
+  genre: z.string().min(1, "Genre is required"),
+  content: z.string().min(10, "Review content must be longer"),
+  whyItMatters: z.string().min(10, "Analysis must be longer"),
+  rating: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
+  image: z.string().optional().or(z.literal('')),
+  console_slug: z.string().optional().or(z.literal('')),
 });
 
 export interface TimelineEvent {
@@ -123,14 +123,14 @@ export interface Manufacturer {
 
 export const ManufacturerSchema = z.object({
   id: z.string().optional(),
-  name: z.string().min(1, "Name Required"),
-  slug: z.string().min(1, "Slug Required"),
-  description: z.string().min(10, "Description Required"),
-  country: z.string().min(2, "Country Required"),
-  founded_year: z.coerce.number().min(1800).max(2100),
-  website: z.string().url().optional().or(z.literal('')),
-  key_franchises: z.string().optional(),
-  image_url: z.string().url().optional().or(z.literal('')),
+  name: z.string().optional().or(z.literal('')),
+  slug: z.string().optional().or(z.literal('')),
+  description: z.string().optional().or(z.literal('')),
+  country: z.string().optional().or(z.literal('')),
+  founded_year: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
+  website: z.string().optional().or(z.literal('')),
+  key_franchises: z.string().optional().or(z.literal('')),
+  image_url: z.string().optional().or(z.literal('')),
 });
 
 export const MANUFACTURER_FORM_FIELDS = [
@@ -145,8 +145,8 @@ export const MANUFACTURER_FORM_FIELDS = [
 ];
 
 export const ConsoleSchema = z.object({
-    manufacturer_id: z.string().min(1, "Manufacturer is required"),
-    name: z.string().min(1, "Console Name is required"),
+    manufacturer_id: z.string().optional().or(z.literal('')),
+    name: z.string().optional().or(z.literal('')),
     slug: z.string().optional().or(z.literal('')),
     description: z.string().optional().or(z.literal('')),
     // Relaxed from enum to string to allow legacy types
@@ -299,8 +299,8 @@ export interface ConsoleDetails {
 // Relaxed Validation: Only Identity fields required. Everything else optional/nullable.
 export const ConsoleVariantSchema = z.object({
   id: z.string().optional(),
-  console_id: z.string().min(1, "Parent Console ID Required"),
-  variant_name: z.string().min(1, "Variant Name Required"),
+  console_id: z.string().optional().or(z.literal('')),
+  variant_name: z.string().optional().or(z.literal('')),
   slug: z.string().optional().or(z.literal('')),
   
   // Booleans with preprocessing to handle nulls
