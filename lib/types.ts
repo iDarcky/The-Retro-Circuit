@@ -67,7 +67,7 @@ export const GameSchema = z.object({
   genre: z.string().min(1, "Genre is required"),
   content: z.string().min(10, "Review content must be longer"),
   whyItMatters: z.string().min(10, "Analysis must be longer"),
-  rating: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
+  rating: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
   image: z.string().optional().or(z.literal('')),
   console_slug: z.string().optional().or(z.literal('')),
 });
@@ -123,11 +123,11 @@ export interface Manufacturer {
 
 export const ManufacturerSchema = z.object({
   id: z.string().optional(),
-  name: z.string().optional().or(z.literal('')),
-  slug: z.string().optional().or(z.literal('')),
+  name: z.string().min(1, "Name is required"),
+  slug: z.string().min(1, "Slug is required"),
   description: z.string().optional().or(z.literal('')),
   country: z.string().optional().or(z.literal('')),
-  founded_year: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
+  founded_year: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
   website: z.string().optional().or(z.literal('')),
   key_franchises: z.string().optional().or(z.literal('')),
   image_url: z.string().optional().or(z.literal('')),
@@ -145,15 +145,15 @@ export const MANUFACTURER_FORM_FIELDS = [
 ];
 
 export const ConsoleSchema = z.object({
-    manufacturer_id: z.string().optional().or(z.literal('')),
-    name: z.string().optional().or(z.literal('')),
+    manufacturer_id: z.string().min(1, "Manufacturer is required"),
+    name: z.string().min(1, "Console Name is required"),
     slug: z.string().optional().or(z.literal('')),
     description: z.string().optional().or(z.literal('')),
     // Relaxed from enum to string to allow legacy types
     type: z.string().optional().or(z.literal('')),
     generation: z.string().optional().or(z.literal('')),
     // Numeric safety
-    release_year: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()), 
+    release_year: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()), 
     units_sold: z.string().optional().or(z.literal('')),
     image_url: z.string().optional().or(z.literal('')),
     form_factor: z.string().optional().or(z.literal('')),
@@ -299,16 +299,16 @@ export interface ConsoleDetails {
 // Relaxed Validation: Only Identity fields required. Everything else optional/nullable.
 export const ConsoleVariantSchema = z.object({
   id: z.string().optional(),
-  console_id: z.string().optional().or(z.literal('')),
-  variant_name: z.string().optional().or(z.literal('')),
+  console_id: z.string().min(1, "Parent Console is required"), // REQUIRED
+  variant_name: z.string().min(1, "Variant Name is required"), // REQUIRED
   slug: z.string().optional().or(z.literal('')),
   
   // Booleans with preprocessing to handle nulls
   is_default: z.preprocess((val) => val === true || val === 'true', z.boolean().default(false)),
   
   // Relaxed Identity Fields (Optional for Legacy/Drafts)
-  release_year: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
-  price_launch_usd: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
+  release_year: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
+  price_launch_usd: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
 
   // Optional Identity
   model_no: z.string().optional().or(z.literal('')),
@@ -318,44 +318,44 @@ export const ConsoleVariantSchema = z.object({
   cpu_model: z.string().optional().or(z.literal('')),
   cpu_architecture: z.string().optional().or(z.literal('')),
   cpu_process_node: z.string().optional().or(z.literal('')),
-  cpu_cores: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
-  cpu_threads: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
-  cpu_clock_mhz: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
+  cpu_cores: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
+  cpu_threads: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
+  cpu_clock_mhz: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
   
   gpu_model: z.string().optional().or(z.literal('')),
   gpu_architecture: z.string().optional().or(z.literal('')),
-  gpu_cores: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
+  gpu_cores: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
   gpu_core_unit: z.string().optional().or(z.literal('')),
-  gpu_clock_mhz: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
-  gpu_teraflops: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
+  gpu_clock_mhz: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
+  gpu_teraflops: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
   
   os: z.string().optional().or(z.literal('')),
   tdp_range_w: z.string().optional().or(z.literal('')),
 
   // Memory (Optional)
-  ram_gb: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
+  ram_gb: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
   ram_type: z.string().optional().or(z.literal('')),
-  ram_speed_mhz: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
+  ram_speed_mhz: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
   
-  storage_gb: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
+  storage_gb: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
   storage_type: z.string().optional().or(z.literal('')),
   storage_expandable: z.preprocess((val) => val === true || val === 'true', z.boolean().default(false)),
 
   // Display (Optional)
-  screen_size_inch: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
-  screen_resolution_x: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
-  screen_resolution_y: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
+  screen_size_inch: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
+  screen_resolution_x: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
+  screen_resolution_y: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
   display_type: z.string().optional().or(z.literal('')),
   display_tech: z.string().optional().or(z.literal('')),
   touchscreen: z.preprocess((val) => val === true || val === 'true', z.boolean().default(false)),
   aspect_ratio: z.string().optional().or(z.literal('')),
-  ppi: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
-  refresh_rate_hz: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
-  brightness_nits: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
+  ppi: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
+  refresh_rate_hz: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
+  brightness_nits: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
 
-  second_screen_size: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
-  second_screen_resolution_x: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
-  second_screen_resolution_y: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
+  second_screen_size: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
+  second_screen_resolution_x: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
+  second_screen_resolution_y: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
   second_screen_touch: z.preprocess((val) => val === true || val === 'true', z.boolean().default(false)),
 
   // Input & Connectivity (Optional)
@@ -380,13 +380,13 @@ export const ConsoleVariantSchema = z.object({
   biometrics: z.string().optional().or(z.literal('')),
 
   // Power (Optional)
-  battery_mah: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
-  battery_wh: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
-  charging_speed_w: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
+  battery_mah: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
+  battery_wh: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
+  charging_speed_w: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
   charging_port: z.string().optional().or(z.literal('')),
   
   dimensions: z.string().optional().or(z.literal('')),
-  weight_g: z.preprocess((val) => (val === '' || val === null ? undefined : Number(val)), z.number().optional()),
+  weight_g: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
   body_material: z.string().optional().or(z.literal('')),
   cooling: z.string().optional().or(z.literal('')),
   colors: z.string().optional().or(z.literal('')),
