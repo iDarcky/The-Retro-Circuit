@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, type FC, type ReactNode } from 'react';
@@ -284,6 +283,10 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                                 </div>
                                 <SpecField label="Performance" value={mergedSpecs.gpu_teraflops} unit="TFLOPS" highlight />
                             </div>
+                            
+                            <div className="mt-4 pt-4 border-t border-white/5">
+                                 <SpecField label="OS / Firmware" value={mergedSpecs.os} />
+                            </div>
                         </SpecCard>
 
                         {/* 2. MEMORY & STORAGE */}
@@ -298,23 +301,25 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                                 <SpecField label="Internal Storage" value={mergedSpecs.storage_gb} unit="GB" highlight />
                                 <SpecField label="Storage Type" value={mergedSpecs.storage_type} />
                                 <div className="mt-2 flex gap-2">
-                                    <TechBadge label="SD Card Slot" active={mergedSpecs.storage_expandable} />
+                                    <TechBadge label="SD Expandable" active={mergedSpecs.storage_expandable} />
                                 </div>
                             </div>
                         </SpecCard>
 
                         {/* 3. DISPLAY */}
-                        <SpecCard title="DISPLAY MATRIX">
-                             <div className="grid grid-cols-2 gap-4">
+                        <SpecCard title="DISPLAY">
+                            <div className="grid grid-cols-2 gap-4">
                                 <SpecField label="Size" value={mergedSpecs.screen_size_inch} unit='"' highlight />
                                 <SpecField label="Type" value={mergedSpecs.display_type} small />
                             </div>
                             <SpecField label="Resolution" value={mergedSpecs.screen_resolution_x && mergedSpecs.screen_resolution_y ? `${mergedSpecs.screen_resolution_x} x ${mergedSpecs.screen_resolution_y}` : null} />
+                            <SpecField label="Display Tech" value={mergedSpecs.display_tech} small />
                             <div className="grid grid-cols-2 gap-4">
                                 <SpecField label="PPI" value={mergedSpecs.ppi} small />
                                 <SpecField label="Refresh" value={mergedSpecs.refresh_rate_hz} unit="Hz" highlight small />
                             </div>
                             <SpecField label="Peak Brightness" value={mergedSpecs.brightness_nits} unit="nits" />
+                            <SpecField label="Aspect Ratio" value={mergedSpecs.aspect_ratio} small />
                             
                             <div className="mt-2 flex flex-wrap gap-2">
                                 <TechBadge label="Touchscreen" active={mergedSpecs.touchscreen} />
@@ -336,15 +341,22 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                         </SpecCard>
 
                         {/* 4. INPUT & CONNECTIVITY */}
-                        <SpecCard title="I/O & CONNECTIVITY">
-                             <SpecField label="WiFi / BT" value={mergedSpecs.wireless_connectivity} small />
-                             <SpecField label="Ports" value={mergedSpecs.ports} small />
-                             <SpecField label="Video Out" value={mergedSpecs.video_out} small />
+                        <SpecCard title="INPUT & CONNECTIVITY">
+                             {/* Controls */}
+                             <SpecField label="Input Layout" value={mergedSpecs.input_layout} />
+                             <SpecField label="D-Pad" value={mergedSpecs.dpad_type} small />
+                             <SpecField label="Analog Sticks" value={mergedSpecs.analog_stick_type} small />
+                             <SpecField label="Triggers" value={mergedSpecs.shoulder_buttons} small />
+                             
+                             <div className="mt-4 pt-4 border-t border-white/5">
+                                <SpecField label="Wireless" value={mergedSpecs.wireless_connectivity} small />
+                                <SpecField label="Ports" value={mergedSpecs.ports} small />
+                                <SpecField label="Video Out" value={mergedSpecs.video_out} small />
+                             </div>
                              
                              <div className="mt-4 pt-4 border-t border-white/5 space-y-2">
                                 <div className="flex flex-wrap gap-2">
-                                    <TechBadge label="Hall Effect" active={mergedSpecs.analog_stick_type?.includes('Hall')} color="bg-retro-blue" />
-                                    <TechBadge label="Analog Triggers" active={mergedSpecs.shoulder_buttons?.includes('Analog')} />
+                                    <TechBadge label="Hall Effect" active={mergedSpecs.analog_stick_type?.toLowerCase().includes('hall') || mergedSpecs.shoulder_buttons?.toLowerCase().includes('hall')} color="bg-retro-blue" />
                                     <TechBadge label="Back Buttons" active={mergedSpecs.has_back_buttons} />
                                     <TechBadge label="Haptics" active={mergedSpecs.haptics} />
                                     <TechBadge label="Gyro" active={mergedSpecs.gyro} />
@@ -353,26 +365,52 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                              </div>
                         </SpecCard>
 
-                         {/* 5. POWER & BATTERY */}
-                         <SpecCard title="POWER SYSTEM">
-                             <div className="grid grid-cols-2 gap-4">
-                                <SpecField label="Capacity" value={mergedSpecs.battery_mah} unit="mAh" highlight />
-                                <SpecField label="Energy" value={mergedSpecs.battery_wh} unit="Wh" />
-                            </div>
-                            <SpecField label="Charging" value={mergedSpecs.charging_speed_w} unit="W" />
-                            <SpecField label="Est. Playtime" value={mergedSpecs.tdp_range_w} />
+                        {/* 5. POWER & CHASSIS */}
+                        <SpecCard title="POWER & CHASSIS">
+                             {/* Battery Logic: Wh prioritized */}
+                             {mergedSpecs.battery_wh ? (
+                                  <SpecField label="Battery Energy" value={mergedSpecs.battery_wh} unit="Wh" highlight />
+                             ) : (
+                                  <SpecField label="Battery Capacity" value={mergedSpecs.battery_mah} unit="mAh" highlight />
+                             )}
+                             
+                             {/* Show secondary battery metric if both exist */}
+                             {mergedSpecs.battery_wh && mergedSpecs.battery_mah && (
+                                 <SpecField label="Capacity" value={mergedSpecs.battery_mah} unit="mAh" small />
+                             )}
+ 
+                             <SpecField label="Charging" value={mergedSpecs.charging_speed_w} unit="W" />
+                             <SpecField label="Port" value={mergedSpecs.charging_port} small />
+                             <SpecField label="Est. Playtime" value={mergedSpecs.tdp_range_w} />
+ 
+                             <div className="mt-4 pt-4 border-t border-white/5">
+                                 <SpecField label="Dimensions" value={mergedSpecs.dimensions} small />
+                                 <SpecField label="Weight" value={mergedSpecs.weight_g} unit="g" />
+                                 <SpecField label="Material" value={mergedSpecs.body_material} small />
+                                 <SpecField label="Cooling" value={mergedSpecs.cooling} small />
+                             </div>
                         </SpecCard>
 
                         {/* 6. AUDIO & MISC */}
-                        <SpecCard title="AUDIO & BUILD">
-                             <SpecField label="Speakers" value={mergedSpecs.audio_speakers} />
-                             <SpecField label="Material" value={mergedSpecs.body_material} small />
-                             <SpecField label="Weight" value={mergedSpecs.weight_g} unit="g" />
-                             <SpecField label="Dimensions" value={mergedSpecs.dimensions} small />
-                             <div className="mt-2 flex gap-2">
-                                <TechBadge label="3.5mm Jack" active={mergedSpecs.headphone_jack} />
-                                <TechBadge label="Microphone" active={mergedSpecs.microphone} />
-                                <TechBadge label="Active Cooling" active={mergedSpecs.cooling === 'Active' || mergedSpecs.cooling?.includes('Fan')} color="bg-cyan-400" />
+                        <SpecCard title="AUDIO & MISC">
+                             <SpecField label="Colors" value={mergedSpecs.colors} small />
+                             <SpecField label="UI Skin" value={mergedSpecs.ui_skin} />
+                             
+                             <div className="mt-4 pt-4 border-t border-white/5">
+                                <SpecField label="Speakers" value={mergedSpecs.audio_speakers} />
+                                <SpecField label="Audio Tech" value={mergedSpecs.audio_tech} small />
+                             </div>
+
+                             <div className="mt-4 pt-4 border-t border-white/5">
+                                <SpecField label="Camera" value={mergedSpecs.camera} />
+                                <SpecField label="Biometrics" value={mergedSpecs.biometrics} />
+                             </div>
+
+                             <div className="mt-4 pt-4 border-t border-white/5">
+                                <div className="flex flex-wrap gap-2">
+                                    <TechBadge label="3.5mm Jack" active={mergedSpecs.headphone_jack} />
+                                    <TechBadge label="Microphone" active={mergedSpecs.microphone} />
+                                </div>
                              </div>
                         </SpecCard>
 

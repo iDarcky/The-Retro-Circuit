@@ -5,6 +5,7 @@
 import { useState, type FormEvent, type FC, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { addConsole, updateConsole } from '../../lib/api';
+import { purgeCache } from '../../app/actions/revalidate';
 import { supabase } from '../../lib/supabase/singleton';
 import { ConsoleSchema, Manufacturer, CONSOLE_FORM_FIELDS, ConsoleDetails } from '../../lib/types';
 import Button from '../ui/Button';
@@ -98,19 +99,28 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
 
         setLoading(true);
         try {
-            let response;
+            // TIMEOUT SAFETY: 10 Seconds
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error("Database operation timed out (10s limit)")), 10000)
+            );
+
+            let operationPromise;
+
             if (isEditMode && initialData?.id) {
                 // UPDATE
-                response = await updateConsole(initialData.id, consoleResult.data as any);
+                operationPromise = updateConsole(initialData.id, consoleResult.data as any);
             } else {
                 // INSERT
-                // New Workflow: We do NOT send specs here. Just the folder identity.
-                response = await addConsole(consoleResult.data as any);
+                operationPromise = addConsole(consoleResult.data as any);
             }
             
+            // Race: Operation vs Timeout
+            const response: any = await Promise.race([operationPromise, timeoutPromise]);
+            
             if (response.success) {
-                // DO NOT RESET FORM in either case.
-                
+                // FORCE REVALIDATION
+                await purgeCache();
+
                 // Refresh Server Data so changes are reflected
                 router.refresh();
 

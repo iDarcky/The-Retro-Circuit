@@ -11,10 +11,9 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
 
         if (filters.manufacturer_id) query = query.eq('manufacturer_id', filters.manufacturer_id);
         
-        // We only apply DB-level year filtering if the years are set on the PARENT table.
-        // Since you refactored to variants, strict DB filtering on parent 'release_year' excludes new items.
-        // We will filter in-memory for accuracy if the parent table has NULLs.
-        if (filters.generations.length > 0) query = query.in('generation', filters.generations);
+        // Removed generation filtering as it's no longer a column in the console table.
+        // if (filters.generations.length > 0) query = query.in('generation', filters.generations);
+        
         if (filters.form_factors.length > 0) query = query.in('form_factor', filters.form_factors);
 
         // Pagination (fetch a bit more to handle in-memory filtering if needed, but for now strict range)

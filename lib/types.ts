@@ -1,4 +1,3 @@
-
 import { z } from 'zod';
 
 // --- VALIDATION HELPERS ---
@@ -167,17 +166,14 @@ export const ConsoleSchema = z.object({
     name: safeString,
     slug: safeString,
     description: safeString,
-    type: safeString,
-    generation: safeString,
-    release_year: safeNumber,
-    units_sold: safeString,
     image_url: safeString,
     form_factor: safeString,
 });
 
 export const CONSOLE_FORM_FIELDS = [
-    { label: 'Console Name', key: 'name', type: 'text', required: false },
-    { label: 'Slug (Auto)', key: 'slug', type: 'text', required: false },
+    { label: 'Console Name', key: 'name', type: 'text', required: true },
+    { label: 'Slug (Auto)', key: 'slug', type: 'text', required: true },
+    { label: 'Form Factor (Handheld, Console, etc.)', key: 'form_factor', type: 'text', required: false },
     { label: 'Description', key: 'description', type: 'textarea', required: false },
     { label: 'Image URL', key: 'image_url', type: 'url', required: false },
 ];
@@ -291,15 +287,17 @@ export interface ConsoleDetails {
     name: string;
     slug: string;
     description?: string;
-    type?: string;
-    generation?: string;
-    release_year?: number;
-    units_sold?: string;
     image_url?: string;
     form_factor?: string;
     manufacturer?: Manufacturer;
     variants?: ConsoleVariant[];
     specs?: ConsoleSpecs | Partial<ConsoleVariant>;
+    // Optional display fields populated from variants
+    release_year?: number;
+    // Legacy fields
+    type?: string;
+    generation?: string;
+    units_sold?: string;
 }
 
 // Zod Schema for Variants

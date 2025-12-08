@@ -2,7 +2,9 @@
 'use client';
 
 import { useState, type FormEvent, type FC, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { addConsoleVariant, updateConsoleVariant, getVariantsByConsole } from '../../lib/api';
+import { purgeCache } from '../../app/actions/revalidate';
 import { ConsoleVariantSchema, VARIANT_FORM_GROUPS, ConsoleVariant } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
@@ -17,9 +19,9 @@ interface VariantFormProps {
 }
 
 const ChevronDown = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>;
-const ChevronUp = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>;
 
 export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedConsoleId, initialData, onSuccess, onError }) => {
+    const router = useRouter();
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
@@ -27,7 +29,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     // Edit Mode Detection
     const isEditMode = !!initialData;
 
-    // Accordion State
+    // Accordion State (Default First Section Open)
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({
         "IDENTITY & ORIGIN": true
     });
@@ -36,7 +38,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     const [existingVariants, setExistingVariants] = useState<ConsoleVariant[]>([]);
     const [selectedTemplate, setSelectedTemplate] = useState<string>('');
     
-    // Initialize
+    // Initialize Data
     useEffect(() => {
         if (initialData) {
             setFormData(initialData);
@@ -45,7 +47,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         }
     }, [initialData, preSelectedConsoleId]);
 
-    // Fetch existing variants
+    // Fetch existing variants for template system
     useEffect(() => {
         const fetchTemplates = async () => {
             const consoleId = formData.console_id;
@@ -74,6 +76,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
         const template = existingVariants.find(v => v.id === variantId);
         if (template) {
+            // Copy specs but reset identity fields
             const { id, variant_name, slug, is_default, price_launch_usd, model_no, ...specs } = template;
 
             setFormData(prev => ({
@@ -111,7 +114,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             rawVariant.slug = rawVariant.variant_name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
         }
 
-        // 2. Safe Parse (Permissive Schema)
+        // 2. Safe Parse using Zod Schema
         const result = ConsoleVariantSchema.safeParse(rawVariant);
         
         if (!result.success) { 
@@ -122,6 +125,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 if (issue.path.length > 0) {
                     const fieldKey = issue.path[0].toString();
                     newErrors[fieldKey] = issue.message;
+                    // Auto-open section with error
                     if (!errorGroup) {
                          const group = VARIANT_FORM_GROUPS.find(g => g.fields.some(f => f.key === fieldKey));
                          if (group) errorGroup = group.title;
@@ -134,23 +138,35 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 setOpenSections(prev => ({ ...prev, [errorGroup]: true }));
             }
             
-            onError("VALIDATION FAILED."); 
+            onError("VALIDATION FAILED. PLEASE CHECK HIGHLIGHTED FIELDS."); 
             return; 
         }
 
         setLoading(true);
         try {
-            let response;
+            // TIMEOUT SAFETY: 10 Seconds
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error("Database operation timed out (10s limit)")), 10000)
+            );
+
+            let operationPromise;
+
             if (isEditMode && initialData?.id) {
-                response = await updateConsoleVariant(initialData.id, result.data as any);
+                operationPromise = updateConsoleVariant(initialData.id, result.data as any);
             } else {
-                response = await addConsoleVariant(result.data as any);
+                operationPromise = addConsoleVariant(result.data as any);
             }
             
+            // Race: Operation vs Timeout
+            const response: any = await Promise.race([operationPromise, timeoutPromise]);
+            
             if (response.success) {
+                await purgeCache();
                 onSuccess(isEditMode ? "VARIANT UPDATED." : "VARIANT SAVED.");
                 setFieldErrors({});
+                router.refresh();
                 
+                // Refresh local templates
                 if (rawVariant.console_id) {
                     const updatedVariants = await getVariantsByConsole(rawVariant.console_id);
                     setExistingVariants(updatedVariants);
@@ -158,10 +174,13 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
                 if (!isEditMode) {
                     if (mode === 'SAVE') {
+                        // Reset form but keep console selected
                         setFormData({ console_id: rawVariant.console_id });
                         setSelectedTemplate('');
                         setOpenSections({ "IDENTITY & ORIGIN": true });
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     } else {
+                        // CLONE mode: Keep specs, just clear identity
                         setFormData(prev => ({ 
                             ...prev, 
                             variant_name: '', 
@@ -169,6 +188,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                             is_default: false, 
                             model_no: ''
                         }));
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                 }
             } else {
@@ -183,20 +203,29 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
     return (
         <form className="space-y-6">
-            <div className={`border-l-4 p-4 mb-4 ${isEditMode ? 'bg-retro-neon/10 border-retro-neon' : 'bg-retro-pink/10 border-retro-pink'}`}>
-                <h3 className={`font-bold text-sm uppercase ${isEditMode ? 'text-retro-neon' : 'text-retro-pink'}`}>
-                    {isEditMode ? 'Edit Mode: Updating Existing Variant' : 'Step 2: Technical Specifications'}
+            
+            {/* 1. Header Card */}
+            <div className={`border-l-4 p-5 mb-6 bg-black/40 shadow-md ${isEditMode ? 'border-retro-neon' : 'border-retro-pink'}`}>
+                <h3 className={`font-bold text-sm uppercase font-mono tracking-widest ${isEditMode ? 'text-retro-neon' : 'text-retro-pink'}`}>
+                    {isEditMode ? 'Edit Mode: Variant Specifications' : 'Step 2: Technical Specifications'}
                 </h3>
-                <p className="text-xs text-gray-400">
-                    Define the hardware. Create a "Base Model" first.
+                <p className="text-xs text-gray-400 mt-2 font-mono">
+                    {isEditMode 
+                        ? `Modifying Variant ID: ${initialData?.id}` 
+                        : 'Define the hardware capabilities. You can create multiple variants (e.g. Pro, Slim, OLED) for this console.'}
                 </p>
             </div>
 
-            <div className="mb-8 space-y-6">
+            {/* 2. Console Selector & Template Copy */}
+            <div className="mb-8 space-y-6 bg-black/20 p-6 border border-retro-grid relative">
+                <div className="absolute top-0 left-0 bg-retro-grid text-[10px] text-gray-400 px-2 py-0.5 font-mono uppercase">Context</div>
+                
                 <div>
-                    <label className={`text-[10px] mb-1 block uppercase ${fieldErrors.console_id ? 'text-retro-pink' : 'text-gray-500'}`}>Parent Console</label>
+                    <label className={`text-[10px] mb-2 block uppercase font-bold tracking-wider ${fieldErrors.console_id ? 'text-retro-pink' : 'text-gray-500'}`}>
+                        Target Console Folder
+                    </label>
                     <select 
-                        className={`w-full bg-black border p-3 outline-none text-white font-mono ${fieldErrors.console_id ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'} ${isEditMode ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`w-full bg-black border p-3 outline-none text-white font-mono text-sm ${fieldErrors.console_id ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'} ${isEditMode ? 'opacity-50 cursor-not-allowed' : ''}`}
                         value={formData.console_id || ''} 
                         onChange={(e) => handleInputChange('console_id', e.target.value)}
                         required
@@ -211,7 +240,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     <div className="p-4 border border-dashed border-retro-blue bg-retro-blue/5 animate-fadeIn">
                         <label className="text-[10px] text-retro-blue mb-2 block uppercase font-bold flex items-center gap-2">
                              <span className="w-2 h-2 bg-retro-blue rounded-full animate-pulse"></span>
-                             Copy Specs From (Optional)
+                             Quick Fill: Copy Specs From Existing Variant
                         </label>
                         <select 
                             className="w-full bg-black border border-retro-blue text-retro-blue p-2 font-mono text-xs focus:outline-none"
@@ -229,80 +258,109 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 )}
             </div>
 
+            {/* 3. Form Sections (Accordions) */}
             <div className="space-y-4">
                 {VARIANT_FORM_GROUPS.map((group, idx) => {
                     const isOpen = openSections[group.title];
                     const hasError = group.fields.some(f => fieldErrors[f.key]);
 
                     return (
-                        <div key={idx} className={`border ${hasError ? 'border-retro-pink' : 'border-retro-grid'} bg-black/50 transition-colors`}>
-                            <button
-                                type="button"
-                                onClick={() => toggleSection(group.title)}
-                                className={`w-full flex justify-between items-center p-4 text-left transition-colors ${
-                                    isOpen 
-                                    ? `bg-retro-neon/10 text-retro-neon border-b ${hasError ? 'border-retro-pink' : 'border-retro-neon'}`
-                                    : `hover:bg-white/5 ${hasError ? 'text-retro-pink' : 'text-gray-400'}`
-                                }`}
-                            >
-                                <span className="font-bold font-mono text-xs uppercase tracking-widest flex items-center gap-2">
-                                    {group.title}
-                                </span>
-                                {isOpen ? <ChevronUp /> : <ChevronDown />}
-                            </button>
+                        <div key={idx} className="relative transition-all duration-300">
+                            {/* Card Container with Neon Border */}
+                            <div className={`
+                                bg-black/40 border-l-4 
+                                ${hasError ? 'border-retro-pink' : 'border-retro-neon'}
+                                shadow-lg transition-colors
+                            `}>
+                                {/* Accordion Header */}
+                                <button
+                                    type="button"
+                                    onClick={() => toggleSection(group.title)}
+                                    className={`
+                                        w-full flex justify-between items-center p-4 text-left font-mono uppercase tracking-widest text-sm
+                                        ${isOpen 
+                                            ? 'text-white bg-white/5 font-bold' 
+                                            : 'text-gray-400 hover:text-retro-neon hover:bg-white/5'}
+                                        transition-colors
+                                    `}
+                                >
+                                    <span className="flex items-center gap-3">
+                                        {hasError && <span className="text-retro-pink animate-pulse font-bold">!</span>}
+                                        {group.title}
+                                    </span>
+                                    <div className={`transition-transform duration-200 ${isOpen ? 'rotate-180 text-retro-neon' : 'text-gray-600'}`}>
+                                        <ChevronDown />
+                                    </div>
+                                </button>
 
-                            {isOpen && (
-                                <div className="p-4 grid grid-cols-2 gap-4 animate-fadeIn">
-                                    {group.fields.map(field => {
-                                        const colSpan = (field as any).width === 'full' ? 'col-span-2' : 'col-span-1';
-                                        
-                                        if (field.key === 'variant_name') {
+                                {/* Content Grid */}
+                                {isOpen && (
+                                    <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-white/5 animate-fadeIn">
+                                        {group.fields.map(field => {
+                                            const colSpan = (field as any).width === 'full' ? 'md:col-span-2' : 'md:col-span-1';
+                                            const error = fieldErrors[field.key];
+
+                                            // A. CUSTOM RENDER: URL / Image Upload
+                                            if (field.type === 'url' || field.key.includes('image_url')) {
+                                                return (
+                                                    <div key={field.key} className={colSpan}>
+                                                        <label className={`text-[10px] mb-2 block uppercase font-bold tracking-wider ${error ? 'text-retro-pink' : 'text-gray-500'}`}>
+                                                            {field.label}
+                                                        </label>
+                                                        <ImageUpload
+                                                            value={formData[field.key]}
+                                                            onChange={(url) => handleInputChange(field.key, url)}
+                                                        />
+                                                    </div>
+                                                );
+                                            }
+
+                                            // B. CUSTOM RENDER: Styled Checkbox (Label Left, Box Right)
+                                            if (field.type === 'checkbox') {
+                                                const checked = !!formData[field.key];
+                                                return (
+                                                    <div key={field.key} className={colSpan}>
+                                                        <div 
+                                                            className={`
+                                                                flex items-center justify-between bg-black border p-3 cursor-pointer group transition-all h-[46px] mt-[19px]
+                                                                ${error ? 'border-retro-pink' : 'border-gray-700 hover:border-retro-neon'}
+                                                            `}
+                                                            onClick={() => handleInputChange(field.key, !checked)}
+                                                        >
+                                                            <span className={`text-[10px] uppercase font-bold tracking-wider group-hover:text-white ${error ? 'text-retro-pink' : 'text-gray-500'}`}>
+                                                                {field.label}
+                                                            </span>
+                                                            <div className={`w-5 h-5 border flex items-center justify-center transition-all ${checked ? 'bg-retro-neon border-retro-neon' : 'border-gray-600 bg-transparent'}`}>
+                                                                {checked && <svg className="w-3 h-3 text-black font-bold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                                                            </div>
+                                                        </div>
+                                                        {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
+                                                    </div>
+                                                )
+                                            }
+
+                                            // C. DEFAULT RENDER: AdminInput (Text, Number)
                                             return (
                                                 <div key={field.key} className={colSpan}>
-                                                    <label className={`text-[10px] mb-1 block uppercase ${fieldErrors[field.key] ? 'text-retro-pink' : 'text-gray-500'}`}>{field.label}</label>
-                                                    <input 
-                                                        name="variant_name_focus_target"
-                                                        type="text"
-                                                        className={`w-full bg-black border p-3 outline-none text-white font-mono ${fieldErrors[field.key] ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'}`}
-                                                        value={formData[field.key] || ''}
-                                                        onChange={(e) => handleInputChange(field.key, e.target.value)}
-                                                    />
-                                                    {fieldErrors[field.key] && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors[field.key]}</div>}
-                                                </div>
-                                            )
-                                        }
-
-                                        if (field.key === 'image_url') {
-                                            return (
-                                                <div key={field.key} className={colSpan}>
-                                                    <label className={`text-[10px] mb-1 block uppercase ${fieldErrors.image_url ? 'text-retro-pink' : 'text-gray-500'}`}>{field.label}</label>
-                                                    <ImageUpload
-                                                        value={formData[field.key]}
-                                                        onChange={(url) => handleInputChange(field.key, url)}
+                                                    <AdminInput 
+                                                        field={field as any} 
+                                                        value={formData[field.key]} 
+                                                        onChange={handleInputChange} 
+                                                        error={error} 
                                                     />
                                                 </div>
                                             );
-                                        }
-
-                                        return (
-                                            <div key={field.key} className={colSpan}>
-                                                <AdminInput 
-                                                    field={field as any} 
-                                                    value={formData[field.key]} 
-                                                    onChange={handleInputChange} 
-                                                    error={fieldErrors[field.key]} 
-                                                />
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
+                                        })}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     );
                 })}
             </div>
             
-            <div className="flex justify-end gap-4 pt-4 border-t border-retro-grid sticky bottom-0 bg-retro-dark p-4 z-10 border-t shadow-lg">
+            {/* 4. Footer Actions */}
+            <div className="flex justify-end gap-4 pt-6 border-t border-retro-grid sticky bottom-0 bg-retro-dark/95 backdrop-blur p-4 z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
                 {!isEditMode && (
                     <Button 
                         type="button" 
