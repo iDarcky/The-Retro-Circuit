@@ -115,9 +115,9 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
 
                 if (isEditMode) {
                     onConsoleCreated(initialData!.id, formData.name); // Just notify success, maybe parent keeps tab open
-                } else if (response.id) {
+                } else if ((response as any).id) {
                      // Trigger Workflow Switch -> This will change the tab to 'ADD VARIANTS'
-                    onConsoleCreated(response.id, consoleData.name);
+                    onConsoleCreated((response as any).id, consoleData.name);
                 }
 
             } else {
