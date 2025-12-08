@@ -193,7 +193,7 @@ const ConsoleSearchSelect = ({
 function ArenaContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { playClick, playHover } = useSound();
+    const { playClick } = useSound();
 
     const [allConsoles, setAllConsoles] = useState<{name: string, slug: string}[]>([]);
     
