@@ -7,33 +7,7 @@ import { supabase } from '../../lib/supabase/singleton';
 import { ManufacturerSchema, MANUFACTURER_FORM_FIELDS } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
-
-const ImagePreview: FC<{ url?: string }> = ({ url }) => {
-    const [error, setError] = useState(false);
-    
-    if (!url) return (
-        <div className="mt-2 h-24 bg-black/20 border border-dashed border-gray-800 flex items-center justify-center">
-            <span className="font-mono text-[10px] text-gray-600 uppercase">No Signal</span>
-        </div>
-    );
-
-    if (error) return (
-        <div className="mt-2 h-24 bg-red-900/10 border border-dashed border-red-900/50 flex items-center justify-center">
-            <span className="font-mono text-[10px] text-red-500 uppercase">Invalid Signal</span>
-        </div>
-    );
-
-    return (
-        <div className="mt-2 h-24 bg-black/40 border border-retro-grid flex items-center justify-center p-2">
-            <img 
-                src={url} 
-                className="h-full w-auto object-contain" 
-                onError={() => setError(true)} 
-                alt="Preview" 
-            />
-        </div>
-    );
-};
+import ImageUpload from '../ui/ImageUpload';
 
 interface ManufacturerFormProps {
     onSuccess: (msg: string) => void;
@@ -98,7 +72,6 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
         e.preventDefault();
         
         // --- STANDARD AUTH CHECK ---
-        // Removed the aggressive refreshSession() which was causing logouts.
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         if (sessionError || !session) {
             console.error("Auth Error:", sessionError);
@@ -233,14 +206,13 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
 
                     if (field.key === 'image_url') {
                         return (
-                            <div key={field.key}>
-                                <AdminInput 
-                                    field={field} 
-                                    value={formData[field.key]} 
-                                    onChange={handleInputChange} 
-                                    error={fieldErrors.image_url}
+                            <div key={field.key} className="col-span-1 md:col-span-2">
+                                <label className={`text-[10px] mb-1 block uppercase ${fieldErrors.image_url ? 'text-retro-pink' : 'text-gray-500'}`}>{field.label}</label>
+                                <ImageUpload
+                                    value={formData[field.key]}
+                                    onChange={(url) => handleInputChange(field.key, url)}
                                 />
-                                <ImagePreview url={formData[field.key]} key={formData[field.key]} />
+                                {fieldErrors.image_url && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors.image_url}</div>}
                             </div>
                         );
                     }

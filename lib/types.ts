@@ -1,4 +1,5 @@
 
+
 import { z } from 'zod';
 
 export type NewsCategory = 'Hardware' | 'Software' | 'Industry' | 'Rumor' | 'Mods' | 'Events' | 'Homebrew';
@@ -163,6 +164,7 @@ export const CONSOLE_FORM_FIELDS = [
     { label: 'Console Name', key: 'name', type: 'text', required: true },
     { label: 'Slug (Auto)', key: 'slug', type: 'text', required: false },
     { label: 'Description', key: 'description', type: 'textarea', required: false },
+    { label: 'Image URL', key: 'image_url', type: 'url', required: false },
 ];
 
 export interface ConsoleFilterState {

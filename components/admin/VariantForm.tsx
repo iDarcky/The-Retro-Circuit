@@ -5,6 +5,7 @@ import { addConsoleVariant, updateConsoleVariant, getVariantsByConsole } from '.
 import { ConsoleVariantSchema, VARIANT_FORM_GROUPS, ConsoleVariant } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
+import ImageUpload from '../ui/ImageUpload';
 
 interface VariantFormProps {
     consoleList: {name: string, id: string}[];
@@ -308,6 +309,20 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                     {fieldErrors[field.key] && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors[field.key]}</div>}
                                                 </div>
                                             )
+                                        }
+
+                                        // Image Upload Integration
+                                        if (field.key === 'image_url') {
+                                            return (
+                                                <div key={field.key} className={colSpan}>
+                                                    <label className={`text-[10px] mb-1 block uppercase ${fieldErrors.image_url ? 'text-retro-pink' : 'text-gray-500'}`}>{field.label}</label>
+                                                    <ImageUpload
+                                                        value={formData[field.key]}
+                                                        onChange={(url) => handleInputChange(field.key, url)}
+                                                    />
+                                                    {fieldErrors.image_url && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors.image_url}</div>}
+                                                </div>
+                                            );
                                         }
 
                                         return (
