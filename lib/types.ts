@@ -252,14 +252,14 @@ export interface ConsoleVariant {
   audio_tech?: string;
   headphone_jack?: string; // Changed to text based on SQL (text null) but logic might treat as bool-ish string
   microphone?: boolean;
-  camera?: string;
-  biometrics?: string;
+  camera?: boolean;
+  biometrics?: boolean;
   
   // IO & Connectivity
   ports?: string;
   connectivity?: string;
   wireless_connectivity?: string;
-  cellular_connectivity?: string; // Text in DB
+  cellular_connectivity?: boolean;
   video_out?: string;
   haptics?: string; // Text in DB (e.g. 'HD Rumble')
   gyro?: boolean;
@@ -372,13 +372,13 @@ export const ConsoleVariantSchema = z.object({
   audio_tech: safeString,
   headphone_jack: safeString,
   microphone: safeBoolean,
-  camera: safeString,
-  biometrics: safeString,
+  camera: safeBoolean,
+  biometrics: safeBoolean,
 
   // IO & Connectivity
   ports: safeString,
   wireless_connectivity: safeString,
-  cellular_connectivity: safeString,
+  cellular_connectivity: safeBoolean,
   video_out: safeString,
   haptics: safeString,
   gyro: safeBoolean,
@@ -484,7 +484,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Back Buttons?', key: 'has_back_buttons', type: 'checkbox', required: false },
             
             { label: 'Wireless (WiFi/BT)', key: 'wireless_connectivity', type: 'text', required: false },
-            { label: 'Cellular', key: 'cellular_connectivity', type: 'text', required: false },
+            { label: 'Cellular (5G/4G)', key: 'cellular_connectivity', type: 'checkbox', required: false },
             { label: 'Ports / IO', key: 'ports', type: 'text', required: false },
             { label: 'Video Out', key: 'video_out', type: 'text', required: false },
             { label: 'Haptics', key: 'haptics', type: 'text', required: false },
@@ -513,8 +513,8 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Audio Tech', key: 'audio_tech', type: 'text', required: false },
             { label: 'Headphone Jack', key: 'headphone_jack', type: 'text', required: false },
             { label: 'Microphone?', key: 'microphone', type: 'checkbox', required: false },
-            { label: 'Camera', key: 'camera', type: 'text', required: false },
-            { label: 'Biometrics', key: 'biometrics', type: 'text', required: false },
+            { label: 'Camera', key: 'camera', type: 'checkbox', required: false },
+            { label: 'Biometrics', key: 'biometrics', type: 'checkbox', required: false },
         ]
     }
 ];
