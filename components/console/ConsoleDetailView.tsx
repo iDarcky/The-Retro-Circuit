@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ConsoleDetails, ConsoleSpecs, ConsoleVariant, GameOfTheWeekData } from '../../lib/types';
 import CollectionToggle from '../ui/CollectionToggle';
 import AdminEditTrigger from '../admin/AdminEditTrigger';
+import { IconGames } from '../ui/Icons';
 
 interface ConsoleDetailViewProps {
   consoleData: ConsoleDetails;
@@ -425,3 +426,35 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
             {/* LINKED GAMES SECTION */}
             {games.length > 0 && (
                 <div className="mt-16 pt-8 border-t-2 border-retro-grid">
+                    <h3 className="font-pixel text-xl text-white mb-6 flex items-center gap-3">
+                        <IconGames className="w-6 h-6 text-retro-pink" />
+                        Software Library
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {games.map(game => (
+                            <Link 
+                                href={`/archive/${game.slug || game.id}`} 
+                                key={game.id}
+                                className="group flex items-center gap-4 bg-retro-dark border border-retro-grid p-3 hover:border-retro-pink transition-all"
+                            >
+                                <div className="w-16 h-16 bg-black flex-shrink-0 border border-gray-800 flex items-center justify-center">
+                                    {game.image ? (
+                                        <img src={game.image} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <span className="text-[10px] text-gray-600">IMG</span>
+                                    )}
+                                </div>
+                                <div>
+                                    <div className="font-pixel text-xs text-white group-hover:text-retro-pink mb-1 line-clamp-1">{game.title}</div>
+                                    <div className="font-mono text-[10px] text-gray-500">{game.year} // {game.genre}</div>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default ConsoleDetailView;
