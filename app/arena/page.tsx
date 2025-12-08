@@ -152,22 +152,22 @@ const ComparisonRow = ({ metric, varA, varB }: { metric: ComparisonMetric, varA:
     };
 
     return (
-        <div className="grid grid-cols-3 border-b border-retro-grid/30 hover:bg-white/5 transition-colors group">
+        <div className="grid grid-cols-3 border-b border-white/5 hover:bg-white/5 transition-colors group">
             {/* VALUE A (Right Aligned) */}
-            <div className={`p-3 text-right font-mono text-sm flex items-center justify-end ${winner === 'A' ? 'text-retro-neon font-bold drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]' : 'text-gray-400'}`}>
+            <div className={`py-4 px-4 text-right font-mono text-sm flex items-center justify-end ${winner === 'A' ? 'text-retro-neon font-bold drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]' : 'text-gray-400'}`}>
                 {winner === 'A' && <span className="mr-2 text-xs">▲</span>}
                 {format(rawA, varA)}
             </div>
             
             {/* LABEL (Center) */}
-            <div className="p-2 flex items-center justify-center bg-retro-grid/10 border-l border-r border-retro-grid/30">
+            <div className="py-2 px-2 flex items-center justify-center bg-retro-grid/10 border-l border-r border-retro-grid/30">
                 <span className="font-pixel text-[9px] text-gray-500 uppercase tracking-wider text-center group-hover:text-white transition-colors">
                     {metric.label}
                 </span>
             </div>
             
             {/* VALUE B (Left Aligned) */}
-            <div className={`p-3 text-left font-mono text-sm flex items-center justify-start ${winner === 'B' ? 'text-retro-pink font-bold drop-shadow-[0_0_5px_rgba(255,0,255,0.5)]' : 'text-gray-400'}`}>
+            <div className={`py-4 px-4 text-left font-mono text-sm flex items-center justify-start ${winner === 'B' ? 'text-retro-pink font-bold drop-shadow-[0_0_5px_rgba(255,0,255,0.5)]' : 'text-gray-400'}`}>
                 {format(rawB, varB)}
                 {winner === 'B' && <span className="ml-2 text-xs">▲</span>}
             </div>
@@ -248,6 +248,69 @@ const ConsoleSearchSelect = ({
                         ))}
                         {filtered.length === 0 && <div className="p-2 text-xs font-mono text-gray-500 text-center">NO MATCHES</div>}
                     </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+// Custom Variant Dropdown
+const VariantSelect = ({ 
+    variants, 
+    selectedId, 
+    onChange, 
+    color // 'neon' | 'pink'
+}: { 
+    variants: ConsoleVariant[], 
+    selectedId: string | null, 
+    onChange: (id: string) => void,
+    color: 'neon' | 'pink'
+}) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    
+    // Close on click outside logic
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const selectedVariant = variants.find(v => v.id === selectedId);
+    
+    // Theme Colors
+    const borderColor = color === 'neon' ? 'border-retro-neon' : 'border-retro-pink';
+    const textColor = color === 'neon' ? 'text-retro-neon' : 'text-retro-pink';
+    const hoverBg = color === 'neon' ? 'hover:bg-retro-neon hover:text-black' : 'hover:bg-retro-pink hover:text-black';
+    const activeClass = color === 'neon' ? 'bg-retro-neon/20 text-white' : 'bg-retro-pink/20 text-white';
+
+    return (
+        <div className="relative w-full" ref={wrapperRef}>
+            <button 
+                className={`w-full flex justify-between items-center bg-black/50 border ${isOpen ? borderColor : 'border-gray-700 hover:border-gray-500'} p-2 transition-colors`}
+                onClick={() => setIsOpen(!isOpen)}
+            >
+                <span className={`font-mono text-xs ${selectedVariant ? 'text-white' : 'text-gray-500'}`}>
+                    {selectedVariant ? `${selectedVariant.variant_name} ${selectedVariant.is_default ? '(Base)' : ''}` : 'SELECT VARIANT'}
+                </span>
+                <svg className={`w-3 h-3 ${isOpen ? textColor : 'text-gray-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+            </button>
+
+            {isOpen && (
+                <div className={`absolute top-full left-0 right-0 z-[60] bg-black border ${borderColor} shadow-xl max-h-48 overflow-y-auto custom-scrollbar mt-1`}>
+                    {variants.map(v => (
+                        <button
+                            key={v.id}
+                            onClick={() => { onChange(v.id); setIsOpen(false); }}
+                            className={`w-full text-left p-2 font-mono text-xs border-b border-gray-800 last:border-0 transition-colors ${selectedId === v.id ? activeClass : 'text-gray-400'} ${hoverBg}`}
+                        >
+                            {v.variant_name} {v.is_default && <span className="opacity-50 text-[10px] ml-1">(Base)</span>}
+                        </button>
+                    ))}
                 </div>
             )}
         </div>
@@ -413,15 +476,12 @@ function ArenaContent() {
                                 {left.details.variants && left.details.variants.length > 1 && (
                                     <div className="mb-4">
                                         <label className="text-[10px] font-mono text-gray-500 block mb-1">SELECT VARIANT</label>
-                                        <select 
-                                            className="w-full bg-retro-grid/20 border border-gray-700 text-white font-mono text-xs p-2 outline-none focus:border-retro-neon"
-                                            value={left.selectedVariant?.id || ''}
-                                            onChange={(e: ChangeEvent<HTMLSelectElement>) => handleSelectVariant('left', e.target.value)}
-                                        >
-                                            {left.details.variants.map(v => (
-                                                <option key={v.id} value={v.id}>{v.variant_name} {v.is_default ? '(Base)' : ''}</option>
-                                            ))}
-                                        </select>
+                                        <VariantSelect 
+                                            variants={left.details.variants}
+                                            selectedId={left.selectedVariant?.id || null}
+                                            onChange={(id) => handleSelectVariant('left', id)}
+                                            color="neon"
+                                        />
                                     </div>
                                 )}
 
@@ -476,15 +536,12 @@ function ArenaContent() {
                                 {right.details.variants && right.details.variants.length > 1 && (
                                     <div className="mb-4">
                                         <label className="text-[10px] font-mono text-gray-500 block mb-1">SELECT VARIANT</label>
-                                        <select 
-                                            className="w-full bg-retro-grid/20 border border-gray-700 text-white font-mono text-xs p-2 outline-none focus:border-retro-pink"
-                                            value={right.selectedVariant?.id || ''}
-                                            onChange={(e: ChangeEvent<HTMLSelectElement>) => handleSelectVariant('right', e.target.value)}
-                                        >
-                                            {right.details.variants.map(v => (
-                                                <option key={v.id} value={v.id}>{v.variant_name} {v.is_default ? '(Base)' : ''}</option>
-                                            ))}
-                                        </select>
+                                        <VariantSelect 
+                                            variants={right.details.variants}
+                                            selectedId={right.selectedVariant?.id || null}
+                                            onChange={(id) => handleSelectVariant('right', id)}
+                                            color="pink"
+                                        />
                                     </div>
                                 )}
 
