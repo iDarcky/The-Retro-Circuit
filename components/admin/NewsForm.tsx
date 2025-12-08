@@ -20,11 +20,16 @@ export const NewsForm: FC<NewsFormProps> = ({ onSuccess, onError }) => {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        const result = NewsItemSchema.safeParse({ headline: newsHeadline, summary: newsSummary, category: newsCategory });
+        
+        // Omit date from schema check as it is generated on submit
+        const FormSchema = NewsItemSchema.omit({ date: true });
+        const result = FormSchema.safeParse({ headline: newsHeadline, summary: newsSummary, category: newsCategory });
+        
         if (!result.success) { onError(result.error.issues[0].message); return; }
         
         setLoading(true);
-        if (await addNewsItem({ ...result.data, date: new Date().toISOString() })) {
+        // Cast to NewsItem to resolve type mismatch on optional properties
+        if (await addNewsItem({ ...result.data, date: new Date().toISOString() } as NewsItem)) {
             onSuccess("NEWS TRANSMITTED");
             setNewsHeadline(''); setNewsSummary('');
         } else {

@@ -4,7 +4,7 @@
 
 import { useState, type FormEvent, type FC } from 'react';
 import { addGame } from '../../lib/api';
-import { GameSchema } from '../../lib/types';
+import { GameSchema, GameOfTheWeekData } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
 
@@ -48,7 +48,8 @@ export const GameForm: FC<GameFormProps> = ({ onSuccess, onError }) => {
         }
         
         setLoading(true);
-        if (await addGame(result.data)) {
+        // Cast to GameOfTheWeekData to resolve type mismatch on optional properties
+        if (await addGame(result.data as GameOfTheWeekData)) {
             onSuccess("GAME ARCHIVED");
             setFormData({});
             setFieldErrors({});
