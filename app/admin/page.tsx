@@ -61,16 +61,14 @@ function AdminPortalContent() {
                     const type = searchParams?.get('type');
                     const id = searchParams?.get('id');
 
-                    // 1. Edit Variant
-                    const variantId = searchParams?.get('variant_id');
-                    const consoleId = searchParams?.get('console_id');
+                    // 1. Edit Variant (Supports old param 'variant_id' or new generic 'type=variant&id=...')
+                    const variantId = searchParams?.get('variant_id') || (type === 'variant' ? id : null);
                     
                     if (mode === 'edit' && variantId) {
                         const variantData = await getVariantById(variantId);
                         if (variantData) {
                             setEditingVariant(variantData);
-                            // If console_id wasn't in URL, use the one from the variant
-                            setNewlyCreatedConsoleId(consoleId || variantData.console_id); 
+                            setNewlyCreatedConsoleId(variantData.console_id); 
                             setActiveTab('VARIANTS');
                             setMessage(`EDIT MODE ACTIVE: ${variantData.variant_name}`);
                         } else {
@@ -316,10 +314,4 @@ function AdminPortalContent() {
     );
 }
 
-export default function AdminPortal() {
-    return (
-        <Suspense fallback={<div className="p-10 text-center font-mono text-retro-neon">LOADING ADMIN MODULES...</div>}>
-            <AdminPortalContent />
-        </Suspense>
-    );
-}
+export default AdminPortalContent;

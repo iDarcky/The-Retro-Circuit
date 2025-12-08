@@ -136,9 +136,14 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
     return (
         <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn relative">
             
-            {/* ADMIN TRIGGER */}
+            {/* ADMIN TRIGGER (FIXED: EDIT VARIANT) */}
             {selectedVariantId !== 'base' && (
-                <AdminEditTrigger variantId={selectedVariantId} consoleId={consoleData.id} />
+                <AdminEditTrigger 
+                    id={selectedVariantId} 
+                    type="variant"
+                    label="EDIT VARIANT"
+                    displayMode="fixed"
+                />
             )}
 
             {/* TOP NAVIGATION & HEADER */}
@@ -147,9 +152,19 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                      <Link href="/console" className="inline-block text-xs font-mono text-retro-blue hover:text-retro-neon transition-colors mb-2">
                         &lt; BACK TO CONSOLE VAULT
                      </Link>
-                     <h1 className="text-4xl md:text-6xl font-pixel text-white drop-shadow-[4px_4px_0_rgba(0,255,157,0.5)] leading-tight uppercase break-words">
-                        {consoleData.name}
-                     </h1>
+                     <div className="flex flex-wrap items-center gap-4">
+                        <h1 className="text-4xl md:text-6xl font-pixel text-white drop-shadow-[4px_4px_0_rgba(0,255,157,0.5)] leading-tight uppercase break-words">
+                            {consoleData.name}
+                        </h1>
+                        <AdminEditTrigger 
+                            id={consoleData.id} 
+                            type="console"
+                            label="EDIT FOLDER"
+                            displayMode="inline"
+                            color="amber"
+                            className="mt-2"
+                        />
+                     </div>
                      <div className="flex flex-wrap gap-4 font-mono text-sm text-gray-400 mt-2">
                         <Link href={`/fabricators/${consoleData.manufacturer?.slug}`} className="hover:text-retro-neon transition-colors border-b border-transparent hover:border-retro-neon">
                             {consoleData.manufacturer?.name.toUpperCase()}
@@ -410,33 +425,3 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
             {/* LINKED GAMES SECTION */}
             {games.length > 0 && (
                 <div className="mt-16 pt-8 border-t-2 border-retro-grid">
-                    <h3 className="font-pixel text-2xl text-retro-pink mb-6 drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">NOTABLE SOFTWARE LIBRARY</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                        {games.map((game) => (
-                            <Link 
-                                key={game.id} 
-                                href={`/archive/${game.slug || game.id}`}
-                                className="group block bg-black border border-retro-grid hover:border-retro-pink transition-all relative overflow-hidden"
-                            >
-                                <div className="aspect-[3/4] overflow-hidden relative">
-                                    {game.image ? (
-                                        <img src={game.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-80 group-hover:opacity-100" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-gray-700 font-pixel text-xs text-center p-2">NO COVER</div>
-                                    )}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
-                                </div>
-                                <div className="absolute bottom-0 left-0 right-0 p-3">
-                                    <div className="font-pixel text-[10px] text-white truncate group-hover:text-retro-pink">{game.title}</div>
-                                    <div className="font-mono text-[9px] text-gray-400">{game.year}</div>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-};
-
-export default ConsoleDetailView;
