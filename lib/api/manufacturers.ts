@@ -23,6 +23,16 @@ export const getManufacturerBySlug = async (slug: string): Promise<Manufacturer 
     }
 };
 
+export const getManufacturerById = async (id: string): Promise<Manufacturer | null> => {
+    try {
+        const { data, error } = await supabase.from('manufacturer').select('*').eq('id', id).single();
+        if (error) throw error;
+        return data as Manufacturer;
+    } catch {
+        return null;
+    }
+};
+
 export const addManufacturer = async (manu: Omit<Manufacturer, 'id'>): Promise<{ success: boolean, message?: string }> => {
     try {
         console.log('[API] Inserting Manufacturer:', manu);
@@ -41,4 +51,17 @@ export const addManufacturer = async (manu: Omit<Manufacturer, 'id'>): Promise<{
         console.error('[API] Exception in addManufacturer:', e);
         return { success: false, message: e.message || "Unknown error occurred" };
     }
-}
+};
+
+export const updateManufacturer = async (id: string, manu: Partial<Manufacturer>): Promise<{ success: boolean, message?: string }> => {
+    try {
+        const { error } = await supabase.from('manufacturer').update(manu).eq('id', id);
+        if (error) {
+            console.error('[API] Update Error:', error);
+            return { success: false, message: error.message };
+        }
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, message: e.message };
+    }
+};

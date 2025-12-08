@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { createClient } from '../../../lib/supabase/server';
 import { ConsoleDetails } from '../../../lib/types';
 import { getBrandTheme } from '../../../data/static';
+import AdminEditTrigger from '../../../components/admin/AdminEditTrigger';
 
 type Props = {
   params: { slug: string }
@@ -97,7 +98,7 @@ export default async function FabricatorDetailPage({ params }: Props) {
                              <div className={`font-mono text-xs border inline-block px-2 py-0.5 ${theme.color}`}>CONFIDENTIAL</div>
                         </div>
                         
-                        <div className="flex items-center gap-4 mt-4">
+                        <div className="flex flex-wrap items-center gap-4 mt-4">
                             {profile.image_url && (
                                 <div className="bg-black/20 p-2 border border-gray-700 rounded md:hidden">
                                      <img src={profile.image_url} className="h-12 w-auto object-contain" />
@@ -106,6 +107,13 @@ export default async function FabricatorDetailPage({ params }: Props) {
                             <h1 className={`text-3xl sm:text-4xl md:text-6xl font-pixel ${themeColorClass} opacity-90 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] break-words leading-tight`}>
                                 {profile.name}
                             </h1>
+                            
+                            <AdminEditTrigger 
+                                id={profile.id} 
+                                type="fabricator" 
+                                displayMode="inline" 
+                                className="mt-1"
+                            />
                         </div>
 
                         {profile.website && (

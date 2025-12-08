@@ -1,3 +1,4 @@
+
 import { supabase } from "../supabase/singleton";
 import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant } from "../types";
 
@@ -107,6 +108,16 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
     }
 };
 
+export const getConsoleById = async (id: string): Promise<ConsoleDetails | null> => {
+    try {
+        const { data, error } = await supabase.from('consoles').select('*').eq('id', id).single();
+        if (error) throw error;
+        return data as ConsoleDetails;
+    } catch {
+        return null;
+    }
+};
+
 export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs | null> => {
     // Legacy support: Fetch from console_variants since console_specs is deprecated
     try {
@@ -200,6 +211,19 @@ export const addConsole = async (
     } catch (e: any) {
         console.error('EXCEPTION IN addConsole:', e);
         return { success: false, message: e.message || "Unknown Exception" };
+    }
+};
+
+export const updateConsole = async (
+    id: string,
+    consoleData: Partial<ConsoleDetails>
+): Promise<{ success: boolean, message?: string }> => {
+    try {
+        const { error } = await supabase.from('consoles').update(consoleData).eq('id', id);
+        if (error) return { success: false, message: error.message };
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, message: e.message };
     }
 };
 

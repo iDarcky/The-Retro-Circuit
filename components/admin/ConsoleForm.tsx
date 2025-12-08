@@ -1,28 +1,38 @@
 
-
 'use client';
 
-import { useState, type FormEvent, type FC } from 'react';
+import { useState, type FormEvent, type FC, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { addConsole } from '../../lib/api';
+import { addConsole, updateConsole } from '../../lib/api';
 import { supabase } from '../../lib/supabase/singleton';
-import { ConsoleSchema, Manufacturer, CONSOLE_FORM_FIELDS } from '../../lib/types';
+import { ConsoleSchema, Manufacturer, CONSOLE_FORM_FIELDS, ConsoleDetails } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
 import ImageUpload from '../ui/ImageUpload';
 
 interface ConsoleFormProps {
+    initialData?: ConsoleDetails | null;
     manufacturers: Manufacturer[];
     onConsoleCreated: (id: string, name: string) => void;
     onError: (msg: string) => void;
 }
 
-export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onConsoleCreated, onError }) => {
+export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, onConsoleCreated, onError }) => {
     const router = useRouter();
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
     const [isSlugLocked, setIsSlugLocked] = useState(true);
+    
+    // Edit Mode Flag
+    const isEditMode = !!initialData;
+
+    // Load Initial Data for Edit Mode
+    useEffect(() => {
+        if (initialData) {
+            setFormData(initialData);
+        }
+    }, [initialData]);
 
     const generateSlug = (text: string) => {
         return text.toLowerCase()
@@ -36,7 +46,8 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onConsoleCrea
             const newData = { ...prev, [key]: value };
             
             // Auto-update slug if locked and editing name
-            if (key === 'name' && isSlugLocked) {
+            // Only if NOT in edit mode.
+            if (key === 'name' && isSlugLocked && !isEditMode) {
                 newData['slug'] = generateSlug(value);
             }
             return newData;
@@ -82,28 +93,36 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onConsoleCrea
              return; 
         }
 
-        console.log('Validation Passed. Creating Console Folder...');
+        console.log('Validation Passed. Processing Console Folder...');
 
         setLoading(true);
         try {
-            // New Workflow: We do NOT send specs here. Just the folder identity.
-            const response = await addConsole(consoleResult.data as any);
+            let response;
+            if (isEditMode && initialData?.id) {
+                // UPDATE
+                response = await updateConsole(initialData.id, consoleResult.data as any);
+            } else {
+                // INSERT
+                // New Workflow: We do NOT send specs here. Just the folder identity.
+                response = await addConsole(consoleResult.data as any);
+            }
             
-            if (response.success && response.id) {
-                // DO NOT RESET FORM. 
-                // The user wants to see what they just made as they move to the next tab.
-                setIsSlugLocked(true);
-                setFieldErrors({});
+            if (response.success) {
+                // DO NOT RESET FORM in either case.
                 
-                // Refresh Server Data so the ID is valid for the next step
+                // Refresh Server Data so changes are reflected
                 router.refresh();
 
-                // Trigger Workflow Switch -> This will change the tab to 'ADD VARIANTS'
-                onConsoleCreated(response.id, consoleData.name);
+                if (isEditMode) {
+                    onConsoleCreated(initialData!.id, formData.name); // Just notify success, maybe parent keeps tab open
+                } else if ((response as any).id) {
+                     // Trigger Workflow Switch -> This will change the tab to 'ADD VARIANTS'
+                    onConsoleCreated((response as any).id, consoleData.name);
+                }
 
             } else {
-                console.error(`[ConsoleForm] Registration Failed:`, response.message);
-                onError(`REGISTRATION FAILED: ${response.message}`);
+                console.error(`[ConsoleForm] Operation Failed:`, response.message);
+                onError(`OPERATION FAILED: ${response.message}`);
             }
         } catch (err: any) {
              console.error('[ConsoleForm] Critical Exception:', err);
@@ -115,9 +134,15 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onConsoleCrea
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="bg-retro-blue/10 border-l-4 border-retro-blue p-4 mb-4">
-                <h3 className="font-bold text-retro-blue text-sm uppercase">Step 1: System Identity (The Folder)</h3>
-                <p className="text-xs text-gray-400">Create the container for this console. You will add technical specs (Variants) in the next step.</p>
+            <div className={`border-l-4 p-4 mb-4 ${isEditMode ? 'bg-retro-neon/10 border-retro-neon' : 'bg-retro-blue/10 border-retro-blue'}`}>
+                <h3 className={`font-bold text-sm uppercase ${isEditMode ? 'text-retro-neon' : 'text-retro-blue'}`}>
+                    {isEditMode ? 'Edit Mode: Console Identity' : 'Step 1: System Identity (The Folder)'}
+                </h3>
+                <p className="text-xs text-gray-400">
+                    {isEditMode 
+                     ? 'Renaming the folder or moving manufacturer.' 
+                     : 'Create the container for this console. You will add technical specs (Variants) in the next step.'}
+                </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -184,7 +209,11 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onConsoleCrea
                 })}
             </div>
 
-            <div className="flex justify-end pt-4"><Button type="submit" isLoading={loading}>CREATE FOLDER & START SPECS &gt;</Button></div>
+            <div className="flex justify-end pt-4">
+                <Button type="submit" isLoading={loading}>
+                    {isEditMode ? 'UPDATE CONSOLE IDENTITY' : 'CREATE FOLDER & START SPECS >'}
+                </Button>
+            </div>
         </form>
     );
 };

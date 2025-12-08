@@ -1,20 +1,22 @@
+
 'use client';
 
-import { useState, type FormEvent, type FC, type KeyboardEvent } from 'react';
+import { useState, type FormEvent, type FC, type KeyboardEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { addManufacturer } from '../../lib/api';
+import { addManufacturer, updateManufacturer } from '../../lib/api';
 import { supabase } from '../../lib/supabase/singleton';
-import { ManufacturerSchema, MANUFACTURER_FORM_FIELDS } from '../../lib/types';
+import { ManufacturerSchema, MANUFACTURER_FORM_FIELDS, Manufacturer } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
 import ImageUpload from '../ui/ImageUpload';
 
 interface ManufacturerFormProps {
+    initialData?: Manufacturer | null;
     onSuccess: (msg: string) => void;
     onError: (msg: string) => void;
 }
 
-export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError }) => {
+export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuccess, onError }) => {
     const router = useRouter();
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -25,6 +27,22 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
     // Franchise Tag State
     const [franchises, setFranchises] = useState<string[]>([]);
     const [franchiseInput, setFranchiseInput] = useState('');
+    
+    // Edit Mode Flag
+    const isEditMode = !!initialData;
+
+    // Load Initial Data for Edit Mode
+    useEffect(() => {
+        if (initialData) {
+            setFormData(initialData);
+            if (initialData.key_franchises) {
+                setFranchises(initialData.key_franchises.split(',').map(s => s.trim()).filter(Boolean));
+            }
+            // If editing, generally we keep the slug locked unless they explicitly want to change it (risky for SEO)
+            // But we don't want auto-generation from name to overwrite the existing slug immediately.
+            // So we start locked, but the handleInputChange logic needs to know we are in "initialized" state.
+        }
+    }, [initialData]);
 
     const generateSlug = (text: string) => {
         return text.toLowerCase()
@@ -38,7 +56,9 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
             const newData = { ...prev, [key]: value };
             
             // Auto-update slug if locked and editing name
-            if (key === 'name' && isSlugLocked) {
+            // Only if NOT in edit mode, OR if the user manually unlocked it.
+            // In edit mode, usually we don't want changing name to break the URL unless intended.
+            if (key === 'name' && isSlugLocked && !isEditMode) {
                 newData['slug'] = generateSlug(value);
             }
             return newData;
@@ -103,14 +123,23 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
 
         setLoading(true);
         try {
-            const response = await addManufacturer(result.data as any);
+            let response;
+            if (isEditMode && initialData?.id) {
+                // UPDATE
+                response = await updateManufacturer(initialData.id, result.data as any);
+            } else {
+                // INSERT
+                response = await addManufacturer(result.data as any);
+            }
             
             if (response.success) {
-                // RESET PROTOCOL FOR BULK ENTRY
-                setFormData({});
-                setFranchises([]);
-                setFranchiseInput('');
-                setIsSlugLocked(true);
+                if (!isEditMode) {
+                    // RESET PROTOCOL FOR BULK ENTRY (Only if creating)
+                    setFormData({});
+                    setFranchises([]);
+                    setFranchiseInput('');
+                    setIsSlugLocked(true);
+                }
                 setFieldErrors({});
 
                 // Show local success banner
@@ -120,15 +149,15 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
                 router.refresh();
 
                 // Trigger parent refresh but suppress parent banner (send empty string)
-                onSuccess(''); 
+                onSuccess(isEditMode ? "FABRICATOR UPDATED." : ""); 
 
                 // Auto-dismiss banner
                 setTimeout(() => {
                     setIsSuccess(false);
                 }, 3000);
             } else {
-                console.error(`[ManufacturerForm] Registration Failed:`, response.message);
-                onError(`REGISTRATION FAILED: ${response.message}`);
+                console.error(`[ManufacturerForm] Operation Failed:`, response.message);
+                onError(`OPERATION FAILED: ${response.message}`);
             }
         } catch (err: any) {
              console.error('[ManufacturerForm] Critical Exception:', err);
@@ -143,7 +172,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
         <form onSubmit={handleSubmit} className="space-y-6">
             {isSuccess && (
                 <div className="bg-retro-neon/10 border border-retro-neon text-retro-neon p-4 text-center font-bold animate-pulse shadow-[0_0_10px_rgba(0,255,157,0.2)]">
-                    FABRICATOR REGISTERED. READY FOR NEXT ENTRY.
+                    {isEditMode ? 'FABRICATOR DATA UPDATED.' : 'FABRICATOR REGISTERED. READY FOR NEXT ENTRY.'}
                 </div>
             )}
 
@@ -220,7 +249,11 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ onSuccess, onError
                     return <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} error={fieldErrors[field.key]} />;
                 })}
             </div>
-            <div className="flex justify-end pt-4"><Button type="submit" isLoading={loading}>REGISTER FABRICATOR</Button></div>
+            <div className="flex justify-end pt-4">
+                <Button type="submit" isLoading={loading}>
+                    {isEditMode ? 'UPDATE FABRICATOR' : 'REGISTER FABRICATOR'}
+                </Button>
+            </div>
         </form>
     );
 };

@@ -1,10 +1,11 @@
+
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { retroAuth } from '../../lib/auth';
-import { fetchManufacturers, fetchConsoleList, getVariantById } from '../../lib/api';
-import { Manufacturer, ConsoleVariant } from '../../lib/types';
+import { fetchManufacturers, fetchConsoleList, getVariantById, getManufacturerById, getConsoleById } from '../../lib/api';
+import { Manufacturer, ConsoleVariant, ConsoleDetails } from '../../lib/types';
 import { NewsForm } from '../../components/admin/NewsForm';
 import { ManufacturerForm } from '../../components/admin/ManufacturerForm';
 import { ConsoleForm } from '../../components/admin/ConsoleForm';
@@ -28,9 +29,13 @@ function AdminPortalContent() {
     const [consoleList, setConsoleList] = useState<{name: string, id: string}[]>([]);
     const [customLogo, setCustomLogo] = useState<string | null>(null);
 
-    // State for Variant-First Workflow & Edit Mode
+    // State for Workflow & Edit Mode
     const [newlyCreatedConsoleId, setNewlyCreatedConsoleId] = useState<string | null>(null);
+    
+    // Edit Objects
     const [editingVariant, setEditingVariant] = useState<ConsoleVariant | null>(null);
+    const [editingManufacturer, setEditingManufacturer] = useState<Manufacturer | null>(null);
+    const [editingConsoleFolder, setEditingConsoleFolder] = useState<ConsoleDetails | null>(null);
 
     // Initial Auth & Data Load
     useEffect(() => {
@@ -53,24 +58,49 @@ function AdminPortalContent() {
 
                     // --- CHECK FOR EDIT MODE IN URL ---
                     const mode = searchParams?.get('mode');
-                    const variantId = searchParams?.get('variant_id');
-                    const consoleId = searchParams?.get('console_id');
-                    const tabParam = searchParams?.get('tab');
+                    const type = searchParams?.get('type');
+                    const id = searchParams?.get('id');
+
+                    // 1. Edit Variant (Supports old param 'variant_id' or new generic 'type=variant&id=...')
+                    const variantId = searchParams?.get('variant_id') || (type === 'variant' ? id : null);
                     
                     if (mode === 'edit' && variantId) {
                         const variantData = await getVariantById(variantId);
                         if (variantData) {
                             setEditingVariant(variantData);
-                            // If console_id wasn't in URL, use the one from the variant
-                            setNewlyCreatedConsoleId(consoleId || variantData.console_id); 
+                            setNewlyCreatedConsoleId(variantData.console_id); 
                             setActiveTab('VARIANTS');
                             setMessage(`EDIT MODE ACTIVE: ${variantData.variant_name}`);
                         } else {
                             setErrorMsg("FAILED TO FETCH VARIANT FOR EDITING.");
                         }
-                    } else if (tabParam) {
-                        // Allow deep linking to tabs (e.g. from nav)
-                        if (['NEWS', 'GAME', 'CONSOLE', 'VARIANTS', 'FABRICATOR', 'SETTINGS'].includes(tabParam)) {
+                    } 
+                    // 2. Edit Fabricator
+                    else if (mode === 'edit' && type === 'fabricator' && id) {
+                         const manu = await getManufacturerById(id);
+                         if (manu) {
+                             setEditingManufacturer(manu);
+                             setActiveTab('FABRICATOR');
+                             setMessage(`EDITING FABRICATOR: ${manu.name}`);
+                         } else {
+                             setErrorMsg("FAILED TO FETCH FABRICATOR.");
+                         }
+                    }
+                    // 3. Edit Console Folder
+                    else if (mode === 'edit' && type === 'console' && id) {
+                         const cons = await getConsoleById(id);
+                         if (cons) {
+                             setEditingConsoleFolder(cons);
+                             setActiveTab('CONSOLE');
+                             setMessage(`EDITING CONSOLE IDENTITY: ${cons.name}`);
+                         } else {
+                             setErrorMsg("FAILED TO FETCH CONSOLE FOLDER.");
+                         }
+                    }
+                    // 4. Tab Navigation
+                    else {
+                        const tabParam = searchParams?.get('tab');
+                        if (tabParam && ['NEWS', 'GAME', 'CONSOLE', 'VARIANTS', 'FABRICATOR', 'SETTINGS'].includes(tabParam)) {
                             setActiveTab(tabParam as AdminTab);
                         }
                     }
@@ -85,15 +115,36 @@ function AdminPortalContent() {
     }, [searchParams]);
 
     const handleConsoleCreated = (id: string, name: string) => {
-        setNewlyCreatedConsoleId(id);
-        // Refresh list so the new console appears in dropdowns immediately
-        fetchConsoleList().then((list) => setConsoleList(list as any));
-        setActiveTab('VARIANTS');
-        setMessage(`FOLDER CREATED: "${name}". NOW ADD SPECS.`);
+        if (editingConsoleFolder) {
+            setMessage(`CONSOLE FOLDER UPDATED: "${name}"`);
+            // Optional: exit edit mode? 
+            // setEditingConsoleFolder(null); 
+        } else {
+            setNewlyCreatedConsoleId(id);
+            // Refresh list so the new console appears in dropdowns immediately
+            fetchConsoleList().then((list) => setConsoleList(list as any));
+            setActiveTab('VARIANTS');
+            setMessage(`FOLDER CREATED: "${name}". NOW ADD SPECS.`);
+        }
     };
 
     const handleLogoUpdate = (base64: string | null) => {
         setCustomLogo(base64);
+    };
+
+    const clearEditMode = () => {
+        setEditingVariant(null);
+        setEditingManufacturer(null);
+        setEditingConsoleFolder(null);
+        setNewlyCreatedConsoleId(null);
+        setMessage(null);
+        setErrorMsg(null);
+        window.history.replaceState(null, '', '/admin');
+    };
+
+    const handleTabChange = (tab: AdminTab) => {
+        setActiveTab(tab);
+        clearEditMode();
     };
 
     if (loading) return <div className="p-8 text-center font-mono text-retro-neon">VERIFYING BIOMETRICS...</div>;
@@ -138,23 +189,18 @@ function AdminPortalContent() {
                 {tabs.map(tab => (
                     <button
                         key={tab}
-                        onClick={() => {
-                            setActiveTab(tab);
-                            setMessage(null);
-                            setErrorMsg(null);
-                            // Clear edit mode when switching tabs manually
-                            if (editingVariant && tab !== 'VARIANTS') {
-                                setEditingVariant(null);
-                                window.history.replaceState(null, '', '/admin'); // Clean URL
-                            }
-                        }}
+                        onClick={() => handleTabChange(tab)}
                         className={`font-mono text-sm px-4 py-2 border-t border-l border-r transition-all ${
                             activeTab === tab 
                             ? 'bg-retro-dark text-retro-neon border-retro-neon -mb-[1px] font-bold' 
                             : 'bg-black text-gray-500 border-gray-800 hover:text-white hover:bg-white/5'
                         }`}
                     >
-                        {tab === 'VARIANTS' && editingVariant ? 'EDIT VARIANT' : tab}
+                        {/* Dynamic Label based on Edit Mode */}
+                        {tab === 'VARIANTS' && editingVariant ? 'EDIT VARIANT' : 
+                         tab === 'FABRICATOR' && editingManufacturer ? 'EDIT FABRICATOR' :
+                         tab === 'CONSOLE' && editingConsoleFolder ? 'EDIT CONSOLE' :
+                         tab}
                     </button>
                 ))}
             </div>
@@ -175,12 +221,22 @@ function AdminPortalContent() {
 
                     {activeTab === 'CONSOLE' && (
                         <div>
-                            <h2 className="font-pixel text-xl text-white mb-6">NEW CONSOLE FOLDER</h2>
+                            <h2 className="font-pixel text-xl text-white mb-6">
+                                {editingConsoleFolder ? `EDITING: ${editingConsoleFolder.name}` : 'NEW CONSOLE FOLDER'}
+                            </h2>
                             <ConsoleForm 
+                                initialData={editingConsoleFolder}
                                 manufacturers={manufacturers} 
                                 onConsoleCreated={handleConsoleCreated}
                                 onError={setErrorMsg}
                             />
+                            {editingConsoleFolder && (
+                                <div className="mt-4 pt-4 border-t border-dashed border-gray-700">
+                                    <Button variant="secondary" onClick={clearEditMode} className="text-xs">
+                                        CANCEL EDITING
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     )}
 
@@ -198,9 +254,7 @@ function AdminPortalContent() {
                                     if (editingVariant) {
                                         // Exit edit mode on success
                                         setTimeout(() => {
-                                            setEditingVariant(null);
-                                            window.history.replaceState(null, '', '/admin');
-                                            // Optional: Redirect back to public page could go here
+                                            clearEditMode();
                                         }, 1500);
                                     }
                                 }}
@@ -208,16 +262,7 @@ function AdminPortalContent() {
                             />
                             {editingVariant && (
                                 <div className="mt-4 pt-4 border-t border-dashed border-gray-700">
-                                    <Button 
-                                        variant="secondary" 
-                                        onClick={() => {
-                                            setEditingVariant(null);
-                                            setNewlyCreatedConsoleId(null);
-                                            setMessage("EDIT MODE CANCELLED");
-                                            window.history.replaceState(null, '', '/admin');
-                                        }}
-                                        className="text-xs"
-                                    >
+                                    <Button variant="secondary" onClick={clearEditMode} className="text-xs">
                                         CANCEL EDITING
                                     </Button>
                                 </div>
@@ -227,8 +272,21 @@ function AdminPortalContent() {
 
                     {activeTab === 'FABRICATOR' && (
                         <div>
-                            <h2 className="font-pixel text-xl text-white mb-6">REGISTER FABRICATOR</h2>
-                            <ManufacturerForm onSuccess={setMessage} onError={setErrorMsg} />
+                            <h2 className="font-pixel text-xl text-white mb-6">
+                                {editingManufacturer ? `EDITING: ${editingManufacturer.name}` : 'REGISTER FABRICATOR'}
+                            </h2>
+                            <ManufacturerForm 
+                                initialData={editingManufacturer}
+                                onSuccess={setMessage} 
+                                onError={setErrorMsg} 
+                            />
+                            {editingManufacturer && (
+                                <div className="mt-4 pt-4 border-t border-dashed border-gray-700">
+                                    <Button variant="secondary" onClick={clearEditMode} className="text-xs">
+                                        CANCEL EDITING
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     )}
 
@@ -256,9 +314,13 @@ function AdminPortalContent() {
     );
 }
 
-export default function AdminPortal() {
+export default function AdminPage() {
     return (
-        <Suspense fallback={<div className="p-10 text-center font-mono text-retro-neon">LOADING ADMIN MODULES...</div>}>
+        <Suspense fallback={
+            <div className="w-full h-screen flex items-center justify-center font-mono text-retro-neon">
+                <div className="animate-pulse">ACCESSING SECURE MAINFRAME...</div>
+            </div>
+        }>
             <AdminPortalContent />
         </Suspense>
     );
