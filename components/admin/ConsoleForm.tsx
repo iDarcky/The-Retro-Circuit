@@ -1,8 +1,7 @@
 
-
 'use client';
 
-import { useState, type FormEvent, type FC, useEffect } from 'react';
+import { useState, type FormEvent, type FC, useEffect, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { addConsole, updateConsole } from '../../lib/api';
 import { purgeCache } from '../../app/actions/revalidate';
@@ -162,7 +161,7 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                     <select 
                         className={`w-full bg-black border p-3 outline-none text-white font-mono ${fieldErrors.manufacturer_id ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'}`}
                         value={formData.manufacturer_id || ''}
-                        onChange={(e) => handleInputChange('manufacturer_id', e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLSelectElement>) => handleInputChange('manufacturer_id', e.target.value)}
                     >
                         <option value="">-- Select Fabricator --</option>
                         {manufacturers.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
@@ -193,7 +192,7 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                                         : `bg-black text-white ${fieldErrors.slug ? 'border-retro-pink' : 'border-retro-neon focus:border-retro-blue'}`
                                     }`}
                                     value={formData[field.key] || ''}
-                                    onChange={(e) => handleInputChange(field.key, e.target.value)}
+                                    onChange={(e: ChangeEvent<HTMLInputElement>) => handleInputChange(field.key, e.target.value)}
                                     readOnly={isSlugLocked}
                                 />
                                 {fieldErrors.slug && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors.slug}</div>}

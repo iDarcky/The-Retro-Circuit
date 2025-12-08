@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, type FormEvent, type FC, useEffect } from 'react';
+import { useState, type FormEvent, type FC, useEffect, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { addConsoleVariant, updateConsoleVariant, getVariantsByConsole } from '../../lib/api';
 import { purgeCache } from '../../app/actions/revalidate';
@@ -227,7 +227,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     <select 
                         className={`w-full bg-black border p-3 outline-none text-white font-mono text-sm ${fieldErrors.console_id ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'} ${isEditMode ? 'opacity-50 cursor-not-allowed' : ''}`}
                         value={formData.console_id || ''} 
-                        onChange={(e) => handleInputChange('console_id', e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLSelectElement>) => handleInputChange('console_id', e.target.value)}
                         required
                         disabled={isEditMode}
                     >
@@ -245,7 +245,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                         <select 
                             className="w-full bg-black border border-retro-blue text-retro-blue p-2 font-mono text-xs focus:outline-none"
                             value={selectedTemplate}
-                            onChange={(e) => handleTemplateSelect(e.target.value)}
+                            onChange={(e: ChangeEvent<HTMLSelectElement>) => handleTemplateSelect(e.target.value)}
                         >
                             <option value="">-- Select a Base Model Template --</option>
                             {existingVariants.map(v => (

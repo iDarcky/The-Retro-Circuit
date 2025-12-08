@@ -1,8 +1,7 @@
 
-
 'use client';
 
-import { useState, type FormEvent, type FC } from 'react';
+import { useState, type FormEvent, type FC, type ChangeEvent } from 'react';
 import { addNewsItem } from '../../lib/api';
 import { NewsItem, NewsItemSchema } from '../../lib/types';
 import Button from '../ui/Button';
@@ -40,14 +39,14 @@ export const NewsForm: FC<NewsFormProps> = ({ onSuccess, onError }) => {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
-            <input className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none text-white font-mono" placeholder="Headline" value={newsHeadline} onChange={(e) => setNewsHeadline(e.target.value)} />
-            <select className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none text-white font-mono" value={newsCategory} onChange={(e) => setNewsCategory(e.target.value as NewsItem['category'])}>
+            <input className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none text-white font-mono" placeholder="Headline" value={newsHeadline} onChange={(e: ChangeEvent<HTMLInputElement>) => setNewsHeadline(e.target.value)} />
+            <select className="w-full bg-black border border-gray-700 p-3 focus:border-retro-neon outline-none text-white font-mono" value={newsCategory} onChange={(e: ChangeEvent<HTMLSelectElement>) => setNewsCategory(e.target.value as NewsItem['category'])}>
                 <option value="Hardware">Hardware</option>
                 <option value="Software">Software</option>
                 <option value="Industry">Industry</option>
                 <option value="Rumor">Rumor</option>
             </select>
-            <textarea className="w-full bg-black border border-gray-700 p-3 h-32 focus:border-retro-neon outline-none text-white font-mono" placeholder="Summary" value={newsSummary} onChange={(e) => setNewsSummary(e.target.value)} />
+            <textarea className="w-full bg-black border border-gray-700 p-3 h-32 focus:border-retro-neon outline-none text-white font-mono" placeholder="Summary" value={newsSummary} onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setNewsSummary(e.target.value)} />
             <div className="flex justify-end"><Button type="submit" isLoading={loading}>TRANSMIT</Button></div>
         </form>
     );

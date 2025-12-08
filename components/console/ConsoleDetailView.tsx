@@ -400,12 +400,11 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                              <div className="mt-4 pt-4 border-t border-white/5">
                                 <SpecField label="Speakers" value={mergedSpecs.audio_speakers} />
                                 <SpecField label="Audio Tech" value={mergedSpecs.audio_tech} small />
-                                <SpecField label="Headphone Jack" value={mergedSpecs.headphone_jack} small />
                              </div>
 
                              <div className="mt-4 pt-4 border-t border-white/5">
                                 <div className="flex flex-wrap gap-2">
-                                    <TechBadge label="3.5mm Jack" active={mergedSpecs.headphone_jack ? true : undefined} />
+                                    <TechBadge label="3.5mm Jack" active={mergedSpecs.headphone_jack} />
                                     <TechBadge label="Microphone" active={mergedSpecs.microphone} />
                                     <TechBadge label="Camera" active={mergedSpecs.camera} />
                                     <TechBadge label="Biometrics" active={mergedSpecs.biometrics} />

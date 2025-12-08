@@ -1,5 +1,5 @@
 
-import { type FC } from 'react';
+import { type FC, type ChangeEvent } from 'react';
 
 interface RenderInputProps {
     field: { label: string, key: string, type: string, required?: boolean, step?: string };
@@ -20,7 +20,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                 <textarea 
                     className={`w-full bg-black border p-3 h-24 outline-none font-mono text-sm ${borderColor} transition-colors`}
                     value={val}
-                    onChange={(e) => onChange(field.key, e.target.value)}
+                    onChange={(e: ChangeEvent<HTMLTextAreaElement>) => onChange(field.key, e.target.value)}
                     required={false}
                 />
                 {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
@@ -36,7 +36,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                         type="checkbox"
                         className="accent-retro-neon w-4 h-4"
                         checked={!!val}
-                        onChange={(e) => onChange(field.key, e.target.checked)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(field.key, e.target.checked)}
                     />
                     <label className="text-xs text-gray-300 uppercase cursor-pointer" onClick={() => onChange(field.key, !val)}>{field.label}</label>
                 </div>
@@ -53,7 +53,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                 step={field.step}
                 className={`w-full bg-black border p-3 outline-none text-white font-mono ${borderColor} transition-colors`}
                 value={val}
-                onChange={(e) => onChange(field.key, e.target.value)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(field.key, e.target.value)}
                 required={false}
             />
             {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
