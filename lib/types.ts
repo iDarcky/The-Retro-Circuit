@@ -1,11 +1,13 @@
 
-
 import { z } from 'zod';
 
 // --- VALIDATION HELPERS ---
 // Aggressively permissive types to prevent "Validation Failed" errors on empty/partial forms.
 
-const safeString = z.string().optional().or(z.literal('')).or(z.null()).transform(val => val || '');
+const safeString = z.any().transform(val => {
+  if (val === null || val === undefined) return '';
+  return String(val);
+});
 
 const safeNumber = z.preprocess((val) => {
   if (val === '' || val === null || val === undefined) return undefined;

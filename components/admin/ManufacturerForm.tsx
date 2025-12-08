@@ -38,14 +38,11 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
             if (initialData.key_franchises) {
                 setFranchises(initialData.key_franchises.split(',').map(s => s.trim()).filter(Boolean));
             }
-            // If editing, generally we keep the slug locked unless they explicitly want to change it (risky for SEO)
-            // But we don't want auto-generation from name to overwrite the existing slug immediately.
-            // So we start locked, but the handleInputChange logic needs to know we are in "initialized" state.
         }
     }, [initialData]);
 
     const generateSlug = (text: string) => {
-        return text.toLowerCase()
+        return (text || '').toLowerCase()
             .replace(/\s+/g, '-')          // Replace spaces with hyphens
             .replace(/[^a-z0-9-]/g, '')    // Remove special chars
             .replace(/-+/g, '-');          // Collapse multiple hyphens
@@ -56,8 +53,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
             const newData = { ...prev, [key]: value };
             
             // Auto-update slug if locked and editing name
-            // Only if NOT in edit mode, OR if the user manually unlocked it.
-            // In edit mode, usually we don't want changing name to break the URL unless intended.
+            // Only if NOT in edit mode.
             if (key === 'name' && isSlugLocked && !isEditMode) {
                 newData['slug'] = generateSlug(value);
             }
@@ -94,7 +90,6 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
         // --- STANDARD AUTH CHECK ---
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         if (sessionError || !session) {
-            console.error("Auth Error:", sessionError);
             onError("Session expired. Please refresh the page.");
             return;
         }
@@ -107,7 +102,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
         const rawData = {
             ...formData,
             key_franchises: franchises.join(', '),
-            founded_year: Number(formData.founded_year)
+            founded_year: formData.founded_year // safeSchema handles parsing
         };
 
         const result = ManufacturerSchema.safeParse(rawData);
@@ -117,7 +112,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                  if (issue.path.length > 0) newErrors[issue.path[0].toString()] = issue.message;
              });
              setFieldErrors(newErrors);
-             onError("VALIDATION FAILED. CHECK HIGHLIGHTED FIELDS."); 
+             onError("VALIDATION FAILED."); 
              return; 
         }
 
@@ -125,45 +120,31 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
         try {
             let response;
             if (isEditMode && initialData?.id) {
-                // UPDATE
                 response = await updateManufacturer(initialData.id, result.data as any);
             } else {
-                // INSERT
                 response = await addManufacturer(result.data as any);
             }
             
             if (response.success) {
                 if (!isEditMode) {
-                    // RESET PROTOCOL FOR BULK ENTRY (Only if creating)
                     setFormData({});
                     setFranchises([]);
                     setFranchiseInput('');
                     setIsSlugLocked(true);
                 }
                 setFieldErrors({});
-
-                // Show local success banner
                 setIsSuccess(true);
-
-                // Refresh Server Data
                 router.refresh();
-
-                // Trigger parent refresh but suppress parent banner (send empty string)
                 onSuccess(isEditMode ? "FABRICATOR UPDATED." : ""); 
-
-                // Auto-dismiss banner
                 setTimeout(() => {
                     setIsSuccess(false);
                 }, 3000);
             } else {
-                console.error(`[ManufacturerForm] Operation Failed:`, response.message);
                 onError(`OPERATION FAILED: ${response.message}`);
             }
         } catch (err: any) {
-             console.error('[ManufacturerForm] Critical Exception:', err);
              onError(`SYSTEM ERROR: ${err.message}`);
         } finally {
-             // CRITICAL: Always reset loading state so button doesn't get stuck
              setLoading(false);
         }
     };
@@ -202,7 +183,6 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                                     value={formData[field.key] || ''}
                                     onChange={(e) => handleInputChange(field.key, e.target.value)}
                                     readOnly={isSlugLocked}
-                                    required={field.required}
                                 />
                                 {fieldErrors.slug && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors.slug}</div>}
                             </div>
@@ -241,7 +221,6 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                                     value={formData[field.key]}
                                     onChange={(url) => handleInputChange(field.key, url)}
                                 />
-                                {fieldErrors.image_url && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors.image_url}</div>}
                             </div>
                         );
                     }
