@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, useEffect, useRef, type FC } from 'react';
+import { useState, useEffect, useRef, type FC, type ChangeEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { fetchConsoleList, fetchConsoleBySlug } from '../../lib/api';
 import { ConsoleDetails, ConsoleVariant } from '../../lib/types';
@@ -305,7 +304,7 @@ const ConsoleSearch = ({
                 className={`w-full bg-black/80 backdrop-blur border-b-2 p-3 font-mono text-sm uppercase outline-none transition-colors ${theme} border-gray-700`}
                 placeholder={placeholder}
                 value={query}
-                onChange={(e) => { setQuery(e.target.value); setIsOpen(true); }}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => { setQuery(e.target.value); setIsOpen(true); }}
                 onFocus={() => setIsOpen(true)}
             />
             {isOpen && query.length > 0 && (
