@@ -9,7 +9,9 @@ interface RenderInputProps {
 }
 
 export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error }) => {
-    const val = value || (field.type === 'checkbox' ? false : '');
+    // Default val handling
+    const val = value !== undefined && value !== null ? value : (field.type === 'checkbox' ? false : '');
+    
     const borderColor = error ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon';
     const labelColor = error ? 'text-retro-pink' : 'text-gray-500';
     
@@ -29,17 +31,22 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
     }
 
     if (field.type === 'checkbox') {
-            return (
-            <div className="flex flex-col">
-                <div className={`flex items-center gap-3 border p-3 bg-black ${borderColor} transition-colors`}>
+        // Strictly check for true or "true" string to handle potential DB type mismatch
+        const isChecked = String(val) === 'true';
+        
+        return (
+            <div>
+                <label className={`flex items-center gap-3 cursor-pointer group`}>
                     <input 
                         type="checkbox"
-                        className="accent-retro-neon w-4 h-4"
-                        checked={!!val}
+                        className="w-4 h-4 rounded border-gray-700 bg-black text-retro-neon focus:ring-retro-neon"
+                        checked={isChecked}
                         onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(field.key, e.target.checked)}
                     />
-                    <label className="text-xs text-gray-300 uppercase cursor-pointer" onClick={() => onChange(field.key, !val)}>{field.label}</label>
-                </div>
+                    <span className={`text-[10px] uppercase font-bold tracking-wider group-hover:text-white ${labelColor}`}>
+                        {field.label}
+                    </span>
+                </label>
                 {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
             </div>
         );
@@ -50,11 +57,11 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
             <label className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
             <input 
                 type={field.type}
-                step={field.step}
-                className={`w-full bg-black border p-3 outline-none text-white font-mono ${borderColor} transition-colors`}
+                className={`w-full bg-black border p-3 outline-none font-mono text-sm ${borderColor} transition-colors`}
                 value={val}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(field.key, e.target.value)}
-                required={false}
+                required={field.required}
+                step={field.step}
             />
             {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
         </div>
