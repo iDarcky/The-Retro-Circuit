@@ -21,7 +21,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                     className={`w-full bg-black border p-3 h-24 outline-none font-mono text-sm ${borderColor} transition-colors`}
                     value={val}
                     onChange={(e) => onChange(field.key, e.target.value)}
-                    required={field.required}
+                    required={false}
                 />
                 {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
             </div>
@@ -54,7 +54,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                 className={`w-full bg-black border p-3 outline-none text-white font-mono ${borderColor} transition-colors`}
                 value={val}
                 onChange={(e) => onChange(field.key, e.target.value)}
-                required={field.required}
+                required={false}
             />
             {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
         </div>

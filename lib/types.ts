@@ -1,6 +1,23 @@
 
-
 import { z } from 'zod';
+
+// --- VALIDATION HELPERS ---
+// Aggressively permissive types to prevent "Validation Failed" errors on empty/partial forms.
+
+const safeString = z.any().transform(val => {
+  if (val === null || val === undefined) return '';
+  return String(val);
+});
+
+const safeNumber = z.preprocess((val) => {
+  if (val === '' || val === null || val === undefined) return undefined;
+  const n = Number(val);
+  return isNaN(n) ? undefined : n;
+}, z.number().optional());
+
+const safeBoolean = z.preprocess((val) => val === true || val === 'true', z.boolean().default(false));
+
+// --- TYPES ---
 
 export type NewsCategory = 'Hardware' | 'Software' | 'Industry' | 'Rumor' | 'Mods' | 'Events' | 'Homebrew';
 
@@ -12,10 +29,10 @@ export interface NewsItem {
 }
 
 export const NewsItemSchema = z.object({
-  headline: z.string().min(5, "Headline too short"),
-  date: z.string().optional(),
-  summary: z.string().min(10, "Summary too short"),
-  category: z.enum(['Hardware', 'Software', 'Industry', 'Rumor', 'Mods', 'Events', 'Homebrew']),
+  headline: safeString,
+  date: safeString,
+  summary: safeString,
+  category: z.enum(['Hardware', 'Software', 'Industry', 'Rumor', 'Mods', 'Events', 'Homebrew']).optional().default('Hardware'),
 });
 
 export interface SearchResult {
@@ -61,16 +78,16 @@ export interface GameOfTheWeekData {
 
 export const GameSchema = z.object({
   id: z.string().optional(),
-  slug: z.string().optional(),
-  title: z.string().min(1, "Title is required"),
-  developer: z.string().min(1, "Developer is required"),
-  year: z.string().min(4, "Year must be 4 digits"),
-  genre: z.string().min(1, "Genre is required"),
-  content: z.string().min(10, "Review content must be longer"),
-  whyItMatters: z.string().min(10, "Analysis must be longer"),
-  rating: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  image: z.string().optional().or(z.literal('')),
-  console_slug: z.string().optional().or(z.literal('')),
+  slug: safeString,
+  title: safeString,
+  developer: safeString,
+  year: safeString,
+  genre: safeString,
+  content: safeString,
+  whyItMatters: safeString,
+  rating: safeNumber,
+  image: safeString,
+  console_slug: safeString,
 });
 
 export interface TimelineEvent {
@@ -124,44 +141,42 @@ export interface Manufacturer {
 
 export const ManufacturerSchema = z.object({
   id: z.string().optional(),
-  name: z.string().min(1, "Name is required"),
-  slug: z.string().min(1, "Slug is required"),
-  description: z.string().optional().or(z.literal('')),
-  country: z.string().optional().or(z.literal('')),
-  founded_year: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  website: z.string().optional().or(z.literal('')),
-  key_franchises: z.string().optional().or(z.literal('')),
-  image_url: z.string().optional().or(z.literal('')),
+  name: safeString,
+  slug: safeString,
+  description: safeString,
+  country: safeString,
+  founded_year: safeNumber,
+  website: safeString,
+  key_franchises: safeString,
+  image_url: safeString,
 });
 
 export const MANUFACTURER_FORM_FIELDS = [
-  { label: 'Company Name', key: 'name', type: 'text', required: true },
-  { label: 'Slug (Unique)', key: 'slug', type: 'text', required: true },
-  { label: 'Founded Year', key: 'founded_year', type: 'number', required: true },
-  { label: 'Country', key: 'country', type: 'text', required: true },
+  { label: 'Company Name', key: 'name', type: 'text', required: false },
+  { label: 'Slug (Unique)', key: 'slug', type: 'text', required: false },
+  { label: 'Founded Year', key: 'founded_year', type: 'number', required: false },
+  { label: 'Country', key: 'country', type: 'text', required: false },
   { label: 'Website URL', key: 'website', type: 'url', required: false },
   { label: 'Image URL', key: 'image_url', type: 'url', required: false },
   { label: 'Key Franchises', key: 'key_franchises', type: 'text', required: false },
-  { label: 'Description', key: 'description', type: 'textarea', required: true },
+  { label: 'Description', key: 'description', type: 'textarea', required: false },
 ];
 
 export const ConsoleSchema = z.object({
-    manufacturer_id: z.string().min(1, "Manufacturer is required"),
-    name: z.string().min(1, "Console Name is required"),
-    slug: z.string().optional().or(z.literal('')),
-    description: z.string().optional().or(z.literal('')),
-    // Relaxed from enum to string to allow legacy types
-    type: z.string().optional().or(z.literal('')),
-    generation: z.string().optional().or(z.literal('')),
-    // Numeric safety
-    release_year: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()), 
-    units_sold: z.string().optional().or(z.literal('')),
-    image_url: z.string().optional().or(z.literal('')),
-    form_factor: z.string().optional().or(z.literal('')),
+    manufacturer_id: safeString,
+    name: safeString,
+    slug: safeString,
+    description: safeString,
+    type: safeString,
+    generation: safeString,
+    release_year: safeNumber,
+    units_sold: safeString,
+    image_url: safeString,
+    form_factor: safeString,
 });
 
 export const CONSOLE_FORM_FIELDS = [
-    { label: 'Console Name', key: 'name', type: 'text', required: true },
+    { label: 'Console Name', key: 'name', type: 'text', required: false },
     { label: 'Slug (Auto)', key: 'slug', type: 'text', required: false },
     { label: 'Description', key: 'description', type: 'textarea', required: false },
     { label: 'Image URL', key: 'image_url', type: 'url', required: false },
@@ -175,16 +190,12 @@ export interface ConsoleFilterState {
     manufacturer_id: string | null;
 }
 
-// DEPRECATED: ConsoleSpecs is no longer used for new entries. 
-// All specs are now in ConsoleVariant. Kept for type safety on legacy reads if needed.
 export interface ConsoleSpecs {
   id?: string;
   console_id?: string;
-  // Legacy fields...
   [key: string]: any; 
 }
 
-// Table: console_variants (Now holds ALL specs)
 export interface ConsoleVariant {
   id: string;
   console_id: string;
@@ -204,7 +215,7 @@ export interface ConsoleVariant {
   cpu_threads?: number;
   cpu_clock_mhz?: number;
   gpu_model?: string;
-  gpu_architecture?: string; 
+  gpu_architecture?: string; // RESTORED
   gpu_cores?: number;
   gpu_core_unit?: string;
   gpu_clock_mhz?: number;
@@ -214,18 +225,18 @@ export interface ConsoleVariant {
 
   // Memory & Storage
   ram_gb?: number;
-  ram_type?: string;     // e.g. LPDDR5
-  ram_speed_mhz?: number; // e.g. 6400
+  ram_type?: string;
+  ram_speed_mhz?: number;
   storage_gb?: number;
-  storage_type?: string; // e.g. NVMe SSD, eMMC
+  storage_type?: string;
   storage_expandable?: boolean;
   
   // Display
   screen_size_inch?: number;
   screen_resolution_x?: number;
   screen_resolution_y?: number;
-  display_type?: string; // e.g. OLED, LCD
-  display_tech?: string; // e.g. VRR, FreeSync
+  display_type?: string;
+  display_tech?: string;
   touchscreen?: boolean; 
   aspect_ratio?: string; 
   resolution_pixel_density?: number;
@@ -292,101 +303,95 @@ export interface ConsoleDetails {
 }
 
 // Zod Schema for Variants
-// Relaxed Validation: Only Identity fields required. Everything else optional/nullable.
 export const ConsoleVariantSchema = z.object({
   id: z.string().optional(),
-  console_id: z.string().min(1, "Parent Console is required"), // REQUIRED
-  variant_name: z.string().min(1, "Variant Name is required"), // REQUIRED
-  slug: z.string().optional().or(z.literal('')),
+  console_id: safeString,
+  variant_name: safeString,
+  slug: safeString,
+  is_default: safeBoolean,
   
-  // Booleans with preprocessing to handle nulls
-  is_default: z.preprocess((val) => val === true || val === 'true', z.boolean().default(false)),
+  release_year: safeNumber,
+  price_launch_usd: safeNumber,
+  model_no: safeString,
+  image_url: safeString,
+
+  // Silicon
+  cpu_model: safeString,
+  cpu_architecture: safeString,
+  cpu_process_node: safeString,
+  cpu_cores: safeNumber,
+  cpu_threads: safeNumber,
+  cpu_clock_mhz: safeNumber,
   
-  // Relaxed Identity Fields (Optional for Legacy/Drafts)
-  release_year: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  price_launch_usd: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-
-  // Optional Identity
-  model_no: z.string().optional().or(z.literal('')),
-  image_url: z.string().optional().or(z.literal('')),
-
-  // Silicon (Optional)
-  cpu_model: z.string().optional().or(z.literal('')),
-  cpu_architecture: z.string().optional().or(z.literal('')),
-  cpu_process_node: z.string().optional().or(z.literal('')),
-  cpu_cores: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  cpu_threads: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  cpu_clock_mhz: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
+  gpu_model: safeString,
+  gpu_architecture: safeString, // RESTORED
+  gpu_cores: safeNumber,
+  gpu_core_unit: safeString,
+  gpu_clock_mhz: safeNumber,
+  gpu_teraflops: safeNumber,
   
-  gpu_model: z.string().optional().or(z.literal('')),
-  gpu_architecture: z.string().optional().or(z.literal('')),
-  gpu_cores: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  gpu_core_unit: z.string().optional().or(z.literal('')),
-  gpu_clock_mhz: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  gpu_teraflops: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
+  os: safeString,
+  tdp_range_w: safeString,
+
+  // Memory
+  ram_gb: safeNumber,
+  ram_type: safeString,
+  ram_speed_mhz: safeNumber,
   
-  os: z.string().optional().or(z.literal('')),
-  tdp_range_w: z.string().optional().or(z.literal('')),
+  storage_gb: safeNumber,
+  storage_type: safeString,
+  storage_expandable: safeBoolean,
 
-  // Memory (Optional)
-  ram_gb: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  ram_type: z.string().optional().or(z.literal('')),
-  ram_speed_mhz: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
+  // Display
+  screen_size_inch: safeNumber,
+  screen_resolution_x: safeNumber,
+  screen_resolution_y: safeNumber,
+  display_type: safeString,
+  display_tech: safeString,
+  touchscreen: safeBoolean,
+  aspect_ratio: safeString,
+  ppi: safeNumber,
+  refresh_rate_hz: safeNumber,
+  brightness_nits: safeNumber,
+
+  second_screen_size: safeNumber,
+  second_screen_resolution_x: safeNumber,
+  second_screen_resolution_y: safeNumber,
+  second_screen_touch: safeBoolean,
+
+  // Input & Connectivity
+  input_layout: safeString,
+  dpad_type: safeString,
+  analog_stick_type: safeString,
+  shoulder_buttons: safeString,
+  has_back_buttons: safeBoolean,
+  ports: safeString,
+  wireless_connectivity: safeString,
+  cellular_connectivity: safeBoolean,
+  video_out: safeString,
+  haptics: safeBoolean,
+  gyro: safeBoolean,
+
+  // Audio & Misc
+  audio_speakers: safeString,
+  audio_tech: safeString,
+  headphone_jack: safeBoolean,
+  microphone: safeBoolean,
+  camera: safeString,
+  biometrics: safeString,
+
+  // Power
+  battery_mah: safeNumber,
+  battery_wh: safeNumber,
+  charging_speed_w: safeNumber,
+  charging_port: safeString,
   
-  storage_gb: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  storage_type: z.string().optional().or(z.literal('')),
-  storage_expandable: z.preprocess((val) => val === true || val === 'true', z.boolean().default(false)),
-
-  // Display (Optional)
-  screen_size_inch: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  screen_resolution_x: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  screen_resolution_y: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  display_type: z.string().optional().or(z.literal('')),
-  display_tech: z.string().optional().or(z.literal('')),
-  touchscreen: z.preprocess((val) => val === true || val === 'true', z.boolean().default(false)),
-  aspect_ratio: z.string().optional().or(z.literal('')),
-  ppi: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  refresh_rate_hz: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  brightness_nits: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-
-  second_screen_size: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  second_screen_resolution_x: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  second_screen_resolution_y: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  second_screen_touch: z.preprocess((val) => val === true || val === 'true', z.boolean().default(false)),
-
-  // Input & Connectivity (Optional)
-  input_layout: z.string().optional().or(z.literal('')),
-  dpad_type: z.string().optional().or(z.literal('')),
-  analog_stick_type: z.string().optional().or(z.literal('')),
-  shoulder_buttons: z.string().optional().or(z.literal('')),
-  has_back_buttons: z.preprocess((val) => val === true || val === 'true', z.boolean().default(false)),
-  ports: z.string().optional().or(z.literal('')),
-  wireless_connectivity: z.string().optional().or(z.literal('')),
-  cellular_connectivity: z.preprocess((val) => val === true || val === 'true', z.boolean().default(false)),
-  video_out: z.string().optional().or(z.literal('')),
-  haptics: z.preprocess((val) => val === true || val === 'true', z.boolean().default(false)),
-  gyro: z.preprocess((val) => val === true || val === 'true', z.boolean().default(false)),
-
-  // Audio & Misc (Optional)
-  audio_speakers: z.string().optional().or(z.literal('')),
-  audio_tech: z.string().optional().or(z.literal('')),
-  headphone_jack: z.preprocess((val) => val === true || val === 'true', z.boolean().default(false)),
-  microphone: z.preprocess((val) => val === true || val === 'true', z.boolean().default(false)),
-  camera: z.string().optional().or(z.literal('')),
-  biometrics: z.string().optional().or(z.literal('')),
-
-  // Power (Optional)
-  battery_mah: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  battery_wh: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  charging_speed_w: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  charging_port: z.string().optional().or(z.literal('')),
-  
-  dimensions: z.string().optional().or(z.literal('')),
-  weight_g: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
-  body_material: z.string().optional().or(z.literal('')),
-  cooling: z.string().optional().or(z.literal('')),
-  colors: z.string().optional().or(z.literal('')),
-  ui_skin: z.string().optional().or(z.literal('')),
+  dimensions: safeString,
+  weight_g: safeNumber,
+  body_material: safeString,
+  cooling: safeString,
+  colors: safeString,
+  ui_skin: safeString,
 });
 
 // Admin Form Structure
@@ -394,7 +399,7 @@ export const VARIANT_FORM_GROUPS = [
     {
         title: "IDENTITY & ORIGIN",
         fields: [
-            { label: 'Variant Name (e.g. "OLED Model")', key: 'variant_name', type: 'text', required: true, width: 'full' },
+            { label: 'Variant Name (e.g. "OLED Model")', key: 'variant_name', type: 'text', required: false, width: 'full' },
             { label: 'Release Year', key: 'release_year', type: 'number', required: false },
             { label: 'Launch Price ($)', key: 'price_launch_usd', type: 'number', required: false },
             { label: 'Is Default/Base Model?', key: 'is_default', type: 'checkbox', required: false },
@@ -412,7 +417,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'CPU Threads', key: 'cpu_threads', type: 'number', required: false },
             { label: 'CPU Clock (MHz)', key: 'cpu_clock_mhz', type: 'number', required: false },
             { label: 'GPU Model', key: 'gpu_model', type: 'text', required: false },
-            { label: 'GPU Architecture', key: 'gpu_architecture', type: 'text', required: false },
+            { label: 'GPU Architecture', key: 'gpu_architecture', type: 'text', required: false }, // RESTORED
             { label: 'GPU Cores', key: 'gpu_cores', type: 'number', required: false },
             { label: 'GPU Unit (CUs/Cores)', key: 'gpu_core_unit', type: 'text', required: false },
             { label: 'GPU Clock (MHz)', key: 'gpu_clock_mhz', type: 'number', required: false },

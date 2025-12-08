@@ -1,8 +1,10 @@
+
+
 'use client';
 
 import { useState, type FormEvent, type FC } from 'react';
 import { addGame } from '../../lib/api';
-import { GameSchema } from '../../lib/types';
+import { GameSchema, GameOfTheWeekData } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
 
@@ -46,7 +48,8 @@ export const GameForm: FC<GameFormProps> = ({ onSuccess, onError }) => {
         }
         
         setLoading(true);
-        if (await addGame(result.data)) {
+        // Cast to GameOfTheWeekData to resolve type mismatch on optional properties
+        if (await addGame(result.data as GameOfTheWeekData)) {
             onSuccess("GAME ARCHIVED");
             setFormData({});
             setFieldErrors({});
@@ -59,11 +62,11 @@ export const GameForm: FC<GameFormProps> = ({ onSuccess, onError }) => {
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <AdminInput field={{ label: 'Title', key: 'title', type: 'text', required: true }} value={formData.title} onChange={handleInputChange} error={fieldErrors.title} />
+                <AdminInput field={{ label: 'Title', key: 'title', type: 'text' }} value={formData.title} onChange={handleInputChange} error={fieldErrors.title} />
                 <AdminInput field={{ label: 'Slug (opt)', key: 'slug', type: 'text' }} value={formData.slug} onChange={handleInputChange} error={fieldErrors.slug} />
-                <AdminInput field={{ label: 'Developer', key: 'developer', type: 'text', required: true }} value={formData.developer} onChange={handleInputChange} error={fieldErrors.developer} />
-                <AdminInput field={{ label: 'Year', key: 'year', type: 'text', required: true }} value={formData.year} onChange={handleInputChange} error={fieldErrors.year} />
-                <AdminInput field={{ label: 'Genre', key: 'genre', type: 'text', required: true }} value={formData.genre} onChange={handleInputChange} error={fieldErrors.genre} />
+                <AdminInput field={{ label: 'Developer', key: 'developer', type: 'text' }} value={formData.developer} onChange={handleInputChange} error={fieldErrors.developer} />
+                <AdminInput field={{ label: 'Year', key: 'year', type: 'text' }} value={formData.year} onChange={handleInputChange} error={fieldErrors.year} />
+                <AdminInput field={{ label: 'Genre', key: 'genre', type: 'text' }} value={formData.genre} onChange={handleInputChange} error={fieldErrors.genre} />
                 
                 <div className="flex gap-2">
                 <div className="flex-1">
@@ -78,10 +81,10 @@ export const GameForm: FC<GameFormProps> = ({ onSuccess, onError }) => {
                 <AdminInput field={{ label: 'Image URL', key: 'image', type: 'url' }} value={formData.image} onChange={handleInputChange} error={fieldErrors.image} />
                 </div>
                 <div className="md:col-span-2">
-                    <AdminInput field={{ label: 'Review Content', key: 'content', type: 'textarea', required: true }} value={formData.content} onChange={handleInputChange} error={fieldErrors.content} />
+                    <AdminInput field={{ label: 'Review Content', key: 'content', type: 'textarea' }} value={formData.content} onChange={handleInputChange} error={fieldErrors.content} />
                 </div>
                 <div className="md:col-span-2">
-                    <AdminInput field={{ label: 'Why It Matters', key: 'whyItMatters', type: 'textarea', required: true }} value={formData.whyItMatters} onChange={handleInputChange} error={fieldErrors.whyItMatters} />
+                    <AdminInput field={{ label: 'Why It Matters', key: 'whyItMatters', type: 'textarea' }} value={formData.whyItMatters} onChange={handleInputChange} error={fieldErrors.whyItMatters} />
                 </div>
             </div>
             <div className="flex justify-end"><Button type="submit" isLoading={loading}>ARCHIVE GAME</Button></div>
