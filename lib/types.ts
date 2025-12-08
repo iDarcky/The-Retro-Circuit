@@ -215,7 +215,7 @@ export interface ConsoleVariant {
   cpu_threads?: number;
   cpu_clock_mhz?: number;
   gpu_model?: string;
-  gpu_architecture?: string; 
+  gpu_architecture?: string; // RESTORED
   gpu_cores?: number;
   gpu_core_unit?: string;
   gpu_clock_mhz?: number;
@@ -324,7 +324,7 @@ export const ConsoleVariantSchema = z.object({
   cpu_clock_mhz: safeNumber,
   
   gpu_model: safeString,
-  gpu_architecture: safeString,
+  gpu_architecture: safeString, // RESTORED
   gpu_cores: safeNumber,
   gpu_core_unit: safeString,
   gpu_clock_mhz: safeNumber,
@@ -417,7 +417,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'CPU Threads', key: 'cpu_threads', type: 'number', required: false },
             { label: 'CPU Clock (MHz)', key: 'cpu_clock_mhz', type: 'number', required: false },
             { label: 'GPU Model', key: 'gpu_model', type: 'text', required: false },
-            { label: 'GPU Architecture', key: 'gpu_architecture', type: 'text', required: false },
+            { label: 'GPU Architecture', key: 'gpu_architecture', type: 'text', required: false }, // RESTORED
             { label: 'GPU Cores', key: 'gpu_cores', type: 'number', required: false },
             { label: 'GPU Unit (CUs/Cores)', key: 'gpu_core_unit', type: 'text', required: false },
             { label: 'GPU Clock (MHz)', key: 'gpu_clock_mhz', type: 'number', required: false },
