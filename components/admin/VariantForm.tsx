@@ -1,8 +1,11 @@
 
+
 'use client';
 
 import { useState, type FormEvent, type FC, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { addConsoleVariant, updateConsoleVariant, getVariantsByConsole } from '../../lib/api';
+import { purgeCache } from '../../app/actions/revalidate';
 import { ConsoleVariantSchema, VARIANT_FORM_GROUPS, ConsoleVariant } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
@@ -20,6 +23,7 @@ const ChevronDown = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 2
 const ChevronUp = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>;
 
 export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedConsoleId, initialData, onSuccess, onError }) => {
+    const router = useRouter();
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
@@ -148,8 +152,14 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             }
             
             if (response.success) {
+                // FORCE REVALIDATION
+                await purgeCache();
+                
                 onSuccess(isEditMode ? "VARIANT UPDATED." : "VARIANT SAVED.");
                 setFieldErrors({});
+                
+                // Refresh client side
+                router.refresh();
                 
                 if (rawVariant.console_id) {
                     const updatedVariants = await getVariantsByConsole(rawVariant.console_id);

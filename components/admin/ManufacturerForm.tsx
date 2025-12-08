@@ -1,9 +1,11 @@
 
+
 'use client';
 
 import { useState, type FormEvent, type FC, type KeyboardEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { addManufacturer, updateManufacturer } from '../../lib/api';
+import { purgeCache } from '../../app/actions/revalidate';
 import { supabase } from '../../lib/supabase/singleton';
 import { ManufacturerSchema, MANUFACTURER_FORM_FIELDS, Manufacturer } from '../../lib/types';
 import Button from '../ui/Button';
@@ -126,6 +128,9 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
             }
             
             if (response.success) {
+                // FORCE REVALIDATION
+                await purgeCache();
+
                 if (!isEditMode) {
                     setFormData({});
                     setFranchises([]);

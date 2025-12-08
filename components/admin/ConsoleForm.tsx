@@ -5,6 +5,7 @@
 import { useState, type FormEvent, type FC, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { addConsole, updateConsole } from '../../lib/api';
+import { purgeCache } from '../../app/actions/revalidate';
 import { supabase } from '../../lib/supabase/singleton';
 import { ConsoleSchema, Manufacturer, CONSOLE_FORM_FIELDS, ConsoleDetails } from '../../lib/types';
 import Button from '../ui/Button';
@@ -109,8 +110,9 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
             }
             
             if (response.success) {
-                // DO NOT RESET FORM in either case.
-                
+                // FORCE REVALIDATION
+                await purgeCache();
+
                 // Refresh Server Data so changes are reflected
                 router.refresh();
 
