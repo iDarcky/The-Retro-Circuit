@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, type FormEvent, type FC, useEffect, type ChangeEvent } from 'react';
@@ -84,7 +83,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 console_id: prev.console_id, 
                 variant_name: '', 
                 slug: '',
-                is_default: false,
+                is_default: false, 
                 price_launch_usd: '', 
                 model_no: '',
                 image_url: template.image_url 
@@ -317,7 +316,10 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
                                             // B. CUSTOM RENDER: Styled Checkbox (Label Left, Box Right)
                                             if (field.type === 'checkbox') {
-                                                const checked = !!formData[field.key];
+                                                const rawVal = formData[field.key];
+                                                // Strictly check for true boolean or "true" string to handle potential DB type mismatch
+                                                const checked = String(rawVal) === 'true';
+                                                
                                                 return (
                                                     <div key={field.key} className={colSpan}>
                                                         <div 
