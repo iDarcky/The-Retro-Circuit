@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, type FormEvent, type FC } from 'react';
@@ -8,6 +9,7 @@ import { supabase } from '../../lib/supabase/singleton';
 import { ConsoleSchema, Manufacturer, CONSOLE_FORM_FIELDS } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
+import ImageUpload from '../ui/ImageUpload';
 
 interface ConsoleFormProps {
     manufacturers: Manufacturer[];
@@ -161,6 +163,19 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ manufacturers, onConsoleCrea
                                     required={field.required}
                                 />
                                 {fieldErrors.slug && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors.slug}</div>}
+                            </div>
+                        );
+                    }
+
+                    if (field.key === 'image_url') {
+                        return (
+                            <div key={field.key} className="col-span-1 md:col-span-2">
+                                <label className={`text-[10px] mb-1 block uppercase ${fieldErrors.image_url ? 'text-retro-pink' : 'text-gray-500'}`}>{field.label}</label>
+                                <ImageUpload
+                                    value={formData[field.key]}
+                                    onChange={(url) => handleInputChange(field.key, url)}
+                                />
+                                {fieldErrors.image_url && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors.image_url}</div>}
                             </div>
                         );
                     }
