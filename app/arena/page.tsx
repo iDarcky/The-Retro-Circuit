@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, type FC, type ChangeEvent } from 'react';
@@ -122,7 +123,6 @@ const ComparisonRow = ({
     if (!hasA && !hasB) return null;
 
     // DIFFERENCE FILTER: If enabled, and values are identical, hide the row
-    // We treat "Exists vs Missing" as a difference. We only hide if both exist and are equal.
     if (showDiffOnly && rawA === rawB) return null;
 
     let winner: 'A' | 'B' | 'TIE' | null = null;
@@ -448,8 +448,6 @@ export default function ArenaPage() {
     // Fallback names
     const nameA = playerA.details?.name || 'PLAYER 1';
     const nameB = playerB.details?.name || 'PLAYER 2';
-    const varNameA = playerA.selectedVariant?.variant_name || 'BASE MODEL';
-    const varNameB = playerB.selectedVariant?.variant_name || 'BASE MODEL';
 
     return (
         <div className="w-full max-w-7xl mx-auto p-4 md:p-8 min-h-screen flex flex-col">
@@ -464,18 +462,36 @@ export default function ArenaPage() {
                 </p>
             </div>
 
-            {/* FIGHTERS STAGE (VERTICAL CARDS) */}
-            <div className="grid grid-cols-2 gap-4 md:gap-12 mb-12 relative">
+            {/* FIGHTERS STAGE (SKEWED CARDS) */}
+            <div className="grid grid-cols-2 gap-4 md:gap-16 mb-12 relative items-stretch">
                 
-                {/* VS LOGO (CENTER) - Absolute Positioned to float over the gap */}
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none hidden md:block">
-                     <div className="font-pixel text-6xl text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.8)] italic">VS</div>
+                {/* CENTER PIECE: VS LOGO + CONTROLS (Floating Overlay) */}
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col items-center justify-center w-0 overflow-visible pointer-events-none">
+                     <div className="font-pixel text-5xl md:text-7xl text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.8)] italic mb-6 whitespace-nowrap">VS</div>
+                     
+                     {/* Toggle Button - Enable pointer events */}
+                     {playerA.selectedVariant && playerB.selectedVariant && (
+                        <button 
+                            onClick={() => { playClick(); setShowDiffOnly(!showDiffOnly); }}
+                            className={`
+                                pointer-events-auto whitespace-nowrap
+                                flex items-center gap-2 px-4 py-2 border-2 font-mono text-[10px] uppercase tracking-widest transition-all backdrop-blur-md
+                                hover:scale-105 active:scale-95
+                                ${showDiffOnly 
+                                    ? 'bg-retro-neon/20 text-retro-neon border-retro-neon shadow-[0_0_15px_rgba(0,255,157,0.5)] font-bold' 
+                                    : 'bg-black/80 text-gray-400 border-gray-600 hover:border-white hover:text-white'}
+                            `}
+                        >
+                            <div className={`w-2 h-2 border ${showDiffOnly ? 'bg-retro-neon border-retro-neon animate-pulse' : 'border-gray-500'}`}></div>
+                            DIFF ONLY
+                        </button>
+                     )}
                 </div>
 
                 {/* PLAYER 1 (CYAN) */}
-                <div className="relative flex flex-col h-full">
+                <div className="flex flex-col">
                     {/* Header Input */}
-                    <div className="mb-4">
+                    <div className="mb-4 px-2 relative z-20">
                         <ConsoleSearch 
                             items={allConsoles} 
                             onSelect={(s) => handleSelectConsole('A', s)} 
@@ -484,56 +500,64 @@ export default function ArenaPage() {
                         />
                     </div>
 
-                    {/* Card Container (Aspect 3/4) */}
-                    <div className="aspect-[3/4] bg-black/40 border-2 border-cyan-400 relative p-4 flex flex-col shadow-[0_0_20px_rgba(34,211,238,0.2)]">
-                        {playerA.loading ? (
-                            <RetroLoader />
-                        ) : playerA.details ? (
-                            <>
-                                {/* Top: Name & Variant */}
-                                <div className="z-10">
-                                    <h2 className="font-pixel text-xl md:text-3xl text-white leading-none mb-1 drop-shadow-md">
-                                        {playerA.details.name}
-                                    </h2>
-                                    <div className="text-cyan-400 font-mono text-xs uppercase font-bold tracking-widest">
-                                        {playerA.selectedVariant?.variant_name || 'BASE UNIT'}
+                    {/* SKEWED CARD CONTAINER */}
+                    <div className="flex-1 relative group">
+                        {/* Content Container (Skewed Box) */}
+                        <div className="h-full transform skew-x-[-6deg] border-2 border-cyan-400 bg-black/40 shadow-[0_0_30px_rgba(34,211,238,0.2)] relative overflow-hidden flex flex-col aspect-[3/4] min-h-[400px]">
+                            
+                            {/* Inner Content Wrapper (Counter Skewed to Straighten Content) */}
+                            <div className="transform skew-x-[6deg] w-full h-full flex flex-col p-6 relative z-10">
+                                {playerA.loading ? (
+                                    <RetroLoader />
+                                ) : playerA.details ? (
+                                    <>
+                                        {/* Top: Name & Variant */}
+                                        <div className="z-10">
+                                            <h2 className="font-pixel text-xl md:text-3xl text-white leading-none mb-1 drop-shadow-md">
+                                                {playerA.details.name}
+                                            </h2>
+                                            <div className="text-cyan-400 font-mono text-xs uppercase font-bold tracking-widest">
+                                                {playerA.selectedVariant?.variant_name || 'BASE UNIT'}
+                                            </div>
+                                        </div>
+
+                                        {/* Middle: Image (Centered, Contain) */}
+                                        <div className="flex-1 relative flex items-center justify-center my-4">
+                                            {imgA ? (
+                                                <img src={imgA} alt={nameA} className="max-w-full max-h-full object-contain drop-shadow-2xl animate-slideDown" />
+                                            ) : (
+                                                <div className="font-pixel text-gray-700 text-6xl">?</div>
+                                            )}
+                                        </div>
+
+                                        {/* Bottom: Variant Selector */}
+                                        <div className="z-10 mt-auto">
+                                            <VariantSelect 
+                                                variants={playerA.details.variants || []} 
+                                                selectedId={playerA.selectedVariant?.id} 
+                                                onSelect={(id) => handleVariantChange('A', id)}
+                                                color="cyan"
+                                            />
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="flex-1 flex flex-col items-center justify-center text-gray-700">
+                                        <div className="font-pixel text-6xl opacity-50 mb-4">P1</div>
+                                        <div className="font-mono text-xs animate-pulse">WAITING FOR CHALLENGER...</div>
                                     </div>
-                                </div>
-
-                                {/* Middle: Image (Centered, Contain) */}
-                                <div className="flex-1 relative flex items-center justify-center my-4">
-                                     {imgA ? (
-                                         <img src={imgA} alt={nameA} className="max-w-full max-h-full object-contain drop-shadow-2xl animate-slideDown" />
-                                     ) : (
-                                         <div className="font-pixel text-gray-700 text-4xl">?</div>
-                                     )}
-                                     {/* Background Grid specific to card */}
-                                     <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.1)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none opacity-50"></div>
-                                </div>
-
-                                {/* Bottom: Variant Selector */}
-                                <div className="z-10 mt-auto">
-                                    <VariantSelect 
-                                        variants={playerA.details.variants || []} 
-                                        selectedId={playerA.selectedVariant?.id} 
-                                        onSelect={(id) => handleVariantChange('A', id)}
-                                        color="cyan"
-                                    />
-                                </div>
-                            </>
-                        ) : (
-                            <div className="flex-1 flex flex-col items-center justify-center text-gray-700">
-                                <div className="font-pixel text-6xl opacity-50 mb-4">P1</div>
-                                <div className="font-mono text-xs animate-pulse">WAITING FOR CHALLENGER...</div>
+                                )}
                             </div>
-                        )}
+
+                            {/* Background Grid - Skewed with container */}
+                            <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.1)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none opacity-30"></div>
+                        </div>
                     </div>
                 </div>
 
                 {/* PLAYER 2 (PINK) */}
-                <div className="relative flex flex-col h-full">
+                <div className="flex flex-col">
                     {/* Header Input */}
-                    <div className="mb-4">
+                    <div className="mb-4 px-2 relative z-20">
                         <ConsoleSearch 
                             items={allConsoles} 
                             onSelect={(s) => handleSelectConsole('B', s)} 
@@ -542,49 +566,57 @@ export default function ArenaPage() {
                         />
                     </div>
 
-                    {/* Card Container (Aspect 3/4) */}
-                    <div className="aspect-[3/4] bg-black/40 border-2 border-retro-pink relative p-4 flex flex-col shadow-[0_0_20px_rgba(255,0,255,0.2)]">
-                        {playerB.loading ? (
-                            <RetroLoader />
-                        ) : playerB.details ? (
-                            <>
-                                {/* Top: Name & Variant */}
-                                <div className="z-10 text-right">
-                                    <h2 className="font-pixel text-xl md:text-3xl text-white leading-none mb-1 drop-shadow-md">
-                                        {playerB.details.name}
-                                    </h2>
-                                    <div className="text-retro-pink font-mono text-xs uppercase font-bold tracking-widest">
-                                        {playerB.selectedVariant?.variant_name || 'BASE UNIT'}
+                    {/* SKEWED CARD CONTAINER (Parallel Skew) */}
+                    <div className="flex-1 relative group">
+                        {/* Content Container (Skewed Box) */}
+                        <div className="h-full transform skew-x-[-6deg] border-2 border-retro-pink bg-black/40 shadow-[0_0_30px_rgba(255,0,255,0.2)] relative overflow-hidden flex flex-col aspect-[3/4] min-h-[400px]">
+                            
+                            {/* Inner Content Wrapper (Counter Skewed) */}
+                            <div className="transform skew-x-[6deg] w-full h-full flex flex-col p-6 relative z-10">
+                                {playerB.loading ? (
+                                    <RetroLoader />
+                                ) : playerB.details ? (
+                                    <>
+                                        {/* Top: Name & Variant (Right Aligned for P2) */}
+                                        <div className="z-10 text-right">
+                                            <h2 className="font-pixel text-xl md:text-3xl text-white leading-none mb-1 drop-shadow-md">
+                                                {playerB.details.name}
+                                            </h2>
+                                            <div className="text-retro-pink font-mono text-xs uppercase font-bold tracking-widest">
+                                                {playerB.selectedVariant?.variant_name || 'BASE UNIT'}
+                                            </div>
+                                        </div>
+
+                                        {/* Middle: Image */}
+                                        <div className="flex-1 relative flex items-center justify-center my-4">
+                                            {imgB ? (
+                                                <img src={imgB} alt={nameB} className="max-w-full max-h-full object-contain drop-shadow-2xl animate-slideDown" />
+                                            ) : (
+                                                <div className="font-pixel text-gray-700 text-6xl">?</div>
+                                            )}
+                                        </div>
+
+                                        {/* Bottom: Variant Selector */}
+                                        <div className="z-10 mt-auto">
+                                            <VariantSelect 
+                                                variants={playerB.details.variants || []} 
+                                                selectedId={playerB.selectedVariant?.id} 
+                                                onSelect={(id) => handleVariantChange('B', id)}
+                                                color="pink"
+                                            />
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="flex-1 flex flex-col items-center justify-center text-gray-700">
+                                        <div className="font-pixel text-6xl opacity-50 mb-4">P2</div>
+                                        <div className="font-mono text-xs animate-pulse">WAITING FOR CHALLENGER...</div>
                                     </div>
-                                </div>
-
-                                {/* Middle: Image (Centered, Contain) */}
-                                <div className="flex-1 relative flex items-center justify-center my-4">
-                                     {imgB ? (
-                                         <img src={imgB} alt={nameB} className="max-w-full max-h-full object-contain drop-shadow-2xl animate-slideDown" />
-                                     ) : (
-                                         <div className="font-pixel text-gray-700 text-4xl">?</div>
-                                     )}
-                                     {/* Background Grid specific to card */}
-                                     <div className="absolute inset-0 bg-[linear-gradient(rgba(255,0,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,0,255,0.1)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none opacity-50"></div>
-                                </div>
-
-                                {/* Bottom: Variant Selector */}
-                                <div className="z-10 mt-auto">
-                                    <VariantSelect 
-                                        variants={playerB.details.variants || []} 
-                                        selectedId={playerB.selectedVariant?.id} 
-                                        onSelect={(id) => handleVariantChange('B', id)}
-                                        color="pink"
-                                    />
-                                </div>
-                            </>
-                        ) : (
-                            <div className="flex-1 flex flex-col items-center justify-center text-gray-700">
-                                <div className="font-pixel text-6xl opacity-50 mb-4">P2</div>
-                                <div className="font-mono text-xs animate-pulse">WAITING FOR CHALLENGER...</div>
+                                )}
                             </div>
-                        )}
+
+                            {/* Background Grid */}
+                            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,0,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,0,255,0.1)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none opacity-30"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -593,25 +625,6 @@ export default function ArenaPage() {
             {/* COMPARISON MATRIX */}
             {playerA.selectedVariant && playerB.selectedVariant && (
                 <div className="animate-fadeIn">
-                    
-                    {/* Controls Bar */}
-                    <div className="flex justify-center mb-8">
-                         <button 
-                            onClick={() => { playClick(); setShowDiffOnly(!showDiffOnly); }}
-                            className={`
-                                flex items-center gap-3 px-6 py-2 border font-mono text-xs uppercase tracking-widest transition-all
-                                ${showDiffOnly 
-                                    ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.5)]' 
-                                    : 'bg-transparent text-gray-400 border-gray-600 hover:border-white hover:text-white'}
-                            `}
-                         >
-                            <div className={`w-3 h-3 border ${showDiffOnly ? 'bg-black border-black' : 'border-gray-500'}`}>
-                                {showDiffOnly && <div className="w-full h-full bg-black transform scale-50"></div>}
-                            </div>
-                            [ SHOW DIFFERENCES ONLY ]
-                         </button>
-                    </div>
-
                     <div className="bg-black/80 border border-retro-grid shadow-2xl backdrop-blur-md">
                         {/* Matrix Header */}
                         <div className="grid grid-cols-3 bg-white/5 border-b border-retro-grid py-4 px-2">
