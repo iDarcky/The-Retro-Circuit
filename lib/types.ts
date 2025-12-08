@@ -124,8 +124,8 @@ export interface Manufacturer {
 
 export const ManufacturerSchema = z.object({
   id: z.string().optional(),
-  name: z.string().min(1, "Name is required"),
-  slug: z.string().min(1, "Slug is required"),
+  name: z.string().optional().or(z.literal('')),
+  slug: z.string().optional().or(z.literal('')),
   description: z.string().optional().or(z.literal('')),
   country: z.string().optional().or(z.literal('')),
   founded_year: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().optional()),
@@ -135,19 +135,19 @@ export const ManufacturerSchema = z.object({
 });
 
 export const MANUFACTURER_FORM_FIELDS = [
-  { label: 'Company Name', key: 'name', type: 'text', required: true },
-  { label: 'Slug (Unique)', key: 'slug', type: 'text', required: true },
-  { label: 'Founded Year', key: 'founded_year', type: 'number', required: true },
-  { label: 'Country', key: 'country', type: 'text', required: true },
+  { label: 'Company Name', key: 'name', type: 'text', required: false },
+  { label: 'Slug (Unique)', key: 'slug', type: 'text', required: false },
+  { label: 'Founded Year', key: 'founded_year', type: 'number', required: false },
+  { label: 'Country', key: 'country', type: 'text', required: false },
   { label: 'Website URL', key: 'website', type: 'url', required: false },
   { label: 'Image URL', key: 'image_url', type: 'url', required: false },
   { label: 'Key Franchises', key: 'key_franchises', type: 'text', required: false },
-  { label: 'Description', key: 'description', type: 'textarea', required: true },
+  { label: 'Description', key: 'description', type: 'textarea', required: false },
 ];
 
 export const ConsoleSchema = z.object({
-    manufacturer_id: z.string().min(1, "Manufacturer is required"),
-    name: z.string().min(1, "Console Name is required"),
+    manufacturer_id: z.string().optional().or(z.literal('')),
+    name: z.string().optional().or(z.literal('')),
     slug: z.string().optional().or(z.literal('')),
     description: z.string().optional().or(z.literal('')),
     // Relaxed from enum to string to allow legacy types
@@ -161,7 +161,7 @@ export const ConsoleSchema = z.object({
 });
 
 export const CONSOLE_FORM_FIELDS = [
-    { label: 'Console Name', key: 'name', type: 'text', required: true },
+    { label: 'Console Name', key: 'name', type: 'text', required: false },
     { label: 'Slug (Auto)', key: 'slug', type: 'text', required: false },
     { label: 'Description', key: 'description', type: 'textarea', required: false },
     { label: 'Image URL', key: 'image_url', type: 'url', required: false },
@@ -295,8 +295,8 @@ export interface ConsoleDetails {
 // Relaxed Validation: Only Identity fields required. Everything else optional/nullable.
 export const ConsoleVariantSchema = z.object({
   id: z.string().optional(),
-  console_id: z.string().min(1, "Parent Console is required"), // REQUIRED
-  variant_name: z.string().min(1, "Variant Name is required"), // REQUIRED
+  console_id: z.string().optional().or(z.literal('')), // Relaxed
+  variant_name: z.string().optional().or(z.literal('')), // Relaxed
   slug: z.string().optional().or(z.literal('')),
   
   // Booleans with preprocessing to handle nulls
@@ -394,7 +394,7 @@ export const VARIANT_FORM_GROUPS = [
     {
         title: "IDENTITY & ORIGIN",
         fields: [
-            { label: 'Variant Name (e.g. "OLED Model")', key: 'variant_name', type: 'text', required: true, width: 'full' },
+            { label: 'Variant Name (e.g. "OLED Model")', key: 'variant_name', type: 'text', required: false, width: 'full' },
             { label: 'Release Year', key: 'release_year', type: 'number', required: false },
             { label: 'Launch Price ($)', key: 'price_launch_usd', type: 'number', required: false },
             { label: 'Is Default/Base Model?', key: 'is_default', type: 'checkbox', required: false },
