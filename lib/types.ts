@@ -1,8 +1,6 @@
 import { z } from 'zod';
 
 // --- VALIDATION HELPERS ---
-// Aggressively permissive types to prevent "Validation Failed" errors on empty/partial forms.
-
 const safeString = z.any().transform(val => {
   if (val === null || val === undefined) return '';
   return String(val);
@@ -48,8 +46,8 @@ export interface ComparisonPoint {
   consoleAValue: string;
   consoleBValue: string;
   winner: 'A' | 'B' | 'Tie';
-  aScore?: number; // 0-100 for visual bar
-  bScore?: number; // 0-100 for visual bar
+  aScore?: number;
+  bScore?: number;
 }
 
 export interface ComparisonResult {
@@ -125,17 +123,16 @@ export interface ManufacturerProfile {
 
 // -- DB STRUCTURE TYPES --
 
-// Table: manufacturer
 export interface Manufacturer {
-  id: string;             // UUID
-  name: string;           // Required Text
-  slug: string;           // Unique Required Text
-  description: string;    // Multiline Text
-  country: string;        // Text
-  founded_year: number;   // Integer
-  website?: string;       // Text (URL)
-  key_franchises: string; // Text (Comma-separated)
-  image_url?: string;     // Text (URL)
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  country: string;
+  founded_year: number;
+  website?: string;
+  key_franchises: string;
+  image_url?: string;
 }
 
 export const ManufacturerSchema = z.object({
@@ -197,29 +194,28 @@ export interface ConsoleVariant {
   console_id: string;
   variant_name: string;
   slug?: string;
-  release_year?: number;
   is_default: boolean;
-  image_url?: string; 
+  release_year?: number;
   model_no?: string;
   price_launch_usd?: number;
+  image_url?: string; 
 
-  // Core Tech
+  // Silicon
   cpu_model?: string;
-  cpu_architecture?: string; 
-  cpu_process_node?: string; 
+  cpu_architecture?: string;
+  cpu_process_node?: string;
   cpu_cores?: number;
   cpu_threads?: number;
   cpu_clock_mhz?: number;
+  
   gpu_model?: string;
-  gpu_architecture?: string; // RESTORED
+  gpu_architecture?: string;
   gpu_cores?: number;
   gpu_core_unit?: string;
   gpu_clock_mhz?: number;
-  gpu_teraflops?: number; 
+  gpu_teraflops?: number;
+  
   os?: string;
-  tdp_range_w?: string;
-
-  // Memory & Storage
   ram_gb?: number;
   ram_type?: string;
   ram_speed_mhz?: number;
@@ -233,46 +229,56 @@ export interface ConsoleVariant {
   screen_resolution_y?: number;
   display_type?: string;
   display_tech?: string;
-  touchscreen?: boolean; 
-  aspect_ratio?: string; 
-  resolution_pixel_density?: number;
-  ppi?: number; 
-  refresh_rate_hz?: number; 
-  brightness_nits?: number; 
+  refresh_rate_hz?: number;
+  brightness_nits?: number;
+  aspect_ratio?: string;
+  ppi?: number;
+  touchscreen?: boolean;
 
-  // Dual Screen
   second_screen_size?: number;
   second_screen_resolution_x?: number;
   second_screen_resolution_y?: number;
   second_screen_touch?: boolean;
-  
-  // Controls & IO
-  input_layout?: string;
-  dpad_type?: string;
-  analog_stick_type?: string;
-  shoulder_buttons?: string;
-  has_back_buttons?: boolean;
-  ports?: string;
-  connectivity?: string;
-  wireless_connectivity?: string;
-  cellular_connectivity?: boolean;
-  video_out?: string;
-  haptics?: boolean;
-  gyro?: boolean;
-  
-  // Audio & Media
-  audio_speakers?: string;
-  audio_tech?: string;
-  headphone_jack?: boolean;
-  microphone?: boolean;
-  camera?: string;
-  biometrics?: string;
 
-  // Power & Body
+  // Power
   battery_mah?: number;
   battery_wh?: number;
   charging_speed_w?: number;
   charging_port?: string;
+  tdp_range_w?: string;
+
+  // Audio & Misc
+  audio_speakers?: string;
+  audio_tech?: string;
+  headphone_jack?: string; // Changed to text based on SQL (text null) but logic might treat as bool-ish string
+  microphone?: boolean;
+  camera?: string;
+  biometrics?: string;
+  
+  // IO & Connectivity
+  ports?: string;
+  connectivity?: string;
+  wireless_connectivity?: string;
+  cellular_connectivity?: string; // Text in DB
+  video_out?: string;
+  haptics?: string; // Text in DB (e.g. 'HD Rumble')
+  gyro?: boolean;
+  
+  // Controls
+  input_layout?: string;
+  dpad_type?: string;
+  dpad_mechanism?: string;
+  dpad_shape?: string;
+  analog_stick_type?: string;
+  thumbstick_mechanism?: string;
+  thumbstick_layout?: string;
+  thumbstick_cap?: string;
+  shoulder_buttons?: string;
+  trigger_mechanism?: string;
+  action_button_mechanism?: string;
+  has_back_buttons?: boolean;
+
+  // Body
   dimensions?: string;
   weight_g?: number;
   body_material?: string;
@@ -291,16 +297,14 @@ export interface ConsoleDetails {
     form_factor?: string;
     manufacturer?: Manufacturer;
     variants?: ConsoleVariant[];
-    specs?: ConsoleSpecs | Partial<ConsoleVariant>;
-    // Optional display fields populated from variants
-    release_year?: number;
-    // Legacy fields
-    type?: string;
-    generation?: string;
-    units_sold?: string;
+    specs?: ConsoleSpecs | Partial<ConsoleVariant>; // Legacy prop for compatibility
+    
+    // Computed/Joined fields
+    release_year?: number; 
+    generation?: string; // Not in DB, derived or removed
 }
 
-// Zod Schema for Variants
+// Zod Schema for Variants matching new DB
 export const ConsoleVariantSchema = z.object({
   id: z.string().optional(),
   console_id: safeString,
@@ -322,7 +326,7 @@ export const ConsoleVariantSchema = z.object({
   cpu_clock_mhz: safeNumber,
   
   gpu_model: safeString,
-  gpu_architecture: safeString, // RESTORED
+  gpu_architecture: safeString,
   gpu_cores: safeNumber,
   gpu_core_unit: safeString,
   gpu_clock_mhz: safeNumber,
@@ -346,37 +350,16 @@ export const ConsoleVariantSchema = z.object({
   screen_resolution_y: safeNumber,
   display_type: safeString,
   display_tech: safeString,
-  touchscreen: safeBoolean,
-  aspect_ratio: safeString,
-  ppi: safeNumber,
   refresh_rate_hz: safeNumber,
   brightness_nits: safeNumber,
+  aspect_ratio: safeString,
+  ppi: safeNumber,
+  touchscreen: safeBoolean,
 
   second_screen_size: safeNumber,
   second_screen_resolution_x: safeNumber,
   second_screen_resolution_y: safeNumber,
   second_screen_touch: safeBoolean,
-
-  // Input & Connectivity
-  input_layout: safeString,
-  dpad_type: safeString,
-  analog_stick_type: safeString,
-  shoulder_buttons: safeString,
-  has_back_buttons: safeBoolean,
-  ports: safeString,
-  wireless_connectivity: safeString,
-  cellular_connectivity: safeBoolean,
-  video_out: safeString,
-  haptics: safeBoolean,
-  gyro: safeBoolean,
-
-  // Audio & Misc
-  audio_speakers: safeString,
-  audio_tech: safeString,
-  headphone_jack: safeBoolean,
-  microphone: safeBoolean,
-  camera: safeString,
-  biometrics: safeString,
 
   // Power
   battery_mah: safeNumber,
@@ -384,6 +367,37 @@ export const ConsoleVariantSchema = z.object({
   charging_speed_w: safeNumber,
   charging_port: safeString,
   
+  // Audio & Misc
+  audio_speakers: safeString,
+  audio_tech: safeString,
+  headphone_jack: safeString,
+  microphone: safeBoolean,
+  camera: safeString,
+  biometrics: safeString,
+
+  // IO & Connectivity
+  ports: safeString,
+  wireless_connectivity: safeString,
+  cellular_connectivity: safeString,
+  video_out: safeString,
+  haptics: safeString,
+  gyro: safeBoolean,
+
+  // Controls
+  input_layout: safeString,
+  dpad_type: safeString,
+  dpad_mechanism: safeString,
+  dpad_shape: safeString,
+  analog_stick_type: safeString,
+  thumbstick_mechanism: safeString,
+  thumbstick_layout: safeString,
+  thumbstick_cap: safeString,
+  shoulder_buttons: safeString,
+  trigger_mechanism: safeString,
+  action_button_mechanism: safeString,
+  has_back_buttons: safeBoolean,
+
+  // Body
   dimensions: safeString,
   weight_g: safeNumber,
   body_material: safeString,
@@ -415,13 +429,13 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'CPU Threads', key: 'cpu_threads', type: 'number', required: false },
             { label: 'CPU Clock (MHz)', key: 'cpu_clock_mhz', type: 'number', required: false },
             { label: 'GPU Model', key: 'gpu_model', type: 'text', required: false },
-            { label: 'GPU Architecture', key: 'gpu_architecture', type: 'text', required: false }, // RESTORED
+            { label: 'GPU Architecture', key: 'gpu_architecture', type: 'text', required: false },
             { label: 'GPU Cores', key: 'gpu_cores', type: 'number', required: false },
             { label: 'GPU Unit (CUs/Cores)', key: 'gpu_core_unit', type: 'text', required: false },
             { label: 'GPU Clock (MHz)', key: 'gpu_clock_mhz', type: 'number', required: false },
             { label: 'GPU Teraflops', key: 'gpu_teraflops', type: 'number', required: false, step: '0.01' },
             { label: 'OS / Firmware', key: 'os', type: 'text', required: false },
-            { label: 'TDP Range (W)', key: 'tdp_range_w', type: 'text', required: false },
+            { label: 'TDP / Wattage', key: 'tdp_range_w', type: 'text', required: false },
         ]
     },
     {
@@ -448,6 +462,11 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Brightness (nits)', key: 'brightness_nits', type: 'number', required: false },
             { label: 'Display Tech (VRR etc)', key: 'display_tech', type: 'text', required: false },
             { label: 'Touchscreen?', key: 'touchscreen', type: 'checkbox', required: false },
+            // Dual Screen
+            { label: '2nd Screen Size', key: 'second_screen_size', type: 'number', required: false, step: '0.1' },
+            { label: '2nd Screen Touch?', key: 'second_screen_touch', type: 'checkbox', required: false },
+            { label: '2nd Res X', key: 'second_screen_resolution_x', type: 'number', required: false },
+            { label: '2nd Res Y', key: 'second_screen_resolution_y', type: 'number', required: false },
         ]
     },
     {
@@ -455,15 +474,21 @@ export const VARIANT_FORM_GROUPS = [
         fields: [
             { label: 'Input Layout', key: 'input_layout', type: 'text', required: false },
             { label: 'D-Pad Style', key: 'dpad_type', type: 'text', required: false },
+            { label: 'D-Pad Mech (Rubber/Clicky)', key: 'dpad_mechanism', type: 'text', required: false },
             { label: 'Analog Sticks', key: 'analog_stick_type', type: 'text', required: false },
+            { label: 'Stick Mech (Alps/Hall)', key: 'thumbstick_mechanism', type: 'text', required: false },
+            { label: 'Stick Layout', key: 'thumbstick_layout', type: 'text', required: false },
             { label: 'Shoulder Buttons', key: 'shoulder_buttons', type: 'text', required: false },
-            { label: 'Wireless (WiFi/BT)', key: 'wireless_connectivity', type: 'text', required: false },
-            { label: 'Ports / IO', key: 'ports', type: 'text', required: false },
-            { label: 'Video Out Capable', key: 'video_out', type: 'text', required: false },
+            { label: 'Trigger Mech (Digital/Analog)', key: 'trigger_mechanism', type: 'text', required: false },
+            { label: 'Action Btn Mech', key: 'action_button_mechanism', type: 'text', required: false },
             { label: 'Back Buttons?', key: 'has_back_buttons', type: 'checkbox', required: false },
-            { label: 'Haptics?', key: 'haptics', type: 'checkbox', required: false },
+            
+            { label: 'Wireless (WiFi/BT)', key: 'wireless_connectivity', type: 'text', required: false },
+            { label: 'Cellular', key: 'cellular_connectivity', type: 'text', required: false },
+            { label: 'Ports / IO', key: 'ports', type: 'text', required: false },
+            { label: 'Video Out', key: 'video_out', type: 'text', required: false },
+            { label: 'Haptics', key: 'haptics', type: 'text', required: false },
             { label: 'Gyroscope?', key: 'gyro', type: 'checkbox', required: false },
-            { label: 'Cellular (5G/4G)?', key: 'cellular_connectivity', type: 'checkbox', required: false },
         ]
     },
     {
@@ -486,8 +511,10 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'UI Skin', key: 'ui_skin', type: 'text', required: false },
             { label: 'Speakers', key: 'audio_speakers', type: 'text', required: false },
             { label: 'Audio Tech', key: 'audio_tech', type: 'text', required: false },
-            { label: 'Headphone Jack?', key: 'headphone_jack', type: 'checkbox', required: false },
+            { label: 'Headphone Jack', key: 'headphone_jack', type: 'text', required: false },
             { label: 'Microphone?', key: 'microphone', type: 'checkbox', required: false },
+            { label: 'Camera', key: 'camera', type: 'text', required: false },
+            { label: 'Biometrics', key: 'biometrics', type: 'text', required: false },
         ]
     }
 ];
