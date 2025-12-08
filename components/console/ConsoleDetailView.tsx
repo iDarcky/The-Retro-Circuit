@@ -350,7 +350,6 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                              
                              <div className="mt-4 pt-4 border-t border-white/5">
                                 <SpecField label="Wireless" value={mergedSpecs.wireless_connectivity} small />
-                                <SpecField label="Cellular" value={mergedSpecs.cellular_connectivity} small />
                                 <SpecField label="Ports" value={mergedSpecs.ports} small />
                                 <SpecField label="Video Out" value={mergedSpecs.video_out} small />
                                 <SpecField label="Haptics" value={mergedSpecs.haptics} small />
@@ -362,7 +361,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                                     <TechBadge label="Back Buttons" active={mergedSpecs.has_back_buttons} />
                                     <TechBadge label="Haptics" active={mergedSpecs.haptics ? true : undefined} />
                                     <TechBadge label="Gyro" active={mergedSpecs.gyro} />
-                                    <TechBadge label="5G/LTE" active={mergedSpecs.cellular_connectivity ? true : undefined} color="bg-retro-pink" />
+                                    <TechBadge label="5G/LTE" active={mergedSpecs.cellular_connectivity} color="bg-retro-pink" />
                                 </div>
                              </div>
                         </SpecCard>
@@ -405,14 +404,11 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                              </div>
 
                              <div className="mt-4 pt-4 border-t border-white/5">
-                                <SpecField label="Camera" value={mergedSpecs.camera} />
-                                <SpecField label="Biometrics" value={mergedSpecs.biometrics} />
-                             </div>
-
-                             <div className="mt-4 pt-4 border-t border-white/5">
                                 <div className="flex flex-wrap gap-2">
                                     <TechBadge label="3.5mm Jack" active={mergedSpecs.headphone_jack ? true : undefined} />
                                     <TechBadge label="Microphone" active={mergedSpecs.microphone} />
+                                    <TechBadge label="Camera" active={mergedSpecs.camera} />
+                                    <TechBadge label="Biometrics" active={mergedSpecs.biometrics} />
                                 </div>
                              </div>
                         </SpecCard>
