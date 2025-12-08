@@ -394,7 +394,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                         {/* 6. AUDIO & MISC */}
                         <SpecCard title="AUDIO & MISC">
                              <SpecField label="Colors" value={mergedSpecs.colors} small />
-                             <SpecField label="UI / Skin" value={mergedSpecs.ui_skin} />
+                             <SpecField label="UI Skin" value={mergedSpecs.ui_skin} />
                              
                              <div className="mt-4 pt-4 border-t border-white/5">
                                 <SpecField label="Speakers" value={mergedSpecs.audio_speakers} />
