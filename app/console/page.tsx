@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, type ChangeEvent } from 'react';
 import Link from 'next/link';
 import { fetchManufacturers, fetchConsolesFiltered } from '../../lib/api';
 import { ConsoleDetails, ConsoleFilterState, Manufacturer } from '../../lib/types';
@@ -83,7 +83,7 @@ export default function ConsoleVaultPage() {
                         <select 
                             className="bg-black border border-gray-700 text-white font-mono text-xs p-2 focus:border-retro-neon outline-none"
                             value={filters.manufacturer_id || ''}
-                            onChange={(e) => handleFilterChange('manufacturer_id', e.target.value || null)}
+                            onChange={(e: ChangeEvent<HTMLSelectElement>) => handleFilterChange('manufacturer_id', e.target.value || null)}
                         >
                             <option value="">ALL FABRICATORS</option>
                             {manufacturers.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
@@ -96,13 +96,13 @@ export default function ConsoleVaultPage() {
                                 type="number" 
                                 className="bg-black border border-gray-700 text-white font-mono text-xs p-2 w-20"
                                 value={filters.minYear}
-                                onChange={(e) => handleFilterChange('minYear', parseInt(e.target.value))}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => handleFilterChange('minYear', parseInt(e.target.value))}
                              />
                              <input 
                                 type="number" 
                                 className="bg-black border border-gray-700 text-white font-mono text-xs p-2 w-20"
                                 value={filters.maxYear}
-                                onChange={(e) => handleFilterChange('maxYear', parseInt(e.target.value))}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => handleFilterChange('maxYear', parseInt(e.target.value))}
                              />
                         </div>
                     </div>

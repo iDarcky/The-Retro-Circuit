@@ -250,7 +250,7 @@ export interface ConsoleVariant {
   // Audio & Misc
   audio_speakers?: string;
   audio_tech?: string;
-  headphone_jack?: string; // Changed to text based on SQL (text null) but logic might treat as bool-ish string
+  headphone_jack?: boolean;
   microphone?: boolean;
   camera?: boolean;
   biometrics?: boolean;
@@ -370,7 +370,7 @@ export const ConsoleVariantSchema = z.object({
   // Audio & Misc
   audio_speakers: safeString,
   audio_tech: safeString,
-  headphone_jack: safeString,
+  headphone_jack: safeBoolean,
   microphone: safeBoolean,
   camera: safeBoolean,
   biometrics: safeBoolean,
@@ -511,7 +511,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'UI Skin', key: 'ui_skin', type: 'text', required: false },
             { label: 'Speakers', key: 'audio_speakers', type: 'text', required: false },
             { label: 'Audio Tech', key: 'audio_tech', type: 'text', required: false },
-            { label: 'Headphone Jack', key: 'headphone_jack', type: 'text', required: false },
+            { label: 'Headphone Jack?', key: 'headphone_jack', type: 'checkbox', required: false },
             { label: 'Microphone?', key: 'microphone', type: 'checkbox', required: false },
             { label: 'Camera', key: 'camera', type: 'checkbox', required: false },
             { label: 'Biometrics', key: 'biometrics', type: 'checkbox', required: false },

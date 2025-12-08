@@ -1,8 +1,7 @@
 
-
 'use client';
 
-import { useState, type FormEvent, type FC, type KeyboardEvent, useEffect } from 'react';
+import { useState, type FormEvent, type FC, type KeyboardEvent, useEffect, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { addManufacturer, updateManufacturer } from '../../lib/api';
 import { purgeCache } from '../../app/actions/revalidate';
@@ -186,7 +185,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                                         : `bg-black text-white ${fieldErrors.slug ? 'border-retro-pink' : 'border-retro-neon focus:border-retro-blue'}`
                                     }`}
                                     value={formData[field.key] || ''}
-                                    onChange={(e) => handleInputChange(field.key, e.target.value)}
+                                    onChange={(e: ChangeEvent<HTMLInputElement>) => handleInputChange(field.key, e.target.value)}
                                     readOnly={isSlugLocked}
                                 />
                                 {fieldErrors.slug && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors.slug}</div>}
@@ -210,7 +209,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                                         className="bg-transparent outline-none text-white flex-1 min-w-[120px]"
                                         placeholder="Type & Enter..."
                                         value={franchiseInput}
-                                        onChange={(e) => setFranchiseInput(e.target.value)}
+                                        onChange={(e: ChangeEvent<HTMLInputElement>) => setFranchiseInput(e.target.value)}
                                         onKeyDown={handleFranchiseKeyDown}
                                     />
                                 </div>
