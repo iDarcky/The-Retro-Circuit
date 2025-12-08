@@ -99,15 +99,23 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
 
         setLoading(true);
         try {
-            let response;
+            // TIMEOUT SAFETY: 10 Seconds
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error("Database operation timed out (10s limit)")), 10000)
+            );
+
+            let operationPromise;
+
             if (isEditMode && initialData?.id) {
                 // UPDATE
-                response = await updateConsole(initialData.id, consoleResult.data as any);
+                operationPromise = updateConsole(initialData.id, consoleResult.data as any);
             } else {
                 // INSERT
-                // New Workflow: We do NOT send specs here. Just the folder identity.
-                response = await addConsole(consoleResult.data as any);
+                operationPromise = addConsole(consoleResult.data as any);
             }
+            
+            // Race: Operation vs Timeout
+            const response: any = await Promise.race([operationPromise, timeoutPromise]);
             
             if (response.success) {
                 // FORCE REVALIDATION

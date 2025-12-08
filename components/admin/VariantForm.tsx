@@ -144,12 +144,21 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
         setLoading(true);
         try {
-            let response;
+            // TIMEOUT SAFETY: 10 Seconds
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error("Database operation timed out (10s limit)")), 10000)
+            );
+
+            let operationPromise;
+
             if (isEditMode && initialData?.id) {
-                response = await updateConsoleVariant(initialData.id, result.data as any);
+                operationPromise = updateConsoleVariant(initialData.id, result.data as any);
             } else {
-                response = await addConsoleVariant(result.data as any);
+                operationPromise = addConsoleVariant(result.data as any);
             }
+            
+            // Race: Operation vs Timeout
+            const response: any = await Promise.race([operationPromise, timeoutPromise]);
             
             if (response.success) {
                 // FORCE REVALIDATION
