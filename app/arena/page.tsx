@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, Suspense, useCallback, useRef, type ChangeEvent } from 'react';
@@ -14,30 +15,81 @@ import RetroLoader from '../../components/ui/RetroLoader';
 type ComparisonMetric = {
     key: keyof ConsoleVariant;
     label: string;
-    type: 'number' | 'string' | 'boolean' | 'currency';
+    type: 'number' | 'string' | 'boolean' | 'currency' | 'resolution';
     unit?: string;
     lowerIsBetter?: boolean;
     category?: string;
 };
 
 const METRICS: ComparisonMetric[] = [
-    { label: 'Release Year', key: 'release_year', type: 'number', category: 'General' },
-    { label: 'Launch Price', key: 'price_launch_usd', type: 'currency', lowerIsBetter: true, category: 'General' },
+    // IDENTITY
+    { label: 'Release Year', key: 'release_year', type: 'number', category: 'Identity' },
+    { label: 'Launch Price', key: 'price_launch_usd', type: 'currency', lowerIsBetter: true, category: 'Identity' },
+    { label: 'Model No.', key: 'model_no', type: 'string', category: 'Identity' },
+
+    // SILICON
+    { label: 'CPU Model', key: 'cpu_model', type: 'string', category: 'Silicon' },
+    { label: 'CPU Cores', key: 'cpu_cores', type: 'number', category: 'Silicon' },
+    { label: 'CPU Clock', key: 'cpu_clock_mhz', type: 'number', unit: 'MHz', category: 'Silicon' },
+    { label: 'Architecture', key: 'cpu_architecture', type: 'string', category: 'Silicon' },
+    { label: 'Process Node', key: 'cpu_process_node', type: 'string', category: 'Silicon' },
     
-    { label: 'CPU Cores', key: 'cpu_cores', type: 'number', category: 'Performance' },
-    { label: 'CPU Clock', key: 'cpu_clock_mhz', type: 'number', unit: 'MHz', category: 'Performance' },
-    { label: 'GPU TFLOPS', key: 'gpu_teraflops', type: 'number', unit: 'TF', category: 'Performance' },
-    { label: 'RAM', key: 'ram_gb', type: 'number', unit: 'GB', category: 'Performance' },
-    { label: 'RAM Speed', key: 'ram_speed_mhz', type: 'number', unit: 'MHz', category: 'Performance' },
-    
+    { label: 'GPU Model', key: 'gpu_model', type: 'string', category: 'Silicon' },
+    { label: 'GPU Cores', key: 'gpu_cores', type: 'number', category: 'Silicon' },
+    { label: 'GPU Unit', key: 'gpu_core_unit', type: 'string', category: 'Silicon' },
+    { label: 'GPU Clock', key: 'gpu_clock_mhz', type: 'number', unit: 'MHz', category: 'Silicon' },
+    { label: 'Performance', key: 'gpu_teraflops', type: 'number', unit: 'TFLOPS', category: 'Silicon' },
+    { label: 'OS', key: 'os', type: 'string', category: 'Silicon' },
+
+    // MEMORY
+    { label: 'RAM Size', key: 'ram_gb', type: 'number', unit: 'GB', category: 'Memory' },
+    { label: 'RAM Type', key: 'ram_type', type: 'string', category: 'Memory' },
+    { label: 'RAM Speed', key: 'ram_speed_mhz', type: 'number', unit: 'MHz', category: 'Memory' },
+    { label: 'Storage', key: 'storage_gb', type: 'number', unit: 'GB', category: 'Memory' },
+    { label: 'Storage Type', key: 'storage_type', type: 'string', category: 'Memory' },
+    { label: 'Expandable?', key: 'storage_expandable', type: 'boolean', category: 'Memory' },
+
+    // DISPLAY
     { label: 'Screen Size', key: 'screen_size_inch', type: 'number', unit: '"', category: 'Display' },
-    { label: 'Resolution X', key: 'screen_resolution_x', type: 'number', unit: 'px', category: 'Display' },
+    { label: 'Resolution', key: 'screen_resolution_x', type: 'resolution', category: 'Display' },
+    { label: 'Panel Type', key: 'display_type', type: 'string', category: 'Display' },
     { label: 'Refresh Rate', key: 'refresh_rate_hz', type: 'number', unit: 'Hz', category: 'Display' },
     { label: 'Pixel Density', key: 'ppi', type: 'number', unit: 'PPI', category: 'Display' },
-    { label: 'Panel Type', key: 'display_type', type: 'string', category: 'Display' },
+    { label: 'Aspect Ratio', key: 'aspect_ratio', type: 'string', category: 'Display' },
+    { label: 'Touchscreen', key: 'touchscreen', type: 'boolean', category: 'Display' },
+    { label: 'Brightness', key: 'brightness_nits', type: 'number', unit: 'nits', category: 'Display' },
+    { label: 'Display Tech', key: 'display_tech', type: 'string', category: 'Display' },
 
-    { label: 'Battery Capacity', key: 'battery_wh', type: 'number', unit: 'Wh', category: 'Power' },
-    { label: 'Weight', key: 'weight_g', type: 'number', unit: 'g', lowerIsBetter: true, category: 'Body' },
+    // CONTROLS
+    { label: 'Input Layout', key: 'input_layout', type: 'string', category: 'Controls' },
+    { label: 'D-Pad', key: 'dpad_type', type: 'string', category: 'Controls' },
+    { label: 'Stick Type', key: 'analog_stick_type', type: 'string', category: 'Controls' },
+    { label: 'Triggers', key: 'trigger_mechanism', type: 'string', category: 'Controls' },
+    { label: 'Back Buttons', key: 'has_back_buttons', type: 'boolean', category: 'Controls' },
+    { label: 'Haptics', key: 'haptics', type: 'string', category: 'Controls' },
+    { label: 'Gyro', key: 'gyro', type: 'boolean', category: 'Controls' },
+
+    // CONNECTIVITY
+    { label: 'Wireless', key: 'wireless_connectivity', type: 'string', category: 'Connectivity' },
+    { label: 'Ports', key: 'ports', type: 'string', category: 'Connectivity' },
+    { label: 'Video Out', key: 'video_out', type: 'string', category: 'Connectivity' },
+    { label: 'Charging Port', key: 'charging_port', type: 'string', category: 'Connectivity' },
+
+    // MULTIMEDIA
+    { label: 'Speakers', key: 'audio_speakers', type: 'string', category: 'Multimedia' },
+    { label: 'Audio Tech', key: 'audio_tech', type: 'string', category: 'Multimedia' },
+    { label: 'Headphone Jack', key: 'headphone_jack', type: 'boolean', category: 'Multimedia' },
+    { label: 'Mic', key: 'microphone', type: 'boolean', category: 'Multimedia' },
+
+    // POWER
+    { label: 'Battery (mAh)', key: 'battery_mah', type: 'number', unit: 'mAh', category: 'Power' },
+    { label: 'Battery (Wh)', key: 'battery_wh', type: 'number', unit: 'Wh', category: 'Power' },
+    { label: 'Charging Speed', key: 'charging_speed_w', type: 'number', unit: 'W', category: 'Power' },
+
+    // PHYSICAL
+    { label: 'Dimensions', key: 'dimensions', type: 'string', category: 'Physical' },
+    { label: 'Weight', key: 'weight_g', type: 'number', unit: 'g', lowerIsBetter: true, category: 'Physical' },
+    { label: 'Material', key: 'body_material', type: 'string', category: 'Physical' },
 ];
 
 interface SelectionState {
@@ -50,19 +102,26 @@ interface SelectionState {
 // --- HELPER COMPONENTS ---
 
 const ComparisonRow = ({ metric, varA, varB }: { metric: ComparisonMetric, varA: ConsoleVariant, varB: ConsoleVariant }) => {
-    const valA = varA[metric.key];
-    const valB = varB[metric.key];
+    const rawA = varA[metric.key];
+    const rawB = varB[metric.key];
+
+    // Helper: Is the value present?
+    const exists = (v: any) => v !== undefined && v !== null && v !== '';
+    
+    const hasA = exists(rawA);
+    const hasB = exists(rawB);
+
+    // SMART HIDE: If both are missing, hide the row
+    if (!hasA && !hasB) return null;
 
     let winner: 'A' | 'B' | 'TIE' | null = null;
 
-    if (metric.type === 'number' || metric.type === 'currency') {
-        const hasA = valA !== undefined && valA !== null;
-        const hasB = valB !== undefined && valB !== null;
+    // --- COMPARISON LOGIC ---
+    if ((metric.type === 'number' || metric.type === 'currency' || metric.type === 'resolution') && hasA && hasB) {
+        const numA = Number(rawA);
+        const numB = Number(rawB);
         
-        if (hasA && hasB) {
-            const numA = Number(valA);
-            const numB = Number(valB);
-            
+        if (!isNaN(numA) && !isNaN(numB)) {
             if (numA !== numB) {
                 if (metric.lowerIsBetter) {
                     winner = numA < numB ? 'A' : 'B';
@@ -73,36 +132,43 @@ const ComparisonRow = ({ metric, varA, varB }: { metric: ComparisonMetric, varA:
                 winner = 'TIE';
             }
         }
-    } else if (metric.type === 'boolean') {
-        const boolA = valA === true || valA === 'true';
-        const boolB = valB === true || valB === 'true';
+    } else if (metric.type === 'boolean' && hasA && hasB) {
+        const boolA = rawA === true || rawA === 'true';
+        const boolB = rawB === true || rawB === 'true';
         if (boolA && !boolB) winner = 'A';
         else if (!boolA && boolB) winner = 'B';
         else if (boolA && boolB) winner = 'TIE';
     }
 
-    const format = (val: any) => {
-        if (val === undefined || val === null || val === '') return '---';
+    // --- FORMATTER ---
+    const format = (val: any, side: ConsoleVariant) => {
+        if (!exists(val)) return '---';
         if (metric.type === 'boolean') return (val === true || val === 'true') ? 'YES' : 'NO';
         if (metric.type === 'currency') return `$${val}`;
+        if (metric.type === 'resolution') {
+            return side.screen_resolution_y ? `${val} x ${side.screen_resolution_y}` : `${val}`;
+        }
         return `${val}${metric.unit ? metric.unit : ''}`;
     };
 
     return (
         <div className="grid grid-cols-3 border-b border-retro-grid/30 hover:bg-white/5 transition-colors group">
+            {/* VALUE A (Right Aligned) */}
             <div className={`p-3 text-right font-mono text-sm flex items-center justify-end ${winner === 'A' ? 'text-retro-neon font-bold drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]' : 'text-gray-400'}`}>
                 {winner === 'A' && <span className="mr-2 text-xs">▲</span>}
-                {format(valA)}
+                {format(rawA, varA)}
             </div>
             
+            {/* LABEL (Center) */}
             <div className="p-2 flex items-center justify-center bg-retro-grid/10 border-l border-r border-retro-grid/30">
                 <span className="font-pixel text-[9px] text-gray-500 uppercase tracking-wider text-center group-hover:text-white transition-colors">
                     {metric.label}
                 </span>
             </div>
             
+            {/* VALUE B (Left Aligned) */}
             <div className={`p-3 text-left font-mono text-sm flex items-center justify-start ${winner === 'B' ? 'text-retro-pink font-bold drop-shadow-[0_0_5px_rgba(255,0,255,0.5)]' : 'text-gray-400'}`}>
-                {format(valB)}
+                {format(rawB, varB)}
                 {winner === 'B' && <span className="ml-2 text-xs">▲</span>}
             </div>
         </div>
@@ -463,7 +529,7 @@ function ArenaContent() {
 
                     <div className="bg-black/50 border-2 border-retro-grid shadow-2xl overflow-hidden">
                         {/* Headers */}
-                        <div className="grid grid-cols-3 bg-retro-grid/20 border-b-2 border-retro-grid text-[10px] font-pixel text-gray-400 py-2 uppercase tracking-widest">
+                        <div className="grid grid-cols-3 bg-retro-grid/20 border-b-2 border-retro-grid text-[10px] font-pixel text-gray-400 py-2 uppercase tracking-widest sticky top-0 z-30 backdrop-blur-sm">
                             <div className="text-center border-r border-retro-grid">{left.details?.name}</div>
                             <div className="text-center">METRIC</div>
                             <div className="text-center border-l border-retro-grid">{right.details?.name}</div>
