@@ -314,4 +314,14 @@ function AdminPortalContent() {
     );
 }
 
-export default AdminPortalContent;
+export default function AdminPage() {
+    return (
+        <Suspense fallback={
+            <div className="w-full h-screen flex items-center justify-center font-mono text-retro-neon">
+                <div className="animate-pulse">ACCESSING SECURE MAINFRAME...</div>
+            </div>
+        }>
+            <AdminPortalContent />
+        </Suspense>
+    );
+}
