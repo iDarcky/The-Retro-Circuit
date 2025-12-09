@@ -1,0 +1,62 @@
+
+.fighterCardContainer {
+  /* Shape */
+  transform: skewX(-10deg);
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  
+  /* Visuals */
+  background-color: rgba(0, 0, 0, 0.8);
+  border: 2px solid #00ff9d; /* retro-neon */
+  box-shadow: 0 0 20px rgba(0, 255, 157, 0.1);
+  transition: all 0.3s ease;
+}
+
+.fighterCardContainerP2 {
+  /* Shape */
+  transform: skewX(10deg);
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+  width: 100%;
+
+  /* Visuals */
+  background-color: rgba(0, 0, 0, 0.8);
+  border: 2px solid #ff00ff; /* retro-pink */
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Hover Effects */
+.fighterCardContainer:hover {
+    box-shadow: 0 0 30px rgba(0, 255, 157, 0.3);
+    border-color: #fff;
+    z-index: 40;
+}
+
+.fighterCardContainerP2:hover {
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
+    border-color: #fff;
+    z-index: 40;
+}
+
+/* Inner Content (Un-skew) */
+.fighterCardContent {
+  transform: skewX(10deg);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+}
+
+.fighterCardContentP2 {
+  transform: skewX(-10deg);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+}
