@@ -1,4 +1,3 @@
-
 'use client';
 
 import { type FC } from 'react';
@@ -33,7 +32,7 @@ const EmulationGrid: FC<EmulationGridProps> = ({ profile }) => {
     ];
 
     return (
-        <div className="bg-retro-dark border border-retro-grid mb-6 relative group overflow-hidden">
+        <div className="bg-retro-dark border border-retro-grid mb-6 relative group overflow-hidden animate-fadeIn">
              {/* Header */}
             <div className="bg-black/40 border-b border-retro-grid px-4 py-2 flex justify-between items-center">
                 <h3 className="font-pixel text-[10px] text-retro-neon uppercase tracking-widest">EMULATION PERFORMANCE</h3>
