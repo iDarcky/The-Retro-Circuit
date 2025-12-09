@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, Suspense } from 'react';
@@ -20,18 +19,92 @@ type ComparisonMetric = {
 };
 
 const METRICS: ComparisonMetric[] = [
+    // --- IDENTITY ---
     { label: 'Release Year', key: 'release_year', type: 'number' },
     { label: 'Launch Price', key: 'price_launch_usd', type: 'currency', lowerIsBetter: true },
-    { label: 'CPU Cores', key: 'cpu_cores', type: 'number' },
-    { label: 'CPU Clock', key: 'cpu_clock_mhz', type: 'number', unit: 'MHz' },
-    { label: 'RAM Size', key: 'ram_gb', type: 'number', unit: 'GB' },
-    { label: 'Storage', key: 'storage_gb', type: 'number', unit: 'GB' },
+    { label: 'Model Number', key: 'model_no', type: 'string' },
+    { label: 'OS / Firmware', key: 'os', type: 'string' },
+    { label: 'UI Skin', key: 'ui_skin', type: 'string' },
+
+    // --- DISPLAY ---
     { label: 'Screen Size', key: 'screen_size_inch', type: 'number', unit: '"' },
     { label: 'Resolution', key: 'screen_resolution_x', type: 'resolution' },
+    { label: 'Display Type', key: 'display_type', type: 'string' },
+    { label: 'Display Tech', key: 'display_tech', type: 'string' },
     { label: 'Refresh Rate', key: 'refresh_rate_hz', type: 'number', unit: 'Hz' },
-    { label: 'PPI', key: 'ppi', type: 'number', unit: 'PPI' },
-    { label: 'Battery', key: 'battery_wh', type: 'number', unit: 'Wh' },
+    { label: 'Pixel Density', key: 'ppi', type: 'number', unit: 'PPI' },
+    { label: 'Brightness', key: 'brightness_nits', type: 'number', unit: ' nits' },
+    { label: 'Touchscreen', key: 'touchscreen', type: 'boolean' },
+    { label: 'Aspect Ratio', key: 'aspect_ratio', type: 'string' },
+    { label: '2nd Screen Size', key: 'second_screen_size', type: 'number', unit: '"' },
+    { label: '2nd Screen Touch', key: 'second_screen_touch', type: 'boolean' },
+
+    // --- PROCESSING ---
+    { label: 'CPU Model', key: 'cpu_model', type: 'string' },
+    { label: 'CPU Arch', key: 'cpu_architecture', type: 'string' },
+    { label: 'Process Node', key: 'cpu_process_node', type: 'string' },
+    { label: 'CPU Cores', key: 'cpu_cores', type: 'number' },
+    { label: 'CPU Threads', key: 'cpu_threads', type: 'number' },
+    { label: 'CPU Clock', key: 'cpu_clock_mhz', type: 'number', unit: ' MHz' },
+    
+    { label: 'GPU Model', key: 'gpu_model', type: 'string' },
+    { label: 'GPU Arch', key: 'gpu_architecture', type: 'string' },
+    { label: 'GPU Cores', key: 'gpu_cores', type: 'number' },
+    { label: 'GPU Units', key: 'gpu_core_unit', type: 'string' },
+    { label: 'GPU Clock', key: 'gpu_clock_mhz', type: 'number', unit: ' MHz' },
+    { label: 'Compute Power', key: 'gpu_teraflops', type: 'number', unit: ' TFLOPS' },
+
+    // --- MEMORY & STORAGE ---
+    { label: 'RAM', key: 'ram_gb', type: 'number', unit: ' GB' },
+    { label: 'RAM Type', key: 'ram_type', type: 'string' },
+    { label: 'RAM Speed', key: 'ram_speed_mhz', type: 'number', unit: ' MHz' },
+    { label: 'Storage', key: 'storage_gb', type: 'number', unit: ' GB' },
+    { label: 'Storage Type', key: 'storage_type', type: 'string' },
+    { label: 'Expandable', key: 'storage_expandable', type: 'boolean' },
+
+    // --- POWER ---
+    { label: 'Battery Capacity', key: 'battery_mah', type: 'number', unit: ' mAh' },
+    { label: 'Battery Energy', key: 'battery_wh', type: 'number', unit: ' Wh' },
+    { label: 'Charging Speed', key: 'charging_speed_w', type: 'number', unit: 'W' },
+    { label: 'Charging Port', key: 'charging_port', type: 'string' },
+    { label: 'TDP', key: 'tdp_range_w', type: 'string' },
+
+    // --- CONNECTIVITY & IO ---
+    { label: 'Wireless', key: 'wireless_connectivity', type: 'string' },
+    { label: 'Cellular', key: 'cellular_connectivity', type: 'boolean' },
+    { label: 'Video Output', key: 'video_out', type: 'string' },
+    { label: 'Ports', key: 'ports', type: 'string' },
+    
+    // --- AUDIO & MISC ---
+    { label: 'Speakers', key: 'audio_speakers', type: 'string' },
+    { label: 'Audio Tech', key: 'audio_tech', type: 'string' },
+    { label: 'Headphone Jack', key: 'headphone_jack', type: 'boolean' },
+    { label: 'Microphone', key: 'microphone', type: 'boolean' },
+    { label: 'Camera', key: 'camera', type: 'boolean' },
+    { label: 'Biometrics', key: 'biometrics', type: 'boolean' },
+
+    // --- CONTROLS & SENSORS ---
+    { label: 'Input Layout', key: 'input_layout', type: 'string' },
+    { label: 'D-Pad', key: 'dpad_type', type: 'string' },
+    { label: 'D-Pad Mech', key: 'dpad_mechanism', type: 'string' },
+    { label: 'D-Pad Shape', key: 'dpad_shape', type: 'string' },
+    { label: 'Analog Sticks', key: 'analog_stick_type', type: 'string' },
+    { label: 'Stick Mech', key: 'thumbstick_mechanism', type: 'string' },
+    { label: 'Stick Layout', key: 'thumbstick_layout', type: 'string' },
+    { label: 'Stick Cap', key: 'thumbstick_cap', type: 'string' },
+    { label: 'Triggers', key: 'trigger_mechanism', type: 'string' },
+    { label: 'Shoulders', key: 'shoulder_buttons', type: 'string' },
+    { label: 'Action Buttons', key: 'action_button_mechanism', type: 'string' },
+    { label: 'Back Buttons', key: 'has_back_buttons', type: 'boolean' },
+    { label: 'Haptics', key: 'haptics', type: 'string' },
+    { label: 'Gyroscope', key: 'gyro', type: 'boolean' },
+
+    // --- PHYSICAL ---
+    { label: 'Dimensions', key: 'dimensions', type: 'string' },
     { label: 'Weight', key: 'weight_g', type: 'number', unit: 'g', lowerIsBetter: true },
+    { label: 'Body Material', key: 'body_material', type: 'string' },
+    { label: 'Cooling', key: 'cooling', type: 'string' },
+    { label: 'Colors', key: 'colors', type: 'string' },
 ];
 
 interface SelectionState {
@@ -372,10 +445,7 @@ function ArenaContent() {
                                         )}
                                     </>
                                 ) : (
-                                    <div className="text-center opacity-30">
-                                        <div className="font-pixel text-4xl text-retro-neon mb-2">?</div>
-                                        <p className="font-mono text-retro-neon text-[10px]">SELECT SYSTEM</p>
-                                    </div>
+                                    <div className="text-retro-neon/30 font-pixel text-4xl animate-pulse">?</div>
                                 )}
                             </div>
                         </div>
@@ -388,8 +458,8 @@ function ArenaContent() {
                     <div className={styles.fighterCardContainerP2}>
                         {/* Inner Content: Counter Skewed */}
                         <div className={styles.fighterCardContentP2}>
-                             
-                             <div className="w-full mb-4">
+                            
+                            <div className="w-full mb-4">
                                 <h3 className="font-pixel text-lg text-retro-pink text-center mb-2">PLAYER 2</h3>
                                 <ConsoleSearch 
                                     consoles={allConsoles} 
@@ -429,36 +499,46 @@ function ArenaContent() {
                                         )}
                                     </>
                                 ) : (
-                                    <div className="text-center opacity-30">
-                                        <div className="font-pixel text-4xl text-retro-pink mb-2">?</div>
-                                        <p className="font-mono text-retro-pink text-[10px]">SELECT SYSTEM</p>
-                                    </div>
+                                    <div className="text-retro-pink/30 font-pixel text-4xl animate-pulse">?</div>
                                 )}
                             </div>
-
                         </div>
                     </div>
                 </div>
 
             </div>
+            
+            {/* --- COMPARISON TABLE --- */}
+            {left.selectedVariant && right.selectedVariant && (
+                <div className="animate-fadeIn max-w-4xl mx-auto">
+                    
+                    {/* Controls */}
+                    <div className="flex justify-center mb-8">
+                        <button 
+                            onClick={() => setShowDiffOnly(!showDiffOnly)}
+                            className={`
+                                px-4 py-2 font-mono text-xs border transition-all
+                                ${showDiffOnly 
+                                    ? 'bg-retro-neon text-black border-retro-neon font-bold' 
+                                    : 'bg-transparent text-retro-neon border-retro-neon hover:bg-retro-neon/10'}
+                            `}
+                        >
+                            {showDiffOnly ? 'SHOW ALL SPECS' : 'SHOW DIFFERENCES ONLY'}
+                        </button>
+                    </div>
 
-            {/* --- BATTLE REPORT --- */}
-            <div className="border-t-2 border-retro-grid pt-8 animate-fadeIn">
-                <div className="flex justify-between items-center mb-6">
-                    <h3 className="font-pixel text-xl text-white">BATTLE REPORT</h3>
-                    <button 
-                        onClick={() => { playClick(); setShowDiffOnly(!showDiffOnly); }}
-                        onMouseEnter={playHover}
-                        className={`font-mono text-xs border px-3 py-1 transition-all ${showDiffOnly ? 'bg-white text-black border-white' : 'text-gray-500 border-gray-700 hover:border-white'}`}
-                    >
-                        [ {showDiffOnly ? 'SHOW ALL' : 'DIFF ONLY'} ]
-                    </button>
-                </div>
+                    {/* Table */}
+                    <div className="bg-black/80 border border-retro-grid backdrop-blur-sm">
+                        {/* Table Header */}
+                        <div className="grid grid-cols-12 gap-2 py-4 border-b-2 border-retro-grid bg-white/5 font-pixel text-[10px] md:text-xs text-center sticky top-0 z-10 backdrop-blur-md">
+                            <div className="col-span-4 text-cyan-400 truncate px-2">{left.details?.name}</div>
+                            <div className="col-span-4 text-gray-500">METRIC</div>
+                            <div className="col-span-4 text-fuchsia-500 truncate px-2">{right.details?.name}</div>
+                        </div>
 
-                <div className="bg-black/40 border border-retro-grid p-4 md:p-8">
-                    {left.selectedVariant && right.selectedVariant ? (
-                        <div className="space-y-1">
-                            {METRICS.map(metric => (
+                        {/* Rows */}
+                        <div className="divide-y divide-retro-grid/30">
+                            {METRICS.map((metric) => (
                                 <ComparisonRow 
                                     key={metric.key} 
                                     metric={metric} 
@@ -468,23 +548,20 @@ function ArenaContent() {
                                 />
                             ))}
                         </div>
-                    ) : (
-                        <div className="text-center py-12">
-                            <div className="font-mono text-gray-500 mb-2">AWAITING FIGHTER SELECTION...</div>
-                            <div className="w-full h-1 bg-retro-grid/30 rounded overflow-hidden">
-                                <div className="h-full bg-retro-grid/50 w-1/3 animate-pulse"></div>
-                            </div>
-                        </div>
-                    )}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }
 
 export default function ArenaPage() {
     return (
-        <Suspense fallback={<div className="text-center p-20 font-mono text-retro-neon">LOADING ARENA...</div>}>
+        <Suspense fallback={
+            <div className="w-full h-screen flex items-center justify-center">
+                <div className="font-pixel text-retro-neon animate-pulse">LOADING ARENA...</div>
+            </div>
+        }>
             <ArenaContent />
         </Suspense>
     );
