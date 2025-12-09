@@ -190,6 +190,18 @@ export interface ConsoleSpecs {
   [key: string]: any; 
 }
 
+export interface EmulationProfile {
+  id: string;
+  variant_id: string;
+  ps2_state: 'Perfect' | 'Great' | 'Playable' | 'Struggles' | 'Unplayable' | 'N/A';
+  gamecube_state: string;
+  wii_state: string;
+  x3ds_state: string;
+  switch_state: string;
+  vita_state: string;
+  summary_text: string;
+}
+
 export interface ConsoleVariant {
   id: string;
   console_id: string;
@@ -286,6 +298,9 @@ export interface ConsoleVariant {
   cooling?: string;
   colors?: string;
   ui_skin?: string;
+
+  // Emulation
+  emulation_profile?: EmulationProfile | null;
 }
 
 export interface ConsoleDetails {
