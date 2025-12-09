@@ -200,7 +200,7 @@ const ComparisonRow = ({
 // --- SEARCH COMPONENT ---
 interface ConsoleSearchProps {
     consoles: {name: string, slug: string}[];
-    onSelect: (slug: string) => void;
+    onSelect: (slug: string, name: string) => void;
     placeholder?: string;
     themeColor: 'cyan' | 'pink';
     currentSelection?: string;
@@ -236,7 +236,7 @@ const ConsoleSearch = ({ consoles, onSelect, placeholder = "SELECT SYSTEM...", t
     const handleSelect = (slug: string, name: string) => {
         setSearchTerm(name);
         setIsOpen(false);
-        onSelect(slug);
+        onSelect(slug, name);
     };
 
     const borderColor = themeColor === 'cyan' ? 'border-retro-neon focus:border-retro-neon' : 'border-retro-pink focus:border-retro-pink';
@@ -283,7 +283,7 @@ const ConsoleSearch = ({ consoles, onSelect, placeholder = "SELECT SYSTEM...", t
 function ArenaContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { playClick, playHover } = useSound();
+    const { playClick } = useSound();
 
     const [allConsoles, setAllConsoles] = useState<{name: string, slug: string}[]>([]);
     
