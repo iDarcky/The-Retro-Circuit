@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense, type FC } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { fetchConsoleList, fetchConsoleBySlug } from '../../lib/api';
 import { ConsoleDetails, ConsoleVariant } from '../../lib/types';
@@ -116,16 +116,18 @@ interface SelectionState {
 
 // --- HELPER COMPONENTS ---
 
-const ComparisonRow = ({ 
+interface ComparisonRowProps {
+    metric: ComparisonMetric;
+    varA: ConsoleVariant;
+    varB: ConsoleVariant;
+    showDiffOnly: boolean;
+}
+
+const ComparisonRow: FC<ComparisonRowProps> = ({ 
     metric, 
     varA, 
     varB,
     showDiffOnly
-}: { 
-    metric: ComparisonMetric, 
-    varA: ConsoleVariant, 
-    varB: ConsoleVariant, 
-    showDiffOnly: boolean
 }) => {
     const rawA = varA[metric.key];
     const rawB = varB[metric.key];
@@ -206,7 +208,7 @@ interface ConsoleSearchProps {
     currentSelection?: string;
 }
 
-const ConsoleSearch = ({ consoles, onSelect, placeholder = "SELECT SYSTEM...", themeColor, currentSelection }: ConsoleSearchProps) => {
+const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, placeholder = "SELECT SYSTEM...", themeColor, currentSelection }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
