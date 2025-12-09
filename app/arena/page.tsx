@@ -212,20 +212,25 @@ const ComparisonRow = ({
 const ConsoleSearch = ({ 
     onSelect, 
     consoles,
-    themeColor = 'cyan' 
+    themeColor = 'cyan',
+    currentSelection
 }: { 
     onSelect: (slug: string) => void, 
     consoles: {name: string, slug: string}[],
-    themeColor?: 'cyan' | 'pink'
+    themeColor?: 'cyan' | 'pink',
+    currentSelection?: string | null
 }) => {
     const [query, setQuery] = useState('');
     const [filtered, setFiltered] = useState<{name: string, slug: string}[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const borderColor = themeColor === 'cyan' ? 'border-cyan-400 focus:border-cyan-400' : 'border-fuchsia-500 focus:border-fuchsia-500';
     const textColor = themeColor === 'cyan' ? 'text-cyan-400' : 'text-fuchsia-500';
     const hoverBg = themeColor === 'cyan' ? 'hover:bg-cyan-900/30' : 'hover:bg-fuchsia-900/30';
+
+    const placeholderText = currentSelection ? currentSelection.toUpperCase() : "SELECT FIGHTER...";
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -253,27 +258,31 @@ const ConsoleSearch = ({
         onSelect(slug);
         setQuery('');
         setIsOpen(false);
+        if (inputRef.current) inputRef.current.blur();
     };
 
     return (
-        <div className="relative w-full" ref={wrapperRef}>
+        <div className="relative w-full z-50" ref={wrapperRef}>
             <input 
+                ref={inputRef}
                 type="text" 
-                placeholder="SELECT FIGHTER..." 
-                className={`w-full bg-black/80 border-b-2 ${borderColor} p-2 font-mono text-sm text-white placeholder-gray-600 outline-none uppercase tracking-wider transition-all`}
+                placeholder={placeholderText}
+                className={`w-full bg-black/80 border-b-2 ${borderColor} p-2 font-mono text-sm text-white placeholder-gray-600 outline-none uppercase tracking-wider transition-all focus:bg-black`}
                 value={query}
                 onChange={handleSearch}
-                onFocus={() => query.length > 0 && setIsOpen(true)}
+                onFocus={() => {
+                    if (query.length > 0 && filtered.length > 0) setIsOpen(true);
+                }}
             />
             {isOpen && filtered.length > 0 && (
-                <div className={`absolute top-full left-0 right-0 bg-black border border-gray-800 z-50 max-h-60 overflow-y-auto custom-scrollbar shadow-xl`}>
+                <div className={`absolute top-full left-0 right-0 bg-black border border-gray-800 z-[100] max-h-60 overflow-y-auto custom-scrollbar shadow-2xl`}>
                     {filtered.map(c => (
                         <button 
                             key={c.slug}
                             onClick={() => handleSelect(c.slug)}
                             className={`w-full text-left p-3 font-mono text-xs text-gray-300 ${hoverBg} border-b border-gray-900 last:border-0 uppercase transition-colors flex justify-between group`}
                         >
-                            <span className="group-hover:text-white">{c.name}</span>
+                            <span className="group-hover:text-white font-bold">{c.name}</span>
                             <span className={`${textColor} opacity-0 group-hover:opacity-100`}>SELECT</span>
                         </button>
                     ))}
@@ -318,7 +327,7 @@ const VariantSelect = ({
     if (variants.length <= 1) return null;
 
     return (
-        <div className="relative w-full" ref={wrapperRef}>
+        <div className="relative w-full z-40" ref={wrapperRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={`w-full flex items-center justify-between bg-black/80 border ${borderClass} px-3 py-1.5 ${shadowClass} transition-all group`}
@@ -360,7 +369,6 @@ function ArenaContent() {
 
     const [allConsoles, setAllConsoles] = useState<{name: string, slug: string}[]>([]);
     
-    // Initial state setup (Removed unused varParamKey)
     const getInitialState = (paramKey: string): SelectionState => ({
         slug: searchParams?.get(paramKey) || null,
         details: null,
@@ -465,7 +473,8 @@ function ArenaContent() {
                 {/* LEFT FIGHTER (PLAYER 1) - CYAN */}
                 <div className="relative z-10 w-full max-w-sm h-[350px] mx-auto md:ml-auto md:mr-0">
                      {/* SKEWED CONTAINER (-6deg) - / shape */}
-                     <div className="h-full border-2 border-cyan-400 bg-black/90 shadow-[0_0_30px_rgba(34,211,238,0.2)] relative overflow-hidden transform md:-skew-x-6 transition-all duration-300">
+                     {/* IMPORTANT: Removed overflow-hidden to allow dropdowns to spill out */}
+                     <div className="h-full border-2 border-cyan-400 bg-black/90 shadow-[0_0_30px_rgba(34,211,238,0.2)] relative transform md:-skew-x-6 transition-all duration-300">
                         {/* UN-SKEW CONTENT (6deg) */}
                         <div className="absolute inset-0 flex flex-col justify-between p-4 transform md:skew-x-6">
                             
@@ -481,6 +490,7 @@ function ArenaContent() {
                                     consoles={allConsoles} 
                                     onSelect={(s) => handleSelect('a', s)}
                                     themeColor="cyan"
+                                    currentSelection={left.details?.name}
                                 />
                             </div>
 
@@ -493,7 +503,10 @@ function ArenaContent() {
                                         alt="Player 1"
                                     />
                                 ) : (
-                                    <div className="text-cyan-900 font-pixel text-4xl opacity-50 select-none">?</div>
+                                    <div className="flex flex-col items-center justify-center h-full opacity-50 select-none">
+                                        <div className="text-cyan-900 font-pixel text-4xl mb-2">?</div>
+                                        <div className="text-cyan-800 font-mono text-[10px] tracking-widest">SELECT SYSTEM</div>
+                                    </div>
                                 )}
                                 {/* Scanline Effect Overlay */}
                                 <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.05)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none"></div>
@@ -538,7 +551,7 @@ function ArenaContent() {
                 {/* RIGHT FIGHTER (PLAYER 2) - PINK */}
                 <div className="relative z-10 w-full max-w-sm h-[350px] mx-auto md:mr-auto md:ml-0">
                      {/* SKEWED CONTAINER (6deg) - \ shape */}
-                     <div className="h-full border-2 border-fuchsia-500 bg-black/90 shadow-[0_0_30px_rgba(217,70,239,0.2)] relative overflow-hidden transform md:skew-x-6 transition-all duration-300">
+                     <div className="h-full border-2 border-fuchsia-500 bg-black/90 shadow-[0_0_30px_rgba(217,70,239,0.2)] relative transform md:skew-x-6 transition-all duration-300">
                         {/* UN-SKEW CONTENT (-6deg) */}
                         <div className="absolute inset-0 flex flex-col justify-between p-4 transform md:-skew-x-6">
                             
@@ -554,6 +567,7 @@ function ArenaContent() {
                                     consoles={allConsoles} 
                                     onSelect={(s) => handleSelect('b', s)}
                                     themeColor="pink"
+                                    currentSelection={right.details?.name}
                                 />
                             </div>
 
@@ -566,7 +580,10 @@ function ArenaContent() {
                                         alt="Player 2"
                                     />
                                 ) : (
-                                    <div className="text-fuchsia-900 font-pixel text-4xl opacity-50 select-none">?</div>
+                                    <div className="flex flex-col items-center justify-center h-full opacity-50 select-none">
+                                        <div className="text-fuchsia-900 font-pixel text-4xl mb-2">?</div>
+                                        <div className="text-fuchsia-800 font-mono text-[10px] tracking-widest">SELECT SYSTEM</div>
+                                    </div>
                                 )}
                                 {/* Scanline Effect Overlay */}
                                 <div className="absolute inset-0 bg-[linear-gradient(rgba(217,70,239,0.05)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none"></div>
