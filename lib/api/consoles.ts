@@ -81,13 +81,26 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
     try {
         const { data, error } = await supabase
             .from('consoles')
-            .select('*, manufacturer:manufacturer(*), variants:console_variants(*)')
+            .select('*, manufacturer:manufacturer(*), variants:console_variants(*, emulation_profiles(*))')
             .eq('slug', slug)
             .single();
             
         if (error) throw error;
 
         const rawData: any = data;
+        
+        // Normalize emulation_profiles array to single object if present
+        if (rawData.variants && Array.isArray(rawData.variants)) {
+             rawData.variants = rawData.variants.map((v: any) => {
+                 // Check if emulation_profiles came back as array
+                 if (v.emulation_profiles && Array.isArray(v.emulation_profiles)) {
+                     v.emulation_profile = v.emulation_profiles[0] || null;
+                     delete v.emulation_profiles;
+                 }
+                 return v;
+             });
+        }
+        
         const variants = rawData.variants || [];
         const defaultVariant = variants.find((v: any) => v.is_default) || variants[0];
 

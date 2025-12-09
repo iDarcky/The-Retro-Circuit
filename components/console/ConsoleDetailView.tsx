@@ -9,6 +9,7 @@ import CollectionToggle from '../ui/CollectionToggle';
 import AdminEditTrigger from '../admin/AdminEditTrigger';
 import { IconGames, IconVS } from '../ui/Icons';
 import Button from '../ui/Button';
+import EmulationGrid from './EmulationGrid';
 
 interface ConsoleDetailViewProps {
   consoleData: ConsoleDetails;
@@ -274,6 +275,9 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                             ))}
                         </div>
                     )}
+                    
+                    {/* EMULATION PERFORMANCE GRID */}
+                    <EmulationGrid profile={mergedSpecs.emulation_profile} />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         
