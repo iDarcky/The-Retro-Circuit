@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { fetchConsoleList, fetchConsoleBySlug } from '../../lib/api';
 import { ConsoleDetails, ConsoleVariant } from '../../lib/types';
 import { useSound } from '../../components/ui/SoundContext';
+import styles from './Arena.module.css';
 
 // --- TYPES & CONFIG ---
 
@@ -284,8 +285,7 @@ function ArenaContent() {
     };
 
     const handleSelect = (side: 'a' | 'b', slug: string) => {
-        playClick();
-        // Just update URL, effect handles fetch
+        playClick(); // Only needed if updating URL or selection state directly
         updateUrl(side, slug);
     };
 
@@ -326,9 +326,9 @@ function ArenaContent() {
                 {/* --- PLAYER 1 (LEFT) --- */}
                 {/* Container: Skewed Right / */}
                 <div className="relative w-full md:w-1/2 group z-20 focus-within:z-50 md:-mr-10 mb-8 md:mb-0">
-                    <div className="h-full bg-black/80 border-2 border-retro-neon md:transform md:-skew-x-12 shadow-[0_0_30px_rgba(0,255,157,0.15)] overflow-visible relative transition-all duration-300 hover:shadow-[0_0_50px_rgba(0,255,157,0.3)] hover:border-retro-neon/100">
+                    <div className={`h-full bg-black/80 border-2 border-retro-neon shadow-[0_0_30px_rgba(0,255,157,0.15)] relative transition-all duration-300 hover:shadow-[0_0_50px_rgba(0,255,157,0.3)] hover:border-retro-neon/100 ${styles.fighterCardContainer}`}>
                         {/* Inner Content: Counter Skewed */}
-                        <div className="md:transform md:skew-x-12 h-full flex flex-col p-8 md:p-12 items-center">
+                        <div className={`h-full flex flex-col p-8 md:p-12 items-center ${styles.fighterCardContent}`}>
                             
                             <div className="w-full mb-6">
                                 <h3 className="font-pixel text-xl text-retro-neon text-center mb-2">PLAYER 1</h3>
@@ -383,9 +383,9 @@ function ArenaContent() {
                 {/* --- PLAYER 2 (RIGHT) --- */}
                 {/* Container: Skewed Left \ */}
                 <div className="relative w-full md:w-1/2 group z-20 focus-within:z-50 md:-ml-10">
-                    <div className="h-full bg-black/80 border-2 border-retro-pink md:transform md:skew-x-12 shadow-[0_0_30px_rgba(255,0,255,0.15)] overflow-visible relative transition-all duration-300 hover:shadow-[0_0_50px_rgba(255,0,255,0.3)] hover:border-retro-pink/100">
+                    <div className={`h-full bg-black/80 border-2 border-retro-pink shadow-[0_0_30px_rgba(255,0,255,0.15)] relative transition-all duration-300 hover:shadow-[0_0_50px_rgba(255,0,255,0.3)] hover:border-retro-pink/100 ${styles.fighterCardContainerP2}`}>
                         {/* Inner Content: Counter Skewed */}
-                        <div className="md:transform md:-skew-x-12 h-full flex flex-col p-8 md:p-12 items-center">
+                        <div className={`h-full flex flex-col p-8 md:p-12 items-center ${styles.fighterCardContentP2}`}>
                              
                              <div className="w-full mb-6">
                                 <h3 className="font-pixel text-xl text-retro-pink text-center mb-2">PLAYER 2</h3>

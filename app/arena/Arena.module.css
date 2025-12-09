@@ -1,0 +1,40 @@
+
+.fighterCardContainer {
+  /* Creates the Rhombus shape */
+  transform: skewX(-10deg);
+  overflow: hidden; /* Clips content to the rhombus shape */
+}
+
+.fighterCardContainerP2 {
+  transform: skewX(10deg);
+  overflow: hidden;
+}
+
+.fighterCardContent {
+  /* Un-skews the content so it stands straight */
+  transform: skewX(10deg);
+  /* Ensure content fills the space */
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.fighterCardContentP2 {
+  transform: skewX(-10deg);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Mobile Reset - Restore stacked layout on small screens */
+@media (max-width: 768px) {
+  .fighterCardContainer,
+  .fighterCardContainerP2,
+  .fighterCardContent,
+  .fighterCardContentP2 {
+    transform: none;
+    overflow: visible;
+  }
+}
