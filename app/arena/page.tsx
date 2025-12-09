@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect, useRef, Suspense, type FC, type ChangeEvent } from 'react';
+import { useState, useEffect, useRef, Suspense, type FC, type ChangeEvent, type Dispatch, type SetStateAction } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { fetchConsoleList, fetchConsoleBySlug } from '../../lib/api';
 import { ConsoleDetails, ConsoleVariant } from '../../lib/types';
@@ -292,7 +293,7 @@ function VSModeContent() {
     }, []);
 
     // Helper: Fetch Logic
-    const loadSelection = async (slug: string, variantSlug: string | null, setSelection: React.Dispatch<React.SetStateAction<SelectionState>>) => {
+    const loadSelection = async (slug: string, variantSlug: string | null, setSelection: Dispatch<SetStateAction<SelectionState>>) => {
         setSelection(prev => ({ ...prev, loading: true, slug }));
         
         const details = await fetchConsoleBySlug(slug);

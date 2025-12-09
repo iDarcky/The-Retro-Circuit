@@ -20,7 +20,7 @@ const GlobalSearch: FC = () => {
     const { playHover, playClick } = useSound();
     
     // Debounce Timer
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Focus input on mount/open
     useEffect(() => {
