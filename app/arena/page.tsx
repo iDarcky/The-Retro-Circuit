@@ -285,7 +285,7 @@ const ConsoleSearch = ({
                 ref={inputRef}
                 type="text" 
                 placeholder="TYPE TO SEARCH..."
-                className={`w-full bg-black/80 border-b-2 ${borderColor} p-2 font-mono text-sm text-white placeholder-gray-600 outline-none uppercase tracking-wider transition-all focus:bg-black focus:placeholder-gray-500`}
+                className={`w-full bg-black/80 border ${borderColor} p-3 font-mono text-sm text-white placeholder-gray-600 outline-none uppercase tracking-wider transition-all focus:bg-black focus:placeholder-gray-500 focus:shadow-[0_0_15px_rgba(255,255,255,0.1)]`}
                 value={query}
                 onChange={handleSearch}
                 onFocus={handleFocus}
@@ -489,26 +489,26 @@ function ArenaContent() {
         <div className="w-full max-w-7xl mx-auto p-4 min-h-screen flex flex-col">
             
             {/* 1. FIGHTER SELECTION ARENA */}
-            <div className="relative grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-8 items-center justify-center max-w-6xl mx-auto mb-8">
+            <div className="relative grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 items-center justify-center max-w-6xl mx-auto mb-8">
                 
-                {/* LEFT FIGHTER (PLAYER 1) - CYAN - / shape (-skew) */}
-                <div className="relative z-30 w-full max-w-sm h-[380px] mx-auto md:ml-auto md:mr-0 group focus-within:z-50 hover:z-50 transition-all">
-                     {/* SKEWED CONTAINER (-12deg) */}
-                     <div className="h-full border-2 border-cyan-400 bg-black/90 shadow-[0_0_30px_rgba(34,211,238,0.2)] relative transform md:-skew-x-12 transition-all duration-300 overflow-visible">
-                        {/* UN-SKEW CONTENT (12deg) */}
-                        <div className="absolute inset-0 flex flex-col justify-between p-6 transform md:skew-x-12">
+                {/* LEFT FIGHTER (PLAYER 1) - CYAN - / shape (Negative Skew) */}
+                <div className="relative z-30 w-full max-w-md h-[420px] mx-auto group focus-within:z-50 hover:z-50 transition-all">
+                     {/* SKEWED CONTAINER (-12deg creates / shape) */}
+                     <div className="h-full border-2 border-cyan-400 bg-black/80 backdrop-blur-md shadow-[0_0_30px_rgba(34,211,238,0.15)] relative transform md:-skew-x-12 transition-all duration-300 overflow-visible">
+                        {/* UN-SKEW CONTENT (12deg) + SAFE PADDING */}
+                        <div className="absolute inset-0 flex flex-col justify-between py-6 px-10 md:px-16 transform md:skew-x-12">
                             
                             {/* P1 LABEL */}
-                            <div className="flex justify-between items-center mb-2 border-b border-cyan-900/50 pb-1">
-                                <span className="font-pixel text-[10px] text-cyan-400">PLAYER 1</span>
-                                {left.loading && <span className="text-[10px] font-mono text-cyan-400 animate-pulse">LOADING...</span>}
+                            <div className="flex justify-between items-center mb-4 border-b border-cyan-500/30 pb-2">
+                                <span className="font-pixel text-xs text-cyan-400">PLAYER 1</span>
+                                {left.loading && <span className="text-[10px] font-mono text-cyan-400 animate-pulse">SCANNING...</span>}
                             </div>
 
                             {/* SEARCH BAR */}
-                            <div className="mb-2 relative">
+                            <div className="mb-4 relative z-50">
                                 <ConsoleSearch 
                                     consoles={allConsoles} 
-                                    onSelect={(s) => handleSelect('a', s)}
+                                    onSelect={(slug, name) => handleSelect('a', slug)}
                                     themeColor="cyan"
                                     currentSelection={left.details?.name}
                                 />
@@ -519,23 +519,23 @@ function ArenaContent() {
                                 {left.details?.image_url || left.selectedVariant?.image_url ? (
                                     <img 
                                         src={left.selectedVariant?.image_url || left.details?.image_url} 
-                                        className="max-h-full max-w-full object-contain drop-shadow-[0_0_15px_rgba(34,211,238,0.4)] transition-transform duration-500 group-hover:scale-110"
+                                        className="max-h-full max-w-full object-contain drop-shadow-[0_0_15px_rgba(34,211,238,0.4)] transition-transform duration-500 group-hover:scale-105"
                                         alt="Player 1"
                                     />
                                 ) : (
-                                    <div className="flex flex-col items-center justify-center h-full opacity-50 select-none border-2 border-dashed border-cyan-900/50 w-full bg-cyan-900/5">
-                                        <div className="text-cyan-500 font-pixel text-4xl mb-2 animate-pulse">?</div>
-                                        <div className="text-cyan-400 font-mono text-[10px] tracking-widest text-center font-bold">
-                                            SELECT SYSTEM<br/>FROM LIST
+                                    <div className="flex flex-col items-center justify-center h-full opacity-60 select-none border-2 border-dashed border-cyan-900 w-full bg-cyan-900/10">
+                                        <div className="text-cyan-500 font-pixel text-5xl mb-4 animate-pulse">?</div>
+                                        <div className="text-cyan-400 font-mono text-xs tracking-widest text-center font-bold">
+                                            SELECT SYSTEM
                                         </div>
                                     </div>
                                 )}
                                 {/* Scanline Effect Overlay */}
-                                <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.05)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none"></div>
+                                <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.03)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none"></div>
                             </div>
 
                             {/* VARIANT SELECTOR */}
-                            <div className="mt-2 h-10 relative">
+                            <div className="mt-4 h-10 relative z-40">
                                 {left.details && left.details.variants && (
                                     <VariantSelect 
                                         variants={left.details.variants} 
@@ -552,7 +552,7 @@ function ArenaContent() {
 
                 {/* CENTRAL CONTROLS */}
                 <div className="relative z-20 flex flex-col items-center justify-center gap-4 py-4 md:py-0">
-                    <div className="font-pixel text-4xl md:text-5xl text-white italic drop-shadow-[0_0_10px_rgba(255,255,255,0.8)] skew-x-[-10deg]">
+                    <div className="font-pixel text-5xl md:text-6xl text-white italic drop-shadow-[0_0_15px_rgba(255,255,255,0.8)] md:skew-x-[-10deg]">
                         VS
                     </div>
                     
@@ -570,24 +570,24 @@ function ArenaContent() {
                     </button>
                 </div>
 
-                {/* RIGHT FIGHTER (PLAYER 2) - PINK - \ shape (+skew) */}
-                <div className="relative z-30 w-full max-w-sm h-[380px] mx-auto md:mr-auto md:ml-0 group focus-within:z-50 hover:z-50 transition-all">
-                     {/* SKEWED CONTAINER (12deg) */}
-                     <div className="h-full border-2 border-fuchsia-500 bg-black/90 shadow-[0_0_30px_rgba(217,70,239,0.2)] relative transform md:skew-x-12 transition-all duration-300 overflow-visible">
-                        {/* UN-SKEW CONTENT (-12deg) */}
-                        <div className="absolute inset-0 flex flex-col justify-between p-6 transform md:-skew-x-12">
+                {/* RIGHT FIGHTER (PLAYER 2) - PINK - \ shape (Positive Skew) */}
+                <div className="relative z-30 w-full max-w-md h-[420px] mx-auto group focus-within:z-50 hover:z-50 transition-all">
+                     {/* SKEWED CONTAINER (12deg creates \ shape) */}
+                     <div className="h-full border-2 border-fuchsia-500 bg-black/80 backdrop-blur-md shadow-[0_0_30px_rgba(217,70,239,0.15)] relative transform md:skew-x-12 transition-all duration-300 overflow-visible">
+                        {/* UN-SKEW CONTENT (-12deg) + SAFE PADDING */}
+                        <div className="absolute inset-0 flex flex-col justify-between py-6 px-10 md:px-16 transform md:-skew-x-12">
                             
                             {/* P2 LABEL */}
-                            <div className="flex justify-between items-center mb-2 border-b border-fuchsia-900/50 pb-1">
-                                <span className="font-pixel text-[10px] text-fuchsia-500">PLAYER 2</span>
-                                {right.loading && <span className="text-[10px] font-mono text-fuchsia-500 animate-pulse">LOADING...</span>}
+                            <div className="flex justify-between items-center mb-4 border-b border-fuchsia-500/30 pb-2">
+                                <span className="font-pixel text-xs text-fuchsia-500">PLAYER 2</span>
+                                {right.loading && <span className="text-[10px] font-mono text-fuchsia-500 animate-pulse">SCANNING...</span>}
                             </div>
 
                             {/* SEARCH BAR */}
-                            <div className="mb-2 relative">
+                            <div className="mb-4 relative z-50">
                                 <ConsoleSearch 
                                     consoles={allConsoles} 
-                                    onSelect={(s) => handleSelect('b', s)}
+                                    onSelect={(slug, name) => handleSelect('b', slug)}
                                     themeColor="pink"
                                     currentSelection={right.details?.name}
                                 />
@@ -598,23 +598,23 @@ function ArenaContent() {
                                 {right.details?.image_url || right.selectedVariant?.image_url ? (
                                     <img 
                                         src={right.selectedVariant?.image_url || right.details?.image_url} 
-                                        className="max-h-full max-w-full object-contain drop-shadow-[0_0_15px_rgba(217,70,239,0.4)] transition-transform duration-500 group-hover:scale-110"
+                                        className="max-h-full max-w-full object-contain drop-shadow-[0_0_15px_rgba(217,70,239,0.4)] transition-transform duration-500 group-hover:scale-105"
                                         alt="Player 2"
                                     />
                                 ) : (
-                                    <div className="flex flex-col items-center justify-center h-full opacity-50 select-none border-2 border-dashed border-fuchsia-900/50 w-full bg-fuchsia-900/5">
-                                        <div className="text-fuchsia-500 font-pixel text-4xl mb-2 animate-pulse">?</div>
-                                        <div className="text-fuchsia-400 font-mono text-[10px] tracking-widest text-center font-bold">
-                                            SELECT SYSTEM<br/>FROM LIST
+                                    <div className="flex flex-col items-center justify-center h-full opacity-60 select-none border-2 border-dashed border-fuchsia-900 w-full bg-fuchsia-900/10">
+                                        <div className="text-fuchsia-500 font-pixel text-5xl mb-4 animate-pulse">?</div>
+                                        <div className="text-fuchsia-400 font-mono text-xs tracking-widest text-center font-bold">
+                                            SELECT SYSTEM
                                         </div>
                                     </div>
                                 )}
                                 {/* Scanline Effect Overlay */}
-                                <div className="absolute inset-0 bg-[linear-gradient(rgba(217,70,239,0.05)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none"></div>
+                                <div className="absolute inset-0 bg-[linear-gradient(rgba(217,70,239,0.03)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none"></div>
                             </div>
 
                             {/* VARIANT SELECTOR */}
-                            <div className="mt-2 h-10 relative">
+                            <div className="mt-4 h-10 relative z-40">
                                 {right.details && right.details.variants && (
                                     <VariantSelect 
                                         variants={right.details.variants} 
