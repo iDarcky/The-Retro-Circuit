@@ -1,20 +1,17 @@
+
 .fighterCardContainer {
   /* Shape */
   transform: skewX(-10deg);
   overflow: hidden;
   position: relative;
   height: 100%;
+  width: 100%;
   
   /* Visuals */
   background-color: rgba(0, 0, 0, 0.8);
   border: 2px solid #00ff9d; /* retro-neon */
-  box-shadow: 0 0 30px rgba(0, 255, 157, 0.15);
-  transition: all 0.3s ease-in-out;
-}
-
-.fighterCardContainer:hover {
-  box-shadow: 0 0 50px rgba(0, 255, 157, 0.3);
-  border-color: #00ff9d;
+  box-shadow: 0 0 20px rgba(0, 255, 157, 0.1);
+  transition: all 0.3s ease;
 }
 
 .fighterCardContainerP2 {
@@ -23,60 +20,43 @@
   overflow: hidden;
   position: relative;
   height: 100%;
+  width: 100%;
 
   /* Visuals */
   background-color: rgba(0, 0, 0, 0.8);
   border: 2px solid #ff00ff; /* retro-pink */
-  box-shadow: 0 0 30px rgba(255, 0, 255, 0.15);
-  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Hover Effects */
+.fighterCardContainer:hover {
+    box-shadow: 0 0 30px rgba(0, 255, 157, 0.3);
+    border-color: #fff;
+    z-index: 40;
 }
 
 .fighterCardContainerP2:hover {
-  box-shadow: 0 0 50px rgba(255, 0, 255, 0.3);
-  border-color: #ff00ff;
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
+    border-color: #fff;
+    z-index: 40;
 }
 
+/* Inner Content (Un-skew) */
 .fighterCardContent {
-  /* Un-skew */
   transform: skewX(10deg);
-  
-  /* Layout */
   height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
 .fighterCardContentP2 {
-  /* Un-skew */
   transform: skewX(-10deg);
-  
-  /* Layout */
   height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 2rem;
-}
-
-/* Tablet/Desktop Padding Adjustment */
-@media (min-width: 768px) {
-  .fighterCardContent,
-  .fighterCardContentP2 {
-    padding: 3rem;
-  }
-}
-
-/* Mobile Reset - Restore stacked straight layout on small screens */
-@media (max-width: 768px) {
-  .fighterCardContainer,
-  .fighterCardContainerP2,
-  .fighterCardContent,
-  .fighterCardContentP2 {
-    transform: none;
-    overflow: visible;
-  }
+  padding: 1.5rem;
 }

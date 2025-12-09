@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, Suspense } from 'react';
@@ -182,7 +183,7 @@ const ConsoleSearch = ({ consoles, onSelect, placeholder = "SELECT SYSTEM...", t
                     setIsOpen(true);
                 }}
                 placeholder={placeholder}
-                className={`w-full bg-black/60 border-2 ${borderColor} p-3 font-mono text-sm ${textColor} outline-none uppercase shadow-inner transition-all text-center`}
+                className={`w-full bg-black/60 border-2 ${borderColor} p-2 font-mono text-xs ${textColor} outline-none uppercase shadow-inner transition-all text-center`}
             />
             
             {isOpen && (searchTerm.length > 0 || filtered.length > 0) && (
@@ -313,10 +314,11 @@ function ArenaContent() {
             </div>
 
             {/* --- THE ARENA (RHOMBUS LAYOUT) --- */}
-            <div className="relative flex flex-col md:flex-row justify-center items-stretch min-h-[500px] mb-12 px-4 md:px-0">
+            {/* Gap-20 provides safe separation. No negative margins. Flex wrap on mobile. */}
+            <div className="relative flex flex-col md:flex-row justify-center items-center gap-8 md:gap-20 min-h-[400px] mb-12 px-4 md:px-0">
                 
                 {/* VS Badge (Absolute Center) */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40 pointer-events-none md:block hidden">
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none md:block hidden">
                      <div className="relative">
                         <h2 className="font-pixel text-6xl text-white italic drop-shadow-[0_0_20px_rgba(255,255,255,0.8)] z-10 relative">VS</h2>
                         <div className="absolute inset-0 blur-xl bg-white/30 rounded-full"></div>
@@ -324,14 +326,14 @@ function ArenaContent() {
                 </div>
 
                 {/* --- PLAYER 1 (LEFT) --- */}
-                {/* Container: Skewed Right / */}
-                <div className="relative w-full md:w-1/2 group z-20 focus-within:z-50 md:-mr-10 mb-8 md:mb-0">
+                {/* Fixed size on desktop: w-[300px] h-[320px] */}
+                <div className="relative w-full max-w-xs md:w-[300px] h-[400px] md:h-[320px] group z-20 focus-within:z-30">
                     <div className={styles.fighterCardContainer}>
                         {/* Inner Content: Counter Skewed */}
                         <div className={styles.fighterCardContent}>
                             
-                            <div className="w-full mb-6">
-                                <h3 className="font-pixel text-xl text-retro-neon text-center mb-2">PLAYER 1</h3>
+                            <div className="w-full mb-4">
+                                <h3 className="font-pixel text-lg text-retro-neon text-center mb-2">PLAYER 1</h3>
                                 <ConsoleSearch 
                                     consoles={allConsoles} 
                                     onSelect={(slug) => handleSelect('a', slug)}
@@ -340,13 +342,13 @@ function ArenaContent() {
                                 />
                             </div>
 
-                            <div className="flex-1 flex flex-col items-center justify-center w-full min-h-[250px] relative">
+                            <div className="flex-1 flex flex-col items-center justify-center w-full relative">
                                 {left.loading ? (
-                                    <div className="animate-spin w-12 h-12 border-4 border-retro-neon border-t-transparent rounded-full"></div>
+                                    <div className="animate-spin w-8 h-8 border-2 border-retro-neon border-t-transparent rounded-full"></div>
                                 ) : left.details ? (
                                     <>
-                                        {/* Image */}
-                                        <div className="relative w-full h-48 mb-6 flex items-center justify-center">
+                                        {/* Image - Compacted */}
+                                        <div className="relative w-full h-32 mb-4 flex items-center justify-center">
                                             <img 
                                                 src={left.selectedVariant?.image_url || left.details.image_url} 
                                                 className="max-h-full max-w-full object-contain drop-shadow-2xl animate-slideDown"
@@ -356,9 +358,9 @@ function ArenaContent() {
 
                                         {/* Variant Selector */}
                                         {left.details.variants && left.details.variants.length > 1 && (
-                                            <div className="w-full max-w-[200px]">
+                                            <div className="w-full max-w-[180px]">
                                                 <select 
-                                                    className="w-full bg-black/50 border border-retro-neon text-retro-neon font-mono text-xs p-2 outline-none text-center appearance-none cursor-pointer hover:bg-retro-neon hover:text-black transition-colors"
+                                                    className="w-full bg-black/50 border border-retro-neon text-retro-neon font-mono text-[10px] p-1 outline-none text-center appearance-none cursor-pointer hover:bg-retro-neon hover:text-black transition-colors"
                                                     value={left.selectedVariant?.slug || ''}
                                                     onChange={(e) => handleVariantChange('a', e.target.value)}
                                                 >
@@ -371,8 +373,8 @@ function ArenaContent() {
                                     </>
                                 ) : (
                                     <div className="text-center opacity-30">
-                                        <div className="font-pixel text-6xl text-retro-neon mb-4">?</div>
-                                        <p className="font-mono text-retro-neon text-sm">SELECT SYSTEM</p>
+                                        <div className="font-pixel text-4xl text-retro-neon mb-2">?</div>
+                                        <p className="font-mono text-retro-neon text-[10px]">SELECT SYSTEM</p>
                                     </div>
                                 )}
                             </div>
@@ -381,14 +383,14 @@ function ArenaContent() {
                 </div>
 
                 {/* --- PLAYER 2 (RIGHT) --- */}
-                {/* Container: Skewed Left \ */}
-                <div className="relative w-full md:w-1/2 group z-20 focus-within:z-50 md:-ml-10">
+                {/* Fixed size on desktop: w-[300px] h-[320px] */}
+                <div className="relative w-full max-w-xs md:w-[300px] h-[400px] md:h-[320px] group z-20 focus-within:z-30">
                     <div className={styles.fighterCardContainerP2}>
                         {/* Inner Content: Counter Skewed */}
                         <div className={styles.fighterCardContentP2}>
                              
-                             <div className="w-full mb-6">
-                                <h3 className="font-pixel text-xl text-retro-pink text-center mb-2">PLAYER 2</h3>
+                             <div className="w-full mb-4">
+                                <h3 className="font-pixel text-lg text-retro-pink text-center mb-2">PLAYER 2</h3>
                                 <ConsoleSearch 
                                     consoles={allConsoles} 
                                     onSelect={(slug) => handleSelect('b', slug)}
@@ -397,13 +399,13 @@ function ArenaContent() {
                                 />
                             </div>
 
-                            <div className="flex-1 flex flex-col items-center justify-center w-full min-h-[250px] relative">
+                            <div className="flex-1 flex flex-col items-center justify-center w-full relative">
                                 {right.loading ? (
-                                    <div className="animate-spin w-12 h-12 border-4 border-retro-pink border-t-transparent rounded-full"></div>
+                                    <div className="animate-spin w-8 h-8 border-2 border-retro-pink border-t-transparent rounded-full"></div>
                                 ) : right.details ? (
                                     <>
-                                        {/* Image */}
-                                        <div className="relative w-full h-48 mb-6 flex items-center justify-center">
+                                        {/* Image - Compacted */}
+                                        <div className="relative w-full h-32 mb-4 flex items-center justify-center">
                                             <img 
                                                 src={right.selectedVariant?.image_url || right.details.image_url} 
                                                 className="max-h-full max-w-full object-contain drop-shadow-2xl animate-slideDown"
@@ -413,9 +415,9 @@ function ArenaContent() {
 
                                         {/* Variant Selector */}
                                         {right.details.variants && right.details.variants.length > 1 && (
-                                            <div className="w-full max-w-[200px]">
+                                            <div className="w-full max-w-[180px]">
                                                 <select 
-                                                    className="w-full bg-black/50 border border-retro-pink text-retro-pink font-mono text-xs p-2 outline-none text-center appearance-none cursor-pointer hover:bg-retro-pink hover:text-black transition-colors"
+                                                    className="w-full bg-black/50 border border-retro-pink text-retro-pink font-mono text-[10px] p-1 outline-none text-center appearance-none cursor-pointer hover:bg-retro-pink hover:text-black transition-colors"
                                                     value={right.selectedVariant?.slug || ''}
                                                     onChange={(e) => handleVariantChange('b', e.target.value)}
                                                 >
@@ -428,8 +430,8 @@ function ArenaContent() {
                                     </>
                                 ) : (
                                     <div className="text-center opacity-30">
-                                        <div className="font-pixel text-6xl text-retro-pink mb-4">?</div>
-                                        <p className="font-mono text-retro-pink text-sm">SELECT SYSTEM</p>
+                                        <div className="font-pixel text-4xl text-retro-pink mb-2">?</div>
+                                        <p className="font-mono text-retro-pink text-[10px]">SELECT SYSTEM</p>
                                     </div>
                                 )}
                             </div>
