@@ -1,9 +1,10 @@
+
 'use client';
 
-import { useState, type FC } from 'react';
+import { type FC } from 'react';
 import Logo from '../ui/Logo';
 import { IconSearch, IconMenu, IconClose } from '../ui/Icons';
-import GlobalSearch from '../ui/GlobalSearch';
+import { useSearch } from '../ui/SearchContext';
 
 interface MobileTopBarProps {
   onMenuClick: () => void;
@@ -12,7 +13,7 @@ interface MobileTopBarProps {
 }
 
 const MobileTopBar: FC<MobileTopBarProps> = ({ onMenuClick, isSidebarOpen, customLogo }) => {
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { openSearch } = useSearch();
 
   return (
     <>
@@ -25,8 +26,8 @@ const MobileTopBar: FC<MobileTopBarProps> = ({ onMenuClick, isSidebarOpen, custo
         {/* Right: Actions */}
         <div className="flex items-center gap-4">
             <button 
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className={`transition-colors ${isSearchOpen ? 'text-retro-neon' : 'text-gray-400 hover:text-white'}`}
+                onClick={openSearch}
+                className="transition-colors text-gray-400 hover:text-white"
                 aria-label="Search"
             >
                 <IconSearch className="w-6 h-6" />
@@ -40,13 +41,6 @@ const MobileTopBar: FC<MobileTopBarProps> = ({ onMenuClick, isSidebarOpen, custo
             </button>
         </div>
       </header>
-
-      {/* Search Overlay */}
-      {isSearchOpen && (
-          <div className="md:hidden fixed top-16 left-0 right-0 z-30 bg-retro-dark border-b border-retro-grid shadow-2xl animate-slideDown">
-              <GlobalSearch autoFocus className="border-b-0" /> 
-          </div>
-      )}
     </>
   );
 };
