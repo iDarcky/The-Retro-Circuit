@@ -508,7 +508,7 @@ function ArenaContent() {
                             <div className="mb-4 relative z-50">
                                 <ConsoleSearch 
                                     consoles={allConsoles} 
-                                    onSelect={(slug, name) => handleSelect('a', slug)}
+                                    onSelect={(slug) => handleSelect('a', slug)}
                                     themeColor="cyan"
                                     currentSelection={left.details?.name}
                                 />
@@ -587,7 +587,7 @@ function ArenaContent() {
                             <div className="mb-4 relative z-50">
                                 <ConsoleSearch 
                                     consoles={allConsoles} 
-                                    onSelect={(slug, name) => handleSelect('b', slug)}
+                                    onSelect={(slug) => handleSelect('b', slug)}
                                     themeColor="pink"
                                     currentSelection={right.details?.name}
                                 />
