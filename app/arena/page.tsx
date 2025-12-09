@@ -283,7 +283,7 @@ function ArenaContent() {
         router.replace(`/arena?${params.toString()}`, { scroll: false });
     };
 
-    const handleSelect = (side: 'a' | 'b', slug: string, name: string) => {
+    const handleSelect = (side: 'a' | 'b', slug: string) => {
         playClick();
         // Just update URL, effect handles fetch
         updateUrl(side, slug);
@@ -334,7 +334,7 @@ function ArenaContent() {
                                 <h3 className="font-pixel text-xl text-retro-neon text-center mb-2">PLAYER 1</h3>
                                 <ConsoleSearch 
                                     consoles={allConsoles} 
-                                    onSelect={(slug, name) => handleSelect('a', slug, name)}
+                                    onSelect={(slug) => handleSelect('a', slug)}
                                     themeColor="cyan"
                                     currentSelection={left.details?.name}
                                 />
@@ -391,7 +391,7 @@ function ArenaContent() {
                                 <h3 className="font-pixel text-xl text-retro-pink text-center mb-2">PLAYER 2</h3>
                                 <ConsoleSearch 
                                     consoles={allConsoles} 
-                                    onSelect={(slug, name) => handleSelect('b', slug, name)}
+                                    onSelect={(slug) => handleSelect('b', slug)}
                                     themeColor="pink"
                                     currentSelection={right.details?.name}
                                 />
