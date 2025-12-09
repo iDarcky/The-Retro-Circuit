@@ -12,15 +12,34 @@ type Props = {
 
 export async function generateMetadata({ params }: Props) {
     const supabase = await createClient();
-    const { data } = await supabase.from('consoles').select('name, description, image_url, manufacturer:manufacturer(name)').eq('slug', params.slug).single();
+    
+    // Fetch console identity + variants for robust image fallback
+    const { data } = await supabase
+      .from('consoles')
+      .select('name, description, image_url, variants:console_variants(image_url, is_default)')
+      .eq('slug', params.slug)
+      .single();
     
     if (!data) return { title: 'Unknown Hardware' };
+    
+    // Logic to determine best image: Console Image -> Default Variant Image -> First Variant Image
+    let finalImage = data.image_url;
+    
+    if (!finalImage && data.variants && Array.isArray(data.variants) && data.variants.length > 0) {
+        const variants = data.variants;
+        const defaultVar = variants.find((v: any) => v.is_default);
+        finalImage = defaultVar?.image_url || variants[0].image_url;
+    }
+
+    // Ensure fallback to site logo if absolutely no image found
+    finalImage = finalImage || '/logo.png';
   
     return {
-      title: `${data.name} Specs`,
-      description: data.description?.substring(0, 160) || 'Specs unavailable.',
+      title: `${data.name} Specs & Price | The Retro Circuit`,
+      description: `View full technical specifications, release date, and variant comparisons for the ${data.name}.`,
       openGraph: {
-        images: data.image_url ? [data.image_url] : []
+        title: `${data.name} - Classified Specs`,
+        images: [{ url: finalImage }]
       }
     };
 }

@@ -1,3 +1,4 @@
+
 import { z } from 'zod';
 
 // --- VALIDATION HELPERS ---
@@ -33,7 +34,7 @@ export const NewsItemSchema = z.object({
 });
 
 export interface SearchResult {
-    type: 'GAME' | 'CONSOLE';
+    type: 'GAME' | 'CONSOLE' | 'FABRICATOR';
     id: string;
     slug: string;
     title: string;

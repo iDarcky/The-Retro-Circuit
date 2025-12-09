@@ -1,20 +1,21 @@
+
 'use client';
 
 import { useState, useEffect, type FC, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSound } from '../ui/SoundContext';
+import { useSearch } from '../ui/SearchContext';
 import { retroAuth } from '../../lib/auth';
 import { checkDatabaseConnection } from '../../lib/api';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase/singleton';
-import GlobalSearch from '../ui/GlobalSearch';
 import Logo from '../ui/Logo';
 import MobileBottomNav from './MobileBottomNav';
 import MobileTopBar from './MobileTopBar';
 import type { User } from '@supabase/supabase-js';
 import { 
   IconNews, IconDatabase, IconVS, IconGames, IconTimeline, 
-  IconHome, IconSettings, IconChip
+  IconHome, IconSettings, IconChip, IconSearch
 } from '../ui/Icons';
 
 // --- HELPER COMPONENTS ---
@@ -51,6 +52,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [customLogo, setCustomLogo] = useState<string | null>(null);
+  const { openSearch } = useSearch();
 
   useEffect(() => {
     // 1. Setup Auth Listener Immediately
@@ -150,6 +152,22 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         </div>
 
         <nav className="flex-1 py-6 space-y-2 overflow-y-auto custom-scrollbar">
+           {/* SEARCH TRIGGER */}
+           <div className="px-4 mb-6">
+                <button 
+                    onClick={openSearch}
+                    className="w-full bg-black/40 border border-white/10 text-gray-500 font-mono text-sm px-3 py-2 flex justify-between items-center hover:border-retro-neon hover:text-white transition-all group cursor-pointer"
+                >
+                    <span className="flex items-center gap-2">
+                        <IconSearch className="w-4 h-4" />
+                        <span className="tracking-wider">QUICK FIND</span>
+                    </span>
+                    <span className="text-[10px] border border-gray-700 px-1.5 py-0.5 rounded text-gray-600 group-hover:text-retro-neon group-hover:border-retro-neon">
+                        CMD+K
+                    </span>
+                </button>
+           </div>
+
            <div className="px-6 mb-2 text-xs font-mono text-retro-neon uppercase tracking-widest opacity-80">MAINFRAME</div>
            <SidebarItem to="/" icon={IconHome} label="CONTROL ROOM" exact />
            <SidebarItem to="/signals" icon={IconNews} label="SIGNALS" />
@@ -196,11 +214,6 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
 
       {/* MAIN CONTENT AREA */}
       <main className="flex-1 relative z-10 flex flex-col h-screen md:h-screen overflow-hidden pt-16 md:pt-0">
-        {/* Global Search Bar (Hidden on mobile if search is toggled in TopBar, but we keep it here for desktop or generic use) */}
-        <div className="hidden md:block">
-            <GlobalSearch />
-        </div>
-        
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto custom-scrollbar bg-retro-dark/80 pb-24 md:pb-0">
              {children}

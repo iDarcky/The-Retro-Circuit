@@ -7,7 +7,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ConsoleDetails, ConsoleSpecs, ConsoleVariant, GameOfTheWeekData } from '../../lib/types';
 import CollectionToggle from '../ui/CollectionToggle';
 import AdminEditTrigger from '../admin/AdminEditTrigger';
-import { IconGames } from '../ui/Icons';
+import { IconGames, IconVS } from '../ui/Icons';
+import Button from '../ui/Button';
 
 interface ConsoleDetailViewProps {
   consoleData: ConsoleDetails;
@@ -135,6 +136,9 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
     const currentImage = currentVariant?.image_url || consoleData.image_url;
     const currentYear = currentVariant?.release_year || consoleData.release_year;
     
+    // Construct VS Mode URL (Using p1 as requested)
+    const compareUrl = `/arena?p1=${consoleData.slug}${currentVariant?.slug ? `&v1=${currentVariant.slug}` : ''}`;
+
     // --- RENDER ---
 
     return (
@@ -179,7 +183,13 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                         <span>{consoleData.generation}</span>
                      </div>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 md:gap-4">
+                    <Link href={compareUrl}>
+                        <Button variant="secondary" className="flex items-center gap-2 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black">
+                            <IconVS className="w-4 h-4" />
+                            COMPARE
+                        </Button>
+                    </Link>
                     <CollectionToggle 
                         itemId={consoleData.slug || consoleData.id} 
                         itemType="CONSOLE" 

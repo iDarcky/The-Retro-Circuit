@@ -21,8 +21,8 @@ export async function generateMetadata({ params }: Props) {
     const titleName = profile?.name || decodeURIComponent(params.slug);
     
     return {
-        title: `AUTHORIZED FABRICATOR: ${titleName}`,
-        description: `Explore the history of ${titleName}, including their console releases, key franchises, and market impact.`,
+        title: `${titleName} Handheld History | The Retro Circuit`,
+        description: `Explore the complete hardware archive of ${titleName}.`,
     };
 }
 

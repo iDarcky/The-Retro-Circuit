@@ -1,8 +1,11 @@
+
 'use client';
 
 import { useState, useEffect, type FC, type ReactNode } from 'react';
 import BootSequence from '../ui/BootSequence';
 import { SoundProvider } from '../ui/SoundContext';
+import { SearchProvider } from '../ui/SearchContext';
+import GlobalSearch from '../ui/GlobalSearch';
 import MainLayout from './MainLayout';
 
 interface ClientShellProps {
@@ -31,13 +34,16 @@ const ClientShell: FC<ClientShellProps> = ({ children }) => {
 
   return (
     <SoundProvider>
-      {!bootComplete ? (
-        <BootSequence onComplete={handleBootComplete} />
-      ) : (
-        <MainLayout>
-           {children}
-        </MainLayout>
-      )}
+      <SearchProvider>
+        {!bootComplete ? (
+          <BootSequence onComplete={handleBootComplete} />
+        ) : (
+          <MainLayout>
+             {children}
+          </MainLayout>
+        )}
+        <GlobalSearch />
+      </SearchProvider>
     </SoundProvider>
   );
 };

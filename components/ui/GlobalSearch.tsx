@@ -3,127 +3,175 @@
 
 import { useState, useEffect, useRef, type FC, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSearch } from './SearchContext';
 import { searchDatabase } from '../../lib/api';
 import { SearchResult } from '../../lib/types';
 import { useSound } from './SoundContext';
+import { IconSearch } from './Icons';
 
-interface GlobalSearchProps {
-    className?: string;
-    autoFocus?: boolean;
-}
-
-const GlobalSearch: FC<GlobalSearchProps> = ({ className = "", autoFocus = false }) => {
+const GlobalSearch: FC = () => {
+    const { isOpen, closeSearch } = useSearch();
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<SearchResult[]>([]);
-    const [isOpen, setIsOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const wrapperRef = useRef<HTMLDivElement>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    
     const inputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
     const { playHover, playClick } = useSound();
+    
+    // Debounce Timer
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+    // Focus input on mount/open
     useEffect(() => {
-        if (autoFocus && inputRef.current) {
-            inputRef.current.focus();
+        if (isOpen) {
+            setTimeout(() => inputRef.current?.focus(), 50);
+        } else {
+            // Clear query on close? Optional, but feels cleaner
+            setQuery('');
+            setResults([]);
         }
-    }, [autoFocus]);
+    }, [isOpen]);
 
-    // Close on click outside
+    // Handle Search Logic
     useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
-                setIsOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
-    // Debounced search
-    useEffect(() => {
-        const delaySearch = setTimeout(async () => {
-            if (query.length >= 2) {
-                setLoading(true);
-                const hits = await searchDatabase(query);
-                setResults(hits);
-                setLoading(false);
-                setIsOpen(true);
-            } else {
+        if (!query || query.length < 2) {
+            setResults([]);
+            setIsLoading(false);
+            return;
+        }
+
+        setIsLoading(true);
+
+        timeoutRef.current = setTimeout(async () => {
+            try {
+                const data = await searchDatabase(query);
+                setResults(data);
+            } catch (err) {
+                console.error("Search failed", err);
                 setResults([]);
-                setIsOpen(false);
+            } finally {
+                setIsLoading(false);
             }
-        }, 300); // Reduced delay for faster suggestions
+        }, 300); // 300ms debounce
 
-        return () => clearTimeout(delaySearch);
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
     }, [query]);
 
     const handleSelect = (result: SearchResult) => {
         playClick();
-        const path = result.type === 'GAME' ? `/archive/${result.slug}` : `/console/${result.slug}`;
+        let path = '/';
+        
+        switch (result.type) {
+            case 'CONSOLE':
+                path = `/console/${result.slug}`;
+                break;
+            case 'FABRICATOR':
+                path = `/fabricators/${result.slug}`;
+                break;
+            case 'GAME':
+                path = `/archive/${result.slug || result.id}`;
+                break;
+        }
+
         router.push(path);
-        setIsOpen(false);
-        setQuery('');
+        closeSearch();
     };
 
-    return (
-        <div className={`relative p-4 border-b border-retro-grid ${className}`} ref={wrapperRef}>
-            <div className="relative">
-                <input
-                    ref={inputRef}
-                    type="text"
-                    value={query}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
-                    onFocus={() => query.length >= 2 && setIsOpen(true)}
-                    placeholder="SEARCH DATABASE..."
-                    className="w-full bg-black/50 border border-retro-grid text-retro-neon font-mono text-sm px-3 py-2 pl-9 focus:border-retro-neon focus:outline-none placeholder-gray-600 transition-colors"
-                />
-                {loading ? (
-                    <div className="absolute left-3 top-2.5 w-4 h-4 border-2 border-retro-neon border-t-transparent rounded-full animate-spin"></div>
-                ) : (
-                    <svg className="w-4 h-4 text-gray-500 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                )}
-            </div>
+    if (!isOpen) return null;
 
-            {isOpen && (
-                <div className="absolute left-4 right-4 top-full mt-1 bg-retro-dark border-2 border-retro-neon shadow-[0_0_20px_rgba(0,0,0,0.8)] z-50 max-h-80 overflow-y-auto custom-scrollbar">
-                    {loading ? (
-                        <div className="p-4 text-xs font-mono text-retro-blue animate-pulse">SCANNING ARCHIVES...</div>
-                    ) : results.length > 0 ? (
-                        <div className="divide-y divide-retro-grid">
-                            {results.map((res) => (
-                                <button
-                                    key={res.type + res.id}
-                                    onClick={() => handleSelect(res)}
-                                    onMouseEnter={playHover}
-                                    className="w-full text-left p-3 hover:bg-retro-grid/30 flex items-center gap-3 transition-colors group"
-                                >
-                                    <div className="w-8 h-8 bg-black border border-retro-grid flex-shrink-0 flex items-center justify-center">
-                                        {res.image ? (
-                                            <img src={res.image} className="w-full h-full object-cover" />
-                                        ) : (
-                                            <span className="text-[10px] text-gray-600">IMG</span>
-                                        )}
-                                    </div>
-                                    <div>
-                                        <div className="font-pixel text-xs text-white group-hover:text-retro-neon">{res.title}</div>
-                                        <div className="flex gap-2 text-[10px] font-mono">
-                                            <span className={res.type === 'GAME' ? 'text-retro-pink' : 'text-retro-blue'}>
-                                                {res.type}
-                                            </span>
-                                            <span className="text-gray-500">//</span>
-                                            <span className="text-gray-400">{res.subtitle}</span>
-                                        </div>
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="p-4 text-xs font-mono text-gray-500">NO RECORDS FOUND</div>
-                    )}
+    return (
+        <div 
+            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-start justify-center pt-20 animate-fadeIn" 
+            onClick={closeSearch}
+        >
+            {/* PANEL: Centered box, max-w-xl, Neon Green Border, Deep Black BG */}
+            <div
+                className="w-full max-w-xl bg-[#0a0a0a] border-2 border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)] relative overflow-hidden flex flex-col max-h-[80vh] m-4 rounded-sm"
+                onClick={e => e.stopPropagation()}
+            >
+                {/* Header / Input */}
+                <div className="p-6 border-b border-green-500/30 flex items-center gap-4 bg-black/40">
+                    <IconSearch className={`w-6 h-6 text-green-500 ${isLoading ? 'animate-spin' : ''}`} />
+                    <input
+                        ref={inputRef}
+                        type="text"
+                        className="flex-1 bg-transparent border-none outline-none text-white font-mono text-xl placeholder-gray-600 uppercase tracking-wider"
+                        placeholder="SEARCH DATABASE..."
+                        value={query}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
+                    />
+                    <button onClick={closeSearch} className="text-gray-500 hover:text-white transition-colors">
+                        <span className="text-[10px] font-mono border border-gray-700 px-2 py-1 rounded text-gray-500">ESC</span>
+                    </button>
                 </div>
-            )}
+
+                {/* Results List */}
+                <div className="overflow-y-auto custom-scrollbar flex-1 bg-gradient-to-b from-[#0a0a0a] to-[#050505] min-h-[100px]">
+                    
+                    {query.length > 0 && query.length < 2 && (
+                         <div className="p-8 text-center font-mono text-xs text-gray-600">
+                             ENTER AT LEAST 2 CHARACTERS...
+                         </div>
+                    )}
+
+                    {results.length === 0 && query.length >= 2 && !isLoading && (
+                         <div className="p-8 text-center font-mono text-xs text-gray-600">
+                             NO RECORDS FOUND.
+                         </div>
+                    )}
+
+                    <div className="divide-y divide-green-500/10">
+                        {results.map((res) => (
+                            <button
+                                key={`${res.type}-${res.id}`}
+                                onClick={() => handleSelect(res)}
+                                onMouseEnter={playHover}
+                                className="w-full text-left p-4 hover:bg-green-500/20 flex items-center gap-4 transition-all group border-l-4 border-transparent hover:border-green-500"
+                            >
+                                {/* Image Placeholder */}
+                                <div className="w-12 h-12 bg-black border border-gray-800 flex-shrink-0 flex items-center justify-center overflow-hidden shadow-lg group-hover:border-green-500/50 transition-colors">
+                                    {res.image ? (
+                                        <img src={res.image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100" />
+                                    ) : (
+                                        <div className="text-[9px] text-gray-600 font-pixel">IMG</div>
+                                    )}
+                                </div>
+
+                                {/* Text Info */}
+                                <div className="flex-1 min-w-0">
+                                    <div className="font-pixel text-sm text-white group-hover:text-green-400 truncate mb-1">
+                                        {res.title}
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className={`text-[9px] font-mono px-1.5 py-0.5 border rounded-sm ${
+                                            res.type === 'CONSOLE' ? 'text-retro-blue border-retro-blue bg-retro-blue/10' :
+                                            res.type === 'FABRICATOR' ? 'text-retro-pink border-retro-pink bg-retro-pink/10' : 
+                                            res.type === 'GAME' ? 'text-retro-neon border-retro-neon bg-retro-neon/10' : 'text-gray-400 border-gray-400'
+                                        }`}>
+                                            {res.type}
+                                        </span>
+                                        <span className="text-[10px] font-mono text-gray-500 truncate uppercase tracking-tight">
+                                            // {res.subtitle || 'DATABASE_RECORD'}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Enter Key Hint */}
+                                <div className="opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 duration-300">
+                                    <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
