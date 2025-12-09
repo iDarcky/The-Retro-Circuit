@@ -249,7 +249,7 @@ const ConsoleSearch = ({
         }
     };
 
-    const handleSelect = (slug: string, name: string) => {
+    const handleSelect = (slug: string) => {
         onSelect(slug);
         setQuery('');
         setIsOpen(false);
@@ -270,7 +270,7 @@ const ConsoleSearch = ({
                     {filtered.map(c => (
                         <button 
                             key={c.slug}
-                            onClick={() => handleSelect(c.slug, c.name)}
+                            onClick={() => handleSelect(c.slug)}
                             className={`w-full text-left p-3 font-mono text-xs text-gray-300 ${hoverBg} border-b border-gray-900 last:border-0 uppercase transition-colors flex justify-between group`}
                         >
                             <span className="group-hover:text-white">{c.name}</span>
@@ -360,7 +360,7 @@ function ArenaContent() {
 
     const [allConsoles, setAllConsoles] = useState<{name: string, slug: string}[]>([]);
     
-    // Initial state setup
+    // Initial state setup (Removed unused varParamKey)
     const getInitialState = (paramKey: string): SelectionState => ({
         slug: searchParams?.get(paramKey) || null,
         details: null,
