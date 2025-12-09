@@ -17,10 +17,11 @@ export async function generateMetadata({ params }: Props) {
     if (!data) return { title: 'Unknown Hardware' };
   
     return {
-      title: `${data.name} Specs`,
-      description: data.description?.substring(0, 160) || 'Specs unavailable.',
+      title: `${data.name} Specs & Price | The Retro Circuit`,
+      description: `View full technical specifications, release date, and variant comparisons for the ${data.name}.`,
       openGraph: {
-        images: data.image_url ? [data.image_url] : []
+        title: `${data.name} - Classified Specs`,
+        images: [{ url: data.image_url || '/logo.png' }]
       }
     };
 }
