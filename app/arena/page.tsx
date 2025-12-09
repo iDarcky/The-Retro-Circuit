@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, Suspense, type FC } from 'react';
+import { useState, useEffect, useRef, Suspense, type FC, type ChangeEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { fetchConsoleList, fetchConsoleBySlug } from '../../lib/api';
 import { ConsoleDetails, ConsoleVariant } from '../../lib/types';
@@ -123,7 +123,7 @@ interface ComparisonRowProps {
     showDiffOnly: boolean;
 }
 
-const ComparisonRow: FC<ComparisonRowProps> = ({ 
+const ComparisonRow: FC<ComparisonRowProps & { key?: string }> = ({ 
     metric, 
     varA, 
     varB,
@@ -212,359 +212,315 @@ const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, placeholder
     const [searchTerm, setSearchTerm] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
-
-    // Sync input with external selection changes
-    useEffect(() => {
-        if (currentSelection) {
-            setSearchTerm(currentSelection);
-        }
-    }, [currentSelection]);
+    const { playHover } = useSound();
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
                 setIsOpen(false);
-                if (currentSelection) setSearchTerm(currentSelection);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [currentSelection]);
+    }, []);
 
-    const filtered = consoles.filter(c => 
-        c.name.toLowerCase().includes(searchTerm.toLowerCase())
-    ).slice(0, 8);
-
-    const handleSelect = (slug: string, name: string) => {
-        setSearchTerm(name);
-        setIsOpen(false);
-        onSelect(slug, name);
-    };
-
-    const borderColor = themeColor === 'cyan' ? 'border-retro-neon focus:border-retro-neon' : 'border-retro-pink focus:border-retro-pink';
-    const textColor = themeColor === 'cyan' ? 'text-retro-neon placeholder-retro-neon/50' : 'text-retro-pink placeholder-retro-pink/50';
+    const filtered = consoles.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const borderColor = themeColor === 'cyan' ? 'border-retro-neon' : 'border-retro-pink';
+    const textColor = themeColor === 'cyan' ? 'text-retro-neon' : 'text-retro-pink';
+    const focusColor = themeColor === 'cyan' ? 'focus:border-retro-neon' : 'focus:border-retro-pink';
 
     return (
         <div className="relative w-full" ref={wrapperRef}>
-            <input
+            <input 
                 type="text"
                 value={searchTerm}
-                onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    setIsOpen(true);
-                }}
-                onFocus={() => {
-                    if (searchTerm === currentSelection) setSearchTerm('');
-                    setIsOpen(true);
-                }}
-                placeholder={placeholder}
-                className={`w-full bg-black/60 border-2 ${borderColor} p-2 font-mono text-xs ${textColor} outline-none uppercase shadow-inner transition-all text-center`}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                onFocus={() => setIsOpen(true)}
+                placeholder={currentSelection || placeholder}
+                className={`w-full bg-black/80 border-b-2 ${borderColor} p-2 font-mono text-xs md:text-sm text-white outline-none ${focusColor} transition-colors placeholder-gray-500`}
             />
-            
-            {isOpen && (searchTerm.length > 0 || filtered.length > 0) && (
-                <ul className="absolute left-0 right-0 top-full mt-2 bg-black border-2 border-gray-700 max-h-60 overflow-y-auto z-[100] shadow-2xl custom-scrollbar">
-                    {filtered.length > 0 ? filtered.map((c) => (
-                        <li 
+            {isOpen && (
+                <div className={`absolute left-0 right-0 top-full max-h-60 overflow-y-auto bg-black border border-gray-700 z-[100] custom-scrollbar`}>
+                    {filtered.map(c => (
+                        <div 
                             key={c.slug}
-                            onClick={() => handleSelect(c.slug, c.name)}
-                            className="p-3 hover:bg-white/10 cursor-pointer border-b border-gray-800 last:border-0 font-mono text-xs text-white uppercase text-center"
+                            onClick={() => {
+                                onSelect(c.slug, c.name);
+                                setSearchTerm('');
+                                setIsOpen(false);
+                            }}
+                            onMouseEnter={playHover}
+                            className={`p-2 text-xs font-mono cursor-pointer hover:bg-white/10 ${textColor} border-b border-white/5`}
                         >
                             {c.name}
-                        </li>
-                    )) : (
-                        <li className="p-3 text-gray-500 font-mono text-xs italic text-center">NO MATCHES</li>
+                        </div>
+                    ))}
+                    {filtered.length === 0 && (
+                        <div className="p-2 text-xs font-mono text-gray-600">NO MATCHES</div>
                     )}
-                </ul>
+                </div>
             )}
         </div>
     );
 };
 
-// --- MAIN PAGE COMPONENT ---
+// --- MAIN PAGE CONTENT ---
 
-function ArenaContent() {
+function VSModeContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { playClick } = useSound();
 
     const [allConsoles, setAllConsoles] = useState<{name: string, slug: string}[]>([]);
     
-    // Player A State
-    const [left, setLeft] = useState<SelectionState>({ 
-        slug: null, details: null, selectedVariant: null, loading: false 
+    // Player 1 State (Cyan)
+    const [selectionA, setSelectionA] = useState<SelectionState>({
+        slug: null, details: null, selectedVariant: null, loading: false
+    });
+
+    // Player 2 State (Pink)
+    const [selectionB, setSelectionB] = useState<SelectionState>({
+        slug: null, details: null, selectedVariant: null, loading: false
     });
     
-    // Player B State
-    const [right, setRight] = useState<SelectionState>({ 
-        slug: null, details: null, selectedVariant: null, loading: false 
-    });
-
     const [showDiffOnly, setShowDiffOnly] = useState(false);
 
-    // Initial List Load
+    // Initial Load: Console List
     useEffect(() => {
-        fetchConsoleList().then((list: any) => setAllConsoles(list));
+        fetchConsoleList().then((list) => setAllConsoles(list));
     }, []);
 
-    // Load from URL
-    useEffect(() => {
-        const loadSide = async (side: 'a' | 'b', slug: string | null, variantSlug: string | null) => {
-            if (!slug) return;
-            
-            const setFn = side === 'a' ? setLeft : setRight;
-            setFn(prev => ({ ...prev, loading: true }));
-
-            const details = await fetchConsoleBySlug(slug);
-            if (details) {
-                const variants = details.variants || [];
-                let variant = variants[0]; // Default fallback
-                
-                if (variantSlug) {
-                    variant = variants.find(v => v.slug === variantSlug) || variant;
-                } else {
-                    variant = variants.find(v => v.is_default) || variant;
-                }
-
-                setFn({ 
-                    slug, 
-                    details, 
-                    selectedVariant: variant || (details.specs as ConsoleVariant), 
-                    loading: false 
-                });
-            } else {
-                setFn(prev => ({ ...prev, loading: false }));
-            }
-        };
-
-        const slugA = searchParams?.get('c1') || null;
-        const varA = searchParams?.get('v1') || null;
-        const slugB = searchParams?.get('c2') || null;
-        const varB = searchParams?.get('v2') || null;
-
-        if (slugA !== left.slug) loadSide('a', slugA, varA);
-        if (slugB !== right.slug) loadSide('b', slugB, varB);
+    // Helper: Fetch Logic
+    const loadSelection = async (slug: string, variantSlug: string | null, setSelection: React.Dispatch<React.SetStateAction<SelectionState>>) => {
+        setSelection(prev => ({ ...prev, loading: true, slug }));
         
+        const details = await fetchConsoleBySlug(slug);
+        
+        if (details) {
+            const variants = details.variants || [];
+            let variant = null;
+            if (variantSlug) {
+                variant = variants.find(v => v.slug === variantSlug) || null;
+            }
+            if (!variant && variants.length > 0) {
+                variant = variants.find(v => v.is_default) || variants[0];
+            }
+
+            setSelection({
+                slug,
+                details,
+                selectedVariant: variant,
+                loading: false
+            });
+        } else {
+             setSelection(prev => ({ ...prev, loading: false }));
+        }
+    };
+
+    // 1. Sync State with URL Params
+    useEffect(() => {
+        const p1Slug = searchParams?.get('p1') || searchParams?.get('c1');
+        const v1Slug = searchParams?.get('v1');
+        
+        const p2Slug = searchParams?.get('p2') || searchParams?.get('c2');
+        const v2Slug = searchParams?.get('v2');
+
+        if (p1Slug && p1Slug !== selectionA.slug) {
+            loadSelection(p1Slug, v1Slug, setSelectionA);
+        }
+        if (p2Slug && p2Slug !== selectionB.slug) {
+            loadSelection(p2Slug, v2Slug, setSelectionB);
+        }
     }, [searchParams]);
 
-    const updateUrl = (side: 'a' | 'b', consoleSlug: string, variantSlug?: string) => {
+    // Update URL Helper
+    const updateUrl = (side: 'a' | 'b', slug: string, variantSlug?: string) => {
         const params = new URLSearchParams(searchParams?.toString());
+        
         if (side === 'a') {
-            params.set('c1', consoleSlug);
-            if (variantSlug) params.set('v1', variantSlug);
-            else params.delete('v1');
+            params.set('p1', slug);
+            if (variantSlug) params.set('v1', variantSlug); else params.delete('v1');
         } else {
-            params.set('c2', consoleSlug);
-            if (variantSlug) params.set('v2', variantSlug);
-            else params.delete('v2');
+            params.set('p2', slug);
+            if (variantSlug) params.set('v2', variantSlug); else params.delete('v2');
         }
-        router.replace(`/arena?${params.toString()}`, { scroll: false });
+        
+        router.replace(`?${params.toString()}`, { scroll: false });
     };
 
     const handleSelect = (side: 'a' | 'b', slug: string) => {
-        playClick(); // Only needed if updating URL or selection state directly
+        playClick();
+        // Just update URL, effect handles fetch
         updateUrl(side, slug);
     };
 
     const handleVariantChange = (side: 'a' | 'b', variantSlug: string) => {
-        const state = side === 'a' ? left : right;
-        if (state.slug) {
-            updateUrl(side, state.slug, variantSlug);
-            // Optimistic update
-            const v = state.details?.variants?.find(v => v.slug === variantSlug);
-            if (v) {
-                const setFn = side === 'a' ? setLeft : setRight;
-                setFn(prev => ({ ...prev, selectedVariant: v }));
+        const currentSlug = side === 'a' ? selectionA.slug : selectionB.slug;
+        if (currentSlug) {
+            updateUrl(side, currentSlug, variantSlug);
+            // Manually update state for instant feedback
+            if (side === 'a' && selectionA.details) {
+                const v = selectionA.details.variants?.find(v => v.slug === variantSlug) || null;
+                setSelectionA(prev => ({ ...prev, selectedVariant: v }));
+            } else if (side === 'b' && selectionB.details) {
+                const v = selectionB.details.variants?.find(v => v.slug === variantSlug) || null;
+                setSelectionB(prev => ({ ...prev, selectedVariant: v }));
             }
         }
     };
 
     return (
-        <div className="w-full max-w-6xl mx-auto p-4 min-h-screen">
-            {/* Header */}
-            <div className="text-center mb-12">
-                <h1 className="text-4xl md:text-5xl font-pixel text-white mb-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+        <div className="w-full max-w-7xl mx-auto p-4 md:p-8 min-h-screen flex flex-col">
+            
+            {/* HEADERS */}
+            <div className="text-center mb-8 relative z-10">
+                <h1 className="text-4xl md:text-6xl font-pixel text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] mb-2">
                     VS MODE
                 </h1>
-                <p className="font-mono text-gray-500 text-sm">SELECT FIGHTERS FOR SPECIFICATION BATTLE</p>
+                <p className="font-mono text-gray-400 text-xs md:text-sm">
+                    SPECIFICATION SHOWDOWN
+                </p>
+                <div className="mt-4">
+                    <button 
+                        onClick={() => setShowDiffOnly(!showDiffOnly)}
+                        className={`text-[10px] font-mono border px-3 py-1 uppercase transition-all ${showDiffOnly ? 'bg-white text-black border-white' : 'text-gray-500 border-gray-700 hover:border-white'}`}
+                    >
+                        {showDiffOnly ? 'Show All Specs' : 'Show Differences Only'}
+                    </button>
+                </div>
             </div>
 
-            {/* --- THE ARENA (RHOMBUS LAYOUT) --- */}
-            {/* Gap-20 provides safe separation. No negative margins. Flex wrap on mobile. */}
-            <div className="relative flex flex-col md:flex-row justify-center items-center gap-8 md:gap-20 min-h-[400px] mb-12 px-4 md:px-0">
+            {/* ARENA STAGE (Flex Gap Layout) */}
+            <div className="flex flex-col md:flex-row justify-center items-stretch gap-20 mb-12 relative">
                 
-                {/* VS Badge (Absolute Center) */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none md:block hidden">
-                     <div className="relative">
-                        <h2 className="font-pixel text-6xl text-white italic drop-shadow-[0_0_20px_rgba(255,255,255,0.8)] z-10 relative">VS</h2>
-                        <div className="absolute inset-0 blur-xl bg-white/30 rounded-full"></div>
+                {/* VS BADGE (Centered Absolutely) */}
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none">
+                     <div className="font-pixel text-6xl text-white drop-shadow-[4px_4px_0_#000] italic animate-pulse">VS</div>
+                </div>
+
+                {/* PLAYER 1 CARD */}
+                <div className={`w-full md:w-[300px] h-auto md:h-[320px] relative z-10 ${styles.fighterCardContainer}`}>
+                     <div className={styles.fighterCardContent}>
+                         <div className="mb-4">
+                             <div className="font-pixel text-xs text-retro-neon mb-1">PLAYER 1</div>
+                             <ConsoleSearch 
+                                consoles={allConsoles} 
+                                onSelect={(s) => handleSelect('a', s)} 
+                                themeColor="cyan"
+                                currentSelection={selectionA.details?.name}
+                             />
+                         </div>
+                         
+                         {selectionA.loading ? (
+                             <div className="flex-1 flex items-center justify-center font-mono text-retro-neon animate-pulse text-xs">LOADING...</div>
+                         ) : selectionA.details ? (
+                             <div className="flex-1 flex flex-col">
+                                 {/* Image Area */}
+                                 <div className="flex-1 relative flex items-center justify-center bg-black/30 border border-white/10 mb-4 overflow-hidden">
+                                     <img 
+                                        src={selectionA.selectedVariant?.image_url || selectionA.details.image_url || ''} 
+                                        className="max-h-32 max-w-full object-contain drop-shadow-lg"
+                                     />
+                                     <div className="absolute bottom-1 right-1 font-mono text-[9px] text-gray-500">{selectionA.details.manufacturer?.name}</div>
+                                 </div>
+                                 {/* Variant Selector */}
+                                 {(selectionA.details.variants?.length || 0) > 1 && (
+                                     <select 
+                                        className="w-full bg-black/50 border border-retro-neon/30 text-retro-neon text-[10px] font-mono p-1 outline-none"
+                                        value={selectionA.selectedVariant?.slug || ''}
+                                        onChange={(e: ChangeEvent<HTMLSelectElement>) => handleVariantChange('a', e.target.value)}
+                                     >
+                                         {selectionA.details.variants?.map(v => (
+                                             <option key={v.id} value={v.slug}>{v.variant_name}</option>
+                                         ))}
+                                     </select>
+                                 )}
+                             </div>
+                         ) : (
+                             <div className="flex-1 flex items-center justify-center font-mono text-gray-600 text-xs text-center p-4 border border-dashed border-gray-800">
+                                 SELECT A FIGHTER
+                             </div>
+                         )}
                      </div>
                 </div>
 
-                {/* --- PLAYER 1 (LEFT) --- */}
-                {/* Fixed size on desktop: w-[300px] h-[320px] */}
-                <div className="relative w-full max-w-xs md:w-[300px] h-[400px] md:h-[320px] group z-20 focus-within:z-30">
-                    <div className={styles.fighterCardContainer}>
-                        {/* Inner Content: Counter Skewed */}
-                        <div className={styles.fighterCardContent}>
-                            
-                            <div className="w-full mb-4">
-                                <h3 className="font-pixel text-lg text-retro-neon text-center mb-2">PLAYER 1</h3>
-                                <ConsoleSearch 
-                                    consoles={allConsoles} 
-                                    onSelect={(slug) => handleSelect('a', slug)}
-                                    themeColor="cyan"
-                                    currentSelection={left.details?.name}
-                                />
-                            </div>
-
-                            <div className="flex-1 flex flex-col items-center justify-center w-full relative">
-                                {left.loading ? (
-                                    <div className="animate-spin w-8 h-8 border-2 border-retro-neon border-t-transparent rounded-full"></div>
-                                ) : left.details ? (
-                                    <>
-                                        {/* Image - Compacted */}
-                                        <div className="relative w-full h-32 mb-4 flex items-center justify-center">
-                                            <img 
-                                                src={left.selectedVariant?.image_url || left.details.image_url} 
-                                                className="max-h-full max-w-full object-contain drop-shadow-2xl animate-slideDown"
-                                                alt={left.details.name}
-                                            />
-                                        </div>
-
-                                        {/* Variant Selector */}
-                                        {left.details.variants && left.details.variants.length > 1 && (
-                                            <div className="w-full max-w-[180px]">
-                                                <select 
-                                                    className="w-full bg-black/50 border border-retro-neon text-retro-neon font-mono text-[10px] p-1 outline-none text-center appearance-none cursor-pointer hover:bg-retro-neon hover:text-black transition-colors"
-                                                    value={left.selectedVariant?.slug || ''}
-                                                    onChange={(e) => handleVariantChange('a', e.target.value)}
-                                                >
-                                                    {left.details.variants.map(v => (
-                                                        <option key={v.id} value={v.slug}>{v.variant_name}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        )}
-                                    </>
-                                ) : (
-                                    <div className="text-retro-neon/30 font-pixel text-4xl animate-pulse">?</div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
+                {/* PLAYER 2 CARD */}
+                <div className={`w-full md:w-[300px] h-auto md:h-[320px] relative z-10 ${styles.fighterCardContainerP2}`}>
+                     <div className={styles.fighterCardContentP2}>
+                         <div className="mb-4 text-right">
+                             <div className="font-pixel text-xs text-retro-pink mb-1">PLAYER 2</div>
+                             <ConsoleSearch 
+                                consoles={allConsoles} 
+                                onSelect={(s) => handleSelect('b', s)} 
+                                themeColor="pink"
+                                currentSelection={selectionB.details?.name}
+                             />
+                         </div>
+                         
+                         {selectionB.loading ? (
+                             <div className="flex-1 flex items-center justify-center font-mono text-retro-pink animate-pulse text-xs">LOADING...</div>
+                         ) : selectionB.details ? (
+                             <div className="flex-1 flex flex-col">
+                                 {/* Image Area */}
+                                 <div className="flex-1 relative flex items-center justify-center bg-black/30 border border-white/10 mb-4 overflow-hidden">
+                                     <img 
+                                        src={selectionB.selectedVariant?.image_url || selectionB.details.image_url || ''} 
+                                        className="max-h-32 max-w-full object-contain drop-shadow-lg"
+                                     />
+                                     <div className="absolute bottom-1 left-1 font-mono text-[9px] text-gray-500">{selectionB.details.manufacturer?.name}</div>
+                                 </div>
+                                 {/* Variant Selector */}
+                                 {(selectionB.details.variants?.length || 0) > 1 && (
+                                     <select 
+                                        className="w-full bg-black/50 border border-retro-pink/30 text-retro-pink text-[10px] font-mono p-1 outline-none text-right"
+                                        value={selectionB.selectedVariant?.slug || ''}
+                                        onChange={(e: ChangeEvent<HTMLSelectElement>) => handleVariantChange('b', e.target.value)}
+                                     >
+                                         {selectionB.details.variants?.map(v => (
+                                             <option key={v.id} value={v.slug}>{v.variant_name}</option>
+                                         ))}
+                                     </select>
+                                 )}
+                             </div>
+                         ) : (
+                             <div className="flex-1 flex items-center justify-center font-mono text-gray-600 text-xs text-center p-4 border border-dashed border-gray-800">
+                                 SELECT A FIGHTER
+                             </div>
+                         )}
+                     </div>
                 </div>
+            </div>
 
-                {/* --- PLAYER 2 (RIGHT) --- */}
-                {/* Fixed size on desktop: w-[300px] h-[320px] */}
-                <div className="relative w-full max-w-xs md:w-[300px] h-[400px] md:h-[320px] group z-20 focus-within:z-30">
-                    <div className={styles.fighterCardContainerP2}>
-                        {/* Inner Content: Counter Skewed */}
-                        <div className={styles.fighterCardContentP2}>
-                            
-                            <div className="w-full mb-4">
-                                <h3 className="font-pixel text-lg text-retro-pink text-center mb-2">PLAYER 2</h3>
-                                <ConsoleSearch 
-                                    consoles={allConsoles} 
-                                    onSelect={(slug) => handleSelect('b', slug)}
-                                    themeColor="pink"
-                                    currentSelection={right.details?.name}
-                                />
-                            </div>
-
-                            <div className="flex-1 flex flex-col items-center justify-center w-full relative">
-                                {right.loading ? (
-                                    <div className="animate-spin w-8 h-8 border-2 border-retro-pink border-t-transparent rounded-full"></div>
-                                ) : right.details ? (
-                                    <>
-                                        {/* Image - Compacted */}
-                                        <div className="relative w-full h-32 mb-4 flex items-center justify-center">
-                                            <img 
-                                                src={right.selectedVariant?.image_url || right.details.image_url} 
-                                                className="max-h-full max-w-full object-contain drop-shadow-2xl animate-slideDown"
-                                                alt={right.details.name}
-                                            />
-                                        </div>
-
-                                        {/* Variant Selector */}
-                                        {right.details.variants && right.details.variants.length > 1 && (
-                                            <div className="w-full max-w-[180px]">
-                                                <select 
-                                                    className="w-full bg-black/50 border border-retro-pink text-retro-pink font-mono text-[10px] p-1 outline-none text-center appearance-none cursor-pointer hover:bg-retro-pink hover:text-black transition-colors"
-                                                    value={right.selectedVariant?.slug || ''}
-                                                    onChange={(e) => handleVariantChange('b', e.target.value)}
-                                                >
-                                                    {right.details.variants.map(v => (
-                                                        <option key={v.id} value={v.slug}>{v.variant_name}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        )}
-                                    </>
-                                ) : (
-                                    <div className="text-retro-pink/30 font-pixel text-4xl animate-pulse">?</div>
-                                )}
-                            </div>
-                        </div>
+            {/* COMPARISON TABLE */}
+            <div className="relative z-0 max-w-4xl mx-auto w-full bg-black/40 border border-retro-grid backdrop-blur-sm p-4 md:p-8 shadow-2xl">
+                {selectionA.selectedVariant && selectionB.selectedVariant ? (
+                    <div className="space-y-1">
+                        {METRICS.map((metric) => (
+                            <ComparisonRow 
+                                key={metric.key}
+                                metric={metric}
+                                varA={selectionA.selectedVariant!}
+                                varB={selectionB.selectedVariant!}
+                                showDiffOnly={showDiffOnly}
+                            />
+                        ))}
                     </div>
-                </div>
-
+                ) : (
+                    <div className="text-center py-12">
+                        <p className="font-pixel text-gray-600 text-sm animate-pulse">AWAITING CHALLENGERS...</p>
+                    </div>
+                )}
             </div>
             
-            {/* --- COMPARISON TABLE --- */}
-            {left.selectedVariant && right.selectedVariant && (
-                <div className="animate-fadeIn max-w-4xl mx-auto">
-                    
-                    {/* Controls */}
-                    <div className="flex justify-center mb-8">
-                        <button 
-                            onClick={() => setShowDiffOnly(!showDiffOnly)}
-                            className={`
-                                px-4 py-2 font-mono text-xs border transition-all
-                                ${showDiffOnly 
-                                    ? 'bg-retro-neon text-black border-retro-neon font-bold' 
-                                    : 'bg-transparent text-retro-neon border-retro-neon hover:bg-retro-neon/10'}
-                            `}
-                        >
-                            {showDiffOnly ? 'SHOW ALL SPECS' : 'SHOW DIFFERENCES ONLY'}
-                        </button>
-                    </div>
-
-                    {/* Table */}
-                    <div className="bg-black/80 border border-retro-grid backdrop-blur-sm">
-                        {/* Table Header */}
-                        <div className="grid grid-cols-12 gap-2 py-4 border-b-2 border-retro-grid bg-white/5 font-pixel text-[10px] md:text-xs text-center sticky top-0 z-10 backdrop-blur-md">
-                            <div className="col-span-4 text-cyan-400 truncate px-2">{left.details?.name}</div>
-                            <div className="col-span-4 text-gray-500">METRIC</div>
-                            <div className="col-span-4 text-fuchsia-500 truncate px-2">{right.details?.name}</div>
-                        </div>
-
-                        {/* Rows */}
-                        <div className="divide-y divide-retro-grid/30">
-                            {METRICS.map((metric) => (
-                                <ComparisonRow 
-                                    key={metric.key} 
-                                    metric={metric} 
-                                    varA={left.selectedVariant!} 
-                                    varB={right.selectedVariant!} 
-                                    showDiffOnly={showDiffOnly}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
 
 export default function ArenaPage() {
     return (
-        <Suspense fallback={
-            <div className="w-full h-screen flex items-center justify-center">
-                <div className="font-pixel text-retro-neon animate-pulse">LOADING ARENA...</div>
-            </div>
-        }>
-            <ArenaContent />
+        <Suspense fallback={<div className="h-screen w-full flex items-center justify-center bg-retro-dark text-retro-neon font-pixel">LOADING ARENA...</div>}>
+            <VSModeContent />
         </Suspense>
     );
 }
