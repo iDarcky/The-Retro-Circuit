@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, type ChangeEvent, Suspense } from 'react';
@@ -215,7 +216,7 @@ const ConsoleSearch = ({
     themeColor = 'cyan',
     currentSelection
 }: { 
-    onSelect: (slug: string) => void, 
+    onSelect: (slug: string, name: string) => void, 
     consoles: {name: string, slug: string}[],
     themeColor?: 'cyan' | 'pink',
     currentSelection?: string | null
@@ -260,9 +261,10 @@ const ConsoleSearch = ({
     };
 
     const handleSelect = (slug: string, name: string) => {
-        setQuery(name); // Immediate feedback
+        setQuery(name); // Immediate visual update
         setIsOpen(false);
-        onSelect(slug);
+        setFiltered([]);
+        onSelect(slug, name); // Propagate
         if (inputRef.current) inputRef.current.blur();
     };
 
@@ -278,7 +280,7 @@ const ConsoleSearch = ({
     };
 
     return (
-        <div className="relative w-full z-50" ref={wrapperRef}>
+        <div className="relative w-full z-[60]" ref={wrapperRef}>
             <input 
                 ref={inputRef}
                 type="text" 
@@ -290,19 +292,20 @@ const ConsoleSearch = ({
                 autoComplete="off"
             />
             {isOpen && filtered.length > 0 && (
-                <div className={`absolute top-full left-0 right-0 bg-black border border-gray-800 z-[100] max-h-60 overflow-y-auto custom-scrollbar shadow-2xl animate-fadeIn`}>
+                <ul className={`absolute top-full left-0 right-0 bg-black border border-gray-800 z-[100] max-h-60 overflow-y-auto custom-scrollbar shadow-[0_10px_40px_rgba(0,0,0,0.9)]`}>
                     {filtered.map(c => (
-                        <button 
-                            key={c.slug}
-                            type="button"
-                            onClick={() => handleSelect(c.slug, c.name)}
-                            className={`w-full text-left p-3 font-mono text-xs text-gray-300 ${hoverBg} border-b border-gray-900 last:border-0 uppercase transition-colors flex justify-between group`}
-                        >
-                            <span className="group-hover:text-white font-bold">{c.name}</span>
-                            <span className={`${textColor} opacity-0 group-hover:opacity-100`}>SELECT</span>
-                        </button>
+                        <li key={c.slug}>
+                            <button 
+                                type="button"
+                                onMouseDown={() => handleSelect(c.slug, c.name)}
+                                className={`w-full text-left p-3 font-mono text-xs text-gray-300 ${hoverBg} border-b border-gray-900 last:border-0 uppercase transition-colors flex justify-between group`}
+                            >
+                                <span className="group-hover:text-white font-bold">{c.name}</span>
+                                <span className={`${textColor} opacity-0 group-hover:opacity-100`}>SELECT</span>
+                            </button>
+                        </li>
                     ))}
-                </div>
+                </ul>
             )}
         </div>
     );
@@ -413,6 +416,7 @@ function ArenaContent() {
                 const details = await fetchConsoleBySlug(slug);
                 if (details) {
                     const variants = details.variants || [];
+                    // Ensure we pick default if no variantSlug is provided
                     let activeVar = variants.find(v => v.slug === variantSlug) || variants.find(v => v.is_default) || variants[0];
                     setLeft({ slug, details, selectedVariant: activeVar || null, loading: false });
                 } else {
@@ -440,6 +444,7 @@ function ArenaContent() {
                 const details = await fetchConsoleBySlug(slug);
                 if (details) {
                     const variants = details.variants || [];
+                    // Ensure we pick default if no variantSlug is provided
                     let activeVar = variants.find(v => v.slug === variantSlug) || variants.find(v => v.is_default) || variants[0];
                     setRight({ slug, details, selectedVariant: activeVar || null, loading: false });
                 } else {
@@ -466,7 +471,7 @@ function ArenaContent() {
         router.replace(`?${params.toString()}`, { scroll: false });
     };
 
-    const handleSelect = (side: 'a' | 'b', slug: string) => {
+    const handleSelect = (side: 'a' | 'b', slug: string, name: string) => {
         playClick();
         updateUrl(side, slug);
     };
@@ -486,13 +491,12 @@ function ArenaContent() {
             {/* 1. FIGHTER SELECTION ARENA */}
             <div className="relative grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-8 items-center justify-center max-w-6xl mx-auto mb-8">
                 
-                {/* LEFT FIGHTER (PLAYER 1) - CYAN */}
-                {/* Added 'group focus-within:z-50 hover:z-50' to handle dropdown visibility issues with stacking context */}
-                <div className="relative z-10 w-full max-w-sm h-[350px] mx-auto md:ml-auto md:mr-0 group focus-within:z-50 hover:z-50 transition-all">
-                     {/* SKEWED CONTAINER (-6deg) - / shape */}
-                     <div className="h-full border-2 border-cyan-400 bg-black/90 shadow-[0_0_30px_rgba(34,211,238,0.2)] relative transform md:-skew-x-6 transition-all duration-300">
-                        {/* UN-SKEW CONTENT (6deg) */}
-                        <div className="absolute inset-0 flex flex-col justify-between p-4 transform md:skew-x-6">
+                {/* LEFT FIGHTER (PLAYER 1) - CYAN - / shape (-skew) */}
+                <div className="relative z-30 w-full max-w-sm h-[380px] mx-auto md:ml-auto md:mr-0 group focus-within:z-50 hover:z-50 transition-all">
+                     {/* SKEWED CONTAINER (-12deg) */}
+                     <div className="h-full border-2 border-cyan-400 bg-black/90 shadow-[0_0_30px_rgba(34,211,238,0.2)] relative transform md:-skew-x-12 transition-all duration-300 overflow-visible">
+                        {/* UN-SKEW CONTENT (12deg) */}
+                        <div className="absolute inset-0 flex flex-col justify-between p-6 transform md:skew-x-12">
                             
                             {/* P1 LABEL */}
                             <div className="flex justify-between items-center mb-2 border-b border-cyan-900/50 pb-1">
@@ -501,10 +505,10 @@ function ArenaContent() {
                             </div>
 
                             {/* SEARCH BAR */}
-                            <div className="mb-2">
+                            <div className="mb-2 relative">
                                 <ConsoleSearch 
                                     consoles={allConsoles} 
-                                    onSelect={(s) => handleSelect('a', s)}
+                                    onSelect={(s, n) => handleSelect('a', s, n)}
                                     themeColor="cyan"
                                     currentSelection={left.details?.name}
                                 />
@@ -519,9 +523,9 @@ function ArenaContent() {
                                         alt="Player 1"
                                     />
                                 ) : (
-                                    <div className="flex flex-col items-center justify-center h-full opacity-50 select-none border border-dashed border-cyan-900/50 w-full">
-                                        <div className="text-cyan-900 font-pixel text-4xl mb-2 animate-pulse">?</div>
-                                        <div className="text-cyan-800 font-mono text-[10px] tracking-widest text-center">
+                                    <div className="flex flex-col items-center justify-center h-full opacity-50 select-none border-2 border-dashed border-cyan-900/50 w-full bg-cyan-900/5">
+                                        <div className="text-cyan-500 font-pixel text-4xl mb-2 animate-pulse">?</div>
+                                        <div className="text-cyan-400 font-mono text-[10px] tracking-widest text-center font-bold">
                                             SELECT SYSTEM<br/>FROM LIST
                                         </div>
                                     </div>
@@ -531,7 +535,7 @@ function ArenaContent() {
                             </div>
 
                             {/* VARIANT SELECTOR */}
-                            <div className="mt-2 h-10">
+                            <div className="mt-2 h-10 relative">
                                 {left.details && left.details.variants && (
                                     <VariantSelect 
                                         variants={left.details.variants} 
@@ -566,12 +570,12 @@ function ArenaContent() {
                     </button>
                 </div>
 
-                {/* RIGHT FIGHTER (PLAYER 2) - PINK */}
-                <div className="relative z-10 w-full max-w-sm h-[350px] mx-auto md:mr-auto md:ml-0 group focus-within:z-50 hover:z-50 transition-all">
-                     {/* SKEWED CONTAINER (6deg) - \ shape */}
-                     <div className="h-full border-2 border-fuchsia-500 bg-black/90 shadow-[0_0_30px_rgba(217,70,239,0.2)] relative transform md:skew-x-6 transition-all duration-300">
-                        {/* UN-SKEW CONTENT (-6deg) */}
-                        <div className="absolute inset-0 flex flex-col justify-between p-4 transform md:-skew-x-6">
+                {/* RIGHT FIGHTER (PLAYER 2) - PINK - \ shape (+skew) */}
+                <div className="relative z-30 w-full max-w-sm h-[380px] mx-auto md:mr-auto md:ml-0 group focus-within:z-50 hover:z-50 transition-all">
+                     {/* SKEWED CONTAINER (12deg) */}
+                     <div className="h-full border-2 border-fuchsia-500 bg-black/90 shadow-[0_0_30px_rgba(217,70,239,0.2)] relative transform md:skew-x-12 transition-all duration-300 overflow-visible">
+                        {/* UN-SKEW CONTENT (-12deg) */}
+                        <div className="absolute inset-0 flex flex-col justify-between p-6 transform md:-skew-x-12">
                             
                             {/* P2 LABEL */}
                             <div className="flex justify-between items-center mb-2 border-b border-fuchsia-900/50 pb-1">
@@ -580,10 +584,10 @@ function ArenaContent() {
                             </div>
 
                             {/* SEARCH BAR */}
-                            <div className="mb-2">
+                            <div className="mb-2 relative">
                                 <ConsoleSearch 
                                     consoles={allConsoles} 
-                                    onSelect={(s) => handleSelect('b', s)}
+                                    onSelect={(s, n) => handleSelect('b', s, n)}
                                     themeColor="pink"
                                     currentSelection={right.details?.name}
                                 />
@@ -598,9 +602,9 @@ function ArenaContent() {
                                         alt="Player 2"
                                     />
                                 ) : (
-                                    <div className="flex flex-col items-center justify-center h-full opacity-50 select-none border border-dashed border-fuchsia-900/50 w-full">
-                                        <div className="text-fuchsia-900 font-pixel text-4xl mb-2 animate-pulse">?</div>
-                                        <div className="text-fuchsia-800 font-mono text-[10px] tracking-widest text-center">
+                                    <div className="flex flex-col items-center justify-center h-full opacity-50 select-none border-2 border-dashed border-fuchsia-900/50 w-full bg-fuchsia-900/5">
+                                        <div className="text-fuchsia-500 font-pixel text-4xl mb-2 animate-pulse">?</div>
+                                        <div className="text-fuchsia-400 font-mono text-[10px] tracking-widest text-center font-bold">
                                             SELECT SYSTEM<br/>FROM LIST
                                         </div>
                                     </div>
@@ -610,7 +614,7 @@ function ArenaContent() {
                             </div>
 
                             {/* VARIANT SELECTOR */}
-                            <div className="mt-2 h-10">
+                            <div className="mt-2 h-10 relative">
                                 {right.details && right.details.variants && (
                                     <VariantSelect 
                                         variants={right.details.variants} 
