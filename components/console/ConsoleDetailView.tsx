@@ -275,7 +275,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                             ))}
                         </div>
                     )}
-                    
+
                     {/* EMULATION PERFORMANCE GRID */}
                     <EmulationGrid profile={mergedSpecs.emulation_profile} />
 
