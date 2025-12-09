@@ -126,7 +126,7 @@ const ComparisonRow = ({
 // --- SEARCH COMPONENT ---
 interface ConsoleSearchProps {
     consoles: {name: string, slug: string}[];
-    onSelect: (slug: string, name: string) => void;
+    onSelect: (slug: string) => void;
     placeholder?: string;
     themeColor: 'cyan' | 'pink';
     currentSelection?: string;
@@ -159,10 +159,10 @@ const ConsoleSearch = ({ consoles, onSelect, placeholder = "SELECT SYSTEM...", t
         c.name.toLowerCase().includes(searchTerm.toLowerCase())
     ).slice(0, 8);
 
-    const handleSelect = (c: {name: string, slug: string}) => {
-        setSearchTerm(c.name);
+    const handleSelect = (slug: string, name: string) => {
+        setSearchTerm(name);
         setIsOpen(false);
-        onSelect(c.slug, c.name);
+        onSelect(slug);
     };
 
     const borderColor = themeColor === 'cyan' ? 'border-retro-neon focus:border-retro-neon' : 'border-retro-pink focus:border-retro-pink';
@@ -190,7 +190,7 @@ const ConsoleSearch = ({ consoles, onSelect, placeholder = "SELECT SYSTEM...", t
                     {filtered.length > 0 ? filtered.map((c) => (
                         <li 
                             key={c.slug}
-                            onClick={() => handleSelect(c)}
+                            onClick={() => handleSelect(c.slug, c.name)}
                             className="p-3 hover:bg-white/10 cursor-pointer border-b border-gray-800 last:border-0 font-mono text-xs text-white uppercase text-center"
                         >
                             {c.name}
@@ -326,9 +326,9 @@ function ArenaContent() {
                 {/* --- PLAYER 1 (LEFT) --- */}
                 {/* Container: Skewed Right / */}
                 <div className="relative w-full md:w-1/2 group z-20 focus-within:z-50 md:-mr-10 mb-8 md:mb-0">
-                    <div className={`h-full bg-black/80 border-2 border-retro-neon shadow-[0_0_30px_rgba(0,255,157,0.15)] relative transition-all duration-300 hover:shadow-[0_0_50px_rgba(0,255,157,0.3)] hover:border-retro-neon/100 ${styles.fighterCardContainer}`}>
+                    <div className={styles.fighterCardContainer}>
                         {/* Inner Content: Counter Skewed */}
-                        <div className={`h-full flex flex-col p-8 md:p-12 items-center ${styles.fighterCardContent}`}>
+                        <div className={styles.fighterCardContent}>
                             
                             <div className="w-full mb-6">
                                 <h3 className="font-pixel text-xl text-retro-neon text-center mb-2">PLAYER 1</h3>
@@ -383,9 +383,9 @@ function ArenaContent() {
                 {/* --- PLAYER 2 (RIGHT) --- */}
                 {/* Container: Skewed Left \ */}
                 <div className="relative w-full md:w-1/2 group z-20 focus-within:z-50 md:-ml-10">
-                    <div className={`h-full bg-black/80 border-2 border-retro-pink shadow-[0_0_30px_rgba(255,0,255,0.15)] relative transition-all duration-300 hover:shadow-[0_0_50px_rgba(255,0,255,0.3)] hover:border-retro-pink/100 ${styles.fighterCardContainerP2}`}>
+                    <div className={styles.fighterCardContainerP2}>
                         {/* Inner Content: Counter Skewed */}
-                        <div className={`h-full flex flex-col p-8 md:p-12 items-center ${styles.fighterCardContentP2}`}>
+                        <div className={styles.fighterCardContentP2}>
                              
                              <div className="w-full mb-6">
                                 <h3 className="font-pixel text-xl text-retro-pink text-center mb-2">PLAYER 2</h3>
