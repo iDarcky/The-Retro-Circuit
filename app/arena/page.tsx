@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef, type ChangeEvent } from 'react';
+import { useState, useEffect, useRef, type ChangeEvent, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { fetchConsoleList, fetchConsoleBySlug } from '../../lib/api';
 import { ConsoleDetails, ConsoleVariant } from '../../lib/types';
 import { useSound } from '../../components/ui/SoundContext';
-import RetroLoader from '../../components/ui/RetroLoader';
 
 // --- TYPES & CONFIG ---
 
@@ -159,13 +158,9 @@ const ComparisonRow = ({
         }
         if (metric.type === 'currency') return `$${val}`;
         if (metric.type === 'resolution' && varA.screen_resolution_y) {
-             // Hack: For resolution type, we assume X is passed, but we want Y too
-             // Actually, if 'val' is just the X, this formatter is tricky.
-             // Simplification: Just display the raw value for now, or use row-level logic
              return `${val}p`; 
         }
         if (metric.type === 'resolution') {
-            // For resolution, construct the string if possible, else return val
             return val;
         }
 
@@ -184,12 +179,14 @@ const ComparisonRow = ({
     const valDisplayB = metric.type === 'resolution' ? getResString(varB) : formatValue(rawB);
 
     // Winner Classes
-    const winClass = "text-retro-neon drop-shadow-[0_0_5px_rgba(0,255,157,0.5)] font-bold";
+    // Player 1 (Left) is Cyan, Player 2 (Right) is Pink
+    const winClassA = "text-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)] font-bold";
+    const winClassB = "text-fuchsia-500 drop-shadow-[0_0_5px_rgba(217,70,239,0.5)] font-bold";
     const loseClass = "text-gray-400 opacity-80";
     const tieClass = "text-white";
 
-    const classA = winner === 'A' ? winClass : (winner === 'TIE' ? tieClass : loseClass);
-    const classB = winner === 'B' ? winClass : (winner === 'TIE' ? tieClass : loseClass);
+    const classA = winner === 'A' ? winClassA : (winner === 'TIE' ? tieClass : loseClass);
+    const classB = winner === 'B' ? winClassB : (winner === 'TIE' ? tieClass : loseClass);
 
     return (
         <div className="grid grid-cols-12 gap-2 py-4 border-b border-white/5 items-center hover:bg-white/5 transition-colors group">
@@ -354,9 +351,9 @@ const VariantSelect = ({
     );
 };
 
-// --- MAIN PAGE COMPONENT ---
+// --- MAIN PAGE CONTENT ---
 
-export default function ArenaPage() {
+function ArenaContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { playClick } = useSound();
@@ -538,13 +535,13 @@ export default function ArenaPage() {
                     <button 
                         onClick={() => { playClick(); setShowDiffOnly(!showDiffOnly); }}
                         className={`
-                            group relative px-6 py-2 font-mono text-xs font-bold uppercase tracking-widest border transition-all duration-300
+                            group relative px-6 py-2 font-mono text-xs font-bold uppercase tracking-widest border transition-all duration-300 transform md:-skew-x-12
                             ${showDiffOnly 
                                 ? 'bg-retro-neon text-black border-retro-neon shadow-[0_0_15px_rgba(0,255,157,0.4)]' 
                                 : 'bg-black text-gray-500 border-gray-700 hover:border-white hover:text-white'}
                         `}
                     >
-                        <span className="relative z-10">
+                        <span className="relative z-10 inline-block transform md:skew-x-12">
                             {showDiffOnly ? 'DIFF ONLY: ON' : 'DIFF ONLY: OFF'}
                         </span>
                     </button>
@@ -658,5 +655,17 @@ export default function ArenaPage() {
                 </div>
             )}
         </div>
+    );
+}
+
+export default function ArenaPage() {
+    return (
+        <Suspense fallback={
+            <div className="w-full h-screen flex items-center justify-center font-pixel text-retro-neon">
+                INITIALIZING ARENA...
+            </div>
+        }>
+            <ArenaContent />
+        </Suspense>
     );
 }
