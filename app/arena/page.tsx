@@ -460,12 +460,12 @@ function ArenaContent() {
         <div className="w-full max-w-7xl mx-auto p-4 min-h-screen flex flex-col">
             
             {/* 1. FIGHTER SELECTION ARENA */}
-            <div className="relative grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-12 mb-8 md:mb-16 items-center">
+            <div className="relative grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-8 items-center justify-center max-w-6xl mx-auto mb-8">
                 
                 {/* LEFT FIGHTER (PLAYER 1) - CYAN */}
-                <div className="relative z-10 w-full max-w-sm h-[400px] mx-auto">
+                <div className="relative z-10 w-full max-w-sm h-[350px] mx-auto md:ml-auto md:mr-0">
                      {/* SKEWED CONTAINER (-6deg) - / shape */}
-                     <div className="h-full border-2 border-cyan-400 bg-black/80 shadow-[0_0_30px_rgba(34,211,238,0.2)] relative overflow-hidden transform md:-skew-x-6 transition-all duration-300">
+                     <div className="h-full border-2 border-cyan-400 bg-black/90 shadow-[0_0_30px_rgba(34,211,238,0.2)] relative overflow-hidden transform md:-skew-x-6 transition-all duration-300">
                         {/* UN-SKEW CONTENT (6deg) */}
                         <div className="absolute inset-0 flex flex-col justify-between p-4 transform md:skew-x-6">
                             
@@ -475,84 +475,70 @@ function ArenaContent() {
                                 {left.loading && <span className="text-[10px] font-mono text-cyan-400 animate-pulse">LOADING...</span>}
                             </div>
 
-                            {/* SEARCH */}
-                            <ConsoleSearch 
-                                onSelect={(s) => handleSelect('a', s)} 
-                                consoles={allConsoles}
-                                themeColor="cyan"
-                            />
-
-                            {/* IMAGE PREVIEW */}
-                            <div className="flex-1 relative flex items-center justify-center my-2 min-h-0 group">
-                                {left.details ? (
-                                    <>
-                                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.15)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                        <img 
-                                            src={left.selectedVariant?.image_url || left.details.image_url} 
-                                            alt={left.details.name} 
-                                            className="max-w-full max-h-full object-contain drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] z-10 transition-transform duration-500 group-hover:scale-105" 
-                                        />
-                                        <div className="absolute bottom-0 left-0 bg-black/50 p-1 backdrop-blur-sm rounded-tr-lg">
-                                            <h2 className="font-pixel text-lg md:text-xl text-white drop-shadow-md uppercase leading-none">
-                                                {left.details.name}
-                                            </h2>
-                                            <div className="font-mono text-[10px] text-cyan-400 mt-1">
-                                                {left.details.manufacturer?.name}
-                                            </div>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <div className="text-cyan-900/40 font-pixel text-6xl select-none">?</div>
-                                )}
+                            {/* SEARCH BAR */}
+                            <div className="mb-2">
+                                <ConsoleSearch 
+                                    consoles={allConsoles} 
+                                    onSelect={(s) => handleSelect('a', s)}
+                                    themeColor="cyan"
+                                />
                             </div>
 
-                            {/* VARIANT SELECT */}
-                            {left.details?.variants && (
-                                <div className="mt-2">
+                            {/* MAIN IMAGE PREVIEW */}
+                            <div className="flex-1 min-h-0 relative flex items-center justify-center p-2 group">
+                                {left.details?.image_url || left.selectedVariant?.image_url ? (
+                                    <img 
+                                        src={left.selectedVariant?.image_url || left.details?.image_url} 
+                                        className="max-h-full max-w-full object-contain drop-shadow-[0_0_15px_rgba(34,211,238,0.4)] transition-transform duration-500 group-hover:scale-110"
+                                        alt="Player 1"
+                                    />
+                                ) : (
+                                    <div className="text-cyan-900 font-pixel text-4xl opacity-50 select-none">?</div>
+                                )}
+                                {/* Scanline Effect Overlay */}
+                                <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.05)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none"></div>
+                            </div>
+
+                            {/* VARIANT SELECTOR */}
+                            <div className="mt-2">
+                                {left.details && left.details.variants && (
                                     <VariantSelect 
-                                        variants={left.details.variants}
+                                        variants={left.details.variants} 
                                         selectedId={left.selectedVariant?.id || null}
                                         onSelect={(id) => handleVariantChange('a', id)}
                                         themeColor="cyan"
                                     />
-                                </div>
-                            )}
-                        </div>
+                                )}
+                            </div>
 
-                        {/* DECORATIVE LINES */}
-                        <div className="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-cyan-400/30"></div>
-                        <div className="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-cyan-400/30"></div>
+                        </div>
                      </div>
                 </div>
 
-                {/* CENTRAL VS CONTROL (OVERLAY) */}
-                <div className="relative z-20 flex flex-col items-center justify-center gap-6 md:-mx-8">
-                     {/* VS LOGO */}
-                    <div className="relative">
-                        <div className="font-pixel text-6xl text-white drop-shadow-[4px_4px_0_#000] italic">VS</div>
-                        <div className="absolute inset-0 font-pixel text-6xl text-retro-neon blur-md opacity-50 italic">VS</div>
+                {/* CENTRAL CONTROLS */}
+                <div className="relative z-20 flex flex-col items-center justify-center gap-4 py-4 md:py-0">
+                    <div className="font-pixel text-4xl md:text-5xl text-white italic drop-shadow-[0_0_10px_rgba(255,255,255,0.8)] skew-x-[-10deg]">
+                        VS
                     </div>
-
+                    
                     {/* DIFFERENCE TOGGLE */}
                     <button 
                         onClick={() => { playClick(); setShowDiffOnly(!showDiffOnly); }}
                         className={`
-                            group relative px-6 py-2 font-mono text-xs font-bold uppercase tracking-widest border transition-all duration-300 transform md:-skew-x-12
+                            px-4 py-2 font-mono text-[10px] uppercase tracking-widest border transition-all
                             ${showDiffOnly 
-                                ? 'bg-retro-neon text-black border-retro-neon shadow-[0_0_15px_rgba(0,255,157,0.4)]' 
+                                ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.5)]' 
                                 : 'bg-black text-gray-500 border-gray-700 hover:border-white hover:text-white'}
                         `}
                     >
-                        <span className="relative z-10 inline-block transform md:skew-x-12">
-                            {showDiffOnly ? 'DIFF ONLY: ON' : 'DIFF ONLY: OFF'}
-                        </span>
+                        {showDiffOnly ? '[ SHOW ALL ]' : '[ DIFF ONLY ]'}
                     </button>
                 </div>
 
                 {/* RIGHT FIGHTER (PLAYER 2) - PINK */}
-                <div className="relative z-10 w-full max-w-sm h-[400px] mx-auto">
-                     {/* SKEWED CONTAINER (6deg) - \ shape (Symmetrical to Left) */}
-                     <div className="h-full border-2 border-fuchsia-500 bg-black/80 shadow-[0_0_30px_rgba(217,70,239,0.2)] relative overflow-hidden transform md:skew-x-6 transition-all duration-300">
+                <div className="relative z-10 w-full max-w-sm h-[350px] mx-auto md:mr-auto md:ml-0">
+                     {/* SKEWED CONTAINER (6deg) - \ shape */}
+                     <div className="h-full border-2 border-fuchsia-500 bg-black/90 shadow-[0_0_30px_rgba(217,70,239,0.2)] relative overflow-hidden transform md:skew-x-6 transition-all duration-300">
                         {/* UN-SKEW CONTENT (-6deg) */}
                         <div className="absolute inset-0 flex flex-col justify-between p-4 transform md:-skew-x-6">
                             
@@ -562,113 +548,89 @@ function ArenaContent() {
                                 {right.loading && <span className="text-[10px] font-mono text-fuchsia-500 animate-pulse">LOADING...</span>}
                             </div>
 
-                            {/* SEARCH */}
-                            <ConsoleSearch 
-                                onSelect={(s) => handleSelect('b', s)} 
-                                consoles={allConsoles}
-                                themeColor="pink"
-                            />
-
-                            {/* IMAGE PREVIEW */}
-                            <div className="flex-1 relative flex items-center justify-center my-2 min-h-0 group">
-                                {right.details ? (
-                                    <>
-                                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(217,70,239,0.15)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                        <img 
-                                            src={right.selectedVariant?.image_url || right.details.image_url} 
-                                            alt={right.details.name} 
-                                            className="max-w-full max-h-full object-contain drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] z-10 transition-transform duration-500 group-hover:scale-105" 
-                                        />
-                                        <div className="absolute bottom-0 right-0 text-right bg-black/50 p-1 backdrop-blur-sm rounded-tl-lg">
-                                            <h2 className="font-pixel text-lg md:text-xl text-white drop-shadow-md uppercase leading-none">
-                                                {right.details.name}
-                                            </h2>
-                                            <div className="font-mono text-[10px] text-fuchsia-500 mt-1">
-                                                {right.details.manufacturer?.name}
-                                            </div>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <div className="text-fuchsia-900/40 font-pixel text-6xl select-none">?</div>
-                                )}
+                            {/* SEARCH BAR */}
+                            <div className="mb-2">
+                                <ConsoleSearch 
+                                    consoles={allConsoles} 
+                                    onSelect={(s) => handleSelect('b', s)}
+                                    themeColor="pink"
+                                />
                             </div>
 
-                            {/* VARIANT SELECT */}
-                            {right.details?.variants && (
-                                <div className="mt-2">
+                            {/* MAIN IMAGE PREVIEW */}
+                            <div className="flex-1 min-h-0 relative flex items-center justify-center p-2 group">
+                                {right.details?.image_url || right.selectedVariant?.image_url ? (
+                                    <img 
+                                        src={right.selectedVariant?.image_url || right.details?.image_url} 
+                                        className="max-h-full max-w-full object-contain drop-shadow-[0_0_15px_rgba(217,70,239,0.4)] transition-transform duration-500 group-hover:scale-110"
+                                        alt="Player 2"
+                                    />
+                                ) : (
+                                    <div className="text-fuchsia-900 font-pixel text-4xl opacity-50 select-none">?</div>
+                                )}
+                                {/* Scanline Effect Overlay */}
+                                <div className="absolute inset-0 bg-[linear-gradient(rgba(217,70,239,0.05)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none"></div>
+                            </div>
+
+                            {/* VARIANT SELECTOR */}
+                            <div className="mt-2">
+                                {right.details && right.details.variants && (
                                     <VariantSelect 
-                                        variants={right.details.variants}
+                                        variants={right.details.variants} 
                                         selectedId={right.selectedVariant?.id || null}
                                         onSelect={(id) => handleVariantChange('b', id)}
                                         themeColor="pink"
                                     />
-                                </div>
-                            )}
-                        </div>
+                                )}
+                            </div>
 
-                         {/* DECORATIVE LINES */}
-                        <div className="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-fuchsia-500/30"></div>
-                        <div className="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-fuchsia-500/30"></div>
+                        </div>
                      </div>
                 </div>
 
             </div>
 
             {/* 2. DATA MATRIX */}
-            {left.selectedVariant && right.selectedVariant ? (
-                <div className="animate-fadeIn relative z-10">
-                    {/* Header Row */}
-                    <div className="grid grid-cols-12 gap-2 pb-4 border-b-2 border-retro-grid mb-4 font-pixel text-xs text-gray-500 uppercase">
-                        <div className="col-span-4 text-right pr-2 text-cyan-400">{left.details?.name}</div>
-                        <div className="col-span-4 text-center">METRIC</div>
-                        <div className="col-span-4 text-left pl-2 text-fuchsia-500">{right.details?.name}</div>
+            <div className="flex-1 relative z-0 mt-8">
+                 {/* Decorative Top Border */}
+                 <div className="h-1 w-full bg-gradient-to-r from-cyan-500 via-white to-fuchsia-500 mb-0 opacity-50"></div>
+                 
+                 <div className="bg-black/40 border border-white/10 p-4 md:p-8 backdrop-blur-sm relative">
+                    {/* HEADER */}
+                    <div className="grid grid-cols-12 gap-2 mb-6 border-b border-white/20 pb-4 text-[10px] md:text-xs font-pixel text-gray-500">
+                        <div className="col-span-4 text-right text-cyan-400">P1 SPECS</div>
+                        <div className="col-span-4 text-center text-white">METRIC</div>
+                        <div className="col-span-4 text-left text-fuchsia-500">P2 SPECS</div>
                     </div>
 
-                    {/* Metrics */}
-                    <div className="space-y-1">
-                        {METRICS.map((metric, i) => {
-                            // Category Header (Render only if category changes)
-                            const prevCategory = i > 0 ? METRICS[i-1].category : null;
-                            const showHeader = metric.category !== prevCategory;
-                            
-                            return (
-                                <div key={metric.key}>
-                                    {showHeader && (
-                                        <div className="col-span-12 py-4 flex items-center gap-4">
-                                            <div className="h-px bg-retro-grid flex-1"></div>
-                                            <div className="font-pixel text-[10px] text-gray-600 uppercase tracking-widest">{metric.category}</div>
-                                            <div className="h-px bg-retro-grid flex-1"></div>
-                                        </div>
-                                    )}
-                                    <ComparisonRow 
-                                        metric={metric} 
-                                        varA={left.selectedVariant!} 
-                                        varB={right.selectedVariant!}
-                                        showDiffOnly={showDiffOnly}
-                                    />
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            ) : (
-                <div className="text-center py-20 border-2 border-dashed border-gray-800 rounded-lg">
-                    <p className="font-mono text-gray-500 animate-pulse">
-                        AWAITING FIGHTER SELECTION...
-                    </p>
-                </div>
-            )}
+                    {/* ROWS */}
+                    {left.selectedVariant && right.selectedVariant ? (
+                        <div className="space-y-0">
+                            {/* Group by Category if needed, for now just flat list */}
+                            {METRICS.map((metric) => (
+                                <ComparisonRow 
+                                    key={metric.key} 
+                                    metric={metric} 
+                                    varA={left.selectedVariant!} 
+                                    varB={right.selectedVariant!} 
+                                    showDiffOnly={showDiffOnly}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="py-20 text-center font-mono text-gray-600 animate-pulse">
+                            AWAITING CHALLENGERS... SELECT TWO SYSTEMS TO BEGIN.
+                        </div>
+                    )}
+                 </div>
+            </div>
         </div>
     );
 }
 
 export default function ArenaPage() {
     return (
-        <Suspense fallback={
-            <div className="w-full h-screen flex items-center justify-center font-pixel text-retro-neon">
-                INITIALIZING ARENA...
-            </div>
-        }>
+        <Suspense fallback={<div className="w-full h-screen flex items-center justify-center font-mono text-retro-neon">INITIALIZING BATTLEFIELD...</div>}>
             <ArenaContent />
         </Suspense>
     );
