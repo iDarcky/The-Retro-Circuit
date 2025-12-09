@@ -471,7 +471,7 @@ function ArenaContent() {
         router.replace(`?${params.toString()}`, { scroll: false });
     };
 
-    const handleSelect = (side: 'a' | 'b', slug: string, name: string) => {
+    const handleSelect = (side: 'a' | 'b', slug: string) => {
         playClick();
         updateUrl(side, slug);
     };
@@ -508,7 +508,7 @@ function ArenaContent() {
                             <div className="mb-2 relative">
                                 <ConsoleSearch 
                                     consoles={allConsoles} 
-                                    onSelect={(s, n) => handleSelect('a', s, n)}
+                                    onSelect={(s) => handleSelect('a', s)}
                                     themeColor="cyan"
                                     currentSelection={left.details?.name}
                                 />
@@ -587,7 +587,7 @@ function ArenaContent() {
                             <div className="mb-2 relative">
                                 <ConsoleSearch 
                                     consoles={allConsoles} 
-                                    onSelect={(s, n) => handleSelect('b', s, n)}
+                                    onSelect={(s) => handleSelect('b', s)}
                                     themeColor="pink"
                                     currentSelection={right.details?.name}
                                 />
