@@ -1,4 +1,5 @@
 
+
 import { supabase } from "../supabase/singleton";
 import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant } from "../types";
 
@@ -81,7 +82,14 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
     try {
         const { data, error } = await supabase
             .from('consoles')
-            .select('*, manufacturer:manufacturer(*), variants:console_variants(*, emulation_profiles(*))')
+            .select(`
+                *,
+                manufacturer:manufacturer(*),
+                variants:console_variants (
+                    *,
+                    emulation_profiles (*)
+                )
+            `)
             .eq('slug', slug)
             .single();
             
