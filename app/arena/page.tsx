@@ -260,7 +260,7 @@ const ConsoleSearch = ({
             <input 
                 type="text" 
                 placeholder="SELECT FIGHTER..." 
-                className={`w-full bg-black/80 border-b-2 ${borderColor} p-3 font-mono text-sm text-white placeholder-gray-600 outline-none uppercase tracking-wider transition-all`}
+                className={`w-full bg-black/80 border-b-2 ${borderColor} p-2 font-mono text-sm text-white placeholder-gray-600 outline-none uppercase tracking-wider transition-all`}
                 value={query}
                 onChange={handleSearch}
                 onFocus={() => query.length > 0 && setIsOpen(true)}
@@ -318,10 +318,10 @@ const VariantSelect = ({
     if (variants.length <= 1) return null;
 
     return (
-        <div className="relative w-full mt-4" ref={wrapperRef}>
+        <div className="relative w-full" ref={wrapperRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`w-full flex items-center justify-between bg-black/80 border ${borderClass} px-4 py-2 ${shadowClass} transition-all group`}
+                className={`w-full flex items-center justify-between bg-black/80 border ${borderClass} px-3 py-1.5 ${shadowClass} transition-all group`}
             >
                 <div className="flex flex-col items-start">
                     <span className="text-[9px] text-gray-500 font-mono uppercase tracking-widest">SPEC VARIANT</span>
@@ -463,15 +463,15 @@ function ArenaContent() {
             <div className="relative grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-12 mb-8 md:mb-16 items-center">
                 
                 {/* LEFT FIGHTER (PLAYER 1) - CYAN */}
-                <div className="relative z-10 w-full h-full md:aspect-[3/4]">
-                     {/* SKEWED CONTAINER (-6deg) */}
+                <div className="relative z-10 w-full max-w-sm h-[400px] mx-auto">
+                     {/* SKEWED CONTAINER (-6deg) - / shape */}
                      <div className="h-full border-2 border-cyan-400 bg-black/80 shadow-[0_0_30px_rgba(34,211,238,0.2)] relative overflow-hidden transform md:-skew-x-6 transition-all duration-300">
                         {/* UN-SKEW CONTENT (6deg) */}
-                        <div className="absolute inset-0 flex flex-col p-6 transform md:skew-x-6">
+                        <div className="absolute inset-0 flex flex-col justify-between p-4 transform md:skew-x-6">
                             
                             {/* P1 LABEL */}
-                            <div className="flex justify-between items-center mb-4 border-b border-cyan-900/50 pb-2">
-                                <span className="font-pixel text-xs text-cyan-400">PLAYER 1</span>
+                            <div className="flex justify-between items-center mb-2 border-b border-cyan-900/50 pb-1">
+                                <span className="font-pixel text-[10px] text-cyan-400">PLAYER 1</span>
                                 {left.loading && <span className="text-[10px] font-mono text-cyan-400 animate-pulse">LOADING...</span>}
                             </div>
 
@@ -483,7 +483,7 @@ function ArenaContent() {
                             />
 
                             {/* IMAGE PREVIEW */}
-                            <div className="flex-1 relative flex items-center justify-center my-4 group">
+                            <div className="flex-1 relative flex items-center justify-center my-2 min-h-0 group">
                                 {left.details ? (
                                     <>
                                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.15)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -492,11 +492,11 @@ function ArenaContent() {
                                             alt={left.details.name} 
                                             className="max-w-full max-h-full object-contain drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] z-10 transition-transform duration-500 group-hover:scale-105" 
                                         />
-                                        <div className="absolute bottom-0 left-0">
-                                            <h2 className="font-pixel text-xl md:text-2xl text-white drop-shadow-md uppercase leading-none">
+                                        <div className="absolute bottom-0 left-0 bg-black/50 p-1 backdrop-blur-sm rounded-tr-lg">
+                                            <h2 className="font-pixel text-lg md:text-xl text-white drop-shadow-md uppercase leading-none">
                                                 {left.details.name}
                                             </h2>
-                                            <div className="font-mono text-xs text-cyan-400 mt-1">
+                                            <div className="font-mono text-[10px] text-cyan-400 mt-1">
                                                 {left.details.manufacturer?.name}
                                             </div>
                                         </div>
@@ -508,18 +508,20 @@ function ArenaContent() {
 
                             {/* VARIANT SELECT */}
                             {left.details?.variants && (
-                                <VariantSelect 
-                                    variants={left.details.variants}
-                                    selectedId={left.selectedVariant?.id || null}
-                                    onSelect={(id) => handleVariantChange('a', id)}
-                                    themeColor="cyan"
-                                />
+                                <div className="mt-2">
+                                    <VariantSelect 
+                                        variants={left.details.variants}
+                                        selectedId={left.selectedVariant?.id || null}
+                                        onSelect={(id) => handleVariantChange('a', id)}
+                                        themeColor="cyan"
+                                    />
+                                </div>
                             )}
                         </div>
 
                         {/* DECORATIVE LINES */}
-                        <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-cyan-400/30"></div>
-                        <div className="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 border-cyan-400/30"></div>
+                        <div className="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-cyan-400/30"></div>
+                        <div className="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-cyan-400/30"></div>
                      </div>
                 </div>
 
@@ -548,15 +550,15 @@ function ArenaContent() {
                 </div>
 
                 {/* RIGHT FIGHTER (PLAYER 2) - PINK */}
-                <div className="relative z-10 w-full h-full md:aspect-[3/4]">
-                     {/* SKEWED CONTAINER (-6deg) - Parallel to P1 */}
-                     <div className="h-full border-2 border-fuchsia-500 bg-black/80 shadow-[0_0_30px_rgba(217,70,239,0.2)] relative overflow-hidden transform md:-skew-x-6 transition-all duration-300">
-                        {/* UN-SKEW CONTENT (6deg) */}
-                        <div className="absolute inset-0 flex flex-col p-6 transform md:skew-x-6">
+                <div className="relative z-10 w-full max-w-sm h-[400px] mx-auto">
+                     {/* SKEWED CONTAINER (6deg) - \ shape (Symmetrical to Left) */}
+                     <div className="h-full border-2 border-fuchsia-500 bg-black/80 shadow-[0_0_30px_rgba(217,70,239,0.2)] relative overflow-hidden transform md:skew-x-6 transition-all duration-300">
+                        {/* UN-SKEW CONTENT (-6deg) */}
+                        <div className="absolute inset-0 flex flex-col justify-between p-4 transform md:-skew-x-6">
                             
                             {/* P2 LABEL */}
-                            <div className="flex justify-between items-center mb-4 border-b border-fuchsia-900/50 pb-2">
-                                <span className="font-pixel text-xs text-fuchsia-500">PLAYER 2</span>
+                            <div className="flex justify-between items-center mb-2 border-b border-fuchsia-900/50 pb-1">
+                                <span className="font-pixel text-[10px] text-fuchsia-500">PLAYER 2</span>
                                 {right.loading && <span className="text-[10px] font-mono text-fuchsia-500 animate-pulse">LOADING...</span>}
                             </div>
 
@@ -568,7 +570,7 @@ function ArenaContent() {
                             />
 
                             {/* IMAGE PREVIEW */}
-                            <div className="flex-1 relative flex items-center justify-center my-4 group">
+                            <div className="flex-1 relative flex items-center justify-center my-2 min-h-0 group">
                                 {right.details ? (
                                     <>
                                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(217,70,239,0.15)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -577,11 +579,11 @@ function ArenaContent() {
                                             alt={right.details.name} 
                                             className="max-w-full max-h-full object-contain drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] z-10 transition-transform duration-500 group-hover:scale-105" 
                                         />
-                                        <div className="absolute bottom-0 right-0 text-right">
-                                            <h2 className="font-pixel text-xl md:text-2xl text-white drop-shadow-md uppercase leading-none">
+                                        <div className="absolute bottom-0 right-0 text-right bg-black/50 p-1 backdrop-blur-sm rounded-tl-lg">
+                                            <h2 className="font-pixel text-lg md:text-xl text-white drop-shadow-md uppercase leading-none">
                                                 {right.details.name}
                                             </h2>
-                                            <div className="font-mono text-xs text-fuchsia-500 mt-1">
+                                            <div className="font-mono text-[10px] text-fuchsia-500 mt-1">
                                                 {right.details.manufacturer?.name}
                                             </div>
                                         </div>
@@ -593,18 +595,20 @@ function ArenaContent() {
 
                             {/* VARIANT SELECT */}
                             {right.details?.variants && (
-                                <VariantSelect 
-                                    variants={right.details.variants}
-                                    selectedId={right.selectedVariant?.id || null}
-                                    onSelect={(id) => handleVariantChange('b', id)}
-                                    themeColor="pink"
-                                />
+                                <div className="mt-2">
+                                    <VariantSelect 
+                                        variants={right.details.variants}
+                                        selectedId={right.selectedVariant?.id || null}
+                                        onSelect={(id) => handleVariantChange('b', id)}
+                                        themeColor="pink"
+                                    />
+                                </div>
                             )}
                         </div>
 
                          {/* DECORATIVE LINES */}
-                        <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-fuchsia-500/30"></div>
-                        <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-fuchsia-500/30"></div>
+                        <div className="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-fuchsia-500/30"></div>
+                        <div className="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-fuchsia-500/30"></div>
                      </div>
                 </div>
 
