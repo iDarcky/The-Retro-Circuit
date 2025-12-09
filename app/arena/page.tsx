@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, type ChangeEvent, Suspense } from 'react';
@@ -19,40 +18,18 @@ type ComparisonMetric = {
 };
 
 const METRICS: ComparisonMetric[] = [
-    // IDENTITY
-    { label: 'Release Year', key: 'release_year', type: 'number', category: 'Identity' },
-    { label: 'Launch Price', key: 'price_launch_usd', type: 'currency', lowerIsBetter: true, category: 'Identity' },
-    { label: 'Model No.', key: 'model_no', type: 'string', category: 'Identity' },
-
-    // SILICON
-    { label: 'CPU Model', key: 'cpu_model', type: 'string', category: 'Silicon' },
-    { label: 'CPU Cores', key: 'cpu_cores', type: 'number', category: 'Silicon' },
-    { label: 'CPU Clock', key: 'cpu_clock_mhz', type: 'number', unit: 'MHz', category: 'Silicon' },
-    { label: 'Architecture', key: 'cpu_architecture', type: 'string', category: 'Silicon' },
-    
-    { label: 'GPU Model', key: 'gpu_model', type: 'string', category: 'Silicon' },
-    { label: 'GPU Cores', key: 'gpu_cores', type: 'number', category: 'Silicon' },
-    { label: 'Performance', key: 'gpu_teraflops', type: 'number', unit: 'TFLOPS', category: 'Silicon' },
-    
-    // MEMORY
-    { label: 'RAM Size', key: 'ram_gb', type: 'number', unit: 'GB', category: 'Memory' },
-    { label: 'RAM Type', key: 'ram_type', type: 'string', category: 'Memory' },
-    { label: 'Storage', key: 'storage_gb', type: 'number', unit: 'GB', category: 'Memory' },
-
-    // DISPLAY
-    { label: 'Screen Size', key: 'screen_size_inch', type: 'number', unit: '"', category: 'Display' },
-    { label: 'Resolution', key: 'screen_resolution_x', type: 'resolution', category: 'Display' },
-    { label: 'Panel Type', key: 'display_type', type: 'string', category: 'Display' },
-    { label: 'Refresh Rate', key: 'refresh_rate_hz', type: 'number', unit: 'Hz', category: 'Display' },
-    { label: 'Pixel Density', key: 'ppi', type: 'number', unit: 'PPI', category: 'Display' },
-
-    // POWER
-    { label: 'Battery (Wh)', key: 'battery_wh', type: 'number', unit: 'Wh', category: 'Power' },
-    { label: 'Battery (mAh)', key: 'battery_mah', type: 'number', unit: 'mAh', category: 'Power' },
-
-    // PHYSICAL
-    { label: 'Weight', key: 'weight_g', type: 'number', unit: 'g', lowerIsBetter: true, category: 'Physical' },
-    { label: 'Material', key: 'body_material', type: 'string', category: 'Physical' },
+    { label: 'Release Year', key: 'release_year', type: 'number' },
+    { label: 'Launch Price', key: 'price_launch_usd', type: 'currency', lowerIsBetter: true },
+    { label: 'CPU Cores', key: 'cpu_cores', type: 'number' },
+    { label: 'CPU Clock', key: 'cpu_clock_mhz', type: 'number', unit: 'MHz' },
+    { label: 'RAM Size', key: 'ram_gb', type: 'number', unit: 'GB' },
+    { label: 'Storage', key: 'storage_gb', type: 'number', unit: 'GB' },
+    { label: 'Screen Size', key: 'screen_size_inch', type: 'number', unit: '"' },
+    { label: 'Resolution', key: 'screen_resolution_x', type: 'resolution' },
+    { label: 'Refresh Rate', key: 'refresh_rate_hz', type: 'number', unit: 'Hz' },
+    { label: 'PPI', key: 'ppi', type: 'number', unit: 'PPI' },
+    { label: 'Battery', key: 'battery_wh', type: 'number', unit: 'Wh' },
+    { label: 'Weight', key: 'weight_g', type: 'number', unit: 'g', lowerIsBetter: true },
 ];
 
 interface SelectionState {
@@ -135,9 +112,7 @@ const ComparisonRow = ({
                 {valDisplayA}
             </div>
             <div className="col-span-4 text-center">
-                <span className="font-mono text-[10px] text-gray-600 uppercase tracking-widest group-hover:text-retro-blue transition-colors">
-                    {metric.label}
-                </span>
+                <span className="font-mono text-[10px] text-gray-600 uppercase tracking-widest group-hover:text-white transition-colors">{metric.label}</span>
             </div>
             <div className={`col-span-4 text-left font-mono text-xs md:text-sm flex justify-start items-center gap-2 ${classB}`}>
                 {valDisplayB}
@@ -147,455 +122,367 @@ const ComparisonRow = ({
     );
 };
 
-// --- DROPDOWN COMPONENTS ---
+// --- SEARCH COMPONENT ---
+interface ConsoleSearchProps {
+    consoles: {name: string, slug: string}[];
+    onSelect: (slug: string, name: string) => void;
+    placeholder?: string;
+    themeColor: 'cyan' | 'pink';
+    currentSelection?: string;
+}
 
-const ConsoleSearch = ({ 
-    onSelect, 
-    consoles,
-    themeColor = 'cyan',
-    currentSelection
-}: { 
-    onSelect: (slug: string, name: string) => void, 
-    consoles: {name: string, slug: string}[],
-    themeColor?: 'cyan' | 'pink',
-    currentSelection?: string | null
-}) => {
-    const [query, setQuery] = useState(currentSelection || '');
-    const [filtered, setFiltered] = useState<{name: string, slug: string}[]>([]);
+const ConsoleSearch = ({ consoles, onSelect, placeholder = "SELECT SYSTEM...", themeColor, currentSelection }: ConsoleSearchProps) => {
+    const [searchTerm, setSearchTerm] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
 
-    // Styling configuration
-    const styles = themeColor === 'cyan' ? {
-        border: 'border-cyan-400',
-        focusBorder: 'focus:border-cyan-400',
-        text: 'text-cyan-400',
-        hoverBg: 'hover:bg-cyan-900/30'
-    } : {
-        border: 'border-fuchsia-500',
-        focusBorder: 'focus:border-fuchsia-500',
-        text: 'text-fuchsia-500',
-        hoverBg: 'hover:bg-fuchsia-900/30'
-    };
-
+    // Sync input with external selection changes
     useEffect(() => {
-        if (currentSelection) setQuery(currentSelection);
+        if (currentSelection) {
+            setSearchTerm(currentSelection);
+        }
     }, [currentSelection]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
                 setIsOpen(false);
+                if (currentSelection) setSearchTerm(currentSelection);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+    }, [currentSelection]);
 
-    const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value;
-        setQuery(val);
-        if (val.length > 0) {
-            const matches = consoles.filter(c => c.name.toLowerCase().includes(val.toLowerCase())).slice(0, 10);
-            setFiltered(matches);
-            setIsOpen(true);
-        } else {
-            setIsOpen(false);
-        }
-    };
+    const filtered = consoles.filter(c => 
+        c.name.toLowerCase().includes(searchTerm.toLowerCase())
+    ).slice(0, 8);
 
-    const handleSelect = (slug: string, name: string) => {
-        setQuery(name);
+    const handleSelect = (c: {name: string, slug: string}) => {
+        setSearchTerm(c.name);
         setIsOpen(false);
-        onSelect(slug, name);
+        onSelect(c.slug, c.name);
     };
+
+    const borderColor = themeColor === 'cyan' ? 'border-retro-neon focus:border-retro-neon' : 'border-retro-pink focus:border-retro-pink';
+    const textColor = themeColor === 'cyan' ? 'text-retro-neon placeholder-retro-neon/50' : 'text-retro-pink placeholder-retro-pink/50';
 
     return (
-        <div className="relative w-full z-50" ref={wrapperRef}>
-            <input 
-                type="text" 
-                placeholder="TYPE CONSOLE..."
-                className={`w-full bg-black/80 border ${styles.border} ${styles.focusBorder} p-2 font-mono text-sm text-white placeholder-gray-500 outline-none uppercase transition-all shadow-inner`}
-                value={query}
-                onChange={handleSearch}
-                onFocus={() => { if(query.length > 0) setIsOpen(true); }}
+        <div className="relative w-full" ref={wrapperRef}>
+            <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setIsOpen(true);
+                }}
+                onFocus={() => {
+                    if (searchTerm === currentSelection) setSearchTerm('');
+                    setIsOpen(true);
+                }}
+                placeholder={placeholder}
+                className={`w-full bg-black/60 border-2 ${borderColor} p-3 font-mono text-sm ${textColor} outline-none uppercase shadow-inner transition-all text-center`}
             />
-            {isOpen && filtered.length > 0 && (
-                <ul className={`absolute top-full left-0 right-0 bg-black border-l border-r border-b ${styles.border} z-[100] max-h-48 overflow-y-auto shadow-[0_10px_30px_rgba(0,0,0,0.9)]`}>
-                    {filtered.map(c => (
-                        <li key={c.slug}>
-                            <button 
-                                type="button"
-                                onClick={() => handleSelect(c.slug, c.name)}
-                                className={`w-full text-left p-3 font-mono text-xs text-gray-300 ${styles.hoverBg} border-b border-gray-900 last:border-0 uppercase flex justify-between group transition-colors`}
-                            >
-                                <span className="group-hover:text-white font-bold">{c.name}</span>
-                            </button>
+            
+            {isOpen && (searchTerm.length > 0 || filtered.length > 0) && (
+                <ul className="absolute left-0 right-0 top-full mt-2 bg-black border-2 border-gray-700 max-h-60 overflow-y-auto z-[100] shadow-2xl custom-scrollbar">
+                    {filtered.length > 0 ? filtered.map((c) => (
+                        <li 
+                            key={c.slug}
+                            onClick={() => handleSelect(c)}
+                            className="p-3 hover:bg-white/10 cursor-pointer border-b border-gray-800 last:border-0 font-mono text-xs text-white uppercase text-center"
+                        >
+                            {c.name}
                         </li>
-                    ))}
+                    )) : (
+                        <li className="p-3 text-gray-500 font-mono text-xs italic text-center">NO MATCHES</li>
+                    )}
                 </ul>
             )}
         </div>
     );
 };
 
-const VariantSelect = ({
-    variants,
-    selectedId,
-    onSelect,
-    themeColor = 'cyan'
-}: {
-    variants: ConsoleVariant[],
-    selectedId: string | null,
-    onSelect: (id: string) => void,
-    themeColor?: 'cyan' | 'pink'
-}) => {
-    if (variants.length <= 1) return null;
-
-    const styles = themeColor === 'cyan' ? {
-        border: 'border-cyan-400',
-        text: 'text-cyan-400',
-        bg: 'bg-cyan-900/10'
-    } : {
-        border: 'border-fuchsia-500',
-        text: 'text-fuchsia-500',
-        bg: 'bg-fuchsia-900/10'
-    };
-
-    return (
-        <select
-            value={selectedId || ''}
-            onChange={(e) => onSelect(e.target.value)}
-            className={`w-full bg-black border ${styles.border} ${styles.text} p-2 font-mono text-[10px] md:text-xs outline-none cursor-pointer uppercase mt-2 shadow-[0_0_10px_rgba(0,0,0,0.5)]`}
-        >
-            {variants.map(v => (
-                <option key={v.id} value={v.id}>
-                    {v.variant_name} {v.is_default ? '(DEFAULT)' : ''}
-                </option>
-            ))}
-        </select>
-    );
-};
-
-// --- MAIN PAGE CONTENT ---
+// --- MAIN PAGE COMPONENT ---
 
 function ArenaContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { playClick } = useSound();
+    const { playClick, playHover } = useSound();
 
     const [allConsoles, setAllConsoles] = useState<{name: string, slug: string}[]>([]);
     
-    // State initialization helper
-    const getInitialState = (paramKey: string): SelectionState => ({
-        slug: searchParams?.get(paramKey) || null,
-        details: null,
-        selectedVariant: null,
-        loading: false
+    // Player A State
+    const [left, setLeft] = useState<SelectionState>({ 
+        slug: null, details: null, selectedVariant: null, loading: false 
+    });
+    
+    // Player B State
+    const [right, setRight] = useState<SelectionState>({ 
+        slug: null, details: null, selectedVariant: null, loading: false 
     });
 
-    const [left, setLeft] = useState<SelectionState>(() => getInitialState('a'));
-    const [right, setRight] = useState<SelectionState>(() => getInitialState('b'));
     const [showDiffOnly, setShowDiffOnly] = useState(false);
 
-    // Load console list once
+    // Initial List Load
     useEffect(() => {
-        fetchConsoleList().then(list => setAllConsoles(list as any));
+        fetchConsoleList().then((list: any) => setAllConsoles(list));
     }, []);
 
-    // Load Left/Right logic (refactored to avoid repetition)
-    const loadSide = async (side: 'a' | 'b', current: SelectionState, setter: Function) => {
-        const slug = searchParams?.get(side);
-        const variantSlug = searchParams?.get(side === 'a' ? 'varA' : 'varB');
-        
-        if (slug && slug !== current.details?.slug) {
-            setter((prev: any) => ({ ...prev, loading: true, slug }));
+    // Load from URL
+    useEffect(() => {
+        const loadSide = async (side: 'a' | 'b', slug: string | null, variantSlug: string | null) => {
+            if (!slug) return;
+            
+            const setFn = side === 'a' ? setLeft : setRight;
+            setFn(prev => ({ ...prev, loading: true }));
+
             const details = await fetchConsoleBySlug(slug);
             if (details) {
                 const variants = details.variants || [];
-                const activeVar = variantSlug 
-                    ? variants.find(v => v.slug === variantSlug)
-                    : (variants.find(v => v.is_default) || variants[0]);
+                let variant = variants[0]; // Default fallback
+                
+                if (variantSlug) {
+                    variant = variants.find(v => v.slug === variantSlug) || variant;
+                } else {
+                    variant = variants.find(v => v.is_default) || variant;
+                }
 
-                setter({
-                    slug,
-                    details,
-                    selectedVariant: activeVar || null,
-                    loading: false
+                setFn({ 
+                    slug, 
+                    details, 
+                    selectedVariant: variant || (details.specs as ConsoleVariant), 
+                    loading: false 
                 });
             } else {
-                setter((prev: any) => ({ ...prev, loading: false }));
+                setFn(prev => ({ ...prev, loading: false }));
             }
-        }
-    };
+        };
 
-    useEffect(() => { loadSide('a', left, setLeft); }, [searchParams?.get('a')]);
-    useEffect(() => { loadSide('b', right, setRight); }, [searchParams?.get('b')]);
+        const slugA = searchParams?.get('c1') || null;
+        const varA = searchParams?.get('v1') || null;
+        const slugB = searchParams?.get('c2') || null;
+        const varB = searchParams?.get('v2') || null;
 
-    // Handle variant changes without reloading console
-    useEffect(() => {
-        const varA = searchParams?.get('varA');
-        if (left.details && varA && left.selectedVariant?.slug !== varA) {
-            const v = left.details.variants?.find(v => v.slug === varA);
-            if(v) setLeft(prev => ({ ...prev, selectedVariant: v }));
-        }
+        if (slugA !== left.slug) loadSide('a', slugA, varA);
+        if (slugB !== right.slug) loadSide('b', slugB, varB);
         
-        const varB = searchParams?.get('varB');
-        if (right.details && varB && right.selectedVariant?.slug !== varB) {
-            const v = right.details.variants?.find(v => v.slug === varB);
-            if(v) setRight(prev => ({ ...prev, selectedVariant: v }));
-        }
-    }, [searchParams, left.details, right.details]);
+    }, [searchParams]);
 
-    // Update URL Helper
-    const updateUrl = (side: 'a' | 'b', slug: string, variantSlug?: string) => {
+    const updateUrl = (side: 'a' | 'b', consoleSlug: string, variantSlug?: string) => {
         const params = new URLSearchParams(searchParams?.toString());
-        params.set(side, slug);
-        // Reset variant when changing console unless specified
-        params.delete(side === 'a' ? 'varA' : 'varB'); 
-        if(variantSlug) params.set(side === 'a' ? 'varA' : 'varB', variantSlug);
-        router.push(`?${params.toString()}`, { scroll: false });
+        if (side === 'a') {
+            params.set('c1', consoleSlug);
+            if (variantSlug) params.set('v1', variantSlug);
+            else params.delete('v1');
+        } else {
+            params.set('c2', consoleSlug);
+            if (variantSlug) params.set('v2', variantSlug);
+            else params.delete('v2');
+        }
+        router.replace(`/arena?${params.toString()}`, { scroll: false });
     };
 
     const handleSelect = (side: 'a' | 'b', slug: string, name: string) => {
         playClick();
+        // Just update URL, effect handles fetch
         updateUrl(side, slug);
     };
 
-    const handleVariantSelect = (side: 'a' | 'b', variantId: string) => {
+    const handleVariantChange = (side: 'a' | 'b', variantSlug: string) => {
         const state = side === 'a' ? left : right;
-        const variant = state.details?.variants?.find(v => v.id === variantId);
-        if (variant && variant.slug) {
-            const params = new URLSearchParams(searchParams?.toString());
-            params.set(side === 'a' ? 'varA' : 'varB', variant.slug);
-            router.replace(`?${params.toString()}`, { scroll: false });
+        if (state.slug) {
+            updateUrl(side, state.slug, variantSlug);
+            // Optimistic update
+            const v = state.details?.variants?.find(v => v.slug === variantSlug);
+            if (v) {
+                const setFn = side === 'a' ? setLeft : setRight;
+                setFn(prev => ({ ...prev, selectedVariant: v }));
+            }
         }
     };
 
-    const resetBattle = () => router.push('/arena');
-
     return (
-        <div className="w-full max-w-7xl mx-auto p-4 min-h-screen">
-            
+        <div className="w-full max-w-6xl mx-auto p-4 min-h-screen">
             {/* Header */}
             <div className="text-center mb-12">
-                <h1 className="font-pixel text-2xl md:text-3xl text-gray-500 mb-2">SELECT YOUR FIGHTERS</h1>
+                <h1 className="text-4xl md:text-5xl font-pixel text-white mb-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                    VS MODE
+                </h1>
+                <p className="font-mono text-gray-500 text-sm">SELECT FIGHTERS FOR SPECIFICATION BATTLE</p>
             </div>
 
-            {/* BATTLE STAGE: THE RHOMBUS LAYOUT */}
-            <div className="relative flex flex-col md:flex-row justify-center items-stretch gap-8 md:gap-0 mt-8 mb-16 min-h-[450px]">
-
+            {/* --- THE ARENA (RHOMBUS LAYOUT) --- */}
+            <div className="relative flex flex-col md:flex-row justify-center items-stretch min-h-[500px] mb-12 px-4 md:px-0">
+                
                 {/* VS Badge (Absolute Center) */}
-                <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none hidden md:block">
-                    <div className="font-pixel text-4xl md:text-8xl text-white drop-shadow-[0_0_20px_rgba(255,255,255,1)] animate-pulse italic transform -skew-x-12">
-                        VS
-                    </div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40 pointer-events-none md:block hidden">
+                     <div className="relative">
+                        <h2 className="font-pixel text-6xl text-white italic drop-shadow-[0_0_20px_rgba(255,255,255,0.8)] z-10 relative">VS</h2>
+                        <div className="absolute inset-0 blur-xl bg-white/30 rounded-full"></div>
+                     </div>
                 </div>
 
-                {/* Mobile VS Badge */}
-                <div className="md:hidden text-center font-pixel text-4xl text-white animate-pulse mb-4">VS</div>
-
-                {/* PLAYER 1 (LEFT) - Slanted / */}
-                {/* Outer container applies the skew shape (-skew-x-6 -> /) */}
-                <div className="w-full md:w-1/2 relative z-10 focus-within:z-50 transition-all duration-300 md:pr-12">
-                    <div className="h-full transform md:-skew-x-6 border-4 border-cyan-400 bg-black shadow-[0_0_30px_rgba(34,211,238,0.15)] hover:shadow-[0_0_50px_rgba(34,211,238,0.3)] transition-all overflow-visible flex flex-col relative group">
-                        
-                        {/* Glow Overlay */}
-                        <div className="absolute inset-0 bg-cyan-400/5 pointer-events-none group-hover:bg-cyan-400/10 transition-colors"></div>
-
-                        {/* Content Wrapper (Counter-skew to keep text straight) */}
-                        <div className="transform md:skew-x-6 p-8 md:p-12 flex flex-col h-full items-center text-center relative z-10">
-                            <h2 className="font-pixel text-2xl md:text-3xl text-cyan-400 mb-8 drop-shadow-[0_0_5px_rgba(34,211,238,0.8)]">PLAYER 1</h2>
-
-                            {/* Search Input */}
-                            <div className="w-full mb-6 relative">
+                {/* --- PLAYER 1 (LEFT) --- */}
+                {/* Container: Skewed Right / */}
+                <div className="relative w-full md:w-1/2 group z-20 focus-within:z-50 md:-mr-10 mb-8 md:mb-0">
+                    <div className="h-full bg-black/80 border-2 border-retro-neon md:transform md:-skew-x-12 shadow-[0_0_30px_rgba(0,255,157,0.15)] overflow-visible relative transition-all duration-300 hover:shadow-[0_0_50px_rgba(0,255,157,0.3)] hover:border-retro-neon/100">
+                        {/* Inner Content: Counter Skewed */}
+                        <div className="md:transform md:skew-x-12 h-full flex flex-col p-8 md:p-12 items-center">
+                            
+                            <div className="w-full mb-6">
+                                <h3 className="font-pixel text-xl text-retro-neon text-center mb-2">PLAYER 1</h3>
                                 <ConsoleSearch 
-                                    consoles={allConsoles}
+                                    consoles={allConsoles} 
                                     onSelect={(slug, name) => handleSelect('a', slug, name)}
                                     themeColor="cyan"
                                     currentSelection={left.details?.name}
                                 />
                             </div>
 
-                            {/* Image Stage */}
-                            <div className="flex-1 w-full flex items-center justify-center my-6 min-h-[180px] relative">
-                                {left.details ? (
-                                    <div className="relative w-full h-full flex items-center justify-center animate-fadeIn">
-                                        <div className="absolute inset-0 bg-cyan-400/20 blur-2xl rounded-full opacity-50"></div>
-                                        <img 
-                                            src={left.selectedVariant?.image_url || left.details.image_url} 
-                                            className="max-w-full max-h-[200px] object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] relative z-10 hover:scale-105 transition-transform duration-300" 
-                                            alt="Player 1"
-                                        />
-                                    </div>
+                            <div className="flex-1 flex flex-col items-center justify-center w-full min-h-[250px] relative">
+                                {left.loading ? (
+                                    <div className="animate-spin w-12 h-12 border-4 border-retro-neon border-t-transparent rounded-full"></div>
+                                ) : left.details ? (
+                                    <>
+                                        {/* Image */}
+                                        <div className="relative w-full h-48 mb-6 flex items-center justify-center">
+                                            <img 
+                                                src={left.selectedVariant?.image_url || left.details.image_url} 
+                                                className="max-h-full max-w-full object-contain drop-shadow-2xl animate-slideDown"
+                                                alt={left.details.name}
+                                            />
+                                        </div>
+
+                                        {/* Variant Selector */}
+                                        {left.details.variants && left.details.variants.length > 1 && (
+                                            <div className="w-full max-w-[200px]">
+                                                <select 
+                                                    className="w-full bg-black/50 border border-retro-neon text-retro-neon font-mono text-xs p-2 outline-none text-center appearance-none cursor-pointer hover:bg-retro-neon hover:text-black transition-colors"
+                                                    value={left.selectedVariant?.slug || ''}
+                                                    onChange={(e) => handleVariantChange('a', e.target.value)}
+                                                >
+                                                    {left.details.variants.map(v => (
+                                                        <option key={v.id} value={v.slug}>{v.variant_name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        )}
+                                    </>
                                 ) : (
-                                    <div className="flex flex-col items-center opacity-30 select-none">
-                                        <div className="font-pixel text-6xl text-cyan-400 mb-2">?</div>
-                                        <div className="font-mono text-xs text-cyan-400 uppercase tracking-widest">SELECT SYSTEM</div>
+                                    <div className="text-center opacity-30">
+                                        <div className="font-pixel text-6xl text-retro-neon mb-4">?</div>
+                                        <p className="font-mono text-retro-neon text-sm">SELECT SYSTEM</p>
                                     </div>
                                 )}
                             </div>
-
-                            {/* Variant Selector */}
-                            {left.details && (
-                                <div className="w-full mt-auto border-t border-cyan-400/30 pt-4">
-                                    <div className="text-[10px] font-mono text-cyan-400 mb-1 uppercase tracking-widest text-left">
-                                        Hardware Spec
-                                    </div>
-                                    <VariantSelect 
-                                        variants={left.details.variants || []}
-                                        selectedId={left.selectedVariant?.id || null}
-                                        onSelect={(id) => handleVariantSelect('a', id)}
-                                        themeColor="cyan"
-                                    />
-                                </div>
-                            )}
                         </div>
                     </div>
                 </div>
 
-                {/* PLAYER 2 (RIGHT) - Slanted \ */}
-                {/* Outer container applies the skew shape (skew-x-6 -> \) */}
-                <div className="w-full md:w-1/2 relative z-10 focus-within:z-50 transition-all duration-300 md:pl-12">
-                     <div className="h-full transform md:skew-x-6 border-4 border-fuchsia-500 bg-black shadow-[0_0_30px_rgba(217,70,239,0.15)] hover:shadow-[0_0_50px_rgba(217,70,239,0.3)] transition-all overflow-visible flex flex-col relative group">
-                        
-                        {/* Glow Overlay */}
-                        <div className="absolute inset-0 bg-fuchsia-500/5 pointer-events-none group-hover:bg-fuchsia-500/10 transition-colors"></div>
-
-                        {/* Content Wrapper (Counter-skew) */}
-                        <div className="transform md:-skew-x-6 p-8 md:p-12 flex flex-col h-full items-center text-center relative z-10">
-                            <h2 className="font-pixel text-2xl md:text-3xl text-fuchsia-500 mb-8 drop-shadow-[0_0_5px_rgba(217,70,239,0.8)]">PLAYER 2</h2>
-                            
-                            {/* Search Input */}
-                            <div className="w-full mb-6 relative">
+                {/* --- PLAYER 2 (RIGHT) --- */}
+                {/* Container: Skewed Left \ */}
+                <div className="relative w-full md:w-1/2 group z-20 focus-within:z-50 md:-ml-10">
+                    <div className="h-full bg-black/80 border-2 border-retro-pink md:transform md:skew-x-12 shadow-[0_0_30px_rgba(255,0,255,0.15)] overflow-visible relative transition-all duration-300 hover:shadow-[0_0_50px_rgba(255,0,255,0.3)] hover:border-retro-pink/100">
+                        {/* Inner Content: Counter Skewed */}
+                        <div className="md:transform md:-skew-x-12 h-full flex flex-col p-8 md:p-12 items-center">
+                             
+                             <div className="w-full mb-6">
+                                <h3 className="font-pixel text-xl text-retro-pink text-center mb-2">PLAYER 2</h3>
                                 <ConsoleSearch 
-                                    consoles={allConsoles}
+                                    consoles={allConsoles} 
                                     onSelect={(slug, name) => handleSelect('b', slug, name)}
                                     themeColor="pink"
                                     currentSelection={right.details?.name}
                                 />
                             </div>
 
-                            {/* Image Stage */}
-                             <div className="flex-1 w-full flex items-center justify-center my-6 min-h-[180px] relative">
-                                {right.details ? (
-                                    <div className="relative w-full h-full flex items-center justify-center animate-fadeIn">
-                                        <div className="absolute inset-0 bg-fuchsia-500/20 blur-2xl rounded-full opacity-50"></div>
-                                        <img 
-                                            src={right.selectedVariant?.image_url || right.details.image_url} 
-                                            className="max-w-full max-h-[200px] object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] relative z-10 hover:scale-105 transition-transform duration-300" 
-                                            alt="Player 2"
-                                        />
-                                    </div>
+                            <div className="flex-1 flex flex-col items-center justify-center w-full min-h-[250px] relative">
+                                {right.loading ? (
+                                    <div className="animate-spin w-12 h-12 border-4 border-retro-pink border-t-transparent rounded-full"></div>
+                                ) : right.details ? (
+                                    <>
+                                        {/* Image */}
+                                        <div className="relative w-full h-48 mb-6 flex items-center justify-center">
+                                            <img 
+                                                src={right.selectedVariant?.image_url || right.details.image_url} 
+                                                className="max-h-full max-w-full object-contain drop-shadow-2xl animate-slideDown"
+                                                alt={right.details.name}
+                                            />
+                                        </div>
+
+                                        {/* Variant Selector */}
+                                        {right.details.variants && right.details.variants.length > 1 && (
+                                            <div className="w-full max-w-[200px]">
+                                                <select 
+                                                    className="w-full bg-black/50 border border-retro-pink text-retro-pink font-mono text-xs p-2 outline-none text-center appearance-none cursor-pointer hover:bg-retro-pink hover:text-black transition-colors"
+                                                    value={right.selectedVariant?.slug || ''}
+                                                    onChange={(e) => handleVariantChange('b', e.target.value)}
+                                                >
+                                                    {right.details.variants.map(v => (
+                                                        <option key={v.id} value={v.slug}>{v.variant_name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        )}
+                                    </>
                                 ) : (
-                                    <div className="flex flex-col items-center opacity-30 select-none">
-                                        <div className="font-pixel text-6xl text-fuchsia-500 mb-2">?</div>
-                                        <div className="font-mono text-xs text-fuchsia-500 uppercase tracking-widest">SELECT SYSTEM</div>
+                                    <div className="text-center opacity-30">
+                                        <div className="font-pixel text-6xl text-retro-pink mb-4">?</div>
+                                        <p className="font-mono text-retro-pink text-sm">SELECT SYSTEM</p>
                                     </div>
                                 )}
                             </div>
 
-                            {/* Variant Selector */}
-                            {right.details && (
-                                <div className="w-full mt-auto border-t border-fuchsia-500/30 pt-4">
-                                    <div className="text-[10px] font-mono text-fuchsia-500 mb-1 uppercase tracking-widest text-left">
-                                        Hardware Spec
-                                    </div>
-                                    <VariantSelect 
-                                        variants={right.details.variants || []}
-                                        selectedId={right.selectedVariant?.id || null}
-                                        onSelect={(id) => handleVariantSelect('b', id)}
-                                        themeColor="pink"
-                                    />
-                                </div>
-                            )}
                         </div>
                     </div>
                 </div>
 
             </div>
 
-            {/* FIGHT BUTTON */}
-            {(left.details || right.details) && (
-                <div className="flex justify-center mb-12 animate-fadeIn">
+            {/* --- BATTLE REPORT --- */}
+            <div className="border-t-2 border-retro-grid pt-8 animate-fadeIn">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="font-pixel text-xl text-white">BATTLE REPORT</h3>
                     <button 
-                        onClick={resetBattle}
-                        className="font-pixel text-xs bg-red-600 text-white px-8 py-3 hover:bg-red-500 border-2 border-red-400 shadow-[0_0_20px_rgba(220,38,38,0.5)] transition-all uppercase tracking-widest"
+                        onClick={() => { playClick(); setShowDiffOnly(!showDiffOnly); }}
+                        onMouseEnter={playHover}
+                        className={`font-mono text-xs border px-3 py-1 transition-all ${showDiffOnly ? 'bg-white text-black border-white' : 'text-gray-500 border-gray-700 hover:border-white'}`}
                     >
-                        RESET MATCH
+                        [ {showDiffOnly ? 'SHOW ALL' : 'DIFF ONLY'} ]
                     </button>
                 </div>
-            )}
-            
-            {/* BATTLE REPORT (Comparison Table) */}
-            {left.selectedVariant && right.selectedVariant && (
-                <div className="animate-slideDown border-2 border-white/20 bg-black/80 backdrop-blur-md shadow-2xl relative">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 via-white to-fuchsia-500"></div>
-                    
-                    <div className="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
-                        <h3 className="font-pixel text-sm md:text-lg text-white">BATTLE REPORT</h3>
-                        <div className="flex items-center gap-2">
-                            <label className="text-[10px] font-mono text-gray-400 uppercase cursor-pointer">Diff Only</label>
-                            <input 
-                                type="checkbox" 
-                                checked={showDiffOnly}
-                                onChange={(e) => setShowDiffOnly(e.target.checked)}
-                                className="accent-retro-neon"
-                            />
+
+                <div className="bg-black/40 border border-retro-grid p-4 md:p-8">
+                    {left.selectedVariant && right.selectedVariant ? (
+                        <div className="space-y-1">
+                            {METRICS.map(metric => (
+                                <ComparisonRow 
+                                    key={metric.key} 
+                                    metric={metric} 
+                                    varA={left.selectedVariant!} 
+                                    varB={right.selectedVariant!} 
+                                    showDiffOnly={showDiffOnly}
+                                />
+                            ))}
                         </div>
-                    </div>
-
-                    <div className="p-4 md:p-8">
-                        {/* Headers */}
-                        <div className="grid grid-cols-12 gap-2 mb-6 font-pixel text-xs md:text-sm text-gray-500 uppercase border-b border-white/10 pb-2">
-                            <div className="col-span-4 text-right text-cyan-400 truncate pr-2">{left.details?.name}</div>
-                            <div className="col-span-4 text-center">Metric</div>
-                            <div className="col-span-4 text-left text-fuchsia-500 truncate pl-2">{right.details?.name}</div>
+                    ) : (
+                        <div className="text-center py-12">
+                            <div className="font-mono text-gray-500 mb-2">AWAITING FIGHTER SELECTION...</div>
+                            <div className="w-full h-1 bg-retro-grid/30 rounded overflow-hidden">
+                                <div className="h-full bg-retro-grid/50 w-1/3 animate-pulse"></div>
+                            </div>
                         </div>
-
-                        {/* Categories */}
-                        {['Identity', 'Silicon', 'Memory', 'Display', 'Power', 'Physical'].map(cat => {
-                            const catMetrics = METRICS.filter(m => m.category === cat);
-                            // Only show category if it has visible rows
-                            const hasVisibleRows = catMetrics.some(m => {
-                                const vA = left.selectedVariant?.[m.key];
-                                const vB = right.selectedVariant?.[m.key];
-                                if (!vA && !vB) return false;
-                                if (showDiffOnly && vA === vB) return false;
-                                return true;
-                            });
-
-                            if (!hasVisibleRows) return null;
-
-                            return (
-                                <div key={cat} className="mb-8">
-                                    <div className="text-[10px] font-mono text-retro-neon uppercase tracking-widest mb-3 pl-2 border-l-2 border-retro-neon opacity-70">
-                                        {cat}
-                                    </div>
-                                    <div className="space-y-1">
-                                        {catMetrics.map(metric => (
-                                            <ComparisonRow 
-                                                key={metric.key} 
-                                                metric={metric} 
-                                                varA={left.selectedVariant!} 
-                                                varB={right.selectedVariant!}
-                                                showDiffOnly={showDiffOnly}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
+                    )}
                 </div>
-            )}
+            </div>
         </div>
     );
 }
 
 export default function ArenaPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center font-pixel text-white">LOADING ARENA...</div>}>
+        <Suspense fallback={<div className="text-center p-20 font-mono text-retro-neon">LOADING ARENA...</div>}>
             <ArenaContent />
         </Suspense>
     );
