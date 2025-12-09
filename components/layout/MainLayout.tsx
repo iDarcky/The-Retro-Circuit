@@ -152,6 +152,22 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         </div>
 
         <nav className="flex-1 py-6 space-y-2 overflow-y-auto custom-scrollbar">
+           {/* SEARCH TRIGGER */}
+           <div className="px-4 mb-6">
+                <button 
+                    onClick={openSearch}
+                    className="w-full bg-black/40 border border-white/10 text-gray-500 font-mono text-sm px-3 py-2 flex justify-between items-center hover:border-retro-neon hover:text-white transition-all group cursor-pointer"
+                >
+                    <span className="flex items-center gap-2">
+                        <IconSearch className="w-4 h-4" />
+                        <span className="tracking-wider">QUICK FIND</span>
+                    </span>
+                    <span className="text-[10px] border border-gray-700 px-1.5 py-0.5 rounded text-gray-600 group-hover:text-retro-neon group-hover:border-retro-neon">
+                        CMD+K
+                    </span>
+                </button>
+           </div>
+
            <div className="px-6 mb-2 text-xs font-mono text-retro-neon uppercase tracking-widest opacity-80">MAINFRAME</div>
            <SidebarItem to="/" icon={IconHome} label="CONTROL ROOM" exact />
            <SidebarItem to="/signals" icon={IconNews} label="SIGNALS" />
@@ -198,22 +214,6 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
 
       {/* MAIN CONTENT AREA */}
       <main className="flex-1 relative z-10 flex flex-col h-screen md:h-screen overflow-hidden pt-16 md:pt-0">
-        {/* Global Search Trigger (Desktop) */}
-        <div className="hidden md:block p-4 border-b border-retro-grid sticky top-0 bg-retro-dark/95 z-40 backdrop-blur">
-            <button 
-                onClick={openSearch}
-                className="w-full bg-black/50 border border-retro-grid text-gray-500 font-mono text-sm px-4 py-2 flex justify-between items-center hover:border-retro-neon hover:text-white transition-colors group"
-            >
-                <span className="flex items-center gap-2">
-                    <IconSearch className="w-4 h-4" />
-                    SEARCH DATABASE...
-                </span>
-                <span className="text-[10px] border border-gray-700 px-1.5 py-0.5 rounded text-gray-600 group-hover:text-retro-neon group-hover:border-retro-neon">
-                    CMD+K
-                </span>
-            </button>
-        </div>
-        
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto custom-scrollbar bg-retro-dark/80 pb-24 md:pb-0">
              {children}
