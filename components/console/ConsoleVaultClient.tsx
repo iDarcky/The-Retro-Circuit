@@ -59,20 +59,21 @@ const ConsoleVaultClient: FC = () => {
 
     // Filter: Year
     result = result.filter(c => {
-        const y = c.release_year || 9999;
+        const y = c.release_year;
+        if (!y) return true; // Keep items with unknown year
         return y >= filters.minYear && y <= filters.maxYear;
     });
 
     // Filter: Form Factor
     if (filters.form_factors.length > 0) {
         result = result.filter(c => {
+            if (!c.form_factor) return false;
             // Case-insensitive check
-            const ff = (c.form_factor || '').toLowerCase();
-            return filters.form_factors.some(filterFF => ff.includes(filterFF.toLowerCase()));
+            return filters.form_factors.some(ff => c.form_factor?.toLowerCase() === ff.toLowerCase());
         });
     }
 
-    // Filter: Screen Tech (The Hard Part - check variants)
+    // Filter: Screen Tech (Check Variants)
     if (filters.panel_types.length > 0) {
         result = result.filter(c => {
             const variants = c.variants || [];
@@ -85,7 +86,11 @@ const ConsoleVaultClient: FC = () => {
     }
 
     // Sort: Newest First
-    result.sort((a, b) => (b.release_year || 0) - (a.release_year || 0));
+    result.sort((a, b) => {
+        const yA = a.release_year || 9999;
+        const yB = b.release_year || 9999;
+        return yB - yA;
+    });
 
     setFilteredConsoles(result);
     setPage(1); // Reset pagination on filter change
@@ -107,6 +112,15 @@ const ConsoleVaultClient: FC = () => {
           
           return { ...prev, [category]: updated };
       });
+  };
+
+  // Helper: Form Factor Badge Style
+  const getFormFactorColor = (factor: string) => {
+      const f = factor.toLowerCase();
+      if (f === 'vertical') return 'text-yellow-400 border-yellow-400';
+      if (f === 'horizontal') return 'text-retro-blue border-retro-blue';
+      if (f === 'clamshell') return 'text-retro-pink border-retro-pink';
+      return 'text-gray-400 border-gray-400';
   };
 
   // Pagination Logic
@@ -256,10 +270,11 @@ const ConsoleVaultClient: FC = () => {
                                          ) : (
                                              <span className="font-pixel text-gray-700 text-2xl">?</span>
                                          )}
-                                         {/* Tech Badge Overlay */}
-                                         {(console.variants || []).some(v => (v.display_type || '').includes('OLED')) && (
-                                             <div className="absolute top-2 right-2 bg-black/80 border border-retro-pink text-retro-pink px-1.5 py-0.5 text-[9px] font-mono">
-                                                 OLED
+                                         
+                                         {/* Form Factor Badge */}
+                                         {console.form_factor && (
+                                             <div className={`absolute top-2 right-2 bg-black/90 border px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase shadow-lg z-10 ${getFormFactorColor(console.form_factor)}`}>
+                                                 {console.form_factor}
                                              </div>
                                          )}
                                     </div>

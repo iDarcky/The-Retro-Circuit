@@ -1,15 +1,16 @@
-
-
 import { supabase } from "../supabase/singleton";
 import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant } from "../types";
 
 export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
     try {
-        // Fetch everything. No range limit (or very high limit).
-        // Ensure we get variants for client-side filtering
+        // The 'Vacuum' Strategy: Fetch everything including nested variants
         const { data, error } = await supabase
             .from('consoles')
-            .select('*, manufacturer:manufacturer(*), variants:console_variants(*)')
+            .select(`
+                *,
+                manufacturer:manufacturer(*),
+                variants:console_variants(*)
+            `)
             .order('name', { ascending: true });
 
         if (error) {
@@ -46,9 +47,6 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
             .select('*, manufacturer:manufacturer(*), variants:console_variants(*)', { count: 'exact' });
 
         if (filters.manufacturer_id) query = query.eq('manufacturer_id', filters.manufacturer_id);
-        
-        // Removed generation filtering as it's no longer a column in the console table.
-        // if (filters.generations.length > 0) query = query.in('generation', filters.generations);
         
         if (filters.form_factors.length > 0) query = query.in('form_factor', filters.form_factors);
 
@@ -250,7 +248,6 @@ export const getConsolesByManufacturer = async (manufacturerId: string): Promise
     }
 }
 
-// Updated: Only creates the Console Identity (Folder). Specs are handled via variants.
 export const addConsole = async (
     consoleData: Omit<ConsoleDetails, 'id' | 'manufacturer' | 'specs' | 'variants'>
 ): Promise<{ success: boolean, message?: string, id?: string }> => {
