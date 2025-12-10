@@ -5,10 +5,15 @@ import { type FC } from 'react';
 import { EmulationProfile } from '../../lib/types';
 
 interface EmulationGridProps {
-    profile?: EmulationProfile | null;
+    profile?: EmulationProfile | EmulationProfile[] | null | any;
 }
 
-const EmulationGrid: FC<EmulationGridProps> = ({ profile }) => {
+const EmulationGrid: FC<EmulationGridProps> = ({ profile: rawProfile }) => {
+    // Task 1: Data Access Logic
+    // Supabase might return an array (relation) or we might have normalized it to an object.
+    const profile = Array.isArray(rawProfile) ? rawProfile[0] : rawProfile;
+
+    // Safety Check: Don't render if no profile exists
     if (!profile) return null;
 
     const getStatusStyle = (status?: string) => {
@@ -34,6 +39,11 @@ const EmulationGrid: FC<EmulationGridProps> = ({ profile }) => {
 
     return (
         <div className="bg-retro-dark border border-retro-grid mb-6 relative group overflow-hidden animate-fadeIn">
+             {/* Task 2: Render Debug (Temporary) */}
+             <pre className="text-[9px] font-mono text-retro-pink bg-black p-2 border-b border-retro-pink/30 overflow-x-auto max-h-20 hidden group-hover:block">
+                DEBUG: {JSON.stringify(profile, null, 2)}
+             </pre>
+
              {/* Header */}
             <div className="bg-black/40 border-b border-retro-grid px-4 py-2 flex justify-between items-center">
                 <h3 className="font-pixel text-[10px] text-retro-neon uppercase tracking-widest">EMULATION PERFORMANCE</h3>
@@ -44,6 +54,7 @@ const EmulationGrid: FC<EmulationGridProps> = ({ profile }) => {
             </div>
 
             <div className="p-4">
+                {/* Task 3: The Badges */}
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {systems.map((sys) => (
                         <div key={sys.name} className={`border px-3 py-2 flex flex-col items-center justify-center text-center transition-all hover:brightness-110 ${getStatusStyle(sys.state)}`}>
