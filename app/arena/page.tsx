@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, Suspense, type FC, type ChangeEvent, type Dispatch, type SetStateAction } from 'react';
@@ -63,11 +64,10 @@ const METRICS: ComparisonMetric[] = [
     { label: 'Expandable', key: 'storage_expandable', type: 'boolean' },
 
     // --- POWER ---
-    { label: 'Battery Capacity', key: 'battery_mah', type: 'number', unit: ' mAh' },
-    { label: 'Battery Energy', key: 'battery_wh', type: 'number', unit: ' Wh' },
+    { label: 'Battery Capacity', key: 'battery_capacity_mah', type: 'number', unit: ' mAh' },
+    { label: 'Battery Energy', key: 'battery_capacity_wh', type: 'number', unit: ' Wh' },
     { label: 'Charging Speed', key: 'charging_speed_w', type: 'number', unit: 'W' },
-    { label: 'Charging Port', key: 'charging_port', type: 'string' },
-    { label: 'TDP', key: 'tdp_range_w', type: 'string' },
+    { label: 'TDP', key: 'tdp_wattage', type: 'number', unit: 'W' },
 
     // --- CONNECTIVITY & IO ---
     { label: 'Wi-Fi', key: 'wifi_specs', type: 'string' },
@@ -79,14 +79,13 @@ const METRICS: ComparisonMetric[] = [
     // --- AUDIO & MISC ---
     { label: 'Speakers', key: 'audio_speakers', type: 'string' },
     { label: 'Audio Tech', key: 'audio_tech', type: 'string' },
-    { label: 'Headphone Jack', key: 'headphone_jack', type: 'boolean' },
-    { label: 'Microphone', key: 'microphone', type: 'boolean' },
+    { label: 'Headphone Jack', key: 'has_headphone_jack', type: 'boolean' },
+    { label: 'Microphone', key: 'has_microphone', type: 'boolean' },
     { label: 'Camera', key: 'camera_specs', type: 'string' },
     { label: 'Biometrics', key: 'biometrics', type: 'string' },
 
     // --- CONTROLS & SENSORS ---
     { label: 'Input Layout', key: 'input_layout', type: 'string' },
-    { label: 'D-Pad', key: 'dpad_type', type: 'string' },
     { label: 'D-Pad Mech', key: 'dpad_mechanism', type: 'string' },
     { label: 'D-Pad Shape', key: 'dpad_shape', type: 'string' },
     { label: 'Stick Mech', key: 'thumbstick_mechanism', type: 'string' },
@@ -104,7 +103,7 @@ const METRICS: ComparisonMetric[] = [
     { label: 'Weight', key: 'weight_g', type: 'number', unit: 'g', lowerIsBetter: true },
     { label: 'Body Material', key: 'body_material', type: 'string' },
     { label: 'Cooling', key: 'cooling_solution', type: 'string' },
-    { label: 'Colors', key: 'colors', type: 'string' },
+    { label: 'Colors', key: 'available_colors', type: 'string' },
 ];
 
 interface SelectionState {

@@ -261,19 +261,22 @@ export interface ConsoleVariant {
   second_screen_resolution_y?: number;
   second_screen_touch?: boolean;
 
-  // Power
-  battery_mah?: number;
-  battery_wh?: number;
+  // Power & Chassis
+  battery_capacity_mah?: number;
+  battery_capacity_wh?: number;
   battery_type?: string;
   charging_speed_w?: number;
-  charging_port?: string;
-  tdp_range_w?: string;
+  tdp_wattage?: number;
+  weight_g?: number;
+  cooling_solution?: string;
+  body_material?: string;
+  available_colors?: string;
 
   // Audio & Misc
   audio_speakers?: string;
   audio_tech?: string;
-  headphone_jack?: boolean;
-  microphone?: boolean;
+  has_headphone_jack?: boolean;
+  has_microphone?: boolean;
   camera_specs?: string;
   biometrics?: string;
   
@@ -290,7 +293,6 @@ export interface ConsoleVariant {
   // Controls
   input_layout?: string;
   other_buttons?: string;
-  dpad_type?: string;
   dpad_mechanism?: string;
   dpad_shape?: string;
   thumbstick_mechanism?: string;
@@ -303,15 +305,11 @@ export interface ConsoleVariant {
   action_button_mechanism?: string;
   has_back_buttons?: boolean;
 
-  // Body
+  // Dimensions
   dimensions?: string;
   width_mm?: number;
   height_mm?: number;
   depth_mm?: number;
-  weight_g?: number;
-  body_material?: string;
-  cooling_solution?: string;
-  colors?: string;
   ui_skin?: string;
 
   // Emulation
@@ -364,7 +362,6 @@ export const ConsoleVariantSchema = z.object({
   gpu_teraflops: safeNumber,
   
   os: safeString,
-  tdp_range_w: safeString,
 
   // Memory
   ram_gb: safeNumber,
@@ -392,18 +389,22 @@ export const ConsoleVariantSchema = z.object({
   second_screen_resolution_y: safeNumber,
   second_screen_touch: safeBoolean,
 
-  // Power
-  battery_mah: safeNumber,
-  battery_wh: safeNumber,
+  // Power & Chassis
+  battery_capacity_mah: safeNumber,
+  battery_capacity_wh: safeNumber,
   battery_type: safeString,
   charging_speed_w: safeNumber,
-  charging_port: safeString,
-  
+  tdp_wattage: safeNumber,
+  weight_g: safeNumber,
+  cooling_solution: safeString,
+  body_material: safeString,
+  available_colors: safeString,
+
   // Audio & Misc
   audio_speakers: safeString,
   audio_tech: safeString,
-  headphone_jack: safeBoolean,
-  microphone: safeBoolean,
+  has_headphone_jack: safeBoolean,
+  has_microphone: safeBoolean,
   camera_specs: safeString,
   biometrics: safeString,
 
@@ -420,7 +421,6 @@ export const ConsoleVariantSchema = z.object({
   // Controls
   input_layout: safeString,
   other_buttons: safeString,
-  dpad_type: safeString,
   dpad_mechanism: safeString,
   dpad_shape: safeString,
   thumbstick_mechanism: safeString,
@@ -438,10 +438,6 @@ export const ConsoleVariantSchema = z.object({
   width_mm: safeNumber,
   height_mm: safeNumber,
   depth_mm: safeNumber,
-  weight_g: safeNumber,
-  body_material: safeString,
-  cooling_solution: safeString,
-  colors: safeString,
   ui_skin: safeString,
 });
 
@@ -483,7 +479,6 @@ export const VARIANT_FORM_GROUPS = [
             // Row 5: GPU Performance
             { label: 'GPU Clock (MHz)', key: 'gpu_clock_mhz', type: 'number', required: false, width: 'third' },
             { label: 'GPU Teraflops', key: 'gpu_teraflops', type: 'number', required: false, step: '0.01', width: 'third' },
-            { label: 'TDP / Wattage', key: 'tdp_range_w', type: 'text', required: false, width: 'third' },
         ]
     },
     {
@@ -590,8 +585,8 @@ export const VARIANT_FORM_GROUPS = [
         title: "POWER & CHASSIS",
         fields: [
             // Row 1: Battery Stats
-            { label: 'Capacity (mAh)', key: 'battery_mah', type: 'number', required: false, width: 'third' },
-            { label: 'Capacity (Wh)', key: 'battery_wh', type: 'number', required: false, width: 'third' },
+            { label: 'Capacity (mAh)', key: 'battery_capacity_mah', type: 'number', required: false, width: 'third' },
+            { label: 'Capacity (Wh)', key: 'battery_capacity_wh', type: 'number', required: false, width: 'third' },
             { label: 'Battery Type', key: 'battery_type', type: 'text', required: false, width: 'third', note: 'Li-Ion, Li-Po, AA...' },
 
             // Row 2: Charging & Weight
@@ -599,14 +594,17 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Weight (g)', key: 'weight_g', type: 'number', required: false, width: 'third' },
             { label: 'Cooling', key: 'cooling_solution', type: 'text', required: false, width: 'third', note: 'Active Fan, Passive...' },
 
-            // Row 3: Dimensions
+            // Row 3: TDP
+            { label: 'TDP (W)', key: 'tdp_wattage', type: 'number', required: false, width: 'full', note: 'Thermal Design Power' },
+
+            // Row 4: Dimensions
             { label: 'Width (mm)', key: 'width_mm', type: 'number', required: false, width: 'third' },
             { label: 'Height (mm)', key: 'height_mm', type: 'number', required: false, width: 'third' },
             { label: 'Thickness (mm)', key: 'depth_mm', type: 'number', required: false, width: 'third' },
 
-            // Row 4: Build
+            // Row 5: Build
             { label: 'Body Material', key: 'body_material', type: 'text', required: false, width: 'half' },
-            { label: 'Available Colors', key: 'colors', type: 'text', required: false, width: 'half' },
+            { label: 'Available Colors', key: 'available_colors', type: 'text', required: false, width: 'half' },
         ]
     },
     {
@@ -614,8 +612,8 @@ export const VARIANT_FORM_GROUPS = [
         fields: [
             // Row 1: Audio
             { label: 'Speakers', key: 'audio_speakers', type: 'text', required: false, width: 'half', note: 'Front-facing Stereo, Mono...' },
-            { label: 'Headphone Jack?', key: 'headphone_jack', type: 'checkbox', required: false, width: 'quarter' },
-            { label: 'Microphone?', key: 'microphone', type: 'checkbox', required: false, width: 'quarter' },
+            { label: 'Headphone Jack?', key: 'has_headphone_jack', type: 'checkbox', required: false, width: 'quarter' },
+            { label: 'Microphone?', key: 'has_microphone', type: 'checkbox', required: false, width: 'quarter' },
 
             // Row 2: Extras
             { label: 'Biometrics', key: 'biometrics', type: 'text', required: false, width: 'half', note: 'Fingerprint Sensor, Face Unlock...' },
