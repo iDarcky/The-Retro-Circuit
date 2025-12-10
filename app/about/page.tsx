@@ -1,5 +1,4 @@
 
-import Link from 'next/link';
 import { siteConfig } from '../../config/site';
 import Button from '../../components/ui/Button';
 
