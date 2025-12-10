@@ -220,27 +220,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                             : 'Define the hardware capabilities. You can create multiple variants (e.g. Pro, Slim, OLED) for this console.'}
                     </p>
                 </div>
-                {/* Emulation Manager Toggle */}
-                {isEditMode && initialData?.id && (
-                     <Button 
-                        onClick={() => setShowEmulationForm(!showEmulationForm)}
-                        variant="secondary"
-                        className={`text-xs ${showEmulationForm ? 'bg-retro-blue text-black' : ''}`}
-                     >
-                        {showEmulationForm ? 'CLOSE MANAGER' : 'MANAGE EMULATION'}
-                     </Button>
-                )}
             </div>
-
-            {/* Emulation Manager (Inline) */}
-            {isEditMode && showEmulationForm && initialData?.id && (
-                <div className="mb-8 border-2 border-retro-blue shadow-[0_0_20px_rgba(59,130,246,0.2)]">
-                    <EmulationForm 
-                        variantId={initialData.id} 
-                        onSave={() => onSuccess("EMULATION DATA SYNCED.")} 
-                    />
-                </div>
-            )}
 
             <form className="space-y-6">
                 {/* 2. Console Selector & Template Copy */}
@@ -388,6 +368,45 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                         );
                     })}
                 </div>
+
+                {/* NEW: Emulation Performance Section (Bottom of Form) */}
+                {isEditMode && initialData?.id && (
+                    <div className="mt-8 border-t-2 border-dashed border-retro-grid pt-8 animate-fadeIn">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-pixel text-sm text-retro-blue">
+                                EXTENDED CONFIGURATION
+                            </h3>
+                        </div>
+                        
+                        {!showEmulationForm ? (
+                            <button
+                                type="button"
+                                onClick={() => setShowEmulationForm(true)}
+                                className="w-full py-4 border-2 border-retro-blue bg-retro-blue/10 text-retro-blue font-pixel text-sm hover:bg-retro-blue hover:text-black transition-all flex items-center justify-center gap-3 shadow-[0_0_15px_rgba(59,130,246,0.2)] group"
+                            >
+                                <span className="w-2 h-2 bg-retro-blue rounded-full animate-pulse group-hover:bg-black"></span>
+                                [ EDIT EMULATION PERFORMANCE ]
+                            </button>
+                        ) : (
+                            <div className="border-2 border-retro-blue shadow-[0_0_20px_rgba(59,130,246,0.2)] relative">
+                                <div className="bg-retro-blue/20 p-2 flex justify-between items-center border-b border-retro-blue/50">
+                                    <span className="text-[10px] font-mono text-retro-blue px-2">PERFORMANCE MATRIX</span>
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setShowEmulationForm(false)}
+                                        className="text-[10px] font-mono text-retro-blue hover:text-white uppercase px-2 py-1 hover:bg-retro-blue/20"
+                                    >
+                                        [ CLOSE MANAGER ]
+                                    </button>
+                                </div>
+                                <EmulationForm 
+                                    variantId={initialData.id} 
+                                    onSave={() => onSuccess("EMULATION DATA SYNCED.")} 
+                                />
+                            </div>
+                        )}
+                    </div>
+                )}
                 
                 {/* 4. Footer Actions */}
                 <div className="flex justify-end gap-4 pt-6 border-t border-retro-grid sticky bottom-0 bg-retro-dark/95 backdrop-blur p-4 z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
