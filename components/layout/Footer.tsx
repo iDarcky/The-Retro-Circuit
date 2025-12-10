@@ -6,7 +6,7 @@ import { siteConfig } from '../../config/site';
 
 const Footer: FC = () => {
   return (
-    <footer className="w-full bg-black border-t border-white/10 shrink-0 z-10">
+    <footer className="w-full bg-black shrink-0 z-10 relative before:absolute before:top-0 before:left-0 before:w-full before:h-[1px] before:bg-gradient-to-r before:from-pink-500 before:via-green-500 before:to-cyan-500 before:content-['']">
       <div className="max-w-7xl mx-auto px-4 h-10 flex items-center justify-between text-[10px] font-mono">
         
         {/* Left: Branding */}
@@ -39,6 +39,8 @@ const Footer: FC = () => {
              ONLINE
              <span className="w-1.5 h-1.5 rounded-full bg-retro-neon animate-pulse shadow-[0_0_5px_currentColor]"></span>
            </span>
+           <span className="opacity-30">•</span>
+           <span>LOC: MARS</span>
         </div>
 
       </div>
