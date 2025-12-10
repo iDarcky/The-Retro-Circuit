@@ -529,50 +529,34 @@ export const VARIANT_FORM_GROUPS = [
         ]
     },
     {
-        title: "INPUT & CONTROLS",
-        fields: [
-            // Row 1: Layout
-            { 
-                label: 'Input Layout', 
-                key: 'input_layout', 
-                type: 'select', 
-                required: false, 
-                width: 'third', 
-                subHeader: 'Layout & Features',
-                options: ['Xbox', 'Nintendo', 'PlayStation', 'Retroid/Unique']
-            },
-            { label: 'Back Buttons?', key: 'has_back_buttons', type: 'checkbox', required: false, width: 'third' },
-            { label: 'Gyroscope?', key: 'gyro', type: 'checkbox', required: false, width: 'third' },
-
-            // Row 2: Face Buttons
-            { label: 'D-Pad Mech', key: 'dpad_mechanism', type: 'text', required: false, width: 'third', subHeader: 'Face Buttons' },
-            { label: 'D-Pad Shape', key: 'dpad_shape', type: 'text', required: false, width: 'third' },
-            { label: 'Face Btn Mech', key: 'action_button_mechanism', type: 'text', required: false, width: 'third' },
-
-            // Row 3: Sticks
-            { label: 'Stick Tech (Hall/Alps)', key: 'thumbstick_mechanism', type: 'text', required: false, width: 'third', subHeader: 'Analog Sticks' },
-            { label: 'Stick Layout', key: 'thumbstick_layout', type: 'text', required: false, width: 'third' },
-            { label: 'Stick Cap', key: 'thumbstick_cap', type: 'text', required: false, width: 'third' },
-
-            // Row 4: Triggers
-            { label: 'Shoulder Layout (Stacked/Inline)', key: 'shoulder_layout', type: 'text', required: false, width: 'half', subHeader: 'Triggers & Shoulders' },
-            { label: 'Trigger Type (Analog/Dig)', key: 'trigger_mechanism', type: 'text', required: false, width: 'half' },
-
-            // Row 5: Feedback
-            { label: 'Haptics', key: 'haptics', type: 'text', required: false, width: 'full', subHeader: 'Feedback' },
-        ]
-    },
-    {
-        title: "CONNECTIVITY & IO",
+        title: "INPUT & CONNECTIVITY",
         fields: [
             // Row 1: Wireless
             { label: 'Wi-Fi Specs', key: 'wifi_specs', type: 'text', required: false, width: 'third', subHeader: 'Wireless' },
             { label: 'Bluetooth Specs', key: 'bluetooth_specs', type: 'text', required: false, width: 'third' },
-            { label: 'Cellular (5G/4G)', key: 'cellular_connectivity', type: 'checkbox', required: false, width: 'third' },
+            { label: 'Cellular (Check)', key: 'cellular_connectivity', type: 'checkbox', required: false, width: 'third' },
 
             // Row 2: Wired
-            { label: 'Video Output', key: 'video_out', type: 'text', required: false, width: 'full', subHeader: 'Wired & IO' },
-            { label: 'Ports & IO', key: 'ports', type: 'textarea', required: false, width: 'full' },
+            { label: 'Video Output', key: 'video_out', type: 'text', required: false, width: 'half', subHeader: 'Wired & IO' },
+            { label: 'Ports', key: 'ports', type: 'textarea', required: false, width: 'half' },
+
+            // Row 3: Main Controls
+            { label: 'D-Pad Mech', key: 'dpad_mechanism', type: 'text', required: false, width: 'third', subHeader: 'Controls' },
+            { label: 'Stick Tech', key: 'thumbstick_mechanism', type: 'text', required: false, width: 'third' },
+            { label: 'Shoulder Layout (Stacked/Inline)', key: 'shoulder_layout', type: 'text', required: false, width: 'third' },
+
+            // Row 4: Extended Controls (Preserving other fields)
+            { label: 'Input Layout', key: 'input_layout', type: 'select', required: false, width: 'third', subHeader: 'Extended Controls', options: ['Xbox', 'Nintendo', 'PlayStation', 'Retroid/Unique'] },
+            { label: 'Back Buttons?', key: 'has_back_buttons', type: 'checkbox', required: false, width: 'third' },
+            { label: 'Gyroscope?', key: 'gyro', type: 'checkbox', required: false, width: 'third' },
+
+            { label: 'D-Pad Shape', key: 'dpad_shape', type: 'text', required: false, width: 'third' },
+            { label: 'Face Btn Mech', key: 'action_button_mechanism', type: 'text', required: false, width: 'third' },
+            { label: 'Stick Layout', key: 'thumbstick_layout', type: 'text', required: false, width: 'third' },
+
+            { label: 'Stick Cap', key: 'thumbstick_cap', type: 'text', required: false, width: 'third' },
+            { label: 'Trigger Type', key: 'trigger_mechanism', type: 'text', required: false, width: 'third' },
+            { label: 'Haptics', key: 'haptics', type: 'text', required: false, width: 'full' },
         ]
     },
     {
