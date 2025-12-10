@@ -145,7 +145,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
         if (mergedSpecs.width_mm && mergedSpecs.height_mm && mergedSpecs.depth_mm) {
             return `${mergedSpecs.width_mm} x ${mergedSpecs.height_mm} x ${mergedSpecs.depth_mm} mm`;
         }
-        return mergedSpecs.dimensions;
+        return '---';
     };
 
     // --- RENDER ---
@@ -421,18 +421,21 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                         {/* 6. POWER & BODY */}
                         <SpecCard title="POWER & CHASSIS">
                             <div className="grid grid-cols-2 gap-4">
-                                <SpecField label="Capacity" value={mergedSpecs.battery_mah} unit="mAh" highlight />
-                                <SpecField label="Energy" value={mergedSpecs.battery_wh} unit="Wh" />
+                                <SpecField label="Capacity" value={mergedSpecs.battery_capacity_mah} unit="mAh" highlight />
+                                <SpecField label="Energy" value={mergedSpecs.battery_capacity_wh} unit="Wh" />
                             </div>
                             <SpecField label="Battery Type" value={mergedSpecs.battery_type} small />
-                            <SpecField label="Charging" value={mergedSpecs.charging_speed_w} unit="W" />
+                            <div className="grid grid-cols-2 gap-4">
+                                <SpecField label="Charging" value={mergedSpecs.charging_speed_w} unit="W" />
+                                <SpecField label="TDP" value={mergedSpecs.tdp_wattage} unit="W" />
+                            </div>
                             <SpecField label="Cooling" value={mergedSpecs.cooling_solution} small />
                             
                             <div className="mt-4 pt-4 border-t border-white/5">
                                 <SpecField label="Dimensions" value={getDimString()} small />
                                 <SpecField label="Weight" value={mergedSpecs.weight_g} unit="g" small />
                                 <SpecField label="Material" value={mergedSpecs.body_material} small />
-                                <SpecField label="Colors" value={mergedSpecs.colors} small />
+                                <SpecField label="Colors" value={mergedSpecs.available_colors} small />
                             </div>
                         </SpecCard>
 
@@ -440,8 +443,8 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                         <SpecCard title="AUDIO & MISC">
                             <SpecField label="Speakers" value={mergedSpecs.audio_speakers} />
                             <div className="flex flex-wrap gap-2 mt-2">
-                                <TechBadge label="HEADPHONE JACK" active={mergedSpecs.headphone_jack} />
-                                <TechBadge label="MICROPHONE" active={mergedSpecs.microphone} />
+                                <TechBadge label="HEADPHONE JACK" active={mergedSpecs.has_headphone_jack} />
+                                <TechBadge label="MICROPHONE" active={mergedSpecs.has_microphone} />
                             </div>
                             
                             <div className="mt-4 pt-4 border-t border-white/5">

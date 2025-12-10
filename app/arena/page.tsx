@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, Suspense, type FC, type ChangeEvent, type Dispatch, type SetStateAction } from 'react';
@@ -63,11 +64,10 @@ const METRICS: ComparisonMetric[] = [
     { label: 'Expandable', key: 'storage_expandable', type: 'boolean' },
 
     // --- POWER ---
-    { label: 'Battery Capacity', key: 'battery_mah', type: 'number', unit: ' mAh' },
-    { label: 'Battery Energy', key: 'battery_wh', type: 'number', unit: ' Wh' },
+    { label: 'Battery Capacity', key: 'battery_capacity_mah', type: 'number', unit: ' mAh' },
+    { label: 'Battery Energy', key: 'battery_capacity_wh', type: 'number', unit: ' Wh' },
     { label: 'Charging Speed', key: 'charging_speed_w', type: 'number', unit: 'W' },
-    { label: 'Charging Port', key: 'charging_port', type: 'string' },
-    { label: 'TDP', key: 'tdp_range_w', type: 'string' },
+    { label: 'TDP', key: 'tdp_wattage', type: 'number', unit: 'W' },
 
     // --- CONNECTIVITY & IO ---
     { label: 'Wi-Fi', key: 'wifi_specs', type: 'string' },
@@ -79,14 +79,13 @@ const METRICS: ComparisonMetric[] = [
     // --- AUDIO & MISC ---
     { label: 'Speakers', key: 'audio_speakers', type: 'string' },
     { label: 'Audio Tech', key: 'audio_tech', type: 'string' },
-    { label: 'Headphone Jack', key: 'headphone_jack', type: 'boolean' },
-    { label: 'Microphone', key: 'microphone', type: 'boolean' },
+    { label: 'Headphone Jack', key: 'has_headphone_jack', type: 'boolean' },
+    { label: 'Microphone', key: 'has_microphone', type: 'boolean' },
     { label: 'Camera', key: 'camera_specs', type: 'string' },
     { label: 'Biometrics', key: 'biometrics', type: 'string' },
 
     // --- CONTROLS & SENSORS ---
     { label: 'Input Layout', key: 'input_layout', type: 'string' },
-    { label: 'D-Pad', key: 'dpad_type', type: 'string' },
     { label: 'D-Pad Mech', key: 'dpad_mechanism', type: 'string' },
     { label: 'D-Pad Shape', key: 'dpad_shape', type: 'string' },
     { label: 'Stick Mech', key: 'thumbstick_mechanism', type: 'string' },
@@ -100,11 +99,13 @@ const METRICS: ComparisonMetric[] = [
     { label: 'Gyroscope', key: 'gyro', type: 'boolean' },
 
     // --- PHYSICAL ---
-    { label: 'Dimensions', key: 'dimensions', type: 'string' },
+    { label: 'Width (mm)', key: 'width_mm', type: 'number' },
+    { label: 'Height (mm)', key: 'height_mm', type: 'number' },
+    { label: 'Thickness (mm)', key: 'depth_mm', type: 'number' },
     { label: 'Weight', key: 'weight_g', type: 'number', unit: 'g', lowerIsBetter: true },
     { label: 'Body Material', key: 'body_material', type: 'string' },
     { label: 'Cooling', key: 'cooling_solution', type: 'string' },
-    { label: 'Colors', key: 'colors', type: 'string' },
+    { label: 'Colors', key: 'available_colors', type: 'string' },
 ];
 
 interface SelectionState {
@@ -314,212 +315,211 @@ function VSModeContent() {
                 loading: false
             });
         } else {
-             setSelection(prev => ({ ...prev, loading: false }));
+            setSelection(prev => ({ ...prev, loading: false }));
         }
     };
 
-    // 1. Sync State with URL Params
+    // Parse URL Params
     useEffect(() => {
-        const p1Slug = searchParams?.get('p1') || searchParams?.get('c1');
-        const v1Slug = searchParams?.get('v1');
-        
-        const p2Slug = searchParams?.get('p2') || searchParams?.get('c2');
-        const v2Slug = searchParams?.get('v2');
+        const p1 = searchParams?.get('p1');
+        const v1 = searchParams?.get('v1');
+        const p2 = searchParams?.get('p2');
+        const v2 = searchParams?.get('v2');
 
-        if (p1Slug && p1Slug !== selectionA.slug) {
-            loadSelection(p1Slug, v1Slug, setSelectionA);
-        }
-        if (p2Slug && p2Slug !== selectionB.slug) {
-            loadSelection(p2Slug, v2Slug, setSelectionB);
-        }
+        if (p1 && p1 !== selectionA.slug) loadSelection(p1, v1 || null, setSelectionA);
+        if (p2 && p2 !== selectionB.slug) loadSelection(p2, v2 || null, setSelectionB);
     }, [searchParams]);
 
-    // Update URL Helper
-    const updateUrl = (side: 'a' | 'b', slug: string, variantSlug?: string) => {
-        const params = new URLSearchParams(searchParams?.toString());
+    const updateUrl = (p1?: string | null, v1?: string | null, p2?: string | null, v2?: string | null) => {
+        const params = new URLSearchParams();
         
-        if (side === 'a') {
-            params.set('p1', slug);
-            if (variantSlug) params.set('v1', variantSlug); else params.delete('v1');
-        } else {
-            params.set('p2', slug);
-            if (variantSlug) params.set('v2', variantSlug); else params.delete('v2');
-        }
-        
+        const finalP1 = p1 !== undefined ? p1 : selectionA.slug;
+        const finalV1 = v1 !== undefined ? v1 : selectionA.selectedVariant?.slug;
+        const finalP2 = p2 !== undefined ? p2 : selectionB.slug;
+        const finalV2 = v2 !== undefined ? v2 : selectionB.selectedVariant?.slug;
+
+        if (finalP1) params.set('p1', finalP1);
+        if (finalV1) params.set('v1', finalV1);
+        if (finalP2) params.set('p2', finalP2);
+        if (finalV2) params.set('v2', finalV2);
+
         router.replace(`?${params.toString()}`, { scroll: false });
     };
 
-    const handleSelect = (side: 'a' | 'b', slug: string) => {
+    const handleSelectP1 = (slug: string) => {
+        setSelectionA(prev => ({ ...prev, slug, loading: true }));
+        updateUrl(slug, null, undefined, undefined); 
         playClick();
-        // Just update URL, effect handles fetch
-        updateUrl(side, slug);
     };
 
-    const handleVariantChange = (side: 'a' | 'b', variantSlug: string) => {
-        const currentSlug = side === 'a' ? selectionA.slug : selectionB.slug;
-        if (currentSlug) {
-            updateUrl(side, currentSlug, variantSlug);
-            // Manually update state for instant feedback
-            if (side === 'a' && selectionA.details) {
-                const v = selectionA.details.variants?.find(v => v.slug === variantSlug) || null;
-                setSelectionA(prev => ({ ...prev, selectedVariant: v }));
-            } else if (side === 'b' && selectionB.details) {
-                const v = selectionB.details.variants?.find(v => v.slug === variantSlug) || null;
-                setSelectionB(prev => ({ ...prev, selectedVariant: v }));
-            }
-        }
+    const handleSelectP2 = (slug: string) => {
+        setSelectionB(prev => ({ ...prev, slug, loading: true }));
+        updateUrl(undefined, undefined, slug, null);
+        playClick();
+    };
+
+    const handleVariantChangeA = (e: ChangeEvent<HTMLSelectElement>) => {
+        const slug = e.target.value;
+        const variant = selectionA.details?.variants?.find(v => v.slug === slug) || null;
+        setSelectionA(prev => ({ ...prev, selectedVariant: variant }));
+        updateUrl(undefined, slug, undefined, undefined);
+    };
+
+    const handleVariantChangeB = (e: ChangeEvent<HTMLSelectElement>) => {
+        const slug = e.target.value;
+        const variant = selectionB.details?.variants?.find(v => v.slug === slug) || null;
+        setSelectionB(prev => ({ ...prev, selectedVariant: variant }));
+        updateUrl(undefined, undefined, undefined, slug);
     };
 
     return (
-        <div className="w-full max-w-7xl mx-auto p-4 md:p-8 min-h-screen flex flex-col">
-            
-            {/* HEADERS */}
-            <div className="text-center mb-8 relative z-10">
-                <h1 className="text-4xl md:text-6xl font-pixel text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] mb-2">
-                    VS MODE
-                </h1>
-                <p className="font-mono text-gray-400 text-xs md:text-sm">
-                    SPECIFICATION SHOWDOWN
-                </p>
-                <div className="mt-4">
-                    <button 
-                        onClick={() => setShowDiffOnly(!showDiffOnly)}
-                        className={`text-[10px] font-mono border px-3 py-1 uppercase transition-all ${showDiffOnly ? 'bg-white text-black border-white' : 'text-gray-500 border-gray-700 hover:border-white'}`}
-                    >
-                        {showDiffOnly ? 'Show All Specs' : 'Show Differences Only'}
-                    </button>
-                </div>
-            </div>
+        <div className="w-full max-w-7xl mx-auto p-4 flex flex-col min-h-screen">
+            <h1 className="text-3xl md:text-5xl font-pixel text-center text-white mb-8 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                VS MODE <span className="text-retro-neon">ARENA</span>
+            </h1>
 
-            {/* ARENA STAGE (Flex Gap Layout) */}
-            <div className="flex flex-col md:flex-row justify-center items-stretch gap-20 mb-12 relative">
+            {/* FIGHTER SELECT */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 relative">
                 
-                {/* VS BADGE (Centered Absolutely) */}
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none">
-                     <div className="font-pixel text-6xl text-white drop-shadow-[4px_4px_0_#000] italic animate-pulse">VS</div>
+                {/* VS Badge (Desktop Center) */}
+                <div className="hidden md:flex absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 w-16 h-16 bg-black rounded-full items-center justify-center border-4 border-white shadow-[0_0_20px_rgba(255,255,255,0.5)]">
+                    <span className="font-pixel text-xl italic text-white">VS</span>
                 </div>
 
-                {/* PLAYER 1 CARD */}
-                <div className={`w-full md:w-[300px] h-auto md:h-[320px] relative z-10 ${styles.fighterCardContainer}`}>
+                {/* Player 1 Card */}
+                <div className={`p-6 border-2 border-retro-neon bg-retro-neon/5 relative min-h-[300px] flex flex-col ${styles.fighterCardContainer}`}>
+                     {/* Skew fix wrapper */}
                      <div className={styles.fighterCardContent}>
-                         <div className="mb-4">
-                             <div className="font-pixel text-xs text-retro-neon mb-1">PLAYER 1</div>
-                             <ConsoleSearch 
-                                consoles={allConsoles} 
-                                onSelect={(s) => handleSelect('a', s)} 
-                                themeColor="cyan"
-                                currentSelection={selectionA.details?.name}
-                             />
-                         </div>
-                         
-                         {selectionA.loading ? (
-                             <div className="flex-1 flex items-center justify-center font-mono text-retro-neon animate-pulse text-xs">LOADING...</div>
-                         ) : selectionA.details ? (
-                             <div className="flex-1 flex flex-col">
-                                 {/* Image Area */}
-                                 <div className="flex-1 relative flex items-center justify-center bg-black/30 border border-white/10 mb-4 overflow-hidden">
-                                     <img 
-                                        src={selectionA.selectedVariant?.image_url || selectionA.details.image_url || ''} 
-                                        className="max-h-32 max-w-full object-contain drop-shadow-lg"
-                                     />
-                                     <div className="absolute bottom-1 right-1 font-mono text-[9px] text-gray-500">{selectionA.details.manufacturer?.name}</div>
+                        <h2 className="font-pixel text-retro-neon mb-4">PLAYER 1</h2>
+                        
+                        <ConsoleSearch 
+                            consoles={allConsoles} 
+                            onSelect={handleSelectP1} 
+                            themeColor="cyan"
+                            currentSelection={selectionA.details?.name}
+                        />
+
+                        {selectionA.loading ? (
+                             <div className="flex-1 flex items-center justify-center text-retro-neon font-mono animate-pulse">LOADING SPEC SHEET...</div>
+                        ) : selectionA.details ? (
+                             <div className="mt-6 flex-1 flex flex-col items-center animate-fadeIn">
+                                 <div className="relative w-full h-32 mb-4">
+                                     {selectionA.selectedVariant?.image_url || selectionA.details.image_url ? (
+                                         <img src={selectionA.selectedVariant?.image_url || selectionA.details.image_url} className="w-full h-full object-contain drop-shadow-lg" />
+                                     ) : (
+                                         <div className="w-full h-full flex items-center justify-center text-retro-neon opacity-50 font-pixel">NO IMAGE</div>
+                                     )}
                                  </div>
+                                 <h3 className="font-pixel text-xl text-white text-center mb-1">{selectionA.details.name}</h3>
+                                 <div className="font-mono text-xs text-retro-neon mb-4">{selectionA.details.manufacturer?.name}</div>
+
                                  {/* Variant Selector */}
-                                 {(selectionA.details.variants?.length || 0) > 1 && (
+                                 {selectionA.details.variants && selectionA.details.variants.length > 0 && (
                                      <select 
-                                        className="w-full bg-black/50 border border-retro-neon/30 text-retro-neon text-[10px] font-mono p-1 outline-none"
+                                        className="w-full bg-black border border-retro-neon text-retro-neon font-mono text-xs p-2 outline-none"
                                         value={selectionA.selectedVariant?.slug || ''}
-                                        onChange={(e: ChangeEvent<HTMLSelectElement>) => handleVariantChange('a', e.target.value)}
+                                        onChange={handleVariantChangeA}
                                      >
-                                         {selectionA.details.variants?.map(v => (
+                                         {selectionA.details.variants.map(v => (
                                              <option key={v.id} value={v.slug}>{v.variant_name}</option>
                                          ))}
                                      </select>
                                  )}
                              </div>
-                         ) : (
-                             <div className="flex-1 flex items-center justify-center font-mono text-gray-600 text-xs text-center p-4 border border-dashed border-gray-800">
-                                 SELECT A FIGHTER
+                        ) : (
+                             <div className="flex-1 flex items-center justify-center text-gray-600 font-pixel text-xs opacity-50">
+                                 SELECT FIGHTER
                              </div>
-                         )}
+                        )}
                      </div>
                 </div>
 
-                {/* PLAYER 2 CARD */}
-                <div className={`w-full md:w-[300px] h-auto md:h-[320px] relative z-10 ${styles.fighterCardContainerP2}`}>
+                {/* Player 2 Card */}
+                <div className={`p-6 border-2 border-retro-pink bg-retro-pink/5 relative min-h-[300px] flex flex-col ${styles.fighterCardContainerP2}`}>
+                     {/* Skew fix wrapper */}
                      <div className={styles.fighterCardContentP2}>
-                         <div className="mb-4 text-right">
-                             <div className="font-pixel text-xs text-retro-pink mb-1">PLAYER 2</div>
-                             <ConsoleSearch 
-                                consoles={allConsoles} 
-                                onSelect={(s) => handleSelect('b', s)} 
-                                themeColor="pink"
-                                currentSelection={selectionB.details?.name}
-                             />
-                         </div>
-                         
-                         {selectionB.loading ? (
-                             <div className="flex-1 flex items-center justify-center font-mono text-retro-pink animate-pulse text-xs">LOADING...</div>
-                         ) : selectionB.details ? (
-                             <div className="flex-1 flex flex-col">
-                                 {/* Image Area */}
-                                 <div className="flex-1 relative flex items-center justify-center bg-black/30 border border-white/10 mb-4 overflow-hidden">
-                                     <img 
-                                        src={selectionB.selectedVariant?.image_url || selectionB.details.image_url || ''} 
-                                        className="max-h-32 max-w-full object-contain drop-shadow-lg"
-                                     />
-                                     <div className="absolute bottom-1 left-1 font-mono text-[9px] text-gray-500">{selectionB.details.manufacturer?.name}</div>
+                        <h2 className="font-pixel text-retro-pink mb-4 text-right">PLAYER 2</h2>
+                        
+                        <ConsoleSearch 
+                            consoles={allConsoles} 
+                            onSelect={handleSelectP2} 
+                            themeColor="pink"
+                            currentSelection={selectionB.details?.name}
+                        />
+
+                        {selectionB.loading ? (
+                             <div className="flex-1 flex items-center justify-center text-retro-pink font-mono animate-pulse">LOADING SPEC SHEET...</div>
+                        ) : selectionB.details ? (
+                             <div className="mt-6 flex-1 flex flex-col items-center animate-fadeIn">
+                                 <div className="relative w-full h-32 mb-4">
+                                     {selectionB.selectedVariant?.image_url || selectionB.details.image_url ? (
+                                         <img src={selectionB.selectedVariant?.image_url || selectionB.details.image_url} className="w-full h-full object-contain drop-shadow-lg" />
+                                     ) : (
+                                         <div className="w-full h-full flex items-center justify-center text-retro-pink opacity-50 font-pixel">NO IMAGE</div>
+                                     )}
                                  </div>
+                                 <h3 className="font-pixel text-xl text-white text-center mb-1">{selectionB.details.name}</h3>
+                                 <div className="font-mono text-xs text-retro-pink mb-4">{selectionB.details.manufacturer?.name}</div>
+
                                  {/* Variant Selector */}
-                                 {(selectionB.details.variants?.length || 0) > 1 && (
+                                 {selectionB.details.variants && selectionB.details.variants.length > 0 && (
                                      <select 
-                                        className="w-full bg-black/50 border border-retro-pink/30 text-retro-pink text-[10px] font-mono p-1 outline-none text-right"
+                                        className="w-full bg-black border border-retro-pink text-retro-pink font-mono text-xs p-2 outline-none"
                                         value={selectionB.selectedVariant?.slug || ''}
-                                        onChange={(e: ChangeEvent<HTMLSelectElement>) => handleVariantChange('b', e.target.value)}
+                                        onChange={handleVariantChangeB}
                                      >
-                                         {selectionB.details.variants?.map(v => (
+                                         {selectionB.details.variants.map(v => (
                                              <option key={v.id} value={v.slug}>{v.variant_name}</option>
                                          ))}
                                      </select>
                                  )}
                              </div>
-                         ) : (
-                             <div className="flex-1 flex items-center justify-center font-mono text-gray-600 text-xs text-center p-4 border border-dashed border-gray-800">
-                                 SELECT A FIGHTER
+                        ) : (
+                             <div className="flex-1 flex items-center justify-center text-gray-600 font-pixel text-xs opacity-50">
+                                 SELECT FIGHTER
                              </div>
-                         )}
+                        )}
                      </div>
                 </div>
+
             </div>
 
             {/* COMPARISON TABLE */}
-            <div className="relative z-0 max-w-4xl mx-auto w-full bg-black/40 border border-retro-grid backdrop-blur-sm p-4 md:p-8 shadow-2xl">
-                {selectionA.selectedVariant && selectionB.selectedVariant ? (
+            {selectionA.selectedVariant && selectionB.selectedVariant && (
+                <div className="bg-black/80 border border-gray-800 p-4 mb-12 animate-slideDown shadow-2xl">
+                    <div className="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
+                        <h3 className="font-pixel text-lg text-white">TALE OF THE TAPE</h3>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input 
+                                type="checkbox" 
+                                checked={showDiffOnly} 
+                                onChange={() => setShowDiffOnly(!showDiffOnly)}
+                                className="accent-retro-neon" 
+                            />
+                            <span className="font-mono text-xs text-gray-400 uppercase">Show Differences Only</span>
+                        </label>
+                    </div>
+
                     <div className="space-y-1">
-                        {METRICS.map((metric) => (
+                        {METRICS.map(metric => (
                             <ComparisonRow 
-                                key={metric.key}
-                                metric={metric}
-                                varA={selectionA.selectedVariant!}
+                                key={metric.key} 
+                                metric={metric} 
+                                varA={selectionA.selectedVariant!} 
                                 varB={selectionB.selectedVariant!}
                                 showDiffOnly={showDiffOnly}
                             />
                         ))}
                     </div>
-                ) : (
-                    <div className="text-center py-12">
-                        <p className="font-pixel text-gray-600 text-sm animate-pulse">AWAITING CHALLENGERS...</p>
-                    </div>
-                )}
-            </div>
-            
+                </div>
+            )}
         </div>
     );
 }
 
 export default function ArenaPage() {
     return (
-        <Suspense fallback={<div className="h-screen w-full flex items-center justify-center bg-retro-dark text-retro-neon font-pixel">LOADING ARENA...</div>}>
+        <Suspense fallback={<div className="p-12 text-center text-retro-neon font-mono">LOADING ARENA...</div>}>
             <VSModeContent />
         </Suspense>
     );
