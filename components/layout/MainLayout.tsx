@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, type FC, type ReactNode } from 'react';
@@ -200,8 +201,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         </div>
         
         {/* Status Footer */}
-        <div className="p-2 bg-black text-[10px] font-mono text-center flex justify-between items-center px-4 text-gray-600">
-            <span>v1.1.0</span>
+        <div className="p-2 bg-black text-[10px] font-mono text-center flex justify-end items-center px-4 text-gray-600">
             {isAdmin && (
                 <span className={`flex items-center gap-1 ${dbStatus === 'ONLINE' ? 'text-retro-neon' : 'text-red-500'}`}>
                     <span className={`w-2 h-2 rounded-full ${dbStatus === 'ONLINE' ? 'bg-retro-neon' : 'bg-red-500'} animate-pulse`}></span>
