@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, type FC, type ReactNode } from 'react';
@@ -214,8 +213,8 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
 
       {/* MAIN CONTENT AREA */}
       <main className="flex-1 relative z-10 flex flex-col h-screen md:h-screen overflow-hidden pt-16 md:pt-0">
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar bg-retro-dark/80 pb-24 md:pb-0">
+        {/* Scrollable Content Container: Set to flex-col to ensure children fill height properly */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar bg-retro-dark/80 pb-24 md:pb-0 flex flex-col min-h-0">
              {children}
         </div>
 

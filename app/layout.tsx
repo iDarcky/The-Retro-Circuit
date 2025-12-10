@@ -56,7 +56,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${pressStart.variable} ${shareTech.variable}`}>
+      <body className={`${pressStart.variable} ${shareTech.variable} min-h-screen flex flex-col`}>
         {/* CRT Overlay Effects */}
         <div className="scanlines"></div>
         <div className="crt-flicker"></div>
@@ -66,7 +66,10 @@ export default function RootLayout({
 
         {/* Main Application Shell */}
         <ClientShell>
-            {children}
+            {/* Flex wrapper to ensure footer sticks to bottom */}
+            <div className="flex-1 w-full flex flex-col">
+              {children}
+            </div>
             <Footer />
         </ClientShell>
         <Analytics />
