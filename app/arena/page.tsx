@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, Suspense, type FC, type ChangeEvent, type Dispatch, type SetStateAction } from 'react';
@@ -51,7 +50,7 @@ const METRICS: ComparisonMetric[] = [
     { label: 'GPU Model', key: 'gpu_model', type: 'string' },
     { label: 'GPU Arch', key: 'gpu_architecture', type: 'string' },
     { label: 'GPU Cores', key: 'gpu_cores', type: 'number' },
-    { label: 'GPU Units', key: 'gpu_core_unit', type: 'string' },
+    { label: 'GPU Units', key: 'gpu_compute_units', type: 'string' },
     { label: 'GPU Clock', key: 'gpu_clock_mhz', type: 'number', unit: ' MHz' },
     { label: 'Compute Power', key: 'gpu_teraflops', type: 'number', unit: ' TFLOPS' },
 
@@ -71,7 +70,8 @@ const METRICS: ComparisonMetric[] = [
     { label: 'TDP', key: 'tdp_range_w', type: 'string' },
 
     // --- CONNECTIVITY & IO ---
-    { label: 'Wireless', key: 'wireless_connectivity', type: 'string' },
+    { label: 'Wi-Fi', key: 'wifi_specs', type: 'string' },
+    { label: 'Bluetooth', key: 'bluetooth_specs', type: 'string' },
     { label: 'Cellular', key: 'cellular_connectivity', type: 'boolean' },
     { label: 'Video Output', key: 'video_out', type: 'string' },
     { label: 'Ports', key: 'ports', type: 'string' },
@@ -81,20 +81,19 @@ const METRICS: ComparisonMetric[] = [
     { label: 'Audio Tech', key: 'audio_tech', type: 'string' },
     { label: 'Headphone Jack', key: 'headphone_jack', type: 'boolean' },
     { label: 'Microphone', key: 'microphone', type: 'boolean' },
-    { label: 'Camera', key: 'camera', type: 'boolean' },
-    { label: 'Biometrics', key: 'biometrics', type: 'boolean' },
+    { label: 'Camera', key: 'camera_specs', type: 'string' },
+    { label: 'Biometrics', key: 'biometrics', type: 'string' },
 
     // --- CONTROLS & SENSORS ---
     { label: 'Input Layout', key: 'input_layout', type: 'string' },
     { label: 'D-Pad', key: 'dpad_type', type: 'string' },
     { label: 'D-Pad Mech', key: 'dpad_mechanism', type: 'string' },
     { label: 'D-Pad Shape', key: 'dpad_shape', type: 'string' },
-    { label: 'Analog Sticks', key: 'analog_stick_type', type: 'string' },
     { label: 'Stick Mech', key: 'thumbstick_mechanism', type: 'string' },
     { label: 'Stick Layout', key: 'thumbstick_layout', type: 'string' },
     { label: 'Stick Cap', key: 'thumbstick_cap', type: 'string' },
     { label: 'Triggers', key: 'trigger_mechanism', type: 'string' },
-    { label: 'Shoulders', key: 'shoulder_buttons', type: 'string' },
+    { label: 'Shoulders', key: 'shoulder_layout', type: 'string' },
     { label: 'Action Buttons', key: 'action_button_mechanism', type: 'string' },
     { label: 'Back Buttons', key: 'has_back_buttons', type: 'boolean' },
     { label: 'Haptics', key: 'haptics', type: 'string' },
@@ -104,7 +103,7 @@ const METRICS: ComparisonMetric[] = [
     { label: 'Dimensions', key: 'dimensions', type: 'string' },
     { label: 'Weight', key: 'weight_g', type: 'number', unit: 'g', lowerIsBetter: true },
     { label: 'Body Material', key: 'body_material', type: 'string' },
-    { label: 'Cooling', key: 'cooling', type: 'string' },
+    { label: 'Cooling', key: 'cooling_solution', type: 'string' },
     { label: 'Colors', key: 'colors', type: 'string' },
 ];
 

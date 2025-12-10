@@ -2,7 +2,16 @@
 import { type FC, type ChangeEvent } from 'react';
 
 interface RenderInputProps {
-    field: { label: string, key: string, type: string, required?: boolean, step?: string };
+    field: { 
+        label: string, 
+        key: string, 
+        type: string, 
+        required?: boolean, 
+        step?: string, 
+        note?: string,
+        options?: string[],
+        visualStyle?: 'computed' | 'standard'
+    };
     value: any;
     onChange: (key: string, val: any) => void;
     error?: string;
@@ -14,6 +23,10 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
     
     const borderColor = error ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon';
     const labelColor = error ? 'text-retro-pink' : 'text-gray-500';
+
+    // Visual styles for computed fields (read-only appearance)
+    const isComputed = field.visualStyle === 'computed';
+    const computedBg = isComputed ? 'bg-gray-900 text-gray-400 cursor-not-allowed' : 'bg-black text-white';
     
     if (field.type === 'textarea') {
         return (
@@ -25,6 +38,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => onChange(field.key, e.target.value)}
                     required={false}
                 />
+                {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{field.note}</div>}
                 {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
             </div>
         );
@@ -36,17 +50,38 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
         
         return (
             <div>
-                <label className={`flex items-center gap-3 cursor-pointer group`}>
-                    <input 
-                        type="checkbox"
-                        className="w-4 h-4 rounded border-gray-700 bg-black text-retro-neon focus:ring-retro-neon"
-                        checked={isChecked}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(field.key, e.target.checked)}
-                    />
+                <div 
+                    className={`flex items-center justify-between bg-black border p-3 cursor-pointer group transition-all h-[46px] mt-[19px] ${borderColor}`}
+                    onClick={() => onChange(field.key, !isChecked)}
+                >
                     <span className={`text-[10px] uppercase font-bold tracking-wider group-hover:text-white ${labelColor}`}>
                         {field.label}
                     </span>
-                </label>
+                    <div className={`w-5 h-5 border flex items-center justify-center transition-all ${isChecked ? 'bg-retro-neon border-retro-neon' : 'border-gray-600 bg-transparent'}`}>
+                        {isChecked && <svg className="w-3 h-3 text-black font-bold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                    </div>
+                </div>
+                {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{field.note}</div>}
+                {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
+            </div>
+        );
+    }
+
+    if (field.type === 'select') {
+        return (
+            <div>
+                <label className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
+                <select
+                    className={`w-full bg-black border p-3 outline-none font-mono text-sm ${borderColor} transition-colors text-white`}
+                    value={val}
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) => onChange(field.key, e.target.value)}
+                >
+                    <option value="">-- Select --</option>
+                    {field.options?.map(opt => (
+                        <option key={opt} value={opt} className="bg-black">{opt}</option>
+                    ))}
+                </select>
+                {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{field.note}</div>}
                 {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
             </div>
         );
@@ -57,12 +92,14 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
             <label className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
             <input 
                 type={field.type}
-                className={`w-full bg-black border p-3 outline-none font-mono text-sm ${borderColor} transition-colors`}
+                className={`w-full border p-3 outline-none font-mono text-sm ${borderColor} ${computedBg} transition-colors`}
                 value={val}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(field.key, e.target.value)}
                 required={field.required}
                 step={field.step}
+                readOnly={isComputed}
             />
+            {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{field.note}</div>}
             {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
         </div>
     );

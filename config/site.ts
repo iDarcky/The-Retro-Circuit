@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: "The Retro Circuit",
-  version: "v1.1.0", 
+  version: "v1.1.1", // this is the current website version
   est: "2025",
   links: {
     email: "mailto:contact@theretrocircuit.com",

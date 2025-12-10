@@ -232,7 +232,7 @@ export interface ConsoleVariant {
   gpu_model?: string;
   gpu_architecture?: string;
   gpu_cores?: number;
-  gpu_core_unit?: string;
+  gpu_compute_units?: string;
   gpu_clock_mhz?: number;
   gpu_teraflops?: number;
   
@@ -264,6 +264,7 @@ export interface ConsoleVariant {
   // Power
   battery_mah?: number;
   battery_wh?: number;
+  battery_type?: string;
   charging_speed_w?: number;
   charging_port?: string;
   tdp_range_w?: string;
@@ -273,37 +274,43 @@ export interface ConsoleVariant {
   audio_tech?: string;
   headphone_jack?: boolean;
   microphone?: boolean;
-  camera?: boolean;
-  biometrics?: boolean;
+  camera_specs?: string;
+  biometrics?: string;
   
   // IO & Connectivity
   ports?: string;
-  connectivity?: string;
-  wireless_connectivity?: string;
+  bluetooth_specs?: string;
+  wifi_specs?: string;
+  other_connectivity?: string;
   cellular_connectivity?: boolean;
-  video_out?: string;
-  haptics?: string; // Text in DB (e.g. 'HD Rumble')
+  video_out?: string | null;
+  haptics?: string;
   gyro?: boolean;
   
   // Controls
   input_layout?: string;
+  other_buttons?: string;
   dpad_type?: string;
   dpad_mechanism?: string;
   dpad_shape?: string;
-  analog_stick_type?: string;
   thumbstick_mechanism?: string;
   thumbstick_layout?: string;
   thumbstick_cap?: string;
-  shoulder_buttons?: string;
+  has_stick_clicks?: boolean;
+  shoulder_layout?: string;
+  bumper_mechanism?: string;
   trigger_mechanism?: string;
   action_button_mechanism?: string;
   has_back_buttons?: boolean;
 
   // Body
   dimensions?: string;
+  width_mm?: number;
+  height_mm?: number;
+  depth_mm?: number;
   weight_g?: number;
   body_material?: string;
-  cooling?: string;
+  cooling_solution?: string;
   colors?: string;
   ui_skin?: string;
 
@@ -352,7 +359,7 @@ export const ConsoleVariantSchema = z.object({
   gpu_model: safeString,
   gpu_architecture: safeString,
   gpu_cores: safeNumber,
-  gpu_core_unit: safeString,
+  gpu_compute_units: safeString,
   gpu_clock_mhz: safeNumber,
   gpu_teraflops: safeNumber,
   
@@ -388,6 +395,7 @@ export const ConsoleVariantSchema = z.object({
   // Power
   battery_mah: safeNumber,
   battery_wh: safeNumber,
+  battery_type: safeString,
   charging_speed_w: safeNumber,
   charging_port: safeString,
   
@@ -396,12 +404,14 @@ export const ConsoleVariantSchema = z.object({
   audio_tech: safeString,
   headphone_jack: safeBoolean,
   microphone: safeBoolean,
-  camera: safeBoolean,
-  biometrics: safeBoolean,
+  camera_specs: safeString,
+  biometrics: safeString,
 
   // IO & Connectivity
   ports: safeString,
-  wireless_connectivity: safeString,
+  wifi_specs: safeString,
+  bluetooth_specs: safeString,
+  other_connectivity: safeString,
   cellular_connectivity: safeBoolean,
   video_out: safeString,
   haptics: safeString,
@@ -409,23 +419,28 @@ export const ConsoleVariantSchema = z.object({
 
   // Controls
   input_layout: safeString,
+  other_buttons: safeString,
   dpad_type: safeString,
   dpad_mechanism: safeString,
   dpad_shape: safeString,
-  analog_stick_type: safeString,
   thumbstick_mechanism: safeString,
   thumbstick_layout: safeString,
   thumbstick_cap: safeString,
-  shoulder_buttons: safeString,
+  has_stick_clicks: safeBoolean,
+  shoulder_layout: safeString,
+  bumper_mechanism: safeString,
   trigger_mechanism: safeString,
   action_button_mechanism: safeString,
   has_back_buttons: safeBoolean,
 
   // Body
   dimensions: safeString,
+  width_mm: safeNumber,
+  height_mm: safeNumber,
+  depth_mm: safeNumber,
   weight_g: safeNumber,
   body_material: safeString,
-  cooling: safeString,
+  cooling_solution: safeString,
   colors: safeString,
   ui_skin: safeString,
 });
@@ -446,99 +461,165 @@ export const VARIANT_FORM_GROUPS = [
     {
         title: "SILICON CORE",
         fields: [
-            { label: 'CPU Model', key: 'cpu_model', type: 'text', required: false },
-            { label: 'CPU Architecture', key: 'cpu_architecture', type: 'text', required: false },
-            { label: 'Process Node', key: 'cpu_process_node', type: 'text', required: false },
-            { label: 'CPU Cores', key: 'cpu_cores', type: 'number', required: false },
-            { label: 'CPU Threads', key: 'cpu_threads', type: 'number', required: false },
-            { label: 'CPU Clock (MHz)', key: 'cpu_clock_mhz', type: 'number', required: false },
-            { label: 'GPU Model', key: 'gpu_model', type: 'text', required: false },
-            { label: 'GPU Architecture', key: 'gpu_architecture', type: 'text', required: false },
-            { label: 'GPU Cores', key: 'gpu_cores', type: 'number', required: false },
-            { label: 'GPU Unit (CUs/Cores)', key: 'gpu_core_unit', type: 'text', required: false },
-            { label: 'GPU Clock (MHz)', key: 'gpu_clock_mhz', type: 'number', required: false },
-            { label: 'GPU Teraflops', key: 'gpu_teraflops', type: 'number', required: false, step: '0.01' },
+            // Row 1: Platform
             { label: 'OS / Firmware', key: 'os', type: 'text', required: false },
-            { label: 'TDP / Wattage', key: 'tdp_range_w', type: 'text', required: false },
+            { label: 'UI Skin', key: 'ui_skin', type: 'text', required: false },
+            
+            // Row 2: CPU Specs
+            { label: 'CPU Model', key: 'cpu_model', type: 'text', required: false, width: 'third' },
+            { label: 'CPU Architecture', key: 'cpu_architecture', type: 'text', required: false, width: 'third' },
+            { label: 'Process Node', key: 'cpu_process_node', type: 'text', required: false, width: 'third' },
+
+            // Row 3: CPU Performance
+            { label: 'CPU Cores', key: 'cpu_cores', type: 'number', required: false, width: 'third' },
+            { label: 'CPU Threads', key: 'cpu_threads', type: 'number', required: false, width: 'third' },
+            { label: 'CPU Clock (MHz)', key: 'cpu_clock_mhz', type: 'number', required: false, width: 'third' },
+            
+            // Row 4: GPU Specs
+            { label: 'GPU Model', key: 'gpu_model', type: 'text', required: false, width: 'third' },
+            { label: 'GPU Architecture', key: 'gpu_architecture', type: 'text', required: false, width: 'third' },
+            { label: 'CUs / Execution Units', key: 'gpu_compute_units', type: 'text', required: false, width: 'third' },
+            
+            // Row 5: GPU Performance
+            { label: 'GPU Clock (MHz)', key: 'gpu_clock_mhz', type: 'number', required: false, width: 'third' },
+            { label: 'GPU Teraflops', key: 'gpu_teraflops', type: 'number', required: false, step: '0.01', width: 'third' },
+            { label: 'TDP / Wattage', key: 'tdp_range_w', type: 'text', required: false, width: 'third' },
         ]
     },
     {
         title: "MEMORY & STORAGE",
         fields: [
-            { label: 'RAM (GB)', key: 'ram_gb', type: 'number', required: false },
-            { label: 'RAM Type', key: 'ram_type', type: 'text', required: false },
-            { label: 'RAM Speed (MHz)', key: 'ram_speed_mhz', type: 'number', required: false },
-            { label: 'Storage (GB)', key: 'storage_gb', type: 'number', required: false },
-            { label: 'Storage Type', key: 'storage_type', type: 'text', required: false },
-            { label: 'SD Expandable?', key: 'storage_expandable', type: 'checkbox', required: false },
+            // Row 1: RAM
+            { label: 'RAM (GB)', key: 'ram_gb', type: 'number', required: false, width: 'third' },
+            { label: 'RAM Type (e.g. LPDDR5)', key: 'ram_type', type: 'text', required: false, width: 'third' },
+            { 
+                label: 'RAM Speed (Rated)', 
+                key: 'ram_speed_mhz', 
+                type: 'number', 
+                required: false, 
+                width: 'third',
+                note: 'Use effective speed (MT/s). E.g. 5500.'
+            },
+            
+            // Row 2: Storage
+            { label: 'Base Capacity (GB)', key: 'storage_gb', type: 'number', required: false, width: 'third' },
+            { label: 'Storage Type (e.g. UFS 3.1)', key: 'storage_type', type: 'text', required: false, width: 'third' },
+            { label: 'MicroSD Slot?', key: 'storage_expandable', type: 'checkbox', required: false, width: 'third' },
         ]
     },
     {
         title: "DISPLAY",
         fields: [
-            { label: 'Screen Size (inch)', key: 'screen_size_inch', type: 'number', required: false, step: '0.1' },
-            { label: 'Display Type (OLED/LCD)', key: 'display_type', type: 'text', required: false },
-            { label: 'Res X (px)', key: 'screen_resolution_x', type: 'number', required: false },
-            { label: 'Res Y (px)', key: 'screen_resolution_y', type: 'number', required: false },
-            { label: 'Aspect Ratio', key: 'aspect_ratio', type: 'text', required: false },
-            { label: 'Pixel Density (PPI)', key: 'ppi', type: 'number', required: false },
-            { label: 'Refresh Rate (Hz)', key: 'refresh_rate_hz', type: 'number', required: false },
-            { label: 'Brightness (nits)', key: 'brightness_nits', type: 'number', required: false },
-            { label: 'Display Tech (VRR etc)', key: 'display_tech', type: 'text', required: false },
-            { label: 'Touchscreen?', key: 'touchscreen', type: 'checkbox', required: false },
-            // Dual Screen
-            { label: '2nd Screen Size', key: 'second_screen_size', type: 'number', required: false, step: '0.1' },
-            { label: '2nd Screen Touch?', key: 'second_screen_touch', type: 'checkbox', required: false },
-            { label: '2nd Res X', key: 'second_screen_resolution_x', type: 'number', required: false },
-            { label: '2nd Res Y', key: 'second_screen_resolution_y', type: 'number', required: false },
+            // Row 1: Dimensions
+            { label: 'Screen Size (inch)', key: 'screen_size_inch', type: 'number', required: false, step: '0.1', width: 'third' },
+            { label: 'Res X (px)', key: 'screen_resolution_x', type: 'number', required: false, width: 'third' },
+            { label: 'Res Y (px)', key: 'screen_resolution_y', type: 'number', required: false, width: 'third' },
+
+            // Row 2: Computed Specs
+            { label: 'Aspect Ratio', key: 'aspect_ratio', type: 'text', required: false, width: 'half', visualStyle: 'computed', note: 'Auto-calculated' },
+            { label: 'Pixel Density (PPI)', key: 'ppi', type: 'number', required: false, width: 'half', visualStyle: 'computed', note: 'Auto-calculated' },
+
+            // Row 3: Tech Specs
+            { 
+                label: 'Display Type', 
+                key: 'display_type', 
+                type: 'select', 
+                required: false, 
+                width: 'third',
+                options: ['IPS LCD', 'OLED', 'AMOLED', 'TN LCD', 'Mini-LED', 'Micro-LED', 'TFT LCD'] 
+            },
+            { label: 'Refresh Rate (Hz)', key: 'refresh_rate_hz', type: 'number', required: false, width: 'third' },
+            { label: 'Brightness (nits)', key: 'brightness_nits', type: 'number', required: false, width: 'third' },
+
+            // Row 4: Extras
+            { label: 'Display Tech (VRR etc)', key: 'display_tech', type: 'text', required: false, width: 'half' },
+            { label: 'Touchscreen?', key: 'touchscreen', type: 'checkbox', required: false, width: 'half' },
+
+            // Row 5: Dual Screen
+            { label: '2nd Screen Size', key: 'second_screen_size', type: 'number', required: false, step: '0.1', width: 'quarter', subHeader: 'Secondary Display' },
+            { label: '2nd Res X', key: 'second_screen_resolution_x', type: 'number', required: false, width: 'quarter' },
+            { label: '2nd Res Y', key: 'second_screen_resolution_y', type: 'number', required: false, width: 'quarter' },
+            { label: '2nd Touch?', key: 'second_screen_touch', type: 'checkbox', required: false, width: 'quarter' },
         ]
     },
     {
-        title: "INPUT & CONNECTIVITY",
+        title: "INPUT MECHANICS",
         fields: [
-            { label: 'Input Layout', key: 'input_layout', type: 'text', required: false },
-            { label: 'D-Pad Style', key: 'dpad_type', type: 'text', required: false },
-            { label: 'D-Pad Mech (Rubber/Clicky)', key: 'dpad_mechanism', type: 'text', required: false },
-            { label: 'Analog Sticks', key: 'analog_stick_type', type: 'text', required: false },
-            { label: 'Stick Mech (Alps/Hall)', key: 'thumbstick_mechanism', type: 'text', required: false },
-            { label: 'Stick Layout', key: 'thumbstick_layout', type: 'text', required: false },
-            { label: 'Shoulder Buttons', key: 'shoulder_buttons', type: 'text', required: false },
-            { label: 'Trigger Mech (Digital/Analog)', key: 'trigger_mechanism', type: 'text', required: false },
-            { label: 'Action Btn Mech', key: 'action_button_mechanism', type: 'text', required: false },
-            { label: 'Back Buttons?', key: 'has_back_buttons', type: 'checkbox', required: false },
-            
-            { label: 'Wireless (WiFi/BT)', key: 'wireless_connectivity', type: 'text', required: false },
-            { label: 'Cellular (5G/4G)', key: 'cellular_connectivity', type: 'checkbox', required: false },
-            { label: 'Ports / IO', key: 'ports', type: 'text', required: false },
-            { label: 'Video Out', key: 'video_out', type: 'text', required: false },
-            { label: 'Haptics', key: 'haptics', type: 'text', required: false },
-            { label: 'Gyroscope?', key: 'gyro', type: 'checkbox', required: false },
+            // Row 1: The Basics
+            { label: 'Input Layout', key: 'input_layout', type: 'select', required: false, width: 'half', options: ['Xbox', 'Nintendo', 'PlayStation', 'Retroid/Unique'] },
+            { label: 'Function Buttons', key: 'other_buttons', type: 'text', required: false, width: 'half', note: 'Start, Select, Home...' },
+
+            // Row 2: Face & D-Pad
+            { label: 'D-Pad Mech', key: 'dpad_mechanism', type: 'text', required: false, width: 'half', note: 'Rubber Dome, Dome Switch...' },
+            { label: 'Face Btn Mech', key: 'action_button_mechanism', type: 'text', required: false, width: 'half', note: 'Conductive Rubber, Microswitch...' },
+
+            // Row 3: Thumbsticks
+            { label: 'Stick Tech', key: 'thumbstick_mechanism', type: 'text', required: false, width: 'quarter', note: 'Hall Effect, ALPS...' },
+            { label: 'Stick Layout', key: 'thumbstick_layout', type: 'text', required: false, width: 'quarter', note: 'Staggered, Inline...' },
+            { label: 'L3/R3 Clicks?', key: 'has_stick_clicks', type: 'checkbox', required: false, width: 'quarter' },
+            { label: 'Cap Type', key: 'thumbstick_cap', type: 'text', required: false, width: 'quarter', note: 'Concave, Convex...' },
+
+            // Row 4: Shoulders & Triggers
+            { label: 'L1/R1 Mech', key: 'bumper_mechanism', type: 'text', required: false, width: 'third' },
+            { label: 'L2/R2 Mech', key: 'trigger_mechanism', type: 'text', required: false, width: 'third', note: 'Analog, Digital...' },
+            { label: 'Shoulder Layout', key: 'shoulder_layout', type: 'text', required: false, width: 'third', note: 'Stacked vs Inline' },
+
+            // Row 5: Feedback
+            { label: 'Haptics', key: 'haptics', type: 'text', required: false, width: 'third' },
+            { label: 'Gyroscope?', key: 'gyro', type: 'checkbox', required: false, width: 'third' },
+            { label: 'Back Buttons?', key: 'has_back_buttons', type: 'checkbox', required: false, width: 'third' },
+        ]
+    },
+    {
+        title: "CONNECTIVITY & IO",
+        fields: [
+            // Row 1: Wireless
+            { label: 'Wi-Fi Specs', key: 'wifi_specs', type: 'text', required: false, width: 'quarter' },
+            { label: 'Bluetooth Specs', key: 'bluetooth_specs', type: 'text', required: false, width: 'quarter' },
+            { label: 'Legacy/Other (IR, NFC)', key: 'other_connectivity', type: 'text', required: false, width: 'quarter' },
+            { label: 'Cellular?', key: 'cellular_connectivity', type: 'checkbox', required: false, width: 'quarter' },
+
+            // Row 2: Video
+            { label: 'Video Output', key: 'video_out', type: 'text', required: false, width: 'full' },
+
+            // Row 3: Ports
+            { label: 'Ports', key: 'ports', type: 'textarea', required: false, width: 'full', note: 'List all physical I/O (USB-C, HDMI, etc.)' },
         ]
     },
     {
         title: "POWER & CHASSIS",
         fields: [
-            { label: 'Battery (mAh)', key: 'battery_mah', type: 'number', required: false },
-            { label: 'Battery (Wh)', key: 'battery_wh', type: 'number', required: false },
-            { label: 'Charging Speed (W)', key: 'charging_speed_w', type: 'number', required: false },
-            { label: 'Charging Port', key: 'charging_port', type: 'text', required: false },
-            { label: 'Dimensions', key: 'dimensions', type: 'text', required: false },
-            { label: 'Weight (g)', key: 'weight_g', type: 'number', required: false },
-            { label: 'Body Material', key: 'body_material', type: 'text', required: false },
-            { label: 'Cooling Solution', key: 'cooling', type: 'text', required: false },
+            // Row 1: Battery Stats
+            { label: 'Capacity (mAh)', key: 'battery_mah', type: 'number', required: false, width: 'third' },
+            { label: 'Capacity (Wh)', key: 'battery_wh', type: 'number', required: false, width: 'third' },
+            { label: 'Battery Type', key: 'battery_type', type: 'text', required: false, width: 'third', note: 'Li-Ion, Li-Po, AA...' },
+
+            // Row 2: Charging & Weight
+            { label: 'Charge Speed (W)', key: 'charging_speed_w', type: 'number', required: false, width: 'third' },
+            { label: 'Weight (g)', key: 'weight_g', type: 'number', required: false, width: 'third' },
+            { label: 'Cooling', key: 'cooling_solution', type: 'text', required: false, width: 'third', note: 'Active Fan, Passive...' },
+
+            // Row 3: Dimensions
+            { label: 'Width (mm)', key: 'width_mm', type: 'number', required: false, width: 'third' },
+            { label: 'Height (mm)', key: 'height_mm', type: 'number', required: false, width: 'third' },
+            { label: 'Thickness (mm)', key: 'depth_mm', type: 'number', required: false, width: 'third' },
+
+            // Row 4: Build
+            { label: 'Body Material', key: 'body_material', type: 'text', required: false, width: 'half' },
+            { label: 'Available Colors', key: 'colors', type: 'text', required: false, width: 'half' },
         ]
     },
     {
         title: "AUDIO & MISC",
         fields: [
-            { label: 'Colors', key: 'colors', type: 'text', required: false },
-            { label: 'UI Skin', key: 'ui_skin', type: 'text', required: false },
-            { label: 'Speakers', key: 'audio_speakers', type: 'text', required: false },
-            { label: 'Audio Tech', key: 'audio_tech', type: 'text', required: false },
-            { label: 'Headphone Jack?', key: 'headphone_jack', type: 'checkbox', required: false },
-            { label: 'Microphone?', key: 'microphone', type: 'checkbox', required: false },
-            { label: 'Camera', key: 'camera', type: 'checkbox', required: false },
-            { label: 'Biometrics', key: 'biometrics', type: 'checkbox', required: false },
+            // Row 1: Audio
+            { label: 'Speakers', key: 'audio_speakers', type: 'text', required: false, width: 'half', note: 'Front-facing Stereo, Mono...' },
+            { label: 'Headphone Jack?', key: 'headphone_jack', type: 'checkbox', required: false, width: 'quarter' },
+            { label: 'Microphone?', key: 'microphone', type: 'checkbox', required: false, width: 'quarter' },
+
+            // Row 2: Extras
+            { label: 'Biometrics', key: 'biometrics', type: 'text', required: false, width: 'half', note: 'Fingerprint Sensor, Face Unlock...' },
+            { label: 'Camera Specs', key: 'camera_specs', type: 'text', required: false, width: 'half', note: '2MP Front...' },
         ]
     }
 ];
