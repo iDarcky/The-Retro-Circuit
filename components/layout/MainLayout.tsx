@@ -201,8 +201,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         </div>
         
         {/* Status Footer */}
-        <div className="p-2 bg-black text-[10px] font-mono text-center flex justify-between items-center px-4 text-gray-600">
-            <span>v1.1.0</span>
+        <div className="p-2 bg-black text-[10px] font-mono text-center flex justify-end items-center px-4 text-gray-600">
             {isAdmin && (
                 <span className={`flex items-center gap-1 ${dbStatus === 'ONLINE' ? 'text-retro-neon' : 'text-red-500'}`}>
                     <span className={`w-2 h-2 rounded-full ${dbStatus === 'ONLINE' ? 'bg-retro-neon' : 'bg-red-500'} animate-pulse`}></span>
@@ -214,8 +213,8 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
 
       {/* MAIN CONTENT AREA */}
       <main className="flex-1 relative z-10 flex flex-col h-screen md:h-screen overflow-hidden pt-16 md:pt-0">
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar bg-retro-dark/80 pb-24 md:pb-0">
+        {/* Scrollable Content Container: Set to flex-col to ensure children fill height properly */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar bg-retro-dark/80 pb-24 md:pb-0 flex flex-col min-h-0">
              {children}
         </div>
 

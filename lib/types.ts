@@ -182,6 +182,7 @@ export interface ConsoleFilterState {
     generations: string[];
     form_factors: string[];
     manufacturer_id: string | null;
+    panel_types: string[];
 }
 
 export interface ConsoleSpecs {
