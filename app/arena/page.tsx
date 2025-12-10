@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, Suspense, type FC, type ChangeEvent, type Dispatch, type SetStateAction } from 'react';
@@ -82,8 +81,8 @@ const METRICS: ComparisonMetric[] = [
     { label: 'Audio Tech', key: 'audio_tech', type: 'string' },
     { label: 'Headphone Jack', key: 'headphone_jack', type: 'boolean' },
     { label: 'Microphone', key: 'microphone', type: 'boolean' },
-    { label: 'Camera', key: 'camera', type: 'boolean' },
-    { label: 'Biometrics', key: 'biometrics', type: 'boolean' },
+    { label: 'Camera', key: 'camera_specs', type: 'string' },
+    { label: 'Biometrics', key: 'biometrics', type: 'string' },
 
     // --- CONTROLS & SENSORS ---
     { label: 'Input Layout', key: 'input_layout', type: 'string' },
@@ -104,7 +103,7 @@ const METRICS: ComparisonMetric[] = [
     { label: 'Dimensions', key: 'dimensions', type: 'string' },
     { label: 'Weight', key: 'weight_g', type: 'number', unit: 'g', lowerIsBetter: true },
     { label: 'Body Material', key: 'body_material', type: 'string' },
-    { label: 'Cooling', key: 'cooling', type: 'string' },
+    { label: 'Cooling', key: 'cooling_solution', type: 'string' },
     { label: 'Colors', key: 'colors', type: 'string' },
 ];
 

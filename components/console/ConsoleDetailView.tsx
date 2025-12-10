@@ -139,6 +139,14 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
     
     // Construct VS Mode URL (Using p1 as requested)
     const compareUrl = `/arena?p1=${consoleData.slug}${currentVariant?.slug ? `&v1=${currentVariant.slug}` : ''}`;
+    
+    // Construct Dimensions String
+    const getDimString = () => {
+        if (mergedSpecs.width_mm && mergedSpecs.height_mm && mergedSpecs.depth_mm) {
+            return `${mergedSpecs.width_mm} x ${mergedSpecs.height_mm} x ${mergedSpecs.depth_mm} mm`;
+        }
+        return mergedSpecs.dimensions;
+    };
 
     // --- RENDER ---
 
@@ -264,7 +272,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                                     key={variant.id}
                                     onClick={() => handleVariantChange(variant.id)}
                                     className={`
-                                        px-4 py-2 font-mono text-xs border-t border-l border-r uppercase transition-all
+                                        px-4 py-2 font-mono text-xs border-t border-l-2 border-r uppercase transition-all
                                         ${selectedVariantId === variant.id 
                                             ? 'bg-retro-neon text-black border-retro-neon font-bold shadow-[0_-2px_10px_rgba(0,255,157,0.3)]' 
                                             : 'bg-black text-gray-500 border-gray-800 hover:text-white hover:bg-white/5'}
@@ -358,12 +366,28 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                         {/* 4. INPUT & CONTROLS */}
                         <SpecCard title="INPUT & CONTROLS">
                             <SpecField label="Layout" value={mergedSpecs.input_layout} />
-                            <SpecField label="D-Pad" value={mergedSpecs.dpad_mechanism} />
-                            <SpecField label="Sticks" value={mergedSpecs.thumbstick_mechanism} small />
-                            
+                            <SpecField label="Buttons" value={mergedSpecs.other_buttons} small />
                             <div className="grid grid-cols-2 gap-4 mt-2">
-                                <SpecField label="Triggers" value={mergedSpecs.trigger_mechanism} small />
-                                <SpecField label="Shoulders" value={mergedSpecs.shoulder_layout} small />
+                                <SpecField label="D-Pad" value={mergedSpecs.dpad_mechanism} small />
+                                <SpecField label="Face Btn" value={mergedSpecs.action_button_mechanism} small />
+                            </div>
+                            
+                            <div className="mt-3 pt-2 border-t border-white/5">
+                                <div className="text-[9px] text-gray-500 uppercase mb-1">Analog Sticks</div>
+                                <SpecField label="Tech" value={mergedSpecs.thumbstick_mechanism} small />
+                                <SpecField label="Layout" value={mergedSpecs.thumbstick_layout} small />
+                                <div className="flex justify-between items-center py-1">
+                                    <span className="font-mono text-[10px] text-gray-500 uppercase">L3/R3</span>
+                                    <TechBadge label="CLICKABLE" active={mergedSpecs.has_stick_clicks} />
+                                </div>
+                            </div>
+
+                            <div className="mt-3 pt-2 border-t border-white/5">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <SpecField label="L1/R1" value={mergedSpecs.bumper_mechanism} small />
+                                    <SpecField label="L2/R2" value={mergedSpecs.trigger_mechanism} small />
+                                </div>
+                                <SpecField label="Shoulder Style" value={mergedSpecs.shoulder_layout} small />
                             </div>
 
                             <div className="mt-3 pt-2 border-t border-white/5">
@@ -379,6 +403,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                         <SpecCard title="CONNECTIVITY & IO">
                             <SpecField label="Wi-Fi" value={mergedSpecs.wifi_specs} small />
                             <SpecField label="Bluetooth" value={mergedSpecs.bluetooth_specs} small />
+                            <SpecField label="Other" value={mergedSpecs.other_connectivity} small />
                             <div className="flex justify-between items-center py-1">
                                 <span className="font-mono text-[10px] text-gray-500 uppercase">Cellular</span>
                                 <TechBadge label="5G / 4G LTE" active={mergedSpecs.cellular_connectivity} />
@@ -396,16 +421,32 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                         {/* 6. POWER & BODY */}
                         <SpecCard title="POWER & CHASSIS">
                             <div className="grid grid-cols-2 gap-4">
-                                <SpecField label="Battery" value={mergedSpecs.battery_mah} unit="mAh" highlight />
+                                <SpecField label="Capacity" value={mergedSpecs.battery_mah} unit="mAh" highlight />
                                 <SpecField label="Energy" value={mergedSpecs.battery_wh} unit="Wh" />
                             </div>
+                            <SpecField label="Battery Type" value={mergedSpecs.battery_type} small />
                             <SpecField label="Charging" value={mergedSpecs.charging_speed_w} unit="W" />
-                            <SpecField label="TDP Range" value={mergedSpecs.tdp_range_w} />
+                            <SpecField label="Cooling" value={mergedSpecs.cooling_solution} small />
                             
                             <div className="mt-4 pt-4 border-t border-white/5">
-                                <SpecField label="Dimensions" value={mergedSpecs.dimensions} small />
+                                <SpecField label="Dimensions" value={getDimString()} small />
                                 <SpecField label="Weight" value={mergedSpecs.weight_g} unit="g" small />
                                 <SpecField label="Material" value={mergedSpecs.body_material} small />
+                                <SpecField label="Colors" value={mergedSpecs.colors} small />
+                            </div>
+                        </SpecCard>
+
+                        {/* 7. AUDIO & MISC */}
+                        <SpecCard title="AUDIO & MISC">
+                            <SpecField label="Speakers" value={mergedSpecs.audio_speakers} />
+                            <div className="flex flex-wrap gap-2 mt-2">
+                                <TechBadge label="HEADPHONE JACK" active={mergedSpecs.headphone_jack} />
+                                <TechBadge label="MICROPHONE" active={mergedSpecs.microphone} />
+                            </div>
+                            
+                            <div className="mt-4 pt-4 border-t border-white/5">
+                                <SpecField label="Biometrics" value={mergedSpecs.biometrics} small />
+                                <SpecField label="Camera" value={mergedSpecs.camera_specs} small />
                             </div>
                         </SpecCard>
                     </div>
