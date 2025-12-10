@@ -116,14 +116,14 @@ const ConsoleVaultClient: FC = () => {
   // --- SUB-COMPONENTS ---
 
   const CheckboxFilter = ({ label, checked, onChange }: { label: string, checked: boolean, onChange: () => void }) => (
-      <label className="flex items-center gap-3 cursor-pointer group mb-2 last:mb-0">
+      <div onClick={onChange} className="flex items-center gap-3 cursor-pointer group mb-2 last:mb-0">
           <div className={`w-4 h-4 border flex items-center justify-center transition-colors ${checked ? 'bg-retro-neon border-retro-neon' : 'border-gray-600 bg-black group-hover:border-retro-blue'}`}>
               {checked && <svg className="w-3 h-3 text-black font-bold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
           </div>
           <span className={`text-[10px] font-mono uppercase ${checked ? 'text-white' : 'text-gray-500 group-hover:text-retro-blue'}`}>
               {label}
           </span>
-      </label>
+      </div>
   );
 
   return (
