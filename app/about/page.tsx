@@ -110,7 +110,7 @@ export default function AboutPage() {
                     Built to solve the chaos of handheld specifications. This project serves as both a public utility for the retro gaming community and a demonstration of modern full-stack architecture.
                 </p>
                 <div className="font-mono text-xs text-gray-600">
-                    > CURRENT_OBJECTIVE: DATA_EXPANSION
+                    &gt; CURRENT_OBJECTIVE: DATA_EXPANSION
                 </div>
             </div>
         </div>
