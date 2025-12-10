@@ -39,11 +39,7 @@ const EmulationGrid: FC<EmulationGridProps> = ({ profile: rawProfile }) => {
 
     return (
         <div className="bg-retro-dark border border-retro-grid mb-6 relative group overflow-hidden animate-fadeIn">
-             {/* Task 2: Render Debug (Temporary) */}
-             <pre className="text-[9px] font-mono text-retro-pink bg-black p-2 border-b border-retro-pink/30 overflow-x-auto max-h-20 hidden group-hover:block">
-                DEBUG: {JSON.stringify(profile, null, 2)}
-             </pre>
-
+             
              {/* Header */}
             <div className="bg-black/40 border-b border-retro-grid px-4 py-2 flex justify-between items-center">
                 <h3 className="font-pixel text-[10px] text-retro-neon uppercase tracking-widest">EMULATION PERFORMANCE</h3>
