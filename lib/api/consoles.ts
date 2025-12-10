@@ -3,6 +3,41 @@
 import { supabase } from "../supabase/singleton";
 import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant } from "../types";
 
+export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
+    try {
+        // Fetch everything. No range limit (or very high limit).
+        // Ensure we get variants for client-side filtering
+        const { data, error } = await supabase
+            .from('consoles')
+            .select('*, manufacturer:manufacturer(*), variants:console_variants(*)')
+            .order('name', { ascending: true });
+
+        if (error) {
+            console.error('[API] fetchAllConsoles DB Error:', error.message);
+            throw error;
+        }
+
+        // Normalize
+        return (data || []).map((item: any) => {
+            const variants = item.variants || [];
+            const defaultVariant = variants.find((v: any) => v.is_default) || variants[0];
+            
+            if (defaultVariant) {
+                if (!item.release_year) item.release_year = defaultVariant.release_year;
+                if (!item.image_url) item.image_url = defaultVariant.image_url;
+                item.specs = defaultVariant;
+            } else {
+                item.specs = {};
+            }
+            return item;
+        }) as ConsoleDetails[];
+
+    } catch (e) {
+        console.error('[API] Fetch All Consoles Exception:', e);
+        return [];
+    }
+};
+
 export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: number = 1, limit: number = 20): Promise<{ data: ConsoleDetails[], count: number }> => {
     try {
         // Query consoles. We sort by NAME by default in the DB to ensure we get a stable list
