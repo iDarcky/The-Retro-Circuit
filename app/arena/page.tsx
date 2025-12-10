@@ -56,7 +56,7 @@ const METRICS: ComparisonMetric[] = [
     { label: 'Compute Power', key: 'gpu_teraflops', type: 'number', unit: ' TFLOPS' },
 
     // --- MEMORY & STORAGE ---
-    { label: 'RAM', key: 'ram_gb', type: 'number', unit: ' GB' },
+    { label: 'RAM', key: 'ram_mb', type: 'number', unit: ' MB' },
     { label: 'RAM Type', key: 'ram_type', type: 'string' },
     { label: 'RAM Speed', key: 'ram_speed_mhz', type: 'number', unit: ' MHz' },
     { label: 'Storage', key: 'storage_gb', type: 'number', unit: ' GB' },
@@ -67,6 +67,7 @@ const METRICS: ComparisonMetric[] = [
     { label: 'Battery Capacity', key: 'battery_capacity_mah', type: 'number', unit: ' mAh' },
     { label: 'Battery Energy', key: 'battery_capacity_wh', type: 'number', unit: ' Wh' },
     { label: 'Charging Speed', key: 'charging_speed_w', type: 'number', unit: 'W' },
+    { label: 'Charging Tech', key: 'charging_tech', type: 'string' },
     { label: 'TDP', key: 'tdp_wattage', type: 'number', unit: 'W' },
 
     // --- CONNECTIVITY & IO ---
@@ -164,6 +165,10 @@ const ComparisonRow: FC<ComparisonRowProps & { key?: string }> = ({
         if (metric.type === 'boolean') return (val === true || val === 'true') ? 'YES' : 'NO';
         if (metric.type === 'currency') return `$${val}`;
         if (metric.type === 'resolution' && varA.screen_resolution_y) return `${val}p`; 
+        
+        // RAM Formatting override logic could go here, but generic units work for now
+        // e.g. if key == ram_mb && val > 1024 -> convert. But generic handling is fine.
+        
         return `${val}${metric.unit ? metric.unit : ''}`;
     };
 

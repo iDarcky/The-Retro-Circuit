@@ -36,21 +36,47 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     // Accordion State (Default First Section Open)
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({
         "IDENTITY & ORIGIN": true,
-        "DISPLAY": true // Auto-open display for this task context
+        "MEMORY & STORAGE": true // Auto-open for testing RAM logic
     });
     
     // Template System State
     const [existingVariants, setExistingVariants] = useState<ConsoleVariant[]>([]);
     const [selectedTemplate, setSelectedTemplate] = useState<string>('');
-    
-    // Initialize Data
+
+    // --- SMART RAM STATE ---
+    const [ramInput, setRamInput] = useState<{ value: string | number, unit: 'GB' | 'MB' }>({ value: '', unit: 'GB' });
+
+    // Initialize Data & RAM Logic
     useEffect(() => {
         if (initialData) {
             setFormData(initialData);
+            // Smart RAM Init
+            const mb = Number(initialData.ram_mb);
+            if (!isNaN(mb) && mb > 0) {
+                 if (mb >= 1024 && mb % 1024 === 0) {
+                     setRamInput({ value: mb / 1024, unit: 'GB' });
+                 } else {
+                     setRamInput({ value: mb, unit: 'MB' });
+                 }
+            }
         } else if (preSelectedConsoleId) {
             setFormData(prev => ({ ...prev, console_id: preSelectedConsoleId }));
         }
     }, [initialData, preSelectedConsoleId]);
+
+    // Handle RAM Input Changes
+    const handleRamChange = (newVal: string | number, newUnit: 'GB' | 'MB') => {
+        setRamInput({ value: newVal, unit: newUnit });
+        
+        // Update formData immediately
+        const val = Number(newVal);
+        if (!isNaN(val)) {
+            const finalMb = newUnit === 'GB' ? val * 1024 : val;
+            handleInputChange('ram_mb', finalMb);
+        } else {
+            handleInputChange('ram_mb', 0);
+        }
+    };
 
     // Fetch existing variants for template system
     useEffect(() => {
@@ -88,8 +114,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             let ratioX = w / divisor;
             let ratioY = h / divisor;
 
-            // Optional: Map 8:5 to common 16:10 marketing term if desired, 
-            // but strict GCD is mathematically correct. Keeping strict for now.
+            // Optional: Map 8:5 to common 16:10 marketing term
             if (ratioX === 8 && ratioY === 5) {
                  ratioX = 16;
                  ratioY = 10;
@@ -136,6 +161,18 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 model_no: '',
                 image_url: template.image_url 
             }));
+
+            // Sync RAM input to template
+            const mb = Number(template.ram_mb);
+            if (!isNaN(mb) && mb > 0) {
+                 if (mb >= 1024 && mb % 1024 === 0) {
+                     setRamInput({ value: mb / 1024, unit: 'GB' });
+                 } else {
+                     setRamInput({ value: mb, unit: 'MB' });
+                 }
+            } else {
+                setRamInput({ value: '', unit: 'GB' });
+            }
         }
     };
 
@@ -223,6 +260,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     if (mode === 'SAVE') {
                         // Reset form but keep console selected
                         setFormData({ console_id: rawVariant.console_id });
+                        setRamInput({ value: '', unit: 'GB' });
                         setSelectedTemplate('');
                         setOpenSections({ "IDENTITY & ORIGIN": true });
                         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -355,6 +393,32 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                 if (field.width === 'quarter') colSpan = 'md:col-span-3';
 
                                                 const error = fieldErrors[field.key];
+
+                                                // --- SMART RAM LOGIC RENDER ---
+                                                if (field.type === 'custom_ram') {
+                                                    return (
+                                                        <div key={field.key} className={`${colSpan} flex flex-col`}>
+                                                            <label className={`text-[10px] mb-1 block uppercase ${error ? 'text-retro-pink' : 'text-gray-500'}`}>{field.label}</label>
+                                                            <div className="flex gap-2">
+                                                                <input 
+                                                                    type="number"
+                                                                    className={`flex-1 border p-3 outline-none font-mono text-sm bg-black text-white ${error ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'}`}
+                                                                    value={ramInput.value}
+                                                                    onChange={(e) => handleRamChange(e.target.value, ramInput.unit)}
+                                                                />
+                                                                <select
+                                                                    className="w-24 bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm focus:border-retro-neon"
+                                                                    value={ramInput.unit}
+                                                                    onChange={(e) => handleRamChange(ramInput.value, e.target.value as 'GB' | 'MB')}
+                                                                >
+                                                                    <option value="GB">GB</option>
+                                                                    <option value="MB">MB</option>
+                                                                </select>
+                                                            </div>
+                                                            {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
+                                                        </div>
+                                                    );
+                                                }
 
                                                 return (
                                                     <div key={field.key} className={`${colSpan} flex flex-col`}>

@@ -237,7 +237,7 @@ export interface ConsoleVariant {
   gpu_teraflops?: number;
   
   os?: string;
-  ram_gb?: number;
+  ram_mb?: number; // Replaced ram_gb
   ram_type?: string;
   ram_speed_mhz?: number;
   storage_gb?: number;
@@ -266,6 +266,7 @@ export interface ConsoleVariant {
   battery_capacity_wh?: number;
   battery_type?: string;
   charging_speed_w?: number;
+  charging_tech?: string; // New field
   tdp_wattage?: number | null;
   weight_g?: number;
   cooling_solution?: string;
@@ -363,7 +364,7 @@ export const ConsoleVariantSchema = z.object({
   os: safeString,
 
   // Memory
-  ram_gb: safeNumber,
+  ram_mb: safeNumber,
   ram_type: safeString,
   ram_speed_mhz: safeNumber,
   
@@ -393,6 +394,7 @@ export const ConsoleVariantSchema = z.object({
   battery_capacity_wh: safeNumber,
   battery_type: safeString,
   charging_speed_w: safeNumber,
+  charging_tech: safeString,
   tdp_wattage: safeNumber,
   weight_g: safeNumber,
   cooling_solution: safeString,
@@ -483,7 +485,7 @@ export const VARIANT_FORM_GROUPS = [
         title: "MEMORY & STORAGE",
         fields: [
             // Row 1: RAM
-            { label: 'RAM (GB)', key: 'ram_gb', type: 'number', required: false, width: 'third' },
+            { label: 'RAM Size', key: 'ram_mb', type: 'custom_ram', required: false, width: 'third' },
             { label: 'RAM Type (e.g. LPDDR5)', key: 'ram_type', type: 'text', required: false, width: 'third' },
             { 
                 label: 'RAM Speed (Rated)', 
@@ -588,9 +590,12 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Battery Type', key: 'battery_type', type: 'text', required: false, width: 'third', note: 'Li-Ion, Li-Po, AA...' },
 
             // Row 2: Charging & Weight
-            { label: 'Charge Speed (W)', key: 'charging_speed_w', type: 'number', required: false, width: 'third' },
+            { label: 'Max Speed (W)', key: 'charging_speed_w', type: 'number', required: false, width: 'third', note: 'For Sorting' },
+            { label: 'Charging Specs', key: 'charging_tech', type: 'text', required: false, width: 'third', note: 'e.g. 5V/1.5A, USB-PD' },
             { label: 'Weight (g)', key: 'weight_g', type: 'number', required: false, width: 'third' },
-            { label: 'Cooling', key: 'cooling_solution', type: 'text', required: false, width: 'third', note: 'Active Fan, Passive...' },
+            
+            // Row 2b: Cooling
+            { label: 'Cooling', key: 'cooling_solution', type: 'text', required: false, width: 'full', note: 'Active Fan, Passive...' },
 
             // Row 3: Dimensions
             { label: 'Width (mm)', key: 'width_mm', type: 'number', required: false, width: 'third' },

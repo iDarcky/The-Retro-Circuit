@@ -99,15 +99,15 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
             bScore: coreScore.b
         });
 
-        // 4. RAM (Variant Level)
-        const ramA = getBestVariantSpec(cA, 'ram_gb');
-        const ramB = getBestVariantSpec(cB, 'ram_gb');
+        // 4. RAM (Variant Level) - USING MB
+        const ramA = getBestVariantSpec(cA, 'ram_mb');
+        const ramB = getBestVariantSpec(cB, 'ram_mb');
         const ramScore = calculateScore(ramA, ramB);
         
         points.push({
             feature: 'System RAM',
-            consoleAValue: ramA ? `${ramA} GB` : 'Unknown',
-            consoleBValue: ramB ? `${ramB} GB` : 'Unknown',
+            consoleAValue: ramA >= 1024 ? `${(ramA/1024).toFixed(1)} GB` : `${ramA} MB`,
+            consoleBValue: ramB >= 1024 ? `${(ramB/1024).toFixed(1)} GB` : `${ramB} MB`,
             winner: ramA > ramB ? 'A' : (ramB > ramA ? 'B' : 'Tie'),
             aScore: ramScore.a,
             bScore: ramScore.b
@@ -128,9 +128,6 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
         });
 
         // 6. Output (Variant Level - screen resolution as proxy for output capability in handheld context)
-        // Or if 'max_resolution_output' exists on variant? ConsoleVariant schema doesn't show it explicitly, 
-        // but let's assume we compare screen or just list N/A if missing.
-        // For handhelds, screen resolution is key.
         const resA = specsA.screen_resolution_x ? `${specsA.screen_resolution_x}x${specsA.screen_resolution_y}` : 'Unknown';
         const resB = specsB.screen_resolution_x ? `${specsB.screen_resolution_x}x${specsB.screen_resolution_y}` : 'Unknown';
         
