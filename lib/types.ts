@@ -305,8 +305,7 @@ export interface ConsoleVariant {
   action_button_mechanism?: string;
   has_back_buttons?: boolean;
 
-  // Dimensions
-  dimensions?: string;
+  // Dimensions (mm)
   width_mm?: number;
   height_mm?: number;
   depth_mm?: number;
@@ -434,7 +433,6 @@ export const ConsoleVariantSchema = z.object({
   has_back_buttons: safeBoolean,
 
   // Body
-  dimensions: safeString,
   width_mm: safeNumber,
   height_mm: safeNumber,
   depth_mm: safeNumber,
@@ -542,7 +540,7 @@ export const VARIANT_FORM_GROUPS = [
         fields: [
             // Row 1: The Basics
             { label: 'Input Layout', key: 'input_layout', type: 'select', required: false, width: 'half', options: ['Xbox', 'Nintendo', 'PlayStation', 'Retroid/Unique'] },
-            { label: 'Function Buttons', key: 'other_buttons', type: 'text', required: false, width: 'half', note: 'Start, Select, Home...' },
+            { label: 'Start, Select, Home', key: 'other_buttons', type: 'text', required: false, width: 'half' },
 
             // Row 2: Face & D-Pad
             { label: 'D-Pad Mech', key: 'dpad_mechanism', type: 'text', required: false, width: 'half', note: 'Rubber Dome, Dome Switch...' },
@@ -557,7 +555,7 @@ export const VARIANT_FORM_GROUPS = [
             // Row 4: Shoulders & Triggers
             { label: 'L1/R1 Mech', key: 'bumper_mechanism', type: 'text', required: false, width: 'third' },
             { label: 'L2/R2 Mech', key: 'trigger_mechanism', type: 'text', required: false, width: 'third', note: 'Analog, Digital...' },
-            { label: 'Shoulder Layout', key: 'shoulder_layout', type: 'text', required: false, width: 'third', note: 'Stacked vs Inline' },
+            { label: 'Stacked vs Inline', key: 'shoulder_layout', type: 'text', required: false, width: 'third' },
 
             // Row 5: Feedback
             { label: 'Haptics', key: 'haptics', type: 'text', required: false, width: 'third' },
@@ -594,17 +592,17 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Weight (g)', key: 'weight_g', type: 'number', required: false, width: 'third' },
             { label: 'Cooling', key: 'cooling_solution', type: 'text', required: false, width: 'third', note: 'Active Fan, Passive...' },
 
-            // Row 3: TDP
-            { label: 'TDP (W)', key: 'tdp_wattage', type: 'number', required: false, width: 'full', note: 'Thermal Design Power' },
-
-            // Row 4: Dimensions
+            // Row 3: Dimensions
             { label: 'Width (mm)', key: 'width_mm', type: 'number', required: false, width: 'third' },
             { label: 'Height (mm)', key: 'height_mm', type: 'number', required: false, width: 'third' },
             { label: 'Thickness (mm)', key: 'depth_mm', type: 'number', required: false, width: 'third' },
 
-            // Row 5: Build
+            // Row 4: Build
             { label: 'Body Material', key: 'body_material', type: 'text', required: false, width: 'half' },
             { label: 'Available Colors', key: 'available_colors', type: 'text', required: false, width: 'half' },
+            
+            // Row 5: TDP
+            { label: 'TDP (W)', key: 'tdp_wattage', type: 'number', required: false, width: 'full', note: 'Thermal Design Power' },
         ]
     },
     {

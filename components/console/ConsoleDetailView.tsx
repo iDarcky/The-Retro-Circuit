@@ -145,7 +145,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
         if (mergedSpecs.width_mm && mergedSpecs.height_mm && mergedSpecs.depth_mm) {
             return `${mergedSpecs.width_mm} x ${mergedSpecs.height_mm} x ${mergedSpecs.depth_mm} mm`;
         }
-        return mergedSpecs.dimensions;
+        return '---';
     };
 
     // --- RENDER ---
