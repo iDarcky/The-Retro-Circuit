@@ -280,6 +280,7 @@ export interface ConsoleVariant {
   ports?: string;
   bluetooth_specs?: string; // Renamed from connectivity
   wifi_specs?: string; // Renamed from wireless_connectivity
+  other_connectivity?: string; // New
   cellular_connectivity?: boolean;
   video_out?: string | null;
   haptics?: string; // Text in DB (e.g. 'HD Rumble')
@@ -287,6 +288,7 @@ export interface ConsoleVariant {
   
   // Controls
   input_layout?: string;
+  other_buttons?: string; // New
   dpad_type?: string;
   dpad_mechanism?: string;
   dpad_shape?: string;
@@ -294,7 +296,9 @@ export interface ConsoleVariant {
   thumbstick_mechanism?: string;
   thumbstick_layout?: string;
   thumbstick_cap?: string;
+  has_stick_clicks?: boolean; // New
   shoulder_layout?: string; // Renamed from shoulder_buttons
+  bumper_mechanism?: string; // New
   trigger_mechanism?: string;
   action_button_mechanism?: string;
   has_back_buttons?: boolean;
@@ -403,6 +407,7 @@ export const ConsoleVariantSchema = z.object({
   ports: safeString,
   wifi_specs: safeString, // Renamed
   bluetooth_specs: safeString, // Renamed & Added to schema
+  other_connectivity: safeString, // New
   cellular_connectivity: safeBoolean,
   video_out: safeString,
   haptics: safeString,
@@ -410,6 +415,7 @@ export const ConsoleVariantSchema = z.object({
 
   // Controls
   input_layout: safeString,
+  other_buttons: safeString, // New
   dpad_type: safeString,
   dpad_mechanism: safeString,
   dpad_shape: safeString,
@@ -417,7 +423,9 @@ export const ConsoleVariantSchema = z.object({
   thumbstick_mechanism: safeString,
   thumbstick_layout: safeString,
   thumbstick_cap: safeString,
+  has_stick_clicks: safeBoolean, // New
   shoulder_layout: safeString, // Renamed
+  bumper_mechanism: safeString, // New
   trigger_mechanism: safeString,
   action_button_mechanism: safeString,
   has_back_buttons: safeBoolean,
@@ -529,34 +537,47 @@ export const VARIANT_FORM_GROUPS = [
         ]
     },
     {
-        title: "INPUT & CONNECTIVITY",
+        title: "INPUT MECHANICS",
         fields: [
-            // Row 1: Wireless
-            { label: 'Wi-Fi Specs', key: 'wifi_specs', type: 'text', required: false, width: 'third', subHeader: 'Wireless' },
-            { label: 'Bluetooth Specs', key: 'bluetooth_specs', type: 'text', required: false, width: 'third' },
-            { label: 'Cellular (Check)', key: 'cellular_connectivity', type: 'checkbox', required: false, width: 'third' },
+            // Row 1
+            { label: 'Input Layout', key: 'input_layout', type: 'select', required: false, width: 'half', options: ['Xbox', 'Nintendo', 'PlayStation', 'Retroid/Unique'] },
+            { label: 'Function Buttons', key: 'other_buttons', type: 'text', required: false, width: 'half', note: 'Start, Select, Home, etc.' },
 
-            // Row 2: Wired
-            { label: 'Video Output', key: 'video_out', type: 'text', required: false, width: 'half', subHeader: 'Wired & IO' },
-            { label: 'Ports', key: 'ports', type: 'textarea', required: false, width: 'half' },
+            // Row 2
+            { label: 'D-Pad Mech', key: 'dpad_mechanism', type: 'text', required: false, width: 'half' },
+            { label: 'Face Btn Mech', key: 'action_button_mechanism', type: 'text', required: false, width: 'half' },
 
-            // Row 3: Main Controls
-            { label: 'D-Pad Mech', key: 'dpad_mechanism', type: 'text', required: false, width: 'third', subHeader: 'Controls' },
-            { label: 'Stick Tech', key: 'thumbstick_mechanism', type: 'text', required: false, width: 'third' },
-            { label: 'Shoulder Layout (Stacked/Inline)', key: 'shoulder_layout', type: 'text', required: false, width: 'third' },
+            // Row 3
+            { label: 'Stick Tech', key: 'thumbstick_mechanism', type: 'text', required: false, width: 'quarter' },
+            { label: 'Stick Layout', key: 'thumbstick_layout', type: 'text', required: false, width: 'quarter' },
+            { label: 'L3/R3 Clicks?', key: 'has_stick_clicks', type: 'checkbox', required: false, width: 'quarter' },
+            { label: 'Cap Type', key: 'thumbstick_cap', type: 'text', required: false, width: 'quarter' },
 
-            // Row 4: Extended Controls (Preserving other fields)
-            { label: 'Input Layout', key: 'input_layout', type: 'select', required: false, width: 'third', subHeader: 'Extended Controls', options: ['Xbox', 'Nintendo', 'PlayStation', 'Retroid/Unique'] },
-            { label: 'Back Buttons?', key: 'has_back_buttons', type: 'checkbox', required: false, width: 'third' },
-            { label: 'Gyroscope?', key: 'gyro', type: 'checkbox', required: false, width: 'third' },
+            // Row 4
+            { label: 'L1/R1 Mech', key: 'bumper_mechanism', type: 'text', required: false, width: 'third' },
+            { label: 'L2/R2 Mech', key: 'trigger_mechanism', type: 'text', required: false, width: 'third' },
+            { label: 'Shoulder Layout', key: 'shoulder_layout', type: 'text', required: false, width: 'third', note: 'Stacked or Inline' },
 
-            { label: 'D-Pad Shape', key: 'dpad_shape', type: 'text', required: false, width: 'third' },
-            { label: 'Face Btn Mech', key: 'action_button_mechanism', type: 'text', required: false, width: 'third' },
-            { label: 'Stick Layout', key: 'thumbstick_layout', type: 'text', required: false, width: 'third' },
+            // Row 5
+            { label: 'Haptics', key: 'haptics', type: 'text', required: false, width: 'half' },
+            { label: 'Gyroscope?', key: 'gyro', type: 'checkbox', required: false, width: 'quarter' },
+            { label: 'Back Buttons?', key: 'has_back_buttons', type: 'checkbox', required: false, width: 'quarter' },
+        ]
+    },
+    {
+        title: "CONNECTIVITY & IO",
+        fields: [
+            // Row 1
+            { label: 'Wi-Fi Specs', key: 'wifi_specs', type: 'text', required: false, width: 'quarter' },
+            { label: 'Bluetooth Specs', key: 'bluetooth_specs', type: 'text', required: false, width: 'quarter' },
+            { label: 'Legacy/Other', key: 'other_connectivity', type: 'text', required: false, width: 'quarter', note: 'IR, NFC, etc.' },
+            { label: 'Cellular?', key: 'cellular_connectivity', type: 'checkbox', required: false, width: 'quarter' },
 
-            { label: 'Stick Cap', key: 'thumbstick_cap', type: 'text', required: false, width: 'third' },
-            { label: 'Trigger Type', key: 'trigger_mechanism', type: 'text', required: false, width: 'third' },
-            { label: 'Haptics', key: 'haptics', type: 'text', required: false, width: 'full' },
+            // Row 2
+            { label: 'Video Output', key: 'video_out', type: 'text', required: false, width: 'full' },
+
+            // Row 3
+            { label: 'Ports', key: 'ports', type: 'textarea', required: false, width: 'full' },
         ]
     },
     {
