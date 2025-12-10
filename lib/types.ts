@@ -1,7 +1,4 @@
 
-
-
-
 import { z } from 'zod';
 
 // --- VALIDATION HELPERS ---
@@ -531,25 +528,50 @@ export const VARIANT_FORM_GROUPS = [
         ]
     },
     {
-        title: "INPUT & CONNECTIVITY",
+        title: "INPUT & CONTROLS",
         fields: [
-            { label: 'Input Layout', key: 'input_layout', type: 'text', required: false },
-            { label: 'D-Pad Style', key: 'dpad_type', type: 'text', required: false },
-            { label: 'D-Pad Mech (Rubber/Clicky)', key: 'dpad_mechanism', type: 'text', required: false },
-            { label: 'Analog Sticks', key: 'analog_stick_type', type: 'text', required: false },
-            { label: 'Stick Mech (Alps/Hall)', key: 'thumbstick_mechanism', type: 'text', required: false },
-            { label: 'Stick Layout', key: 'thumbstick_layout', type: 'text', required: false },
-            { label: 'Shoulder Buttons', key: 'shoulder_buttons', type: 'text', required: false },
-            { label: 'Trigger Mech (Digital/Analog)', key: 'trigger_mechanism', type: 'text', required: false },
-            { label: 'Action Btn Mech', key: 'action_button_mechanism', type: 'text', required: false },
-            { label: 'Back Buttons?', key: 'has_back_buttons', type: 'checkbox', required: false },
-            
-            { label: 'Wireless (WiFi/BT)', key: 'wireless_connectivity', type: 'text', required: false },
-            { label: 'Cellular (5G/4G)', key: 'cellular_connectivity', type: 'checkbox', required: false },
-            { label: 'Ports / IO', key: 'ports', type: 'text', required: false },
-            { label: 'Video Out', key: 'video_out', type: 'text', required: false },
-            { label: 'Haptics', key: 'haptics', type: 'text', required: false },
-            { label: 'Gyroscope?', key: 'gyro', type: 'checkbox', required: false },
+            // Row 1: Layout
+            { 
+                label: 'Input Layout', 
+                key: 'input_layout', 
+                type: 'select', 
+                required: false, 
+                width: 'third', 
+                subHeader: 'Layout & Features',
+                options: ['Xbox', 'Nintendo', 'PlayStation', 'Retroid/Unique']
+            },
+            { label: 'Back Buttons?', key: 'has_back_buttons', type: 'checkbox', required: false, width: 'third' },
+            { label: 'Gyroscope?', key: 'gyro', type: 'checkbox', required: false, width: 'third' },
+
+            // Row 2: Face Buttons
+            { label: 'D-Pad Mech', key: 'dpad_mechanism', type: 'text', required: false, width: 'third', subHeader: 'Face Buttons' },
+            { label: 'D-Pad Shape', key: 'dpad_shape', type: 'text', required: false, width: 'third' },
+            { label: 'Face Btn Mech', key: 'action_button_mechanism', type: 'text', required: false, width: 'third' },
+
+            // Row 3: Sticks
+            { label: 'Stick Tech (Hall/Alps)', key: 'thumbstick_mechanism', type: 'text', required: false, width: 'third', subHeader: 'Analog Sticks' },
+            { label: 'Stick Layout', key: 'thumbstick_layout', type: 'text', required: false, width: 'third' },
+            { label: 'Stick Cap', key: 'thumbstick_cap', type: 'text', required: false, width: 'third' },
+
+            // Row 4: Triggers
+            { label: 'Shoulder Layout (Stacked/Inline)', key: 'shoulder_buttons', type: 'text', required: false, width: 'half', subHeader: 'Triggers & Shoulders' },
+            { label: 'Trigger Type (Analog/Dig)', key: 'trigger_mechanism', type: 'text', required: false, width: 'half' },
+
+            // Row 5: Feedback
+            { label: 'Haptics', key: 'haptics', type: 'text', required: false, width: 'full', subHeader: 'Feedback' },
+        ]
+    },
+    {
+        title: "CONNECTIVITY & IO",
+        fields: [
+            // Row 1: Wireless
+            { label: 'Wi-Fi Specs', key: 'wireless_connectivity', type: 'text', required: false, width: 'third', subHeader: 'Wireless' },
+            { label: 'Bluetooth Specs', key: 'connectivity', type: 'text', required: false, width: 'third' },
+            { label: 'Cellular (5G/4G)', key: 'cellular_connectivity', type: 'checkbox', required: false, width: 'third' },
+
+            // Row 2: Wired
+            { label: 'Video Output', key: 'video_out', type: 'text', required: false, width: 'full', subHeader: 'Wired & IO' },
+            { label: 'Ports & IO', key: 'ports', type: 'textarea', required: false, width: 'full' },
         ]
     },
     {
