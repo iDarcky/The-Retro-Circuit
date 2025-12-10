@@ -46,7 +46,7 @@ export const EmulationForm: FC<EmulationFormProps> = ({ variantId, onSave }) => 
     useEffect(() => {
         const fetchProfile = async () => {
             setLoading(true);
-            const { data, error } = await supabase
+            const { data } = await supabase
                 .from('emulation_profiles')
                 .select('*')
                 .eq('variant_id', variantId)
