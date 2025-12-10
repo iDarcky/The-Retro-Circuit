@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/react";
 import "../styles/globals.css";
 import ClientShell from "../components/layout/ClientShell";
 import AuthSync from "../components/AuthSync";
+import Footer from "../components/layout/Footer";
 
 // Load fonts via Next.js to prevent Layout Shift
 const pressStart = Press_Start_2P({ 
@@ -66,6 +67,7 @@ export default function RootLayout({
         {/* Main Application Shell */}
         <ClientShell>
             {children}
+            <Footer />
         </ClientShell>
         <Analytics />
       </body>
