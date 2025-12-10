@@ -2,7 +2,16 @@
 import { type FC, type ChangeEvent } from 'react';
 
 interface RenderInputProps {
-    field: { label: string, key: string, type: string, required?: boolean, step?: string, note?: string };
+    field: { 
+        label: string, 
+        key: string, 
+        type: string, 
+        required?: boolean, 
+        step?: string, 
+        note?: string,
+        options?: string[],
+        visualStyle?: 'computed' | 'standard'
+    };
     value: any;
     onChange: (key: string, val: any) => void;
     error?: string;
@@ -14,6 +23,10 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
     
     const borderColor = error ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon';
     const labelColor = error ? 'text-retro-pink' : 'text-gray-500';
+
+    // Visual styles for computed fields (read-only appearance)
+    const isComputed = field.visualStyle === 'computed';
+    const computedBg = isComputed ? 'bg-gray-900 text-gray-400 cursor-not-allowed' : 'bg-black text-white';
     
     if (field.type === 'textarea') {
         return (
@@ -54,16 +67,37 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
         );
     }
 
+    if (field.type === 'select') {
+        return (
+            <div>
+                <label className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
+                <select
+                    className={`w-full bg-black border p-3 outline-none font-mono text-sm ${borderColor} transition-colors text-white`}
+                    value={val}
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) => onChange(field.key, e.target.value)}
+                >
+                    <option value="">-- Select --</option>
+                    {field.options?.map(opt => (
+                        <option key={opt} value={opt} className="bg-black">{opt}</option>
+                    ))}
+                </select>
+                {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{field.note}</div>}
+                {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
+            </div>
+        );
+    }
+
     return (
         <div>
             <label className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
             <input 
                 type={field.type}
-                className={`w-full bg-black border p-3 outline-none font-mono text-sm ${borderColor} transition-colors`}
+                className={`w-full border p-3 outline-none font-mono text-sm ${borderColor} ${computedBg} transition-colors`}
                 value={val}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(field.key, e.target.value)}
                 required={field.required}
                 step={field.step}
+                readOnly={isComputed}
             />
             {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{field.note}</div>}
             {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}

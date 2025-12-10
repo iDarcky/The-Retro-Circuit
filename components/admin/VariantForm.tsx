@@ -35,7 +35,8 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
     // Accordion State (Default First Section Open)
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-        "IDENTITY & ORIGIN": true
+        "IDENTITY & ORIGIN": true,
+        "DISPLAY": true // Auto-open display for this task context
     });
     
     // Template System State
@@ -65,6 +66,48 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         };
         fetchTemplates();
     }, [formData.console_id]);
+
+    // Auto-Calculation Logic for Display
+    useEffect(() => {
+        const size = parseFloat(formData.screen_size_inch);
+        const w = parseFloat(formData.screen_resolution_x);
+        const h = parseFloat(formData.screen_resolution_y);
+
+        if (!isNaN(size) && size > 0 && !isNaN(w) && w > 0 && !isNaN(h) && h > 0) {
+            // PPI Calculation
+            const diagonal = Math.sqrt(w * w + h * h);
+            const ppi = Math.round(diagonal / size);
+            
+            // Aspect Ratio Calculation (GCD)
+            const gcd = (a: number, b: number): number => {
+                return b === 0 ? a : gcd(b, a % b);
+            };
+            const divisor = gcd(w, h);
+            
+            // Format Ratio
+            let ratioX = w / divisor;
+            let ratioY = h / divisor;
+
+            // Optional: Map 8:5 to common 16:10 marketing term if desired, 
+            // but strict GCD is mathematically correct. Keeping strict for now.
+            if (ratioX === 8 && ratioY === 5) {
+                 ratioX = 16;
+                 ratioY = 10;
+            }
+
+            const ratio = `${ratioX}:${ratioY}`;
+            
+            // Update state only if changed to avoid unnecessary re-renders
+            setFormData(prev => {
+                if (prev.ppi === ppi && prev.aspect_ratio === ratio) return prev;
+                return {
+                    ...prev,
+                    ppi,
+                    aspect_ratio: ratio
+                };
+            });
+        }
+    }, [formData.screen_size_inch, formData.screen_resolution_x, formData.screen_resolution_y]);
 
     const toggleSection = (title: string) => {
         setOpenSections(prev => ({ ...prev, [title]: !prev[title] }));
@@ -287,7 +330,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                             w-full flex justify-between items-center p-4 text-left font-mono uppercase tracking-widest text-sm
                                             ${isOpen 
                                                 ? 'text-white bg-white/5 font-bold' 
-                                                : 'text-gray-400 hover:text-retro-neon hover:bg-white/5'}
+                                                : 'text-gray-400 hover:text-retro-neon hover:text-white'}
                                             transition-colors
                                         `}
                                     >
@@ -303,45 +346,44 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                     {/* Content Grid */}
                                     {isOpen && (
                                         <div className="p-6 grid grid-cols-1 md:grid-cols-12 gap-6 border-t border-white/5 animate-fadeIn">
-                                            {group.fields.map(field => {
-                                                // Grid Span Logic:
-                                                // Full = 12 cols
-                                                // Half (Default) = 6 cols
-                                                // Third = 4 cols
+                                            {group.fields.map((field: any) => {
+                                                // Grid Span Logic
                                                 let colSpan = 'md:col-span-6';
-                                                if ((field as any).width === 'full') colSpan = 'md:col-span-12';
-                                                if ((field as any).width === 'third') colSpan = 'md:col-span-4';
+                                                if (field.width === 'full') colSpan = 'md:col-span-12';
+                                                if (field.width === 'half') colSpan = 'md:col-span-6';
+                                                if (field.width === 'third') colSpan = 'md:col-span-4';
+                                                if (field.width === 'quarter') colSpan = 'md:col-span-3';
 
                                                 const error = fieldErrors[field.key];
 
-                                                // A. CUSTOM RENDER: URL / Image Upload
-                                                if (field.type === 'url' || field.key.includes('image_url')) {
-                                                    return (
-                                                        <div key={field.key} className={colSpan}>
-                                                            <label className={`text-[10px] mb-2 block uppercase font-bold tracking-wider ${error ? 'text-retro-pink' : 'text-gray-500'}`}>
-                                                                {field.label}
-                                                            </label>
-                                                            <ImageUpload
-                                                                value={formData[field.key]}
-                                                                onChange={(url) => handleInputChange(field.key, url)}
-                                                            />
-                                                        </div>
-                                                    );
-                                                }
-
-                                                // B. CUSTOM RENDER: Styled Checkbox (Label Left, Box Right)
-                                                // Used inside AdminInput now for better consistency, but overriding layout if needed
-                                                // Keeping AdminInput usage for standard fields
-
-                                                // C. DEFAULT RENDER: AdminInput
                                                 return (
-                                                    <div key={field.key} className={colSpan}>
-                                                        <AdminInput 
-                                                            field={field as any} 
-                                                            value={formData[field.key]} 
-                                                            onChange={handleInputChange} 
-                                                            error={error} 
-                                                        />
+                                                    <div key={field.key} className={`${colSpan} flex flex-col`}>
+                                                        {/* SubHeader Logic */}
+                                                        {field.subHeader && (
+                                                            <div className="col-span-1 md:col-span-12 mt-2 mb-3 border-b border-gray-800 pb-1">
+                                                                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">{field.subHeader}</span>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Input Rendering */}
+                                                        {field.type === 'url' || field.key.includes('image_url') ? (
+                                                            <div>
+                                                                <label className={`text-[10px] mb-2 block uppercase font-bold tracking-wider ${error ? 'text-retro-pink' : 'text-gray-500'}`}>
+                                                                    {field.label}
+                                                                </label>
+                                                                <ImageUpload
+                                                                    value={formData[field.key]}
+                                                                    onChange={(url) => handleInputChange(field.key, url)}
+                                                                />
+                                                            </div>
+                                                        ) : (
+                                                            <AdminInput 
+                                                                field={field} 
+                                                                value={formData[field.key]} 
+                                                                onChange={handleInputChange} 
+                                                                error={error} 
+                                                            />
+                                                        )}
                                                     </div>
                                                 );
                                             })}

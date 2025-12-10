@@ -1,6 +1,7 @@
 
 
 
+
 import { z } from 'zod';
 
 // --- VALIDATION HELPERS ---
@@ -497,21 +498,36 @@ export const VARIANT_FORM_GROUPS = [
     {
         title: "DISPLAY",
         fields: [
-            { label: 'Screen Size (inch)', key: 'screen_size_inch', type: 'number', required: false, step: '0.1' },
-            { label: 'Display Type (OLED/LCD)', key: 'display_type', type: 'text', required: false },
-            { label: 'Res X (px)', key: 'screen_resolution_x', type: 'number', required: false },
-            { label: 'Res Y (px)', key: 'screen_resolution_y', type: 'number', required: false },
-            { label: 'Aspect Ratio', key: 'aspect_ratio', type: 'text', required: false },
-            { label: 'Pixel Density (PPI)', key: 'ppi', type: 'number', required: false },
-            { label: 'Refresh Rate (Hz)', key: 'refresh_rate_hz', type: 'number', required: false },
-            { label: 'Brightness (nits)', key: 'brightness_nits', type: 'number', required: false },
-            { label: 'Display Tech (VRR etc)', key: 'display_tech', type: 'text', required: false },
-            { label: 'Touchscreen?', key: 'touchscreen', type: 'checkbox', required: false },
-            // Dual Screen
-            { label: '2nd Screen Size', key: 'second_screen_size', type: 'number', required: false, step: '0.1' },
-            { label: '2nd Screen Touch?', key: 'second_screen_touch', type: 'checkbox', required: false },
-            { label: '2nd Res X', key: 'second_screen_resolution_x', type: 'number', required: false },
-            { label: '2nd Res Y', key: 'second_screen_resolution_y', type: 'number', required: false },
+            // Row 1: Dimensions
+            { label: 'Screen Size (inch)', key: 'screen_size_inch', type: 'number', required: false, step: '0.1', width: 'third' },
+            { label: 'Res X (px)', key: 'screen_resolution_x', type: 'number', required: false, width: 'third' },
+            { label: 'Res Y (px)', key: 'screen_resolution_y', type: 'number', required: false, width: 'third' },
+
+            // Row 2: Computed Specs
+            { label: 'Aspect Ratio', key: 'aspect_ratio', type: 'text', required: false, width: 'half', visualStyle: 'computed', note: 'Auto-calculated' },
+            { label: 'Pixel Density (PPI)', key: 'ppi', type: 'number', required: false, width: 'half', visualStyle: 'computed', note: 'Auto-calculated' },
+
+            // Row 3: Tech Specs
+            { 
+                label: 'Display Type', 
+                key: 'display_type', 
+                type: 'select', 
+                required: false, 
+                width: 'third',
+                options: ['IPS LCD', 'OLED', 'AMOLED', 'TN LCD', 'Mini-LED', 'Micro-LED', 'TFT LCD'] 
+            },
+            { label: 'Refresh Rate (Hz)', key: 'refresh_rate_hz', type: 'number', required: false, width: 'third' },
+            { label: 'Brightness (nits)', key: 'brightness_nits', type: 'number', required: false, width: 'third' },
+
+            // Row 4: Extras
+            { label: 'Display Tech (VRR etc)', key: 'display_tech', type: 'text', required: false, width: 'half' },
+            { label: 'Touchscreen?', key: 'touchscreen', type: 'checkbox', required: false, width: 'half' },
+
+            // Row 5: Dual Screen
+            { label: '2nd Screen Size', key: 'second_screen_size', type: 'number', required: false, step: '0.1', width: 'quarter', subHeader: 'Secondary Display' },
+            { label: '2nd Res X', key: 'second_screen_resolution_x', type: 'number', required: false, width: 'quarter' },
+            { label: '2nd Res Y', key: 'second_screen_resolution_y', type: 'number', required: false, width: 'quarter' },
+            { label: '2nd Touch?', key: 'second_screen_touch', type: 'checkbox', required: false, width: 'quarter' },
         ]
     },
     {
