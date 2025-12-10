@@ -266,7 +266,7 @@ export interface ConsoleVariant {
   battery_capacity_wh?: number;
   battery_type?: string;
   charging_speed_w?: number;
-  tdp_wattage?: number;
+  tdp_wattage?: number | null;
   weight_g?: number;
   cooling_solution?: string;
   body_material?: string;
