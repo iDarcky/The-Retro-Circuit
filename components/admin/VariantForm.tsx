@@ -302,9 +302,16 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
                                     {/* Content Grid */}
                                     {isOpen && (
-                                        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-white/5 animate-fadeIn">
+                                        <div className="p-6 grid grid-cols-1 md:grid-cols-12 gap-6 border-t border-white/5 animate-fadeIn">
                                             {group.fields.map(field => {
-                                                const colSpan = (field as any).width === 'full' ? 'md:col-span-2' : 'md:col-span-1';
+                                                // Grid Span Logic:
+                                                // Full = 12 cols
+                                                // Half (Default) = 6 cols
+                                                // Third = 4 cols
+                                                let colSpan = 'md:col-span-6';
+                                                if ((field as any).width === 'full') colSpan = 'md:col-span-12';
+                                                if ((field as any).width === 'third') colSpan = 'md:col-span-4';
+
                                                 const error = fieldErrors[field.key];
 
                                                 // A. CUSTOM RENDER: URL / Image Upload
@@ -323,33 +330,10 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                 }
 
                                                 // B. CUSTOM RENDER: Styled Checkbox (Label Left, Box Right)
-                                                if (field.type === 'checkbox') {
-                                                    const rawVal = formData[field.key];
-                                                    // Strictly check for true boolean or "true" string to handle potential DB type mismatch
-                                                    const checked = String(rawVal) === 'true';
-                                                    
-                                                    return (
-                                                        <div key={field.key} className={colSpan}>
-                                                            <div 
-                                                                className={`
-                                                                    flex items-center justify-between bg-black border p-3 cursor-pointer group transition-all h-[46px] mt-[19px]
-                                                                    ${error ? 'border-retro-pink' : 'border-gray-700 hover:border-retro-neon'}
-                                                                `}
-                                                                onClick={() => handleInputChange(field.key, !checked)}
-                                                            >
-                                                                <span className={`text-[10px] uppercase font-bold tracking-wider group-hover:text-white ${error ? 'text-retro-pink' : 'text-gray-500'}`}>
-                                                                    {field.label}
-                                                                </span>
-                                                                <div className={`w-5 h-5 border flex items-center justify-center transition-all ${checked ? 'bg-retro-neon border-retro-neon' : 'border-gray-600 bg-transparent'}`}>
-                                                                    {checked && <svg className="w-3 h-3 text-black font-bold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
-                                                                </div>
-                                                            </div>
-                                                            {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
-                                                        </div>
-                                                    )
-                                                }
+                                                // Used inside AdminInput now for better consistency, but overriding layout if needed
+                                                // Keeping AdminInput usage for standard fields
 
-                                                // C. DEFAULT RENDER: AdminInput (Text, Number)
+                                                // C. DEFAULT RENDER: AdminInput
                                                 return (
                                                     <div key={field.key} className={colSpan}>
                                                         <AdminInput 

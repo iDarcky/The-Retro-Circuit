@@ -1,4 +1,6 @@
 
+
+
 import { z } from 'zod';
 
 // --- VALIDATION HELPERS ---
@@ -446,31 +448,50 @@ export const VARIANT_FORM_GROUPS = [
     {
         title: "SILICON CORE",
         fields: [
-            { label: 'CPU Model', key: 'cpu_model', type: 'text', required: false },
-            { label: 'CPU Architecture', key: 'cpu_architecture', type: 'text', required: false },
-            { label: 'Process Node', key: 'cpu_process_node', type: 'text', required: false },
-            { label: 'CPU Cores', key: 'cpu_cores', type: 'number', required: false },
-            { label: 'CPU Threads', key: 'cpu_threads', type: 'number', required: false },
-            { label: 'CPU Clock (MHz)', key: 'cpu_clock_mhz', type: 'number', required: false },
-            { label: 'GPU Model', key: 'gpu_model', type: 'text', required: false },
-            { label: 'GPU Architecture', key: 'gpu_architecture', type: 'text', required: false },
-            { label: 'GPU Cores', key: 'gpu_cores', type: 'number', required: false },
-            { label: 'GPU Unit (CUs/Cores)', key: 'gpu_core_unit', type: 'text', required: false },
-            { label: 'GPU Clock (MHz)', key: 'gpu_clock_mhz', type: 'number', required: false },
-            { label: 'GPU Teraflops', key: 'gpu_teraflops', type: 'number', required: false, step: '0.01' },
+            // Row 1: Platform
             { label: 'OS / Firmware', key: 'os', type: 'text', required: false },
-            { label: 'TDP / Wattage', key: 'tdp_range_w', type: 'text', required: false },
+            { label: 'UI Skin', key: 'ui_skin', type: 'text', required: false },
+            
+            // Row 2: CPU Specs (3 items)
+            { label: 'CPU Model', key: 'cpu_model', type: 'text', required: false, width: 'third' },
+            { label: 'CPU Architecture', key: 'cpu_architecture', type: 'text', required: false, width: 'third' },
+            { label: 'Process Node', key: 'cpu_process_node', type: 'text', required: false, width: 'third' },
+
+            // Row 3: CPU Performance (3 items)
+            { label: 'CPU Cores', key: 'cpu_cores', type: 'number', required: false, width: 'third' },
+            { label: 'CPU Threads', key: 'cpu_threads', type: 'number', required: false, width: 'third' },
+            { label: 'CPU Clock (MHz)', key: 'cpu_clock_mhz', type: 'number', required: false, width: 'third' },
+            
+            // Row 4: GPU Specs (3 items)
+            { label: 'GPU Model', key: 'gpu_model', type: 'text', required: false, width: 'third' },
+            { label: 'GPU Architecture', key: 'gpu_architecture', type: 'text', required: false, width: 'third' },
+            { label: 'CUs / Execution Units', key: 'gpu_core_unit', type: 'text', required: false, width: 'third' },
+            
+            // Row 5: GPU Performance (3 items)
+            { label: 'GPU Clock (MHz)', key: 'gpu_clock_mhz', type: 'number', required: false, width: 'third' },
+            { label: 'GPU Teraflops', key: 'gpu_teraflops', type: 'number', required: false, step: '0.01', width: 'third' },
+            { label: 'TDP / Wattage', key: 'tdp_range_w', type: 'text', required: false, width: 'third' },
         ]
     },
     {
         title: "MEMORY & STORAGE",
         fields: [
-            { label: 'RAM (GB)', key: 'ram_gb', type: 'number', required: false },
-            { label: 'RAM Type', key: 'ram_type', type: 'text', required: false },
-            { label: 'RAM Speed (MHz)', key: 'ram_speed_mhz', type: 'number', required: false },
-            { label: 'Storage (GB)', key: 'storage_gb', type: 'number', required: false },
-            { label: 'Storage Type', key: 'storage_type', type: 'text', required: false },
-            { label: 'SD Expandable?', key: 'storage_expandable', type: 'checkbox', required: false },
+            // Row 1: RAM
+            { label: 'RAM (GB)', key: 'ram_gb', type: 'number', required: false, width: 'third' },
+            { label: 'RAM Type (e.g. LPDDR5)', key: 'ram_type', type: 'text', required: false, width: 'third' },
+            { 
+                label: 'RAM Speed (Rated)', 
+                key: 'ram_speed_mhz', 
+                type: 'number', 
+                required: false, 
+                width: 'third',
+                note: 'Use effective speed (MT/s). E.g. 5500.'
+            },
+            
+            // Row 2: Storage
+            { label: 'Base Capacity (GB)', key: 'storage_gb', type: 'number', required: false, width: 'third' },
+            { label: 'Storage Type (e.g. UFS 3.1)', key: 'storage_type', type: 'text', required: false, width: 'third' },
+            { label: 'MicroSD Slot?', key: 'storage_expandable', type: 'checkbox', required: false, width: 'third' },
         ]
     },
     {
@@ -532,7 +553,6 @@ export const VARIANT_FORM_GROUPS = [
         title: "AUDIO & MISC",
         fields: [
             { label: 'Colors', key: 'colors', type: 'text', required: false },
-            { label: 'UI Skin', key: 'ui_skin', type: 'text', required: false },
             { label: 'Speakers', key: 'audio_speakers', type: 'text', required: false },
             { label: 'Audio Tech', key: 'audio_tech', type: 'text', required: false },
             { label: 'Headphone Jack?', key: 'headphone_jack', type: 'checkbox', required: false },
