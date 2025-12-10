@@ -11,10 +11,9 @@ import { ManufacturerForm } from '../../components/admin/ManufacturerForm';
 import { ConsoleForm } from '../../components/admin/ConsoleForm';
 import { VariantForm } from '../../components/admin/VariantForm';
 import { GameForm } from '../../components/admin/GameForm';
-import { SettingsForm } from '../../components/admin/SettingsForm';
 import Button from '../../components/ui/Button';
 
-type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE' | 'VARIANTS' | 'FABRICATOR' | 'SETTINGS';
+type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE' | 'VARIANTS' | 'FABRICATOR';
 
 function AdminPortalContent() {
     const searchParams = useSearchParams();
@@ -27,7 +26,6 @@ function AdminPortalContent() {
     // Shared Data
     const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
     const [consoleList, setConsoleList] = useState<{name: string, id: string}[]>([]);
-    const [customLogo, setCustomLogo] = useState<string | null>(null);
 
     // State for Workflow & Edit Mode
     const [newlyCreatedConsoleId, setNewlyCreatedConsoleId] = useState<string | null>(null);
@@ -53,9 +51,6 @@ function AdminPortalContent() {
                     setManufacturers(manus);
                     setConsoleList(consoles as any);
                     
-                    const savedLogo = localStorage.getItem('retro_custom_logo');
-                    if (savedLogo) setCustomLogo(savedLogo);
-
                     // --- CHECK FOR EDIT MODE IN URL ---
                     const mode = searchParams?.get('mode');
                     const type = searchParams?.get('type');
@@ -100,7 +95,7 @@ function AdminPortalContent() {
                     // 4. Tab Navigation
                     else {
                         const tabParam = searchParams?.get('tab');
-                        if (tabParam && ['NEWS', 'GAME', 'CONSOLE', 'VARIANTS', 'FABRICATOR', 'SETTINGS'].includes(tabParam)) {
+                        if (tabParam && ['NEWS', 'GAME', 'CONSOLE', 'VARIANTS', 'FABRICATOR'].includes(tabParam)) {
                             setActiveTab(tabParam as AdminTab);
                         }
                     }
@@ -128,10 +123,6 @@ function AdminPortalContent() {
         }
     };
 
-    const handleLogoUpdate = (base64: string | null) => {
-        setCustomLogo(base64);
-    };
-
     const clearEditMode = () => {
         setEditingVariant(null);
         setEditingManufacturer(null);
@@ -150,7 +141,7 @@ function AdminPortalContent() {
     if (loading) return <div className="p-8 text-center font-mono text-retro-neon">VERIFYING BIOMETRICS...</div>;
     if (!isAdmin) return <div className="p-8 text-center font-mono text-retro-pink border-2 border-retro-pink m-8">ACCESS DENIED. ADMIN CLEARANCE REQUIRED.</div>;
 
-    const tabs: AdminTab[] = ['NEWS', 'GAME', 'CONSOLE', 'VARIANTS', 'FABRICATOR', 'SETTINGS'];
+    const tabs: AdminTab[] = ['NEWS', 'GAME', 'CONSOLE', 'VARIANTS', 'FABRICATOR'];
 
     return (
         <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn">
@@ -294,17 +285,6 @@ function AdminPortalContent() {
                         <div>
                             <h2 className="font-pixel text-xl text-white mb-6">ARCHIVE GAME</h2>
                             <GameForm onSuccess={setMessage} onError={setErrorMsg} />
-                        </div>
-                    )}
-
-                    {activeTab === 'SETTINGS' && (
-                        <div>
-                            <h2 className="font-pixel text-xl text-white mb-6">SYSTEM CONFIG</h2>
-                            <SettingsForm 
-                                customLogo={customLogo} 
-                                onLogoUpdate={handleLogoUpdate}
-                                onSuccess={setMessage} 
-                            />
                         </div>
                     )}
 
