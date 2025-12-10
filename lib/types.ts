@@ -193,12 +193,19 @@ export interface ConsoleSpecs {
 export interface EmulationProfile {
   id: string;
   variant_id: string;
+  
+  // Systems
+  ps1_state?: string;
   ps2_state: 'Perfect' | 'Great' | 'Playable' | 'Struggles' | 'Unplayable' | 'N/A';
+  psp_state?: string;
   gamecube_state: string;
   wii_state: string;
   x3ds_state: string;
   switch_state: string;
   vita_state: string;
+  dreamcast_state?: string;
+  saturn_state?: string;
+  
   summary_text: string;
 }
 

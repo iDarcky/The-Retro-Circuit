@@ -275,9 +275,10 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                             ))}
                         </div>
                     )}
-                    
+
                     {/* EMULATION PERFORMANCE GRID */}
-                    <EmulationGrid profile={mergedSpecs.emulation_profile} />
+                    {/* Passing both singular and plural keys to ensure data reaches component regardless of normalization state */}
+                    <EmulationGrid profile={mergedSpecs.emulation_profile || (mergedSpecs as any).emulation_profiles} />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         
