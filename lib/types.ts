@@ -232,7 +232,7 @@ export interface ConsoleVariant {
   gpu_model?: string;
   gpu_architecture?: string;
   gpu_cores?: number;
-  gpu_core_unit?: string;
+  gpu_compute_units?: string; // Renamed from gpu_core_unit
   gpu_clock_mhz?: number;
   gpu_teraflops?: number;
   
@@ -278,10 +278,10 @@ export interface ConsoleVariant {
   
   // IO & Connectivity
   ports?: string;
-  connectivity?: string;
-  wireless_connectivity?: string;
+  bluetooth_specs?: string; // Renamed from connectivity
+  wifi_specs?: string; // Renamed from wireless_connectivity
   cellular_connectivity?: boolean;
-  video_out?: string;
+  video_out?: string | null;
   haptics?: string; // Text in DB (e.g. 'HD Rumble')
   gyro?: boolean;
   
@@ -290,11 +290,11 @@ export interface ConsoleVariant {
   dpad_type?: string;
   dpad_mechanism?: string;
   dpad_shape?: string;
-  analog_stick_type?: string;
+  // analog_stick_type Removed
   thumbstick_mechanism?: string;
   thumbstick_layout?: string;
   thumbstick_cap?: string;
-  shoulder_buttons?: string;
+  shoulder_layout?: string; // Renamed from shoulder_buttons
   trigger_mechanism?: string;
   action_button_mechanism?: string;
   has_back_buttons?: boolean;
@@ -352,7 +352,7 @@ export const ConsoleVariantSchema = z.object({
   gpu_model: safeString,
   gpu_architecture: safeString,
   gpu_cores: safeNumber,
-  gpu_core_unit: safeString,
+  gpu_compute_units: safeString, // Renamed
   gpu_clock_mhz: safeNumber,
   gpu_teraflops: safeNumber,
   
@@ -401,7 +401,8 @@ export const ConsoleVariantSchema = z.object({
 
   // IO & Connectivity
   ports: safeString,
-  wireless_connectivity: safeString,
+  wifi_specs: safeString, // Renamed
+  bluetooth_specs: safeString, // Renamed & Added to schema
   cellular_connectivity: safeBoolean,
   video_out: safeString,
   haptics: safeString,
@@ -412,11 +413,11 @@ export const ConsoleVariantSchema = z.object({
   dpad_type: safeString,
   dpad_mechanism: safeString,
   dpad_shape: safeString,
-  analog_stick_type: safeString,
+  // analog_stick_type Removed
   thumbstick_mechanism: safeString,
   thumbstick_layout: safeString,
   thumbstick_cap: safeString,
-  shoulder_buttons: safeString,
+  shoulder_layout: safeString, // Renamed
   trigger_mechanism: safeString,
   action_button_mechanism: safeString,
   has_back_buttons: safeBoolean,
@@ -463,7 +464,7 @@ export const VARIANT_FORM_GROUPS = [
             // Row 4: GPU Specs (3 items)
             { label: 'GPU Model', key: 'gpu_model', type: 'text', required: false, width: 'third' },
             { label: 'GPU Architecture', key: 'gpu_architecture', type: 'text', required: false, width: 'third' },
-            { label: 'CUs / Execution Units', key: 'gpu_core_unit', type: 'text', required: false, width: 'third' },
+            { label: 'CUs / Execution Units', key: 'gpu_compute_units', type: 'text', required: false, width: 'third' },
             
             // Row 5: GPU Performance (3 items)
             { label: 'GPU Clock (MHz)', key: 'gpu_clock_mhz', type: 'number', required: false, width: 'third' },
@@ -554,7 +555,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Stick Cap', key: 'thumbstick_cap', type: 'text', required: false, width: 'third' },
 
             // Row 4: Triggers
-            { label: 'Shoulder Layout (Stacked/Inline)', key: 'shoulder_buttons', type: 'text', required: false, width: 'half', subHeader: 'Triggers & Shoulders' },
+            { label: 'Shoulder Layout (Stacked/Inline)', key: 'shoulder_layout', type: 'text', required: false, width: 'half', subHeader: 'Triggers & Shoulders' },
             { label: 'Trigger Type (Analog/Dig)', key: 'trigger_mechanism', type: 'text', required: false, width: 'half' },
 
             // Row 5: Feedback
@@ -565,8 +566,8 @@ export const VARIANT_FORM_GROUPS = [
         title: "CONNECTIVITY & IO",
         fields: [
             // Row 1: Wireless
-            { label: 'Wi-Fi Specs', key: 'wireless_connectivity', type: 'text', required: false, width: 'third', subHeader: 'Wireless' },
-            { label: 'Bluetooth Specs', key: 'connectivity', type: 'text', required: false, width: 'third' },
+            { label: 'Wi-Fi Specs', key: 'wifi_specs', type: 'text', required: false, width: 'third', subHeader: 'Wireless' },
+            { label: 'Bluetooth Specs', key: 'bluetooth_specs', type: 'text', required: false, width: 'third' },
             { label: 'Cellular (5G/4G)', key: 'cellular_connectivity', type: 'checkbox', required: false, width: 'third' },
 
             // Row 2: Wired

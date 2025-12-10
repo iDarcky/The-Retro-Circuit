@@ -51,7 +51,7 @@ const METRICS: ComparisonMetric[] = [
     { label: 'GPU Model', key: 'gpu_model', type: 'string' },
     { label: 'GPU Arch', key: 'gpu_architecture', type: 'string' },
     { label: 'GPU Cores', key: 'gpu_cores', type: 'number' },
-    { label: 'GPU Units', key: 'gpu_core_unit', type: 'string' },
+    { label: 'GPU Units', key: 'gpu_compute_units', type: 'string' },
     { label: 'GPU Clock', key: 'gpu_clock_mhz', type: 'number', unit: ' MHz' },
     { label: 'Compute Power', key: 'gpu_teraflops', type: 'number', unit: ' TFLOPS' },
 
@@ -71,7 +71,8 @@ const METRICS: ComparisonMetric[] = [
     { label: 'TDP', key: 'tdp_range_w', type: 'string' },
 
     // --- CONNECTIVITY & IO ---
-    { label: 'Wireless', key: 'wireless_connectivity', type: 'string' },
+    { label: 'Wi-Fi', key: 'wifi_specs', type: 'string' },
+    { label: 'Bluetooth', key: 'bluetooth_specs', type: 'string' },
     { label: 'Cellular', key: 'cellular_connectivity', type: 'boolean' },
     { label: 'Video Output', key: 'video_out', type: 'string' },
     { label: 'Ports', key: 'ports', type: 'string' },
@@ -89,12 +90,11 @@ const METRICS: ComparisonMetric[] = [
     { label: 'D-Pad', key: 'dpad_type', type: 'string' },
     { label: 'D-Pad Mech', key: 'dpad_mechanism', type: 'string' },
     { label: 'D-Pad Shape', key: 'dpad_shape', type: 'string' },
-    { label: 'Analog Sticks', key: 'analog_stick_type', type: 'string' },
     { label: 'Stick Mech', key: 'thumbstick_mechanism', type: 'string' },
     { label: 'Stick Layout', key: 'thumbstick_layout', type: 'string' },
     { label: 'Stick Cap', key: 'thumbstick_cap', type: 'string' },
     { label: 'Triggers', key: 'trigger_mechanism', type: 'string' },
-    { label: 'Shoulders', key: 'shoulder_buttons', type: 'string' },
+    { label: 'Shoulders', key: 'shoulder_layout', type: 'string' },
     { label: 'Action Buttons', key: 'action_button_mechanism', type: 'string' },
     { label: 'Back Buttons', key: 'has_back_buttons', type: 'boolean' },
     { label: 'Haptics', key: 'haptics', type: 'string' },
