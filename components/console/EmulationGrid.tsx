@@ -9,8 +9,7 @@ interface EmulationGridProps {
 }
 
 const EmulationGrid: FC<EmulationGridProps> = ({ profile: rawProfile }) => {
-    // Task 1: Data Access Logic
-    // Supabase might return an array (relation) or we might have normalized it to an object.
+    // Logic to handle array vs object
     const profile = Array.isArray(rawProfile) ? rawProfile[0] : rawProfile;
 
     // Safety Check: Don't render if no profile exists
@@ -28,14 +27,24 @@ const EmulationGrid: FC<EmulationGridProps> = ({ profile: rawProfile }) => {
         return 'bg-gray-800 text-gray-500 border-gray-700';
     };
 
-    const systems = [
+    const allSystems = [
+        { name: 'PS1', state: profile.ps1_state },
         { name: 'PS2', state: profile.ps2_state },
+        { name: 'PSP', state: profile.psp_state },
+        { name: 'PS Vita', state: profile.vita_state },
+        { name: 'Dreamcast', state: profile.dreamcast_state },
+        { name: 'Saturn', state: profile.saturn_state },
         { name: 'GameCube', state: profile.gamecube_state },
         { name: 'Wii', state: profile.wii_state },
         { name: '3DS', state: profile.x3ds_state },
         { name: 'Switch', state: profile.switch_state },
-        { name: 'Vita', state: profile.vita_state },
     ];
+
+    // Filter out systems that are N/A, null, or undefined
+    const activeSystems = allSystems.filter(sys => sys.state && sys.state !== 'N/A');
+
+    // If no active systems and no summary, render nothing
+    if (activeSystems.length === 0 && !profile.summary_text) return null;
 
     return (
         <div className="bg-retro-dark border border-retro-grid mb-6 relative group overflow-hidden animate-fadeIn">
@@ -50,18 +59,19 @@ const EmulationGrid: FC<EmulationGridProps> = ({ profile: rawProfile }) => {
             </div>
 
             <div className="p-4">
-                {/* Task 3: The Badges */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {systems.map((sys) => (
-                        <div key={sys.name} className={`border px-3 py-2 flex flex-col items-center justify-center text-center transition-all hover:brightness-110 ${getStatusStyle(sys.state)}`}>
-                            <div className="text-[10px] font-mono uppercase opacity-70 mb-1">{sys.name}</div>
-                            <div className="font-pixel text-[10px] uppercase tracking-wider">{sys.state || 'N/A'}</div>
-                        </div>
-                    ))}
-                </div>
+                {activeSystems.length > 0 && (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                        {activeSystems.map((sys) => (
+                            <div key={sys.name} className={`border px-3 py-2 flex flex-col items-center justify-center text-center transition-all hover:brightness-110 ${getStatusStyle(sys.state)}`}>
+                                <div className="text-[10px] font-mono uppercase opacity-70 mb-1">{sys.name}</div>
+                                <div className="font-pixel text-[10px] uppercase tracking-wider">{sys.state}</div>
+                            </div>
+                        ))}
+                    </div>
+                )}
                 
                 {profile.summary_text && (
-                    <div className="mt-4 pt-4 border-t border-white/5">
+                    <div className={`pt-4 border-white/5 ${activeSystems.length > 0 ? 'mt-4 border-t' : ''}`}>
                         <p className="font-mono text-xs text-gray-400 leading-relaxed">
                             <span className="text-retro-neon mr-2">» ANALYST NOTE:</span>
                             {profile.summary_text}
