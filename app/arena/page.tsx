@@ -67,7 +67,6 @@ const METRICS: ComparisonMetric[] = [
     { label: 'Battery Capacity', key: 'battery_capacity_mah', type: 'number', unit: ' mAh' },
     { label: 'Battery Energy', key: 'battery_capacity_wh', type: 'number', unit: ' Wh' },
     { label: 'Charging Speed', key: 'charging_speed_w', type: 'number', unit: 'W' },
-    // charging_tech is handled via charging_speed_w display logic, but can keep as fallback if needed
     { label: 'TDP', key: 'tdp_wattage', type: 'number', unit: 'W' },
 
     // --- CONNECTIVITY & IO ---
@@ -342,16 +341,35 @@ function VSModeContent() {
         }
     };
 
-    // Parse URL Params
+    // Parse URL Params & Sync State
     useEffect(() => {
         const p1 = searchParams?.get('p1');
         const v1 = searchParams?.get('v1');
         const p2 = searchParams?.get('p2');
         const v2 = searchParams?.get('v2');
 
-        if (p1 && p1 !== selectionA.slug) loadSelection(p1, v1 || null, setSelectionA);
-        if (p2 && p2 !== selectionB.slug) loadSelection(p2, v2 || null, setSelectionB);
-    }, [searchParams]);
+        // Player 1 Logic
+        if (p1) {
+             if (p1 !== selectionA.slug) {
+                 // Console changed: fetch new data
+                 loadSelection(p1, v1 || null, setSelectionA);
+             } else if (selectionA.details && v1 && v1 !== selectionA.selectedVariant?.slug) {
+                 // Console same, but variant param changed: just update selection locally
+                 const variant = selectionA.details.variants?.find(v => v.slug === v1) || selectionA.details.variants?.[0] || null;
+                 setSelectionA(prev => ({ ...prev, selectedVariant: variant }));
+             }
+        }
+
+        // Player 2 Logic
+        if (p2) {
+             if (p2 !== selectionB.slug) {
+                 loadSelection(p2, v2 || null, setSelectionB);
+             } else if (selectionB.details && v2 && v2 !== selectionB.selectedVariant?.slug) {
+                 const variant = selectionB.details.variants?.find(v => v.slug === v2) || selectionB.details.variants?.[0] || null;
+                 setSelectionB(prev => ({ ...prev, selectedVariant: variant }));
+             }
+        }
+    }, [searchParams]); // Dependent only on URL params to avoid loops
 
     const updateUrl = (p1?: string | null, v1?: string | null, p2?: string | null, v2?: string | null) => {
         const params = new URLSearchParams();
@@ -370,13 +388,16 @@ function VSModeContent() {
     };
 
     const handleSelectP1 = (slug: string) => {
-        setSelectionA(prev => ({ ...prev, slug, loading: true }));
+        // Critical Fix: Do NOT set slug here. 
+        // We only set loading, update URL, and let useEffect trigger loadSelection.
+        setSelectionA(prev => ({ ...prev, loading: true }));
         updateUrl(slug, null, undefined, undefined); 
         playClick();
     };
 
     const handleSelectP2 = (slug: string) => {
-        setSelectionB(prev => ({ ...prev, slug, loading: true }));
+        // Critical Fix: Do NOT set slug here.
+        setSelectionB(prev => ({ ...prev, loading: true }));
         updateUrl(undefined, undefined, slug, null);
         playClick();
     };
