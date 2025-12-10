@@ -56,7 +56,7 @@ const METRICS: ComparisonMetric[] = [
     { label: 'Compute Power', key: 'gpu_teraflops', type: 'number', unit: ' TFLOPS' },
 
     // --- MEMORY & STORAGE ---
-    { label: 'RAM', key: 'ram_gb', type: 'number', unit: ' GB' },
+    { label: 'RAM', key: 'ram_mb', type: 'number', unit: ' MB' },
     { label: 'RAM Type', key: 'ram_type', type: 'string' },
     { label: 'RAM Speed', key: 'ram_speed_mhz', type: 'number', unit: ' MHz' },
     { label: 'Storage', key: 'storage_gb', type: 'number', unit: ' GB' },
@@ -67,6 +67,7 @@ const METRICS: ComparisonMetric[] = [
     { label: 'Battery Capacity', key: 'battery_capacity_mah', type: 'number', unit: ' mAh' },
     { label: 'Battery Energy', key: 'battery_capacity_wh', type: 'number', unit: ' Wh' },
     { label: 'Charging Speed', key: 'charging_speed_w', type: 'number', unit: 'W' },
+    // charging_tech is handled via charging_speed_w display logic, but can keep as fallback if needed
     { label: 'TDP', key: 'tdp_wattage', type: 'number', unit: 'W' },
 
     // --- CONNECTIVITY & IO ---
@@ -159,11 +160,33 @@ const ComparisonRow: FC<ComparisonRowProps & { key?: string }> = ({
         }
     }
 
-    const formatValue = (val: any) => {
+    const formatValue = (val: any, variant: ConsoleVariant) => {
         if (!exists(val)) return <span className="text-gray-700">---</span>;
+        
+        // Smart RAM Formatting
+        if (metric.key === 'ram_mb') {
+            const mb = Number(val);
+            if (!isNaN(mb) && mb >= 1024) {
+                return `${(mb / 1024).toFixed(0)} GB`;
+            }
+            return `${mb} MB`;
+        }
+
+        // Charging Tech Combination
+        if (metric.key === 'charging_speed_w') {
+            const tech = variant.charging_tech;
+            return (
+                <span>
+                    {val}W
+                    {tech && <span className="text-[10px] text-gray-500 ml-1 block md:inline">({tech})</span>}
+                </span>
+            );
+        }
+
         if (metric.type === 'boolean') return (val === true || val === 'true') ? 'YES' : 'NO';
         if (metric.type === 'currency') return `$${val}`;
-        if (metric.type === 'resolution' && varA.screen_resolution_y) return `${val}p`; 
+        if (metric.type === 'resolution' && variant.screen_resolution_y) return `${val}p`; 
+        
         return `${val}${metric.unit ? metric.unit : ''}`;
     };
 
@@ -172,8 +195,8 @@ const ComparisonRow: FC<ComparisonRowProps & { key?: string }> = ({
         return '---';
     };
 
-    const valDisplayA = metric.type === 'resolution' ? getResString(varA) : formatValue(rawA);
-    const valDisplayB = metric.type === 'resolution' ? getResString(varB) : formatValue(rawB);
+    const valDisplayA = metric.type === 'resolution' ? getResString(varA) : formatValue(rawA, varA);
+    const valDisplayB = metric.type === 'resolution' ? getResString(varB) : formatValue(rawB, varB);
 
     const winClassA = "text-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)] font-bold";
     const winClassB = "text-fuchsia-500 drop-shadow-[0_0_5px_rgba(217,70,239,0.5)] font-bold";

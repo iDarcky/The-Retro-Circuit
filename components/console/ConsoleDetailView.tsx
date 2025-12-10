@@ -148,6 +148,15 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
         return '---';
     };
 
+    // Helper for RAM Display
+    const formatRam = (mb?: number) => {
+        if (!mb) return null;
+        if (mb >= 1024) return { val: Math.round((mb / 1024) * 100) / 100, unit: 'GB' };
+        return { val: mb, unit: 'MB' };
+    };
+    
+    const ramData = formatRam(mergedSpecs.ram_mb);
+
     // --- RENDER ---
 
     return (
@@ -318,7 +327,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                         {/* 2. MEMORY & STORAGE */}
                         <SpecCard title="MEMORY & STORAGE">
                             <div className="grid grid-cols-2 gap-4">
-                                <SpecField label="RAM" value={mergedSpecs.ram_gb} unit="GB" highlight />
+                                <SpecField label="RAM" value={ramData?.val} unit={ramData?.unit} highlight />
                                 <SpecField label="Type" value={mergedSpecs.ram_type} small />
                             </div>
                             <SpecField label="Speed" value={mergedSpecs.ram_speed_mhz} unit="MHz" />
@@ -429,6 +438,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                                 <SpecField label="Charging" value={mergedSpecs.charging_speed_w} unit="W" />
                                 <SpecField label="TDP" value={mergedSpecs.tdp_wattage} unit="W" />
                             </div>
+                            <SpecField label="Charge Tech" value={mergedSpecs.charging_tech} small />
                             <SpecField label="Cooling" value={mergedSpecs.cooling_solution} small />
                             
                             <div className="mt-4 pt-4 border-t border-white/5">
