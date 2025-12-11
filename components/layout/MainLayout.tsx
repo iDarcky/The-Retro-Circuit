@@ -1,15 +1,14 @@
-
 'use client';
 
 import { useState, useEffect, type FC, type ReactNode } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useSound } from '../ui/SoundContext';
 import { useSearch } from '../ui/SearchContext';
 import { retroAuth } from '../../lib/auth';
 import { checkDatabaseConnection } from '../../lib/api';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase/singleton';
-import Logo from '../ui/Logo';
 import MobileBottomNav from './MobileBottomNav';
 import MobileTopBar from './MobileTopBar';
 import type { User } from '@supabase/supabase-js';
@@ -51,7 +50,6 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const [dbStatus, setDbStatus] = useState<'CONNECTING' | 'ONLINE' | 'OFFLINE'>('CONNECTING');
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [customLogo, setCustomLogo] = useState<string | null>(null);
   const { openSearch } = useSearch();
 
   useEffect(() => {
@@ -80,10 +78,6 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
             }
         }
         
-        // Logo: Check Local Storage
-        const savedLogo = localStorage.getItem('retro_custom_logo');
-        if (savedLogo) setCustomLogo(savedLogo);
-
         // DB Connection: Perform last as it can be slow
         if (!isSupabaseConfigured) {
             setDbStatus('OFFLINE');
@@ -120,7 +114,6 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       <MobileTopBar 
         onMenuClick={() => setSidebarOpen(!isSidebarOpen)} 
         isSidebarOpen={isSidebarOpen}
-        customLogo={customLogo}
       />
 
       {/* MOBILE DRAWER BACKDROP (z-50) */}
@@ -145,9 +138,18 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
           /* Animation State Logic */
           ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
       `}>
-        <div className="p-6 border-b border-retro-grid flex items-center justify-center bg-black/20">
-             <div className="relative group">
-                <Logo src={customLogo} className="h-12 w-auto drop-shadow-[0_0_10px_rgba(0,255,157,0.5)] transition-transform group-hover:scale-105" />
+        <div className="p-6 border-b border-retro-grid flex items-center justify-center bg-black/20 min-h-[80px]">
+             <div className="relative group text-center">
+                <Link href="/" className="block hover:opacity-80 transition-opacity">
+                  <Image 
+                    src="/brand-logo.png" 
+                    alt="The Retro Circuit" 
+                    width={180} 
+                    height={50} 
+                    priority
+                    className="object-contain drop-shadow-[0_0_8px_rgba(0,255,157,0.3)]"
+                  />
+                </Link>
              </div>
         </div>
 

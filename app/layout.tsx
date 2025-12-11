@@ -1,10 +1,12 @@
 import { ReactNode } from "react";
+import type { Metadata } from "next";
 import { Press_Start_2P, Share_Tech_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "../styles/globals.css";
 import ClientShell from "../components/layout/ClientShell";
 import AuthSync from "../components/AuthSync";
 import Footer from "../components/layout/Footer";
+import { siteConfig } from "../config/site";
 
 // Load fonts via Next.js to prevent Layout Shift
 const pressStart = Press_Start_2P({ 
@@ -27,26 +29,34 @@ export const viewport = {
   themeColor: "#0f0f1b",
 };
 
-export const metadata = {
-  metadataBase: new URL('https://theretrocircuit.com'),
-  title: "The Retro Circuit | Retro Gaming Database & Comparisons",
-  description: "The ultimate retro gaming database. Compare console specs, read classic game reviews, and view the complete timeline of video game history.",
-  keywords: ["retro gaming", "console specs", "video game database", "retro reviews", "console comparison"],
-  icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/logo.png',
+export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`,
   },
-  manifest: '/manifest.json',
+  description: siteConfig.description,
+  icons: {
+    icon: '/favicon-v2.png',
+    shortcut: '/favicon-v2.png',
+    apple: '/favicon-v2.png',
+  },
   openGraph: {
-    siteName: 'The Retro Circuit',
     type: 'website',
     locale: 'en_US',
+    url: siteConfig.url,
+    title: siteConfig.name,
+    description: siteConfig.description,
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: '/og-v2.png',
+        width: 1200,
+        height: 630,
+        alt: siteConfig.name,
+      },
+    ],
   },
-  robots: {
-    index: true,
-    follow: true,
-  }
 };
 
 export default function RootLayout({
