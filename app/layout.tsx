@@ -31,6 +31,33 @@ export const metadata = {
   metadataBase: new URL('https://theretrocircuit.com'),
   title: "The Retro Circuit",
   description: "The ultimate retro gaming database.",
+  icons: {
+    icon: '/brand-logo.png',
+    shortcut: '/brand-logo.png',
+    apple: '/brand-logo.png',
+  },
+  openGraph: {
+    title: "The Retro Circuit",
+    description: "The ultimate retro gaming database.",
+    url: 'https://theretrocircuit.com',
+    siteName: 'The Retro Circuit',
+    images: [
+      {
+        url: '/brand-logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'The Retro Circuit Logo',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "The Retro Circuit",
+    description: "The ultimate retro gaming database.",
+    images: ['/brand-logo.png'],
+  },
 };
 
 export default function RootLayout({
