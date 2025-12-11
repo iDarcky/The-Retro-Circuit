@@ -2,6 +2,7 @@
 
 import { useState, useEffect, type FC, type ReactNode } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useSound } from '../ui/SoundContext';
 import { useSearch } from '../ui/SearchContext';
@@ -139,9 +140,16 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       `}>
         <div className="p-6 border-b border-retro-grid flex items-center justify-center bg-black/20 min-h-[80px]">
              <div className="relative group text-center">
-                <span className="font-pixel font-bold text-sm text-retro-neon drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
-                  THE RETRO CIRCUIT
-                </span>
+                <Link href="/" className="block hover:opacity-80 transition-opacity">
+                  <Image 
+                    src="/brand-logo.png" 
+                    alt="The Retro Circuit" 
+                    width={180} 
+                    height={50} 
+                    priority
+                    className="object-contain drop-shadow-[0_0_8px_rgba(0,255,157,0.3)]"
+                  />
+                </Link>
              </div>
         </div>
 

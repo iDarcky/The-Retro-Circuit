@@ -2,6 +2,7 @@
 
 import { type FC } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { siteConfig } from '../../config/site';
 
 const Footer: FC = () => {
@@ -10,8 +11,16 @@ const Footer: FC = () => {
       <div className="max-w-7xl mx-auto px-4 h-10 flex items-center justify-between text-[10px] font-mono">
         
         {/* Left: Branding */}
-        <div className="flex items-center text-retro-neon tracking-widest min-w-[120px]">
-           [ {siteConfig.name.toUpperCase()} ]
+        <div className="flex items-center min-w-[120px]">
+           <Link href="/">
+               <Image 
+                  src="/brand-logo.png" 
+                  alt="The Retro Circuit" 
+                  width={100} 
+                  height={24} 
+                  className="object-contain h-5 w-auto opacity-70 hover:opacity-100 transition-opacity"
+               />
+           </Link>
         </div>
 
         {/* Center: Navigation */}

@@ -1,6 +1,8 @@
 'use client';
 
 import { type FC } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 import { IconSearch, IconMenu, IconClose } from '../ui/Icons';
 import { useSearch } from '../ui/SearchContext';
 
@@ -15,9 +17,17 @@ const MobileTopBar: FC<MobileTopBarProps> = ({ onMenuClick, isSidebarOpen }) => 
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 h-16 md:hidden bg-retro-dark/90 backdrop-blur-md border-b border-retro-neon flex items-center justify-between px-4 shadow-lg transition-all duration-300">
-        {/* Left: Logo Text */}
+        {/* Left: Logo */}
         <div className="flex items-center">
-            <span className="font-pixel text-xs text-retro-neon">THE RETRO CIRCUIT</span>
+            <Link href="/">
+                <Image 
+                    src="/brand-logo.png" 
+                    alt="The Retro Circuit" 
+                    width={120} 
+                    height={32} 
+                    className="object-contain h-8 w-auto"
+                />
+            </Link>
         </div>
 
         {/* Right: Actions */}
