@@ -161,7 +161,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     const fieldKey = issue.path[0].toString();
                     newErrors[fieldKey] = issue.message;
                     if (!errorGroup) {
-                         const group = VARIANT_FORM_GROUPS.find(g => g.fields.some(f => f.key === fieldKey));
+                         const group = VARIANT_FORM_GROUPS.find(g => g.fields.some(f => f.key && f.key === fieldKey));
                          if (group) errorGroup = group.title;
                     }
                 }
@@ -242,7 +242,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 <div className="space-y-4">
                     {VARIANT_FORM_GROUPS.map((group, idx) => {
                         const isOpen = openSections[group.title];
-                        const hasError = group.fields.some(f => fieldErrors[f.key]);
+                        const hasError = group.fields.some(f => f.key && fieldErrors[f.key as keyof typeof fieldErrors]);
                         return (
                             <div key={idx} className={`bg-black/40 border-l-4 ${hasError ? 'border-retro-pink' : 'border-retro-neon'} shadow-lg`}>
                                 <button type="button" onClick={() => toggleSection(group.title)} className={`w-full flex justify-between items-center p-4 text-left font-mono uppercase tracking-widest text-sm ${isOpen ? 'text-white bg-white/5 font-bold' : 'text-gray-400 hover:text-white'}`}>
@@ -250,15 +250,15 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                 </button>
                                 {isOpen && (
                                     <div className="p-6 grid grid-cols-1 md:grid-cols-12 gap-6 border-t border-white/5">
-                                        {group.fields.map((field: any) => {
+                                        {group.fields.map((field: any, fieldIdx: number) => {
                                             let colSpan = 'md:col-span-6';
                                             if (field.width === 'full') colSpan = 'md:col-span-12';
                                             if (field.width === 'third') colSpan = 'md:col-span-4';
-                                            const error = fieldErrors[field.key];
+                                            const error = field.key ? fieldErrors[field.key as keyof typeof fieldErrors] : undefined;
 
                                             if (field.type === 'custom_ram') {
                                                 return (
-                                                    <div key={field.key} className={`${colSpan}`}>
+                                                    <div key={field.key || `field-${fieldIdx}`} className={`${colSpan}`}>
                                                         <label className={`text-[10px] mb-1 block uppercase ${error ? 'text-retro-pink' : 'text-gray-500'}`}>{field.label}</label>
                                                         <div className="flex gap-2">
                                                             <input type="number" className={`flex-1 border p-3 outline-none font-mono text-sm bg-black text-white ${error ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'}`} value={ramInput.value} onChange={(e) => handleRamChange(e.target.value, ramInput.unit)} />
@@ -270,15 +270,15 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                             }
 
                                             return (
-                                                <div key={field.key} className={`${colSpan}`}>
+                                                <div key={field.key || `field-${fieldIdx}`} className={`${colSpan}`}>
                                                     {field.subHeader && <div className="col-span-12 mt-2 mb-3 border-b border-gray-800 pb-1"><span className="text-[10px] text-gray-500 font-bold uppercase">{field.subHeader}</span></div>}
-                                                    {field.type === 'url' || field.key.includes('image_url') ? (
+                                                    {field.type === 'url' || (field.key && field.key.includes('image_url')) ? (
                                                         <div>
                                                             <label className={`text-[10px] mb-2 block uppercase ${error ? 'text-retro-pink' : 'text-gray-500'}`}>{field.label}</label>
-                                                            <ImageUpload value={formData[field.key]} onChange={(url) => handleInputChange(field.key, url)} />
+                                                            <ImageUpload value={field.key ? formData[field.key] : ''} onChange={(url) => handleInputChange(field.key, url)} />
                                                         </div>
                                                     ) : (
-                                                        <AdminInput field={field} value={formData[field.key]} onChange={handleInputChange} error={error} />
+                                                        <AdminInput field={field} value={field.key ? formData[field.key] : ''} onChange={handleInputChange} error={error} />
                                                     )}
                                                 </div>
                                             );
