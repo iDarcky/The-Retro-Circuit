@@ -7,10 +7,9 @@ import { useSearch } from '../ui/SearchContext';
 interface MobileTopBarProps {
   onMenuClick: () => void;
   isSidebarOpen: boolean;
-  customLogo: string | null;
 }
 
-const MobileTopBar: FC<MobileTopBarProps> = ({ onMenuClick, isSidebarOpen, customLogo }) => {
+const MobileTopBar: FC<MobileTopBarProps> = ({ onMenuClick, isSidebarOpen }) => {
   const { openSearch } = useSearch();
 
   return (

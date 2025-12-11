@@ -49,7 +49,6 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const [dbStatus, setDbStatus] = useState<'CONNECTING' | 'ONLINE' | 'OFFLINE'>('CONNECTING');
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [customLogo, setCustomLogo] = useState<string | null>(null);
   const { openSearch } = useSearch();
 
   useEffect(() => {
@@ -78,10 +77,6 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
             }
         }
         
-        // Logo: Check Local Storage
-        const savedLogo = localStorage.getItem('retro_custom_logo');
-        if (savedLogo) setCustomLogo(savedLogo);
-
         // DB Connection: Perform last as it can be slow
         if (!isSupabaseConfigured) {
             setDbStatus('OFFLINE');
@@ -118,7 +113,6 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       <MobileTopBar 
         onMenuClick={() => setSidebarOpen(!isSidebarOpen)} 
         isSidebarOpen={isSidebarOpen}
-        customLogo={customLogo}
       />
 
       {/* MOBILE DRAWER BACKDROP (z-50) */}
