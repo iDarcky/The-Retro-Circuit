@@ -214,7 +214,7 @@ function VSModeContent() {
                             <ComparisonRow 
                                 key={metric.key} 
                                 metric={metric} 
-                                varA={selectionA.selectedvariant!} 
+                                varA={selectionA.selectedVariant!} 
                                 varB={selectionB.selectedVariant!}
                                 showDiffOnly={showDiffOnly}
                             />
