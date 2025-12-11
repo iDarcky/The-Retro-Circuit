@@ -153,7 +153,7 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                                     {field.label}
                                     <button type="button" onClick={() => setIsSlugLocked(!isSlugLocked)} className="text-[10px] text-retro-blue hover:text-white underline">[{isSlugLocked ? 'UNLOCK' : 'LOCK'}]</button>
                                 </label>
-                                <input type="text" className={`w-full border p-3 font-mono outline-none transition-colors ${isSlugLocked ? 'bg-gray-900/50 border-gray-800 text-gray-500 cursor-not-allowed' : `bg-black text-white ${fieldErrors.slug ? 'border-retro-pink' : 'border-retro-neon focus:border-retro-blue'}`}`} value={formData[field.key] || ''} onChange={(e: ChangeE<HTMLInputElement>) => handleInputChange(field.key, e.target.value)} readOnly={isSlugLocked} />
+                                <input type="text" className={`w-full border p-3 font-mono outline-none transition-colors ${isSlugLocked ? 'bg-gray-900/50 border-gray-800 text-gray-500 cursor-not-allowed' : `bg-black text-white ${fieldErrors.slug ? 'border-retro-pink' : 'border-retro-neon focus:border-retro-blue'}`}`} value={formData[field.key] || ''} onChange={(e: ChangeEvent<HTMLInputElement>) => handleInputChange(field.key, e.target.value)} readOnly={isSlugLocked} />
                                 {fieldErrors.slug && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors.slug}</div>}
                             </div>
                         );
