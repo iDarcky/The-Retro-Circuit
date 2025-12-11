@@ -1,39 +1,10 @@
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 import Link from 'next/link';
 import GameOfTheWeek from '../components/GameOfTheWeek';
+import DashboardSignalFeed from '../components/DashboardSignalFeed';
+import { IconVS, IconDatabase } from '../components/ui/Icons';
 import { fetchRetroNews, fetchGameOfTheWeek } from '../lib/api';
-import { NewsItem } from '../lib/types';
-
-// -- Mini Signal Feed Component (Presentation Only) --
-const DashboardSignalFeed = ({ news }: { news: NewsItem[] }) => {
-  return (
-    <div className="space-y-4">
-       <div className="flex justify-between items-center mb-4">
-          <h3 className="font-pixel text-retro-neon text-lg">LATEST SIGNALS</h3>
-          <Link href="/signals" className="text-xs font-mono text-retro-blue border border-retro-blue px-2 py-1 hover:bg-retro-blue hover:text-black transition-colors">
-              VIEW ALL
-          </Link>
-       </div>
-       {news.length === 0 ? (
-          <div className="text-xs font-mono text-gray-500">NO SIGNALS DETECTED.</div>
-       ) : (
-          news.map((item, i) => (
-            <div key={i} className="border-b border-retro-grid pb-4 last:border-0">
-                <div className="flex justify-between text-[10px] text-gray-500 mb-1 font-mono">
-                    <span>{new Date(item.date).toLocaleDateString()}</span>
-                    <span className="text-retro-pink">{item.category}</span>
-                </div>
-                <Link href="/signals" className="font-mono text-sm text-white hover:text-retro-neon font-bold block mb-1">
-                    {item.headline}
-                </Link>
-                <p className="text-xs text-gray-400 line-clamp-2 font-mono">{item.summary}</p>
-            </div>
-          ))
-       )}
-    </div>
-  );
-};
 
 export default async function ControlRoomPage() {
   // Parallel Data Fetching on the Server
@@ -89,7 +60,7 @@ export default async function ControlRoomPage() {
                                 <div className="font-pixel text-sm text-white group-hover:text-retro-neon">VS MODE</div>
                                 <div className="font-mono text-xs text-gray-500">Spec Showdown</div>
                             </div>
-                            <svg className="w-6 h-6 text-retro-grid group-hover:text-retro-neon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                            <IconVS className="w-6 h-6 text-retro-grid group-hover:text-retro-neon transition-colors" />
                         </div>
                     </Link>
 
@@ -99,7 +70,7 @@ export default async function ControlRoomPage() {
                                 <div className="font-pixel text-sm text-white group-hover:text-retro-pink">CONSOLE VAULT</div>
                                 <div className="font-mono text-xs text-gray-500">Hardware Archive</div>
                             </div>
-                            <svg className="w-6 h-6 text-retro-grid group-hover:text-retro-pink" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
+                            <IconDatabase className="w-6 h-6 text-retro-grid group-hover:text-retro-pink transition-colors" />
                         </div>
                     </Link>
                 </div>

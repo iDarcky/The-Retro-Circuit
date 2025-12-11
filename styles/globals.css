@@ -33,6 +33,13 @@ body {
   animation: flicker 0.15s infinite;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .scanlines, .crt-flicker {
+    display: none;
+    animation: none;
+  }
+}
+
 /* Glitch Animation for 404 */
 @keyframes glitch-shake {
   0% { transform: translate(0); }

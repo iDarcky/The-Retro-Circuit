@@ -2,6 +2,12 @@
 
 import { type ButtonHTMLAttributes, type FC, type MouseEvent } from 'react';
 import { useSound } from './SoundContext';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger';
@@ -40,7 +46,12 @@ const Button: FC<ButtonProps> = ({
 
   return (
     <button
-      className={`${baseStyles} ${variants[variant]} ${isLoading || disabled ? 'opacity-50 cursor-not-allowed' : 'active:scale-95'} ${className}`}
+      className={cn(
+        baseStyles,
+        variants[variant],
+        (isLoading || disabled) ? 'opacity-50 cursor-not-allowed' : 'active:scale-95',
+        className
+      )}
       disabled={disabled || isLoading}
       onMouseEnter={handleMouseEnter}
       onClick={handleClick}
