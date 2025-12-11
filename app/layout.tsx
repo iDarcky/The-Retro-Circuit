@@ -1,10 +1,12 @@
 import { ReactNode } from "react";
+import type { Metadata } from "next";
 import { Press_Start_2P, Share_Tech_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "../styles/globals.css";
 import ClientShell from "../components/layout/ClientShell";
 import AuthSync from "../components/AuthSync";
 import Footer from "../components/layout/Footer";
+import { siteConfig } from "../config/site";
 
 // Load fonts via Next.js to prevent Layout Shift
 const pressStart = Press_Start_2P({ 
@@ -27,36 +29,39 @@ export const viewport = {
   themeColor: "#0f0f1b",
 };
 
-export const metadata = {
-  metadataBase: new URL('https://theretrocircuit.com'),
-  title: "The Retro Circuit",
-  description: "The ultimate retro gaming database.",
+export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
   icons: {
-    icon: '/brand-logo.png',
-    shortcut: '/brand-logo.png',
-    apple: '/brand-logo.png',
+    icon: '/favicon-v2.png',
+    shortcut: '/favicon-v2.png',
+    apple: '/favicon-v2.png',
   },
   openGraph: {
-    title: "The Retro Circuit",
-    description: "The ultimate retro gaming database.",
-    url: 'https://theretrocircuit.com',
-    siteName: 'The Retro Circuit',
+    type: 'website',
+    locale: 'en_US',
+    url: siteConfig.url,
+    title: siteConfig.name,
+    description: siteConfig.description,
+    siteName: siteConfig.name,
     images: [
       {
-        url: '/brand-logo.png',
+        url: '/og-v2.png',
         width: 1200,
         height: 630,
-        alt: 'The Retro Circuit Logo',
+        alt: siteConfig.name,
       },
     ],
-    locale: 'en_US',
-    type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: "The Retro Circuit",
-    description: "The ultimate retro gaming database.",
-    images: ['/brand-logo.png'],
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: ['/og-v2.png'],
   },
 };
 
