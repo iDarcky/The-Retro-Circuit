@@ -231,7 +231,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     {!isEditMode && existingVariants.length > 0 && (
                         <div className="p-4 border border-dashed border-retro-blue bg-retro-blue/5">
                             <label className="text-[10px] text-retro-blue mb-2 block uppercase font-bold">Quick Fill: Copy Specs</label>
-                            <select className="w-full bg-black border border-retro-blue text-retro-blue p-2 font-mono text-xs" value={selectedTemplate} onChange={(e: Change.ChangeEvent<HTMLSelectElement>) => handleTemplateSelect(e.target.value)}>
+                            <select className="w-full bg-black border border-retro-blue text-retro-blue p-2 font-mono text-xs" value={selectedTemplate} onChange={(e: ChangeEvent<HTMLSelectElement>) => handleTemplateSelect(e.target.value)}>
                                 <option value="">-- Select a Base Model Template --</option>
                                 {existingVariants.map(v => <option key={v.id} value={v.id}>{v.variant_name} {v.is_default ? '(Default)' : ''}</option>)}
                             </select>
