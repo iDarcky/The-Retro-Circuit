@@ -1,7 +1,6 @@
 'use client';
 
 import { type FC } from 'react';
-import Image from 'next/image';
 
 interface LogoProps {
   className?: string;
@@ -15,14 +14,15 @@ const Logo: FC<LogoProps> = ({ className = "h-8 w-auto", animate = true, src, al
 
   return (
     <div className={`relative ${className} flex items-center justify-center`}>
-      <Image 
+      {/* 
+        Using standard <img> instead of next/image here because we are loading 
+        a static asset from /public where dimensions might not be known at build time,
+        preventing the "broken image" or 0x0 size issue.
+      */}
+      <img 
         src={logoSrc} 
         alt={alt} 
-        width={0}
-        height={0}
-        sizes="100vw"
         className={`w-auto h-full object-contain ${animate ? 'hover:scale-105 transition-transform duration-300' : ''}`}
-        priority
       />
     </div>
   );

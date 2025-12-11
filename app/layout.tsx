@@ -33,7 +33,11 @@ export const metadata = {
   description: "The ultimate retro gaming database. Compare console specs, read classic game reviews, and view the complete timeline of video game history.",
   keywords: ["retro gaming", "console specs", "video game database", "retro reviews", "console comparison"],
   icons: {
-    icon: '/favicon.ico',
+    // Explicitly defining icon array helps some browsers break cache or choose the best format
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/logo.png', type: 'image/png' }, 
+    ],
     shortcut: '/favicon.ico',
     apple: '/logo.png',
   },
