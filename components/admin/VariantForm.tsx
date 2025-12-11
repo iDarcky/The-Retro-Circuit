@@ -27,30 +27,21 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
     
-    // Edit Mode Detection
     const isEditMode = !!initialData;
-
-    // Emulation Form Toggle
     const [showEmulationForm, setShowEmulationForm] = useState(false);
-
-    // Accordion State (Default First Section Open)
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({
         "IDENTITY & ORIGIN": true,
-        "MEMORY & STORAGE": true // Auto-open for testing RAM logic
+        "INPUT & MECHANICS": true, // Also open this section
     });
     
-    // Template System State
     const [existingVariants, setExistingVariants] = useState<ConsoleVariant[]>([]);
     const [selectedTemplate, setSelectedTemplate] = useState<string>('');
 
-    // --- SMART RAM STATE ---
     const [ramInput, setRamInput] = useState<{ value: string | number, unit: 'GB' | 'MB' }>({ value: '', unit: 'GB' });
 
-    // Initialize Data & RAM Logic
     useEffect(() => {
         if (initialData) {
             setFormData(initialData);
-            // Smart RAM Init
             const mb = Number(initialData.ram_mb);
             if (!isNaN(mb) && mb > 0) {
                  if (mb >= 1024 && mb % 1024 === 0) {
@@ -64,21 +55,16 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         }
     }, [initialData, preSelectedConsoleId]);
 
-    // Handle RAM Input Changes
     const handleRamChange = (newVal: string | number, newUnit: 'GB' | 'MB') => {
         setRamInput({ value: newVal, unit: newUnit });
-        
-        // Update formData immediately
         const val = Number(newVal);
         if (!isNaN(val)) {
-            const finalMb = newUnit === 'GB' ? val * 1024 : val;
-            handleInputChange('ram_mb', finalMb);
+            handleInputChange('ram_mb', newUnit === 'GB' ? val * 1024 : val);
         } else {
             handleInputChange('ram_mb', 0);
         }
     };
 
-    // Fetch existing variants for template system
     useEffect(() => {
         const fetchTemplates = async () => {
             const consoleId = formData.console_id;
@@ -93,43 +79,20 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         fetchTemplates();
     }, [formData.console_id]);
 
-    // Auto-Calculation Logic for Display
     useEffect(() => {
         const size = parseFloat(formData.screen_size_inch);
         const w = parseFloat(formData.screen_resolution_x);
         const h = parseFloat(formData.screen_resolution_y);
-
         if (!isNaN(size) && size > 0 && !isNaN(w) && w > 0 && !isNaN(h) && h > 0) {
-            // PPI Calculation
-            const diagonal = Math.sqrt(w * w + h * h);
-            const ppi = Math.round(diagonal / size);
-            
-            // Aspect Ratio Calculation (GCD)
-            const gcd = (a: number, b: number): number => {
-                return b === 0 ? a : gcd(b, a % b);
-            };
+            const ppi = Math.round(Math.sqrt(w * w + h * h) / size);
+            const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b);
             const divisor = gcd(w, h);
-            
-            // Format Ratio
-            let ratioX = w / divisor;
-            let ratioY = h / divisor;
-
-            // Optional: Map 8:5 to common 16:10 marketing term
-            if (ratioX === 8 && ratioY === 5) {
-                 ratioX = 16;
-                 ratioY = 10;
-            }
-
+            let ratioX = w / divisor, ratioY = h / divisor;
+            if (ratioX === 8 && ratioY === 5) { ratioX = 16; ratioY = 10; }
             const ratio = `${ratioX}:${ratioY}`;
-            
-            // Update state only if changed to avoid unnecessary re-renders
             setFormData(prev => {
                 if (prev.ppi === ppi && prev.aspect_ratio === ratio) return prev;
-                return {
-                    ...prev,
-                    ppi,
-                    aspect_ratio: ratio
-                };
+                return { ...prev, ppi, aspect_ratio: ratio };
             });
         }
     }, [formData.screen_size_inch, formData.screen_resolution_x, formData.screen_resolution_y]);
@@ -140,36 +103,20 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
     const handleTemplateSelect = (variantId: string) => {
         if (isEditMode) return; 
-
         setSelectedTemplate(variantId);
         setFieldErrors({});
-        
         if (!variantId) return;
-
         const template = existingVariants.find(v => v.id === variantId);
         if (template) {
-            // Copy specs but reset identity fields
             const { id, variant_name, slug, is_default, price_launch_usd, model_no, ...specs } = template;
-
             setFormData(prev => ({
-                ...specs,
-                console_id: prev.console_id, 
-                variant_name: '', 
-                slug: '',
-                is_default: false, 
-                price_launch_usd: '', 
-                model_no: '',
-                image_url: template.image_url 
+                ...specs, console_id: prev.console_id, variant_name: '', slug: '',
+                is_default: false, price_launch_usd: '', model_no: '', image_url: template.image_url
             }));
-
-            // Sync RAM input to template
             const mb = Number(template.ram_mb);
             if (!isNaN(mb) && mb > 0) {
-                 if (mb >= 1024 && mb % 1024 === 0) {
-                     setRamInput({ value: mb / 1024, unit: 'GB' });
-                 } else {
-                     setRamInput({ value: mb, unit: 'MB' });
-                 }
+                 if (mb >= 1024 && mb % 1024 === 0) setRamInput({ value: mb / 1024, unit: 'GB' });
+                 else setRamInput({ value: mb, unit: 'MB' });
             } else {
                 setRamInput({ value: '', unit: 'GB' });
             }
@@ -179,102 +126,65 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     const handleInputChange = (key: string, value: any) => {
         setFormData(prev => ({ ...prev, [key]: value }));
         if (fieldErrors[key]) {
-            setFieldErrors(prev => {
-                const next = { ...prev };
-                delete next[key];
-                return next;
-            });
+            setFieldErrors(prev => { const next = { ...prev }; delete next[key]; return next; });
         }
     };
 
     const handleSubmit = async (e: FormEvent, mode: 'SAVE' | 'CLONE' = 'SAVE') => {
         e.preventDefault();
-
-        // 1. Prepare Data
         const rawVariant = { ...formData };
-        
-        // Auto-slug if name exists
         if (rawVariant.variant_name && !rawVariant.slug) {
             rawVariant.slug = rawVariant.variant_name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
         }
-
-        // 2. Safe Parse using Zod Schema
         const result = ConsoleVariantSchema.safeParse(rawVariant);
-        
-        if (!result.success) { 
+        if (!result.success) {
             const newErrors: Record<string, string> = {};
             let errorGroup = "";
-            
             result.error.issues.forEach(issue => {
                 if (issue.path.length > 0) {
                     const fieldKey = issue.path[0].toString();
                     newErrors[fieldKey] = issue.message;
-                    // Auto-open section with error
                     if (!errorGroup) {
                          const group = VARIANT_FORM_GROUPS.find(g => g.fields.some(f => f.key === fieldKey));
                          if (group) errorGroup = group.title;
                     }
                 }
             });
-            
             setFieldErrors(newErrors);
-            if (errorGroup) {
-                setOpenSections(prev => ({ ...prev, [errorGroup]: true }));
-            }
-            
+            if (errorGroup) setOpenSections(prev => ({ ...prev, [errorGroup]: true }));
             onError("VALIDATION FAILED. PLEASE CHECK HIGHLIGHTED FIELDS."); 
             return; 
         }
 
         setLoading(true);
         try {
-            // TIMEOUT SAFETY: 10 Seconds
-            const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error("Database operation timed out (10s limit)")), 10000)
-            );
-
-            let operationPromise;
-
+            const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Database timeout")), 10000));
+            let promise;
             if (isEditMode && initialData?.id) {
-                operationPromise = updateConsoleVariant(initialData.id, result.data as any);
+                promise = updateConsoleVariant(initialData.id, result.data as any);
             } else {
-                operationPromise = addConsoleVariant(result.data as any);
+                promise = addConsoleVariant(result.data as any);
             }
-            
-            // Race: Operation vs Timeout
-            const response: any = await Promise.race([operationPromise, timeoutPromise]);
-            
+            const response: any = await Promise.race([promise, timeout]);
             if (response.success) {
                 await purgeCache();
                 onSuccess(isEditMode ? "VARIANT UPDATED." : "VARIANT SAVED.");
                 setFieldErrors({});
                 router.refresh();
-                
-                // Refresh local templates
                 if (rawVariant.console_id) {
-                    const updatedVariants = await getVariantsByConsole(rawVariant.console_id);
-                    setExistingVariants(updatedVariants);
+                    const updated = await getVariantsByConsole(rawVariant.console_id);
+                    setExistingVariants(updated);
                 }
-
                 if (!isEditMode) {
                     if (mode === 'SAVE') {
-                        // Reset form but keep console selected
                         setFormData({ console_id: rawVariant.console_id });
                         setRamInput({ value: '', unit: 'GB' });
                         setSelectedTemplate('');
                         setOpenSections({ "IDENTITY & ORIGIN": true });
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     } else {
-                        // CLONE mode: Keep specs, just clear identity
-                        setFormData(prev => ({ 
-                            ...prev, 
-                            variant_name: '', 
-                            slug: '',
-                            is_default: false, 
-                            model_no: ''
-                        }));
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        setFormData(prev => ({ ...prev, variant_name: '', slug: '', is_default: false, model_no: '' }));
                     }
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             } else {
                 onError(`OPERATION FAILED: ${response.message}`);
@@ -288,236 +198,116 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
     return (
         <div className="space-y-6">
-            
-            {/* 1. Header Card */}
-            <div className={`border-l-4 p-5 mb-6 bg-black/40 shadow-md flex justify-between items-start ${isEditMode ? 'border-retro-neon' : 'border-retro-pink'}`}>
-                <div>
-                    <h3 className={`font-bold text-sm uppercase font-mono tracking-widest ${isEditMode ? 'text-retro-neon' : 'text-retro-pink'}`}>
-                        {isEditMode ? 'Edit Mode: Variant Specifications' : 'Step 2: Technical Specifications'}
-                    </h3>
-                    <p className="text-xs text-gray-400 mt-2 font-mono">
-                        {isEditMode 
-                            ? `Modifying Variant ID: ${initialData?.id}` 
-                            : 'Define the hardware capabilities. You can create multiple variants (e.g. Pro, Slim, OLED) for this console.'}
-                    </p>
-                </div>
+            <div className={`border-l-4 p-5 mb-6 bg-black/40 shadow-md ${isEditMode ? 'border-retro-neon' : 'border-retro-pink'}`}>
+                <h3 className={`font-bold text-sm uppercase font-mono tracking-widest ${isEditMode ? 'text-retro-neon' : 'border-retro-pink'}`}>{isEditMode ? 'Edit Mode: Variant Specs' : 'Step 2: Technical Specs'}</h3>
+                <p className="text-xs text-gray-400 mt-2 font-mono">{isEditMode ? `Modifying Variant ID: ${initialData?.id}` : 'Define hardware capabilities. Create multiple variants (Pro, Slim, etc.) for a console.'}</p>
             </div>
 
             <form className="space-y-6">
-                {/* 2. Console Selector & Template Copy */}
-                <div className="mb-8 space-y-6 bg-black/20 p-6 border border-retro-grid relative">
-                    <div className="absolute top-0 left-0 bg-retro-grid text-[10px] text-gray-400 px-2 py-0.5 font-mono uppercase">Context</div>
-                    
-                    <div>
-                        <label className={`text-[10px] mb-2 block uppercase font-bold tracking-wider ${fieldErrors.console_id ? 'text-retro-pink' : 'text-gray-500'}`}>
-                            Target Console Folder
-                        </label>
-                        <select 
-                            className={`w-full bg-black border p-3 outline-none text-white font-mono text-sm ${fieldErrors.console_id ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'} ${isEditMode ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            value={formData.console_id || ''} 
-                            onChange={(e: ChangeEvent<HTMLSelectElement>) => handleInputChange('console_id', e.target.value)}
-                            required
-                            disabled={isEditMode}
-                        >
+                <div className="mb-8 space-y-6 bg-black/20 p-6 border border-retro-grid">
+                     <div>
+                        <label className={`text-[10px] mb-2 block uppercase font-bold ${fieldErrors.console_id ? 'text-retro-pink' : 'text-gray-500'}`}>Target Console Folder</label>
+                        <select className={`w-full bg-black border p-3 outline-none text-white font-mono text-sm ${fieldErrors.console_id ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'} ${isEditMode ? 'opacity-50 cursor-not-allowed' : ''}`} value={formData.console_id || ''} onChange={(e: ChangeEvent<HTMLSelectElement>) => handleInputChange('console_id', e.target.value)} required disabled={isEditMode}>
                             <option value="">-- Select Console Folder --</option>
                             {consoleList.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
                     </div>
-
                     {!isEditMode && existingVariants.length > 0 && (
-                        <div className="p-4 border border-dashed border-retro-blue bg-retro-blue/5 animate-fadeIn">
-                            <label className="text-[10px] text-retro-blue mb-2 block uppercase font-bold flex items-center gap-2">
-                                <span className="w-2 h-2 bg-retro-blue rounded-full animate-pulse"></span>
-                                Quick Fill: Copy Specs From Existing Variant
-                            </label>
-                            <select 
-                                className="w-full bg-black border border-retro-blue text-retro-blue p-2 font-mono text-xs focus:outline-none"
-                                value={selectedTemplate}
-                                onChange={(e: ChangeEvent<HTMLSelectElement>) => handleTemplateSelect(e.target.value)}
-                            >
+                        <div className="p-4 border border-dashed border-retro-blue bg-retro-blue/5">
+                            <label className="text-[10px] text-retro-blue mb-2 block uppercase font-bold">Quick Fill: Copy Specs</label>
+                            <select className="w-full bg-black border border-retro-blue text-retro-blue p-2 font-mono text-xs" value={selectedTemplate} onChange={(e: ChangeEvent<HTMLSelectElement>) => handleTemplateSelect(e.target.value)}>
                                 <option value="">-- Select a Base Model Template --</option>
-                                {existingVariants.map(v => (
-                                    <option key={v.id} value={v.id}>
-                                        {v.variant_name} {v.is_default ? '(Default)' : ''}
-                                    </option>
-                                ))}
+                                {existingVariants.map(v => <option key={v.id} value={v.id}>{v.variant_name} {v.is_default ? '(Default)' : ''}</option>)}
                             </select>
                         </div>
                     )}
                 </div>
 
-                {/* 3. Form Sections (Accordions) */}
                 <div className="space-y-4">
                     {VARIANT_FORM_GROUPS.map((group, idx) => {
                         const isOpen = openSections[group.title];
                         const hasError = group.fields.some(f => fieldErrors[f.key]);
-
                         return (
-                            <div key={idx} className="relative transition-all duration-300">
-                                {/* Card Container with Neon Border */}
-                                <div className={`
-                                    bg-black/40 border-l-4 
-                                    ${hasError ? 'border-retro-pink' : 'border-retro-neon'}
-                                    shadow-lg transition-colors
-                                `}>
-                                    {/* Accordion Header */}
-                                    <button
-                                        type="button"
-                                        onClick={() => toggleSection(group.title)}
-                                        className={`
-                                            w-full flex justify-between items-center p-4 text-left font-mono uppercase tracking-widest text-sm
-                                            ${isOpen 
-                                                ? 'text-white bg-white/5 font-bold' 
-                                                : 'text-gray-400 hover:text-retro-neon hover:text-white'}
-                                            transition-colors
-                                        `}
-                                    >
-                                        <span className="flex items-center gap-3">
-                                            {hasError && <span className="text-retro-pink animate-pulse font-bold">!</span>}
-                                            {group.title}
-                                        </span>
-                                        <div className={`transition-transform duration-200 ${isOpen ? 'rotate-180 text-retro-neon' : 'text-gray-600'}`}>
-                                            <ChevronDown />
-                                        </div>
-                                    </button>
+                            <div key={idx} className={`bg-black/40 border-l-4 ${hasError ? 'border-retro-pink' : 'border-retro-neon'} shadow-lg`}>
+                                <button type="button" onClick={() => toggleSection(group.title)} className={`w-full flex justify-between items-center p-4 text-left font-mono uppercase tracking-widest text-sm ${isOpen ? 'text-white bg-white/5 font-bold' : 'text-gray-400 hover:text-white'}`}>
+                                    <span>{group.title}</span><div className={`${isOpen ? 'rotate-180 text-retro-neon' : 'text-gray-600'}`}><ChevronDown /></div>
+                                </button>
+                                {isOpen && (
+                                    <div className="p-6 grid grid-cols-1 md:grid-cols-12 gap-6 border-t border-white/5">
+                                        {group.fields.map((field: any) => {
+                                            let colSpan = 'md:col-span-6';
+                                            if (field.width === 'full') colSpan = 'md:col-span-12';
+                                            if (field.width === 'third') colSpan = 'md:col-span-4';
+                                            const error = fieldErrors[field.key];
 
-                                    {/* Content Grid */}
-                                    {isOpen && (
-                                        <div className="p-6 grid grid-cols-1 md:grid-cols-12 gap-6 border-t border-white/5 animate-fadeIn">
-                                            {group.fields.map((field: any) => {
-                                                // Grid Span Logic
-                                                let colSpan = 'md:col-span-6';
-                                                if (field.width === 'full') colSpan = 'md:col-span-12';
-                                                if (field.width === 'half') colSpan = 'md:col-span-6';
-                                                if (field.width === 'third') colSpan = 'md:col-span-4';
-                                                if (field.width === 'quarter') colSpan = 'md:col-span-3';
-
-                                                const error = fieldErrors[field.key];
-
-                                                // --- SMART RAM LOGIC RENDER ---
-                                                if (field.type === 'custom_ram') {
-                                                    return (
-                                                        <div key={field.key} className={`${colSpan} flex flex-col`}>
-                                                            <label className={`text-[10px] mb-1 block uppercase ${error ? 'text-retro-pink' : 'text-gray-500'}`}>{field.label}</label>
-                                                            <div className="flex gap-2">
-                                                                <input 
-                                                                    type="number"
-                                                                    className={`flex-1 border p-3 outline-none font-mono text-sm bg-black text-white ${error ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'}`}
-                                                                    value={ramInput.value}
-                                                                    onChange={(e) => handleRamChange(e.target.value, ramInput.unit)}
-                                                                />
-                                                                <select
-                                                                    className="w-24 bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm focus:border-retro-neon"
-                                                                    value={ramInput.unit}
-                                                                    onChange={(e) => handleRamChange(ramInput.value, e.target.value as 'GB' | 'MB')}
-                                                                >
-                                                                    <option value="GB">GB</option>
-                                                                    <option value="MB">MB</option>
-                                                                </select>
-                                                            </div>
-                                                            {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
-                                                        </div>
-                                                    );
-                                                }
-
+                                            if (field.type === 'custom_ram') {
                                                 return (
-                                                    <div key={field.key} className={`${colSpan} flex flex-col`}>
-                                                        {/* SubHeader Logic */}
-                                                        {field.subHeader && (
-                                                            <div className="col-span-1 md:col-span-12 mt-2 mb-3 border-b border-gray-800 pb-1">
-                                                                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">{field.subHeader}</span>
-                                                            </div>
-                                                        )}
-
-                                                        {/* Input Rendering */}
-                                                        {field.type === 'url' || field.key.includes('image_url') ? (
-                                                            <div>
-                                                                <label className={`text-[10px] mb-2 block uppercase font-bold tracking-wider ${error ? 'text-retro-pink' : 'text-gray-500'}`}>
-                                                                    {field.label}
-                                                                </label>
-                                                                <ImageUpload
-                                                                    value={formData[field.key]}
-                                                                    onChange={(url) => handleInputChange(field.key, url)}
-                                                                />
-                                                            </div>
-                                                        ) : (
-                                                            <AdminInput 
-                                                                field={field} 
-                                                                value={formData[field.key]} 
-                                                                onChange={handleInputChange} 
-                                                                error={error} 
-                                                            />
-                                                        )}
+                                                    <div key={field.key} className={`${colSpan}`}>
+                                                        <label className={`text-[10px] mb-1 block uppercase ${error ? 'text-retro-pink' : 'text-gray-500'}`}>{field.label}</label>
+                                                        <div className="flex gap-2">
+                                                            <input type="number" className={`flex-1 border p-3 outline-none font-mono text-sm bg-black text-white ${error ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'}`} value={ramInput.value} onChange={(e) => handleRamChange(e.target.value, ramInput.unit)} />
+                                                            <select className="w-24 bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm" value={ramInput.unit} onChange={(e) => handleRamChange(ramInput.value, e.target.value as 'GB' | 'MB')}><option value="GB">GB</option><option value="MB">MB</option></select>
+                                                        </div>
+                                                        {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
                                                     </div>
                                                 );
-                                            })}
-                                        </div>
-                                    )}
-                                </div>
+                                            }
+
+                                            return (
+                                                <div key={field.key} className={`${colSpan}`}>
+                                                    {field.subHeader && <div className="col-span-12 mt-2 mb-3 border-b border-gray-800 pb-1"><span className="text-[10px] text-gray-500 font-bold uppercase">{field.subHeader}</span></div>}
+                                                    {field.type === 'url' || field.key.includes('image_url') ? (
+                                                        <div>
+                                                            <label className={`text-[10px] mb-2 block uppercase ${error ? 'text-retro-pink' : 'text-gray-500'}`}>{field.label}</label>
+                                                            <ImageUpload value={formData[field.key]} onChange={(url) => handleInputChange(field.key, url)} />
+                                                        </div>
+                                                    ) : (
+                                                        <AdminInput field={field} value={formData[field.key]} onChange={handleInputChange} error={error} />
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                        {/* ---- HAS KEYBOARD CHECKBOX ---- */}
+                                        {group.title === 'INPUT & MECHANICS' && (
+                                            <div className="md:col-span-12 flex items-center space-x-3 pt-4 border-t border-gray-800">
+                                                <input 
+                                                    type="checkbox" 
+                                                    id="has_keyboard"
+                                                    checked={!!formData.has_keyboard}
+                                                    onChange={(e) => handleInputChange('has_keyboard', e.target.checked)}
+                                                    className="form-checkbox h-5 w-5 bg-black border-retro-neon text-retro-neon focus:ring-retro-neon/50"
+                                                />
+                                                <label htmlFor="has_keyboard" className="font-mono text-white">Has Physical Keyboard?</label>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         );
                     })}
                 </div>
 
-                {/* NEW: Emulation Performance Section (Bottom of Form) */}
                 {isEditMode && initialData?.id && (
-                    <div className="mt-8 border-t-2 border-dashed border-retro-grid pt-8 animate-fadeIn">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="font-pixel text-sm text-retro-blue">
-                                EXTENDED CONFIGURATION
-                            </h3>
-                        </div>
-                        
+                    <div className="mt-8 border-t-2 border-dashed border-retro-grid pt-8">
                         {!showEmulationForm ? (
-                            <button
-                                type="button"
-                                onClick={() => setShowEmulationForm(true)}
-                                className="w-full py-4 border-2 border-retro-blue bg-retro-blue/10 text-retro-blue font-pixel text-sm hover:bg-retro-blue hover:text-black transition-all flex items-center justify-center gap-3 shadow-[0_0_15px_rgba(59,130,246,0.2)] group"
-                            >
-                                <span className="w-2 h-2 bg-retro-blue rounded-full animate-pulse group-hover:bg-black"></span>
+                            <button type="button" onClick={() => setShowEmulationForm(true)} className="w-full py-4 border-2 border-retro-blue bg-retro-blue/10 text-retro-blue font-pixel text-sm hover:bg-retro-blue hover:text-black">
                                 [ EDIT EMULATION PERFORMANCE ]
                             </button>
                         ) : (
-                            <div className="border-2 border-retro-blue shadow-[0_0_20px_rgba(59,130,246,0.2)] relative">
+                            <div className="border-2 border-retro-blue">
                                 <div className="bg-retro-blue/20 p-2 flex justify-between items-center border-b border-retro-blue/50">
                                     <span className="text-[10px] font-mono text-retro-blue px-2">PERFORMANCE MATRIX</span>
-                                    <button 
-                                        type="button" 
-                                        onClick={() => setShowEmulationForm(false)}
-                                        className="text-[10px] font-mono text-retro-blue hover:text-white uppercase px-2 py-1 hover:bg-retro-blue/20"
-                                    >
-                                        [ CLOSE MANAGER ]
-                                    </button>
+                                    <button type="button" onClick={() => setShowEmulationForm(false)} className="text-[10px] font-mono text-retro-blue hover:text-white px-2 py-1">[ CLOSE ]</button>
                                 </div>
-                                <EmulationForm 
-                                    variantId={initialData.id} 
-                                    onSave={() => onSuccess("EMULATION DATA SYNCED.")} 
-                                />
+                                <EmulationForm variantId={initialData.id} onSave={() => onSuccess("EMULATION DATA SYNCED.")} />
                             </div>
                         )}
                     </div>
                 )}
                 
-                {/* 4. Footer Actions */}
-                <div className="flex justify-end gap-4 pt-6 border-t border-retro-grid sticky bottom-0 bg-retro-dark/95 backdrop-blur p-4 z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
-                    {!isEditMode && (
-                        <Button 
-                            type="button" 
-                            variant="secondary" 
-                            onClick={(e) => handleSubmit(e, 'CLONE')} 
-                            isLoading={loading}
-                            className="border-dashed"
-                        >
-                            [ SAVE & CLONE ]
-                        </Button>
-                    )}
-                    <Button 
-                        type="submit" 
-                        onClick={(e) => handleSubmit(e, 'SAVE')} 
-                        isLoading={loading}
-                    >
-                        {isEditMode ? 'UPDATE UNIT' : 'REGISTER UNIT'}
-                    </Button>
+                <div className="flex justify-end gap-4 pt-6 border-t border-retro-grid">
+                    {!isEditMode && <Button type="button" variant="secondary" onClick={(e) => handleSubmit(e, 'CLONE')} isLoading={loading}>[ SAVE & CLONE ]</Button>}
+                    <Button type="submit" onClick={(e) => handleSubmit(e, 'SAVE')} isLoading={loading}>{isEditMode ? 'UPDATE UNIT' : 'REGISTER UNIT'}</Button>
                 </div>
             </form>
         </div>

@@ -113,7 +113,16 @@ export interface ConsoleSpecs {
 export interface EmulationProfile {
   id: string;
   variant_id: string;
-  
+
+  // New 8/16-bit
+  nes_state?: string;
+  snes_state?: string;
+  genesis_state?: string;
+  gb_state?: string;
+  gbc_state?: string;
+  gba_state?: string;
+
+  // Existing
   ps1_state?: string;
   ps2_state: 'Perfect' | 'Great' | 'Playable' | 'Struggles' | 'Unplayable' | 'N/A';
   psp_state?: string;
@@ -124,8 +133,16 @@ export interface EmulationProfile {
   vita_state: string;
   dreamcast_state?: string;
   saturn_state?: string;
-  
+
+  // New 32/64-bit
+  n64_state?: string;
+  nds_state?: string;
+
   summary_text: string;
+
+  // Verification
+  source: string | null;
+  last_verified: string | Date;
 }
 
 export interface ConsoleVariant {
@@ -217,6 +234,7 @@ export interface ConsoleVariant {
   trigger_mechanism?: string;
   action_button_mechanism?: string;
   has_back_buttons?: boolean;
+  has_keyboard?: boolean; // New
 
   width_mm?: number;
   height_mm?: number;
@@ -240,4 +258,10 @@ export interface ConsoleDetails {
     
     release_year?: number; 
     generation?: string;
+
+    // New Fields
+    device_category: 'emulation' | 'pc_gaming' | 'fpga' | 'legacy';
+    has_cartridge_slot: boolean;
+    supported_cartridge_types: string | null;
+    chassis_features: string | null;
 }
