@@ -187,9 +187,16 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                         {/* Background Grid Effect */}
                         <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,157,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,157,0.05)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none"></div>
                         
-                        {/* Form Factor Badge */}
-                        <div className="absolute top-4 left-4 bg-retro-neon text-black font-mono text-[10px] font-bold px-2 py-1 transform -rotate-2 z-20">
-                            {consoleData.form_factor?.toUpperCase() || 'SYSTEM'}
+                        {/* Form Factor & Feature Badges */}
+                        <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 items-start">
+                            <div className="bg-retro-neon text-black font-mono text-[10px] font-bold px-2 py-1 transform -rotate-2 shadow-lg">
+                                {consoleData.form_factor?.toUpperCase() || 'SYSTEM'}
+                            </div>
+                            {consoleData.chassis_features && (
+                                <div className="bg-black/90 text-retro-neon border border-retro-neon font-mono text-[10px] font-bold px-2 py-1 transform -rotate-2 shadow-lg">
+                                    {consoleData.chassis_features.toUpperCase()}
+                                </div>
+                            )}
                         </div>
                     </div>
 

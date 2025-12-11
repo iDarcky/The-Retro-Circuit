@@ -1,0 +1,36 @@
+
+> retro-circuit@1.0.0 dev
+> next dev
+
+  ▲ Next.js 14.2.33
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 2.1s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 1769ms (497 modules)
+[Middleware] ------------------------------------------------
+[Middleware] Processing: GET /console
+[Middleware] No Session Found. Error: Auth session missing!
+ ○ Compiling /console ...
+ ✓ Compiled /console in 7.3s (1481 modules)
+ GET /console 200 in 8109ms
+ ✓ Compiled in 755ms (738 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (129kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+[Middleware] ------------------------------------------------
+[Middleware] Processing: GET /console
+[Middleware] No Session Found. Error: Auth session missing!
+ GET /console 200 in 43ms
+[Middleware] ------------------------------------------------
+[Middleware] Processing: GET /console
+[Middleware] No Session Found. Error: Auth session missing!
+ GET /console 200 in 55ms
+[Middleware] ------------------------------------------------
+[Middleware] Processing: GET /console
+[Middleware] No Session Found. Error: Auth session missing!
+ GET /console 200 in 29ms
+[Middleware] ------------------------------------------------
+[Middleware] Processing: GET /console
+[Middleware] No Session Found. Error: Auth session missing!
+ GET /console 200 in 35ms
