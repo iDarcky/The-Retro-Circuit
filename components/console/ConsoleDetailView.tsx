@@ -13,6 +13,7 @@ import EmulationGrid from './EmulationGrid';
 import { SpecCard } from '../ui/specs/SpecCard';
 import { SpecField } from '../ui/specs/SpecField';
 import { TechBadge } from '../ui/specs/TechBadge';
+import { getConsoleImage } from '../../lib/utils';
 
 interface ConsoleDetailViewProps {
   consoleData: ConsoleDetails;
@@ -87,8 +88,8 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
 
     const currentVariant = variants.find(v => v.id === selectedVariantId);
     
-    // Fallbacks for Image/Year/Price if not on variant
-    const currentImage = currentVariant?.image_url || consoleData.image_url;
+    // Get the correct image using the centralized helper
+    const currentImage = getConsoleImage({ console: consoleData, variant: currentVariant });
     const currentYear = currentVariant?.release_year || consoleData.release_year;
     
     // Construct VS Mode URL (Using p1 as requested)
