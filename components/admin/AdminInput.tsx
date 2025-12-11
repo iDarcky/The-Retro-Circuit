@@ -5,12 +5,13 @@ interface RenderInputProps {
     field: { 
         label: string, 
         key: string, 
-        type: string, 
+        type?: string, // Make type optional
         required?: boolean, 
         step?: string, 
         note?: string,
         options?: string[],
-        visualStyle?: 'computed' | 'standard'
+        visualStyle?: 'computed' | 'standard',
+        placeholder?: string, // Add placeholder
     };
     value: any;
     onChange: (key: string, val: any) => void;
@@ -18,8 +19,10 @@ interface RenderInputProps {
 }
 
 export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error }) => {
+    const type = field.type || 'text'; // Default to text if not specified
+
     // Default val handling
-    const val = value !== undefined && value !== null ? value : (field.type === 'checkbox' ? false : '');
+    const val = value !== undefined && value !== null ? value : (type === 'checkbox' ? false : '');
     
     const borderColor = error ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon';
     const labelColor = error ? 'text-retro-pink' : 'text-gray-500';
@@ -28,7 +31,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
     const isComputed = field.visualStyle === 'computed';
     const computedBg = isComputed ? 'bg-gray-900 text-gray-400 cursor-not-allowed' : 'bg-black text-white';
     
-    if (field.type === 'textarea') {
+    if (type === 'textarea') {
         return (
             <div className="col-span-1 md:col-span-2">
                 <label className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
@@ -37,6 +40,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                     value={val}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => onChange(field.key, e.target.value)}
                     required={false}
+                    placeholder={field.placeholder}
                 />
                 {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{field.note}</div>}
                 {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
@@ -44,7 +48,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
         );
     }
 
-    if (field.type === 'checkbox') {
+    if (type === 'checkbox') {
         // Strictly check for true or "true" string to handle potential DB type mismatch
         const isChecked = String(val) === 'true';
         
@@ -67,7 +71,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
         );
     }
 
-    if (field.type === 'select') {
+    if (type === 'select') {
         return (
             <div>
                 <label className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
@@ -91,13 +95,14 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
         <div>
             <label className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
             <input 
-                type={field.type}
+                type={type}
                 className={`w-full border p-3 outline-none font-mono text-sm ${borderColor} ${computedBg} transition-colors`}
                 value={val}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(field.key, e.target.value)}
                 required={field.required}
                 step={field.step}
                 readOnly={isComputed}
+                placeholder={field.placeholder}
             />
             {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{field.note}</div>}
             {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
