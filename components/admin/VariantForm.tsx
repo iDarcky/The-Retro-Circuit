@@ -66,7 +66,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     };
 
     useEffect(() => {
-        const fetchTemplates = async () => {
+        const fetchTemplates = async (). => {
             const consoleId = formData.console_id;
             if (consoleId) {
                 const variants = await getVariantsByConsole(consoleId);
