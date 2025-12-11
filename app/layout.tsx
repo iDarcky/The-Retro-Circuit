@@ -42,6 +42,23 @@ export const metadata = {
     siteName: 'The Retro Circuit',
     type: 'website',
     locale: 'en_US',
+    url: 'https://theretrocircuit.com',
+    title: "The Retro Circuit | Retro Gaming Database & Comparisons",
+    description: "The ultimate retro gaming database. Compare console specs, read classic game reviews, and view the complete timeline of video game history.",
+    images: [
+      {
+        url: '/opengraph-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'The Retro Circuit Preview',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'The Retro Circuit',
+    description: "The ultimate retro gaming database. Compare console specs, read classic game reviews, and view the complete timeline of video game history.",
+    images: ['/opengraph-image.png'],
   },
   robots: {
     index: true,
