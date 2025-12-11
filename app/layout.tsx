@@ -31,8 +31,11 @@ export const metadata = {
   metadataBase: new URL('https://theretrocircuit.com'),
   title: "The Retro Circuit",
   description: "The ultimate retro gaming database.",
-  // Icons and OpenGraph images are now automatically handled by Next.js 
-  // because the files (favicon.ico, opengraph-image.png) exist in the app/ folder.
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/logo.png',
+  },
   manifest: '/manifest.json',
   openGraph: {
     siteName: 'The Retro Circuit',
@@ -41,6 +44,20 @@ export const metadata = {
     url: 'https://theretrocircuit.com',
     title: "The Retro Circuit",
     description: "The ultimate retro gaming database.",
+    images: [
+      {
+        url: '/opengraph-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'The Retro Circuit',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'The Retro Circuit',
+    description: "The ultimate retro gaming database.",
+    images: ['/opengraph-image.png'],
   },
 };
 
