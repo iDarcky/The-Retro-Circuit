@@ -57,12 +57,6 @@ export const metadata: Metadata = {
       },
     ],
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: siteConfig.name,
-    description: siteConfig.description,
-    images: ['/og-v2.png'],
-  },
 };
 
 export default function RootLayout({
