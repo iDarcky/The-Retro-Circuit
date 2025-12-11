@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense, type FC, type ChangeEvent, type Dispatch, type SetStateAction } from 'react';
+import { useState, useEffect, Suspense, type ChangeEvent, type Dispatch, type SetStateAction } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { fetchConsoleList, fetchConsoleBySlug } from '../../lib/api';
 import { ConsoleDetails, ConsoleVariant } from '../../lib/types';
@@ -214,7 +214,7 @@ function VSModeContent() {
                             <ComparisonRow 
                                 key={metric.key} 
                                 metric={metric} 
-                                varA={selectionA.selectedVariant!} 
+                                varA={selectionA.selectedvariant!} 
                                 varB={selectionB.selectedVariant!}
                                 showDiffOnly={showDiffOnly}
                             />
