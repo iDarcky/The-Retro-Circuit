@@ -33,6 +33,32 @@ body {
   animation: flicker 0.15s infinite;
 }
 
+/* Glitch Animation for 404 */
+@keyframes glitch-shake {
+  0% { transform: translate(0); }
+  25% { transform: translate(-2px, 2px); }
+  50% { transform: translate(2px, -2px); }
+  75% { transform: translate(-2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+.glitch-hover:hover {
+  animation: glitch-shake 0.2s cubic-bezier(.36,.07,.19,.97) both infinite;
+  text-shadow: 2px 2px 0px #00ff9d, -2px -2px 0px #00ffff;
+}
+
+/* Neon Pulse Animation */
+@keyframes neon-pulse {
+  0%, 100% {
+    text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 40px #ff00ff;
+    opacity: 1;
+  }
+  50% {
+    text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff;
+    opacity: 0.8;
+  }
+}
+
 @keyframes flicker {
   0% { opacity: 0.02; }
   50% { opacity: 0.05; }
