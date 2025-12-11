@@ -2,7 +2,7 @@ export const siteConfig = {
   name: "The Retro Circuit",
   description: "The ultimate retro gaming hub featuring AI-curated news, deep-dive console comparisons, and an interactive history oracle.",
   url: "https://theretrocircuit.com",
-  version: "v1.1.2", // this is the current website version
+  version: "v1.2.0", // this is the current website version
   est: "2025",
   links: {
     email: "mailto:contact@theretrocircuit.com",
