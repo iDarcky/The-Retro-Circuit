@@ -5,6 +5,8 @@ import { createClient } from '../../../lib/supabase/server';
 import { fetchConsoleBySlug, fetchGamesByConsole } from '../../../lib/api';
 import Button from '../../../components/ui/Button';
 import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
+import { getConsoleImage } from '../../../lib/utils';
+import { ConsoleDetails } from '../../../lib/types';
 
 type Props = {
   params: { slug: string }
@@ -22,17 +24,7 @@ export async function generateMetadata({ params }: Props) {
     
     if (!data) return { title: 'Unknown Hardware' };
     
-    // Logic to determine best image: Console Image -> Default Variant Image -> First Variant Image
-    let finalImage = data.image_url;
-    
-    if (!finalImage && data.variants && Array.isArray(data.variants) && data.variants.length > 0) {
-        const variants = data.variants;
-        const defaultVar = variants.find((v: any) => v.is_default);
-        finalImage = defaultVar?.image_url || variants[0].image_url;
-    }
-
-    // Ensure fallback to site logo if absolutely no image found
-    finalImage = finalImage || '/logo.png';
+    const finalImage = getConsoleImage(data as unknown as ConsoleDetails);
   
     return {
       title: `${data.name} Specs & Price | The Retro Circuit`,

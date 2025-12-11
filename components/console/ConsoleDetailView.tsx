@@ -1,69 +1,24 @@
 
 'use client';
 
-import { useState, useEffect, type FC, type ReactNode } from 'react';
+import { useState, useEffect, type FC } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ConsoleDetails, ConsoleSpecs, ConsoleVariant, GameOfTheWeekData } from '../../lib/types';
+import { getConsoleImage } from '../../lib/utils';
 import CollectionToggle from '../ui/CollectionToggle';
 import AdminEditTrigger from '../admin/AdminEditTrigger';
 import { IconGames, IconVS } from '../ui/Icons';
 import Button from '../ui/Button';
 import EmulationGrid from './EmulationGrid';
+import SpecCard from '../ui/specs/SpecCard';
+import SpecField from '../ui/specs/SpecField';
+import TechBadge from '../ui/specs/TechBadge';
 
 interface ConsoleDetailViewProps {
   consoleData: ConsoleDetails;
   games: GameOfTheWeekData[];
 }
-
-// --- SUB-COMPONENTS FOR MODULAR UI ---
-
-const SpecCard = ({ title, className = "", children }: { title: string, className?: string, children?: ReactNode }) => (
-    <div className={`bg-retro-dark border border-retro-grid relative overflow-hidden group hover:border-retro-blue/50 transition-colors ${className}`}>
-        {/* Header Strip */}
-        <div className="bg-black/40 border-b border-retro-grid px-4 py-2 flex justify-between items-center">
-            <h3 className="font-pixel text-[10px] text-retro-blue uppercase tracking-widest">{title}</h3>
-            <div className="flex gap-1">
-                <div className="w-1 h-1 bg-gray-700 rounded-full group-hover:bg-retro-neon transition-colors"></div>
-                <div className="w-1 h-1 bg-gray-700 rounded-full group-hover:bg-retro-neon transition-colors delay-75"></div>
-            </div>
-        </div>
-        {/* Content Body */}
-        <div className="p-4 space-y-3">
-            {children}
-        </div>
-    </div>
-);
-
-const SpecField = ({ label, value, unit, highlight = false, small = false }: { label: string, value?: string | number | null, unit?: string, highlight?: boolean, small?: boolean }) => {
-    if (value === undefined || value === null || value === '') return null;
-    return (
-        <div className="flex justify-between items-end border-b border-white/5 pb-1 last:border-0">
-            <span className="font-mono text-[10px] text-gray-500 uppercase">{label}</span>
-            <span className={`font-mono text-right ${small ? 'text-xs' : 'text-sm'} ${highlight ? 'text-retro-neon font-bold drop-shadow-[0_0_5px_rgba(0,255,157,0.4)]' : 'text-gray-300'}`}>
-                {value} {unit && <span className="text-[10px] text-gray-500 ml-0.5">{unit}</span>}
-            </span>
-        </div>
-    );
-};
-
-const TechBadge = ({ label, active, color = "bg-retro-neon" }: { label: string, active?: boolean | string | null, color?: string }) => {
-    // If active is undefined/null/empty, don't show the badge at all
-    if (active === undefined || active === null || active === '') return null;
-
-    // Strict boolean check because DB might return "false" string which is truthy in JS
-    const isActive = active === true || active === 'true';
-
-    return (
-        <div className={`
-            inline-flex items-center gap-2 px-2 py-1 border text-[9px] font-mono uppercase tracking-wider
-            ${isActive ? 'border-retro-grid bg-white/5 text-gray-200' : 'border-transparent text-gray-600 opacity-50'}
-        `}>
-            <span className={`w-1.5 h-1.5 rounded-full ${isActive ? `${color} animate-pulse shadow-[0_0_5px_currentColor]` : 'bg-gray-700'}`}></span>
-            {label}
-        </div>
-    );
-};
 
 // --- MAIN COMPONENT ---
 
@@ -134,7 +89,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
     const currentVariant = variants.find(v => v.id === selectedVariantId);
     
     // Fallbacks for Image/Year/Price if not on variant
-    const currentImage = currentVariant?.image_url || consoleData.image_url;
+    const currentImage = getConsoleImage(consoleData, currentVariant);
     const currentYear = currentVariant?.release_year || consoleData.release_year;
     
     // Construct VS Mode URL (Using p1 as requested)
