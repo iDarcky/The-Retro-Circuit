@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, type FC, type ReactNode } from 'react';
@@ -9,7 +8,6 @@ import { useSearch } from '../ui/SearchContext';
 import { retroAuth } from '../../lib/auth';
 import { checkDatabaseConnection } from '../../lib/api';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase/singleton';
-import Logo from '../ui/Logo';
 import MobileBottomNav from './MobileBottomNav';
 import MobileTopBar from './MobileTopBar';
 import type { User } from '@supabase/supabase-js';
@@ -145,9 +143,11 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
           /* Animation State Logic */
           ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
       `}>
-        <div className="p-6 border-b border-retro-grid flex items-center justify-center bg-black/20">
-             <div className="relative group">
-                <Logo src={customLogo} className="h-12 w-auto drop-shadow-[0_0_10px_rgba(0,255,157,0.5)] transition-transform group-hover:scale-105" />
+        <div className="p-6 border-b border-retro-grid flex items-center justify-center bg-black/20 min-h-[80px]">
+             <div className="relative group text-center">
+                <span className="font-pixel font-bold text-sm text-retro-neon drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
+                  THE RETRO CIRCUIT
+                </span>
              </div>
         </div>
 

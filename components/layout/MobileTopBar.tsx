@@ -1,8 +1,6 @@
-
 'use client';
 
 import { type FC } from 'react';
-import Logo from '../ui/Logo';
 import { IconSearch, IconMenu, IconClose } from '../ui/Icons';
 import { useSearch } from '../ui/SearchContext';
 
@@ -18,9 +16,9 @@ const MobileTopBar: FC<MobileTopBarProps> = ({ onMenuClick, isSidebarOpen, custo
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 h-16 md:hidden bg-retro-dark/90 backdrop-blur-md border-b border-retro-neon flex items-center justify-between px-4 shadow-lg transition-all duration-300">
-        {/* Left: Logo */}
+        {/* Left: Logo Text */}
         <div className="flex items-center">
-            <Logo src={customLogo} className="h-8 w-auto" />
+            <span className="font-pixel text-xs text-retro-neon">THE RETRO CIRCUIT</span>
         </div>
 
         {/* Right: Actions */}
