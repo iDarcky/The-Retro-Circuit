@@ -19,7 +19,7 @@ export const METRICS: ComparisonMetric[] = [
     { label: 'UI Skin', key: 'ui_skin', type: 'string' },
 
     // --- DISPLAY ---
-    { label: 'Screen Size', key: 'screen_size_inch', type: 'number', unit: '"' },
+    { label: 'Screen Size', key: 'screen_size_inch', type: 'number', unit: '\"' },
     { label: 'Resolution', key: 'screen_resolution_x', type: 'resolution' },
     { label: 'Display Type', key: 'display_type', type: 'string' },
     { label: 'Display Tech', key: 'display_tech', type: 'string' },
@@ -28,8 +28,14 @@ export const METRICS: ComparisonMetric[] = [
     { label: 'Brightness', key: 'brightness_nits', type: 'number', unit: ' nits' },
     { label: 'Touchscreen', key: 'touchscreen', type: 'boolean' },
     { label: 'Aspect Ratio', key: 'aspect_ratio', type: 'string' },
-    { label: '2nd Screen Size', key: 'second_screen_size', type: 'number', unit: '"' },
+    
+    // --- Secondary Display ---
+    { label: '2nd Screen Size', key: 'second_screen_size_inch', type: 'number', unit: '\"' },
     { label: '2nd Screen Touch', key: 'second_screen_touch', type: 'boolean' },
+    { label: '2nd Screen PPI', key: 'second_screen_ppi', type: 'number', unit: 'PPI' },
+    { label: '2nd Screen Aspect Ratio', key: 'second_screen_aspect_ratio', type: 'string' },
+    { label: '2nd Screen Refresh Rate', key: 'second_screen_refresh_rate_hz', type: 'number', unit: 'Hz' },
+    { label: '2nd Screen Brightness', key: 'second_screen_brightness_nits', type: 'number', unit: 'nits' },
 
     // --- PROCESSING ---
     { label: 'CPU Model', key: 'cpu_model', type: 'string' },

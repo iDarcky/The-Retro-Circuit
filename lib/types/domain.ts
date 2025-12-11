@@ -189,10 +189,14 @@ export interface ConsoleVariant {
   ppi?: number;
   touchscreen?: boolean;
 
-  second_screen_size?: number;
+  second_screen_size_inch?: number;
   second_screen_resolution_x?: number;
   second_screen_resolution_y?: number;
   second_screen_touch?: boolean;
+  second_screen_ppi?: number;
+  second_screen_aspect_ratio?: string;
+  second_screen_refresh_rate_hz?: number;
+  second_screen_brightness_nits?: number;
 
   battery_capacity_mah?: number;
   battery_capacity_wh?: number;
