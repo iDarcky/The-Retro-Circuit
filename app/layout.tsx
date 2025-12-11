@@ -29,17 +29,13 @@ export const viewport = {
 
 export const metadata = {
   metadataBase: new URL('https://theretrocircuit.com'),
-  title: "The Retro Circuit | Retro Gaming Database & Comparisons",
-  description: "The ultimate retro gaming database. Compare console specs, read classic game reviews, and view the complete timeline of video game history.",
-  keywords: ["retro gaming", "console specs", "video game database", "retro reviews", "console comparison"],
+  title: "The Retro Circuit",
+  description: "The ultimate retro gaming database.",
+  // Simplified Icon Logic: Points directly to public/ folder
   icons: {
-    // Explicitly defining icon array helps some browsers break cache or choose the best format
-    icon: [
-      { url: '/favicon.ico' },
-      { url: '/logo.png', type: 'image/png' }, 
-    ],
+    icon: '/favicon.ico',
     shortcut: '/favicon.ico',
-    apple: '/logo.png',
+    apple: '/logo.png', // Uses logo for Apple touch icon
   },
   manifest: '/manifest.json',
   openGraph: {
@@ -47,27 +43,17 @@ export const metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://theretrocircuit.com',
-    title: "The Retro Circuit | Retro Gaming Database & Comparisons",
-    description: "The ultimate retro gaming database. Compare console specs, read classic game reviews, and view the complete timeline of video game history.",
+    title: "The Retro Circuit",
+    description: "The ultimate retro gaming database.",
     images: [
       {
         url: '/opengraph-image.png',
         width: 1200,
         height: 630,
-        alt: 'The Retro Circuit Preview',
+        alt: 'The Retro Circuit',
       },
     ],
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'The Retro Circuit',
-    description: "The ultimate retro gaming database. Compare console specs, read classic game reviews, and view the complete timeline of video game history.",
-    images: ['/opengraph-image.png'],
-  },
-  robots: {
-    index: true,
-    follow: true,
-  }
 };
 
 export default function RootLayout({
