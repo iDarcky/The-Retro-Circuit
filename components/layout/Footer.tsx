@@ -2,7 +2,6 @@
 
 import { type FC } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { siteConfig } from '../../config/site';
 
 const Footer: FC = () => {
@@ -12,14 +11,10 @@ const Footer: FC = () => {
         
         {/* Left: Branding */}
         <div className="flex items-center min-w-[120px]">
-           <Link href="/">
-               <Image 
-                  src="/brand-logo.png" 
-                  alt="The Retro Circuit" 
-                  width={100} 
-                  height={24} 
-                  className="object-contain h-5 w-auto opacity-70 hover:opacity-100 transition-opacity"
-               />
+           <Link href="/" className="hover:opacity-80 transition-opacity">
+               <span className="font-mono text-lg font-bold text-retro-neon tracking-wider">
+                  [ THE RETRO CIRCUIT ]
+               </span>
            </Link>
         </div>
 
