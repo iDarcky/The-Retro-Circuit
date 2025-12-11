@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import type { Metadata } from "next";
 import { Press_Start_2P, Share_Tech_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
-import "./globals.css";
+import "../styles/globals.css";
 import ClientShell from "../components/layout/ClientShell";
 import AuthSync from "../components/AuthSync";
 import Footer from "../components/layout/Footer";
@@ -66,7 +66,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${pressStart.variable} ${shareTech.variable} min-h-screen flex flex-col bg-retro-dark text-white font-mono`}>
+      <body className={`${pressStart.variable} ${shareTech.variable} min-h-screen flex flex-col`}>
         {/* CRT Overlay Effects */}
         <div className="scanlines"></div>
         <div className="crt-flicker"></div>
