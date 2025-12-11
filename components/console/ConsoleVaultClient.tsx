@@ -271,12 +271,19 @@ const ConsoleVaultClient: FC = () => {
                                              <span className="font-pixel text-gray-700 text-2xl">?</span>
                                          )}
                                          
-                                         {/* Form Factor Badge */}
-                                         {console.form_factor && (
-                                             <div className={`absolute top-2 right-2 bg-black/90 border px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase shadow-lg z-10 ${getFormFactorColor(console.form_factor)}`}>
-                                                 {console.form_factor}
-                                             </div>
-                                         )}
+                                         {/* Form Factor & Feature Badges */}
+                                         <div className="absolute top-2 right-2 z-10 flex flex-col gap-1 items-end">
+                                             {console.form_factor && (
+                                                 <div className={`bg-black/90 border px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase shadow-lg ${getFormFactorColor(console.form_factor)}`}>
+                                                     {console.form_factor}
+                                                 </div>
+                                             )}
+                                             {console.chassis_features && (
+                                                 <div className="bg-black/90 border border-retro-neon text-retro-neon px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase shadow-lg">
+                                                     {console.chassis_features}
+                                                 </div>
+                                             )}
+                                         </div>
                                     </div>
                                     <div className="p-4 border-t border-retro-grid">
                                         <h3 className="font-pixel text-xs text-white group-hover:text-retro-neon mb-1">{console.name}</h3>
