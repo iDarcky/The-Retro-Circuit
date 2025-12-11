@@ -66,7 +66,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${pressStart.variable} ${shareTech.variable} min-h-screen flex flex-col`}>
+      <body className={`${pressStart.variable} ${shareTech.variable} font-mono min-h-screen flex flex-col`}>
         {/* CRT Overlay Effects */}
         <div className="scanlines"></div>
         <div className="crt-flicker"></div>
