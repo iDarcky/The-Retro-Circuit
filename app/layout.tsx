@@ -31,12 +31,8 @@ export const metadata = {
   metadataBase: new URL('https://theretrocircuit.com'),
   title: "The Retro Circuit",
   description: "The ultimate retro gaming database.",
-  // Simplified Icon Logic: Points directly to public/ folder
-  icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/logo.png', // Uses logo for Apple touch icon
-  },
+  // Icons and OpenGraph images are now automatically handled by Next.js 
+  // because the files (favicon.ico, opengraph-image.png) exist in the app/ folder.
   manifest: '/manifest.json',
   openGraph: {
     siteName: 'The Retro Circuit',
@@ -45,14 +41,6 @@ export const metadata = {
     url: 'https://theretrocircuit.com',
     title: "The Retro Circuit",
     description: "The ultimate retro gaming database.",
-    images: [
-      {
-        url: '/opengraph-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'The Retro Circuit',
-      },
-    ],
   },
 };
 
