@@ -95,14 +95,21 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Display Tech (VRR etc)', key: 'display_tech', type: 'text', required: false, width: 'half' },
             { label: 'Touchscreen?', key: 'touchscreen', type: 'checkbox', required: false, width: 'half' },
 
-            { label: '2nd Screen Size', key: 'second_screen_size', type: 'number', required: false, step: '0.1', width: 'quarter', subHeader: 'Secondary Display' },
-            { label: '2nd Res X', key: 'second_screen_resolution_x', type: 'number', required: false, width: 'quarter' },
-            { label: '2nd Res Y', key: 'second_screen_resolution_y', type: 'number', required: false, width: 'quarter' },
-            { label: '2nd Touch?', key: 'second_screen_touch', type: 'checkbox', required: false, width: 'quarter' },
+            { subHeader: 'Secondary Display' },
+            { label: '2nd Screen Size', key: 'second_screen_size_inch', type: 'number', required: false, step: '0.1', width: 'third' },
+            { label: '2nd Res X', key: 'second_screen_resolution_x', type: 'number', required: false, width: 'third' },
+            { label: '2nd Res Y', key: 'second_screen_resolution_y', type: 'number', required: false, width: 'third' },
+
+            { label: '2nd Aspect Ratio', key: 'second_screen_aspect_ratio', type: 'text', required: false, width: 'half', visualStyle: 'computed', note: 'Auto-calculated' },
+            { label: '2nd Pixel Density (PPI)', key: 'second_screen_ppi', type: 'number', required: false, width: 'half', visualStyle: 'computed', note: 'Auto-calculated' },
+
+            { label: '2nd Refresh Rate (Hz)', key: 'second_screen_refresh_rate_hz', type: 'number', required: false, width: 'third' },
+            { label: '2nd Brightness (nits)', key: 'second_screen_brightness_nits', type: 'number', required: false, width: 'third' },
+            { label: '2nd Touch?', key: 'second_screen_touch', type: 'checkbox', required: false, width: 'third' },
         ]
     },
     {
-        title: "INPUT MECHANICS",
+        title: "INPUT & MECHANICS",
         fields: [
             { label: 'Input Layout', key: 'input_layout', type: 'select', required: false, width: 'half', options: ['Xbox', 'Nintendo', 'PlayStation', 'Retroid/Unique'] },
             { label: 'Start, Select, Home', key: 'other_buttons', type: 'text', required: false, width: 'half' },

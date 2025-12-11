@@ -97,6 +97,22 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         }
     }, [formData.screen_size_inch, formData.screen_resolution_x, formData.screen_resolution_y]);
 
+    useEffect(() => {
+        const size = parseFloat(formData.second_screen_size_inch);
+        const w = parseFloat(formData.second_screen_resolution_x);
+        const h = parseFloat(formData.second_screen_resolution_y);
+        if (!isNaN(size) && size > 0 && !isNaN(w) && w > 0 && !isNaN(h) && h > 0) {
+            const ppi = Math.round(Math.sqrt(w * w + h * h) / size);
+            const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b);
+            const divisor = gcd(w, h);
+            const ratio = `${w / divisor}:${h / divisor}`;
+            setFormData(prev => {
+                if (prev.second_screen_ppi === ppi && prev.second_screen_aspect_ratio === ratio) return prev;
+                return { ...prev, second_screen_ppi: ppi, second_screen_aspect_ratio: ratio };
+            });
+        }
+    }, [formData.second_screen_size_inch, formData.second_screen_resolution_x, formData.second_screen_resolution_y]);
+
     const toggleSection = (title: string) => {
         setOpenSections(prev => ({ ...prev, [title]: !prev[title] }));
     };
@@ -215,7 +231,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     {!isEditMode && existingVariants.length > 0 && (
                         <div className="p-4 border border-dashed border-retro-blue bg-retro-blue/5">
                             <label className="text-[10px] text-retro-blue mb-2 block uppercase font-bold">Quick Fill: Copy Specs</label>
-                            <select className="w-full bg-black border border-retro-blue text-retro-blue p-2 font-mono text-xs" value={selectedTemplate} onChange={(e: ChangeEvent<HTMLSelectElement>) => handleTemplateSelect(e.target.value)}>
+                            <select className="w-full bg-black border border-retro-blue text-retro-blue p-2 font-mono text-xs" value={selectedTemplate} onChange={(e: Change.ChangeEvent<HTMLSelectElement>) => handleTemplateSelect(e.target.value)}>
                                 <option value="">-- Select a Base Model Template --</option>
                                 {existingVariants.map(v => <option key={v.id} value={v.id}>{v.variant_name} {v.is_default ? '(Default)' : ''}</option>)}
                             </select>
