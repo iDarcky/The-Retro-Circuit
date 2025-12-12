@@ -92,8 +92,9 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
                 type="button"
                 onClick={handleRemove}
                 disabled={disabled}
-                className="absolute top-2 right-2 bg-retro-pink text-white w-8 h-8 flex items-center justify-center border border-white hover:bg-red-600 transition-colors shadow-lg z-10"
+                className="absolute top-2 right-2 bg-retro-pink text-white w-8 h-8 flex items-center justify-center border border-white hover:bg-red-600 transition-colors shadow-lg z-10 focus-visible:ring-2 focus-visible:ring-white"
                 title="Remove Image"
+                aria-label="Remove Image"
             >
                 X
             </button>
@@ -104,11 +105,20 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
       ) : (
         <div
             onClick={() => inputRef.current?.click()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                inputRef.current?.click();
+              }
+            }}
+            role="button"
+            tabIndex={disabled ? -1 : 0}
+            aria-label="Upload image"
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             className={`
-                relative h-32 border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all
+                relative h-32 border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all outline-none focus-visible:ring-2 focus-visible:ring-retro-neon
                 ${isDragging 
                     ? 'border-retro-neon bg-retro-neon/10 scale-[1.02]' 
                     : 'border-gray-700 bg-black/20 hover:border-retro-blue hover:bg-black/40'
@@ -126,7 +136,7 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
             />
             
             {isUploading ? (
-                <div className="text-center">
+                <div className="text-center" role="status" aria-live="polite">
                      <div className="w-8 h-8 border-2 border-retro-neon border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
                      <span className="font-pixel text-[10px] text-retro-neon animate-pulse">UPLOADING DATA...</span>
                 </div>
