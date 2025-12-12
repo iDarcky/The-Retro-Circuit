@@ -12,6 +12,6 @@ export const siteConfig = {
   routes: [
     { label: "About Us", href: "/about" },
     { label: "Privacy Policy", href: "/privacy" },
-    { label: "Feedback", href: "mailto:contact@theretrocircuit.com" }
+    { label: "Terms of Service", href: "/terms" }
   ]
 };
