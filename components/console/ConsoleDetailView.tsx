@@ -327,9 +327,26 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                             {/* Dual Screen Info */}
                             {mergedSpecs.second_screen_size && (
                                 <div className="mt-3 pt-2 border-t border-white/5">
-                                    <div className="text-[9px] text-gray-500 uppercase mb-1">Secondary Display</div>
+                                    <div className="flex justify-between items-end mb-1">
+                                        <div className="text-[9px] text-gray-500 uppercase">Secondary Display</div>
+                                        {mergedSpecs.second_screen_type && (
+                                            <span className="font-mono text-[9px] text-retro-blue border border-retro-blue px-1">{mergedSpecs.second_screen_type}</span>
+                                        )}
+                                    </div>
                                     <SpecField label="Size" value={mergedSpecs.second_screen_size} unit='"' small />
                                     <SpecField label="Resolution" value={`${mergedSpecs.second_screen_resolution_x} x ${mergedSpecs.second_screen_resolution_y}`} small />
+
+                                    <div className="grid grid-cols-2 gap-4 mt-2">
+                                        <SpecField label="PPI" value={mergedSpecs.second_screen_ppi} small />
+                                        <SpecField label="Aspect Ratio" value={mergedSpecs.second_screen_aspect_ratio} small />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <SpecField label="Refresh Rate" value={mergedSpecs.second_screen_refresh_rate} unit="Hz" small />
+                                        <SpecField label="Brightness" value={mergedSpecs.second_screen_nits} unit="nits" small />
+                                    </div>
+                                    <div className="mt-2">
+                                        <TechBadge label="TOUCHSCREEN" active={mergedSpecs.second_screen_touch} />
+                                    </div>
                                 </div>
                             )}
                         </SpecCard>

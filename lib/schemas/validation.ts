@@ -118,6 +118,7 @@ export const ConsoleVariantSchema = z.object({
   second_screen_aspect_ratio: safeString,
   second_screen_refresh_rate: safeNumber,
   second_screen_nits: safeNumber,
+  second_screen_type: safeString,
 
   // Power & Chassis
   battery_capacity_mah: safeNumber,

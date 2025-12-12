@@ -103,6 +103,14 @@ export const VARIANT_FORM_GROUPS = [
             { label: '2nd Aspect Ratio', key: 'second_screen_aspect_ratio', type: 'text', required: false, width: 'half', visualStyle: 'computed', note: 'Auto-calculated' },
             { label: '2nd Pixel Density (PPI)', key: 'second_screen_ppi', type: 'number', required: false, width: 'half', visualStyle: 'computed', note: 'Auto-calculated' },
 
+            {
+                label: '2nd Type Panel',
+                key: 'second_screen_type',
+                type: 'select',
+                required: false,
+                width: 'third',
+                options: ['IPS LCD', 'OLED', 'AMOLED', 'TN LCD', 'Mini-LED', 'Micro-LED', 'TFT LCD', 'E-Ink']
+            },
             { label: '2nd Refresh Rate (Hz)', key: 'second_screen_refresh_rate', type: 'number', required: false, width: 'third' },
             { label: '2nd Brightness (nits)', key: 'second_screen_nits', type: 'number', required: false, width: 'third' },
             { label: '2nd Touch?', key: 'second_screen_touch', type: 'checkbox', required: false, width: 'third' },
