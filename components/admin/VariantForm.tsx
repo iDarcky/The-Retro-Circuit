@@ -98,7 +98,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     }, [formData.screen_size_inch, formData.screen_resolution_x, formData.screen_resolution_y]);
 
     useEffect(() => {
-        const size = parseFloat(formData.second_screen_size_inch);
+        const size = parseFloat(formData.second_screen_size);
         const w = parseFloat(formData.second_screen_resolution_x);
         const h = parseFloat(formData.second_screen_resolution_y);
         if (!isNaN(size) && size > 0 && !isNaN(w) && w > 0 && !isNaN(h) && h > 0) {
@@ -111,7 +111,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 return { ...prev, second_screen_ppi: ppi, second_screen_aspect_ratio: ratio };
             });
         }
-    }, [formData.second_screen_size_inch, formData.second_screen_resolution_x, formData.second_screen_resolution_y]);
+    }, [formData.second_screen_size, formData.second_screen_resolution_x, formData.second_screen_resolution_y]);
 
     const toggleSection = (title: string) => {
         setOpenSections(prev => ({ ...prev, [title]: !prev[title] }));

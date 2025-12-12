@@ -110,14 +110,14 @@ export const ConsoleVariantSchema = z.object({
   ppi: safeNumber,
   touchscreen: safeBoolean,
 
-  second_screen_size_inch: safeNumber,
+  second_screen_size: safeNumber,
   second_screen_resolution_x: safeNumber,
   second_screen_resolution_y: safeNumber,
   second_screen_touch: safeBoolean,
   second_screen_ppi: safeNumber,
   second_screen_aspect_ratio: safeString,
-  second_screen_refresh_rate_hz: safeNumber,
-  second_screen_brightness_nits: safeNumber,
+  second_screen_refresh_rate: safeNumber,
+  second_screen_nits: safeNumber,
 
   // Power & Chassis
   battery_capacity_mah: safeNumber,
