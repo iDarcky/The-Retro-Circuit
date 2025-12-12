@@ -272,7 +272,10 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                             return (
                                                 <div key={field.key || `field-${fieldIdx}`} className={`${colSpan}`}>
                                                     {field.subHeader && <div className="col-span-12 mt-2 mb-3 border-b border-gray-800 pb-1"><span className="text-[10px] text-gray-500 font-bold uppercase">{field.subHeader}</span></div>}
-                                                    {field.type === 'url' || (field.key && field.key.includes('image_url')) ? (
+
+                                                    {/* If it's just a subHeader (no key), don't render an input */}
+                                                    {!field.key ? null :
+                                                     field.type === 'url' || (field.key && field.key.includes('image_url')) ? (
                                                         <div>
                                                             <label className={`text-[10px] mb-2 block uppercase ${error ? 'text-retro-pink' : 'text-gray-500'}`}>{field.label}</label>
                                                             <ImageUpload value={field.key ? formData[field.key] : ''} onChange={(url) => handleInputChange(field.key, url)} />

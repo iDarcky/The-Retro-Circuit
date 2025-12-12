@@ -95,7 +95,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Display Tech (VRR etc)', key: 'display_tech', type: 'text', required: false, width: 'half' },
             { label: 'Touchscreen?', key: 'touchscreen', type: 'checkbox', required: false, width: 'half' },
 
-            { subHeader: 'Secondary Display' },
+            { subHeader: 'Secondary Display', width: 'full' },
             { label: '2nd Screen Size', key: 'second_screen_size_inch', type: 'number', required: false, step: '0.1', width: 'third' },
             { label: '2nd Res X', key: 'second_screen_resolution_x', type: 'number', required: false, width: 'third' },
             { label: '2nd Res Y', key: 'second_screen_resolution_y', type: 'number', required: false, width: 'third' },
