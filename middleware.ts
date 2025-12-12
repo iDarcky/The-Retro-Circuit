@@ -97,7 +97,7 @@ export async function middleware(request: NextRequest) {
       // Sentinel: Redacted user email for privacy
       console.log(`[Middleware] Session Valid. User ID: ${user.id}`);
   } else {
-      console.log(`[Middleware] No Session Found.`);
+      console.log(`[Middleware] No Session Found. Error: ${error?.message || 'None'}`);
   }
 
   // 3. Protect Admin Routes
