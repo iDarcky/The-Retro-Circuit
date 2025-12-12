@@ -13,6 +13,19 @@ export async function middleware(request: NextRequest) {
     },
   });
 
+  // Security Headers
+  // X-Content-Type-Options: Prevents MIME type sniffing
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+
+  // X-Frame-Options: Protects against clickjacking
+  response.headers.set('X-Frame-Options', 'DENY');
+
+  // Referrer-Policy: Controls how much referrer information is included with requests
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+
+  // Permissions-Policy: Disables sensitive features not needed
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -35,6 +48,12 @@ export async function middleware(request: NextRequest) {
               headers: request.headers,
             },
           });
+          // Re-apply security headers as creating a new response resets them
+          response.headers.set('X-Content-Type-Options', 'nosniff');
+          response.headers.set('X-Frame-Options', 'DENY');
+          response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+          response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+
           response.cookies.set({
             name,
             value,
@@ -54,6 +73,12 @@ export async function middleware(request: NextRequest) {
               headers: request.headers,
             },
           });
+          // Re-apply security headers
+          response.headers.set('X-Content-Type-Options', 'nosniff');
+          response.headers.set('X-Frame-Options', 'DENY');
+          response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+          response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+
           response.cookies.set({
             name,
             value: '',
@@ -69,9 +94,10 @@ export async function middleware(request: NextRequest) {
 
   // DIAGNOSTIC LOG: User Status
   if (user) {
-      console.log(`[Middleware] Session Valid. User: ${user.email} (${user.id})`);
+      // Sentinel: Redacted user email for privacy
+      console.log(`[Middleware] Session Valid. User ID: ${user.id}`);
   } else {
-      console.log(`[Middleware] No Session Found. Error: ${error?.message || 'None'}`);
+      console.log(`[Middleware] No Session Found.`);
   }
 
   // 3. Protect Admin Routes
