@@ -8,11 +8,16 @@ import { ConsoleDetails, ConsoleFilterState, Manufacturer } from '../../lib/type
 import RetroLoader from '../ui/RetroLoader';
 import Button from '../ui/Button';
 
-const ConsoleVaultClient: FC = () => {
-  const [allConsoles, setAllConsoles] = useState<ConsoleDetails[]>([]);
-  const [filteredConsoles, setFilteredConsoles] = useState<ConsoleDetails[]>([]);
-  const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
-  const [loading, setLoading] = useState(true);
+interface ConsoleVaultClientProps {
+    initialConsoles?: ConsoleDetails[];
+    initialManufacturers?: Manufacturer[];
+}
+
+const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialConsoles, initialManufacturers }) => {
+  const [allConsoles, setAllConsoles] = useState<ConsoleDetails[]>(initialConsoles || []);
+  const [filteredConsoles, setFilteredConsoles] = useState<ConsoleDetails[]>(initialConsoles || []);
+  const [manufacturers, setManufacturers] = useState<Manufacturer[]>(initialManufacturers || []);
+  const [loading, setLoading] = useState(!initialConsoles || !initialManufacturers);
   
   // Mobile Sidebar State
   const [showMobileFilters, setShowMobileFilters] = useState(false);
@@ -31,8 +36,10 @@ const ConsoleVaultClient: FC = () => {
       panel_types: []
   });
 
-  // 1. Initial Load: Fetch Everything
+  // 1. Initial Load: Fetch Everything (Only if no initial data)
   useEffect(() => {
+    if (initialConsoles && initialManufacturers) return;
+
     const init = async () => {
         setLoading(true);
         const [manus, allData] = await Promise.all([
@@ -45,7 +52,7 @@ const ConsoleVaultClient: FC = () => {
         setLoading(false);
     };
     init();
-  }, []);
+  }, [initialConsoles, initialManufacturers]);
 
   // 2. Client-Side Filter Logic
   useEffect(() => {

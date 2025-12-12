@@ -49,10 +49,12 @@ export async function generateStaticParams() {
 }
 
 export default async function ConsoleSpecsPage({ params }: Props) {
+  const supabase = await createClient();
+
   // Parallel Fetching using API helpers
   const [consoleData, games] = await Promise.all([
-    fetchConsoleBySlug(params.slug),
-    fetchGamesByConsole(params.slug)
+    fetchConsoleBySlug(params.slug, supabase),
+    fetchGamesByConsole(params.slug, supabase)
   ]);
 
   if (!consoleData) {

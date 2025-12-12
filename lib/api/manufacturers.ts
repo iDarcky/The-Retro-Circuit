@@ -1,8 +1,10 @@
 
-import { supabase } from "../supabase/singleton";
+import { supabase as supabaseSingleton } from "../supabase/singleton";
 import { Manufacturer } from "../types";
+import { SupabaseClient } from "@supabase/supabase-js";
 
-export const fetchManufacturers = async (): Promise<Manufacturer[]> => {
+export const fetchManufacturers = async (client?: SupabaseClient): Promise<Manufacturer[]> => {
+    const supabase = client || supabaseSingleton;
     try {
         const { data, error } = await supabase.from('manufacturer').select('*').order('name');
         if (error) throw error;
@@ -15,7 +17,7 @@ export const fetchManufacturers = async (): Promise<Manufacturer[]> => {
 
 export const getManufacturerBySlug = async (slug: string): Promise<Manufacturer | null> => {
     try {
-        const { data, error } = await supabase.from('manufacturer').select('*').eq('slug', slug).single();
+        const { data, error } = await supabaseSingleton.from('manufacturer').select('*').eq('slug', slug).single();
         if (error) throw error;
         return data as Manufacturer;
     } catch {
@@ -25,7 +27,7 @@ export const getManufacturerBySlug = async (slug: string): Promise<Manufacturer 
 
 export const getManufacturerById = async (id: string): Promise<Manufacturer | null> => {
     try {
-        const { data, error } = await supabase.from('manufacturer').select('*').eq('id', id).single();
+        const { data, error } = await supabaseSingleton.from('manufacturer').select('*').eq('id', id).single();
         if (error) throw error;
         return data as Manufacturer;
     } catch {
@@ -38,7 +40,7 @@ export const addManufacturer = async (manu: Omit<Manufacturer, 'id'>): Promise<{
         console.log('[API] Inserting Manufacturer:', manu);
         
         // We use select() to get the inserted data back, useful for debugging even if not used
-        const { data, error } = await supabase.from('manufacturer').insert([manu]).select();
+        const { data, error } = await supabaseSingleton.from('manufacturer').insert([manu]).select();
         
         console.log('Supabase raw response:', { data, error });
 
@@ -55,7 +57,7 @@ export const addManufacturer = async (manu: Omit<Manufacturer, 'id'>): Promise<{
 
 export const updateManufacturer = async (id: string, manu: Partial<Manufacturer>): Promise<{ success: boolean, message?: string }> => {
     try {
-        const { error } = await supabase.from('manufacturer').update(manu).eq('id', id);
+        const { error } = await supabaseSingleton.from('manufacturer').update(manu).eq('id', id);
         if (error) {
             console.error('[API] Update Error:', error);
             return { success: false, message: error.message };

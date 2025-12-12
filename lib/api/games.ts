@@ -1,12 +1,14 @@
-import { supabase } from "../supabase/singleton";
+import { supabase as supabaseSingleton } from "../supabase/singleton";
 import { GameOfTheWeekData } from "../types";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 export const fetchGameList = async (): Promise<{title: string, slug: string, id: string}[]> => {
-    const { data } = await supabase.from('games').select('title, slug, id').order('title');
+    const { data } = await supabaseSingleton.from('games').select('title, slug, id').order('title');
     return data || [];
 };
 
-export const fetchGamesByConsole = async (consoleSlug: string): Promise<GameOfTheWeekData[]> => {
+export const fetchGamesByConsole = async (consoleSlug: string, client?: SupabaseClient): Promise<GameOfTheWeekData[]> => {
+    const supabase = client || supabaseSingleton;
     try {
         const { data, error } = await supabase
             .from('games')
@@ -36,7 +38,7 @@ export const fetchGamesByConsole = async (consoleSlug: string): Promise<GameOfTh
 
 export const addGame = async (game: GameOfTheWeekData): Promise<boolean> => {
     try {
-        const { error } = await supabase.from('games').insert([{
+        const { error } = await supabaseSingleton.from('games').insert([{
             title: game.title,
             slug: game.slug,
             developer: game.developer,
@@ -56,7 +58,7 @@ export const addGame = async (game: GameOfTheWeekData): Promise<boolean> => {
 
 export const fetchGameOfTheWeek = async (): Promise<GameOfTheWeekData | null> => {
     try {
-        const { data, error } = await supabase.from('games').select('*').limit(1).maybeSingle();
+        const { data, error } = await supabaseSingleton.from('games').select('*').limit(1).maybeSingle();
         if (error || !data) return null;
         return {
             id: data.id,
@@ -80,7 +82,7 @@ export const fetchGamesPaginated = async (page: number = 1, limit: number = 12):
     try {
         const from = (page - 1) * limit;
         const to = from + limit - 1;
-        const { data, count, error } = await supabase.from('games').select('*', { count: 'exact' }).order('year', { ascending: false }).range(from, to);
+        const { data, count, error } = await supabaseSingleton.from('games').select('*', { count: 'exact' }).order('year', { ascending: false }).range(from, to);
         if (error) throw error;
         const mapped = (data || []).map((g: any) => ({
             id: g.id,
