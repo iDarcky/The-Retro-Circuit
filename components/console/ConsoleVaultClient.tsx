@@ -3,10 +3,22 @@
 
 import { useEffect, useState, type ChangeEvent, type FC } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { fetchManufacturers, fetchAllConsoles } from '../../lib/api';
 import { ConsoleDetails, ConsoleFilterState, Manufacturer } from '../../lib/types';
 import RetroLoader from '../ui/RetroLoader';
 import Button from '../ui/Button';
+
+const CheckboxFilter = ({ label, checked, onChange }: { label: string, checked: boolean, onChange: () => void }) => (
+  <div onClick={onChange} className="flex items-center gap-3 cursor-pointer group mb-2 last:mb-0">
+      <div className={`w-4 h-4 border flex items-center justify-center transition-colors ${checked ? 'bg-retro-neon border-retro-neon' : 'border-gray-600 bg-black group-hover:border-retro-blue'}`}>
+          {checked && <svg className="w-3 h-3 text-black font-bold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+      </div>
+      <span className={`text-[10px] font-mono uppercase ${checked ? 'text-white' : 'text-gray-500 group-hover:text-retro-blue'}`}>
+          {label}
+      </span>
+  </div>
+);
 
 const ConsoleVaultClient: FC = () => {
   const [allConsoles, setAllConsoles] = useState<ConsoleDetails[]>([]);
@@ -126,19 +138,6 @@ const ConsoleVaultClient: FC = () => {
   // Pagination Logic
   const totalPages = Math.ceil(filteredConsoles.length / ITEMS_PER_PAGE);
   const paginatedConsoles = filteredConsoles.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
-
-  // --- SUB-COMPONENTS ---
-
-  const CheckboxFilter = ({ label, checked, onChange }: { label: string, checked: boolean, onChange: () => void }) => (
-      <div onClick={onChange} className="flex items-center gap-3 cursor-pointer group mb-2 last:mb-0">
-          <div className={`w-4 h-4 border flex items-center justify-center transition-colors ${checked ? 'bg-retro-neon border-retro-neon' : 'border-gray-600 bg-black group-hover:border-retro-blue'}`}>
-              {checked && <svg className="w-3 h-3 text-black font-bold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
-          </div>
-          <span className={`text-[10px] font-mono uppercase ${checked ? 'text-white' : 'text-gray-500 group-hover:text-retro-blue'}`}>
-              {label}
-          </span>
-      </div>
-  );
 
   return (
     <div className="w-full max-w-7xl mx-auto p-4">
@@ -266,7 +265,15 @@ const ConsoleVaultClient: FC = () => {
                                 >
                                     <div className="aspect-video bg-gray-900/50 relative flex items-center justify-center p-4">
                                          {console.image_url ? (
-                                             <img src={console.image_url} alt={console.name} className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform" />
+                                             <div className="relative w-full h-full">
+                                                <Image
+                                                    src={console.image_url}
+                                                    alt={console.name}
+                                                    fill
+                                                    className="object-contain group-hover:scale-105 transition-transform"
+                                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                                />
+                                             </div>
                                          ) : (
                                              <span className="font-pixel text-gray-700 text-2xl">?</span>
                                          )}
