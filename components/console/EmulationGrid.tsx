@@ -28,6 +28,14 @@ const EmulationGrid: FC<EmulationGridProps> = ({ profile: rawProfile }) => {
     };
 
     const allSystems = [
+        { name: 'NES', state: profile.nes_state },
+        { name: 'SNES', state: profile.snes_state },
+        { name: 'Genesis', state: profile.genesis_state },
+        { name: 'GB', state: profile.gb_state },
+        { name: 'GBC', state: profile.gbc_state },
+        { name: 'GBA', state: profile.gba_state },
+        { name: 'N64', state: profile.n64_state },
+        { name: 'NDS', state: profile.nds_state },
         { name: 'PS1', state: profile.ps1_state },
         { name: 'PS2', state: profile.ps2_state },
         { name: 'PSP', state: profile.psp_state },

@@ -54,6 +54,10 @@ export const ConsoleSchema = z.object({
     description: safeString,
     image_url: safeString,
     form_factor: safeString,
+    device_category: safeString,
+    has_cartridge_slot: safeBoolean,
+    supported_cartridge_types: safeString,
+    chassis_features: safeString,
 });
 
 export const ConsoleVariantSchema = z.object({
@@ -106,10 +110,14 @@ export const ConsoleVariantSchema = z.object({
   ppi: safeNumber,
   touchscreen: safeBoolean,
 
-  second_screen_size: safeNumber,
+  second_screen_size_inch: safeNumber,
   second_screen_resolution_x: safeNumber,
   second_screen_resolution_y: safeNumber,
   second_screen_touch: safeBoolean,
+  second_screen_ppi: safeNumber,
+  second_screen_aspect_ratio: safeString,
+  second_screen_refresh_rate_hz: safeNumber,
+  second_screen_brightness_nits: safeNumber,
 
   // Power & Chassis
   battery_capacity_mah: safeNumber,
@@ -155,6 +163,7 @@ export const ConsoleVariantSchema = z.object({
   trigger_mechanism: safeString,
   action_button_mechanism: safeString,
   has_back_buttons: safeBoolean,
+  has_keyboard: safeBoolean,
 
   // Body
   width_mm: safeNumber,
