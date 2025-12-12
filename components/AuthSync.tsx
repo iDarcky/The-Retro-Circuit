@@ -2,11 +2,10 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '../lib/supabase/client';
+import { supabase } from '../lib/supabase/singleton';
 
 export default function AuthSync() {
   const router = useRouter();
-  const supabase = createClient();
 
   useEffect(() => {
     // Listen for auth changes (SignIn, SignOut, etc.)
@@ -22,7 +21,7 @@ export default function AuthSync() {
     return () => {
       subscription.unsubscribe();
     };
-  }, [supabase, router]);
+  }, [router]);
 
   return null;
 }
