@@ -34,8 +34,9 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
     if (type === 'textarea') {
         return (
             <div className="col-span-1 md:col-span-2">
-                <label className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
+                <label htmlFor={field.key} className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
                 <textarea 
+                    id={field.key}
                     className={`w-full bg-black border p-3 h-24 outline-none font-mono text-sm ${borderColor} transition-colors`}
                     value={val}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => onChange(field.key, e.target.value)}
@@ -52,11 +53,22 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
         // Strictly check for true or "true" string to handle potential DB type mismatch
         const isChecked = String(val) === 'true';
         
+        const handleKeyDown = (e: React.KeyboardEvent) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onChange(field.key, !isChecked);
+            }
+        };
+
         return (
             <div>
                 <div 
-                    className={`flex items-center justify-between bg-black border p-3 cursor-pointer group transition-all h-[46px] mt-[19px] ${borderColor}`}
+                    role="checkbox"
+                    aria-checked={isChecked}
+                    tabIndex={0}
+                    className={`flex items-center justify-between bg-black border p-3 cursor-pointer group transition-all h-[46px] mt-[19px] ${borderColor} focus:outline-none focus:ring-2 focus:ring-retro-neon`}
                     onClick={() => onChange(field.key, !isChecked)}
+                    onKeyDown={handleKeyDown}
                 >
                     <span className={`text-[10px] uppercase font-bold tracking-wider group-hover:text-white ${labelColor}`}>
                         {field.label}
@@ -74,8 +86,9 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
     if (type === 'select') {
         return (
             <div>
-                <label className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
+                <label htmlFor={field.key} className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
                 <select
+                    id={field.key}
                     className={`w-full bg-black border p-3 outline-none font-mono text-sm ${borderColor} transition-colors text-white`}
                     value={val}
                     onChange={(e: ChangeEvent<HTMLSelectElement>) => onChange(field.key, e.target.value)}
@@ -93,8 +106,9 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
 
     return (
         <div>
-            <label className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
+            <label htmlFor={field.key} className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
             <input 
+                id={field.key}
                 type={type}
                 className={`w-full border p-3 outline-none font-mono text-sm ${borderColor} ${computedBg} transition-colors`}
                 value={val}
