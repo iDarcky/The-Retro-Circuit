@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, type ChangeEvent, type DragEvent, type FC } from 'react';
+import { useState, useRef, type ChangeEvent, type DragEvent, type FC, type KeyboardEvent } from 'react';
 import { supabase } from '../../lib/supabase/singleton';
 
 interface ImageUploadProps {
@@ -72,6 +72,14 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
     }
   };
 
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (disabled) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      inputRef.current?.click();
+    }
+  };
+
   const handleRemove = () => {
     onChange('');
     if (inputRef.current) inputRef.current.value = '';
@@ -104,11 +112,15 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
       ) : (
         <div
             onClick={() => inputRef.current?.click()}
+            onKeyDown={handleKeyDown}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
+            role="button"
+            tabIndex={disabled ? -1 : 0}
+            aria-label="Upload image"
             className={`
-                relative h-32 border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all
+                relative h-32 border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all outline-none focus-visible:ring-2 focus-visible:ring-retro-neon focus-visible:ring-offset-2 focus-visible:ring-offset-black
                 ${isDragging 
                     ? 'border-retro-neon bg-retro-neon/10 scale-[1.02]' 
                     : 'border-gray-700 bg-black/20 hover:border-retro-blue hover:bg-black/40'
