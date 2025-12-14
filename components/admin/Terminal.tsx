@@ -112,16 +112,19 @@ export function Terminal() {
                 const arg = command.split(' ')[1];
                 if (arg === 'on') {
                      localStorage.setItem(MONITOR_KEY, 'true');
-                     // Trigger a reload? Or just trust the observer to pick it up?
-                     // The observer patches on mount. If we are already mounted, it might not pick up unless we force it.
-                     // But we added a 'storage' listener in DebugObserver!
-                     // However, storage events only fire on OTHER tabs.
-                     // So we might need to reload or force the patch.
-                     // For robustness:
-                     location.reload();
+                     // Dispatch event for same-window DebugObserver to pick up
+                     window.dispatchEvent(new Event('storage'));
+                     // Manually patch if needed? No, let DebugObserver handle it via event or we can notify it directly if we exported a helper.
+                     // But simpler: just force the 'storage' event which our Observer listens to (wait, it listens to window 'storage' which only fires cross-tab).
+                     // We need a CUSTOM event.
+                     window.dispatchEvent(new CustomEvent('RETRO_MONITOR_UPDATE', { detail: { active: true } }));
+
+                     setHistory(prev => [...prev, { type: 'output', content: 'CLIENT MONITOR: ENGAGED.' }]);
                 } else if (arg === 'off') {
                      localStorage.setItem(MONITOR_KEY, 'false');
-                     location.reload(); // Reload to un-patch cleanly
+                     window.dispatchEvent(new CustomEvent('RETRO_MONITOR_UPDATE', { detail: { active: false } }));
+
+                     setHistory(prev => [...prev, { type: 'output', content: 'CLIENT MONITOR: DISENGAGED.' }]);
                 } else {
                      setHistory(prev => [...prev, { type: 'output', content: 'USAGE: monitor <on|off>', isError: true }]);
                 }

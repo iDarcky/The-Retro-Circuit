@@ -70,19 +70,26 @@ export default function DebugObserver() {
         // Listen for storage changes (to turn on/off dynamically)
         const storageHandler = (e: StorageEvent) => {
             if (e.key === MONITOR_KEY) {
-                if (e.newValue === 'true') location.reload(); // Force reload to apply patches cleanly? Or just check?
-                // For now, simpler: we check on mount. The Terminal forces a reload or we accept that turning ON requires a refresh for full coverage?
-                // Actually, strictly patching dynamically is better.
                 if (e.newValue === 'true') checkMonitor();
             }
         };
         window.addEventListener('storage', storageHandler);
+
+        // Listen for custom event from same window
+        const customHandler = (e: Event) => {
+             const detail = (e as CustomEvent).detail;
+             if (detail?.active) {
+                 checkMonitor();
+             }
+        };
+        window.addEventListener('RETRO_MONITOR_UPDATE', customHandler);
 
         // @ts-ignore
         window.__DEBUG_OBSERVER_ACTIVE = true;
 
         return () => {
              window.removeEventListener('storage', storageHandler);
+             window.removeEventListener('RETRO_MONITOR_UPDATE', customHandler);
         };
     }, []);
 

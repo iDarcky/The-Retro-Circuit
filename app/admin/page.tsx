@@ -36,7 +36,7 @@ function AdminPortalContent() {
     const [editingManufacturer, setEditingManufacturer] = useState<Manufacturer | null>(null);
     const [editingConsoleFolder, setEditingConsoleFolder] = useState<ConsoleDetails | null>(null);
 
-    // Initial Auth & Data Load
+    // 1. Initial Auth & Data Load (Run ONCE)
     useEffect(() => {
         const check = async () => {
             try {
@@ -51,55 +51,6 @@ function AdminPortalContent() {
                     ]);
                     setManufacturers(manus);
                     setConsoleList(consoles as any);
-                    
-                    // --- CHECK FOR EDIT MODE IN URL ---
-                    const mode = searchParams?.get('mode');
-                    const type = searchParams?.get('type');
-                    const id = searchParams?.get('id');
-
-                    // 1. Edit Variant (Supports old param 'variant_id' or new generic 'type=variant&id=...')
-                    const variantId = searchParams?.get('variant_id') || (type === 'variant' ? id : null);
-                    
-                    if (mode === 'edit' && variantId) {
-                        const variantData = await getVariantById(variantId);
-                        if (variantData) {
-                            setEditingVariant(variantData);
-                            setNewlyCreatedConsoleId(variantData.console_id); 
-                            setActiveTab('VARIANTS');
-                            setMessage(`EDIT MODE ACTIVE: ${variantData.variant_name}`);
-                        } else {
-                            setErrorMsg("FAILED TO FETCH VARIANT FOR EDITING.");
-                        }
-                    } 
-                    // 2. Edit Fabricator
-                    else if (mode === 'edit' && type === 'fabricator' && id) {
-                         const manu = await getManufacturerById(id);
-                         if (manu) {
-                             setEditingManufacturer(manu);
-                             setActiveTab('FABRICATOR');
-                             setMessage(`EDITING FABRICATOR: ${manu.name}`);
-                         } else {
-                             setErrorMsg("FAILED TO FETCH FABRICATOR.");
-                         }
-                    }
-                    // 3. Edit Console Folder
-                    else if (mode === 'edit' && type === 'console' && id) {
-                         const cons = await getConsoleById(id);
-                         if (cons) {
-                             setEditingConsoleFolder(cons);
-                             setActiveTab('CONSOLE');
-                             setMessage(`EDITING CONSOLE IDENTITY: ${cons.name}`);
-                         } else {
-                             setErrorMsg("FAILED TO FETCH CONSOLE FOLDER.");
-                         }
-                    }
-                    // 4. Tab Navigation
-                    else {
-                        const tabParam = searchParams?.get('tab');
-                        if (tabParam && ['NEWS', 'GAME', 'CONSOLE', 'VARIANTS', 'FABRICATOR'].includes(tabParam)) {
-                            setActiveTab(tabParam as AdminTab);
-                        }
-                    }
                 }
             } catch (err) {
                 console.error("Admin Check Failed", err);
@@ -108,7 +59,63 @@ function AdminPortalContent() {
             }
         };
         check();
-    }, [searchParams]);
+    }, []); // Dependency array empty to run once
+
+    // 2. Handle URL/Search Params changes (Run when searchParams changes)
+    useEffect(() => {
+        if (!isAdmin || loading) return; // Wait for auth
+
+        const syncUrlState = async () => {
+             const mode = searchParams?.get('mode');
+             const type = searchParams?.get('type');
+             const id = searchParams?.get('id');
+
+             // 1. Edit Variant
+             const variantId = searchParams?.get('variant_id') || (type === 'variant' ? id : null);
+
+             if (mode === 'edit' && variantId) {
+                 const variantData = await getVariantById(variantId);
+                 if (variantData) {
+                     setEditingVariant(variantData);
+                     setNewlyCreatedConsoleId(variantData.console_id);
+                     setActiveTab('VARIANTS');
+                     setMessage(`EDIT MODE ACTIVE: ${variantData.variant_name}`);
+                 } else {
+                     setErrorMsg("FAILED TO FETCH VARIANT FOR EDITING.");
+                 }
+             }
+             // 2. Edit Fabricator
+             else if (mode === 'edit' && type === 'fabricator' && id) {
+                  const manu = await getManufacturerById(id);
+                  if (manu) {
+                      setEditingManufacturer(manu);
+                      setActiveTab('FABRICATOR');
+                      setMessage(`EDITING FABRICATOR: ${manu.name}`);
+                  } else {
+                      setErrorMsg("FAILED TO FETCH FABRICATOR.");
+                  }
+             }
+             // 3. Edit Console Folder
+             else if (mode === 'edit' && type === 'console' && id) {
+                  const cons = await getConsoleById(id);
+                  if (cons) {
+                      setEditingConsoleFolder(cons);
+                      setActiveTab('CONSOLE');
+                      setMessage(`EDITING CONSOLE IDENTITY: ${cons.name}`);
+                  } else {
+                      setErrorMsg("FAILED TO FETCH CONSOLE FOLDER.");
+                  }
+             }
+             // 4. Tab Navigation
+             else {
+                 const tabParam = searchParams?.get('tab');
+                 if (tabParam && ['NEWS', 'GAME', 'CONSOLE', 'VARIANTS', 'FABRICATOR', 'TERMINAL'].includes(tabParam)) {
+                     setActiveTab(tabParam as AdminTab);
+                 }
+             }
+        };
+        syncUrlState();
+    }, [searchParams, isAdmin, loading]);
 
     const handleConsoleCreated = (id: string, name: string) => {
         if (editingConsoleFolder) {
