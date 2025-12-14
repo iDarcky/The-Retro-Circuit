@@ -161,7 +161,7 @@ function AdminPortalContent() {
                         ROOT TERMINAL
                     </h1>
                     <p className="font-mono text-xs text-gray-500 tracking-widest">
-                        // SECURE DATABASE CONNECTION ESTABLISHED
+                        {'//'} SECURE DATABASE CONNECTION ESTABLISHED
                     </p>
                 </div>
                 <div className="bg-black border border-cyan-400 px-3 py-1 shadow-[0_0_10px_rgba(34,211,238,0.2)]">

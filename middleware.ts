@@ -7,11 +7,15 @@ export async function middleware(request: NextRequest) {
   console.log(`[Middleware] ------------------------------------------------`);
   console.log(`[Middleware] Processing: ${request.method} ${request.nextUrl.pathname}`);
 
+  // 1. Initialize Response
   let response = NextResponse.next({
     request: {
       headers: request.headers,
     },
   });
+
+  // Track all cookie changes to ensure we don't lose them when recreating the response
+  const changedCookies: { name: string; value: string; options: CookieOptions }[] = [];
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,42 +26,59 @@ export async function middleware(request: NextRequest) {
           return request.cookies.get(name)?.value;
         },
         set(name: string, value: string, options: CookieOptions) {
-          // If the supabase client updates the session, we must update the request/response cookies
-          // DIAGNOSTIC LOG: Cookie Set
-          console.log(`[Middleware] Setting cookie: ${name}`);
+          // 1. Update the request cookies (mutable) so Supabase client sees the new value immediately
           request.cookies.set({
             name,
             value,
             ...options,
           });
+
+          // 2. Track this change
+          changedCookies.push({ name, value, options });
+
+          // 3. Re-create the response object
+          // This passes the *updated* request cookies to the actual route handler/server component
           response = NextResponse.next({
             request: {
               headers: request.headers,
             },
           });
-          response.cookies.set({
-            name,
-            value,
-            ...options,
+
+          // 4. Apply ALL accumulated cookie changes to the new response
+          // This ensures that if we set multiple cookies (access + refresh), BOTH Set-Cookie headers exist
+          changedCookies.forEach((cookie) => {
+            response.cookies.set({
+              name: cookie.name,
+              value: cookie.value,
+              ...cookie.options,
+            });
           });
         },
         remove(name: string, options: CookieOptions) {
-          // DIAGNOSTIC LOG: Cookie Remove
-          console.log(`[Middleware] Removing cookie: ${name}`);
+          // 1. Update request cookies
           request.cookies.set({
             name,
             value: '',
             ...options,
           });
+
+          // 2. Track change (value is empty string for removal)
+          changedCookies.push({ name, value: '', options });
+
+          // 3. Re-create response
           response = NextResponse.next({
             request: {
               headers: request.headers,
             },
           });
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
+
+          // 4. Apply all changes
+          changedCookies.forEach((cookie) => {
+            response.cookies.set({
+              name: cookie.name,
+              value: cookie.value,
+              ...cookie.options,
+            });
           });
         },
       },
@@ -105,6 +126,17 @@ export async function middleware(request: NextRequest) {
     
     console.log('[Middleware] Admin Access Granted.');
   }
+
+  // 4. Inject Security Headers
+  // Helper to ensure headers exist before setting
+  const setHeader = (key: string, value: string) => {
+    response.headers.set(key, value);
+  };
+
+  setHeader('X-Frame-Options', 'DENY');
+  setHeader('X-Content-Type-Options', 'nosniff');
+  setHeader('Referrer-Policy', 'origin-when-cross-origin');
+  setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
 
   return response;
 }
