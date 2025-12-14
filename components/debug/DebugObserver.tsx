@@ -2,96 +2,69 @@
 
 import { useEffect } from 'react';
 
+const LOG_KEY = 'RETRO_DEBUG_LOGS';
 const MONITOR_KEY = 'RETRO_DEBUG_MONITOR';
-const LOGS_KEY = 'RETRO_DEBUG_LOGS';
-const MAX_LOGS = 100;
 
 export default function DebugObserver() {
     useEffect(() => {
-        // Prevent double patching
-        // @ts-ignore
-        if (typeof window === 'undefined' || window.__DEBUG_OBSERVER_ACTIVE) return;
+        // 1. Initialize Monitor State
+        const isMonitoring = localStorage.getItem(MONITOR_KEY) === 'true';
 
-        const checkMonitor = () => {
-            const isActive = localStorage.getItem(MONITOR_KEY) === 'true';
-
-            // @ts-ignore
-            if (isActive && !window.__DEBUG_OBSERVER_PATCHED) {
-                patchConsole();
-            }
-        };
-
-        const patchConsole = () => {
-            // @ts-ignore
-            window.__DEBUG_OBSERVER_PATCHED = true;
-
-            // 1. Patch console.error
+        // 2. Monkey Patch Console.error if monitoring
+        if (isMonitoring) {
             const originalError = console.error;
             console.error = (...args) => {
-                originalError(...args);
-                persistLog({
-                    type: 'output',
-                    content: `[LOG] ${args.map(a => String(a)).join(' ')}`,
-                    isError: true,
-                    timestamp: Date.now()
-                });
+                try {
+                    const logs = JSON.parse(localStorage.getItem(LOG_KEY) || '[]');
+                    const newLog = {
+                        type: 'error',
+                        content: args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' '),
+                        timestamp: new Date().toISOString()
+                    };
+                    localStorage.setItem(LOG_KEY, JSON.stringify([...logs, newLog].slice(-50))); // Keep last 50
+                } catch (e) {
+                    // Ignore persistence errors
+                }
+                originalError.apply(console, args);
             };
+        }
 
-            // 2. Patch window.onerror
-            const errorHandler = (event: ErrorEvent) => {
-                persistLog({
-                    type: 'output',
-                    content: `[CRASH] ${event.message} @ ${event.filename}:${event.lineno}`,
-                    isError: true,
-                    timestamp: Date.now()
-                });
-            };
-            window.addEventListener('error', errorHandler);
-
-            console.log('[DebugObserver] Console patched for monitoring.');
-        };
-
-        const persistLog = (item: any) => {
-            try {
-                const raw = localStorage.getItem(LOGS_KEY);
-                const logs = raw ? JSON.parse(raw) : [];
-
-                // Append and slice
-                const newLogs = [...logs, item].slice(-MAX_LOGS);
-                localStorage.setItem(LOGS_KEY, JSON.stringify(newLogs));
-            } catch (e) {
-                // Fail silently to avoid loops
+        // 3. Listen for Toggle Events (from Terminal)
+        const handleMonitorUpdate = (e: CustomEvent) => {
+            const active = e.detail?.active;
+            if (active) {
+                localStorage.setItem(MONITOR_KEY, 'true');
+                // Reload to apply monkey patch?
+                // Better: Just apply it dynamically, but for now simple reload or next nav works.
+                // But the user wants seamless.
+                console.log('DEBUG MONITOR ENABLED');
+            } else {
+                localStorage.setItem(MONITOR_KEY, 'false');
+                console.log('DEBUG MONITOR DISABLED');
             }
         };
 
-        // Initial check
-        checkMonitor();
+        window.addEventListener('RETRO_MONITOR_UPDATE', handleMonitorUpdate as EventListener);
 
-        // Listen for storage changes (to turn on/off dynamically)
-        const storageHandler = (e: StorageEvent) => {
-            if (e.key === MONITOR_KEY) {
-                if (e.newValue === 'true') checkMonitor();
+        // 4. Global Error Handler
+        const handleGlobalError = (event: ErrorEvent) => {
+            if (localStorage.getItem(MONITOR_KEY) === 'true') {
+                 const logs = JSON.parse(localStorage.getItem(LOG_KEY) || '[]');
+                 logs.push({
+                     type: 'error',
+                     content: `UNCAUGHT: ${event.message} at ${event.filename}:${event.lineno}`,
+                     timestamp: new Date().toISOString()
+                 });
+                 localStorage.setItem(LOG_KEY, JSON.stringify(logs.slice(-50)));
             }
         };
-        window.addEventListener('storage', storageHandler);
-
-        // Listen for custom event from same window
-        const customHandler = (e: Event) => {
-             const detail = (e as CustomEvent).detail;
-             if (detail?.active) {
-                 checkMonitor();
-             }
-        };
-        window.addEventListener('RETRO_MONITOR_UPDATE', customHandler);
-
-        // @ts-ignore
-        window.__DEBUG_OBSERVER_ACTIVE = true;
+        window.addEventListener('error', handleGlobalError);
 
         return () => {
-             window.removeEventListener('storage', storageHandler);
-             window.removeEventListener('RETRO_MONITOR_UPDATE', customHandler);
+            window.removeEventListener('RETRO_MONITOR_UPDATE', handleMonitorUpdate as EventListener);
+            window.removeEventListener('error', handleGlobalError);
         };
     }, []);
 
-    return null; // Invisible component
+    return null; // Headless component
 }

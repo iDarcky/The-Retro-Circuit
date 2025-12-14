@@ -5,7 +5,6 @@ import { Analytics } from "@vercel/analytics/react";
 import "../styles/globals.css";
 import ClientShell from "../components/layout/ClientShell";
 import AuthSync from "../components/AuthSync";
-import DebugObserver from "../components/debug/DebugObserver";
 import Footer from "../components/layout/Footer";
 import { siteConfig } from "../config/site";
 
@@ -74,7 +73,6 @@ export default function RootLayout({
         
         {/* Auth Synchronization */}
         <AuthSync />
-        <DebugObserver />
 
         {/* Main Application Shell */}
         <ClientShell>

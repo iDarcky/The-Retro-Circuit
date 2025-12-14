@@ -11,10 +11,9 @@ import { ManufacturerForm } from '../../components/admin/ManufacturerForm';
 import { ConsoleForm } from '../../components/admin/ConsoleForm';
 import { VariantForm } from '../../components/admin/VariantForm';
 import { GameForm } from '../../components/admin/GameForm';
-import { Terminal } from '../../components/admin/Terminal';
 import Button from '../../components/ui/Button';
 
-type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE' | 'VARIANTS' | 'FABRICATOR' | 'TERMINAL';
+type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE' | 'VARIANTS' | 'FABRICATOR';
 
 function AdminPortalContent() {
     const searchParams = useSearchParams();
@@ -36,7 +35,7 @@ function AdminPortalContent() {
     const [editingManufacturer, setEditingManufacturer] = useState<Manufacturer | null>(null);
     const [editingConsoleFolder, setEditingConsoleFolder] = useState<ConsoleDetails | null>(null);
 
-    // 1. Initial Auth & Data Load (Run ONCE)
+    // Initial Auth & Data Load
     useEffect(() => {
         const check = async () => {
             try {
@@ -51,6 +50,55 @@ function AdminPortalContent() {
                     ]);
                     setManufacturers(manus);
                     setConsoleList(consoles as any);
+
+                    // --- CHECK FOR EDIT MODE IN URL ---
+                    const mode = searchParams?.get('mode');
+                    const type = searchParams?.get('type');
+                    const id = searchParams?.get('id');
+
+                    // 1. Edit Variant (Supports old param 'variant_id' or new generic 'type=variant&id=...')
+                    const variantId = searchParams?.get('variant_id') || (type === 'variant' ? id : null);
+
+                    if (mode === 'edit' && variantId) {
+                        const variantData = await getVariantById(variantId);
+                        if (variantData) {
+                            setEditingVariant(variantData);
+                            setNewlyCreatedConsoleId(variantData.console_id);
+                            setActiveTab('VARIANTS');
+                            setMessage(`EDIT MODE ACTIVE: ${variantData.variant_name}`);
+                        } else {
+                            setErrorMsg("FAILED TO FETCH VARIANT FOR EDITING.");
+                        }
+                    }
+                    // 2. Edit Fabricator
+                    else if (mode === 'edit' && type === 'fabricator' && id) {
+                         const manu = await getManufacturerById(id);
+                         if (manu) {
+                             setEditingManufacturer(manu);
+                             setActiveTab('FABRICATOR');
+                             setMessage(`EDITING FABRICATOR: ${manu.name}`);
+                         } else {
+                             setErrorMsg("FAILED TO FETCH FABRICATOR.");
+                         }
+                    }
+                    // 3. Edit Console Folder
+                    else if (mode === 'edit' && type === 'console' && id) {
+                         const cons = await getConsoleById(id);
+                         if (cons) {
+                             setEditingConsoleFolder(cons);
+                             setActiveTab('CONSOLE');
+                             setMessage(`EDITING CONSOLE IDENTITY: ${cons.name}`);
+                         } else {
+                             setErrorMsg("FAILED TO FETCH CONSOLE FOLDER.");
+                         }
+                    }
+                    // 4. Tab Navigation
+                    else {
+                        const tabParam = searchParams?.get('tab');
+                        if (tabParam && ['NEWS', 'GAME', 'CONSOLE', 'VARIANTS', 'FABRICATOR'].includes(tabParam)) {
+                            setActiveTab(tabParam as AdminTab);
+                        }
+                    }
                 }
             } catch (err) {
                 console.error("Admin Check Failed", err);
@@ -59,63 +107,7 @@ function AdminPortalContent() {
             }
         };
         check();
-    }, []); // Dependency array empty to run once
-
-    // 2. Handle URL/Search Params changes (Run when searchParams changes)
-    useEffect(() => {
-        if (!isAdmin || loading) return; // Wait for auth
-
-        const syncUrlState = async () => {
-             const mode = searchParams?.get('mode');
-             const type = searchParams?.get('type');
-             const id = searchParams?.get('id');
-
-             // 1. Edit Variant
-             const variantId = searchParams?.get('variant_id') || (type === 'variant' ? id : null);
-
-             if (mode === 'edit' && variantId) {
-                 const variantData = await getVariantById(variantId);
-                 if (variantData) {
-                     setEditingVariant(variantData);
-                     setNewlyCreatedConsoleId(variantData.console_id);
-                     setActiveTab('VARIANTS');
-                     setMessage(`EDIT MODE ACTIVE: ${variantData.variant_name}`);
-                 } else {
-                     setErrorMsg("FAILED TO FETCH VARIANT FOR EDITING.");
-                 }
-             }
-             // 2. Edit Fabricator
-             else if (mode === 'edit' && type === 'fabricator' && id) {
-                  const manu = await getManufacturerById(id);
-                  if (manu) {
-                      setEditingManufacturer(manu);
-                      setActiveTab('FABRICATOR');
-                      setMessage(`EDITING FABRICATOR: ${manu.name}`);
-                  } else {
-                      setErrorMsg("FAILED TO FETCH FABRICATOR.");
-                  }
-             }
-             // 3. Edit Console Folder
-             else if (mode === 'edit' && type === 'console' && id) {
-                  const cons = await getConsoleById(id);
-                  if (cons) {
-                      setEditingConsoleFolder(cons);
-                      setActiveTab('CONSOLE');
-                      setMessage(`EDITING CONSOLE IDENTITY: ${cons.name}`);
-                  } else {
-                      setErrorMsg("FAILED TO FETCH CONSOLE FOLDER.");
-                  }
-             }
-             // 4. Tab Navigation
-             else {
-                 const tabParam = searchParams?.get('tab');
-                 if (tabParam && ['NEWS', 'GAME', 'CONSOLE', 'VARIANTS', 'FABRICATOR', 'TERMINAL'].includes(tabParam)) {
-                     setActiveTab(tabParam as AdminTab);
-                 }
-             }
-        };
-        syncUrlState();
-    }, [searchParams, isAdmin, loading]);
+    }, [searchParams]);
 
     const handleConsoleCreated = (id: string, name: string) => {
         if (editingConsoleFolder) {
@@ -149,7 +141,7 @@ function AdminPortalContent() {
     if (loading) return <div className="p-8 text-center font-mono text-retro-neon">VERIFYING BIOMETRICS...</div>;
     if (!isAdmin) return <div className="p-8 text-center font-mono text-retro-pink border-2 border-retro-pink m-8">ACCESS DENIED. ADMIN CLEARANCE REQUIRED.</div>;
 
-    const tabs: AdminTab[] = ['NEWS', 'GAME', 'CONSOLE', 'VARIANTS', 'FABRICATOR', 'TERMINAL'];
+    const tabs: AdminTab[] = ['NEWS', 'GAME', 'CONSOLE', 'VARIANTS', 'FABRICATOR'];
 
     return (
         <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn">
@@ -161,7 +153,7 @@ function AdminPortalContent() {
                         ROOT TERMINAL
                     </h1>
                     <p className="font-mono text-xs text-gray-500 tracking-widest">
-                        {'//'} SECURE DATABASE CONNECTION ESTABLISHED
+                        // SECURE DATABASE CONNECTION ESTABLISHED
                     </p>
                 </div>
                 <div className="bg-black border border-cyan-400 px-3 py-1 shadow-[0_0_10px_rgba(34,211,238,0.2)]">
@@ -293,13 +285,6 @@ function AdminPortalContent() {
                         <div>
                             <h2 className="font-pixel text-xl text-white mb-6">ARCHIVE GAME</h2>
                             <GameForm onSuccess={setMessage} onError={setErrorMsg} />
-                        </div>
-                    )}
-
-                    {activeTab === 'TERMINAL' && (
-                        <div>
-                             <h2 className="font-pixel text-xl text-white mb-6">DEBUG CONSOLE</h2>
-                            <Terminal />
                         </div>
                     )}
 
