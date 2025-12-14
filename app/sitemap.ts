@@ -14,7 +14,6 @@ export default async function sitemap() {
     '',
     '/console',
     '/arena',
-    '/login',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),

@@ -11,10 +11,9 @@ import { checkDatabaseConnection } from '../../lib/api';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase/singleton';
 import MobileBottomNav from './MobileBottomNav';
 import MobileTopBar from './MobileTopBar';
-import type { User } from '@supabase/supabase-js';
 import { 
   IconDatabase, IconVS,
-  IconHome, IconSettings, IconChip, IconSearch
+  IconHome, IconChip, IconSearch
 } from '../ui/Icons';
 
 // --- HELPER COMPONENTS ---
@@ -48,14 +47,12 @@ const SidebarItem = ({ to, icon: Icon, label, exact = false }: { to: string, ico
 const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [dbStatus, setDbStatus] = useState<'CONNECTING' | 'ONLINE' | 'OFFLINE'>('CONNECTING');
-  const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const { openSearch } = useSearch();
 
   useEffect(() => {
     // 1. Setup Auth Listener Immediately
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-        setUser(session?.user || null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, _session) => {
         // Re-verify admin status on auth change
         const newAdminStatus = await retroAuth.isAdmin();
         setIsAdmin(newAdminStatus);
@@ -66,13 +63,11 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         // Auth: Check local session first (Fast)
         const session = await retroAuth.getSession();
         if (session?.user) {
-            setUser(session.user);
             // Non-blocking admin check
             retroAuth.isAdmin().then(setIsAdmin);
         } else {
             // Server fallback (Slower but accurate)
             const currentUser = await retroAuth.getUser();
-            setUser(currentUser);
             if (currentUser) {
                 retroAuth.isAdmin().then(setIsAdmin);
             }
@@ -181,24 +176,6 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
            <SidebarItem to="/arena" icon={IconVS} label="VS MODE" />
         </nav>
 
-        <div className="p-4 border-t border-retro-grid bg-black/20">
-            {user ? (
-                <Link href="/login" className="flex items-center gap-3 p-2 hover:bg-white/5 rounded transition-colors group">
-                    <div className="w-8 h-8 rounded bg-retro-blue/20 border border-retro-blue flex items-center justify-center group-hover:bg-retro-blue group-hover:text-black transition-colors">
-                        <IconSettings className="w-4 h-4" />
-                    </div>
-                    <div>
-                        <div className="text-[10px] font-mono text-gray-400">OPERATOR</div>
-                        <div className="text-xs font-pixel text-retro-blue truncate w-32">{user.user_metadata?.username || 'USER'}</div>
-                    </div>
-                </Link>
-            ) : (
-                <Link href="/login" className="block w-full border border-retro-grid hover:border-retro-neon text-gray-400 hover:text-retro-neon p-2 text-center font-mono text-xs transition-all">
-                    [ ACCESS TERMINAL ]
-                </Link>
-            )}
-        </div>
-        
         {/* Status Footer */}
         <div className="p-2 bg-black text-[10px] font-mono text-center flex justify-end items-center px-4 text-gray-600">
             {isAdmin && (

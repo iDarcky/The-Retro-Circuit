@@ -49,17 +49,6 @@ export default async function ControlRoomPage() {
                 </div>
             </div>
 
-            {/* Ad / Promo Box */}
-            <div className="border-2 border-dashed border-gray-700 p-6 text-center opacity-75 hover:opacity-100 transition-opacity">
-                <div className="font-pixel text-xs text-gray-500 mb-2">ADVERTISEMENT</div>
-                <div className="font-pixel text-xl text-retro-neon animate-pulse mb-2">POWER UP!</div>
-                <p className="font-mono text-xs text-gray-400">Join the Retro Circuit crew today. Sign up for exclusive updates.</p>
-                <Link href="/login" className="inline-block mt-4">
-                    <button className="bg-retro-grid hover:bg-retro-neon hover:text-black text-white font-mono text-xs px-4 py-2 transition-colors">
-                        LOGIN NOW
-                    </button>
-                </Link>
-            </div>
         </div>
 
       </div>
