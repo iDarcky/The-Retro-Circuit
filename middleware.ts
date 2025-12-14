@@ -3,10 +3,6 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-  // DIAGNOSTIC LOG: Request Start
-  console.log(`[Middleware] ------------------------------------------------`);
-  console.log(`[Middleware] Processing: ${request.method} ${request.nextUrl.pathname}`);
-
   // 1. Initialize Response
   let response = NextResponse.next({
     request: {
@@ -45,7 +41,6 @@ export async function middleware(request: NextRequest) {
           });
 
           // 4. Apply ALL accumulated cookie changes to the new response
-          // This ensures that if we set multiple cookies (access + refresh), BOTH Set-Cookie headers exist
           changedCookies.forEach((cookie) => {
             response.cookies.set({
               name: cookie.name,
@@ -85,23 +80,32 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // 2. Refresh the session
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const path = request.nextUrl.pathname;
 
-  // DIAGNOSTIC LOG: User Status
-  if (user) {
-      console.log(`[Middleware] Session Valid. User: ${user.email} (${user.id})`);
-  } else {
-      console.log(`[Middleware] No Session Found. Error: ${error?.message || 'None'}`);
+  // 2. Conditional Session Refresh
+  // We ONLY refresh the session (call getUser) on routes that require Server-Side Auth.
+  // This prevents race conditions where both Middleware and Client SDK try to refresh
+  // the token simultaneously, causing a "Token Reuse" revocation.
+  const isProtectedRoute = path.startsWith('/admin');
+  const isAuthRoute = path.startsWith('/login');
+
+  let user = null;
+
+  if (isProtectedRoute || isAuthRoute) {
+    // Check/Refresh session only for these routes
+    const { data, error } = await supabase.auth.getUser();
+    user = data.user;
+
+    if (error) {
+       // Diagnostic log only if error is not "Auth session missing!"
+       // console.log(`[Middleware] Auth Check Error on ${path}: ${error.message}`);
+    }
   }
 
   // 3. Protect Admin Routes
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    console.log('[Middleware] Checking Admin Route Access...');
-    
+  if (isProtectedRoute) {
     // Check Authentication
     if (!user) {
-      console.log('[Middleware] Access Denied: No User. Redirecting to Login.');
       return NextResponse.redirect(new URL('/login', request.url));
     }
 
@@ -112,23 +116,17 @@ export async function middleware(request: NextRequest) {
       .eq('id', user.id)
       .single();
 
-    if (profileError) {
-        console.error('[Middleware] Profile Fetch Error:', profileError.message);
-    }
-
-    console.log(`[Middleware] User Role: ${profile?.role}`);
-
-    // If no profile or role is not 'admin', redirect to home
-    if (!profile || profile.role !== 'admin') {
-      console.log('[Middleware] Access Denied: Not Admin. Redirecting to Home.');
+    if (profileError || !profile || profile.role !== 'admin') {
       return NextResponse.redirect(new URL('/', request.url));
     }
-    
-    console.log('[Middleware] Admin Access Granted.');
   }
 
-  // 4. Inject Security Headers
-  // Helper to ensure headers exist before setting
+  // 4. Redirect Logged-In Users away from Login
+  if (isAuthRoute && user) {
+     return NextResponse.redirect(new URL('/admin', request.url));
+  }
+
+  // 5. Inject Security Headers
   const setHeader = (key: string, value: string) => {
     response.headers.set(key, value);
   };
