@@ -6,20 +6,18 @@ import { useSearchParams } from 'next/navigation';
 import { retroAuth } from '../../lib/auth';
 import { fetchManufacturers, fetchConsoleList, getVariantById, getManufacturerById, getConsoleById } from '../../lib/api';
 import { Manufacturer, ConsoleVariant, ConsoleDetails } from '../../lib/types';
-import { NewsForm } from '../../components/admin/NewsForm';
 import { ManufacturerForm } from '../../components/admin/ManufacturerForm';
 import { ConsoleForm } from '../../components/admin/ConsoleForm';
 import { VariantForm } from '../../components/admin/VariantForm';
-import { GameForm } from '../../components/admin/GameForm';
 import Button from '../../components/ui/Button';
 
-type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE' | 'VARIANTS' | 'FABRICATOR';
+type AdminTab = 'CONSOLE' | 'VARIANTS' | 'FABRICATOR';
 
 function AdminPortalContent() {
     const searchParams = useSearchParams();
     const [isAdmin, setIsAdmin] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<AdminTab>('NEWS');
+    const [activeTab, setActiveTab] = useState<AdminTab>('CONSOLE');
     const [message, setMessage] = useState<string | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     
@@ -95,7 +93,7 @@ function AdminPortalContent() {
                     // 4. Tab Navigation
                     else {
                         const tabParam = searchParams?.get('tab');
-                        if (tabParam && ['NEWS', 'GAME', 'CONSOLE', 'VARIANTS', 'FABRICATOR'].includes(tabParam)) {
+                        if (tabParam && ['CONSOLE', 'VARIANTS', 'FABRICATOR'].includes(tabParam)) {
                             setActiveTab(tabParam as AdminTab);
                         }
                     }
@@ -141,7 +139,7 @@ function AdminPortalContent() {
     if (loading) return <div className="p-8 text-center font-mono text-retro-neon">VERIFYING BIOMETRICS...</div>;
     if (!isAdmin) return <div className="p-8 text-center font-mono text-retro-pink border-2 border-retro-pink m-8">ACCESS DENIED. ADMIN CLEARANCE REQUIRED.</div>;
 
-    const tabs: AdminTab[] = ['NEWS', 'GAME', 'CONSOLE', 'VARIANTS', 'FABRICATOR'];
+    const tabs: AdminTab[] = ['CONSOLE', 'VARIANTS', 'FABRICATOR'];
 
     return (
         <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn">
@@ -202,13 +200,6 @@ function AdminPortalContent() {
                 {/* Background Grid */}
                 <div className="absolute inset-0 pointer-events-none opacity-10 bg-[linear-gradient(rgba(0,255,157,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,157,0.1)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
                 <div className="relative z-10">
-
-                    {activeTab === 'NEWS' && (
-                        <div>
-                            <h2 className="font-pixel text-xl text-white mb-6">TRANSMIT SIGNAL</h2>
-                            <NewsForm onSuccess={setMessage} onError={setErrorMsg} />
-                        </div>
-                    )}
 
                     {activeTab === 'CONSOLE' && (
                         <div>
@@ -278,13 +269,6 @@ function AdminPortalContent() {
                                     </Button>
                                 </div>
                             )}
-                        </div>
-                    )}
-
-                    {activeTab === 'GAME' && (
-                        <div>
-                            <h2 className="font-pixel text-xl text-white mb-6">ARCHIVE GAME</h2>
-                            <GameForm onSuccess={setMessage} onError={setErrorMsg} />
                         </div>
                     )}
 
