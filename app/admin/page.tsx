@@ -11,9 +11,10 @@ import { ManufacturerForm } from '../../components/admin/ManufacturerForm';
 import { ConsoleForm } from '../../components/admin/ConsoleForm';
 import { VariantForm } from '../../components/admin/VariantForm';
 import { GameForm } from '../../components/admin/GameForm';
+import { Terminal } from '../../components/admin/Terminal';
 import Button from '../../components/ui/Button';
 
-type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE' | 'VARIANTS' | 'FABRICATOR';
+type AdminTab = 'NEWS' | 'GAME' | 'CONSOLE' | 'VARIANTS' | 'FABRICATOR' | 'TERMINAL';
 
 function AdminPortalContent() {
     const searchParams = useSearchParams();
@@ -141,7 +142,7 @@ function AdminPortalContent() {
     if (loading) return <div className="p-8 text-center font-mono text-retro-neon">VERIFYING BIOMETRICS...</div>;
     if (!isAdmin) return <div className="p-8 text-center font-mono text-retro-pink border-2 border-retro-pink m-8">ACCESS DENIED. ADMIN CLEARANCE REQUIRED.</div>;
 
-    const tabs: AdminTab[] = ['NEWS', 'GAME', 'CONSOLE', 'VARIANTS', 'FABRICATOR'];
+    const tabs: AdminTab[] = ['NEWS', 'GAME', 'CONSOLE', 'VARIANTS', 'FABRICATOR', 'TERMINAL'];
 
     return (
         <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn">
@@ -285,6 +286,13 @@ function AdminPortalContent() {
                         <div>
                             <h2 className="font-pixel text-xl text-white mb-6">ARCHIVE GAME</h2>
                             <GameForm onSuccess={setMessage} onError={setErrorMsg} />
+                        </div>
+                    )}
+
+                    {activeTab === 'TERMINAL' && (
+                        <div>
+                             <h2 className="font-pixel text-xl text-white mb-6">DEBUG CONSOLE</h2>
+                            <Terminal />
                         </div>
                     )}
 
