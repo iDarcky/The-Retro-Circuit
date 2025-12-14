@@ -59,15 +59,17 @@ export async function executeTerminalCommand(commandStr: string): Promise<Termin
       }
 
       case 'stats': {
-        const [users, consoles, games] = await Promise.all([
+        const [users, consoles, games, manufacturers, variants] = await Promise.all([
           supabase.from('profiles').select('id', { count: 'exact', head: true }),
           supabase.from('consoles').select('id', { count: 'exact', head: true }),
           supabase.from('games').select('id', { count: 'exact', head: true }),
+          supabase.from('manufacturers').select('id', { count: 'exact', head: true }),
+          supabase.from('console_variants').select('id', { count: 'exact', head: true }),
         ]);
 
         return {
           type: 'success',
-          output: `SYSTEM METRICS:\n----------------\nUSERS:    ${users.count ?? 'ERR'}\nCONSOLES: ${consoles.count ?? 'ERR'}\nGAMES:    ${games.count ?? 'ERR'}`,
+          output: `SYSTEM METRICS:\n----------------\nUSERS:         ${users.count ?? 'ERR'}\nCONSOLES:      ${consoles.count ?? 'ERR'}\nVARIANTS:      ${variants.count ?? 'ERR'}\nGAMES:         ${games.count ?? 'ERR'}\nMANUFACTURERS: ${manufacturers.count ?? 'ERR'}`,
         };
       }
 
@@ -112,6 +114,127 @@ export async function executeTerminalCommand(commandStr: string): Promise<Termin
           type: 'success',
           output: `${header}\n${rows}`,
         };
+      }
+
+      case 'inspect': {
+        const table = args[0];
+        const id = args[1];
+
+        if (!table || !id) {
+             return { type: 'error', output: 'USAGE: inspect <table_name> <id_or_slug>' };
+        }
+
+        const validTables = ['consoles', 'manufacturers', 'games', 'console_variants', 'profiles'];
+        if (!validTables.includes(table)) {
+             return { type: 'error', output: `INVALID TABLE. ALLOWED: ${validTables.join(', ')}` };
+        }
+
+        // Try to fetch by ID first, then slug if applicable
+        let query = supabase.from(table).select('*').eq('id', id).maybeSingle();
+
+        // Execute
+        const { data, error } = await query;
+
+        if (error) throw new Error(error.message);
+        if (!data) {
+             // Retry with slug if the table has it
+             if (['consoles', 'manufacturers', 'games'].includes(table)) {
+                 const { data: slugData, error: slugError } = await supabase.from(table).select('*').eq('slug', id).maybeSingle();
+                 if (slugError) throw new Error(slugError.message);
+                 if (slugData) {
+                     return { type: 'success', output: JSON.stringify(slugData, null, 2) };
+                 }
+             }
+             return { type: 'error', output: `RECORD NOT FOUND IN ${table}` };
+        }
+
+        return {
+            type: 'success',
+            output: JSON.stringify(data, null, 2)
+        };
+      }
+
+      case 'trace': {
+          const operation = args[0];
+          if (!operation) return { type: 'error', output: 'USAGE: trace <fetch_consoles | check_auth>' };
+
+          const logs: string[] = [];
+          const startTotal = performance.now();
+
+          const logStep = (step: string, time?: number) => {
+              logs.push(`[${(performance.now() - startTotal).toFixed(2)}ms] ${step} ${time ? `(${time.toFixed(2)}ms)` : ''}`);
+          };
+
+          try {
+              if (operation === 'fetch_consoles') {
+                  logStep('START: fetch_consoles');
+
+                  const s1 = performance.now();
+                  const { data, error } = await supabase
+                    .from('consoles')
+                    .select('id, name, variants:console_variants(count)')
+                    .limit(5);
+                  logStep('DB QUERY: select consoles + variant count', performance.now() - s1);
+
+                  if (error) throw error;
+
+                  const s2 = performance.now();
+                  const processed = data.map(c => ({
+                      ...c,
+                      variant_count: c.variants ? (c.variants[0] as any).count : 0
+                  }));
+                  logStep('PROCESS: normalize data', performance.now() - s2);
+
+                  logStep(`COMPLETE: found ${processed.length} records`);
+              }
+              else if (operation === 'check_auth') {
+                  logStep('START: check_auth');
+                  const s1 = performance.now();
+                  const { data: { user } } = await supabase.auth.getUser();
+                  logStep('AUTH: getUser()', performance.now() - s1);
+
+                  if (user) {
+                      const s2 = performance.now();
+                      const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+                      logStep('DB: fetch profile role', performance.now() - s2);
+                      logStep(`RESULT: User ${user.email} is ${profile?.role}`);
+                  } else {
+                      logStep('RESULT: No Active Session');
+                  }
+              }
+              else {
+                  return { type: 'error', output: `UNKNOWN TRACE: ${operation}` };
+              }
+
+              return { type: 'success', output: logs.join('\n') };
+
+          } catch (e: any) {
+               return { type: 'error', output: `TRACE FAILED: ${e.message}` };
+          }
+      }
+
+      case 'performance': {
+           const metrics: string[] = [];
+
+           // 1. Connection Ping
+           const t1 = performance.now();
+           await supabase.from('manufacturers').select('id').limit(1);
+           metrics.push(`DB PING: ${(performance.now() - t1).toFixed(2)}ms`);
+
+           // 2. Heavy Query Simulation (Join)
+           const t2 = performance.now();
+           await supabase.from('consoles').select('*, variants:console_variants(*)').limit(10);
+           metrics.push(`HEAVY JOIN (10 rows): ${(performance.now() - t2).toFixed(2)}ms`);
+
+           // 3. Count Query
+           const t3 = performance.now();
+           await supabase.from('games').select('id', { count: 'exact', head: true });
+           metrics.push(`COUNT GAMES: ${(performance.now() - t3).toFixed(2)}ms`);
+
+           return {
+               type: 'success',
+               output: `PERFORMANCE METRICS:\n--------------------\n${metrics.join('\n')}`
+           };
       }
 
       default:

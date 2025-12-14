@@ -46,16 +46,77 @@ export function Terminal() {
                 return;
             }
 
+            if (command.toLowerCase().startsWith('monitor')) {
+                const arg = command.split(' ')[1];
+                if (arg === 'on') {
+                     // @ts-ignore
+                     if (window._consoleMonitorEnabled) {
+                         setHistory(prev => [...prev, { type: 'output', content: 'MONITOR ALREADY ACTIVE.' }]);
+                     } else {
+                         // @ts-ignore
+                         window._consoleMonitorEnabled = true;
+
+                         // Monkey-patch console.error
+                         const originalError = console.error;
+                         console.error = (...args) => {
+                             originalError(...args);
+                             setHistory(prev => [...prev, {
+                                 type: 'output',
+                                 content: `[CLIENT LOG] ${args.map(a => String(a)).join(' ')}`,
+                                 isError: true
+                             }]);
+                         };
+                         // @ts-ignore
+                         window._restoreConsole = () => { console.error = originalError; };
+
+                         // Listen for window errors
+                         const errorHandler = (event: ErrorEvent) => {
+                             setHistory(prev => [...prev, {
+                                 type: 'output',
+                                 content: `[WINDOW ERROR] ${event.message} at ${event.filename}:${event.lineno}`,
+                                 isError: true
+                             }]);
+                         };
+                         window.addEventListener('error', errorHandler);
+                         // @ts-ignore
+                         window._removeErrorHandler = () => window.removeEventListener('error', errorHandler);
+
+                         setHistory(prev => [...prev, { type: 'output', content: 'CLIENT MONITOR: ENGAGED. CAPTURING LOGS...' }]);
+                     }
+                } else if (arg === 'off') {
+                     // @ts-ignore
+                     if (window._consoleMonitorEnabled) {
+                         // @ts-ignore
+                         window._restoreConsole?.();
+                         // @ts-ignore
+                         window._removeErrorHandler?.();
+                         // @ts-ignore
+                         window._consoleMonitorEnabled = false;
+                         setHistory(prev => [...prev, { type: 'output', content: 'CLIENT MONITOR: DISENGAGED.' }]);
+                     } else {
+                         setHistory(prev => [...prev, { type: 'output', content: 'MONITOR IS NOT ACTIVE.' }]);
+                     }
+                } else {
+                     setHistory(prev => [...prev, { type: 'output', content: 'USAGE: monitor <on|off>', isError: true }]);
+                }
+                setIsProcessing(false);
+                return;
+            }
+
             if (command.toLowerCase() === 'help') {
                 const helpText =
 `AVAILABLE COMMANDS:
 -------------------
-status    - Check database connection & latency
-stats     - View system record counts
-users [n] - List recent n users (default 5)
-env       - View safe environment variables
-clear     - Clear terminal screen
-help      - Show this message`;
+status       - Check database connection & latency
+stats        - View system record counts
+users [n]    - List recent n users (default 5)
+inspect [t]  - Inspect record (table, id/slug)
+trace [op]   - Trace operation (fetch_consoles)
+performance  - Run server benchmark
+monitor      - Capture client-side errors (on/off)
+env          - View safe environment variables
+clear        - Clear terminal screen
+help         - Show this message`;
 
                 setHistory(prev => [...prev, { type: 'output', content: helpText }]);
                 setIsProcessing(false);
