@@ -2,7 +2,7 @@ export const siteConfig = {
   name: "The Retro Circuit",
   description: "The ultimate retro gaming hub featuring deep-dive console comparisons and hardware specifications.",
   url: "https://theretrocircuit.com",
-  version: "v1.3.0",
+  version: "v1.3.1",
   est: "2025",
   links: {
     email: "mailto:contact@theretrocircuit.com",

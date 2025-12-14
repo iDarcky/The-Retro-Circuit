@@ -13,7 +13,7 @@ import MobileBottomNav from './MobileBottomNav';
 import MobileTopBar from './MobileTopBar';
 import type { User } from '@supabase/supabase-js';
 import { 
-  IconNews, IconDatabase, IconVS, IconGames, IconTimeline, 
+  IconDatabase, IconVS,
   IconHome, IconSettings, IconChip, IconSearch
 } from '../ui/Icons';
 
@@ -172,13 +172,10 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
 
            <div className="px-6 mb-2 text-xs font-mono text-retro-neon uppercase tracking-widest opacity-80">MAINFRAME</div>
            <SidebarItem to="/" icon={IconHome} label="CONTROL ROOM" exact />
-           <SidebarItem to="/signals" icon={IconNews} label="SIGNALS" />
            
            <div className="px-6 mt-6 mb-2 text-xs font-mono text-retro-blue uppercase tracking-widest opacity-80">DATABASE</div>
            <SidebarItem to="/console" icon={IconDatabase} label="CONSOLES" />
            <SidebarItem to="/fabricators" icon={IconChip} label="FABRICATORS" />
-           <SidebarItem to="/archive" icon={IconGames} label="GAME VAULT" />
-           <SidebarItem to="/chrono" icon={IconTimeline} label="TIMELINE" />
            
            <div className="px-6 mt-6 mb-2 text-xs font-mono text-retro-pink uppercase tracking-widest opacity-80">TOOLS</div>
            <SidebarItem to="/arena" icon={IconVS} label="VS MODE" />

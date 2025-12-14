@@ -73,9 +73,6 @@ const GlobalSearch: FC = () => {
             case 'FABRICATOR':
                 path = `/fabricators/${result.slug}`;
                 break;
-            case 'GAME':
-                path = `/archive/${result.slug || result.id}`;
-                break;
         }
 
         router.push(path);
@@ -150,8 +147,7 @@ const GlobalSearch: FC = () => {
                                     <div className="flex items-center gap-2">
                                         <span className={`text-[9px] font-mono px-1.5 py-0.5 border rounded-sm ${
                                             res.type === 'CONSOLE' ? 'text-retro-blue border-retro-blue bg-retro-blue/10' :
-                                            res.type === 'FABRICATOR' ? 'text-retro-pink border-retro-pink bg-retro-pink/10' : 
-                                            res.type === 'GAME' ? 'text-retro-neon border-retro-neon bg-retro-neon/10' : 'text-gray-400 border-gray-400'
+                                            res.type === 'FABRICATOR' ? 'text-retro-pink border-retro-pink bg-retro-pink/10' : 'text-gray-400 border-gray-400'
                                         }`}>
                                             {res.type}
                                         </span>
