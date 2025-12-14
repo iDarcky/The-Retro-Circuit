@@ -7,24 +7,84 @@ type HistoryItem = {
     type: 'input' | 'output';
     content: string;
     isError?: boolean;
+    timestamp?: number;
 };
 
+const MONITOR_KEY = 'RETRO_DEBUG_MONITOR';
+const LOGS_KEY = 'RETRO_DEBUG_LOGS';
+
 export function Terminal() {
-    const [history, setHistory] = useState<HistoryItem[]>([
-        { type: 'output', content: 'RETRO CIRCUIT DEBUG CONSOLE v1.0.0' },
-        { type: 'output', content: 'TYPE "help" FOR AVAILABLE COMMANDS.' },
-    ]);
+    const [history, setHistory] = useState<HistoryItem[]>([]);
     const [input, setInput] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
     const bottomRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    // Auto-scroll to bottom
+    // Load initial logs from LocalStorage
+    useEffect(() => {
+        const loadLogs = () => {
+             const raw = localStorage.getItem(LOGS_KEY);
+             if (raw) {
+                 try {
+                     const parsed = JSON.parse(raw);
+                     setHistory(prev => {
+                         // Merge with existing? Or just replace?
+                         // Ideally we show the historical logs first.
+                         // But for simplicity in this terminal, let's just prepend them if empty.
+                         if (prev.length === 0) {
+                             return [
+                                 { type: 'output', content: 'RETRO CIRCUIT DEBUG CONSOLE v1.1.0' },
+                                 { type: 'output', content: 'TYPE "help" FOR AVAILABLE COMMANDS.' },
+                                 ...parsed
+                             ];
+                         }
+                         return prev;
+                     });
+                 } catch (e) {
+                     // Corrupt logs
+                 }
+             } else {
+                 setHistory([
+                     { type: 'output', content: 'RETRO CIRCUIT DEBUG CONSOLE v1.1.0' },
+                     { type: 'output', content: 'TYPE "help" FOR AVAILABLE COMMANDS.' },
+                 ]);
+             }
+        };
+        loadLogs();
+    }, []);
+
+    // Polling LocalStorage for new logs (Sync with DebugObserver)
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const raw = localStorage.getItem(LOGS_KEY);
+            if (!raw) return;
+
+            try {
+                const logs = JSON.parse(raw);
+                // We need to compare specific unique logs or just length?
+                // A simple approach: If local storage has more logs than we displayed (filtered by isError), update.
+                // Or better: Just check the last timestamp.
+
+                setHistory(prev => {
+                    const lastKnown = prev.filter(p => p.timestamp).pop();
+                    const newLogs = logs.filter((l: HistoryItem) => !lastKnown || (l.timestamp && l.timestamp > (lastKnown.timestamp || 0)));
+
+                    if (newLogs.length > 0) {
+                        return [...prev, ...newLogs];
+                    }
+                    return prev;
+                });
+            } catch (e) { }
+        }, 1000);
+        return () => clearInterval(interval);
+    }, []);
+
+    // Auto-scroll
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [history]);
 
-    // Focus input on mount and click
+    // Focus input on mount
     useEffect(() => {
         inputRef.current?.focus();
     }, []);
@@ -35,13 +95,15 @@ export function Terminal() {
             if (!command) return;
 
             // Add input to history
-            setHistory(prev => [...prev, { type: 'input', content: command }]);
+            const inputItem: HistoryItem = { type: 'input', content: command };
+            setHistory(prev => [...prev, inputItem]);
             setInput('');
             setIsProcessing(true);
 
             // Client-side commands
             if (command.toLowerCase() === 'clear') {
                 setHistory([]);
+                localStorage.removeItem(LOGS_KEY); // Clear persisted logs too
                 setIsProcessing(false);
                 return;
             }
@@ -49,53 +111,17 @@ export function Terminal() {
             if (command.toLowerCase().startsWith('monitor')) {
                 const arg = command.split(' ')[1];
                 if (arg === 'on') {
-                     // @ts-ignore
-                     if (window._consoleMonitorEnabled) {
-                         setHistory(prev => [...prev, { type: 'output', content: 'MONITOR ALREADY ACTIVE.' }]);
-                     } else {
-                         // @ts-ignore
-                         window._consoleMonitorEnabled = true;
-
-                         // Monkey-patch console.error
-                         const originalError = console.error;
-                         console.error = (...args) => {
-                             originalError(...args);
-                             setHistory(prev => [...prev, {
-                                 type: 'output',
-                                 content: `[CLIENT LOG] ${args.map(a => String(a)).join(' ')}`,
-                                 isError: true
-                             }]);
-                         };
-                         // @ts-ignore
-                         window._restoreConsole = () => { console.error = originalError; };
-
-                         // Listen for window errors
-                         const errorHandler = (event: ErrorEvent) => {
-                             setHistory(prev => [...prev, {
-                                 type: 'output',
-                                 content: `[WINDOW ERROR] ${event.message} at ${event.filename}:${event.lineno}`,
-                                 isError: true
-                             }]);
-                         };
-                         window.addEventListener('error', errorHandler);
-                         // @ts-ignore
-                         window._removeErrorHandler = () => window.removeEventListener('error', errorHandler);
-
-                         setHistory(prev => [...prev, { type: 'output', content: 'CLIENT MONITOR: ENGAGED. CAPTURING LOGS...' }]);
-                     }
+                     localStorage.setItem(MONITOR_KEY, 'true');
+                     // Trigger a reload? Or just trust the observer to pick it up?
+                     // The observer patches on mount. If we are already mounted, it might not pick up unless we force it.
+                     // But we added a 'storage' listener in DebugObserver!
+                     // However, storage events only fire on OTHER tabs.
+                     // So we might need to reload or force the patch.
+                     // For robustness:
+                     location.reload();
                 } else if (arg === 'off') {
-                     // @ts-ignore
-                     if (window._consoleMonitorEnabled) {
-                         // @ts-ignore
-                         window._restoreConsole?.();
-                         // @ts-ignore
-                         window._removeErrorHandler?.();
-                         // @ts-ignore
-                         window._consoleMonitorEnabled = false;
-                         setHistory(prev => [...prev, { type: 'output', content: 'CLIENT MONITOR: DISENGAGED.' }]);
-                     } else {
-                         setHistory(prev => [...prev, { type: 'output', content: 'MONITOR IS NOT ACTIVE.' }]);
-                     }
+                     localStorage.setItem(MONITOR_KEY, 'false');
+                     location.reload(); // Reload to un-patch cleanly
                 } else {
                      setHistory(prev => [...prev, { type: 'output', content: 'USAGE: monitor <on|off>', isError: true }]);
                 }
