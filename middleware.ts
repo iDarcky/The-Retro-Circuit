@@ -4,35 +4,32 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
   // 1. Initialize Response
+  // We start with a response that copies the request headers.
   let response = NextResponse.next({
     request: {
       headers: request.headers,
     },
   });
 
-  // Track all cookie changes to ensure we don't lose them when recreating the response
-  const changedCookies: { name: string; value: string; options: CookieOptions }[] = [];
-
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value;
+        getAll() {
+          return request.cookies.getAll();
         },
-        set(name: string, value: string, options: CookieOptions) {
-          // 1. Update the request cookies (mutable) so Supabase client sees the new value immediately
-          request.cookies.set({
-            name,
-            value,
-            ...options,
+        setAll(cookiesToSet) {
+          // 1. Update the request cookies (mutable) so Supabase client sees the new values immediately
+          cookiesToSet.forEach(({ name, value, options }) => {
+            request.cookies.set({
+              name,
+              value,
+              ...options,
+            });
           });
 
-          // 2. Track this change
-          changedCookies.push({ name, value, options });
-
-          // 3. Re-create the response object
+          // 2. Re-create the response object
           // This passes the *updated* request cookies to the actual route handler/server component
           response = NextResponse.next({
             request: {
@@ -40,39 +37,13 @@ export async function middleware(request: NextRequest) {
             },
           });
 
-          // 4. Apply ALL accumulated cookie changes to the new response
-          changedCookies.forEach((cookie) => {
+          // 3. Apply ALL cookies to the new response
+          // setAll gives us the complete list of cookies that need to be set
+          cookiesToSet.forEach(({ name, value, options }) => {
             response.cookies.set({
-              name: cookie.name,
-              value: cookie.value,
-              ...cookie.options,
-            });
-          });
-        },
-        remove(name: string, options: CookieOptions) {
-          // 1. Update request cookies
-          request.cookies.set({
-            name,
-            value: '',
-            ...options,
-          });
-
-          // 2. Track change (value is empty string for removal)
-          changedCookies.push({ name, value: '', options });
-
-          // 3. Re-create response
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
-
-          // 4. Apply all changes
-          changedCookies.forEach((cookie) => {
-            response.cookies.set({
-              name: cookie.name,
-              value: cookie.value,
-              ...cookie.options,
+              name,
+              value,
+              ...options,
             });
           });
         },
@@ -86,6 +57,7 @@ export async function middleware(request: NextRequest) {
   // We ONLY refresh the session (call getUser) on routes that require Server-Side Auth.
   // This prevents race conditions where both Middleware and Client SDK try to refresh
   // the token simultaneously, causing a "Token Reuse" revocation.
+  // Note: We also skip static files (handled by matcher) and API routes (handled by client SDK usually).
   const isProtectedRoute = path.startsWith('/admin');
   const isAuthRoute = path.startsWith('/login');
 
@@ -97,7 +69,7 @@ export async function middleware(request: NextRequest) {
     user = data.user;
 
     if (error) {
-       // Diagnostic log only if error is not "Auth session missing!"
+       // Diagnostic log
        // console.log(`[Middleware] Auth Check Error on ${path}: ${error.message}`);
     }
   }
