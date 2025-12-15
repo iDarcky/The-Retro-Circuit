@@ -8,11 +8,17 @@ import { ConsoleDetails, ConsoleFilterState, Manufacturer } from '../../lib/type
 import RetroLoader from '../ui/RetroLoader';
 import Button from '../ui/Button';
 
-const ConsoleVaultClient: FC = () => {
-  const [allConsoles, setAllConsoles] = useState<ConsoleDetails[]>([]);
-  const [filteredConsoles, setFilteredConsoles] = useState<ConsoleDetails[]>([]);
-  const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
-  const [loading, setLoading] = useState(true);
+interface ConsoleVaultClientProps {
+  initialManufacturers?: Manufacturer[];
+  initialConsoles?: ConsoleDetails[];
+}
+
+const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers = [], initialConsoles = [] }) => {
+  const [allConsoles, setAllConsoles] = useState<ConsoleDetails[]>(initialConsoles);
+  const [filteredConsoles, setFilteredConsoles] = useState<ConsoleDetails[]>(initialConsoles);
+  const [manufacturers, setManufacturers] = useState<Manufacturer[]>(initialManufacturers);
+  // If we have initial data, we are not loading.
+  const [loading, setLoading] = useState(initialConsoles.length === 0);
   
   // Mobile Sidebar State
   const [showMobileFilters, setShowMobileFilters] = useState(false);
@@ -31,21 +37,30 @@ const ConsoleVaultClient: FC = () => {
       panel_types: []
   });
 
-  // 1. Initial Load: Fetch Everything
+  // 1. Initial Load: Fetch Everything if not provided
   useEffect(() => {
+    if (initialConsoles.length > 0 && initialManufacturers.length > 0) {
+        return;
+    }
+
     const init = async () => {
         setLoading(true);
-        const [manus, allData] = await Promise.all([
-            fetchManufacturers(),
-            fetchAllConsoles()
-        ]);
-        setManufacturers(manus);
-        setAllConsoles(allData);
-        setFilteredConsoles(allData); // Init filtered list with everything
-        setLoading(false);
+        try {
+            const [manus, allData] = await Promise.all([
+                fetchManufacturers(),
+                fetchAllConsoles()
+            ]);
+            setManufacturers(manus);
+            setAllConsoles(allData);
+            setFilteredConsoles(allData); // Init filtered list with everything
+        } catch (error) {
+            console.error("Failed to load vault data", error);
+        } finally {
+            setLoading(false);
+        }
     };
     init();
-  }, []);
+  }, [initialConsoles.length, initialManufacturers.length]);
 
   // 2. Client-Side Filter Logic
   useEffect(() => {

@@ -1,4 +1,5 @@
 import ConsoleVaultClient from '../../components/console/ConsoleVaultClient';
+import { fetchManufacturers, fetchAllConsoles } from '../../lib/api';
 
 export const dynamic = 'force-dynamic';
 
@@ -7,6 +8,11 @@ export const metadata = {
   description: 'The ultimate database of retro and modern handheld gaming hardware. Compare specs, prices, and performance.',
 };
 
-export default function ConsoleVaultPage() {
-  return <ConsoleVaultClient />;
+export default async function ConsoleVaultPage() {
+  const [manufacturers, allConsoles] = await Promise.all([
+    fetchManufacturers(),
+    fetchAllConsoles()
+  ]);
+
+  return <ConsoleVaultClient initialManufacturers={manufacturers} initialConsoles={allConsoles} />;
 }
