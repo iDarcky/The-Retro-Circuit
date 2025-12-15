@@ -9,14 +9,13 @@ export default function BootSequence() {
   const { playHover, playClick } = useSound();
 
   useEffect(() => {
-    // Sequence Timings
+    // Sequence Timings relative to component mount
     const sequence = async () => {
-      // Wait for "Cartridge Insert" animation (controlled by parent Gameboy) to finish roughly
-      await new Promise(r => setTimeout(r, 2500));
+      // Immediate: Logo Drop
       setStage('DROP');
 
-      // Logo Drop duration
-      await new Promise(r => setTimeout(r, 2000));
+      // Wait for drop (1s) + slight pause
+      await new Promise(r => setTimeout(r, 1500));
       setStage('BOOT');
 
       // "Ding" sound time + boot text
@@ -44,7 +43,7 @@ export default function BootSequence() {
 
         {/* STAGE: BOOT (Registered Trademark) */}
         {stage === 'BOOT' && (
-             <div className="flex flex-col items-center gap-4">
+             <div className="flex flex-col items-center gap-4 animate-fadeIn">
                 <div className="bg-[#0F380F] text-[#8BAC0F] px-4 py-1 text-2xl tracking-widest border-4 border-[#0F380F] rounded-sm">
                     RETRO
                 </div>
@@ -56,34 +55,38 @@ export default function BootSequence() {
 
         {/* STAGE: MENU */}
         {stage === 'MENU' && (
-            <div className="w-full px-6 space-y-6 animate-fadeIn">
+            <div className="w-full px-4 space-y-4 animate-fadeIn flex flex-col h-full justify-center">
 
-                <div className="text-center mb-8">
+                <div className="text-center mb-4">
                      <h2 className="text-lg font-bold tracking-tighter">THE CIRCUIT</h2>
                      <div className="h-1 w-full bg-[#0F380F] mt-1"></div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="flex-1 flex flex-col justify-center gap-4">
                     <Link href="/console"
-                          className="block w-full border-2 border-[#0F380F] p-2 text-center hover:bg-[#0F380F] hover:text-[#8BAC0F] transition-colors cursor-pointer group"
+                          className="block w-full border-4 border-[#0F380F] bg-[#8BAC0F] py-4 text-center hover:bg-[#0F380F] hover:text-[#8BAC0F] transition-colors cursor-pointer group shadow-[4px_4px_0_rgba(15,56,15,0.4)]"
                           onMouseEnter={playHover}
                           onClick={playClick}
                     >
-                        <span className="group-hover:hidden">► CONSOLES</span>
-                        <span className="hidden group-hover:inline">► OPEN VAULT</span>
+                        <div className="flex items-center justify-center gap-2">
+                             <span className="text-xl">►</span>
+                             <span className="text-xl font-bold tracking-widest">CONSOLES</span>
+                        </div>
                     </Link>
 
                     <Link href="/arena"
-                          className="block w-full border-2 border-[#0F380F] p-2 text-center hover:bg-[#0F380F] hover:text-[#8BAC0F] transition-colors cursor-pointer group"
+                          className="block w-full border-4 border-[#0F380F] bg-[#8BAC0F] py-4 text-center hover:bg-[#0F380F] hover:text-[#8BAC0F] transition-colors cursor-pointer group shadow-[4px_4px_0_rgba(15,56,15,0.4)]"
                           onMouseEnter={playHover}
                           onClick={playClick}
                     >
-                        <span className="group-hover:hidden">► VS MODE</span>
-                        <span className="hidden group-hover:inline">► FIGHT</span>
+                        <div className="flex items-center justify-center gap-2">
+                             <span className="text-xl">►</span>
+                             <span className="text-xl font-bold tracking-widest">VS MODE</span>
+                        </div>
                     </Link>
                 </div>
 
-                <div className="absolute bottom-2 right-2 text-[8px] opacity-60">
+                <div className="text-right text-[8px] opacity-60 pb-2">
                     v1.0.4
                 </div>
             </div>
