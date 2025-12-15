@@ -7,40 +7,50 @@ export default function Gameboy() {
   const [stage, setStage] = useState<'INSERT' | 'PLAY'>('INSERT');
 
   useEffect(() => {
-    // Start Animation Sequence
-    // 1. Initial State: Side view, Cartridge Hovering (handled by CSS 'INSERT' class)
-
-    // 2. Trigger Action:
-    //    - Cartridge drops IN
-    //    - Device rotates to FRONT
+    // Sequence:
+    // 1. Initial: Side view, Cartridge hovering.
+    // 2. 0.8s: Cartridge starts dropping (CSS transition delay).
+    // 3. 1.2s: Device starts rotating to front.
     const t1 = setTimeout(() => {
         setStage('PLAY');
-    }, 800); // Wait 0.8s before starting the rotation/insert sync
+    }, 1200);
 
     return () => clearTimeout(t1);
   }, []);
 
   return (
-    // Increased scale and container size for "Way Bigger" feel
-    <div className="relative w-full h-[80vh] flex items-center justify-center perspective-[2000px] overflow-visible scale-125 md:scale-150 origin-center">
+    // Main Stage
+    <div className="relative w-full h-[80vh] flex items-center justify-center overflow-visible scale-125 md:scale-150 origin-center"
+         style={{ perspective: '2000px' }}
+    >
 
-        {/* 3D CONTAINER */}
-        <div className={`
-            relative w-[360px] h-[600px] transition-transform duration-[2000ms] ease-[cubic-bezier(0.25,1,0.5,1)] transform-style-3d
-            ${stage === 'INSERT' ? 'rotate-y-[-60deg] translate-x-[-50px]' : 'rotate-y-0 translate-x-0'}
-        `}>
+        {/* 3D Pivot Group */}
+        <div
+            className="relative w-[360px] h-[600px]"
+            style={{
+                transformStyle: 'preserve-3d',
+                transform: stage === 'INSERT'
+                    ? 'rotateY(-60deg) translateX(-50px)'
+                    : 'rotateY(0deg) translateX(0px)',
+                transition: 'transform 2000ms cubic-bezier(0.25, 1, 0.5, 1)'
+            }}
+        >
 
             {/* --- CARTRIDGE (Animated) --- */}
-            <div className={`
-                absolute top-[-200px] left-1/2 ml-[-100px] w-[200px] h-[220px] bg-gray-700 rounded-t-lg z-0
-                shadow-[inset_0_0_20px_rgba(0,0,0,0.5)] border-4 border-gray-600
-                transition-transform duration-[1500ms] ease-out delay-500 transform-style-3d
-                ${stage === 'INSERT' ? 'translate-y-0' : 'translate-y-[280px]'}
-            `}>
+            <div
+                className="absolute top-[-200px] left-1/2 ml-[-100px] w-[200px] h-[220px] bg-gray-700 rounded-t-lg border-4 border-gray-600 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]"
+                style={{
+                    transform: stage === 'INSERT'
+                        ? 'translateZ(-50px) translateY(0px)'
+                        : 'translateZ(-50px) translateY(280px)',
+                    transition: 'transform 1500ms ease-out 500ms', // 500ms delay for visual "drop"
+                    transformStyle: 'preserve-3d'
+                }}
+            >
                 <div className="absolute top-4 left-4 right-4 h-32 bg-gray-800 rounded flex items-center justify-center border-2 border-gray-900">
                     <div className="font-pixel text-xs text-gray-500 tracking-widest">SYSTEM DISK</div>
                 </div>
-                {/* Cartridge Grip Lines */}
+                {/* Grip Lines */}
                 <div className="absolute bottom-4 left-0 right-0 flex flex-col gap-2 items-center opacity-30">
                      <div className="w-40 h-1.5 bg-black"></div>
                      <div className="w-40 h-1.5 bg-black"></div>
@@ -50,7 +60,13 @@ export default function Gameboy() {
 
 
             {/* --- GAMEBOY CHASSIS (FRONT) --- */}
-            <div className="absolute inset-0 bg-retro-dark border-4 border-retro-grid rounded-[20px_20px_50px_20px] shadow-[0_0_50px_rgba(0,255,157,0.2)] flex flex-col items-center p-8 z-10 backface-hidden bg-[#1a1a2e]">
+            <div
+                className="absolute inset-0 bg-retro-dark border-4 border-retro-grid rounded-[20px_20px_50px_20px] shadow-[0_0_50px_rgba(0,255,157,0.2)] flex flex-col items-center p-8 bg-[#1a1a2e]"
+                style={{
+                    backfaceVisibility: 'hidden',
+                    transform: 'translateZ(25px)', // Push front face forward half depth
+                }}
+            >
 
                 {/* Top Border Detail */}
                 <div className="w-full h-4 border-b-2 border-retro-grid/30 mb-6 flex justify-between px-2">
@@ -69,7 +85,6 @@ export default function Gameboy() {
 
                     {/* LCD SCREEN (Content) */}
                     <div className="w-full h-full bg-[#8BAC0F] border-4 border-[#333] shadow-inner overflow-hidden relative">
-                         {/* Only show boot sequence after rotation starts to finish */}
                          <div className={`transition-opacity duration-1000 delay-[2000ms] ${stage === 'PLAY' ? 'opacity-100' : 'opacity-0'}`}>
                             <BootSequence />
                          </div>
@@ -89,12 +104,10 @@ export default function Gameboy() {
 
                 {/* CONTROLS */}
                 <div className="w-full flex-1 flex justify-between items-end pb-8 px-4">
-
                     {/* D-PAD */}
                     <div className="w-28 h-28 relative">
                         <div className="absolute top-9 left-0 w-28 h-10 bg-black rounded shadow-[0_4px_0_#111]"></div>
                         <div className="absolute top-0 left-9 w-10 h-28 bg-black rounded shadow-[0_4px_0_#111]"></div>
-                        {/* Center Divot */}
                         <div className="absolute top-9 left-9 w-10 h-10 bg-black/90 rounded-full radial-gradient"></div>
                     </div>
 
@@ -123,20 +136,40 @@ export default function Gameboy() {
 
                 {/* SPEAKER GRILL */}
                 <div className="absolute bottom-8 right-8 flex gap-3 -rotate-[25deg]">
-                    <div className="w-2.5 h-20 bg-black/40 rounded-full shadow-[inset_1px_1px_2px_rgba(0,0,0,0.8)] border-b border-white/5"></div>
-                    <div className="w-2.5 h-20 bg-black/40 rounded-full shadow-[inset_1px_1px_2px_rgba(0,0,0,0.8)] border-b border-white/5"></div>
-                    <div className="w-2.5 h-20 bg-black/40 rounded-full shadow-[inset_1px_1px_2px_rgba(0,0,0,0.8)] border-b border-white/5"></div>
-                    <div className="w-2.5 h-20 bg-black/40 rounded-full shadow-[inset_1px_1px_2px_rgba(0,0,0,0.8)] border-b border-white/5"></div>
-                    <div className="w-2.5 h-20 bg-black/40 rounded-full shadow-[inset_1px_1px_2px_rgba(0,0,0,0.8)] border-b border-white/5"></div>
-                    <div className="w-2.5 h-20 bg-black/40 rounded-full shadow-[inset_1px_1px_2px_rgba(0,0,0,0.8)] border-b border-white/5"></div>
+                    {[...Array(6)].map((_, i) => (
+                        <div key={i} className="w-2.5 h-20 bg-black/40 rounded-full shadow-[inset_1px_1px_2px_rgba(0,0,0,0.8)] border-b border-white/5"></div>
+                    ))}
                 </div>
 
             </div>
 
-             {/* --- GAMEBOY CHASSIS (SIDE/BACK HINT) --- */}
-             <div className="absolute inset-0 bg-[#151525] rounded-[20px] transform translate-z-[-50px] w-[360px] h-[600px]"></div>
-             <div className="absolute top-0 right-0 bottom-0 w-[50px] bg-[#11111f] transform rotate-y-[90deg] origin-right border-l border-white/5"></div>
-             <div className="absolute top-0 left-0 bottom-0 w-[50px] bg-[#222233] transform rotate-y-[-90deg] origin-left border-l border-retro-grid/20"></div>
+             {/* --- GAMEBOY CHASSIS (BACK) --- */}
+             <div
+                className="absolute inset-0 bg-[#151525] rounded-[20px]"
+                style={{
+                    transform: 'translateZ(-25px) rotateY(180deg)', // Push back face backward
+                    backfaceVisibility: 'hidden'
+                }}
+             ></div>
+
+             {/* --- SIDE PANELS (To create thickness) --- */}
+             {/* RIGHT SIDE */}
+             <div
+                className="absolute top-0 right-0 bottom-0 w-[50px] bg-[#11111f] border-l border-white/5"
+                style={{
+                    transformOrigin: 'right center',
+                    transform: 'rotateY(90deg) translateZ(25px)' // Move to right edge and rotate
+                }}
+             ></div>
+
+             {/* LEFT SIDE */}
+             <div
+                className="absolute top-0 left-0 bottom-0 w-[50px] bg-[#222233] border-l border-retro-grid/20"
+                style={{
+                    transformOrigin: 'left center',
+                    transform: 'rotateY(-90deg) translateZ(25px)' // Move to left edge and rotate
+                }}
+             ></div>
 
         </div>
     </div>
