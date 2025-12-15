@@ -14,27 +14,6 @@ const safeNumber = z.preprocess((val) => {
 
 const safeBoolean = z.preprocess((val) => val === true || val === 'true', z.boolean().default(false));
 
-export const NewsItemSchema = z.object({
-  headline: safeString,
-  date: safeString,
-  summary: safeString,
-  category: z.enum(['Hardware', 'Software', 'Industry', 'Rumor', 'Mods', 'Events', 'Homebrew']).optional().default('Hardware'),
-});
-
-export const GameSchema = z.object({
-  id: z.string().optional(),
-  slug: safeString,
-  title: safeString,
-  developer: safeString,
-  year: safeString,
-  genre: safeString,
-  content: safeString,
-  whyItMatters: safeString,
-  rating: safeNumber,
-  image: safeString,
-  console_slug: safeString,
-});
-
 export const ManufacturerSchema = z.object({
   id: z.string().optional(),
   name: safeString,

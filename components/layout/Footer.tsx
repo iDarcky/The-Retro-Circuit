@@ -7,19 +7,19 @@ import { siteConfig } from '../../config/site';
 const Footer: FC = () => {
   return (
     <footer className="w-full bg-black shrink-0 z-10 relative before:absolute before:top-0 before:left-0 before:w-full before:h-[1px] before:bg-gradient-to-r before:from-pink-500 before:via-green-500 before:to-cyan-500 before:content-['']">
-      <div className="max-w-7xl mx-auto px-4 h-10 flex items-center justify-between text-[10px] font-mono">
+      <div className="max-w-7xl mx-auto px-4 py-4 md:py-0 md:h-10 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0 text-[10px] font-mono">
         
         {/* Left: Branding */}
         <div className="flex items-center min-w-[120px]">
            <Link href="/" className="hover:opacity-80 transition-opacity">
-               <span className="font-mono text-lg font-bold text-retro-neon tracking-wider">
+               <span className="font-mono text-sm font-bold text-retro-neon tracking-wider">
                   [ THE RETRO CIRCUIT ]
                </span>
            </Link>
         </div>
 
         {/* Center: Navigation */}
-        <div className="hidden md:flex items-center gap-4 text-gray-500">
+        <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-gray-500">
            {siteConfig.routes.map((route, index) => (
              <div key={route.label} className="flex items-center gap-4">
                 <Link 
@@ -29,7 +29,7 @@ const Footer: FC = () => {
                   {route.label}
                 </Link>
                 {index < siteConfig.routes.length - 1 && (
-                  <span className="opacity-30">|</span>
+                  <span className="opacity-30 hidden md:inline">|</span>
                 )}
              </div>
            ))}

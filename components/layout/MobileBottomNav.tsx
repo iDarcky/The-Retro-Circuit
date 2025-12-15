@@ -4,7 +4,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useSound } from '../ui/SoundContext';
-import { IconHome, IconChip, IconDatabase, IconGames, IconVS } from '../ui/Icons';
+import { IconHome, IconChip, IconDatabase, IconVS } from '../ui/Icons';
 
 const MobileBottomNav = () => {
     const pathname = usePathname();
@@ -14,7 +14,6 @@ const MobileBottomNav = () => {
         { label: 'Home', icon: IconHome, path: '/', exact: true },
         { label: 'Fabricators', icon: IconChip, path: '/fabricators' },
         { label: 'Consoles', icon: IconDatabase, path: '/console' },
-        { label: 'Games', icon: IconGames, path: '/archive' },
         { label: 'VS Mode', icon: IconVS, path: '/arena' },
     ];
 

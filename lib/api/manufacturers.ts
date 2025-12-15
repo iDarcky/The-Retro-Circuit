@@ -35,13 +35,9 @@ export const getManufacturerById = async (id: string): Promise<Manufacturer | nu
 
 export const addManufacturer = async (manu: Omit<Manufacturer, 'id'>): Promise<{ success: boolean, message?: string }> => {
     try {
-        console.log('[API] Inserting Manufacturer:', manu);
-        
         // We use select() to get the inserted data back, useful for debugging even if not used
-        const { data, error } = await supabase.from('manufacturer').insert([manu]).select();
+        const { error } = await supabase.from('manufacturer').insert([manu]).select();
         
-        console.log('Supabase raw response:', { data, error });
-
         if (error) {
             console.error('CRITICAL SUPABASE ERROR:', error.code, error.message, error.details, error.hint);
             return { success: false, message: error.message };
