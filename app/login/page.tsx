@@ -236,7 +236,7 @@ export default function LoginPage() {
                 </h2>
 
                 {message && (
-                    <div className={`p-3 mb-6 text-xs font-mono border animate-pulse ${
+                    <div role="alert" aria-live="polite" className={`p-3 mb-6 text-xs font-mono border animate-pulse ${
                         message.type === 'error' ? 'border-retro-pink text-retro-pink bg-retro-pink/10' : 'border-retro-neon text-retro-neon bg-retro-neon/10'
                     }`}>
                         &gt; {message.text}
@@ -246,42 +246,48 @@ export default function LoginPage() {
                 <form onSubmit={handleAuth} className="space-y-4">
                     {mode === 'SIGNUP' && (
                         <div>
-                            <label className="block text-xs font-mono text-retro-blue mb-1 tracking-widest">CODENAME</label>
+                            <label htmlFor="username" className="block text-xs font-mono text-retro-blue mb-1 tracking-widest">CODENAME</label>
                             <input 
+                                id="username"
                                 type="text" 
                                 required 
                                 value={username}
                                 onChange={(e: ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
                                 className="w-full bg-black border border-retro-grid p-3 text-white font-mono focus:border-retro-neon outline-none transition-colors"
                                 placeholder="ENTER USERNAME"
+                                autoComplete="username"
                             />
                         </div>
                     )}
 
                     {(mode === 'LOGIN' || mode === 'SIGNUP' || mode === 'RECOVERY') && (
                         <div>
-                            <label className="block text-xs font-mono text-retro-blue mb-1 tracking-widest">EMAIL ADDRESS</label>
+                            <label htmlFor="email" className="block text-xs font-mono text-retro-blue mb-1 tracking-widest">EMAIL ADDRESS</label>
                             <input 
+                                id="email"
                                 type="email" 
                                 required 
                                 value={email}
                                 onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                                 className="w-full bg-black border border-retro-grid p-3 text-white font-mono focus:border-retro-neon outline-none transition-colors"
                                 placeholder="USER@EXAMPLE.COM"
+                                autoComplete="email"
                             />
                         </div>
                     )}
 
                     {(mode === 'LOGIN' || mode === 'SIGNUP' || mode === 'UPDATE_PASSWORD') && (
                         <div>
-                            <label className="block text-xs font-mono text-retro-blue mb-1 tracking-widest">ACCESS CODE</label>
+                            <label htmlFor="password" className="block text-xs font-mono text-retro-blue mb-1 tracking-widest">ACCESS CODE</label>
                             <input 
+                                id="password"
                                 type="password" 
                                 required 
                                 value={password}
                                 onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                                 className="w-full bg-black border border-retro-grid p-3 text-white font-mono focus:border-retro-neon outline-none transition-colors"
                                 placeholder="••••••••"
+                                autoComplete={mode === 'LOGIN' ? 'current-password' : 'new-password'}
                             />
                         </div>
                     )}
