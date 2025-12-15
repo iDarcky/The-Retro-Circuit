@@ -4,10 +4,9 @@
 import { useState, useEffect, type FC } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ConsoleDetails, ConsoleSpecs, ConsoleVariant, GameOfTheWeekData } from '../../lib/types';
-import CollectionToggle from '../ui/CollectionToggle';
+import { ConsoleDetails, ConsoleSpecs, ConsoleVariant } from '../../lib/types';
 import AdminEditTrigger from '../admin/AdminEditTrigger';
-import { IconGames, IconVS } from '../ui/Icons';
+import { IconVS } from '../ui/Icons';
 import Button from '../ui/Button';
 import EmulationGrid from './EmulationGrid';
 import { SpecCard } from '../ui/specs/SpecCard';
@@ -17,12 +16,11 @@ import { getConsoleImage } from '../../lib/utils';
 
 interface ConsoleDetailViewProps {
   consoleData: ConsoleDetails;
-  games: GameOfTheWeekData[];
 }
 
 // --- MAIN COMPONENT ---
 
-const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) => {
+const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
     
@@ -163,12 +161,6 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                             COMPARE
                         </Button>
                     </Link>
-                    <CollectionToggle 
-                        itemId={consoleData.slug || consoleData.id} 
-                        itemType="CONSOLE" 
-                        itemName={consoleData.name} 
-                        itemImage={currentImage}
-                    />
                 </div>
             </div>
 
@@ -429,33 +421,6 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, games }) =
                 </div>
 
             </div>
-
-            {/* ASSOCIATED GAMES */}
-            {games.length > 0 && (
-                <div className="mt-12 border-t-4 border-retro-grid pt-8">
-                    <h3 className="font-pixel text-2xl text-retro-neon mb-6 flex items-center gap-2">
-                        <IconGames className="w-6 h-6" />
-                        KEY TITLES
-                    </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                        {games.map(game => (
-                            <Link href={`/archive/${game.slug || game.id}`} key={game.id} className="group block bg-black border border-retro-grid hover:border-retro-neon transition-colors">
-                                <div className="aspect-[3/4] relative overflow-hidden">
-                                    {game.image ? (
-                                        <img src={game.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-gray-900 text-gray-600 font-pixel text-xs">NO COVER</div>
-                                    )}
-                                </div>
-                                <div className="p-2">
-                                    <div className="font-pixel text-[10px] text-white truncate group-hover:text-retro-neon">{game.title}</div>
-                                    <div className="font-mono text-[9px] text-gray-500">{game.year}</div>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-            )}
 
         </div>
     );

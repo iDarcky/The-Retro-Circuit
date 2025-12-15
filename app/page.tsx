@@ -1,47 +1,8 @@
 export const revalidate = 60;
 
 import Link from 'next/link';
-import GameOfTheWeek from '../components/GameOfTheWeek';
-import { fetchRetroNews, fetchGameOfTheWeek } from '../lib/api';
-import { NewsItem } from '../lib/types';
-
-// -- Mini Signal Feed Component (Presentation Only) --
-const DashboardSignalFeed = ({ news }: { news: NewsItem[] }) => {
-  return (
-    <div className="space-y-4">
-       <div className="flex justify-between items-center mb-4">
-          <h3 className="font-pixel text-retro-neon text-lg">LATEST SIGNALS</h3>
-          <Link href="/signals" className="text-xs font-mono text-retro-blue border border-retro-blue px-2 py-1 hover:bg-retro-blue hover:text-black transition-colors">
-              VIEW ALL
-          </Link>
-       </div>
-       {news.length === 0 ? (
-          <div className="text-xs font-mono text-gray-500">NO SIGNALS DETECTED.</div>
-       ) : (
-          news.map((item, i) => (
-            <div key={i} className="border-b border-retro-grid pb-4 last:border-0">
-                <div className="flex justify-between text-[10px] text-gray-500 mb-1 font-mono">
-                    <span>{new Date(item.date).toLocaleDateString()}</span>
-                    <span className="text-retro-pink">{item.category}</span>
-                </div>
-                <Link href="/signals" className="font-mono text-sm text-white hover:text-retro-neon font-bold block mb-1">
-                    {item.headline}
-                </Link>
-                <p className="text-xs text-gray-400 line-clamp-2 font-mono">{item.summary}</p>
-            </div>
-          ))
-       )}
-    </div>
-  );
-};
 
 export default async function ControlRoomPage() {
-  // Parallel Data Fetching on the Server
-  const [gameOfTheWeek, newsData] = await Promise.all([
-    fetchGameOfTheWeek(),
-    fetchRetroNews(1, 3)
-  ]);
-
   return (
     <div className="w-full max-w-7xl mx-auto p-4 space-y-12">
       
@@ -55,36 +16,19 @@ export default async function ControlRoomPage() {
         </p>
       </div>
 
-      {/* Hero Section: Game of the Week */}
-      <section className="relative">
-        <div className="absolute -top-4 left-4 bg-retro-pink text-retro-dark font-pixel text-xs px-3 py-1 z-20 rotate-3 shadow-lg border-2 border-white">
-          FEATURED HIT
-        </div>
-        <div className="transform hover:scale-[1.01] transition-transform duration-500">
-            <GameOfTheWeek game={gameOfTheWeek} />
-        </div>
-      </section>
-
-      {/* Dashboard Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Dashboard Grid - Centered since we removed the left column */}
+      <div className="max-w-4xl mx-auto">
         
-        {/* Left Column: Latest News Widget */}
-        <div className="lg:col-span-2">
-           <div className="bg-retro-dark/50 border border-retro-grid p-6 h-full">
-              <DashboardSignalFeed news={newsData.data} />
-           </div>
-        </div>
-
-        {/* Right Column: Quick Access / Tools */}
+        {/* Quick Access / Tools */}
         <div className="space-y-6">
             {/* Quick Nav Panel */}
             <div className="border-2 border-retro-blue bg-retro-blue/5 p-6">
                 <h3 className="font-pixel text-retro-blue mb-6 text-center border-b border-retro-blue/30 pb-4">
                     SYSTEM TOOLS
                 </h3>
-                <div className="grid gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Link href="/arena" className="block">
-                        <div className="group border-2 border-retro-grid hover:border-retro-neon bg-black p-4 flex items-center justify-between transition-all">
+                        <div className="group border-2 border-retro-grid hover:border-retro-neon bg-black p-4 flex items-center justify-between transition-all h-full">
                             <div>
                                 <div className="font-pixel text-sm text-white group-hover:text-retro-neon">VS MODE</div>
                                 <div className="font-mono text-xs text-gray-500">Spec Showdown</div>
@@ -94,7 +38,7 @@ export default async function ControlRoomPage() {
                     </Link>
 
                     <Link href="/console" className="block">
-                        <div className="group border-2 border-retro-grid hover:border-retro-pink bg-black p-4 flex items-center justify-between transition-all">
+                        <div className="group border-2 border-retro-grid hover:border-retro-pink bg-black p-4 flex items-center justify-between transition-all h-full">
                             <div>
                                 <div className="font-pixel text-sm text-white group-hover:text-retro-pink">CONSOLE VAULT</div>
                                 <div className="font-mono text-xs text-gray-500">Hardware Archive</div>
@@ -105,17 +49,6 @@ export default async function ControlRoomPage() {
                 </div>
             </div>
 
-            {/* Ad / Promo Box */}
-            <div className="border-2 border-dashed border-gray-700 p-6 text-center opacity-75 hover:opacity-100 transition-opacity">
-                <div className="font-pixel text-xs text-gray-500 mb-2">ADVERTISEMENT</div>
-                <div className="font-pixel text-xl text-retro-neon animate-pulse mb-2">POWER UP!</div>
-                <p className="font-mono text-xs text-gray-400">Join the Retro Circuit crew today. Sign up for exclusive updates.</p>
-                <Link href="/login" className="inline-block mt-4">
-                    <button className="bg-retro-grid hover:bg-retro-neon hover:text-black text-white font-mono text-xs px-4 py-2 transition-colors">
-                        LOGIN NOW
-                    </button>
-                </Link>
-            </div>
         </div>
 
       </div>

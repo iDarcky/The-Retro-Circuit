@@ -3,13 +3,11 @@
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { fetchUserCollection } from '../../lib/api';
 import { retroAuth } from '../../lib/auth';
 import { supabase } from '../../lib/supabase/singleton';
 import Button from '../../components/ui/Button';
 import AvatarSelector from '../../components/ui/AvatarSelector';
 import { RETRO_AVATARS } from '../../data/avatars';
-import { UserCollectionItem } from '../../lib/types';
 import type { User } from '@supabase/supabase-js';
 
 type AuthMode = 'LOGIN' | 'SIGNUP' | 'RECOVERY' | 'UPDATE_PASSWORD' | 'PROFILE';
@@ -26,9 +24,6 @@ export default function LoginPage() {
     const [isAdmin, setIsAdmin] = useState(false);
     const [avatarId, setAvatarId] = useState('pilot');
     
-    // Collection State
-    const [collection, setCollection] = useState<UserCollectionItem[]>([]);
-    
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'error' | 'success', text: string } | null>(null);
     const [editingAvatar, setEditingAvatar] = useState(false);
@@ -41,13 +36,9 @@ export default function LoginPage() {
                 setMode('PROFILE');
                 setAvatarId(currentUser.user_metadata?.avatar_id || 'pilot');
                 
-                // Check Admin & Collection
-                const [adminStatus, col] = await Promise.all([
-                    retroAuth.isAdmin(),
-                    fetchUserCollection()
-                ]);
+                // Check Admin
+                const adminStatus = await retroAuth.isAdmin();
                 setIsAdmin(adminStatus);
-                setCollection(col);
             }
         };
         checkUser();
@@ -67,17 +58,12 @@ export default function LoginPage() {
                 setAvatarId(session.user.user_metadata?.avatar_id || 'pilot');
                 setMode('PROFILE');
                 
-                const [adminStatus, col] = await Promise.all([
-                    retroAuth.isAdmin(),
-                    fetchUserCollection()
-                ]);
+                const adminStatus = await retroAuth.isAdmin();
                 setIsAdmin(adminStatus);
-                setCollection(col);
             } else if (event === "SIGNED_OUT") {
                 setUser(null);
                 setMode('LOGIN');
                 setIsAdmin(false);
-                setCollection([]);
             }
         });
         return () => subscription.unsubscribe();
@@ -141,9 +127,9 @@ export default function LoginPage() {
 
         return (
             <div className="w-full max-w-4xl mx-auto p-4 animate-fadeIn">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="flex justify-center">
                     {/* User Card */}
-                    <div className="bg-retro-dark border-2 border-retro-grid p-6 text-center h-fit">
+                    <div className="bg-retro-dark border-2 border-retro-grid p-6 text-center h-fit w-full max-w-md">
                         <div className="relative inline-block mb-4">
                             <div className="w-24 h-24 border-2 border-retro-neon rounded-full flex items-center justify-center bg-retro-neon/10 mx-auto shadow-[0_0_15px_rgba(0,255,157,0.3)]">
                                 <CurrentAvatar className="w-16 h-16 text-retro-neon" />
@@ -174,47 +160,6 @@ export default function LoginPage() {
                         )}
 
                         <Button onClick={handleLogout} variant="danger" className="w-full text-xs">DISCONNECT</Button>
-                    </div>
-
-                    {/* Collection */}
-                    <div className="md:col-span-2">
-                        <h3 className="font-pixel text-retro-blue mb-4 text-xl border-b border-retro-grid pb-2">MY COLLECTION</h3>
-                        
-                        {collection.length === 0 ? (
-                            <div className="text-center py-12 border-2 border-dashed border-gray-800 text-gray-600 font-mono">
-                                NO ITEMS IN INVENTORY.
-                                <br />
-                                <Link href="/archive" className="text-retro-neon underline mt-2 inline-block">BROWSE GAMES</Link>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
-                                {collection.map((item) => (
-                                    <Link 
-                                        key={item.id} 
-                                        href={item.item_type === 'GAME' ? `/archive/${item.item_id}` : `/console/${item.item_id}`}
-                                        className="flex items-center gap-3 p-3 border border-retro-grid bg-black/40 hover:bg-retro-grid/20 transition-colors group relative overflow-hidden"
-                                    >
-                                        <div className={`absolute left-0 top-0 bottom-0 w-1 ${item.status === 'OWN' ? 'bg-retro-neon' : 'bg-retro-pink'}`}></div>
-                                        <div className="w-12 h-12 bg-black flex-shrink-0 flex items-center justify-center border border-gray-800 ml-2">
-                                            {item.item_image ? (
-                                                <img src={item.item_image} className="w-full h-full object-cover" />
-                                            ) : (
-                                                <span className="text-[10px] text-gray-600">IMG</span>
-                                            )}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="text-xs font-pixel text-white truncate group-hover:text-retro-neon">{item.item_name}</div>
-                                            <div className="flex justify-between items-center mt-1">
-                                                <span className={`text-[10px] font-mono px-1 ${item.status === 'OWN' ? 'bg-retro-neon/20 text-retro-neon' : 'bg-retro-pink/20 text-retro-pink'}`}>
-                                                    {item.status === 'OWN' ? 'OWNED' : 'WISHLIST'}
-                                                </span>
-                                                <span className="text-[9px] font-mono text-gray-500">{item.item_type}</span>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        )}
                     </div>
                 </div>
             </div>

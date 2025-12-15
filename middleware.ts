@@ -3,10 +3,6 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-  // DIAGNOSTIC LOG: Request Start
-  console.log(`[Middleware] ------------------------------------------------`);
-  console.log(`[Middleware] Processing: ${request.method} ${request.nextUrl.pathname}`);
-
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -23,8 +19,6 @@ export async function middleware(request: NextRequest) {
         },
         set(name: string, value: string, options: CookieOptions) {
           // If the supabase client updates the session, we must update the request/response cookies
-          // DIAGNOSTIC LOG: Cookie Set
-          console.log(`[Middleware] Setting cookie: ${name}`);
           request.cookies.set({
             name,
             value,
@@ -42,8 +36,6 @@ export async function middleware(request: NextRequest) {
           });
         },
         remove(name: string, options: CookieOptions) {
-          // DIAGNOSTIC LOG: Cookie Remove
-          console.log(`[Middleware] Removing cookie: ${name}`);
           request.cookies.set({
             name,
             value: '',
@@ -65,22 +57,13 @@ export async function middleware(request: NextRequest) {
   );
 
   // 2. Refresh the session
-  const { data: { user }, error } = await supabase.auth.getUser();
-
-  // DIAGNOSTIC LOG: User Status
-  if (user) {
-      console.log(`[Middleware] Session Valid. User: ${user.email} (${user.id})`);
-  } else {
-      console.log(`[Middleware] No Session Found. Error: ${error?.message || 'None'}`);
-  }
+  const { data: { user } } = await supabase.auth.getUser();
 
   // 3. Protect Admin Routes
   if (request.nextUrl.pathname.startsWith('/admin')) {
-    console.log('[Middleware] Checking Admin Route Access...');
     
     // Check Authentication
     if (!user) {
-      console.log('[Middleware] Access Denied: No User. Redirecting to Login.');
       return NextResponse.redirect(new URL('/login', request.url));
     }
 
@@ -95,15 +78,10 @@ export async function middleware(request: NextRequest) {
         console.error('[Middleware] Profile Fetch Error:', profileError.message);
     }
 
-    console.log(`[Middleware] User Role: ${profile?.role}`);
-
     // If no profile or role is not 'admin', redirect to home
     if (!profile || profile.role !== 'admin') {
-      console.log('[Middleware] Access Denied: Not Admin. Redirecting to Home.');
       return NextResponse.redirect(new URL('/', request.url));
     }
-    
-    console.log('[Middleware] Admin Access Granted.');
   }
 
   return response;

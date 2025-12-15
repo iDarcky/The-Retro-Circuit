@@ -1,13 +1,4 @@
 
-export type NewsCategory = 'Hardware' | 'Software' | 'Industry' | 'Rumor' | 'Mods' | 'Events' | 'Homebrew';
-
-export interface NewsItem {
-  headline: string;
-  date: string;
-  summary: string;
-  category: NewsCategory;
-}
-
 export interface SearchResult {
     type: 'GAME' | 'CONSOLE' | 'FABRICATOR';
     id: string;
@@ -33,37 +24,6 @@ export interface ComparisonResult {
   points: ComparisonPoint[];
   consoleAImage?: string;
   consoleBImage?: string;
-}
-
-export interface GameOfTheWeekData {
-  id?: string;
-  slug?: string;
-  title: string;
-  developer: string;
-  year: string;
-  genre: string;
-  content: string;
-  whyItMatters: string;
-  image?: string;
-  rating?: number;
-  console_slug?: string;
-}
-
-export interface TimelineEvent {
-  year: string;
-  name: string;
-  manufacturer: string;
-  description: string;
-}
-
-export interface UserCollectionItem {
-  id: string;
-  user_id: string;
-  item_id: string;
-  item_type: 'GAME' | 'CONSOLE';
-  status: 'OWN' | 'WANT';
-  item_name?: string;
-  item_image?: string;
 }
 
 export interface UserProfile {

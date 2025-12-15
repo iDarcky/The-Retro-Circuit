@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
 import { createClient } from '../../../lib/supabase/server';
-import { fetchConsoleBySlug, fetchGamesByConsole } from '../../../lib/api';
+import { fetchConsoleBySlug } from '../../../lib/api';
 import Button from '../../../components/ui/Button';
 import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
 
@@ -50,10 +50,7 @@ export async function generateStaticParams() {
 
 export default async function ConsoleSpecsPage({ params }: Props) {
   // Parallel Fetching using API helpers
-  const [consoleData, games] = await Promise.all([
-    fetchConsoleBySlug(params.slug),
-    fetchGamesByConsole(params.slug)
-  ]);
+  const consoleData = await fetchConsoleBySlug(params.slug);
 
   if (!consoleData) {
     return (
@@ -67,5 +64,5 @@ export default async function ConsoleSpecsPage({ params }: Props) {
     );
   }
 
-  return <ConsoleDetailView consoleData={consoleData} games={games} />;
+  return <ConsoleDetailView consoleData={consoleData} />;
 }
