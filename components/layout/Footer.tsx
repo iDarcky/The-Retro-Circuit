@@ -12,7 +12,7 @@ const Footer: FC = () => {
         {/* Left: Branding */}
         <div className="flex items-center min-w-[120px]">
            <Link href="/" className="hover:opacity-80 transition-opacity">
-               <span className="font-mono text-lg font-bold text-retro-neon tracking-wider">
+               <span className="font-mono text-sm font-bold text-retro-neon tracking-wider">
                   [ THE RETRO CIRCUIT ]
                </span>
            </Link>
