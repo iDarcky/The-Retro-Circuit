@@ -6,11 +6,9 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useSound } from '../ui/SoundContext';
 import { useSearch } from '../ui/SearchContext';
-import { retroAuth } from '../../lib/auth';
-import { checkDatabaseConnection } from '../../lib/api';
-import { supabase, isSupabaseConfigured } from '../../lib/supabase/singleton';
 import MobileBottomNav from './MobileBottomNav';
 import MobileTopBar from './MobileTopBar';
+import DesktopHeader from './DesktopHeader';
 import { 
   IconDatabase, IconVS,
   IconHome, IconChip, IconSearch
@@ -46,46 +44,7 @@ const SidebarItem = ({ to, icon: Icon, label, exact = false }: { to: string, ico
 
 const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const [dbStatus, setDbStatus] = useState<'CONNECTING' | 'ONLINE' | 'OFFLINE'>('CONNECTING');
-  const [isAdmin, setIsAdmin] = useState(false);
   const { openSearch } = useSearch();
-
-  useEffect(() => {
-    // 1. Setup Auth Listener Immediately
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, _session) => {
-        // Re-verify admin status on auth change
-        const newAdminStatus = await retroAuth.isAdmin();
-        setIsAdmin(newAdminStatus);
-    });
-
-    // 2. Perform Async Initialization
-    const init = async () => {
-        // Auth: Check local session first (Fast)
-        const session = await retroAuth.getSession();
-        if (session?.user) {
-            // Non-blocking admin check
-            retroAuth.isAdmin().then(setIsAdmin);
-        } else {
-            // Server fallback (Slower but accurate)
-            const currentUser = await retroAuth.getUser();
-            if (currentUser) {
-                retroAuth.isAdmin().then(setIsAdmin);
-            }
-        }
-        
-        // DB Connection: Perform last as it can be slow
-        if (!isSupabaseConfigured) {
-            setDbStatus('OFFLINE');
-        } else {
-            const connected = await checkDatabaseConnection();
-            setDbStatus(connected ? 'ONLINE' : 'OFFLINE');
-        }
-    };
-
-    init();
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   // Close sidebar on route change (mobile)
   const pathname = usePathname();
@@ -94,7 +53,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
   }, [pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row relative overflow-x-hidden bg-retro-dark">
+    <div className="min-h-screen flex flex-col relative overflow-x-hidden bg-retro-dark">
       
       {/* BACKGROUND GRID */}
       <div className="absolute inset-0 z-0 pointer-events-none" 
@@ -111,6 +70,9 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         isSidebarOpen={isSidebarOpen}
       />
 
+      {/* DESKTOP HEADER (Sticky, z-50) */}
+      <DesktopHeader />
+
       {/* MOBILE DRAWER BACKDROP (z-50) */}
       {isSidebarOpen && (
           <div 
@@ -119,7 +81,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
           />
       )}
 
-      {/* SIDEBAR (Responsive Drawer: Right on Mobile, Left on Desktop) */}
+      {/* SIDEBAR (Responsive Drawer: Right on Mobile, Hidden on Desktop) */}
       {/* Mobile Z-Index must be > Backdrop (50) and > Bottom Nav (50) -> So we use 60 */}
       <aside className={`
           flex flex-col h-screen transition-transform duration-300 ease-out shadow-[0_0_50px_rgba(0,0,0,0.5)]
@@ -127,11 +89,11 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
           /* Mobile: Fixed Right, Slide from Right, Neon Left Border, High Z-Index */
           fixed top-0 right-0 w-72 bg-black border-l border-retro-neon z-[60]
           
-          /* Desktop: Sticky Left, Always Visible, Standard Border, Normal Z-Index */
-          md:sticky md:top-0 md:left-0 md:right-auto md:w-64 md:bg-retro-dark/95 md:border-l-0 md:border-r md:border-retro-grid md:shadow-none md:z-auto
+          /* Desktop: HIDDEN - replaced by DesktopHeader */
+          md:hidden
 
           /* Animation State Logic */
-          ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
+          ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}
       `}>
         <div className="p-6 border-b border-retro-grid flex items-center justify-center bg-black/20 min-h-[80px]">
              <div className="relative group text-center">
@@ -175,20 +137,10 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
            <div className="px-6 mt-6 mb-2 text-xs font-mono text-retro-pink uppercase tracking-widest opacity-80">TOOLS</div>
            <SidebarItem to="/arena" icon={IconVS} label="VS MODE" />
         </nav>
-
-        {/* Status Footer */}
-        <div className="p-2 bg-black text-[10px] font-mono text-center flex justify-end items-center px-4 text-gray-600">
-            {isAdmin && (
-                <span className={`flex items-center gap-1 ${dbStatus === 'ONLINE' ? 'text-retro-neon' : 'text-red-500'}`}>
-                    <span className={`w-2 h-2 rounded-full ${dbStatus === 'ONLINE' ? 'bg-retro-neon' : 'bg-red-500'} animate-pulse`}></span>
-                    {dbStatus === 'ONLINE' ? 'DB ONLINE' : 'OFFLINE'}
-                </span>
-            )}
-        </div>
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 relative z-10 flex flex-col h-screen md:h-screen overflow-hidden pt-16 md:pt-0">
+      <main className="flex-1 relative z-10 flex flex-col h-screen md:h-auto overflow-hidden pt-16 md:pt-0">
         {/* Scrollable Content Container: Set to flex-col to ensure children fill height properly */}
         <div className="flex-1 overflow-y-auto custom-scrollbar bg-retro-dark/80 pb-24 md:pb-0 flex flex-col min-h-0">
              {children}
