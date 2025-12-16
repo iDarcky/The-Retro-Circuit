@@ -1,6 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import Logo from '@/components/ui/Logo';
 
 export default function LandingHero() {
   return (
