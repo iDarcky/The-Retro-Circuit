@@ -68,29 +68,6 @@ body {
 @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* --- 3D Utilities --- */
-.transform-style-3d {
-  transform-style: preserve-3d;
-}
-
-.backface-hidden {
-  backface-visibility: hidden;
-}
-
-/* --- Cartridge Drop Animation --- */
-@keyframes cartridgeDrop {
-  0% {
-    transform: translateY(0px); /* Relative to its absolute position */
-  }
-  100% {
-    transform: translateY(220px); /* Moves down into the slot */
-  }
-}
-
-.animate-cartridgeDrop {
-  animation: cartridgeDrop 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-  animation-delay: 0.5s; /* Wait 0.5s before dropping */
-}
 
 .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
 
