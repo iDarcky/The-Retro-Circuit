@@ -1,11 +1,29 @@
-export const revalidate = 60;
+'use client';
 
-import Gameboy from '../components/ui/Gameboy';
+import React, { useState } from 'react';
+import DesignSwitcher, { DesignVariant } from '@/components/landing/DesignSwitcher';
+import LandingDashboard from '@/components/landing/LandingDashboard';
+import LandingHero from '@/components/landing/LandingHero';
+import LandingTerminal from '@/components/landing/LandingTerminal';
+import LandingMarketing from '@/components/landing/LandingMarketing';
 
-export default async function ControlRoomPage() {
+export default function LandingPage() {
+  const [design, setDesign] = useState<DesignVariant>('dashboard');
+
+  const renderDesign = () => {
+    switch (design) {
+      case 'dashboard': return <LandingDashboard />;
+      case 'hero': return <LandingHero />;
+      case 'terminal': return <LandingTerminal />;
+      case 'marketing': return <LandingMarketing />;
+      default: return <LandingDashboard />;
+    }
+  };
+
   return (
-    <div className="w-full h-full min-h-[calc(100vh-64px)] flex items-center justify-center p-4 bg-retro-dark">
-        <Gameboy />
+    <div className="relative w-full min-h-screen">
+       <DesignSwitcher current={design} onChange={setDesign} />
+       {renderDesign()}
     </div>
   );
 }
