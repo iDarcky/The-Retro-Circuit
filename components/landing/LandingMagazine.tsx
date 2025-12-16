@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Share2, Bookmark, ChevronRight, Play } from 'lucide-react';
+import { Share2, Bookmark, ChevronRight } from 'lucide-react';
 
 export default function LandingMagazine() {
   return (
