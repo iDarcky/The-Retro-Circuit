@@ -11,6 +11,7 @@ import { checkDatabaseConnection } from '../../lib/api';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase/singleton';
 import MobileBottomNav from './MobileBottomNav';
 import MobileTopBar from './MobileTopBar';
+import DesktopHeader from './DesktopHeader';
 import { 
   IconDatabase, IconVS,
   IconHome, IconChip, IconSearch
@@ -94,7 +95,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
   }, [pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row relative overflow-x-hidden bg-retro-dark">
+    <div className="min-h-screen flex flex-col relative overflow-x-hidden bg-retro-dark">
       
       {/* BACKGROUND GRID */}
       <div className="absolute inset-0 z-0 pointer-events-none" 
@@ -111,6 +112,9 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         isSidebarOpen={isSidebarOpen}
       />
 
+      {/* DESKTOP HEADER (New Top Nav) */}
+      <DesktopHeader />
+
       {/* MOBILE DRAWER BACKDROP (z-50) */}
       {isSidebarOpen && (
           <div 
@@ -119,19 +123,19 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
           />
       )}
 
-      {/* SIDEBAR (Responsive Drawer: Right on Mobile, Left on Desktop) */}
-      {/* Mobile Z-Index must be > Backdrop (50) and > Bottom Nav (50) -> So we use 60 */}
+      {/* MOBILE SIDEBAR (Drawer: Right on Mobile) */}
+      {/* Hidden on Desktop now as we use Top Nav */}
       <aside className={`
           flex flex-col h-screen transition-transform duration-300 ease-out shadow-[0_0_50px_rgba(0,0,0,0.5)]
           
           /* Mobile: Fixed Right, Slide from Right, Neon Left Border, High Z-Index */
           fixed top-0 right-0 w-72 bg-black border-l border-retro-neon z-[60]
           
-          /* Desktop: Sticky Left, Always Visible, Standard Border, Normal Z-Index */
-          md:sticky md:top-0 md:left-0 md:right-auto md:w-64 md:bg-retro-dark/95 md:border-l-0 md:border-r md:border-retro-grid md:shadow-none md:z-auto
+          /* Desktop: Hidden */
+          md:hidden
 
           /* Animation State Logic */
-          ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
+          ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}
       `}>
         <div className="p-6 border-b border-retro-grid flex items-center justify-center bg-black/20 min-h-[80px]">
              <div className="relative group text-center">
@@ -188,8 +192,8 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 relative z-10 flex flex-col h-screen md:h-screen overflow-hidden pt-16 md:pt-0">
-        {/* Scrollable Content Container: Set to flex-col to ensure children fill height properly */}
+      <main className="flex-1 relative z-10 flex flex-col min-h-screen pt-16 md:pt-16">
+        {/* Scrollable Content Container */}
         <div className="flex-1 overflow-y-auto custom-scrollbar bg-retro-dark/80 pb-24 md:pb-0 flex flex-col min-h-0">
              {children}
         </div>

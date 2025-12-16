@@ -1,6 +1,5 @@
 export const revalidate = 60;
 
-import Link from 'next/link';
 import DesignSwitcher from '@/components/landing/DesignSwitcher';
 
 export default async function ControlRoomPage() {
