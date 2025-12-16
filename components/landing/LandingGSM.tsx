@@ -1,6 +1,5 @@
 import React from 'react';
 import { Search, Battery, Cpu, Wifi } from 'lucide-react';
-import Link from 'next/link';
 
 export default function LandingGSM() {
   return (
