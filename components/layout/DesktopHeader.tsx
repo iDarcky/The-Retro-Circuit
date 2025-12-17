@@ -61,13 +61,6 @@ export default function DesktopHeader() {
               ))}
           </div>
       </nav>
-
-      {/* Marquee Banner (News Ticker) */}
-      <div className="bg-retro-pink text-black overflow-hidden py-2 font-bold text-lg border-b-4 border-black">
-        <div className="whitespace-nowrap animate-marquee">
-            /// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING /// /// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING ///
-        </div>
-      </div>
     </div>
   );
 }
