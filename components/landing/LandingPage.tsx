@@ -18,9 +18,9 @@ export default async function LandingPage() {
 
       {/*
           BLOCK 1: Title Box
-          Height: 156px, Background: White, Border: 4px Black
+          Height: 156px, Background: White, Border: 4px Slate
       */}
-      <div className="h-[156px] w-full bg-white border-4 border-black flex items-center justify-start pl-4 md:pl-8">
+      <div className="h-[156px] w-full bg-white border-4 border-slate-600 flex items-center justify-start pl-4 md:pl-8">
         <h1 className="text-black font-pixel text-4xl md:text-6xl tracking-tight leading-none flex flex-col">
           <span>RETRO</span>
           <span>CIRCUIT</span>
@@ -29,9 +29,9 @@ export default async function LandingPage() {
 
       {/*
           BLOCK 2: Marquee Box (Static)
-          Height: 52px, Background: Pink, Border: 4px Black (Top merged)
+          Height: 52px, Background: Pink, Border: 4px Slate (Top merged)
       */}
-      <div className="h-[52px] w-full bg-retro-pink border-x-4 border-b-4 border-black flex items-center pl-4 md:pl-8 overflow-hidden">
+      <div className="h-[52px] w-full bg-retro-pink border-x-4 border-b-4 border-slate-600 flex items-center pl-4 md:pl-8 overflow-hidden">
         <div className="font-bold text-black text-[24px] whitespace-nowrap">
           /// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING ///
         </div>
@@ -41,10 +41,10 @@ export default async function LandingPage() {
           BLOCK 3: Main Content Grid (Existing Content)
           Wrapped in border (Top merged)
       */}
-      <div className="grid grid-cols-1 md:grid-cols-12 border-x-4 border-b-4 border-black">
+      <div className="grid grid-cols-1 md:grid-cols-12 border-x-4 border-b-4 border-slate-600">
 
         {/* Left Column (Hero / Database) - 7/12 columns */}
-        <div className="col-span-1 md:col-span-7 flex flex-col border-b-4 md:border-b-0 md:border-r-4 border-black min-h-[600px] bg-retro-dark relative p-8 md:p-12 justify-between">
+        <div className="col-span-1 md:col-span-7 flex flex-col border-b-4 md:border-b-0 md:border-r-4 border-slate-600 min-h-[600px] bg-retro-dark relative p-8 md:p-12 justify-between">
             <div className="absolute top-4 right-4 text-xs text-gray-500">
                 EST. 2024<br/>ARCHIVE_V1.0
             </div>
@@ -77,24 +77,24 @@ export default async function LandingPage() {
         <div className="col-span-1 md:col-span-5 flex flex-col">
 
             {/* VS MODE */}
-            <Link href="/arena" className="h-[200px] bg-retro-neon text-black p-8 border-b-4 border-black flex flex-col justify-between hover:bg-white transition-colors group relative overflow-hidden">
+            <Link href="/arena" className="h-[200px] bg-retro-dark text-white p-8 border-b-4 border-slate-600 flex flex-col justify-between hover:bg-white hover:text-black transition-colors group relative overflow-hidden">
                 <div className="flex justify-between items-start z-10">
                     <h3 className="text-4xl font-black tracking-tighter">VS MODE</h3>
-                    <span className="font-bold text-xs border border-black px-2 py-1">[COMPARE]</span>
+                    <span className="font-bold text-xs border border-white px-2 py-1">[COMPARE]</span>
                 </div>
                 <ArrowUpRight size={48} className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-2 group-hover:-translate-y-2" />
             </Link>
 
             {/* NEWS */}
-            <Link href="/news" className="h-[200px] bg-retro-blue text-black p-8 border-b-4 border-black flex flex-col justify-between hover:bg-white transition-colors group relative overflow-hidden">
+            <Link href="/news" className="h-[200px] bg-retro-dark text-white p-8 border-b-4 border-slate-600 flex flex-col justify-between hover:bg-white hover:text-black transition-colors group relative overflow-hidden">
                 <div className="flex justify-between items-start z-10">
                     <h3 className="text-4xl font-black tracking-tighter">NEWS</h3>
-                    <span className="font-bold text-xs border border-black px-2 py-1">[READ]</span>
+                    <span className="font-bold text-xs border border-white px-2 py-1">[READ]</span>
                 </div>
             </Link>
 
             {/* JOIN */}
-            <Link href="/login" className="h-[200px] bg-black text-white p-8 flex flex-col justify-center items-center hover:bg-retro-pink hover:text-black transition-colors group text-center border-b-4 md:border-b-0 border-black">
+            <Link href="/login" className="h-[200px] bg-black text-white p-8 flex flex-col justify-center items-center hover:bg-retro-pink hover:text-black transition-colors group text-center border-b-4 md:border-b-0 border-slate-600">
                 <h3 className="text-3xl font-bold tracking-widest group-hover:scale-110 transition-transform">
                     JOIN THE CIRCUIT
                 </h3>
