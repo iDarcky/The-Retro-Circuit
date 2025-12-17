@@ -18,13 +18,13 @@ export default function AboutPage() {
         </div>
         <h1 className="text-4xl md:text-6xl font-pixel text-white mb-4 drop-shadow-[4px_4px_0_rgba(255,0,255,0.5)]">
           THE RETRO <br />
-          <span className="text-retro-neon">CIRCUIT //</span>
+          <span className="text-retro-neon">CIRCUIT {'//'}</span>
         </h1>
         <div className="font-mono text-xs md:text-sm text-retro-blue flex gap-4">
             <span>FIRMWARE: {siteConfig.version}</span>
-            <span>//</span>
+            <span>{'//'}</span>
             <span>EST: {siteConfig.est}</span>
-            <span>//</span>
+            <span>{'//'}</span>
             <span className="animate-pulse">STATUS: OPERATIONAL</span>
         </div>
       </div>
@@ -103,7 +103,7 @@ export default function AboutPage() {
             <div>
                 <div className="mb-2">
                     <span className="font-pixel text-lg text-white">PRODUCT LEAD</span>
-                    <span className="mx-2 text-gray-600">//</span>
+                <span className="mx-2 text-gray-600">{'//'}</span>
                     <span className="font-mono text-xs text-retro-pink border border-retro-pink px-2 py-0.5">ADMIN_ACCESS</span>
                 </div>
                 <p className="font-mono text-gray-400 leading-relaxed text-sm mb-4">

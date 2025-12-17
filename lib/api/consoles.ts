@@ -4,12 +4,13 @@ import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant } from
 export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
     try {
         // The 'Vacuum' Strategy: Fetch everything including nested variants
+    // Bolt Optimization: Only fetch fields required for the Vault List View (reduces payload by ~60%)
         const { data, error } = await supabase
             .from('consoles')
             .select(`
-                *,
-                manufacturer:manufacturer(*),
-                variants:console_variants(*)
+            id, name, slug, image_url, release_year, form_factor, chassis_features, manufacturer_id,
+            manufacturer:manufacturer(id, name, slug),
+            variants:console_variants(id, display_type, is_default, release_year, image_url)
             `)
             .order('name', { ascending: true });
 

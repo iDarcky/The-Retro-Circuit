@@ -148,9 +148,9 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                         <Link href={`/fabricators/${consoleData.manufacturer?.slug}`} className="hover:text-retro-neon transition-colors border-b border-transparent hover:border-retro-neon">
                             {consoleData.manufacturer?.name.toUpperCase()}
                         </Link>
-                        <span>//</span>
+                        <span>{'//'}</span>
                         <span className="text-retro-pink">{currentYear || 'TBA'}</span>
-                        <span>//</span>
+                        <span>{'//'}</span>
                         <span>{consoleData.generation}</span>
                      </div>
                 </div>
@@ -299,7 +299,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                         {/* 3. DISPLAY */}
                         <SpecCard title="DISPLAY">
                             <div className="flex justify-between items-end mb-2">
-                                <span className="font-mono text-2xl text-white">{mergedSpecs.screen_size_inch}"</span>
+                                <span className="font-mono text-2xl text-white">{mergedSpecs.screen_size_inch}&quot;</span>
                                 <span className="font-mono text-xs text-retro-blue border border-retro-blue px-1.5">{mergedSpecs.display_type}</span>
                             </div>
                             <SpecField label="Resolution" value={`${mergedSpecs.screen_resolution_x} x ${mergedSpecs.screen_resolution_y}`} />
