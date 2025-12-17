@@ -1,39 +1,14 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowDownLeft, ArrowUpRight, Terminal, Cpu, Box, Grid } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, Cpu, Box, Grid } from 'lucide-react';
 
-export default function LandingBrutalist() {
+export default function LandingPage() {
   return (
     <div className="min-h-screen bg-retro-dark text-retro-neon font-mono selection:bg-retro-pink selection:text-white border-[16px] border-retro-dark overflow-x-hidden">
 
-      {/* Brutalist Sticky Nav */}
-      <nav className="sticky top-0 z-50 bg-retro-dark border-b-4 border-retro-neon p-4 flex justify-between items-center shadow-[0_10px_0_rgba(0,0,0,0.5)]">
-        <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-retro-neon flex items-center justify-center border-2 border-black">
-                <Terminal size={24} className="text-black" />
-            </div>
-            <div className="flex flex-col">
-                <span className="font-pixel text-xl leading-none text-white">RETRO_CIRCUIT</span>
-                <span className="text-xs bg-retro-pink text-black px-1 mt-1 w-max font-bold">RAW DATA ARCHIVE</span>
-            </div>
-        </div>
-
-        <div className="hidden md:flex gap-8">
-            <Link href="/console" className="uppercase font-bold hover:bg-retro-neon hover:text-black px-2 transition-colors">
-                [DIR_01] CONSOLES
-            </Link>
-            <Link href="/fabricators" className="uppercase font-bold hover:bg-retro-blue hover:text-black px-2 transition-colors">
-                [DIR_02] FABRICATORS
-            </Link>
-            <Link href="/arena" className="uppercase font-bold hover:bg-retro-pink hover:text-black px-2 transition-colors">
-                [EXEC] VS_MODE
-            </Link>
-        </div>
-
-        <Link href="/login" className="border-2 border-retro-neon px-6 py-2 font-bold hover:bg-retro-neon hover:text-black transition-all shadow-[4px_4px_0_white] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0_white]">
-            INIT_SESSION
-        </Link>
-      </nav>
+      {/*
+          NOTE: Navigation is now handled globally by DesktopHeader (Brutalist Style)
+      */}
 
       {/* Main Grid Layout */}
       <div className="grid grid-cols-1 md:grid-cols-12 min-h-[calc(100vh-100px)] border-l-2 border-retro-grid">

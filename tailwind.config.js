@@ -18,7 +18,7 @@ module.exports = {
       },
       fontFamily: {
         'pixel': ['var(--font-press-start)', 'cursive'],
-        'mono': ['var(--font-share-tech)', 'monospace']
+        'mono': ['var(--font-mono)', 'monospace']
       }
     },
   },

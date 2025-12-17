@@ -1,16 +1,11 @@
 export const revalidate = 60;
 
-import DesignSwitcher from '@/components/landing/DesignSwitcher';
+import LandingPage from '@/components/landing/LandingPage';
 
 export default async function ControlRoomPage() {
   return (
     <div className="w-full">
-      <DesignSwitcher />
-      {/*
-        The DesignSwitcher component now handles the rendering of the entire landing page
-        based on the selected design. The original content is replaced by the specific
-        Landing Component selected in the switcher.
-      */}
+      <LandingPage />
     </div>
   );
 }
