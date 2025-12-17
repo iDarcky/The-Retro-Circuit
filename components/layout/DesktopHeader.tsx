@@ -17,7 +17,7 @@ export default function DesktopHeader() {
   ];
 
   return (
-    <nav className="hidden md:flex sticky top-0 z-50 bg-retro-dark border-b-4 border-retro-neon px-6 py-3 justify-between items-center shadow-[0_10px_0_rgba(0,0,0,0.5)]">
+    <nav className="hidden md:flex sticky top-0 z-50 bg-retro-dark border-b-4 border-black px-6 py-3 justify-between items-center shadow-[0_10px_0_rgba(0,0,0,0.5)]">
 
         {/* LEFT: Logo */}
         <div className="flex items-center">
