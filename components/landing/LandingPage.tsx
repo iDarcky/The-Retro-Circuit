@@ -10,7 +10,7 @@ export default async function LandingPage() {
 
   return (
     // Outer Container: 16px Padding (p-4)
-    <div className="min-h-screen bg-retro-dark p-4 font-mono selection:bg-retro-pink selection:text-white flex flex-col gap-4">
+    <div className="min-h-screen bg-retro-dark p-4 font-mono selection:bg-retro-pink selection:text-white flex flex-col">
       {/*
           NOTE: The parent MainLayout removes padding-top, and DesktopHeader is fixed/sticky above.
           The p-4 here creates the "floating box" effect with 16px margins on all sides.
@@ -20,27 +20,28 @@ export default async function LandingPage() {
           BLOCK 1: Title Box
           Height: 156px, Background: White, Border: 4px Black
       */}
-      <div className="h-[156px] w-full bg-white border-4 border-black flex items-center justify-center">
-        <h1 className="text-black font-pixel text-4xl md:text-6xl tracking-tight">
-          RETRO CIRCUIT
+      <div className="h-[156px] w-full bg-white border-4 border-black flex items-center justify-start pl-4 md:pl-8">
+        <h1 className="text-black font-pixel text-4xl md:text-6xl tracking-tight leading-none flex flex-col">
+          <span>RETRO</span>
+          <span>CIRCUIT</span>
         </h1>
       </div>
 
       {/*
-          BLOCK 2: Marquee Box
-          Height: 52px, Background: Pink, Border: 4px Black
+          BLOCK 2: Marquee Box (Static)
+          Height: 52px, Background: Pink, Border: 4px Black (Top merged)
       */}
-      <div className="h-[52px] w-full bg-retro-pink border-4 border-black overflow-hidden flex items-center">
-        <div className="whitespace-nowrap animate-marquee font-bold text-black text-lg">
-          /// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING /// /// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING /// /// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING ///
+      <div className="h-[52px] w-full bg-retro-pink border-x-4 border-b-4 border-black flex items-center pl-4 md:pl-8 overflow-hidden">
+        <div className="font-bold text-black text-[24px] whitespace-nowrap">
+          /// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING ///
         </div>
       </div>
 
       {/*
           BLOCK 3: Main Content Grid (Existing Content)
-          Wrapped in border-4 to match the style "Use this border everywhere"
+          Wrapped in border (Top merged)
       */}
-      <div className="grid grid-cols-1 md:grid-cols-12 border-4 border-black">
+      <div className="grid grid-cols-1 md:grid-cols-12 border-x-4 border-b-4 border-black">
 
         {/* Left Column (Hero / Database) - 7/12 columns */}
         <div className="col-span-1 md:col-span-7 flex flex-col border-b-4 md:border-b-0 md:border-r-4 border-black min-h-[600px] bg-retro-dark relative p-8 md:p-12 justify-between">
