@@ -19,6 +19,15 @@ module.exports = {
       fontFamily: {
         'pixel': ['var(--font-press-start)', 'cursive'],
         'mono': ['var(--font-mono)', 'monospace']
+      },
+      animation: {
+        marquee: 'marquee 25s linear infinite',
+      },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        }
       }
     },
   },
