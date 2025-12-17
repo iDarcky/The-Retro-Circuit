@@ -10,9 +10,8 @@ test('capture new brutalist design', async ({ page }) => {
   await expect(page.locator('nav').first()).toBeVisible();
 
   // Update verification for new header structure
-  // Using .first() because the footer might have similar text, or strict mode fails if multiple exist
-  await expect(page.locator('span:has-text("THE RETRO")').first()).toBeVisible();
-  await expect(page.locator('span:has-text("CIRCUIT")').first()).toBeVisible();
+  // Logo is now "RETRO_CIRCUIT" on one line
+  await expect(page.locator('span:has-text("RETRO_CIRCUIT")').first()).toBeVisible();
 
   // 2. Hero Text
   await expect(page.locator('h1').filter({ hasText: 'HARDWARE' })).toBeVisible();
@@ -20,8 +19,10 @@ test('capture new brutalist design', async ({ page }) => {
   // 3. Stats Block
   await expect(page.locator('text=CPU ARCHITECTURE')).toBeVisible();
 
-  // 4. Marquee Footer
-  await expect(page.locator('.animate-marquee')).toBeVisible();
+  // 4. Marquee Footer (Now at Top)
+  const marquee = page.locator('.animate-marquee');
+  await expect(marquee).toBeVisible();
+  await expect(marquee).toHaveText(/SYSTEM ONLINE/);
 
   // Screenshot
   await page.waitForLoadState('networkidle');

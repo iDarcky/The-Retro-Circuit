@@ -21,9 +21,8 @@ export default function DesktopHeader() {
 
         {/* LEFT: Logo */}
         <div className="flex items-center">
-            <Link href="/" className="flex flex-col group">
-                <span className="font-pixel text-lg leading-tight text-white group-hover:text-retro-neon transition-colors">THE RETRO</span>
-                <span className="font-pixel text-lg leading-tight text-white group-hover:text-retro-neon transition-colors">CIRCUIT</span>
+            <Link href="/" className="flex items-center group">
+                <span className="font-pixel text-[20px] leading-tight text-white group-hover:text-retro-neon transition-colors">RETRO_CIRCUIT</span>
             </Link>
         </div>
 
@@ -53,7 +52,7 @@ export default function DesktopHeader() {
                     className={`uppercase font-bold px-2 py-1 transition-colors border-2 ${
                         pathname.startsWith(item.path)
                             ? 'bg-retro-neon text-black border-retro-neon'
-                            : 'bg-transparent text-retro-neon border-transparent hover:border-retro-neon'
+                            : 'bg-transparent text-[#9CA3AF] border-transparent hover:border-retro-neon hover:text-white'
                     }`}
                 >
                     {item.name}

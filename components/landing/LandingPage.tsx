@@ -4,17 +4,24 @@ import { ArrowDownLeft, ArrowUpRight, Cpu, Box, Grid } from 'lucide-react';
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-retro-dark text-retro-neon font-mono selection:bg-retro-pink selection:text-white border-[16px] border-retro-dark overflow-x-hidden">
+    <div className="min-h-screen bg-retro-dark text-retro-neon font-mono selection:bg-retro-pink selection:text-white border-[16px] border-retro-dark overflow-x-hidden flex flex-col">
 
       {/*
           NOTE: Navigation is now handled globally by DesktopHeader (Brutalist Style)
       */}
 
+      {/* Marquee Banner (Moved to top as requested) */}
+      <div className="bg-retro-pink text-black overflow-hidden py-2 font-bold text-lg border-b-4 border-black">
+        <div className="whitespace-nowrap animate-marquee">
+            /// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING /// /// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING ///
+        </div>
+      </div>
+
       {/* Main Grid Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-12 min-h-[calc(100vh-100px)] border-l-2 border-retro-grid">
+      <div className="grid grid-cols-1 md:grid-cols-12 flex-1 border-l-2 border-retro-grid">
 
         {/* Left Column (Hero Text) */}
-        <div className="col-span-1 md:col-span-8 p-8 md:p-16 flex flex-col justify-between border-r-2 border-retro-grid relative">
+        <div className="col-span-1 md:col-span-8 p-8 md:p-16 flex flex-col justify-between border-r-2 border-retro-grid relative min-h-[600px]">
             <div className="absolute top-4 right-4 text-xs text-gray-500">
                 SYS_TIME: {new Date().toLocaleTimeString()}
             </div>
@@ -44,17 +51,17 @@ export default function LandingPage() {
 
         {/* Right Column (Stats/Visuals) */}
         <div className="col-span-1 md:col-span-4 bg-black flex flex-col">
-            <div className="h-1/3 border-b-2 border-retro-grid p-8 flex flex-col justify-center hover:bg-retro-grid/20 transition-colors group cursor-pointer">
+            <div className="h-1/3 border-b-2 border-retro-grid p-8 flex flex-col justify-center hover:bg-retro-grid/20 transition-colors group cursor-pointer min-h-[200px]">
                 <Cpu size={48} className="text-retro-blue mb-4 group-hover:animate-spin" />
                 <h3 className="text-2xl font-bold text-white mb-2">CPU ARCHITECTURE</h3>
                 <p className="text-xs text-gray-500">Compare clock speeds, bit-widths, and instruction sets across generations.</p>
             </div>
-            <div className="h-1/3 border-b-2 border-retro-grid p-8 flex flex-col justify-center hover:bg-retro-grid/20 transition-colors group cursor-pointer">
+            <div className="h-1/3 border-b-2 border-retro-grid p-8 flex flex-col justify-center hover:bg-retro-grid/20 transition-colors group cursor-pointer min-h-[200px]">
                 <Box size={48} className="text-retro-pink mb-4 group-hover:animate-bounce" />
                 <h3 className="text-2xl font-bold text-white mb-2">3D RENDERING</h3>
                 <p className="text-xs text-gray-500">Analyze polygon counts, fill rates, and texture capabilities.</p>
             </div>
-            <div className="h-1/3 p-8 flex flex-col justify-center bg-retro-neon text-black">
+            <div className="h-1/3 p-8 flex flex-col justify-center bg-retro-neon text-black min-h-[200px]">
                 <div className="flex justify-between items-start mb-4">
                     <h3 className="text-4xl font-black">VS<br/>MODE</h3>
                     <ArrowUpRight size={48} />
@@ -64,13 +71,6 @@ export default function LandingPage() {
             </div>
         </div>
 
-      </div>
-
-      {/* Marquee Footer */}
-      <div className="bg-retro-pink text-black overflow-hidden py-3 font-bold text-xl border-y-4 border-black">
-        <div className="whitespace-nowrap animate-marquee">
-            NINTENDO // SEGA // SONY // MICROSOFT // ATARI // SNK // NEC // PANASONIC // NINTENDO // SEGA // SONY // MICROSOFT // ATARI // SNK // NEC // PANASONIC
-        </div>
       </div>
 
     </div>
