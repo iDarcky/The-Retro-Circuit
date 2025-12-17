@@ -11,6 +11,10 @@ export default async function LandingPage() {
   return (
     // Outer Container: 16px Padding (p-4)
     <div className="min-h-screen bg-retro-dark p-4 font-mono selection:bg-retro-pink selection:text-white flex flex-col gap-4">
+      {/*
+          NOTE: The parent MainLayout removes padding-top, and DesktopHeader is fixed/sticky above.
+          The p-4 here creates the "floating box" effect with 16px margins on all sides.
+      */}
 
       {/*
           BLOCK 1: Title Box

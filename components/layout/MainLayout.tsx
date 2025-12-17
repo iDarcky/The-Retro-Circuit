@@ -95,7 +95,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
   }, [pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-x-hidden bg-retro-dark">
+    <div className="h-screen flex flex-col relative overflow-hidden bg-retro-dark">
       
       {/* BACKGROUND GRID */}
       <div className="absolute inset-0 z-0 pointer-events-none" 
@@ -192,7 +192,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 relative z-10 flex flex-col min-h-screen pt-16 md:pt-16">
+      <main className="flex-1 relative z-10 flex flex-col min-h-0">
         {/* Scrollable Content Container */}
         <div className="flex-1 overflow-y-auto custom-scrollbar bg-retro-dark/80 pb-24 md:pb-0 flex flex-col min-h-0">
              {children}
