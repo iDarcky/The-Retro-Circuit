@@ -6,8 +6,8 @@ import { siteConfig } from '../../config/site';
 
 const Footer: FC = () => {
   return (
-    <footer className="w-full bg-black shrink-0 z-10 relative before:absolute before:top-0 before:left-0 before:w-full before:h-[1px] before:bg-gradient-to-r before:from-pink-500 before:via-green-500 before:to-cyan-500 before:content-['']">
-      <div className="max-w-7xl mx-auto px-4 py-4 md:py-0 md:h-10 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0 text-[10px] font-mono">
+    <footer className="w-full bg-black shrink-0 z-10 relative border-t-4 border-retro-grid before:absolute before:bottom-0 before:left-0 before:w-full before:h-[4px] before:bg-gradient-to-r before:from-pink-500 before:via-green-500 before:to-cyan-500 before:content-['']">
+      <div className="max-w-7xl mx-auto px-4 py-6 md:h-16 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0 text-[10px] font-mono">
         
         {/* Left: Branding */}
         <div className="flex items-center min-w-[120px]">

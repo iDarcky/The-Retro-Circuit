@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import type { Metadata } from "next";
-import { Press_Start_2P, Share_Tech_Mono } from "next/font/google";
+import { Press_Start_2P, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "../styles/globals.css";
 import ClientShell from "../components/layout/ClientShell";
@@ -15,10 +15,11 @@ const pressStart = Press_Start_2P({
   variable: '--font-press-start'
 });
 
-const shareTech = Share_Tech_Mono({ 
-  weight: "400", 
+// Replaced Share_Tech_Mono with JetBrains_Mono as requested
+const jetBrainsMono = JetBrains_Mono({
+  weight: ["400", "700"],
   subsets: ["latin"],
-  variable: '--font-share-tech'
+  variable: '--font-mono'
 });
 
 export const viewport = {
@@ -66,7 +67,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${pressStart.variable} ${shareTech.variable} font-mono min-h-screen flex flex-col`}>
+      <body className={`${pressStart.variable} ${jetBrainsMono.variable} font-mono min-h-screen flex flex-col`}>
         {/* CRT Overlay Effects */}
         <div className="scanlines"></div>
         <div className="crt-flicker"></div>
