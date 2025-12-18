@@ -34,43 +34,54 @@ export default async function LandingPage() {
           BLOCK 1: Boot Strip
           Replaces old white hero block with technical status bar
       */}
-      <div className="w-full bg-retro-dark border-x-4 border-t-4 border-b border-slate-600 border-b-white/10 flex flex-col md:flex-row items-start md:items-center justify-between px-4 md:px-8 py-4 md:py-0 md:h-[80px] font-mono">
+      <div className="w-full bg-retro-dark border-x-4 border-t-4 border-b border-slate-600 border-b-white/10 flex flex-col md:flex-row items-start md:items-center justify-between px-4 py-[14px] md:px-8 md:py-[20px] md:h-[80px] font-mono">
 
         {/* Left Content */}
         <div className="flex flex-col">
-            <h1 className="text-white font-pixel tracking-wider text-xs md:text-sm">
+            <h1 className="text-white font-pixel tracking-wider text-[clamp(14px,1.4vw,16px)]">
                 RC://RETRO HANDHELD DATABASE
             </h1>
-            <p className="text-gray-500 font-mono text-[10px] md:text-xs mt-2 md:mt-1">
+            <p className="text-gray-500 font-mono text-[clamp(12px,1.2vw,14px)] mt-2 md:mt-1">
                 Specifications, comparisons, and history of retro gaming handhelds.
             </p>
         </div>
 
-        {/* Right Content: Metadata */}
-        <div className="flex flex-col md:flex-row gap-2 md:gap-6 mt-4 md:mt-0 text-[10px] text-gray-400 font-tech tracking-wider uppercase">
+        {/* Right Content: Metadata (Desktop - 4 Columns) */}
+        <div className="hidden md:flex flex-row gap-6 text-gray-400 font-tech tracking-wider uppercase text-[clamp(11px,1.1vw,13px)]">
 
-            {/* Status */}
             <div className="flex items-center">
                 STATUS: ONLINE
                 <span className="w-2 h-2 rounded-full bg-retro-neon inline-block ml-2 shadow-[0_0_5px_#00ff9d] animate-pulse"></span>
             </div>
 
-            {/* Indexed Count */}
             <div>
                 INDEXED: {count || 0} SYSTEMS
             </div>
 
-            {/* Archive Version */}
             <div>
                 ARCHIVE: v0.1
             </div>
 
-            {/* Date */}
             <div>
                 UPDATED: {new Date().toISOString().split('T')[0]}
             </div>
 
         </div>
+
+        {/* Right Content: Metadata (Mobile - Condensed Single Line) */}
+        <div className="flex md:hidden items-center flex-wrap gap-2 mt-2 opacity-80 text-gray-400 font-tech tracking-wider uppercase text-[clamp(11px,1.1vw,13px)]">
+             <div className="flex items-center">
+                ONLINE
+                <span className="w-1.5 h-1.5 rounded-full bg-retro-neon inline-block ml-1 animate-pulse"></span>
+             </div>
+             <span>•</span>
+             <div>{count || 0} SYSTEMS</div>
+             <span>•</span>
+             <div>v0.1</div>
+             <span>•</span>
+             <div>{new Date().toISOString().split('T')[0]}</div>
+        </div>
+
       </div>
 
       {/*
