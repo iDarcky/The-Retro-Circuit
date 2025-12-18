@@ -31,14 +31,46 @@ export default async function LandingPage() {
       */}
 
       {/*
-          BLOCK 1: Title Box
-          Height: 156px, Background: White, Border: 4px Slate
+          BLOCK 1: Boot Strip
+          Replaces old white hero block with technical status bar
       */}
-      <div className="h-[156px] w-full bg-white border-4 border-slate-600 flex items-center justify-start pl-4 md:pl-8">
-        <h1 className="text-black font-pixel text-4xl md:text-6xl tracking-tight leading-none flex flex-col">
-          <span>RETRO</span>
-          <span>CIRCUIT</span>
-        </h1>
+      <div className="w-full bg-retro-dark border-x-4 border-t-4 border-b border-slate-600 border-b-white/10 flex flex-col md:flex-row items-start md:items-center justify-between px-4 md:px-8 py-4 md:py-0 md:h-[80px] font-mono">
+
+        {/* Left Content */}
+        <div className="flex flex-col">
+            <h1 className="text-white font-bold tracking-wider text-sm md:text-base">
+                RC://RETRO HANDHELD DATABASE
+            </h1>
+            <p className="text-gray-500 text-xs mt-1">
+                Specifications, comparisons, and history of retro gaming handhelds.
+            </p>
+        </div>
+
+        {/* Right Content: Metadata */}
+        <div className="flex flex-col md:flex-row gap-2 md:gap-6 mt-4 md:mt-0 text-[10px] text-gray-400 font-bold uppercase">
+
+            {/* Status */}
+            <div className="flex items-center">
+                STATUS: ONLINE
+                <span className="w-2 h-2 rounded-full bg-retro-neon inline-block ml-2 shadow-[0_0_5px_#00ff9d] animate-pulse"></span>
+            </div>
+
+            {/* Indexed Count */}
+            <div>
+                INDEXED: {count || 0} SYSTEMS
+            </div>
+
+            {/* Archive Version */}
+            <div>
+                ARCHIVE: v0.1
+            </div>
+
+            {/* Date */}
+            <div>
+                UPDATED: {new Date().toISOString().split('T')[0]}
+            </div>
+
+        </div>
       </div>
 
       {/*
