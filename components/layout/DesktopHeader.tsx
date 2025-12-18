@@ -37,11 +37,11 @@ export default function DesktopHeader() {
               >
                   <div className="flex items-center gap-2">
                       <Search size={16} className="group-hover:text-retro-neon" />
-                      <span className="text-sm font-mono tracking-wide">SEARCH DATABASE...</span>
+                      <span className="text-sm font-tech tracking-wider">SEARCH DATABASE...</span>
                   </div>
                   <div className="flex gap-1">
-                      <span className="text-[10px] bg-retro-grid/30 border border-retro-grid px-1.5 rounded text-gray-500 font-mono group-hover:border-retro-neon group-hover:text-retro-neon">CMD</span>
-                      <span className="text-[10px] bg-retro-grid/30 border border-retro-grid px-1.5 rounded text-gray-500 font-mono group-hover:border-retro-neon group-hover:text-retro-neon">K</span>
+                      <span className="text-[10px] bg-retro-grid/30 border border-retro-grid px-1.5 rounded text-gray-500 font-tech group-hover:border-retro-neon group-hover:text-retro-neon">CMD</span>
+                      <span className="text-[10px] bg-retro-grid/30 border border-retro-grid px-1.5 rounded text-gray-500 font-tech group-hover:border-retro-neon group-hover:text-retro-neon">K</span>
                   </div>
               </button>
           </div>
@@ -54,7 +54,7 @@ export default function DesktopHeader() {
                       <Link
                           key={item.path}
                           href={item.path}
-                          className={`group relative uppercase font-bold px-2 py-1 transition-colors ${
+                          className={`group relative uppercase font-pixel text-[10px] md:text-xs px-2 py-1 transition-colors ${
                               isActive ? 'text-white' : 'text-[#9CA3AF] hover:text-white'
                           }`}
                       >

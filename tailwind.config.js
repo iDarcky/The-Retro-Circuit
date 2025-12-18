@@ -18,7 +18,8 @@ module.exports = {
       },
       fontFamily: {
         'pixel': ['var(--font-press-start)', 'cursive'],
-        'mono': ['var(--font-mono)', 'monospace']
+        'mono': ['var(--font-mono)', 'monospace'],
+        'tech': ['var(--font-share-tech)', 'monospace']
       },
       animation: {
         marquee: 'marquee 25s linear infinite',

@@ -17,7 +17,7 @@ export default async function LandingPage() {
      if (!value) return null;
      return (
         <div className="bg-black/90 border border-slate-600 px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase shadow-lg text-gray-400">
-             <span className="text-retro-neon mr-1">{label}:</span>{value}
+             <span className="text-retro-neon mr-1 font-tech">{label}:</span>{value}
         </div>
      );
   };
@@ -38,16 +38,16 @@ export default async function LandingPage() {
 
         {/* Left Content */}
         <div className="flex flex-col">
-            <h1 className="text-white font-bold tracking-wider text-sm md:text-base">
+            <h1 className="text-white font-pixel tracking-wider text-xs md:text-sm">
                 RC://RETRO HANDHELD DATABASE
             </h1>
-            <p className="text-gray-500 text-xs mt-1">
+            <p className="text-gray-500 font-mono text-[10px] md:text-xs mt-2 md:mt-1">
                 Specifications, comparisons, and history of retro gaming handhelds.
             </p>
         </div>
 
         {/* Right Content: Metadata */}
-        <div className="flex flex-col md:flex-row gap-2 md:gap-6 mt-4 md:mt-0 text-[10px] text-gray-400 font-bold uppercase">
+        <div className="flex flex-col md:flex-row gap-2 md:gap-6 mt-4 md:mt-0 text-[10px] text-gray-400 font-tech tracking-wider uppercase">
 
             {/* Status */}
             <div className="flex items-center">
@@ -114,12 +114,12 @@ export default async function LandingPage() {
             <div className="flex flex-col items-end gap-2 mt-auto">
 
                 <Link href="/console" className="bg-white text-black text-xl font-bold px-6 py-3 flex items-center gap-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_#ff00ff]">
-                    <span className="font-mono tracking-wider">BROWSE DATABASE</span>
+                    <span className="font-tech tracking-widest text-lg">BROWSE DATABASE</span>
                     <ArrowDownLeft size={24} />
                 </Link>
 
                 {/* Real Data Count - Text only, right aligned, no icon */}
-                <div className="text-sm text-gray-500 font-bold font-mono">
+                <div className="text-sm text-gray-500 font-tech tracking-wider">
                     {count || 0} SYSTEMS INDEXED
                 </div>
             </div>
@@ -174,7 +174,7 @@ export default async function LandingPage() {
 
                     {/* "NEW" Badge */}
                     <div className="absolute top-4 right-4 z-10">
-                        <div className="bg-retro-pink text-black text-[10px] font-bold px-2 py-1 border border-black shadow-[2px_2px_0_black]">
+                        <div className="bg-retro-pink text-black text-[10px] font-tech font-bold tracking-widest px-2 py-1 border border-black shadow-[2px_2px_0_black]">
                             NEW ENTRY
                         </div>
                     </div>
@@ -210,7 +210,7 @@ export default async function LandingPage() {
                         </h3>
 
                         {/* Price */}
-                        <div className="text-lg font-mono text-retro-pink font-bold border-b border-slate-800 pb-4 mb-4">
+                        <div className="text-lg font-tech tracking-widest text-retro-pink font-bold border-b border-slate-800 pb-4 mb-4">
                             {console.specs?.price_launch_usd ? `$${console.specs.price_launch_usd}` : 'PRICE UNKNOWN'}
                         </div>
 

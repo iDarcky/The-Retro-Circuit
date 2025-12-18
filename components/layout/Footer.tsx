@@ -12,19 +12,19 @@ const Footer: FC = () => {
         {/* Left: Branding */}
         <div className="flex items-center min-w-[120px]">
            <Link href="/" className="hover:opacity-80 transition-opacity">
-               <span className="font-mono text-sm font-bold text-retro-neon tracking-wider">
+               <span className="font-pixel text-[10px] md:text-xs text-retro-neon tracking-wider">
                   [ THE RETRO CIRCUIT ]
                </span>
            </Link>
         </div>
 
         {/* Center: Navigation */}
-        <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-gray-500">
+        <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-gray-500 font-tech uppercase tracking-wider">
            {siteConfig.routes.map((route, index) => (
              <div key={route.label} className="flex items-center gap-4">
                 <Link 
                   href={route.href} 
-                  className="hover:text-white transition-colors uppercase tracking-wider"
+                  className="hover:text-white transition-colors"
                 >
                   {route.label}
                 </Link>
@@ -36,7 +36,7 @@ const Footer: FC = () => {
         </div>
 
         {/* Right: System Status */}
-        <div className="flex items-center gap-3 text-gray-600">
+        <div className="flex items-center gap-3 text-gray-600 font-tech uppercase tracking-wide">
            <span>VER: {siteConfig.version}</span>
            <span className="opacity-30">•</span>
            <span className="flex items-center gap-1.5 text-retro-neon">
