@@ -47,7 +47,7 @@ export default async function LandingPage() {
       */}
       <div className="h-[52px] w-full bg-retro-pink border-x-4 border-b-4 border-slate-600 flex items-center pl-4 md:pl-8 overflow-hidden">
         <div className="font-bold text-black text-[24px] whitespace-nowrap">
-          /// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING ///
+          {'/// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING ///'}
         </div>
       </div>
 
