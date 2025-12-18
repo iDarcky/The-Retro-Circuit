@@ -48,19 +48,25 @@ export default function DesktopHeader() {
 
           {/* RIGHT: Navigation */}
           <div className="flex gap-6">
-              {navItems.map((item) => (
-                  <Link
-                      key={item.path}
-                      href={item.path}
-                      className={`uppercase font-bold px-2 py-1 transition-colors border-2 ${
-                          pathname.startsWith(item.path)
-                              ? 'bg-retro-neon text-black border-retro-neon'
-                              : 'bg-transparent text-[#9CA3AF] border-transparent hover:border-retro-neon hover:text-white'
-                      }`}
-                  >
-                      {item.name}
-                  </Link>
-              ))}
+              {navItems.map((item) => {
+                  const isActive = pathname.startsWith(item.path);
+                  return (
+                      <Link
+                          key={item.path}
+                          href={item.path}
+                          className={`group relative uppercase font-bold px-2 py-1 transition-colors ${
+                              isActive ? 'text-white' : 'text-[#9CA3AF] hover:text-white'
+                          }`}
+                      >
+                          {item.name}
+                          <span
+                              className={`absolute bottom-0 left-0 h-[2px] bg-retro-neon transition-all duration-300 ease-out ${
+                                  isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                              }`}
+                          />
+                      </Link>
+                  );
+              })}
           </div>
       </nav>
     </div>
