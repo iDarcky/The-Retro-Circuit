@@ -17,8 +17,10 @@ export default function DesktopHeader() {
   ];
 
   return (
-    <div className="sticky top-0 z-50 flex flex-col shadow-[0_10px_0_rgba(0,0,0,0.5)]">
-      <nav className="hidden md:flex bg-retro-dark border-b-4 border-black px-6 py-3 justify-between items-center">
+    // Changed: Removed shadow, added 1px border with specific rgba color
+    <div className="sticky top-0 z-50 flex flex-col border-b border-[rgba(255,255,255,0.06)]">
+      {/* Changed: Removed border-b-4 border-black */}
+      <nav className="hidden md:flex bg-retro-dark px-6 py-3 justify-between items-center">
 
           {/* LEFT: Logo */}
           <div className="flex items-center">

@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowDownLeft, ArrowUpRight, Grid } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 import { createClient } from '../../lib/supabase/server';
 import { fetchLatestConsoles } from '../../lib/api/latest';
 
@@ -58,7 +58,6 @@ export default async function LandingPage() {
       <div className="grid grid-cols-1 md:grid-cols-12 border-x-4 border-b-4 border-slate-600">
 
         {/* Left Column (Hero / Database) - 7/12 columns */}
-        {/* Changed: Fixed height to h-[600px] instead of min-h, remove justify-between to stack content at top */}
         <div className="col-span-1 md:col-span-7 flex flex-col border-b-4 md:border-b-0 md:border-r-4 border-slate-600 h-[600px] bg-retro-dark relative p-8 md:p-12">
 
             {/* Top Content Group */}
@@ -67,7 +66,7 @@ export default async function LandingPage() {
                     EST. 2024<br/>ARCHIVE_V1.0
                 </div>
 
-                <div className="mt-8"> {/* Reduced top margin slightly */}
+                <div className="mt-8">
                     <h2 className="text-7xl md:text-[7rem] font-black text-white leading-[0.85] tracking-tighter mix-blend-difference mb-8">
                         DATA<br/>
                         BASE
@@ -78,26 +77,18 @@ export default async function LandingPage() {
                 </div>
             </div>
 
-            {/* Bottom/Interactive Content Group - Pushed down by margin or flex */}
-            {/* Added mt-auto to push this block to the bottom of the container */}
-            <div className="flex flex-col gap-6 mt-auto">
-                {/*
-                   Changed:
-                   1. Wrapped in div with flex justify-end for right alignment
-                   2. Reduced padding (px-6 py-3)
-                   3. Reduced text size (text-xl)
-                */}
-                <div className="flex justify-end">
-                    <Link href="/console" className="bg-white text-black text-xl font-bold px-6 py-3 flex items-center gap-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_#ff00ff]">
-                        <span className="font-mono tracking-wider">BROWSE DATABASE</span>
-                        <ArrowDownLeft size={24} />
-                    </Link>
-                </div>
+            {/* Bottom/Interactive Content Group */}
+            {/* Changed: Flex column to stack Button and Text, items-end to align right */}
+            <div className="flex flex-col items-end gap-2 mt-auto">
 
-                {/* Real Data Count */}
-                <div className="flex items-center gap-4 text-lg text-gray-500 font-bold">
-                    <Grid size={24} />
-                    <span>{count || 0} SYSTEMS INDEXED</span>
+                <Link href="/console" className="bg-white text-black text-xl font-bold px-6 py-3 flex items-center gap-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_#ff00ff]">
+                    <span className="font-mono tracking-wider">BROWSE DATABASE</span>
+                    <ArrowDownLeft size={24} />
+                </Link>
+
+                {/* Real Data Count - Text only, right aligned, no icon */}
+                <div className="text-sm text-gray-500 font-bold font-mono">
+                    {count || 0} SYSTEMS INDEXED
                 </div>
             </div>
         </div>
@@ -123,7 +114,6 @@ export default async function LandingPage() {
             </Link>
 
             {/* JOIN */}
-            {/* Removed filler div below. This is fixed 200px. Total 600px matches left column. */}
             <Link href="/login" className="h-[200px] bg-black text-white p-8 flex flex-col justify-center items-center hover:bg-retro-pink hover:text-black transition-colors group text-center border-b-4 md:border-b-0 border-slate-600">
                 <h3 className="text-3xl font-bold tracking-widest group-hover:scale-110 transition-transform">
                     JOIN THE CIRCUIT
