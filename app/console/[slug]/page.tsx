@@ -7,10 +7,11 @@ import Button from '../../../components/ui/Button';
 import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
 
 type Props = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 };
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata(props: Props) {
+    const params = await props.params;
     const supabase = await createClient();
     
     // Fetch console identity + variants for robust image fallback
@@ -40,7 +41,10 @@ export async function generateMetadata({ params }: Props) {
       openGraph: {
         title: `${data.name} - Classified Specs`,
         images: [{ url: finalImage }]
-      }
+      },
+      alternates: {
+        canonical: `/console/${params.slug}`,
+      },
     };
 }
 
@@ -48,15 +52,36 @@ export async function generateStaticParams() {
     return []; // Disable static param generation to enforce dynamic fetching
 }
 
-export default async function ConsoleSpecsPage({ params }: Props) {
+export default async function ConsoleSpecsPage(props: Props) {
+  const params = await props.params;
   // Parallel Fetching using API helpers
-  const consoleData = await fetchConsoleBySlug(params.slug);
+  const { data: consoleData, error } = await fetchConsoleBySlug(params.slug);
 
   if (!consoleData) {
     return (
-        <div className="flex flex-col items-center justify-center min-h-[50vh]">
+        <div className="flex flex-col items-center justify-center min-h-[50vh] p-4 text-center">
             <h2 className="font-pixel text-accent text-2xl mb-4">ERROR 404</h2>
             <p className="font-mono text-gray-400 mb-8">SYSTEM ARCHIVE NOT FOUND.</p>
+            {error && (
+                <div className="bg-red-900/20 border border-red-500 p-4 mb-8 max-w-lg overflow-auto w-full text-left">
+                    <p className="font-mono text-red-400 text-xs mb-2 font-bold uppercase border-b border-red-500 pb-1">DIAGNOSTIC REPORT</p>
+                    <div className="font-mono text-red-300 text-xs whitespace-pre-wrap">
+                        <div className="mb-2"><span className="text-red-500">ERROR:</span> {error.message}</div>
+                        {error.details && Array.isArray(error.details) && (
+                            <div className="mt-2 border-t border-red-800/50 pt-2">
+                                <p className="text-gray-500 mb-1">SUCCESSFUL STEPS:</p>
+                                {error.details.map((step: string, i: number) => (
+                                    <div key={i} className="text-green-400/80">✓ {step}</div>
+                                ))}
+                            </div>
+                        )}
+                        <div className="mt-4 text-[10px] text-gray-500">
+                             TIMESTAMP: {new Date().toISOString()}<br/>
+                             SLUG: {params.slug}
+                        </div>
+                    </div>
+                </div>
+            )}
             <Link href="/console">
                 <Button variant="secondary">RETURN TO VAULT</Button>
             </Link>
