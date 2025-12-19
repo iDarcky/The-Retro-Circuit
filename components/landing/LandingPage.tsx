@@ -41,13 +41,13 @@ export default async function LandingPage() {
           BLOCK 3: Main Content Grid
           Hero expanded to full width
       */}
-      <div className="grid grid-cols-1 md:grid-cols-12">
+      <div className="grid grid-cols-1 md:grid-cols-12 m-4 md:m-8">
 
-        {/* Full Width Hero - 12/12 columns */}
-        <div className="col-span-1 md:col-span-12 flex flex-col h-[600px] bg-bg-primary relative p-8 md:p-12">
+        {/* Full Width Hero - 12/12 columns - Applied .vault-section style */}
+        <div className="col-span-1 md:col-span-12 flex flex-col h-[600px] vault-section relative p-6 md:p-8">
 
             {/* Top Row: Label and Stats */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center w-full mb-16">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center w-full mb-8">
                  {/* Left: Label */}
                  <div className="text-sm font-bold text-gray-500 font-mono tracking-widest uppercase">
                     RC://RETRO_CIRCUIT
@@ -72,7 +72,7 @@ export default async function LandingPage() {
 
             {/* Main Content Group */}
             <div>
-                <div className="mt-8">
+                <div className="mt-4">
                     <h2 className="text-7xl md:text-[7rem] font-black text-white leading-[0.85] tracking-tighter mix-blend-difference mb-8">
                         DATA BASE_
                     </h2>
