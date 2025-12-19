@@ -87,7 +87,7 @@ export default async function LandingPage() {
                       <h2 className="text-6xl md:text-[6rem] font-black text-white leading-[0.85] tracking-tighter mix-blend-difference mb-6">
                           CONSOLE<br/>VAULT_
                       </h2>
-                      <p className="text-lg md:text-xl font-bold text-gray-400 max-w-2xl leading-relaxed border-l-4 border-gray-700 pl-6">
+                      <p className="text-lg md:text-xl font-bold text-gray-400 max-w-2xl leading-relaxed border-l-4 border-accent pl-6">
                           Find and compare your favorite handhelds...
                       </p>
                   </div>
@@ -121,7 +121,7 @@ export default async function LandingPage() {
                        <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-primary border-b-[8px] border-b-transparent animate-pulse"></div>
                        <h3 className="text-xl font-bold text-white font-mono tracking-tight">QUICK COMPARE_</h3>
                   </div>
-                  <p className="text-xs text-gray-500 font-mono ml-7 border-l-4 border-gray-700 pl-4 py-1">
+                  <p className="text-xs text-gray-500 font-mono ml-7">
                       Select two devices to view a head-to-head performance analysis.
                   </p>
               </div>

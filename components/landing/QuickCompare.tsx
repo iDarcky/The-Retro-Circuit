@@ -33,7 +33,7 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
             <ConsoleSearch
                 consoles={consoles}
                 onSelect={(slug, name) => setP1({ slug, name })}
-                placeholder="SELECT PLAYER 1..."
+                placeholder="SELECT DEVICE..."
                 themeColor="cyan"
                 currentSelection={p1?.name}
             />
@@ -53,7 +53,7 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
             <ConsoleSearch
                 consoles={consoles}
                 onSelect={(slug, name) => setP2({ slug, name })}
-                placeholder="SELECT PLAYER 2..."
+                placeholder="SELECT DEVICE..."
                 themeColor="pink"
                 currentSelection={p2?.name}
             />
