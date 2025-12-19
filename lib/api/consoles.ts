@@ -112,76 +112,23 @@ export const fetchConsoleList = async (): Promise<{name: string, slug: string, i
 };
 
 export const fetchConsoleBySlug = async (slug: string): Promise<{ data: ConsoleDetails | null, error: any }> => {
-    const diagnostic: string[] = [];
     try {
-        // DIAGNOSTIC STEP 1: Check Basic Existence
-        const { data: step1, error: err1 } = await supabase
-            .from('consoles')
-            .select('id, slug, name')
-            .eq('slug', slug)
-            .limit(1);
-
-        if (err1) {
-             return { data: null, error: { message: `[STEP 1 FAIL] Basic Fetch Error: ${err1.message}` } };
-        }
-        if (!step1 || step1.length === 0) {
-             return { data: null, error: { message: `[STEP 1 FAIL] Slug '${slug}' not found in 'consoles' table.` } };
-        }
-        diagnostic.push("Step 1 OK: Row exists");
-
-        // DIAGNOSTIC STEP 2: Check Manufacturer Relation
-        const { data: step2, error: err2 } = await supabase
-            .from('consoles')
-            .select('id, slug, manufacturer:manufacturer(*)')
-            .eq('slug', slug)
-            .limit(1);
-
-        if (err2) {
-             return { data: null, error: { message: `[STEP 2 FAIL] Manufacturer Relation Error: ${err2.message}` } };
-        }
-        // Note: If manufacturer is missing, data is returned but manufacturer property might be null.
-        // We don't fail hard here, but we log it.
-        if (step2 && step2.length > 0 && (step2[0] as any).manufacturer) {
-             diagnostic.push(`Step 2 OK: Found Manufacturer '${(step2[0] as any).manufacturer.name}'`);
-        } else {
-             diagnostic.push("Step 2 OK: Query executed (Manufacturer null or empty)");
-        }
-
-
-        // DIAGNOSTIC STEP 3: Check Variants Relation
-        const { data: step3, error: err3 } = await supabase
-            .from('consoles')
-            .select('id, slug, variants:console_variants(*)')
-            .eq('slug', slug)
-            .limit(1);
-
-        if (err3) {
-             return { data: null, error: { message: `[STEP 3 FAIL] Variants Relation Error: ${err3.message}` } };
-        }
-        if (step3 && step3.length > 0 && (step3[0] as any).variants) {
-             diagnostic.push(`Step 3 OK: Found ${(step3[0] as any).variants.length} variants`);
-        } else {
-             diagnostic.push("Step 3 OK: Query executed (Variants null or empty)");
-        }
-
-        // FINAL STEP: Full Fetch
         const { data, error } = await supabase
             .from('consoles')
             .select(`
                 *,
                 manufacturer:manufacturer(*),
-                variants:console_variants (*)
+                variants:console_variants(*, emulation_profiles(*))
             `)
             .eq('slug', slug)
             .limit(1);
             
         if (error) {
-            return { data: null, error: { message: `[FINAL STEP FAIL] Full Query Error: ${error.message}` } };
+            return { data: null, error: { message: error.message } };
         }
 
         if (!data || data.length === 0) {
-            // Should be impossible if Step 1 passed, unless RLS changed between calls
-            return { data: null, error: { message: "Data vanished between checks (RLS flakiness?)" } };
+            return { data: null, error: { message: "Console not found in database" } };
         }
 
         const rawData: any = data[0];
@@ -201,7 +148,7 @@ export const fetchConsoleBySlug = async (slug: string): Promise<{ data: ConsoleD
 
         return { data: rawData as ConsoleDetails, error: null };
     } catch (e: any) {
-        return { data: null, error: { message: `EXCEPTION: ${e.message}`, details: diagnostic } };
+        return { data: null, error: { message: `EXCEPTION: ${e.message}` } };
     }
 };
 
