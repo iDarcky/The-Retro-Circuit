@@ -117,7 +117,7 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
             .from('consoles')
             .select(`
                 *,
-                manufacturer:manufacturer(*),
+                manufacturer:manufacturers(*),
                 variants:console_variants (
                     *,
                     emulation_profiles (*)

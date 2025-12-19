@@ -12,7 +12,7 @@ export const searchDatabase = async (query: string): Promise<SearchResult[]> => 
         const [consolesResponse, manufacturersResponse] = await Promise.all([
             supabase
                 .from('consoles')
-                .select('id, name, slug, image_url, manufacturer:manufacturer(name)')
+                .select('id, name, slug, image_url, manufacturer:manufacturers(name)')
                 .ilike('name', term)
                 .limit(5),
             supabase

@@ -8,7 +8,7 @@ export const fetchLatestConsoles = async (limit: number = 3): Promise<ConsoleDet
             .from('consoles')
             .select(`
                 *,
-                manufacturer:manufacturer(*),
+                manufacturer:manufacturers(*),
                 variants:console_variants(*)
             `)
             .order('created_at', { ascending: false })
@@ -21,7 +21,7 @@ export const fetchLatestConsoles = async (limit: number = 3): Promise<ConsoleDet
                 .from('consoles')
                 .select(`
                     *,
-                    manufacturer:manufacturer(*),
+                    manufacturer:manufacturers(*),
                     variants:console_variants(*)
                 `)
                 .order('release_year', { ascending: false })
