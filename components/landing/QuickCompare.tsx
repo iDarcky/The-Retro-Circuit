@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
+import { ConsoleSearch } from '../arena/ConsoleSearch';
 
 interface QuickCompareProps {
   consoles: { name: string; slug: string }[];
@@ -10,67 +11,63 @@ interface QuickCompareProps {
 
 export default function QuickCompare({ consoles }: QuickCompareProps) {
   const router = useRouter();
-  const [selected1, setSelected1] = useState('');
-  const [selected2, setSelected2] = useState('');
+  const [p1, setP1] = useState<{slug: string, name: string} | null>(null);
+  const [p2, setP2] = useState<{slug: string, name: string} | null>(null);
 
   const handleCompare = () => {
-    if (selected1 && selected2) {
-      router.push(`/arena/${selected1}-vs-${selected2}`);
-    } else if (selected1) {
-        router.push(`/arena/${selected1}-vs-select`);
-    } else if (selected2) {
-        router.push(`/arena/select-vs-${selected2}`);
-    }
+    const slug1 = p1?.slug || 'select';
+    const slug2 = p2?.slug || 'select';
+
+    // We navigate to /arena/slug1-vs-slug2
+    // If one is missing, we use 'select' which our [versus] page handles nicely (redirects to ?pX=select)
+    // Actually, if both are missing, button is disabled.
+    router.push(`/arena/${slug1}-vs-${slug2}`);
   };
 
   return (
-    <div className="flex flex-col gap-6 h-full justify-center">
-      <div className="space-y-4">
-        {/* Device 1 Select */}
-        <div className="relative">
-          <select
-            value={selected1}
-            onChange={(e) => setSelected1(e.target.value)}
-            className="w-full bg-black/50 border border-gray-700 text-gray-300 font-mono text-xs p-3 appearance-none rounded focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all"
-          >
-            <option value="" disabled>Select first device...</option>
-            {consoles.map((c) => (
-              <option key={`p1-${c.slug}`} value={c.slug}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 text-[10px]">▼</div>
+    <div className="flex flex-col gap-8 h-full">
+      <div className="space-y-6 flex-grow">
+        {/* Device 1 */}
+        <div className="space-y-2">
+            <label className="text-[10px] font-mono text-primary uppercase tracking-widest pl-1">
+                Device 01
+            </label>
+            <ConsoleSearch
+                consoles={consoles}
+                onSelect={(slug, name) => setP1({ slug, name })}
+                placeholder="SELECT DEVICE..."
+                themeColor="cyan"
+                currentSelection={p1?.name}
+            />
         </div>
 
-        <div className="flex items-center justify-center text-[10px] font-mono text-gray-500 uppercase tracking-widest">
-            VS
+        <div className="flex items-center justify-center">
+             <div className="h-px w-full bg-gray-800"></div>
+             <span className="mx-4 text-[10px] font-mono text-gray-500 uppercase tracking-widest">VS</span>
+             <div className="h-px w-full bg-gray-800"></div>
         </div>
 
-        {/* Device 2 Select */}
-        <div className="relative">
-          <select
-            value={selected2}
-            onChange={(e) => setSelected2(e.target.value)}
-            className="w-full bg-black/50 border border-gray-700 text-gray-300 font-mono text-xs p-3 appearance-none rounded focus:border-accent focus:ring-1 focus:ring-accent outline-none transition-all"
-          >
-            <option value="" disabled>Select second device...</option>
-            {consoles.map((c) => (
-              <option key={`p2-${c.slug}`} value={c.slug}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 text-[10px]">▼</div>
+        {/* Device 2 */}
+        <div className="space-y-2">
+            <label className="text-[10px] font-mono text-accent uppercase tracking-widest pl-1">
+                Device 02
+            </label>
+            <ConsoleSearch
+                consoles={consoles}
+                onSelect={(slug, name) => setP2({ slug, name })}
+                placeholder="SELECT DEVICE..."
+                themeColor="pink"
+                currentSelection={p2?.name}
+            />
         </div>
       </div>
 
       <button
         onClick={handleCompare}
-        disabled={!selected1 && !selected2}
-        className="w-full bg-primary hover:bg-white text-black font-bold font-tech text-sm py-3 uppercase tracking-widest transition-all hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2"
+        disabled={!p1 && !p2}
+        className="w-full bg-primary hover:bg-white text-black font-bold font-tech text-sm py-4 uppercase tracking-widest transition-all hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2 shadow-[4px_4px_0_rgba(0,0,0,0.5)]"
       >
-        Compare
+        Compare Systems
         <ArrowRight size={16} />
       </button>
     </div>

@@ -74,20 +74,26 @@ export default async function LandingPage() {
           Left: Text + Buttons
           Right: Quick Compare
       */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 px-4 md:px-8 h-[600px]">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 px-4 md:px-8 min-h-[600px]">
 
-          {/* Left Column (8 cols) */}
-          <div className="col-span-1 md:col-span-8 vault-section relative p-6 md:p-12 flex flex-col justify-center">
-              <div>
-                  <h2 className="text-6xl md:text-[6rem] font-black text-white leading-[0.85] tracking-tighter mix-blend-difference mb-6">
-                      CONSOLE<br/>VAULT_
-                  </h2>
-                  <p className="text-lg md:text-xl font-bold text-gray-400 max-w-2xl leading-relaxed">
-                      Find and compare your favorite handhelds...
-                  </p>
+          {/* Left Column (8 cols) - Console Vault Hero */}
+          <div className="col-span-1 md:col-span-8 vault-section relative p-6 md:p-12 flex flex-col">
+
+              <div className="flex items-start gap-6">
+                  {/* Pink Triangle Marker */}
+                  <div className="w-0 h-0 border-t-[12px] border-t-transparent border-l-[20px] border-l-accent border-b-[12px] border-b-transparent mt-4 md:mt-6 shrink-0"></div>
+
+                  <div>
+                      <h2 className="text-6xl md:text-[6rem] font-black text-white leading-[0.85] tracking-tighter mix-blend-difference mb-6">
+                          CONSOLE<br/>VAULT_
+                      </h2>
+                      <p className="text-lg md:text-xl font-bold text-gray-400 max-w-2xl leading-relaxed">
+                          Find and compare your favorite handhelds...
+                      </p>
+                  </div>
               </div>
 
-              <div className="flex flex-col md:flex-row gap-6 mt-12">
+              <div className="flex flex-col md:flex-row gap-6 mt-16 md:mt-24 ml-0 md:ml-10">
                    {/* Browse Fabricators (Faded) */}
                    <Link href="/fabricators" className="bg-transparent border border-gray-700 text-gray-400 hover:text-white hover:border-white text-lg font-bold px-8 py-4 flex items-center justify-center gap-3 transition-all">
                       <span className="font-tech tracking-widest">BROWSE FABRICATORS</span>
@@ -105,8 +111,12 @@ export default async function LandingPage() {
           {/* Right Column (4 cols) - Quick Compare */}
           <div className="col-span-1 md:col-span-4 vault-section p-6 md:p-8 flex flex-col">
               <div className="mb-6">
-                  <h3 className="text-xl font-bold text-white font-pixel mb-2">QUICK COMPARE</h3>
-                  <p className="text-xs text-gray-500 font-mono">Select two devices to view a head-to-head performance analysis.</p>
+                  <div className="flex items-center gap-3 mb-2">
+                       {/* Blue Triangle */}
+                       <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-primary border-b-[8px] border-b-transparent"></div>
+                       <h3 className="text-xl font-bold text-white font-mono tracking-tight">QUICK COMPARE_</h3>
+                  </div>
+                  <p className="text-xs text-gray-500 font-mono ml-7">Select two devices to view a head-to-head performance analysis.</p>
               </div>
 
               <div className="flex-grow">
@@ -122,8 +132,11 @@ export default async function LandingPage() {
       */}
       <div className="vault-section mx-4 md:mx-8 mt-2.5 p-6 md:p-8">
         <div className="flex items-center gap-4 mb-8">
-             <div className="w-3 h-3 bg-secondary animate-pulse"></div>
-             <h2 className="text-2xl md:text-3xl font-pixel text-white tracking-tight">
+             {/* Green Triangle */}
+             <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-secondary border-b-[8px] border-b-transparent animate-pulse"></div>
+
+             {/* JetBrains Mono Header */}
+             <h2 className="text-2xl md:text-3xl font-mono font-bold text-white tracking-tight">
                 NEW IN THE VAULT_
              </h2>
         </div>
