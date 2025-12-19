@@ -17,7 +17,7 @@ export default async function LandingPage() {
      if (!value) return null;
      return (
         <div className="bg-black/90 border border-slate-600 px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase shadow-lg text-gray-400">
-             <span className="text-retro-neon mr-1">{label}:</span>{value}
+             <span className="text-retro-neon mr-1 font-tech">{label}:</span>{value}
         </div>
      );
   };
@@ -31,23 +31,66 @@ export default async function LandingPage() {
       */}
 
       {/*
-          BLOCK 1: Title Box
-          Height: 156px, Background: White, Border: 4px Slate
+          BLOCK 1: Boot Strip
+          Replaces old white hero block with technical status bar
       */}
-      <div className="h-[156px] w-full bg-white border-4 border-slate-600 flex items-center justify-start pl-4 md:pl-8">
-        <h1 className="text-black font-pixel text-4xl md:text-6xl tracking-tight leading-none flex flex-col">
-          <span>RETRO</span>
-          <span>CIRCUIT</span>
-        </h1>
+      <div className="w-full bg-retro-dark border-x-4 border-t-4 border-b border-slate-600 border-b-white/10 flex flex-col md:flex-row items-start md:items-center justify-between px-4 py-[14px] md:px-8 md:py-[20px] md:h-[80px] font-mono">
+
+        {/* Left Content */}
+        <div className="flex flex-col">
+            <h1 className="text-white font-pixel tracking-wider text-[clamp(14px,1.4vw,16px)]">
+                RC://RETRO HANDHELD DATABASE
+            </h1>
+            <p className="text-gray-500 font-mono text-[clamp(12px,1.2vw,14px)] mt-2 md:mt-1">
+                Specifications, comparisons, and history of retro gaming handhelds.
+            </p>
+        </div>
+
+        {/* Right Content: Metadata (Desktop - 4 Columns) */}
+        <div className="hidden md:flex flex-row gap-6 text-gray-400 font-tech tracking-wider uppercase text-[clamp(11px,1.1vw,13px)]">
+
+            <div className="flex items-center">
+                STATUS: ONLINE
+                <span className="w-2 h-2 rounded-full bg-retro-neon inline-block ml-2 shadow-[0_0_5px_#00ff9d] animate-pulse"></span>
+            </div>
+
+            <div>
+                INDEXED: {count || 0} SYSTEMS
+            </div>
+
+            <div>
+                ARCHIVE: v0.1
+            </div>
+
+            <div>
+                UPDATED: {new Date().toISOString().split('T')[0]}
+            </div>
+
+        </div>
+
+        {/* Right Content: Metadata (Mobile - Condensed Single Line) */}
+        <div className="flex md:hidden items-center flex-wrap gap-2 mt-2 opacity-80 text-gray-400 font-tech tracking-wider uppercase text-[clamp(11px,1.1vw,13px)]">
+             <div className="flex items-center">
+                ONLINE
+                <span className="w-1.5 h-1.5 rounded-full bg-retro-neon inline-block ml-1 animate-pulse"></span>
+             </div>
+             <span>•</span>
+             <div>{count || 0} SYSTEMS</div>
+             <span>•</span>
+             <div>v0.1</div>
+             <span>•</span>
+             <div>{new Date().toISOString().split('T')[0]}</div>
+        </div>
+
       </div>
 
       {/*
-          BLOCK 2: Marquee Box (Static)
-          Height: 52px, Background: Pink, Border: 4px Slate (Top merged)
+          BLOCK 2: Marquee Box (Static Ticker)
+          Height: 32px (Desktop) / 22px (Mobile), Opacity 80%
       */}
-      <div className="h-[52px] w-full bg-retro-pink border-x-4 border-b-4 border-slate-600 flex items-center pl-4 md:pl-8 overflow-hidden">
-        <div className="font-bold text-black text-[24px] whitespace-nowrap">
-          {'/// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING ///'}
+      <div className="h-[22px] md:h-[32px] w-full bg-retro-pink/80 border-x-4 border-b-4 border-slate-600 flex items-center overflow-hidden relative px-4">
+        <div className="whitespace-nowrap overflow-hidden text-ellipsis w-full font-bold text-black text-[10px] md:text-sm tracking-widest">
+          /// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING
         </div>
       </div>
 
@@ -82,12 +125,12 @@ export default async function LandingPage() {
             <div className="flex flex-col items-end gap-2 mt-auto">
 
                 <Link href="/console" className="bg-white text-black text-xl font-bold px-6 py-3 flex items-center gap-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_#ff00ff]">
-                    <span className="font-mono tracking-wider">BROWSE DATABASE</span>
+                    <span className="font-tech tracking-widest text-lg">BROWSE DATABASE</span>
                     <ArrowDownLeft size={24} />
                 </Link>
 
                 {/* Real Data Count - Text only, right aligned, no icon */}
-                <div className="text-sm text-gray-500 font-bold font-mono">
+                <div className="text-sm text-gray-500 font-tech tracking-wider">
                     {count || 0} SYSTEMS INDEXED
                 </div>
             </div>
@@ -142,7 +185,7 @@ export default async function LandingPage() {
 
                     {/* "NEW" Badge */}
                     <div className="absolute top-4 right-4 z-10">
-                        <div className="bg-retro-pink text-black text-[10px] font-bold px-2 py-1 border border-black shadow-[2px_2px_0_black]">
+                        <div className="bg-retro-pink text-black text-[10px] font-tech font-bold tracking-widest px-2 py-1 border border-black shadow-[2px_2px_0_black]">
                             NEW ENTRY
                         </div>
                     </div>
@@ -178,7 +221,7 @@ export default async function LandingPage() {
                         </h3>
 
                         {/* Price */}
-                        <div className="text-lg font-mono text-retro-pink font-bold border-b border-slate-800 pb-4 mb-4">
+                        <div className="text-lg font-tech tracking-widest text-retro-pink font-bold border-b border-slate-800 pb-4 mb-4">
                             {console.specs?.price_launch_usd ? `$${console.specs.price_launch_usd}` : 'PRICE UNKNOWN'}
                         </div>
 
