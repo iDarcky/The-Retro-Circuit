@@ -126,7 +126,10 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
             .eq('slug', slug)
             .single();
             
-        if (error) throw error;
+        if (error) {
+            console.error(`[API] fetchConsoleBySlug DB Error for slug=${slug}:`, error);
+            throw error;
+        }
 
         const rawData: any = data;
         
@@ -156,7 +159,8 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
         }
 
         return rawData as ConsoleDetails;
-    } catch {
+    } catch (e) {
+        console.error(`[API] fetchConsoleBySlug for slug=${slug} Exception:`, e);
         return null;
     }
 };
