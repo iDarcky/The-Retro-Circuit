@@ -85,15 +85,12 @@ export default async function LandingPage() {
       </div>
 
       {/*
-          BLOCK 2: Marquee Box (Animated)
-          Height: 32px (Desktop) / 22px (Mobile), Opacity 80%, Animated Ticker
+          BLOCK 2: Marquee Box (Static Ticker)
+          Height: 32px (Desktop) / 22px (Mobile), Opacity 80%
       */}
-      <div className="h-[22px] md:h-[32px] w-full bg-retro-pink/80 border-x-4 border-b-4 border-slate-600 flex items-center overflow-hidden relative">
-        <div className="animate-marquee whitespace-nowrap flex gap-4 min-w-full font-bold text-black text-[10px] md:text-sm tracking-widest">
-          <span>/// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING</span>
-          <span>/// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING</span>
-          <span>/// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING</span>
-          <span>/// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING</span>
+      <div className="h-[22px] md:h-[32px] w-full bg-retro-pink/80 border-x-4 border-b-4 border-slate-600 flex items-center overflow-hidden relative px-4">
+        <div className="whitespace-nowrap overflow-hidden text-ellipsis w-full font-bold text-black text-[10px] md:text-sm tracking-widest">
+          /// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING
         </div>
       </div>
 
