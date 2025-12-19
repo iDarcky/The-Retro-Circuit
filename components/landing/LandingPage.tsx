@@ -1,7 +1,9 @@
 import Link from 'next/link';
-import { ArrowDownLeft, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { createClient } from '../../lib/supabase/server';
 import { fetchLatestConsoles } from '../../lib/api/latest';
+import { fetchConsoleList } from '../../lib/api/consoles';
+import QuickCompare from './QuickCompare';
 
 export default async function LandingPage() {
   const supabase = await createClient();
@@ -20,6 +22,9 @@ export default async function LandingPage() {
   // Fetch latest consoles
   const latestConsoles = await fetchLatestConsoles(3);
 
+  // Fetch full list for QuickCompare
+  const allConsoles = await fetchConsoleList();
+
   // Helper for badges (reused style)
   const SpecBadge = ({ label, value }: { label: string, value?: string | number | null }) => {
      if (!value) return null;
@@ -32,104 +37,124 @@ export default async function LandingPage() {
 
   return (
     // Outer Container: No borders, no padding
-    <div className="min-h-screen bg-bg-primary font-mono selection:bg-accent selection:text-white flex flex-col">
+    <div className="bg-bg-primary font-mono selection:bg-accent selection:text-white flex flex-col">
       {/*
           NOTE: The parent MainLayout removes padding-top, and DesktopHeader is fixed/sticky above.
       */}
 
       {/*
-          BLOCK 1 & 2: Merged Strip Bar
-          Non-sticky separation strip
+          BLOCK: Hero Header Metadata
+          Moved outside the box as per requirement.
       */}
-      <div className="w-full flex flex-col md:flex-row items-center justify-between px-4 py-2 banner">
-        {/* Left: Welcome Text */}
-        <div className="font-bold text-black text-[10px] md:text-sm tracking-widest">
-            {'/// WELCOME TO THE VAULT ///'}
-        </div>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center px-6 md:px-8 mt-4 md:mt-8 mb-4">
+           {/* Left: Label */}
+           <div className="text-sm font-bold text-gray-500 font-mono tracking-widest uppercase">
+              RC://RETRO_CIRCUIT
+           </div>
 
-        {/* Right Content: Metadata (Desktop) */}
-        <div className="hidden md:flex flex-row gap-6 text-black font-tech tracking-wider uppercase text-[12px] font-bold">
-            <div className="flex items-center">
-                STATUS: ONLINE
-            </div>
-            <div>
-                INDEXED: {count || 0} SYSTEMS
-            </div>
-            <div>
-                ARCHIVE: v0.1
-            </div>
-            <div>
-                UPDATED: {new Date().toISOString().split('T')[0]}
-            </div>
-        </div>
+           {/* Right: Metadata Stats */}
+           <div className="flex flex-row gap-6 text-gray-500 font-tech tracking-wider uppercase text-[12px] font-bold mt-2 md:mt-0">
+              <div className="flex items-center">
+                  STATUS: ONLINE
+              </div>
+              <div>
+                  INDEXED: {count || 0} SYSTEMS
+              </div>
+              <div>
+                  ARCHIVE: v0.1
+              </div>
+              <div>
+                  UPDATED: {new Date().toISOString().split('T')[0]}
+              </div>
+          </div>
       </div>
 
       {/*
-          BLOCK 3: Main Content Grid
-          Hero expanded to full width
+          BLOCK: Hero Grid Split
+          Left: Text + Buttons
+          Right: Quick Compare
       */}
-      <div className="grid grid-cols-1 md:grid-cols-12">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 px-4 md:px-8 min-h-[600px]">
 
-        {/* Full Width Hero - 12/12 columns */}
-        <div className="col-span-1 md:col-span-12 flex flex-col h-[600px] bg-bg-primary relative p-8 md:p-12">
+          {/* Left Column (8 cols) - Console Vault Hero */}
+          <div className="col-span-1 md:col-span-8 vault-section relative p-6 md:p-12 flex flex-col">
 
-            {/* Top Content Group */}
-            <div>
-                <div className="absolute top-4 right-4 text-xs text-gray-500">
-                    EST. 2024<br/>ARCHIVE_V1.0
-                </div>
+              <div className="flex items-start gap-6">
+                  {/* Pink Triangle Marker (Breathing) */}
+                  <div className="w-0 h-0 border-t-[12px] border-t-transparent border-l-[20px] border-l-accent border-b-[12px] border-b-transparent mt-4 md:mt-6 shrink-0 animate-pulse"></div>
 
-                <div className="mt-8">
-                    <h2 className="text-7xl md:text-[7rem] font-black text-white leading-[0.85] tracking-tighter mix-blend-difference mb-8">
-                        RC://<br/>
-                        RETRO_CIRCUIT
-                    </h2>
-                    <p className="text-xl font-bold text-gray-400 border-l-4 border-accent pl-6 py-2">
-                        COMPREHENSIVE SPECIFICATIONS FOR<br/>VIDEO GAME CONSOLES.
-                    </p>
-                </div>
-            </div>
+                  <div>
+                      <h2 className="text-6xl md:text-[6rem] font-black text-white leading-[0.85] tracking-tighter mix-blend-difference mb-6">
+                          CONSOLE<br/>VAULT_
+                      </h2>
+                      <p className="text-lg md:text-xl font-bold text-gray-400 max-w-2xl leading-relaxed border-l-4 border-accent pl-6">
+                          Find and compare your favorite handhelds...
+                      </p>
+                  </div>
+              </div>
 
-            {/* Bottom/Interactive Content Group */}
-            {/* Left aligned as requested */}
-            <div className="flex flex-col items-start gap-4 mt-auto">
+              <div className="mt-16 md:mt-24 ml-0 md:ml-10">
+                   <p className="text-xs font-mono text-gray-500 mb-4 uppercase tracking-widest">
+                       Start by browsing all consoles or manufacturers
+                   </p>
+                   <div className="flex flex-col md:flex-row gap-6">
+                       {/* Browse Fabricators (Faded) */}
+                       <Link href="/fabricators" className="bg-transparent border border-gray-700 text-gray-400 hover:text-white hover:border-white text-lg font-bold px-8 py-4 flex items-center justify-center gap-3 transition-all">
+                          <span className="font-tech tracking-widest">BROWSE FABRICATORS</span>
+                          <ArrowUpRight size={20} />
+                      </Link>
 
-                <div className="flex gap-4">
-                    <Link href="/console" className="bg-white text-black text-xl font-bold px-6 py-3 flex items-center gap-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_var(--color-accent)]">
-                        <span className="font-tech tracking-widest text-lg">BROWSE DATABASE</span>
-                        <ArrowDownLeft size={24} />
-                    </Link>
+                      {/* Browse Consoles (Primary) */}
+                      <Link href="/console" className="bg-white text-black text-lg font-bold px-8 py-4 flex items-center justify-center gap-3 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_var(--color-accent)]">
+                          <span className="font-tech tracking-widest">BROWSE CONSOLES</span>
+                          <ArrowUpRight size={20} />
+                      </Link>
+                  </div>
+              </div>
+          </div>
 
-                    <Link href="/arena" className="bg-white text-black text-xl font-bold px-6 py-3 flex items-center gap-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_var(--color-accent)]">
-                        <span className="font-tech tracking-widest text-lg">COMPARE</span>
-                        <ArrowUpRight size={24} />
-                    </Link>
-                </div>
+          {/* Right Column (4 cols) - Quick Compare */}
+          <div className="col-span-1 md:col-span-4 vault-section p-6 md:p-8 flex flex-col">
+              <div className="mb-6">
+                  <div className="flex items-center gap-3 mb-2">
+                       {/* Blue Triangle (Breathing) */}
+                       <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-primary border-b-[8px] border-b-transparent animate-pulse"></div>
+                       <h3 className="text-xl font-bold text-white font-mono tracking-tight">QUICK COMPARE_</h3>
+                  </div>
+                  <p className="text-xs text-gray-500 font-mono ml-7">
+                      Select two devices to view a head-to-head performance analysis.
+                  </p>
+              </div>
 
-                {/* Real Data Count */}
-                <div className="text-sm text-gray-500 font-tech tracking-wider">
-                    {count || 0} SYSTEMS INDEXED
-                </div>
-            </div>
-        </div>
+              <div className="flex-grow">
+                 <QuickCompare consoles={allConsoles} />
+              </div>
+          </div>
 
       </div>
 
        {/*
-          BLOCK 4: New In The Vault (Latest Arrivals)
-          Apply .vault-section
+          BLOCK: New In The Vault
+          10px gap from hero as requested (mt-2.5 is 10px)
       */}
-      <div className="vault-section m-4 md:m-8">
+      <div className="vault-section mx-4 md:mx-8 mt-2.5 p-6 md:p-8">
         <div className="flex items-center gap-4 mb-8">
-             <div className="w-4 h-4 bg-secondary animate-pulse"></div>
-             <h2 className="text-3xl md:text-5xl font-pixel text-white tracking-tight">
+             {/* Green Triangle (Breathing) */}
+             <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-secondary border-b-[8px] border-b-transparent animate-pulse"></div>
+
+             {/* JetBrains Mono Header */}
+             <h2 className="text-2xl md:text-3xl font-mono font-bold text-white tracking-tight">
                 NEW IN THE VAULT_
              </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {latestConsoles.map((console) => (
-                <Link href={`/console/${console.slug}`} key={console.id} className="group flex flex-col device-card p-6 relative rounded-lg">
+                <Link
+                    href={`/console/${console.slug}`}
+                    key={console.id}
+                    className="group flex flex-col device-card p-6 relative rounded-lg hover:border-secondary transition-colors"
+                >
 
                     {/* "NEW" Badge */}
                     <div className="absolute top-4 right-4 z-10">

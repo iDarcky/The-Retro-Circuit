@@ -29,9 +29,9 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
 
     const filtered = consoles.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const borderColor = themeColor === 'cyan' ? 'border-secondary' : 'border-accent';
-    const textColor = themeColor === 'cyan' ? 'text-secondary' : 'text-accent';
-    const focusColor = themeColor === 'cyan' ? 'focus:border-secondary' : 'focus:border-accent';
+    const borderColor = themeColor === 'cyan' ? 'border-primary' : 'border-accent';
+    const textColor = themeColor === 'cyan' ? 'text-primary' : 'text-accent';
+    const focusColor = themeColor === 'cyan' ? 'focus:border-primary' : 'focus:border-accent';
 
     return (
         <div className="relative w-full" ref={wrapperRef}>
