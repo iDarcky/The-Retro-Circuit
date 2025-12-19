@@ -40,37 +40,12 @@ export default async function FabricatorDetailPage(props: Props) {
     const supabase = await createClient();
     const slug = params.slug;
 
-    // DIAGNOSTIC FETCH FOR FABRICATOR
-    let profile: any = null;
-    let fetchError: any = null;
-    const diagnostic: string[] = [];
-
-    try {
-        // Step 1: Basic Fetch (ID/Name only)
-        const { data: step1, error: err1 } = await supabase
-            .from('manufacturer')
-            .select('id, name')
-            .eq('slug', slug)
-            .limit(1);
-
-        if (err1) throw new Error(`[STEP 1] Basic Fetch Failed: ${err1.message}`);
-        if (!step1 || step1.length === 0) throw new Error(`[STEP 1] Fabricator slug '${slug}' not found.`);
-        diagnostic.push("Step 1 OK: Found ID " + step1[0].id);
-
-        // Step 2: Full Fetch
-        const { data, error } = await supabase
-            .from('manufacturer')
-            .select('*')
-            .eq('slug', slug)
-            .single();
-
-        if (error) throw new Error(`[STEP 2] Full Fetch Failed: ${error.message}`);
-        profile = data;
-        diagnostic.push("Step 2 OK: Full profile loaded");
-
-    } catch (e: any) {
-        fetchError = { message: e.message, details: diagnostic };
-    }
+    // 1. Fetch Profile
+    const { data: profile, error: fetchError } = await supabase
+        .from('manufacturer')
+        .select('*')
+        .eq('slug', slug)
+        .single();
 
     // 2. Fetch Consoles (Only if profile loaded)
     let consoles: ConsoleDetails[] = [];
@@ -113,17 +88,9 @@ export default async function FabricatorDetailPage(props: Props) {
              <div className="flex flex-col items-center justify-center min-h-[50vh] p-4 text-center">
                 <h2 className="font-pixel text-accent text-xl mb-4">FABRICATOR NOT FOUND</h2>
                 <div className="bg-red-900/20 border border-red-500 p-4 mb-8 max-w-lg overflow-auto w-full text-left">
-                    <p className="font-mono text-red-400 text-xs mb-2 font-bold uppercase border-b border-red-500 pb-1">DIAGNOSTIC REPORT</p>
+                    <p className="font-mono text-red-400 text-xs mb-2 font-bold uppercase border-b border-red-500 pb-1">SYSTEM ERROR</p>
                     <div className="font-mono text-red-300 text-xs whitespace-pre-wrap">
-                        <div className="mb-2"><span className="text-red-500">ERROR:</span> {fetchError?.message || "Unknown Error"}</div>
-                        {fetchError?.details && (
-                            <div className="mt-2 border-t border-red-800/50 pt-2">
-                                <p className="text-gray-500 mb-1">SUCCESSFUL STEPS:</p>
-                                {fetchError.details.map((step: string, i: number) => (
-                                    <div key={i} className="text-green-400/80">✓ {step}</div>
-                                ))}
-                            </div>
-                        )}
+                        <div className="mb-2"><span className="text-red-500">ERROR:</span> {fetchError?.message || "Unknown Database Error"}</div>
                          <div className="mt-4 text-[10px] text-gray-500">
                              TIMESTAMP: {new Date().toISOString()}<br/>
                              SLUG: {slug}
