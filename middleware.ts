@@ -11,56 +11,66 @@ export async function middleware(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
 
-  const supabase = createServerClient(
-    supabaseUrl,
-    supabaseKey,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            request.cookies.set({ name, value, ...options });
-          });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
+  // SKIP Supabase checks if env vars are missing/placeholder to prevent crashes (DNS errors, 400s)
+  const isPlaceholder = supabaseUrl.includes('placeholder.supabase.co') || supabaseKey === 'placeholder';
+
+  if (!isPlaceholder) {
+    try {
+      const supabase = createServerClient(
+        supabaseUrl,
+        supabaseKey,
+        {
+          cookies: {
+            getAll() {
+              return request.cookies.getAll();
             },
-          });
-          cookiesToSet.forEach(({ name, value, options }) => {
-            response.cookies.set({ name, value, ...options });
-          });
-        },
-      },
-    }
-  );
+            setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+              cookiesToSet.forEach(({ name, value, options }) => {
+                request.cookies.set({ name, value, ...options });
+              });
+              response = NextResponse.next({
+                request: {
+                  headers: request.headers,
+                },
+              });
+              cookiesToSet.forEach(({ name, value, options }) => {
+                response.cookies.set({ name, value, ...options });
+              });
+            },
+          },
+        }
+      );
 
-  // 2. Refresh the session
-  const { data: { user } } = await supabase.auth.getUser();
+      // 2. Refresh the session
+      const { data: { user } } = await supabase.auth.getUser();
 
-  // 3. Protect Admin Routes
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    
-    // Check Authentication
-    if (!user) {
-      return NextResponse.redirect(new URL('/login', request.url));
-    }
+      // 3. Protect Admin Routes
+      if (request.nextUrl.pathname.startsWith('/admin')) {
 
-    // Check Authorization (Role) via profiles table
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
+        // Check Authentication
+        if (!user) {
+          return NextResponse.redirect(new URL('/login', request.url));
+        }
 
-    if (profileError) {
-        console.error('[Middleware] Profile Fetch Error:', profileError.message);
-    }
+        // Check Authorization (Role) via profiles table
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
 
-    // If no profile or role is not 'admin', redirect to home
-    if (!profile || profile.role !== 'admin') {
-      return NextResponse.redirect(new URL('/', request.url));
+        if (profileError) {
+            console.error('[Middleware] Profile Fetch Error:', profileError.message);
+        }
+
+        // If no profile or role is not 'admin', redirect to home
+        if (!profile || profile.role !== 'admin') {
+          return NextResponse.redirect(new URL('/', request.url));
+        }
+      }
+    } catch (e) {
+      console.error('[Middleware] Supabase Client Error (Skipping Auth):', e);
+      // Proceed without auth if client fails seriously
     }
   }
 

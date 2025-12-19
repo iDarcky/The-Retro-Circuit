@@ -13,6 +13,7 @@ export default function DesktopHeader() {
     { name: 'CONSOLES', path: '/console' },
     { name: 'FABRICATORS', path: '/fabricators' },
     { name: 'VS MODE', path: '/arena' },
+    { name: 'NEWS', path: '/news' },
   ];
 
   return (
@@ -24,7 +25,7 @@ export default function DesktopHeader() {
           {/* LEFT: Logo */}
           <div className="flex items-center">
               <Link href="/" className="flex items-center group">
-                  <span className="font-pixel text-[20px] leading-tight text-white group-hover:text-secondary transition-colors">RETRO CIRCUIT_</span>
+                  <span className="font-pixel text-[14px] leading-tight text-white/40 group-hover:text-secondary transition-colors">RETRO CIRCUIT_</span>
               </Link>
           </div>
 
