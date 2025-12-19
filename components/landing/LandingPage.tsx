@@ -1,4 +1,3 @@
-import React from 'react';
 import Link from 'next/link';
 import { ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 import { createClient } from '../../lib/supabase/server';
