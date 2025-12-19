@@ -37,13 +37,13 @@ const AdminEditTrigger: FC<AdminEditTriggerProps> = ({
     const colors = {
         cyan: "border-cyan-400 text-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:bg-cyan-400",
         amber: "border-amber-400 text-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.3)] hover:bg-amber-400",
-        pink: "border-retro-pink text-retro-pink shadow-[0_0_15px_rgba(255,0,255,0.3)] hover:bg-retro-pink",
+        pink: "border-accent text-accent shadow-[0_0_15px_rgba(255,0,255,0.3)] hover:bg-accent",
     };
 
     const dotColors = {
         cyan: "bg-cyan-400",
         amber: "bg-amber-400",
-        pink: "bg-retro-pink",
+        pink: "bg-accent",
     };
 
     const selectedColor = colors[color];

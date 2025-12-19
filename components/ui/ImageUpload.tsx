@@ -80,7 +80,7 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
   return (
     <div className={`w-full ${className}`}>
       {value ? (
-        <div className="relative group border border-retro-grid bg-black/40 p-2">
+        <div className="relative group border border-border-normal bg-black/40 p-2">
             <div className="aspect-video w-full relative flex items-center justify-center bg-[linear-gradient(45deg,#0f0f1b_25%,transparent_25%,transparent_75%,#0f0f1b_75%,#0f0f1b),linear-gradient(45deg,#0f0f1b_25%,transparent_25%,transparent_75%,#0f0f1b_75%,#0f0f1b)] bg-[length:20px_20px] bg-[position:0_0,10px_10px]">
                 <img 
                     src={value} 
@@ -92,12 +92,12 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
                 type="button"
                 onClick={handleRemove}
                 disabled={disabled}
-                className="absolute top-2 right-2 bg-retro-pink text-white w-8 h-8 flex items-center justify-center border border-white hover:bg-red-600 transition-colors shadow-lg z-10"
+                className="absolute top-2 right-2 bg-accent text-white w-8 h-8 flex items-center justify-center border border-white hover:bg-red-600 transition-colors shadow-lg z-10"
                 title="Remove Image"
             >
                 X
             </button>
-            <div className="absolute bottom-2 left-2 bg-black/80 px-2 py-1 border border-retro-grid text-[9px] font-mono text-retro-neon truncate max-w-[90%]">
+            <div className="absolute bottom-2 left-2 bg-black/80 px-2 py-1 border border-border-normal text-[9px] font-mono text-secondary truncate max-w-[90%]">
                 {value.split('/').pop()}
             </div>
         </div>
@@ -110,8 +110,8 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
             className={`
                 relative h-32 border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all
                 ${isDragging 
-                    ? 'border-retro-neon bg-retro-neon/10 scale-[1.02]' 
-                    : 'border-gray-700 bg-black/20 hover:border-retro-blue hover:bg-black/40'
+                    ? 'border-secondary bg-secondary/10 scale-[1.02]'
+                    : 'border-gray-700 bg-black/20 hover:border-primary hover:bg-black/40'
                 }
                 ${disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}
             `}
@@ -127,12 +127,12 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
             
             {isUploading ? (
                 <div className="text-center">
-                     <div className="w-8 h-8 border-2 border-retro-neon border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                     <span className="font-pixel text-[10px] text-retro-neon animate-pulse">UPLOADING DATA...</span>
+                     <div className="w-8 h-8 border-2 border-secondary border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                     <span className="font-pixel text-[10px] text-secondary animate-pulse">UPLOADING DATA...</span>
                 </div>
             ) : (
                 <div className="text-center p-4">
-                    <svg className={`w-8 h-8 mx-auto mb-2 ${isDragging ? 'text-retro-neon' : 'text-gray-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className={`w-8 h-8 mx-auto mb-2 ${isDragging ? 'text-secondary' : 'text-gray-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
                     <div className="font-pixel text-[10px] text-gray-400 mb-1">

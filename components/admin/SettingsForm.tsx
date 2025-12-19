@@ -37,15 +37,15 @@ export const SettingsForm: FC<SettingsFormProps> = ({ customLogo, onLogoUpdate, 
 
     return (
         <div className="space-y-6 animate-fadeIn">
-            <div className="text-xs text-retro-neon border-b border-gray-700 pb-2 mb-4 font-bold uppercase tracking-widest">Global Assets</div>
+            <div className="text-xs text-secondary border-b border-gray-700 pb-2 mb-4 font-bold uppercase tracking-widest">Global Assets</div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
                 <div className="space-y-4">
-                    <label className="block text-sm font-bold mb-2 text-retro-blue">CUSTOM LOGO UPLOAD</label>
+                    <label className="block text-sm font-bold mb-2 text-primary">CUSTOM LOGO UPLOAD</label>
                     <input 
                         type="file" 
                         accept="image/*"
                         onChange={handleLogoUpload}
-                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-xs file:font-mono file:bg-retro-grid file:text-retro-neon hover:file:bg-retro-neon hover:file:text-black"
+                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-xs file:font-mono file:bg-bg-secondary file:text-secondary hover:file:bg-secondary hover:file:text-black"
                     />
                     {customLogo && (
                         <div className="mt-4">

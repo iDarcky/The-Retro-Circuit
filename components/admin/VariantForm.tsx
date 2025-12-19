@@ -214,24 +214,24 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
     return (
         <div className="space-y-6">
-            <div className={`border-l-4 p-5 mb-6 bg-black/40 shadow-md ${isEditMode ? 'border-retro-neon' : 'border-retro-pink'}`}>
-                <h3 className={`font-bold text-sm uppercase font-mono tracking-widest ${isEditMode ? 'text-retro-neon' : 'border-retro-pink'}`}>{isEditMode ? 'Edit Mode: Variant Specs' : 'Step 2: Technical Specs'}</h3>
+            <div className={`border-l-4 p-5 mb-6 bg-black/40 shadow-md ${isEditMode ? 'border-secondary' : 'border-accent'}`}>
+                <h3 className={`font-bold text-sm uppercase font-mono tracking-widest ${isEditMode ? 'text-secondary' : 'border-accent'}`}>{isEditMode ? 'Edit Mode: Variant Specs' : 'Step 2: Technical Specs'}</h3>
                 <p className="text-xs text-gray-400 mt-2 font-mono">{isEditMode ? `Modifying Variant ID: ${initialData?.id}` : 'Define hardware capabilities. Create multiple variants (Pro, Slim, etc.) for a console.'}</p>
             </div>
 
             <form className="space-y-6">
-                <div className="mb-8 space-y-6 bg-black/20 p-6 border border-retro-grid">
+                <div className="mb-8 space-y-6 bg-black/20 p-6 border border-border-normal">
                      <div>
-                        <label className={`text-[10px] mb-2 block uppercase font-bold ${fieldErrors.console_id ? 'text-retro-pink' : 'text-gray-500'}`}>Target Console Folder</label>
-                        <select className={`w-full bg-black border p-3 outline-none text-white font-mono text-sm ${fieldErrors.console_id ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'} ${isEditMode ? 'opacity-50 cursor-not-allowed' : ''}`} value={formData.console_id || ''} onChange={(e: ChangeEvent<HTMLSelectElement>) => handleInputChange('console_id', e.target.value)} required disabled={isEditMode}>
+                        <label className={`text-[10px] mb-2 block uppercase font-bold ${fieldErrors.console_id ? 'text-accent' : 'text-gray-500'}`}>Target Console Folder</label>
+                        <select className={`w-full bg-black border p-3 outline-none text-white font-mono text-sm ${fieldErrors.console_id ? 'border-accent' : 'border-gray-700 focus:border-secondary'} ${isEditMode ? 'opacity-50 cursor-not-allowed' : ''}`} value={formData.console_id || ''} onChange={(e: ChangeEvent<HTMLSelectElement>) => handleInputChange('console_id', e.target.value)} required disabled={isEditMode}>
                             <option value="">-- Select Console Folder --</option>
                             {consoleList.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
                     </div>
                     {!isEditMode && existingVariants.length > 0 && (
-                        <div className="p-4 border border-dashed border-retro-blue bg-retro-blue/5">
-                            <label className="text-[10px] text-retro-blue mb-2 block uppercase font-bold">Quick Fill: Copy Specs</label>
-                            <select className="w-full bg-black border border-retro-blue text-retro-blue p-2 font-mono text-xs" value={selectedTemplate} onChange={(e: ChangeEvent<HTMLSelectElement>) => handleTemplateSelect(e.target.value)}>
+                        <div className="p-4 border border-dashed border-primary bg-primary/5">
+                            <label className="text-[10px] text-primary mb-2 block uppercase font-bold">Quick Fill: Copy Specs</label>
+                            <select className="w-full bg-black border border-primary text-primary p-2 font-mono text-xs" value={selectedTemplate} onChange={(e: ChangeEvent<HTMLSelectElement>) => handleTemplateSelect(e.target.value)}>
                                 <option value="">-- Select a Base Model Template --</option>
                                 {existingVariants.map(v => <option key={v.id} value={v.id}>{v.variant_name} {v.is_default ? '(Default)' : ''}</option>)}
                             </select>
@@ -244,9 +244,9 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                         const isOpen = openSections[group.title];
                         const hasError = group.fields.some(f => f.key && fieldErrors[f.key as keyof typeof fieldErrors]);
                         return (
-                            <div key={idx} className={`bg-black/40 border-l-4 ${hasError ? 'border-retro-pink' : 'border-retro-neon'} shadow-lg`}>
+                            <div key={idx} className={`bg-black/40 border-l-4 ${hasError ? 'border-accent' : 'border-secondary'} shadow-lg`}>
                                 <button type="button" onClick={() => toggleSection(group.title)} className={`w-full flex justify-between items-center p-4 text-left font-mono uppercase tracking-widest text-sm ${isOpen ? 'text-white bg-white/5 font-bold' : 'text-gray-400 hover:text-white'}`}>
-                                    <span>{group.title}</span><div className={`${isOpen ? 'rotate-180 text-retro-neon' : 'text-gray-600'}`}><ChevronDown /></div>
+                                    <span>{group.title}</span><div className={`${isOpen ? 'rotate-180 text-secondary' : 'text-gray-600'}`}><ChevronDown /></div>
                                 </button>
                                 {isOpen && (
                                     <div className="p-6 grid grid-cols-1 md:grid-cols-12 gap-6 border-t border-white/5">
@@ -259,12 +259,12 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                             if (field.type === 'custom_ram') {
                                                 return (
                                                     <div key={field.key || `field-${fieldIdx}`} className={`${colSpan}`}>
-                                                        <label className={`text-[10px] mb-1 block uppercase ${error ? 'text-retro-pink' : 'text-gray-500'}`}>{field.label}</label>
+                                                        <label className={`text-[10px] mb-1 block uppercase ${error ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
                                                         <div className="flex gap-2">
-                                                            <input type="number" className={`flex-1 border p-3 outline-none font-mono text-sm bg-black text-white ${error ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'}`} value={ramInput.value} onChange={(e) => handleRamChange(e.target.value, ramInput.unit)} />
+                                                            <input type="number" className={`flex-1 border p-3 outline-none font-mono text-sm bg-black text-white ${error ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`} value={ramInput.value} onChange={(e) => handleRamChange(e.target.value, ramInput.unit)} />
                                                             <select className="w-24 bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm" value={ramInput.unit} onChange={(e) => handleRamChange(ramInput.value, e.target.value as 'GB' | 'MB')}><option value="GB">GB</option><option value="MB">MB</option></select>
                                                         </div>
-                                                        {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
+                                                        {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
                                                     </div>
                                                 );
                                             }
@@ -274,7 +274,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                     {field.subHeader && <div className="col-span-12 mt-2 mb-3 border-b border-gray-800 pb-1"><span className="text-[10px] text-gray-500 font-bold uppercase">{field.subHeader}</span></div>}
                                                     {field.type === 'url' || (field.key && field.key.includes('image_url')) ? (
                                                         <div>
-                                                            <label className={`text-[10px] mb-2 block uppercase ${error ? 'text-retro-pink' : 'text-gray-500'}`}>{field.label}</label>
+                                                            <label className={`text-[10px] mb-2 block uppercase ${error ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
                                                             <ImageUpload value={field.key ? formData[field.key] : ''} onChange={(url) => handleInputChange(field.key, url)} />
                                                         </div>
                                                     ) : (
@@ -291,7 +291,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                     id="has_keyboard"
                                                     checked={!!formData.has_keyboard}
                                                     onChange={(e) => handleInputChange('has_keyboard', e.target.checked)}
-                                                    className="form-checkbox h-5 w-5 bg-black border-retro-neon text-retro-neon focus:ring-retro-neon/50"
+                                                    className="form-checkbox h-5 w-5 bg-black border-secondary text-secondary focus:ring-secondary/50"
                                                 />
                                                 <label htmlFor="has_keyboard" className="font-mono text-white">Has Physical Keyboard?</label>
                                             </div>
@@ -304,16 +304,16 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 </div>
 
                 {isEditMode && initialData?.id && (
-                    <div className="mt-8 border-t-2 border-dashed border-retro-grid pt-8">
+                    <div className="mt-8 border-t-2 border-dashed border-border-normal pt-8">
                         {!showEmulationForm ? (
-                            <button type="button" onClick={() => setShowEmulationForm(true)} className="w-full py-4 border-2 border-retro-blue bg-retro-blue/10 text-retro-blue font-pixel text-sm hover:bg-retro-blue hover:text-black">
+                            <button type="button" onClick={() => setShowEmulationForm(true)} className="w-full py-4 border-2 border-primary bg-primary/10 text-primary font-pixel text-sm hover:bg-primary hover:text-black">
                                 [ EDIT EMULATION PERFORMANCE ]
                             </button>
                         ) : (
-                            <div className="border-2 border-retro-blue">
-                                <div className="bg-retro-blue/20 p-2 flex justify-between items-center border-b border-retro-blue/50">
-                                    <span className="text-[10px] font-mono text-retro-blue px-2">PERFORMANCE MATRIX</span>
-                                    <button type="button" onClick={() => setShowEmulationForm(false)} className="text-[10px] font-mono text-retro-blue hover:text-white px-2 py-1">[ CLOSE ]</button>
+                            <div className="border-2 border-primary">
+                                <div className="bg-primary/20 p-2 flex justify-between items-center border-b border-primary/50">
+                                    <span className="text-[10px] font-mono text-primary px-2">PERFORMANCE MATRIX</span>
+                                    <button type="button" onClick={() => setShowEmulationForm(false)} className="text-[10px] font-mono text-primary hover:text-white px-2 py-1">[ CLOSE ]</button>
                                 </div>
                                 <EmulationForm variantId={initialData.id} onSave={() => onSuccess("EMULATION DATA SYNCED.")} />
                             </div>
@@ -321,7 +321,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     </div>
                 )}
                 
-                <div className="flex justify-end gap-4 pt-6 border-t border-retro-grid">
+                <div className="flex justify-end gap-4 pt-6 border-t border-border-normal">
                     {!isEditMode && <Button type="button" variant="secondary" onClick={(e) => handleSubmit(e, 'CLONE')} isLoading={loading}>[ SAVE & CLONE ]</Button>}
                     <Button type="submit" onClick={(e) => handleSubmit(e, 'SAVE')} isLoading={loading}>{isEditMode ? 'UPDATE UNIT' : 'REGISTER UNIT'}</Button>
                 </div>

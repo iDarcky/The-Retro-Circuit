@@ -126,9 +126,9 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
             )}
 
             {/* TOP NAVIGATION & HEADER */}
-            <div className="mb-8 flex flex-col md:flex-row justify-between items-start border-b-4 border-retro-grid pb-6 gap-6">
+            <div className="mb-8 flex flex-col md:flex-row justify-between items-start border-b-4 border-border-normal pb-6 gap-6">
                 <div className="flex-1">
-                     <Link href="/console" className="inline-block text-xs font-mono text-retro-blue hover:text-retro-neon transition-colors mb-2">
+                     <Link href="/console" className="inline-block text-xs font-mono text-primary hover:text-secondary transition-colors mb-2">
                         &lt; BACK TO CONSOLE VAULT
                      </Link>
                      <div className="flex flex-wrap items-center gap-4">
@@ -145,11 +145,11 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                         />
                      </div>
                      <div className="flex flex-wrap gap-4 font-mono text-sm text-gray-400 mt-2">
-                        <Link href={`/fabricators/${consoleData.manufacturer?.slug}`} className="hover:text-retro-neon transition-colors border-b border-transparent hover:border-retro-neon">
+                        <Link href={`/fabricators/${consoleData.manufacturer?.slug}`} className="hover:text-secondary transition-colors border-b border-transparent hover:border-secondary">
                             {consoleData.manufacturer?.name.toUpperCase()}
                         </Link>
                         <span>//</span>
-                        <span className="text-retro-pink">{currentYear || 'TBA'}</span>
+                        <span className="text-accent">{currentYear || 'TBA'}</span>
                         <span>//</span>
                         <span>{consoleData.generation}</span>
                      </div>
@@ -169,11 +169,11 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                 {/* LEFT COLUMN: IMAGE & DESCRIPTION (lg:col-span-4) */}
                 <div className="lg:col-span-4 space-y-6">
                     {/* Main Image Viewer */}
-                    <div className="bg-black border-2 border-retro-grid p-8 flex items-center justify-center min-h-[300px] relative shadow-[0_0_20px_rgba(0,0,0,0.5)] group overflow-hidden">
+                    <div className="bg-black border-2 border-border-normal p-8 flex items-center justify-center min-h-[300px] relative shadow-[0_0_20px_rgba(0,0,0,0.5)] group overflow-hidden">
                         {currentImage ? (
                             <img src={currentImage} alt={consoleData.name} className="w-full h-auto object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-500 relative z-10" key={currentImage} />
                         ) : (
-                            <div className="text-retro-grid font-pixel text-4xl opacity-50">NO SIGNAL</div>
+                            <div className="text-muted font-pixel text-4xl opacity-50">NO SIGNAL</div>
                         )}
                         
                         {/* Background Grid Effect */}
@@ -181,11 +181,11 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                         
                         {/* Form Factor & Feature Badges */}
                         <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 items-start">
-                            <div className="bg-retro-neon text-black font-mono text-[10px] font-bold px-2 py-1 transform -rotate-2 shadow-lg">
+                            <div className="bg-secondary text-black font-mono text-[10px] font-bold px-2 py-1 transform -rotate-2 shadow-lg">
                                 {consoleData.form_factor?.toUpperCase() || 'SYSTEM'}
                             </div>
                             {consoleData.chassis_features && (
-                                <div className="bg-black/90 text-retro-neon border border-retro-neon font-mono text-[10px] font-bold px-2 py-1 transform -rotate-2 shadow-lg">
+                                <div className="bg-black/90 text-secondary border border-secondary font-mono text-[10px] font-bold px-2 py-1 transform -rotate-2 shadow-lg">
                                     {consoleData.chassis_features.toUpperCase()}
                                 </div>
                             )}
@@ -193,31 +193,31 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                     </div>
 
                     {/* Description Text */}
-                    <div className="bg-retro-dark border border-retro-grid p-6 relative">
+                    <div className="bg-bg-primary border border-border-normal p-6 relative">
                         <div className="absolute top-0 right-0 p-1">
-                            <svg className="w-4 h-4 text-retro-grid" viewBox="0 0 24 24" fill="currentColor"><path d="M22 2v20h-20v-20h20zm2-2h-24v24h24v-24z"/></svg>
+                            <svg className="w-4 h-4 text-muted" viewBox="0 0 24 24" fill="currentColor"><path d="M22 2v20h-20v-20h20zm2-2h-24v24h24v-24z"/></svg>
                         </div>
-                        <h3 className="font-pixel text-[10px] text-retro-blue mb-4 uppercase">System Analysis</h3>
+                        <h3 className="font-pixel text-[10px] text-primary mb-4 uppercase">System Analysis</h3>
                         <p className="font-mono text-gray-300 leading-relaxed text-sm whitespace-pre-line">
                             {consoleData.description}
                         </p>
                     </div>
 
                     {/* Quick Stats Summary Card */}
-                    <div className="grid grid-cols-2 gap-px bg-retro-grid border border-retro-grid">
-                        <div className="bg-retro-dark p-3">
+                    <div className="grid grid-cols-2 gap-px bg-bg-secondary border border-border-normal">
+                        <div className="bg-bg-primary p-3">
                             <div className="text-[10px] text-gray-500 font-mono uppercase">Model No.</div>
                             <div className="text-white font-mono text-sm">{mergedSpecs.model_no || 'N/A'}</div>
                         </div>
-                        <div className="bg-retro-dark p-3">
+                        <div className="bg-bg-primary p-3">
                             <div className="text-[10px] text-gray-500 font-mono uppercase">Launch Price</div>
-                            <div className="text-retro-neon font-mono text-sm">{mergedSpecs.price_launch_usd ? `$${mergedSpecs.price_launch_usd}` : 'N/A'}</div>
+                            <div className="text-secondary font-mono text-sm">{mergedSpecs.price_launch_usd ? `$${mergedSpecs.price_launch_usd}` : 'N/A'}</div>
                         </div>
-                        <div className="bg-retro-dark p-3">
+                        <div className="bg-bg-primary p-3">
                             <div className="text-[10px] text-gray-500 font-mono uppercase">Generation</div>
                             <div className="text-white font-mono text-sm">{consoleData.generation || 'Unknown'}</div>
                         </div>
-                        <div className="bg-retro-dark p-3">
+                        <div className="bg-bg-primary p-3">
                             <div className="text-[10px] text-gray-500 font-mono uppercase">Release</div>
                             <div className="text-white font-mono text-sm">{currentYear || 'TBA'}</div>
                         </div>
@@ -229,7 +229,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                     
                     {/* VARIANT SELECTOR TABS */}
                     {hasVariants && (
-                        <div className="mb-6 flex flex-wrap gap-2 border-b border-retro-grid pb-2">
+                        <div className="mb-6 flex flex-wrap gap-2 border-b border-border-normal pb-2">
                             {variants.map(variant => (
                                 <button
                                     key={variant.id}
@@ -237,7 +237,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                                     className={`
                                         px-4 py-2 font-mono text-xs border-t border-l-2 border-r uppercase transition-all
                                         ${selectedVariantId === variant.id 
-                                            ? 'bg-retro-neon text-black border-retro-neon font-bold shadow-[0_-2px_10px_rgba(0,255,157,0.3)]' 
+                                            ? 'bg-secondary text-black border-secondary font-bold shadow-[0_-2px_10px_rgba(0,255,157,0.3)]'
                                             : 'bg-black text-gray-500 border-gray-800 hover:text-white hover:bg-white/5'}
                                     `}
                                 >
@@ -300,7 +300,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                         <SpecCard title="DISPLAY">
                             <div className="flex justify-between items-end mb-2">
                                 <span className="font-mono text-2xl text-white">{mergedSpecs.screen_size_inch}"</span>
-                                <span className="font-mono text-xs text-retro-blue border border-retro-blue px-1.5">{mergedSpecs.display_type}</span>
+                                <span className="font-mono text-xs text-primary border border-primary px-1.5">{mergedSpecs.display_type}</span>
                             </div>
                             <SpecField label="Resolution" value={`${mergedSpecs.screen_resolution_x} x ${mergedSpecs.screen_resolution_y}`} />
                             <div className="grid grid-cols-2 gap-4">

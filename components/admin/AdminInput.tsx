@@ -24,8 +24,8 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
     // Default val handling
     const val = value !== undefined && value !== null ? value : (type === 'checkbox' ? false : '');
     
-    const borderColor = error ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon';
-    const labelColor = error ? 'text-retro-pink' : 'text-gray-500';
+    const borderColor = error ? 'border-accent' : 'border-gray-700 focus:border-secondary';
+    const labelColor = error ? 'text-accent' : 'text-gray-500';
 
     // Visual styles for computed fields (read-only appearance)
     const isComputed = field.visualStyle === 'computed';
@@ -43,7 +43,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                     placeholder={field.placeholder}
                 />
                 {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{field.note}</div>}
-                {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
+                {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
             </div>
         );
     }
@@ -61,12 +61,12 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                     <span className={`text-[10px] uppercase font-bold tracking-wider group-hover:text-white ${labelColor}`}>
                         {field.label}
                     </span>
-                    <div className={`w-5 h-5 border flex items-center justify-center transition-all ${isChecked ? 'bg-retro-neon border-retro-neon' : 'border-gray-600 bg-transparent'}`}>
+                    <div className={`w-5 h-5 border flex items-center justify-center transition-all ${isChecked ? 'bg-secondary border-secondary' : 'border-gray-600 bg-transparent'}`}>
                         {isChecked && <svg className="w-3 h-3 text-black font-bold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
                     </div>
                 </div>
                 {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{field.note}</div>}
-                {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
+                {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
             </div>
         );
     }
@@ -86,7 +86,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                     ))}
                 </select>
                 {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{field.note}</div>}
-                {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
+                {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
             </div>
         );
     }
@@ -105,7 +105,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                 placeholder={field.placeholder}
             />
             {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{field.note}</div>}
-            {error && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {error}</div>}
+            {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
         </div>
     );
 };

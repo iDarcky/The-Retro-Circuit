@@ -3,8 +3,29 @@
 @tailwind utilities;
 
 :root {
-  --background: #0f0f1b;
-  --foreground: #ffffff;
+  /* Backgrounds */
+  --bg-primary: #0a0e1a;
+  --bg-secondary: #161b22;
+  --bg-card: rgba(255, 255, 255, 0.04);
+
+  /* Text */
+  --text-primary: #e0e0e0;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+
+  /* Accent Colors (BY ROLE) */
+  --color-primary: #00D9FF;  /* Cyan - main UI */
+  --color-secondary: #00FF88; /* Green - positive */
+  --color-accent: #FF6B9D;    /* Pink - special */
+  --color-warning: #FFC857;   /* Yellow - caution */
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --border-normal: rgba(255, 255, 255, 0.15);
+  --border-strong: rgba(255, 255, 255, 0.3);
+
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
 }
 
 body {
@@ -14,9 +35,9 @@ body {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: #0f0f1b; border-left: 1px solid #2a2a40; }
-::-webkit-scrollbar-thumb { background: #2a2a40; border: 1px solid #00ff9d; }
-::-webkit-scrollbar-thumb:hover { background: #00ff9d; }
+::-webkit-scrollbar-track { background: var(--bg-primary); border-left: 1px solid var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--bg-secondary); border: 1px solid var(--color-secondary); }
+::-webkit-scrollbar-thumb:hover { background: var(--color-secondary); }
 
 /* CRT Effects */
 .scanlines {
@@ -44,17 +65,17 @@ body {
 
 .glitch-hover:hover {
   animation: glitch-shake 0.2s cubic-bezier(.36,.07,.19,.97) both infinite;
-  text-shadow: 2px 2px 0px #00ff9d, -2px -2px 0px #00ffff;
+  text-shadow: 2px 2px 0px var(--color-secondary), -2px -2px 0px var(--color-primary);
 }
 
 /* Neon Pulse Animation */
 @keyframes neon-pulse {
   0%, 100% {
-    text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 40px #ff00ff;
+    text-shadow: 0 0 10px var(--color-accent), 0 0 20px var(--color-accent), 0 0 40px var(--color-accent);
     opacity: 1;
   }
   50% {
-    text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff;
+    text-shadow: 0 0 5px var(--color-accent), 0 0 10px var(--color-accent);
     opacity: 0.8;
   }
 }
