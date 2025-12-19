@@ -104,3 +104,31 @@ body {
     display: none;
   }
 }
+
+/* Device cards - glass effect */
+.device-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.device-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #00D9FF;
+  box-shadow: 0 8px 16px rgba(0, 217, 255, 0.2);
+}
+
+/* Section backgrounds - subtle layering */
+.vault-section {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  padding: 2rem;
+}
+
+/* Banner */
+.banner {
+  background: rgba(255, 107, 157, 0.15); /* Soft pink, semi-transparent */
+  backdrop-filter: blur(10px);
+  border: none;
+}
