@@ -118,8 +118,8 @@ const ConsoleVaultClient: FC = () => {
   const getFormFactorColor = (factor: string) => {
       const f = factor.toLowerCase();
       if (f === 'vertical') return 'text-yellow-400 border-yellow-400';
-      if (f === 'horizontal') return 'text-retro-blue border-retro-blue';
-      if (f === 'clamshell') return 'text-retro-pink border-retro-pink';
+      if (f === 'horizontal') return 'text-primary border-primary';
+      if (f === 'clamshell') return 'text-accent border-accent';
       return 'text-gray-400 border-gray-400';
   };
 
@@ -131,10 +131,10 @@ const ConsoleVaultClient: FC = () => {
 
   const CheckboxFilter = ({ label, checked, onChange }: { label: string, checked: boolean, onChange: () => void }) => (
       <div onClick={onChange} className="flex items-center gap-3 cursor-pointer group mb-2 last:mb-0">
-          <div className={`w-4 h-4 border flex items-center justify-center transition-colors ${checked ? 'bg-retro-neon border-retro-neon' : 'border-gray-600 bg-black group-hover:border-retro-blue'}`}>
+          <div className={`w-4 h-4 border flex items-center justify-center transition-colors ${checked ? 'bg-secondary border-secondary' : 'border-gray-600 bg-black group-hover:border-primary'}`}>
               {checked && <svg className="w-3 h-3 text-black font-bold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
           </div>
-          <span className={`text-[10px] font-mono uppercase ${checked ? 'text-white' : 'text-gray-500 group-hover:text-retro-blue'}`}>
+          <span className={`text-[10px] font-mono uppercase ${checked ? 'text-white' : 'text-gray-500 group-hover:text-primary'}`}>
               {label}
           </span>
       </div>
@@ -144,7 +144,7 @@ const ConsoleVaultClient: FC = () => {
     <div className="w-full max-w-7xl mx-auto p-4">
         {/* Header */}
         <div className="text-center mb-8">
-            <h2 className="text-3xl md:text-5xl font-pixel text-retro-neon mb-4 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
+            <h2 className="text-3xl md:text-5xl font-pixel text-secondary mb-4 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
                 CONSOLE VAULT
             </h2>
             <p className="font-mono text-gray-400">CLASSIFIED HARDWARE DATABASE</p>
@@ -162,13 +162,13 @@ const ConsoleVaultClient: FC = () => {
                 
                 {/* SIDEBAR FILTERS */}
                 <aside className={`
-                    lg:w-64 flex-shrink-0 bg-retro-dark border border-retro-grid p-4 h-fit
+                    lg:w-64 flex-shrink-0 bg-bg-primary border border-border-normal p-4 h-fit
                     ${showMobileFilters ? 'block' : 'hidden lg:block'}
                 `}>
-                    <div className="mb-6 pb-6 border-b border-retro-grid">
-                        <h3 className="font-pixel text-sm text-retro-blue mb-4">FABRICATOR</h3>
+                    <div className="mb-6 pb-6 border-b border-border-normal">
+                        <h3 className="font-pixel text-sm text-primary mb-4">FABRICATOR</h3>
                         <select 
-                            className="w-full bg-black border border-gray-700 text-white font-mono text-xs p-2 focus:border-retro-neon outline-none"
+                            className="w-full bg-black border border-gray-700 text-white font-mono text-xs p-2 focus:border-secondary outline-none"
                             value={filters.manufacturer_id || ''}
                             onChange={(e: ChangeEvent<HTMLSelectElement>) => setFilters({...filters, manufacturer_id: e.target.value || null})}
                         >
@@ -177,8 +177,8 @@ const ConsoleVaultClient: FC = () => {
                         </select>
                     </div>
 
-                    <div className="mb-6 pb-6 border-b border-retro-grid">
-                        <h3 className="font-pixel text-sm text-retro-blue mb-4">TIMELINE</h3>
+                    <div className="mb-6 pb-6 border-b border-border-normal">
+                        <h3 className="font-pixel text-sm text-primary mb-4">TIMELINE</h3>
                         <div className="flex gap-2 items-center">
                              <input 
                                 type="number" 
@@ -196,8 +196,8 @@ const ConsoleVaultClient: FC = () => {
                         </div>
                     </div>
 
-                    <div className="mb-6 pb-6 border-b border-retro-grid">
-                        <h3 className="font-pixel text-sm text-retro-blue mb-4">FORM FACTOR</h3>
+                    <div className="mb-6 pb-6 border-b border-border-normal">
+                        <h3 className="font-pixel text-sm text-primary mb-4">FORM FACTOR</h3>
                         <CheckboxFilter 
                             label="HORIZONTAL" 
                             checked={filters.form_factors.includes('Horizontal')} 
@@ -216,7 +216,7 @@ const ConsoleVaultClient: FC = () => {
                     </div>
 
                     <div className="mb-6">
-                        <h3 className="font-pixel text-sm text-retro-pink mb-4">SCREEN TECH</h3>
+                        <h3 className="font-pixel text-sm text-accent mb-4">SCREEN TECH</h3>
                         <CheckboxFilter 
                             label="OLED" 
                             checked={filters.panel_types.includes('OLED')} 
@@ -247,7 +247,7 @@ const ConsoleVaultClient: FC = () => {
                 {/* MAIN GRID */}
                 <div className="flex-1">
                     {/* Status Bar */}
-                    <div className="bg-black/40 border-b border-retro-grid p-2 mb-4 flex justify-between items-center text-[10px] font-mono text-gray-400">
+                    <div className="bg-black/40 border-b border-border-normal p-2 mb-4 flex justify-between items-center text-[10px] font-mono text-gray-400">
                         <span>FOUND: {filteredConsoles.length} UNITS</span>
                         <span>PAGE {page} / {totalPages || 1}</span>
                     </div>
@@ -262,7 +262,7 @@ const ConsoleVaultClient: FC = () => {
                                 <Link 
                                     href={`/console/${console.slug}`} 
                                     key={console.id}
-                                    className="group block bg-black border border-retro-grid hover:border-retro-neon transition-all relative overflow-hidden"
+                                    className="group block bg-black border border-border-normal hover:border-secondary transition-all relative overflow-hidden"
                                 >
                                     <div className="aspect-video bg-gray-900/50 relative flex items-center justify-center p-4">
                                          {console.image_url ? (
@@ -279,14 +279,14 @@ const ConsoleVaultClient: FC = () => {
                                                  </div>
                                              )}
                                              {console.chassis_features && (
-                                                 <div className="bg-black/90 border border-retro-neon text-retro-neon px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase shadow-lg">
+                                                 <div className="bg-black/90 border border-secondary text-secondary px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase shadow-lg">
                                                      {console.chassis_features}
                                                  </div>
                                              )}
                                          </div>
                                     </div>
-                                    <div className="p-4 border-t border-retro-grid">
-                                        <h3 className="font-pixel text-xs text-white group-hover:text-retro-neon mb-1">{console.name}</h3>
+                                    <div className="p-4 border-t border-border-normal">
+                                        <h3 className="font-pixel text-xs text-white group-hover:text-secondary mb-1">{console.name}</h3>
                                         <div className="flex justify-between items-center text-[10px] font-mono text-gray-500">
                                             <span>{console.manufacturer?.name}</span>
                                             <span>{console.release_year || 'TBA'}</span>
@@ -299,7 +299,7 @@ const ConsoleVaultClient: FC = () => {
 
                     {/* Pagination */}
                     {totalPages > 1 && (
-                        <div className="flex justify-center items-center gap-4 py-8 border-t border-retro-grid/30">
+                        <div className="flex justify-center items-center gap-4 py-8 border-t border-border-normal/30">
                             <Button 
                                 variant="secondary" 
                                 onClick={() => setPage(p => Math.max(1, p - 1))}
@@ -308,7 +308,7 @@ const ConsoleVaultClient: FC = () => {
                                 &lt; PREV
                             </Button>
                             
-                            <div className="font-pixel text-xs text-retro-neon bg-retro-grid/20 px-4 py-2 rounded">
+                            <div className="font-pixel text-xs text-secondary bg-bg-secondary/20 px-4 py-2 rounded">
                                 PAGE {page} OF {totalPages}
                             </div>
 

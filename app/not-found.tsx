@@ -33,26 +33,26 @@ export default function NotFound() {
     <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center">
       {/* 404 Header with Glitch Effect */}
       <div 
-        className="font-pixel text-8xl text-retro-pink mb-4 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] glitch-hover cursor-help transition-all duration-100 select-none"
+        className="font-pixel text-8xl text-accent mb-4 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] glitch-hover cursor-help transition-all duration-100 select-none"
         title="SYSTEM_ERROR_404"
       >
         404
       </div>
       
-      <h2 className="font-pixel text-2xl text-retro-pink mb-8 tracking-widest animate-[neon-pulse_3s_ease-in-out_infinite]">SIGNAL LOST</h2>
+      <h2 className="font-pixel text-2xl text-accent mb-8 tracking-widest animate-[neon-pulse_3s_ease-in-out_infinite]">SIGNAL LOST</h2>
       
       {/* Terminal Log Output */}
-      <div className="p-6 border-2 border-retro-grid bg-black/80 mb-10 w-full max-w-md shadow-[0_0_20px_rgba(0,0,0,0.5)] relative overflow-hidden">
+      <div className="p-6 border-2 border-border-normal bg-black/80 mb-10 w-full max-w-md shadow-[0_0_20px_rgba(0,0,0,0.5)] relative overflow-hidden">
         {/* Scanline decoration inside terminal */}
         <div className="absolute inset-0 pointer-events-none opacity-10 bg-[linear-gradient(rgba(0,255,157,0.1)_1px,transparent_1px)] bg-[size:100%_4px]"></div>
         
-        <div className="font-mono text-sm text-retro-neon space-y-2 text-left relative z-10 min-h-[140px]">
+        <div className="font-mono text-sm text-secondary space-y-2 text-left relative z-10 min-h-[140px]">
             {logs.map((log, i) => (
                 <div key={i} className="animate-fadeIn">
                     {log}
                 </div>
             ))}
-            <div className="animate-pulse text-retro-blue mt-2">_</div>
+            <div className="animate-pulse text-primary mt-2">_</div>
         </div>
       </div>
 

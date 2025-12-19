@@ -30,14 +30,14 @@ const MobileBottomNav = () => {
                         href={item.path}
                         onClick={playClick}
                         className={`relative flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${
-                            isActive ? 'text-retro-neon' : 'text-gray-400 hover:text-white'
+                            isActive ? 'text-secondary' : 'text-gray-400 hover:text-white'
                         }`}
                     >
                         <div className={`transition-transform duration-300 ${isActive ? 'scale-110 drop-shadow-[0_0_8px_rgba(0,255,157,0.8)]' : ''}`}>
                             <item.icon className="w-6 h-6" />
                         </div>
                         {isActive && (
-                            <div className="absolute -bottom-1 w-1 h-1 bg-retro-neon rounded-full shadow-[0_0_5px_rgba(0,255,157,1)]"></div>
+                            <div className="absolute -bottom-1 w-1 h-1 bg-secondary rounded-full shadow-[0_0_5px_rgba(0,255,157,1)]"></div>
                         )}
                     </Link>
                 );

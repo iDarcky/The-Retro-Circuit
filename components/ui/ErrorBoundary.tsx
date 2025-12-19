@@ -38,7 +38,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
              <pre className="whitespace-pre-wrap break-words font-mono text-sm">{this.state.errorInfo}</pre>
           </div>
           
-          <p className="animate-pulse mb-8 text-retro-neon">* Press RESTART to terminate the current application.</p>
+          <p className="animate-pulse mb-8 text-secondary">* Press RESTART to terminate the current application.</p>
           <p className="text-sm opacity-75 mb-8">Press any key to continue _</p>
           
           <button 

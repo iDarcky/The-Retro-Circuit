@@ -15,7 +15,7 @@ export default async function FabricatorsPage() {
   return (
     <div className="w-full max-w-7xl mx-auto p-4">
       <div className="text-center mb-10">
-        <h2 className="text-3xl md:text-5xl font-pixel text-retro-neon mb-4 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
+        <h2 className="text-3xl md:text-5xl font-pixel text-secondary mb-4 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
             FABRICATOR ARCHIVES
         </h2>
         <p className="font-mono text-gray-400">AUTHORIZED HARDWARE MANUFACTURERS</p>
@@ -32,7 +32,7 @@ export default async function FabricatorsPage() {
                 <Link 
                     href={`/fabricators/${brand.slug}`} 
                     key={brand.id}
-                    className={`group relative bg-retro-dark border-2 ${borderClass} p-8 flex flex-col items-center justify-center hover:bg-white/5 transition-all duration-300 overflow-hidden min-h-[300px]`}
+                    className={`group relative bg-bg-primary border-2 ${borderClass} p-8 flex flex-col items-center justify-center hover:bg-white/5 transition-all duration-300 overflow-hidden min-h-[300px]`}
                 >
                     {/* Decorative Corner */}
                     <div className={`absolute top-0 right-0 p-2 border-b border-l ${borderClass} bg-black/50`}>

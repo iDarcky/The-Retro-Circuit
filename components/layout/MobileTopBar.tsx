@@ -16,8 +16,8 @@ const MobileTopBar: FC<MobileTopBarProps> = ({ onMenuClick, isSidebarOpen }) => 
 
   return (
     <>
-      {/* Changed: Removed border-b border-retro-neon and shadow-lg, added border-[rgba(255,255,255,0.06)] */}
-      <header className="z-50 h-16 md:hidden bg-retro-dark/90 backdrop-blur-md border-b border-[rgba(255,255,255,0.06)] flex items-center justify-between px-4 transition-all duration-300 shrink-0">
+      {/* Changed: Removed border-b border-secondary and shadow-lg, added border-[rgba(255,255,255,0.06)] */}
+      <header className="z-50 h-16 md:hidden bg-bg-primary/90 backdrop-blur-md border-b border-[rgba(255,255,255,0.06)] flex items-center justify-between px-4 transition-all duration-300 shrink-0">
         {/* Left: Logo */}
         <div className="flex items-center">
             <Link href="/">

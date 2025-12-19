@@ -55,7 +55,7 @@ export default async function ConsoleSpecsPage({ params }: Props) {
   if (!consoleData) {
     return (
         <div className="flex flex-col items-center justify-center min-h-[50vh]">
-            <h2 className="font-pixel text-retro-pink text-2xl mb-4">ERROR 404</h2>
+            <h2 className="font-pixel text-accent text-2xl mb-4">ERROR 404</h2>
             <p className="font-mono text-gray-400 mb-8">SYSTEM ARCHIVE NOT FOUND.</p>
             <Link href="/console">
                 <Button variant="secondary">RETURN TO VAULT</Button>

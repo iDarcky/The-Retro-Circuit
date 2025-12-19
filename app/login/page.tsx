@@ -129,21 +129,21 @@ export default function LoginPage() {
             <div className="w-full max-w-4xl mx-auto p-4 animate-fadeIn">
                 <div className="flex justify-center">
                     {/* User Card */}
-                    <div className="bg-retro-dark border-2 border-retro-grid p-6 text-center h-fit w-full max-w-md">
+                    <div className="bg-bg-primary border-2 border-border-normal p-6 text-center h-fit w-full max-w-md">
                         <div className="relative inline-block mb-4">
-                            <div className="w-24 h-24 border-2 border-retro-neon rounded-full flex items-center justify-center bg-retro-neon/10 mx-auto shadow-[0_0_15px_rgba(0,255,157,0.3)]">
-                                <CurrentAvatar className="w-16 h-16 text-retro-neon" />
+                            <div className="w-24 h-24 border-2 border-secondary rounded-full flex items-center justify-center bg-secondary/10 mx-auto shadow-[0_0_15px_rgba(0,255,157,0.3)]">
+                                <CurrentAvatar className="w-16 h-16 text-secondary" />
                             </div>
                             <button 
                                 onClick={() => setEditingAvatar(!editingAvatar)}
-                                className="absolute bottom-0 right-0 bg-retro-blue text-black text-xs px-2 py-1 font-bold border border-white hover:bg-white transition-colors"
+                                className="absolute bottom-0 right-0 bg-primary text-black text-xs px-2 py-1 font-bold border border-white hover:bg-white transition-colors"
                             >
                                 EDIT
                             </button>
                         </div>
                         
                         {editingAvatar && (
-                            <div className="mb-4 animate-fadeIn bg-black p-2 border border-retro-grid">
+                            <div className="mb-4 animate-fadeIn bg-black p-2 border border-border-normal">
                                 <AvatarSelector selectedId={avatarId} onSelect={handleAvatarUpdate} />
                             </div>
                         )}
@@ -153,7 +153,7 @@ export default function LoginPage() {
                         
                         {isAdmin && (
                             <Link href="/admin">
-                                <Button variant="secondary" className="w-full text-xs mb-3 border-retro-pink text-retro-pink hover:bg-retro-pink hover:text-white">
+                                <Button variant="secondary" className="w-full text-xs mb-3 border-accent text-accent hover:bg-accent hover:text-white">
                                     ACCESS ADMIN PANEL
                                 </Button>
                             </Link>
@@ -168,12 +168,12 @@ export default function LoginPage() {
 
     return (
         <div className="w-full max-w-md mx-auto p-4 min-h-[60vh] flex flex-col justify-center">
-            <div className="border-2 border-retro-grid bg-retro-dark p-8 shadow-[0_0_20px_rgba(0,255,157,0.1)] relative overflow-hidden">
+            <div className="border-2 border-border-normal bg-bg-primary p-8 shadow-[0_0_20px_rgba(0,255,157,0.1)] relative overflow-hidden">
                 {/* Decorative lines */}
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-retro-neon to-retro-blue"></div>
-                <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-retro-blue to-retro-neon"></div>
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary to-primary"></div>
+                <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
 
-                <h2 className="text-2xl font-pixel text-center text-retro-neon mb-6 drop-shadow-md">
+                <h2 className="text-2xl font-pixel text-center text-secondary mb-6 drop-shadow-md">
                     {mode === 'LOGIN' && 'SYSTEM LOGIN'}
                     {mode === 'SIGNUP' && 'NEW USER REGISTRATION'}
                     {mode === 'RECOVERY' && 'PASSWORD RECOVERY'}
@@ -182,7 +182,7 @@ export default function LoginPage() {
 
                 {message && (
                     <div className={`p-3 mb-6 text-xs font-mono border animate-pulse ${
-                        message.type === 'error' ? 'border-retro-pink text-retro-pink bg-retro-pink/10' : 'border-retro-neon text-retro-neon bg-retro-neon/10'
+                        message.type === 'error' ? 'border-accent text-accent bg-accent/10' : 'border-secondary text-secondary bg-secondary/10'
                     }`}>
                         &gt; {message.text}
                     </div>
@@ -191,13 +191,13 @@ export default function LoginPage() {
                 <form onSubmit={handleAuth} className="space-y-4">
                     {mode === 'SIGNUP' && (
                         <div>
-                            <label className="block text-xs font-mono text-retro-blue mb-1 tracking-widest">CODENAME</label>
+                            <label className="block text-xs font-mono text-primary mb-1 tracking-widest">CODENAME</label>
                             <input 
                                 type="text" 
                                 required 
                                 value={username}
                                 onChange={(e: ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
-                                className="w-full bg-black border border-retro-grid p-3 text-white font-mono focus:border-retro-neon outline-none transition-colors"
+                                className="w-full bg-black border border-border-normal p-3 text-white font-mono focus:border-secondary outline-none transition-colors"
                                 placeholder="ENTER USERNAME"
                             />
                         </div>
@@ -205,13 +205,13 @@ export default function LoginPage() {
 
                     {(mode === 'LOGIN' || mode === 'SIGNUP' || mode === 'RECOVERY') && (
                         <div>
-                            <label className="block text-xs font-mono text-retro-blue mb-1 tracking-widest">EMAIL ADDRESS</label>
+                            <label className="block text-xs font-mono text-primary mb-1 tracking-widest">EMAIL ADDRESS</label>
                             <input 
                                 type="email" 
                                 required 
                                 value={email}
                                 onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                                className="w-full bg-black border border-retro-grid p-3 text-white font-mono focus:border-retro-neon outline-none transition-colors"
+                                className="w-full bg-black border border-border-normal p-3 text-white font-mono focus:border-secondary outline-none transition-colors"
                                 placeholder="USER@EXAMPLE.COM"
                             />
                         </div>
@@ -219,13 +219,13 @@ export default function LoginPage() {
 
                     {(mode === 'LOGIN' || mode === 'SIGNUP' || mode === 'UPDATE_PASSWORD') && (
                         <div>
-                            <label className="block text-xs font-mono text-retro-blue mb-1 tracking-widest">ACCESS CODE</label>
+                            <label className="block text-xs font-mono text-primary mb-1 tracking-widest">ACCESS CODE</label>
                             <input 
                                 type="password" 
                                 required 
                                 value={password}
                                 onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                                className="w-full bg-black border border-retro-grid p-3 text-white font-mono focus:border-retro-neon outline-none transition-colors"
+                                className="w-full bg-black border border-border-normal p-3 text-white font-mono focus:border-secondary outline-none transition-colors"
                                 placeholder="••••••••"
                             />
                         </div>
@@ -239,11 +239,11 @@ export default function LoginPage() {
                     </Button>
                 </form>
 
-                <div className="mt-6 flex flex-col gap-3 text-center text-xs font-mono text-gray-500 border-t border-retro-grid pt-4">
+                <div className="mt-6 flex flex-col gap-3 text-center text-xs font-mono text-gray-500 border-t border-border-normal pt-4">
                     {mode === 'LOGIN' && (
                         <>
-                            <button onClick={() => { setMode('SIGNUP'); setMessage(null); }} className="hover:text-retro-neon transition-colors">ESTABLISH NEW ID</button>
-                            <button onClick={() => { setMode('RECOVERY'); setMessage(null); }} className="hover:text-retro-pink transition-colors">FORGOT ACCESS CODE?</button>
+                            <button onClick={() => { setMode('SIGNUP'); setMessage(null); }} className="hover:text-secondary transition-colors">ESTABLISH NEW ID</button>
+                            <button onClick={() => { setMode('RECOVERY'); setMessage(null); }} className="hover:text-accent transition-colors">FORGOT ACCESS CODE?</button>
                         </>
                     )}
                     {(mode === 'SIGNUP' || mode === 'RECOVERY') && (

@@ -108,7 +108,7 @@ function VSModeContent() {
     return (
         <div className="w-full max-w-7xl mx-auto p-4 flex flex-col min-h-screen">
             <h1 className="text-3xl md:text-5xl font-pixel text-center text-white mb-8 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-                VS MODE <span className="text-retro-neon">ARENA</span>
+                VS MODE <span className="text-secondary">ARENA</span>
             </h1>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 relative">
@@ -117,9 +117,9 @@ function VSModeContent() {
                 </div>
 
                 {/* Player 1 Card */}
-                <div className="border-2 border-retro-neon bg-retro-neon/5 relative min-h-[300px] -skew-x-10 overflow-hidden shadow-lg hover:shadow-retro-neon/20 transition-shadow">
+                <div className="border-2 border-secondary bg-secondary/5 relative min-h-[300px] -skew-x-10 overflow-hidden shadow-lg hover:shadow-secondary/20 transition-shadow">
                      <div className="skew-x-10 p-6 flex flex-col h-full">
-                        <h2 className="font-pixel text-retro-neon mb-4">PLAYER 1</h2>
+                        <h2 className="font-pixel text-secondary mb-4">PLAYER 1</h2>
                         <ConsoleSearch 
                             consoles={allConsoles} 
                             onSelect={(slug) => handleSelect(setSelectionA, true)(slug)} 
@@ -127,21 +127,21 @@ function VSModeContent() {
                             currentSelection={selectionA.details?.name}
                         />
                         {selectionA.loading ? (
-                             <div className="flex-1 flex items-center justify-center text-retro-neon font-mono animate-pulse">LOADING SPEC SHEET...</div>
+                             <div className="flex-1 flex items-center justify-center text-secondary font-mono animate-pulse">LOADING SPEC SHEET...</div>
                         ) : selectionA.details ? (
                              <div className="mt-6 flex-1 flex flex-col items-center animate-fadeIn">
                                  <div className="relative w-full h-32 mb-4">
                                      {(selectionA.selectedVariant?.image_url || selectionA.details.image_url) ? (
                                          <img src={selectionA.selectedVariant?.image_url || selectionA.details.image_url} alt={selectionA.details.name} className="w-full h-full object-contain drop-shadow-lg" />
                                      ) : (
-                                         <div className="w-full h-full flex items-center justify-center text-retro-neon opacity-50 font-pixel">NO IMAGE</div>
+                                         <div className="w-full h-full flex items-center justify-center text-secondary opacity-50 font-pixel">NO IMAGE</div>
                                      )}
                                  </div>
                                  <h3 className="font-pixel text-xl text-white text-center mb-1">{selectionA.details.name}</h3>
-                                 <div className="font-mono text-xs text-retro-neon mb-4">{selectionA.details.manufacturer?.name}</div>
+                                 <div className="font-mono text-xs text-secondary mb-4">{selectionA.details.manufacturer?.name}</div>
                                  {selectionA.details.variants && selectionA.details.variants.length > 1 && (
                                      <select 
-                                        className="w-full bg-black border border-retro-neon text-retro-neon font-mono text-xs p-2 outline-none"
+                                        className="w-full bg-black border border-secondary text-secondary font-mono text-xs p-2 outline-none"
                                         value={selectionA.selectedVariant?.slug || ''}
                                         onChange={handleVariantChange(setSelectionA, true)}
                                      >
@@ -156,9 +156,9 @@ function VSModeContent() {
                 </div>
 
                 {/* Player 2 Card */}
-                <div className="border-2 border-retro-pink bg-retro-pink/5 relative min-h-[300px] skew-x-10 overflow-hidden shadow-lg hover:shadow-retro-pink/20 transition-shadow">
+                <div className="border-2 border-accent bg-accent/5 relative min-h-[300px] skew-x-10 overflow-hidden shadow-lg hover:shadow-accent/20 transition-shadow">
                      <div className="-skew-x-10 p-6 flex flex-col h-full">
-                        <h2 className="font-pixel text-retro-pink mb-4 text-right">PLAYER 2</h2>
+                        <h2 className="font-pixel text-accent mb-4 text-right">PLAYER 2</h2>
                         <ConsoleSearch 
                             consoles={allConsoles} 
                             onSelect={(slug) => handleSelect(setSelectionB, false)(slug)} 
@@ -166,21 +166,21 @@ function VSModeContent() {
                             currentSelection={selectionB.details?.name}
                         />
                         {selectionB.loading ? (
-                             <div className="flex-1 flex items-center justify-center text-retro-pink font-mono animate-pulse">LOADING SPEC SHEET...</div>
+                             <div className="flex-1 flex items-center justify-center text-accent font-mono animate-pulse">LOADING SPEC SHEET...</div>
                         ) : selectionB.details ? (
                              <div className="mt-6 flex-1 flex flex-col items-center animate-fadeIn">
                                  <div className="relative w-full h-32 mb-4">
                                      {(selectionB.selectedVariant?.image_url || selectionB.details.image_url) ? (
                                          <img src={selectionB.selectedVariant?.image_url || selectionB.details.image_url} alt={selectionB.details.name} className="w-full h-full object-contain drop-shadow-lg" />
                                      ) : (
-                                         <div className="w-full h-full flex items-center justify-center text-retro-pink opacity-50 font-pixel">NO IMAGE</div>
+                                         <div className="w-full h-full flex items-center justify-center text-accent opacity-50 font-pixel">NO IMAGE</div>
                                      )}
                                  </div>
                                  <h3 className="font-pixel text-xl text-white text-center mb-1">{selectionB.details.name}</h3>
-                                 <div className="font-mono text-xs text-retro-pink mb-4">{selectionB.details.manufacturer?.name}</div>
+                                 <div className="font-mono text-xs text-accent mb-4">{selectionB.details.manufacturer?.name}</div>
                                  {selectionB.details.variants && selectionB.details.variants.length > 1 && (
                                      <select 
-                                        className="w-full bg-black border border-retro-pink text-retro-pink font-mono text-xs p-2 outline-none"
+                                        className="w-full bg-black border border-accent text-accent font-mono text-xs p-2 outline-none"
                                         value={selectionB.selectedVariant?.slug || ''}
                                         onChange={handleVariantChange(setSelectionB, false)}
                                      >
@@ -204,7 +204,7 @@ function VSModeContent() {
                                 type="checkbox" 
                                 checked={showDiffOnly} 
                                 onChange={() => setShowDiffOnly(!showDiffOnly)}
-                                className="accent-retro-neon" 
+                                className="accent-secondary"
                             />
                             <span className="font-mono text-xs text-gray-400 uppercase">Show Differences Only</span>
                         </label>
@@ -228,7 +228,7 @@ function VSModeContent() {
 
 export default function ArenaPage() {
     return (
-        <Suspense fallback={<div className="p-12 text-center text-retro-neon font-mono">LOADING ARENA...</div>}>
+        <Suspense fallback={<div className="p-12 text-center text-secondary font-mono">LOADING ARENA...</div>}>
             <VSModeContent />
         </Suspense>
     );

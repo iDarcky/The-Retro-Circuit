@@ -156,7 +156,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             {isSuccess && (
-                <div className="bg-retro-neon/10 border border-retro-neon text-retro-neon p-4 text-center font-bold animate-pulse shadow-[0_0_10px_rgba(0,255,157,0.2)]">
+                <div className="bg-secondary/10 border border-secondary text-secondary p-4 text-center font-bold animate-pulse shadow-[0_0_10px_rgba(0,255,157,0.2)]">
                     {isEditMode ? 'FABRICATOR DATA UPDATED.' : 'FABRICATOR REGISTERED. READY FOR NEXT ENTRY.'}
                 </div>
             )}
@@ -166,12 +166,12 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                     if (field.key === 'slug') {
                         return (
                             <div key={field.key}>
-                                <label className={`text-[10px] mb-1 block uppercase flex justify-between items-center ${fieldErrors.slug ? 'text-retro-pink' : 'text-gray-500'}`}>
+                                <label className={`text-[10px] mb-1 block uppercase flex justify-between items-center ${fieldErrors.slug ? 'text-accent' : 'text-gray-500'}`}>
                                     {field.label}
                                     <button 
                                         type="button" 
                                         onClick={() => setIsSlugLocked(!isSlugLocked)} 
-                                        className="text-[10px] text-retro-blue hover:text-white underline cursor-pointer"
+                                        className="text-[10px] text-primary hover:text-white underline cursor-pointer"
                                         title={isSlugLocked ? "Unlock to edit manually" : "Lock to auto-generate from name"}
                                     >
                                         [{isSlugLocked ? 'UNLOCK' : 'LOCK'}]
@@ -182,13 +182,13 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                                     className={`w-full border p-3 font-mono outline-none transition-colors ${
                                         isSlugLocked 
                                         ? 'bg-gray-900/50 border-gray-800 text-gray-500 cursor-not-allowed' 
-                                        : `bg-black text-white ${fieldErrors.slug ? 'border-retro-pink' : 'border-retro-neon focus:border-retro-blue'}`
+                                        : `bg-black text-white ${fieldErrors.slug ? 'border-accent' : 'border-secondary focus:border-primary'}`
                                     }`}
                                     value={formData[field.key] || ''}
                                     onChange={(e: ChangeEvent<HTMLInputElement>) => handleInputChange(field.key, e.target.value)}
                                     readOnly={isSlugLocked}
                                 />
-                                {fieldErrors.slug && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors.slug}</div>}
+                                {fieldErrors.slug && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {fieldErrors.slug}</div>}
                             </div>
                         );
                     }
@@ -199,7 +199,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                                 <label className="text-[10px] text-gray-500 mb-1 block uppercase">{field.label}</label>
                                 <div className="w-full bg-black border border-gray-700 p-2 font-mono flex flex-wrap gap-2 min-h-[50px]">
                                     {franchises.map(tag => (
-                                        <span key={tag} className="bg-retro-blue/20 text-retro-blue px-2 py-1 text-xs border border-retro-blue flex items-center gap-1">
+                                        <span key={tag} className="bg-primary/20 text-primary px-2 py-1 text-xs border border-primary flex items-center gap-1">
                                             {tag}
                                             <button type="button" onClick={() => removeFranchise(tag)} className="hover:text-white font-bold">×</button>
                                         </span>
@@ -220,7 +220,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                     if (field.key === 'image_url') {
                         return (
                             <div key={field.key} className="col-span-1 md:col-span-2">
-                                <label className={`text-[10px] mb-1 block uppercase ${fieldErrors.image_url ? 'text-retro-pink' : 'text-gray-500'}`}>{field.label}</label>
+                                <label className={`text-[10px] mb-1 block uppercase ${fieldErrors.image_url ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
                                 <ImageUpload
                                     value={formData[field.key]}
                                     onChange={(url) => handleInputChange(field.key, url)}

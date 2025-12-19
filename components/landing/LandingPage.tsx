@@ -1,4 +1,3 @@
-import React from 'react';
 import Link from 'next/link';
 import { ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 import { createClient } from '../../lib/supabase/server';
@@ -16,25 +15,24 @@ export default async function LandingPage() {
   const SpecBadge = ({ label, value }: { label: string, value?: string | number | null }) => {
      if (!value) return null;
      return (
-        <div className="bg-black/90 border border-slate-600 px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase shadow-lg text-gray-400">
-             <span className="text-retro-neon mr-1 font-tech">{label}:</span>{value}
+        <div className="bg-black/90 px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase shadow-lg text-gray-400">
+             <span className="text-secondary mr-1 font-tech">{label}:</span>{value}
         </div>
      );
   };
 
   return (
-    // Outer Container: 16px Padding (p-4)
-    <div className="min-h-screen bg-retro-dark p-4 font-mono selection:bg-retro-pink selection:text-white flex flex-col">
+    // Outer Container: No borders, no padding
+    <div className="min-h-screen bg-bg-primary font-mono selection:bg-accent selection:text-white flex flex-col">
       {/*
           NOTE: The parent MainLayout removes padding-top, and DesktopHeader is fixed/sticky above.
-          The p-4 here creates the "floating box" effect with 16px margins on all sides.
       */}
 
       {/*
           BLOCK 1: Boot Strip
           Replaces old white hero block with technical status bar
       */}
-      <div className="w-full bg-retro-dark border-x-4 border-t-4 border-b border-slate-600 border-b-white/10 flex flex-col md:flex-row items-start md:items-center justify-between px-4 py-[14px] md:px-8 md:py-[20px] md:h-[80px] font-mono">
+      <div className="w-full bg-bg-primary flex flex-col md:flex-row items-start md:items-center justify-between px-4 py-[14px] md:px-8 md:py-[20px] md:h-[80px] font-mono">
 
         {/* Left Content */}
         <div className="flex flex-col">
@@ -51,7 +49,7 @@ export default async function LandingPage() {
 
             <div className="flex items-center">
                 STATUS: ONLINE
-                <span className="w-2 h-2 rounded-full bg-retro-neon inline-block ml-2 shadow-[0_0_5px_#00ff9d] animate-pulse"></span>
+                <span className="w-2 h-2 rounded-full bg-secondary inline-block ml-2 shadow-[0_0_5px_var(--color-secondary)] animate-pulse"></span>
             </div>
 
             <div>
@@ -72,7 +70,7 @@ export default async function LandingPage() {
         <div className="flex md:hidden items-center flex-wrap gap-2 mt-2 opacity-80 text-gray-400 font-tech tracking-wider uppercase text-[clamp(11px,1.1vw,13px)]">
              <div className="flex items-center">
                 ONLINE
-                <span className="w-1.5 h-1.5 rounded-full bg-retro-neon inline-block ml-1 animate-pulse"></span>
+                <span className="w-1.5 h-1.5 rounded-full bg-secondary inline-block ml-1 animate-pulse"></span>
              </div>
              <span>•</span>
              <div>{count || 0} SYSTEMS</div>
@@ -86,9 +84,9 @@ export default async function LandingPage() {
 
       {/*
           BLOCK 2: Marquee Box (Static Ticker)
-          Height: 32px (Desktop) / 22px (Mobile), Opacity 80%
+          Apply .banner class
       */}
-      <div className="h-[22px] md:h-[32px] w-full bg-retro-pink/80 border-x-4 border-b-4 border-slate-600 flex items-center overflow-hidden relative px-4">
+      <div className="h-[22px] md:h-[32px] w-full flex items-center overflow-hidden relative px-4 banner">
         <div className="whitespace-nowrap overflow-hidden text-ellipsis w-full font-bold text-black text-[10px] md:text-sm tracking-widest">
           /// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING
         </div>
@@ -98,10 +96,10 @@ export default async function LandingPage() {
           BLOCK 3: Main Content Grid (Existing Content)
           Wrapped in border (Top merged)
       */}
-      <div className="grid grid-cols-1 md:grid-cols-12 border-x-4 border-b-4 border-slate-600">
+      <div className="grid grid-cols-1 md:grid-cols-12">
 
         {/* Left Column (Hero / Database) - 7/12 columns */}
-        <div className="col-span-1 md:col-span-7 flex flex-col border-b-4 md:border-b-0 md:border-r-4 border-slate-600 h-[600px] bg-retro-dark relative p-8 md:p-12">
+        <div className="col-span-1 md:col-span-7 flex flex-col h-[600px] bg-bg-primary relative p-8 md:p-12">
 
             {/* Top Content Group */}
             <div>
@@ -114,7 +112,7 @@ export default async function LandingPage() {
                         DATA<br/>
                         BASE
                     </h2>
-                    <p className="text-xl font-bold text-gray-400 border-l-4 border-retro-pink pl-6 py-2">
+                    <p className="text-xl font-bold text-gray-400 border-l-4 border-accent pl-6 py-2">
                         COMPREHENSIVE SPECIFICATIONS FOR<br/>VIDEO GAME CONSOLES.
                     </p>
                 </div>
@@ -124,7 +122,7 @@ export default async function LandingPage() {
             {/* Changed: Flex column to stack Button and Text, items-end to align right */}
             <div className="flex flex-col items-end gap-2 mt-auto">
 
-                <Link href="/console" className="bg-white text-black text-xl font-bold px-6 py-3 flex items-center gap-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_#ff00ff]">
+                <Link href="/console" className="bg-white text-black text-xl font-bold px-6 py-3 flex items-center gap-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_var(--color-accent)]">
                     <span className="font-tech tracking-widest text-lg">BROWSE DATABASE</span>
                     <ArrowDownLeft size={24} />
                 </Link>
@@ -137,28 +135,28 @@ export default async function LandingPage() {
         </div>
 
         {/* Right Column (Menu Stack) - 5/12 columns */}
-        <div className="col-span-1 md:col-span-5 flex flex-col">
+        <div className="col-span-1 md:col-span-5 flex flex-col gap-4 p-4">
 
             {/* VS MODE */}
-            <Link href="/arena" className="h-[200px] bg-retro-dark text-white p-8 border-b-4 border-slate-600 flex flex-col justify-between hover:bg-white hover:text-black transition-colors group relative overflow-hidden">
+            <Link href="/arena" className="h-[200px] device-card p-8 flex flex-col justify-between transition-colors group relative overflow-hidden">
                 <div className="flex justify-between items-start z-10">
-                    <h3 className="text-4xl font-black tracking-tighter">VS MODE</h3>
-                    <span className="font-bold text-xs border border-white px-2 py-1">[COMPARE]</span>
+                    <h3 className="text-4xl font-black tracking-tighter text-white">VS MODE</h3>
+                    <span className="font-bold text-xs border border-white text-white px-2 py-1">[COMPARE]</span>
                 </div>
-                <ArrowUpRight size={48} className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-2 group-hover:-translate-y-2" />
+                <ArrowUpRight size={48} className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-2 group-hover:-translate-y-2 text-white" />
             </Link>
 
             {/* NEWS */}
-            <Link href="/news" className="h-[200px] bg-retro-dark text-white p-8 border-b-4 border-slate-600 flex flex-col justify-between hover:bg-white hover:text-black transition-colors group relative overflow-hidden">
+            <Link href="/news" className="h-[200px] device-card p-8 flex flex-col justify-between transition-colors group relative overflow-hidden">
                 <div className="flex justify-between items-start z-10">
-                    <h3 className="text-4xl font-black tracking-tighter">NEWS</h3>
-                    <span className="font-bold text-xs border border-white px-2 py-1">[READ]</span>
+                    <h3 className="text-4xl font-black tracking-tighter text-white">NEWS</h3>
+                    <span className="font-bold text-xs border border-white text-white px-2 py-1">[READ]</span>
                 </div>
             </Link>
 
             {/* JOIN */}
-            <Link href="/login" className="h-[200px] bg-black text-white p-8 flex flex-col justify-center items-center hover:bg-retro-pink hover:text-black transition-colors group text-center border-b-4 md:border-b-0 border-slate-600">
-                <h3 className="text-3xl font-bold tracking-widest group-hover:scale-110 transition-transform">
+            <Link href="/login" className="h-[200px] device-card p-8 flex flex-col justify-center items-center transition-colors group text-center">
+                <h3 className="text-3xl font-bold tracking-widest text-white group-hover:scale-110 transition-transform">
                     JOIN THE CIRCUIT
                 </h3>
             </Link>
@@ -169,11 +167,11 @@ export default async function LandingPage() {
 
        {/*
           BLOCK 4: New In The Vault (Latest Arrivals)
-          Full width row below the main grid.
+          Apply .vault-section
       */}
-      <div className="border-x-4 border-b-4 border-slate-600 bg-retro-dark p-8 md:p-12">
+      <div className="vault-section m-4 md:m-8">
         <div className="flex items-center gap-4 mb-8">
-             <div className="w-4 h-4 bg-retro-neon animate-pulse"></div>
+             <div className="w-4 h-4 bg-secondary animate-pulse"></div>
              <h2 className="text-3xl md:text-5xl font-pixel text-white tracking-tight">
                 NEW IN THE VAULT_
              </h2>
@@ -181,11 +179,11 @@ export default async function LandingPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {latestConsoles.map((console) => (
-                <Link href={`/console/${console.slug}`} key={console.id} className="group flex flex-col bg-black/40 border border-slate-700 hover:border-retro-neon transition-all p-6 relative">
+                <Link href={`/console/${console.slug}`} key={console.id} className="group flex flex-col device-card p-6 relative rounded-lg">
 
                     {/* "NEW" Badge */}
                     <div className="absolute top-4 right-4 z-10">
-                        <div className="bg-retro-pink text-black text-[10px] font-tech font-bold tracking-widest px-2 py-1 border border-black shadow-[2px_2px_0_black]">
+                        <div className="bg-accent text-black text-[10px] font-tech font-bold tracking-widest px-2 py-1 border border-black shadow-[2px_2px_0_black]">
                             NEW ENTRY
                         </div>
                     </div>
@@ -211,17 +209,17 @@ export default async function LandingPage() {
                     {/* Content Stack */}
                     <div className="flex flex-col gap-2">
                         {/* Manufacturer */}
-                        <span className="text-xs font-mono text-retro-blue uppercase tracking-widest">
+                        <span className="text-xs font-mono text-primary uppercase tracking-widest">
                             {console.manufacturer?.name || 'UNKNOWN'}
                         </span>
 
                         {/* Name */}
-                        <h3 className="text-xl font-bold text-white group-hover:text-retro-neon transition-colors font-pixel leading-tight">
+                        <h3 className="text-xl font-bold text-white group-hover:text-secondary transition-colors font-pixel leading-tight">
                             {console.name}
                         </h3>
 
                         {/* Price */}
-                        <div className="text-lg font-tech tracking-widest text-retro-pink font-bold border-b border-slate-800 pb-4 mb-4">
+                        <div className="text-lg font-tech tracking-widest text-accent font-bold border-b border-slate-800 pb-4 mb-4">
                             {console.specs?.price_launch_usd ? `$${console.specs.price_launch_usd}` : 'PRICE UNKNOWN'}
                         </div>
 

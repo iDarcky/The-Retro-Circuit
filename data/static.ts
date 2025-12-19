@@ -40,9 +40,9 @@ export const BRAND_THEMES: Record<string, { color: string, bg: string, hover: st
 
 export const getBrandTheme = (brand: string) => {
     return BRAND_THEMES[brand] || {
-        color: 'text-retro-neon border-retro-neon shadow-[0_0_20px_rgba(0,255,157,0.3)]',
-        bg: 'bg-retro-grid/20',
-        hover: 'hover:bg-retro-grid/40'
+        color: 'text-secondary border-secondary shadow-[0_0_20px_rgba(0,255,157,0.3)]',
+        bg: 'bg-bg-secondary/20',
+        hover: 'hover:bg-bg-secondary/40'
     };
 };
 
