@@ -8,10 +8,11 @@ import AdminEditTrigger from '../../../components/admin/AdminEditTrigger';
 import Button from '../../../components/ui/Button';
 
 type Props = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 };
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata(props: Props) {
+    const params = await props.params;
     const supabase = await createClient();
     const { data: profile } = await supabase
         .from('manufacturer')
@@ -31,7 +32,8 @@ export async function generateStaticParams() {
     return []; // Disable static param generation to enforce dynamic fetching
 }
 
-export default async function FabricatorDetailPage({ params }: Props) {
+export default async function FabricatorDetailPage(props: Props) {
+    const params = await props.params;
     const supabase = await createClient();
     const slug = params.slug;
 

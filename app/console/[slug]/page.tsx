@@ -7,10 +7,11 @@ import Button from '../../../components/ui/Button';
 import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
 
 type Props = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 };
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata(props: Props) {
+    const params = await props.params;
     const supabase = await createClient();
     
     // Fetch console identity + variants for robust image fallback
@@ -48,7 +49,8 @@ export async function generateStaticParams() {
     return []; // Disable static param generation to enforce dynamic fetching
 }
 
-export default async function ConsoleSpecsPage({ params }: Props) {
+export default async function ConsoleSpecsPage(props: Props) {
+  const params = await props.params;
   // Parallel Fetching using API helpers
   const { data: consoleData, error } = await fetchConsoleBySlug(params.slug);
 

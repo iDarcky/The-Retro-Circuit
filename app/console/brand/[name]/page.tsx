@@ -4,10 +4,11 @@ import { ConsoleDetails } from '../../../../lib/types';
 import { getBrandTheme } from '../../../../data/static';
 
 type Props = {
-  params: { name: string }
+  params: Promise<{ name: string }>
 };
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata(props: Props) {
+    const params = await props.params;
     const supabase = await createClient();
     const { data: profile } = await supabase
         .from('manufacturer')
@@ -23,7 +24,8 @@ export async function generateMetadata({ params }: Props) {
     };
 }
 
-export default async function ManufacturerDetailPage({ params }: Props) {
+export default async function ManufacturerDetailPage(props: Props) {
+    const params = await props.params;
     const supabase = await createClient();
     const slug = params.name; 
 
