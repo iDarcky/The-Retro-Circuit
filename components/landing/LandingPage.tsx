@@ -15,14 +15,14 @@ export default async function LandingPage() {
   const SpecBadge = ({ label, value }: { label: string, value?: string | number | null }) => {
      if (!value) return null;
      return (
-        <div className="bg-black/90 border border-slate-600 px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase shadow-lg text-gray-400">
+        <div className="bg-black/90 px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase shadow-lg text-gray-400">
              <span className="text-secondary mr-1 font-tech">{label}:</span>{value}
         </div>
      );
   };
 
   return (
-    // Outer Container: No borders, no padding (User requested border removal like 'border: none')
+    // Outer Container: No borders, no padding
     <div className="min-h-screen bg-bg-primary font-mono selection:bg-accent selection:text-white flex flex-col">
       {/*
           NOTE: The parent MainLayout removes padding-top, and DesktopHeader is fixed/sticky above.
@@ -32,7 +32,7 @@ export default async function LandingPage() {
           BLOCK 1: Boot Strip
           Replaces old white hero block with technical status bar
       */}
-      <div className="w-full bg-bg-primary border-b border-slate-600 border-b-white/10 flex flex-col md:flex-row items-start md:items-center justify-between px-4 py-[14px] md:px-8 md:py-[20px] md:h-[80px] font-mono">
+      <div className="w-full bg-bg-primary flex flex-col md:flex-row items-start md:items-center justify-between px-4 py-[14px] md:px-8 md:py-[20px] md:h-[80px] font-mono">
 
         {/* Left Content */}
         <div className="flex flex-col">
@@ -49,7 +49,7 @@ export default async function LandingPage() {
 
             <div className="flex items-center">
                 STATUS: ONLINE
-                <span className="w-2 h-2 rounded-full bg-secondary inline-block ml-2 shadow-[0_0_5px_#00ff9d] animate-pulse"></span>
+                <span className="w-2 h-2 rounded-full bg-secondary inline-block ml-2 shadow-[0_0_5px_var(--color-secondary)] animate-pulse"></span>
             </div>
 
             <div>
@@ -124,7 +124,7 @@ export default async function LandingPage() {
             {/* Changed: Flex column to stack Button and Text, items-end to align right */}
             <div className="flex flex-col items-end gap-2 mt-auto">
 
-                <Link href="/console" className="bg-white text-black text-xl font-bold px-6 py-3 flex items-center gap-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_#ff00ff]">
+                <Link href="/console" className="bg-white text-black text-xl font-bold px-6 py-3 flex items-center gap-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_var(--color-accent)]">
                     <span className="font-tech tracking-widest text-lg">BROWSE DATABASE</span>
                     <ArrowDownLeft size={24} />
                 </Link>
@@ -140,7 +140,7 @@ export default async function LandingPage() {
         <div className="col-span-1 md:col-span-5 flex flex-col">
 
             {/* VS MODE */}
-            <Link href="/arena" className="h-[200px] bg-bg-primary text-white p-8 border-b border-slate-600 flex flex-col justify-between hover:bg-white hover:text-black transition-colors group relative overflow-hidden">
+            <Link href="/arena" className="h-[200px] bg-bg-primary text-white p-8 flex flex-col justify-between hover:bg-white hover:text-black transition-colors group relative overflow-hidden">
                 <div className="flex justify-between items-start z-10">
                     <h3 className="text-4xl font-black tracking-tighter">VS MODE</h3>
                     <span className="font-bold text-xs border border-white px-2 py-1">[COMPARE]</span>
@@ -149,7 +149,7 @@ export default async function LandingPage() {
             </Link>
 
             {/* NEWS */}
-            <Link href="/news" className="h-[200px] bg-bg-primary text-white p-8 border-b border-slate-600 flex flex-col justify-between hover:bg-white hover:text-black transition-colors group relative overflow-hidden">
+            <Link href="/news" className="h-[200px] bg-bg-primary text-white p-8 flex flex-col justify-between hover:bg-white hover:text-black transition-colors group relative overflow-hidden">
                 <div className="flex justify-between items-start z-10">
                     <h3 className="text-4xl font-black tracking-tighter">NEWS</h3>
                     <span className="font-bold text-xs border border-white px-2 py-1">[READ]</span>
@@ -157,7 +157,7 @@ export default async function LandingPage() {
             </Link>
 
             {/* JOIN */}
-            <Link href="/login" className="h-[200px] bg-black text-white p-8 flex flex-col justify-center items-center hover:bg-accent hover:text-black transition-colors group text-center border-b border-slate-600">
+            <Link href="/login" className="h-[200px] bg-black text-white p-8 flex flex-col justify-center items-center hover:bg-accent hover:text-black transition-colors group text-center">
                 <h3 className="text-3xl font-bold tracking-widest group-hover:scale-110 transition-transform">
                     JOIN THE CIRCUIT
                 </h3>
