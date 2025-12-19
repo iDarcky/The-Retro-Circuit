@@ -5,8 +5,17 @@ import { fetchLatestConsoles } from '../../lib/api/latest';
 
 export default async function LandingPage() {
   const supabase = await createClient();
-  // Fetch count of consoles
-  const { count } = await supabase.from('consoles').select('*', { count: 'exact', head: true });
+
+  // Fetch count of consoles (with error handling for missing DB connection)
+  let count = 0;
+  try {
+      const { count: dbCount, error } = await supabase.from('consoles').select('*', { count: 'exact', head: true });
+      if (!error && dbCount !== null) {
+          count = dbCount;
+      }
+  } catch (e) {
+      console.error('Failed to fetch console count:', e);
+  }
 
   // Fetch latest consoles
   const latestConsoles = await fetchLatestConsoles(3);
