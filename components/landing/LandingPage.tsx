@@ -85,12 +85,15 @@ export default async function LandingPage() {
       </div>
 
       {/*
-          BLOCK 2: Marquee Box (Static)
-          Height: 52px, Background: Pink, Border: 4px Slate (Top merged)
+          BLOCK 2: Marquee Box (Animated)
+          Height: 32px (Desktop) / 22px (Mobile), Opacity 80%, Animated Ticker
       */}
-      <div className="h-[52px] w-full bg-retro-pink border-x-4 border-b-4 border-slate-600 flex items-center pl-4 md:pl-8 overflow-hidden">
-        <div className="font-bold text-black text-[24px] whitespace-nowrap">
-          {'/// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING ///'}
+      <div className="h-[22px] md:h-[32px] w-full bg-retro-pink/80 border-x-4 border-b-4 border-slate-600 flex items-center overflow-hidden relative">
+        <div className="animate-marquee whitespace-nowrap flex gap-4 min-w-full font-bold text-black text-[10px] md:text-sm tracking-widest">
+          <span>/// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING</span>
+          <span>/// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING</span>
+          <span>/// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING</span>
+          <span>/// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING</span>
         </div>
       </div>
 
