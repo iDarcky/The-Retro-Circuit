@@ -80,31 +80,36 @@ export default async function LandingPage() {
           <div className="col-span-1 md:col-span-8 vault-section relative p-6 md:p-12 flex flex-col">
 
               <div className="flex items-start gap-6">
-                  {/* Pink Triangle Marker */}
-                  <div className="w-0 h-0 border-t-[12px] border-t-transparent border-l-[20px] border-l-accent border-b-[12px] border-b-transparent mt-4 md:mt-6 shrink-0"></div>
+                  {/* Pink Triangle Marker (Breathing) */}
+                  <div className="w-0 h-0 border-t-[12px] border-t-transparent border-l-[20px] border-l-accent border-b-[12px] border-b-transparent mt-4 md:mt-6 shrink-0 animate-pulse"></div>
 
                   <div>
                       <h2 className="text-6xl md:text-[6rem] font-black text-white leading-[0.85] tracking-tighter mix-blend-difference mb-6">
                           CONSOLE<br/>VAULT_
                       </h2>
-                      <p className="text-lg md:text-xl font-bold text-gray-400 max-w-2xl leading-relaxed">
+                      <p className="text-lg md:text-xl font-bold text-gray-400 max-w-2xl leading-relaxed border-l-4 border-gray-700 pl-6">
                           Find and compare your favorite handhelds...
                       </p>
                   </div>
               </div>
 
-              <div className="flex flex-col md:flex-row gap-6 mt-16 md:mt-24 ml-0 md:ml-10">
-                   {/* Browse Fabricators (Faded) */}
-                   <Link href="/fabricators" className="bg-transparent border border-gray-700 text-gray-400 hover:text-white hover:border-white text-lg font-bold px-8 py-4 flex items-center justify-center gap-3 transition-all">
-                      <span className="font-tech tracking-widest">BROWSE FABRICATORS</span>
-                      <ArrowUpRight size={20} />
-                  </Link>
+              <div className="mt-16 md:mt-24 ml-0 md:ml-10">
+                   <p className="text-xs font-mono text-gray-500 mb-4 uppercase tracking-widest">
+                       Start by browsing all consoles or manufacturers
+                   </p>
+                   <div className="flex flex-col md:flex-row gap-6">
+                       {/* Browse Fabricators (Faded) */}
+                       <Link href="/fabricators" className="bg-transparent border border-gray-700 text-gray-400 hover:text-white hover:border-white text-lg font-bold px-8 py-4 flex items-center justify-center gap-3 transition-all">
+                          <span className="font-tech tracking-widest">BROWSE FABRICATORS</span>
+                          <ArrowUpRight size={20} />
+                      </Link>
 
-                  {/* Browse Consoles (Primary) */}
-                  <Link href="/console" className="bg-white text-black text-lg font-bold px-8 py-4 flex items-center justify-center gap-3 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_var(--color-accent)]">
-                      <span className="font-tech tracking-widest">BROWSE CONSOLES</span>
-                      <ArrowUpRight size={20} />
-                  </Link>
+                      {/* Browse Consoles (Primary) */}
+                      <Link href="/console" className="bg-white text-black text-lg font-bold px-8 py-4 flex items-center justify-center gap-3 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_var(--color-accent)]">
+                          <span className="font-tech tracking-widest">BROWSE CONSOLES</span>
+                          <ArrowUpRight size={20} />
+                      </Link>
+                  </div>
               </div>
           </div>
 
@@ -112,11 +117,13 @@ export default async function LandingPage() {
           <div className="col-span-1 md:col-span-4 vault-section p-6 md:p-8 flex flex-col">
               <div className="mb-6">
                   <div className="flex items-center gap-3 mb-2">
-                       {/* Blue Triangle */}
-                       <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-primary border-b-[8px] border-b-transparent"></div>
+                       {/* Blue Triangle (Breathing) */}
+                       <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-primary border-b-[8px] border-b-transparent animate-pulse"></div>
                        <h3 className="text-xl font-bold text-white font-mono tracking-tight">QUICK COMPARE_</h3>
                   </div>
-                  <p className="text-xs text-gray-500 font-mono ml-7">Select two devices to view a head-to-head performance analysis.</p>
+                  <p className="text-xs text-gray-500 font-mono ml-7 border-l-4 border-gray-700 pl-4 py-1">
+                      Select two devices to view a head-to-head performance analysis.
+                  </p>
               </div>
 
               <div className="flex-grow">
@@ -132,7 +139,7 @@ export default async function LandingPage() {
       */}
       <div className="vault-section mx-4 md:mx-8 mt-2.5 p-6 md:p-8">
         <div className="flex items-center gap-4 mb-8">
-             {/* Green Triangle */}
+             {/* Green Triangle (Breathing) */}
              <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-secondary border-b-[8px] border-b-transparent animate-pulse"></div>
 
              {/* JetBrains Mono Header */}
@@ -143,7 +150,11 @@ export default async function LandingPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {latestConsoles.map((console) => (
-                <Link href={`/console/${console.slug}`} key={console.id} className="group flex flex-col device-card p-6 relative rounded-lg">
+                <Link
+                    href={`/console/${console.slug}`}
+                    key={console.id}
+                    className="group flex flex-col device-card p-6 relative rounded-lg hover:border-secondary transition-colors"
+                >
 
                     {/* "NEW" Badge */}
                     <div className="absolute top-4 right-4 z-10">

@@ -19,23 +19,21 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
     const slug2 = p2?.slug || 'select';
 
     // We navigate to /arena/slug1-vs-slug2
-    // If one is missing, we use 'select' which our [versus] page handles nicely (redirects to ?pX=select)
-    // Actually, if both are missing, button is disabled.
     router.push(`/arena/${slug1}-vs-${slug2}`);
   };
 
   return (
     <div className="flex flex-col gap-8 h-full">
       <div className="space-y-6 flex-grow">
-        {/* Device 1 */}
+        {/* Player 1 */}
         <div className="space-y-2">
             <label className="text-[10px] font-mono text-primary uppercase tracking-widest pl-1">
-                Device 01
+                PLAYER 1
             </label>
             <ConsoleSearch
                 consoles={consoles}
                 onSelect={(slug, name) => setP1({ slug, name })}
-                placeholder="SELECT DEVICE..."
+                placeholder="SELECT PLAYER 1..."
                 themeColor="cyan"
                 currentSelection={p1?.name}
             />
@@ -47,15 +45,15 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
              <div className="h-px w-full bg-gray-800"></div>
         </div>
 
-        {/* Device 2 */}
+        {/* Player 2 */}
         <div className="space-y-2">
             <label className="text-[10px] font-mono text-accent uppercase tracking-widest pl-1">
-                Device 02
+                PLAYER 2
             </label>
             <ConsoleSearch
                 consoles={consoles}
                 onSelect={(slug, name) => setP2({ slug, name })}
-                placeholder="SELECT DEVICE..."
+                placeholder="SELECT PLAYER 2..."
                 themeColor="pink"
                 currentSelection={p2?.name}
             />
