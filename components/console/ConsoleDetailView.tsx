@@ -91,7 +91,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
     const currentYear = currentVariant?.release_year || consoleData.release_year;
     
     // Construct VS Mode URL (Using p1 as requested)
-    const compareUrl = `/arena?p1=${consoleData.slug}${currentVariant?.slug ? `&v1=${currentVariant.slug}` : ''}`;
+    const compareUrl = `/arena/${consoleData.slug}${currentVariant?.slug ? `-${currentVariant.slug}` : ''}-vs-select`;
     
     // Construct Dimensions String
     const getDimString = () => {
