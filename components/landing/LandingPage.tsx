@@ -5,8 +5,17 @@ import { fetchLatestConsoles } from '../../lib/api/latest';
 
 export default async function LandingPage() {
   const supabase = await createClient();
-  // Fetch count of consoles
-  const { count } = await supabase.from('consoles').select('*', { count: 'exact', head: true });
+
+  // Fetch count of consoles (with error handling for missing DB connection)
+  let count = 0;
+  try {
+      const { count: dbCount, error } = await supabase.from('consoles').select('*', { count: 'exact', head: true });
+      if (!error && dbCount !== null) {
+          count = dbCount;
+      }
+  } catch (e) {
+      console.error('Failed to fetch console count:', e);
+  }
 
   // Fetch latest consoles
   const latestConsoles = await fetchLatestConsoles(3);
@@ -29,77 +38,40 @@ export default async function LandingPage() {
       */}
 
       {/*
-          BLOCK 1: Boot Strip
-          Replaces old white hero block with technical status bar
+          BLOCK 1 & 2: Merged Strip Bar
+          Non-sticky separation strip
       */}
-      <div className="w-full bg-bg-primary flex flex-col md:flex-row items-start md:items-center justify-between px-4 py-[14px] md:px-8 md:py-[20px] md:h-[80px] font-mono">
-
-        {/* Left Content */}
-        <div className="flex flex-col">
-            <h1 className="text-white font-pixel tracking-wider text-[clamp(14px,1.4vw,16px)]">
-                RC://RETRO HANDHELD DATABASE
-            </h1>
-            <p className="text-gray-500 font-mono text-[clamp(12px,1.2vw,14px)] mt-2 md:mt-1">
-                Specifications, comparisons, and history of retro gaming handhelds.
-            </p>
+      <div className="w-full flex flex-col md:flex-row items-center justify-between px-4 py-2 banner">
+        {/* Left: Welcome Text */}
+        <div className="font-bold text-black text-[10px] md:text-sm tracking-widest">
+            {'/// WELCOME TO THE VAULT ///'}
         </div>
 
-        {/* Right Content: Metadata (Desktop - 4 Columns) */}
-        <div className="hidden md:flex flex-row gap-6 text-gray-400 font-tech tracking-wider uppercase text-[clamp(11px,1.1vw,13px)]">
-
+        {/* Right Content: Metadata (Desktop) */}
+        <div className="hidden md:flex flex-row gap-6 text-black font-tech tracking-wider uppercase text-[12px] font-bold">
             <div className="flex items-center">
                 STATUS: ONLINE
-                <span className="w-2 h-2 rounded-full bg-secondary inline-block ml-2 shadow-[0_0_5px_var(--color-secondary)] animate-pulse"></span>
             </div>
-
             <div>
                 INDEXED: {count || 0} SYSTEMS
             </div>
-
             <div>
                 ARCHIVE: v0.1
             </div>
-
             <div>
                 UPDATED: {new Date().toISOString().split('T')[0]}
             </div>
-
-        </div>
-
-        {/* Right Content: Metadata (Mobile - Condensed Single Line) */}
-        <div className="flex md:hidden items-center flex-wrap gap-2 mt-2 opacity-80 text-gray-400 font-tech tracking-wider uppercase text-[clamp(11px,1.1vw,13px)]">
-             <div className="flex items-center">
-                ONLINE
-                <span className="w-1.5 h-1.5 rounded-full bg-secondary inline-block ml-1 animate-pulse"></span>
-             </div>
-             <span>•</span>
-             <div>{count || 0} SYSTEMS</div>
-             <span>•</span>
-             <div>v0.1</div>
-             <span>•</span>
-             <div>{new Date().toISOString().split('T')[0]}</div>
-        </div>
-
-      </div>
-
-      {/*
-          BLOCK 2: Marquee Box (Static Ticker)
-          Apply .banner class
-      */}
-      <div className="h-[22px] md:h-[32px] w-full flex items-center overflow-hidden relative px-4 banner">
-        <div className="whitespace-nowrap overflow-hidden text-ellipsis w-full font-bold text-black text-[10px] md:text-sm tracking-widest">
-          /// SYSTEM ONLINE /// WELCOME TO THE VAULT /// DATABASE LOADING
         </div>
       </div>
 
       {/*
-          BLOCK 3: Main Content Grid (Existing Content)
-          Wrapped in border (Top merged)
+          BLOCK 3: Main Content Grid
+          Hero expanded to full width
       */}
       <div className="grid grid-cols-1 md:grid-cols-12">
 
-        {/* Left Column (Hero / Database) - 7/12 columns */}
-        <div className="col-span-1 md:col-span-7 flex flex-col h-[600px] bg-bg-primary relative p-8 md:p-12">
+        {/* Full Width Hero - 12/12 columns */}
+        <div className="col-span-1 md:col-span-12 flex flex-col h-[600px] bg-bg-primary relative p-8 md:p-12">
 
             {/* Top Content Group */}
             <div>
@@ -109,8 +81,8 @@ export default async function LandingPage() {
 
                 <div className="mt-8">
                     <h2 className="text-7xl md:text-[7rem] font-black text-white leading-[0.85] tracking-tighter mix-blend-difference mb-8">
-                        DATA<br/>
-                        BASE
+                        RC://<br/>
+                        RETRO_CIRCUIT
                     </h2>
                     <p className="text-xl font-bold text-gray-400 border-l-4 border-accent pl-6 py-2">
                         COMPREHENSIVE SPECIFICATIONS FOR<br/>VIDEO GAME CONSOLES.
@@ -119,48 +91,26 @@ export default async function LandingPage() {
             </div>
 
             {/* Bottom/Interactive Content Group */}
-            {/* Changed: Flex column to stack Button and Text, items-end to align right */}
-            <div className="flex flex-col items-end gap-2 mt-auto">
+            {/* Left aligned as requested */}
+            <div className="flex flex-col items-start gap-4 mt-auto">
 
-                <Link href="/console" className="bg-white text-black text-xl font-bold px-6 py-3 flex items-center gap-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_var(--color-accent)]">
-                    <span className="font-tech tracking-widest text-lg">BROWSE DATABASE</span>
-                    <ArrowDownLeft size={24} />
-                </Link>
+                <div className="flex gap-4">
+                    <Link href="/console" className="bg-white text-black text-xl font-bold px-6 py-3 flex items-center gap-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_var(--color-accent)]">
+                        <span className="font-tech tracking-widest text-lg">BROWSE DATABASE</span>
+                        <ArrowDownLeft size={24} />
+                    </Link>
 
-                {/* Real Data Count - Text only, right aligned, no icon */}
+                    <Link href="/arena" className="bg-white text-black text-xl font-bold px-6 py-3 flex items-center gap-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_var(--color-accent)]">
+                        <span className="font-tech tracking-widest text-lg">COMPARE</span>
+                        <ArrowUpRight size={24} />
+                    </Link>
+                </div>
+
+                {/* Real Data Count */}
                 <div className="text-sm text-gray-500 font-tech tracking-wider">
                     {count || 0} SYSTEMS INDEXED
                 </div>
             </div>
-        </div>
-
-        {/* Right Column (Menu Stack) - 5/12 columns */}
-        <div className="col-span-1 md:col-span-5 flex flex-col gap-4 p-4">
-
-            {/* VS MODE */}
-            <Link href="/arena" className="h-[200px] device-card p-8 flex flex-col justify-between transition-colors group relative overflow-hidden">
-                <div className="flex justify-between items-start z-10">
-                    <h3 className="text-4xl font-black tracking-tighter text-white">VS MODE</h3>
-                    <span className="font-bold text-xs border border-white text-white px-2 py-1">[COMPARE]</span>
-                </div>
-                <ArrowUpRight size={48} className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-2 group-hover:-translate-y-2 text-white" />
-            </Link>
-
-            {/* NEWS */}
-            <Link href="/news" className="h-[200px] device-card p-8 flex flex-col justify-between transition-colors group relative overflow-hidden">
-                <div className="flex justify-between items-start z-10">
-                    <h3 className="text-4xl font-black tracking-tighter text-white">NEWS</h3>
-                    <span className="font-bold text-xs border border-white text-white px-2 py-1">[READ]</span>
-                </div>
-            </Link>
-
-            {/* JOIN */}
-            <Link href="/login" className="h-[200px] device-card p-8 flex flex-col justify-center items-center transition-colors group text-center">
-                <h3 className="text-3xl font-bold tracking-widest text-white group-hover:scale-110 transition-transform">
-                    JOIN THE CIRCUIT
-                </h3>
-            </Link>
-
         </div>
 
       </div>
