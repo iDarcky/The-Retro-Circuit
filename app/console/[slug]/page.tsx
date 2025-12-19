@@ -41,7 +41,10 @@ export async function generateMetadata(props: Props) {
       openGraph: {
         title: `${data.name} - Classified Specs`,
         images: [{ url: finalImage }]
-      }
+      },
+      alternates: {
+        canonical: `/console/${params.slug}`,
+      },
     };
 }
 

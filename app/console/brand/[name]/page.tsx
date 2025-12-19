@@ -21,6 +21,9 @@ export async function generateMetadata(props: Props) {
     return {
         title: `${titleName} - Corporate Profile`,
         description: `Explore the history of ${titleName}, including their console releases, key franchises, and market impact.`,
+        alternates: {
+            canonical: `/console/brand/${params.name}`,
+        },
     };
 }
 

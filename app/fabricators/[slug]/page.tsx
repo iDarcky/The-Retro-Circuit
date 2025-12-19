@@ -25,6 +25,9 @@ export async function generateMetadata(props: Props) {
     return {
         title: `${titleName} Handheld History | The Retro Circuit`,
         description: `Explore the complete hardware archive of ${titleName}.`,
+        alternates: {
+            canonical: `/fabricators/${params.slug}`,
+        },
     };
 }
 
