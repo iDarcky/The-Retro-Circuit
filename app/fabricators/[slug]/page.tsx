@@ -47,7 +47,7 @@ export default async function FabricatorDetailPage({ params }: Props) {
         // Query by name first to ensure we get everything, regardless of NULL release years in parent table
         const { data, error } = await supabase
             .from('consoles')
-            .select('*, manufacturer:manufacturers(*), variants:console_variants(*)')
+            .select('*, manufacturer:manufacturer(*), variants:console_variants(*)')
             .eq('manufacturer_id', profile.id)
             .order('name', { ascending: true });
         
