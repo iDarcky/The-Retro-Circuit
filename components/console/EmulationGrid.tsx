@@ -47,14 +47,14 @@ const EmulationGrid: FC<EmulationGridProps> = ({ profile: rawProfile }) => {
     if (activeSystems.length === 0 && !profile.summary_text) return null;
 
     return (
-        <div className="bg-retro-dark border border-retro-grid mb-6 relative group overflow-hidden animate-fadeIn">
+        <div className="bg-bg-primary border border-border-normal mb-6 relative group overflow-hidden animate-fadeIn">
              
              {/* Header */}
-            <div className="bg-black/40 border-b border-retro-grid px-4 py-2 flex justify-between items-center">
-                <h3 className="font-pixel text-[10px] text-retro-neon uppercase tracking-widest">EMULATION PERFORMANCE</h3>
+            <div className="bg-black/40 border-b border-border-normal px-4 py-2 flex justify-between items-center">
+                <h3 className="font-pixel text-[10px] text-secondary uppercase tracking-widest">EMULATION PERFORMANCE</h3>
                 <div className="flex gap-1">
-                    <div className="w-1 h-1 bg-gray-700 rounded-full group-hover:bg-retro-neon transition-colors"></div>
-                    <div className="w-1 h-1 bg-gray-700 rounded-full group-hover:bg-retro-neon transition-colors delay-75"></div>
+                    <div className="w-1 h-1 bg-gray-700 rounded-full group-hover:bg-secondary transition-colors"></div>
+                    <div className="w-1 h-1 bg-gray-700 rounded-full group-hover:bg-secondary transition-colors delay-75"></div>
                 </div>
             </div>
 
@@ -73,7 +73,7 @@ const EmulationGrid: FC<EmulationGridProps> = ({ profile: rawProfile }) => {
                 {profile.summary_text && (
                     <div className={`pt-4 border-white/5 ${activeSystems.length > 0 ? 'mt-4 border-t' : ''}`}>
                         <p className="font-mono text-xs text-gray-400 leading-relaxed">
-                            <span className="text-retro-neon mr-2">» ANALYST NOTE:</span>
+                            <span className="text-secondary mr-2">» ANALYST NOTE:</span>
                             {profile.summary_text}
                         </p>
                     </div>

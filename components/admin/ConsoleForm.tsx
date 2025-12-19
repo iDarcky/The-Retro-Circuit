@@ -126,44 +126,44 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-             <div className={`border-l-4 p-4 mb-4 ${isEditMode ? 'bg-retro-neon/10 border-retro-neon' : 'bg-retro-blue/10 border-retro-blue'}`}>
-                <h3 className={`font-bold text-sm uppercase ${isEditMode ? 'text-retro-neon' : 'text-retro-blue'}`}>{isEditMode ? 'Edit Mode: Console Identity' : 'Step 1: System Identity'}</h3>
+             <div className={`border-l-4 p-4 mb-4 ${isEditMode ? 'bg-secondary/10 border-secondary' : 'bg-primary/10 border-primary'}`}>
+                <h3 className={`font-bold text-sm uppercase ${isEditMode ? 'text-secondary' : 'text-primary'}`}>{isEditMode ? 'Edit Mode: Console Identity' : 'Step 1: System Identity'}</h3>
                 <p className="text-xs text-gray-400">{isEditMode ? 'Update core details of the console folder.' : 'Create the main folder for this console family.'}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="col-span-1 md:col-span-2">
-                    <label className={`text-[10px] mb-1 block uppercase ${fieldErrors.manufacturer_id ? 'text-retro-pink' : 'text-gray-500'}`}>Manufacturer</label>
+                    <label className={`text-[10px] mb-1 block uppercase ${fieldErrors.manufacturer_id ? 'text-accent' : 'text-gray-500'}`}>Manufacturer</label>
                     <select 
-                        className={`w-full bg-black border p-3 outline-none text-white font-mono ${fieldErrors.manufacturer_id ? 'border-retro-pink' : 'border-gray-700 focus:border-retro-neon'}`}
+                        className={`w-full bg-black border p-3 outline-none text-white font-mono ${fieldErrors.manufacturer_id ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`}
                         value={formData.manufacturer_id || ''}
                         onChange={(e: ChangeEvent<HTMLSelectElement>) => handleInputChange('manufacturer_id', e.target.value)}
                     >
                         <option value="">-- Select Fabricator --</option>
                         {manufacturers.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
                     </select>
-                    {fieldErrors.manufacturer_id && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors.manufacturer_id}</div>}
+                    {fieldErrors.manufacturer_id && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {fieldErrors.manufacturer_id}</div>}
                 </div>
 
                 {CONSOLE_FORM_FIELDS.map(field => {
                      if (field.key === 'slug') {
                         return (
                             <div key={field.key}>
-                                <label className={`text-[10px] mb-1 block uppercase flex justify-between items-center ${fieldErrors.slug ? 'text-retro-pink' : 'text-gray-500'}`}>
+                                <label className={`text-[10px] mb-1 block uppercase flex justify-between items-center ${fieldErrors.slug ? 'text-accent' : 'text-gray-500'}`}>
                                     {field.label}
-                                    <button type="button" onClick={() => setIsSlugLocked(!isSlugLocked)} className="text-[10px] text-retro-blue hover:text-white underline">[{isSlugLocked ? 'UNLOCK' : 'LOCK'}]</button>
+                                    <button type="button" onClick={() => setIsSlugLocked(!isSlugLocked)} className="text-[10px] text-primary hover:text-white underline">[{isSlugLocked ? 'UNLOCK' : 'LOCK'}]</button>
                                 </label>
-                                <input type="text" className={`w-full border p-3 font-mono outline-none transition-colors ${isSlugLocked ? 'bg-gray-900/50 border-gray-800 text-gray-500 cursor-not-allowed' : `bg-black text-white ${fieldErrors.slug ? 'border-retro-pink' : 'border-retro-neon focus:border-retro-blue'}`}`} value={formData[field.key] || ''} onChange={(e: ChangeEvent<HTMLInputElement>) => handleInputChange(field.key, e.target.value)} readOnly={isSlugLocked} />
-                                {fieldErrors.slug && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors.slug}</div>}
+                                <input type="text" className={`w-full border p-3 font-mono outline-none transition-colors ${isSlugLocked ? 'bg-gray-900/50 border-gray-800 text-gray-500 cursor-not-allowed' : `bg-black text-white ${fieldErrors.slug ? 'border-accent' : 'border-secondary focus:border-primary'}`}`} value={formData[field.key] || ''} onChange={(e: ChangeEvent<HTMLInputElement>) => handleInputChange(field.key, e.target.value)} readOnly={isSlugLocked} />
+                                {fieldErrors.slug && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {fieldErrors.slug}</div>}
                             </div>
                         );
                     }
                     if (field.key === 'image_url') {
                         return (
                             <div key={field.key} className="col-span-1 md:col-span-2">
-                                <label className={`text-[10px] mb-1 block uppercase ${fieldErrors.image_url ? 'text-retro-pink' : 'text-gray-500'}`}>{field.label}</label>
+                                <label className={`text-[10px] mb-1 block uppercase ${fieldErrors.image_url ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
                                 <ImageUpload value={formData[field.key]} onChange={(url) => handleInputChange(field.key, url)} />
-                                {fieldErrors.image_url && <div className="text-[10px] text-retro-pink mt-1 font-mono uppercase">! {fieldErrors.image_url}</div>}
+                                {fieldErrors.image_url && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {fieldErrors.image_url}</div>}
                             </div>
                         );
                     }
@@ -171,13 +171,13 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                 })}
 
                  {/* ---- DEVICE TYPE SECTION ---- */}
-                <div className="col-span-1 md:col-span-2 border-t border-retro-grid pt-4">
-                    <h4 className="font-pixel text-retro-neon text-sm mb-2">Device Type</h4>
+                <div className="col-span-1 md:col-span-2 border-t border-border-normal pt-4">
+                    <h4 className="font-pixel text-secondary text-sm mb-2">Device Type</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                              <label className="text-[10px] mb-1 block uppercase text-gray-500">Device Category</label>
                              <select 
-                                className="w-full bg-black border p-3 outline-none text-white font-mono border-gray-700 focus:border-retro-neon"
+                                className="w-full bg-black border p-3 outline-none text-white font-mono border-gray-700 focus:border-secondary"
                                 value={formData.device_category || 'emulation'}
                                 onChange={(e) => handleInputChange('device_category', e.target.value)}
                             >
@@ -192,15 +192,15 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                 </div>
 
                 {/* ---- PHYSICAL MEDIA SECTION ---- */}
-                <div className="col-span-1 md:col-span-2 border-t border-retro-grid pt-4">
-                     <h4 className="font-pixel text-retro-neon text-sm mb-2">Physical Media</h4>
+                <div className="col-span-1 md:col-span-2 border-t border-border-normal pt-4">
+                     <h4 className="font-pixel text-secondary text-sm mb-2">Physical Media</h4>
                      <div className="flex items-center space-x-4 mb-2">
                         <input 
                             type="checkbox" 
                             id="has_cartridge_slot"
                             checked={!!formData.has_cartridge_slot}
                             onChange={(e) => handleInputChange('has_cartridge_slot', e.target.checked)}
-                            className="form-checkbox h-5 w-5 bg-black border-retro-neon text-retro-neon focus:ring-retro-neon/50"
+                            className="form-checkbox h-5 w-5 bg-black border-secondary text-secondary focus:ring-secondary/50"
                         />
                         <label htmlFor="has_cartridge_slot" className="font-mono text-white">Has Cartridge Slot?</label>
                      </div>

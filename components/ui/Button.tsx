@@ -23,9 +23,9 @@ const Button: FC<ButtonProps> = ({
   const baseStyles = "font-mono font-bold py-2 px-6 uppercase tracking-wider transition-all duration-200 transform border-2 relative overflow-hidden group focus:outline-none";
   
   const variants = {
-    primary: "border-retro-neon text-retro-neon hover:bg-retro-neon hover:text-retro-dark shadow-[0_0_10px_rgba(0,255,157,0.5)]",
-    secondary: "border-retro-blue text-retro-blue hover:bg-retro-blue hover:text-retro-dark shadow-[0_0_10px_rgba(0,255,255,0.5)]",
-    danger: "border-retro-pink text-retro-pink hover:bg-retro-pink hover:text-retro-dark shadow-[0_0_10px_rgba(255,0,255,0.5)]",
+    primary: "border-secondary text-secondary hover:bg-secondary hover:text-bg-primary shadow-[0_0_10px_rgba(0,255,157,0.5)]",
+    secondary: "border-primary text-primary hover:bg-primary hover:text-bg-primary shadow-[0_0_10px_rgba(0,255,255,0.5)]",
+    danger: "border-accent text-accent hover:bg-accent hover:text-bg-primary shadow-[0_0_10px_rgba(255,0,255,0.5)]",
   };
 
   const handleMouseEnter = (e: MouseEvent<HTMLButtonElement>) => {

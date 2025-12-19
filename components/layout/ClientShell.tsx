@@ -18,7 +18,7 @@ const ClientShell: FC<ClientShellProps> = ({ children }) => {
   }, []);
 
   // Prevent hydration mismatch
-  if (!mounted) return <div className="bg-retro-dark h-screen w-screen" />;
+  if (!mounted) return <div className="bg-bg-primary h-screen w-screen" />;
 
   return (
     <SoundProvider>

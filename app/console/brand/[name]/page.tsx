@@ -64,7 +64,7 @@ export default async function ManufacturerDetailPage({ params }: Props) {
     return (
         <div className="w-full max-w-7xl mx-auto p-4 animate-[fadeIn_0.5s_ease-in-out]">
             {/* Header */}
-            <div className={`border-l-8 ${theme.color} bg-retro-dark p-6 md:p-8 mb-8 shadow-lg`}>
+            <div className={`border-l-8 ${theme.color} bg-bg-primary p-6 md:p-8 mb-8 shadow-lg`}>
                 <div className="flex flex-col md:flex-row justify-between items-start border-b border-gray-800 pb-6 mb-6 gap-6">
                     <div className="flex-1 w-full">
                         <div className="flex flex-wrap gap-2 mb-2 items-center justify-between md:justify-start">
@@ -141,7 +141,7 @@ export default async function ManufacturerDetailPage({ params }: Props) {
                             <Link 
                                 href={`/console/${console.slug}`} 
                                 key={console.id}
-                                className={`group block border border-retro-grid bg-retro-dark relative overflow-hidden transition-all ${theme.hover}`}
+                                className={`group block border border-border-normal bg-bg-primary relative overflow-hidden transition-all ${theme.hover}`}
                             >
                                 <div className="h-32 bg-black/40 flex items-center justify-center p-4 relative">
                                     {console.image_url ? (
@@ -150,12 +150,12 @@ export default async function ManufacturerDetailPage({ params }: Props) {
                                         <span className="font-pixel text-gray-700 text-2xl">?</span>
                                     )}
                                 </div>
-                                <div className="p-3 border-t border-retro-grid">
+                                <div className="p-3 border-t border-border-normal">
                                     <div className="flex justify-between text-[10px] font-mono text-gray-500 mb-1">
                                         <span>{console.release_year}</span>
                                         <span>{console.generation}</span>
                                     </div>
-                                    <h3 className="font-pixel text-xs text-white group-hover:text-retro-neon truncate">
+                                    <h3 className="font-pixel text-xs text-white group-hover:text-secondary truncate">
                                         {console.name}
                                     </h3>
                                 </div>
