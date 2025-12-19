@@ -105,7 +105,7 @@ export default async function LandingPage() {
                       </Link>
 
                       {/* Browse Consoles (Primary) */}
-                      <Link href="/console" className="bg-white text-black text-lg font-bold px-8 py-4 flex items-center justify-center gap-3 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_var(--color-accent)]">
+                      <Link href="/consoles" className="bg-white text-black text-lg font-bold px-8 py-4 flex items-center justify-center gap-3 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_var(--color-accent)]">
                           <span className="font-tech tracking-widest">BROWSE CONSOLES</span>
                           <ArrowUpRight size={20} />
                       </Link>
@@ -151,7 +151,7 @@ export default async function LandingPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {latestConsoles.map((console) => (
                 <Link
-                    href={`/console/${console.slug}`}
+                    href={`/consoles/${console.slug}`}
                     key={console.id}
                     className="group flex flex-col device-card p-6 relative rounded-lg hover:border-secondary transition-colors"
                 >
