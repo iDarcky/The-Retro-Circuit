@@ -37,30 +37,36 @@ export default function DesktopHeader() {
               >
                   <div className="flex items-center gap-2">
                       <Search size={16} className="group-hover:text-retro-neon" />
-                      <span className="text-sm font-mono tracking-wide">SEARCH DATABASE...</span>
+                      <span className="text-sm font-tech tracking-wider">SEARCH DATABASE...</span>
                   </div>
                   <div className="flex gap-1">
-                      <span className="text-[10px] bg-retro-grid/30 border border-retro-grid px-1.5 rounded text-gray-500 font-mono group-hover:border-retro-neon group-hover:text-retro-neon">CMD</span>
-                      <span className="text-[10px] bg-retro-grid/30 border border-retro-grid px-1.5 rounded text-gray-500 font-mono group-hover:border-retro-neon group-hover:text-retro-neon">K</span>
+                      <span className="text-[10px] bg-retro-grid/30 border border-retro-grid px-1.5 rounded text-gray-500 font-tech group-hover:border-retro-neon group-hover:text-retro-neon">CMD</span>
+                      <span className="text-[10px] bg-retro-grid/30 border border-retro-grid px-1.5 rounded text-gray-500 font-tech group-hover:border-retro-neon group-hover:text-retro-neon">K</span>
                   </div>
               </button>
           </div>
 
           {/* RIGHT: Navigation */}
           <div className="flex gap-6">
-              {navItems.map((item) => (
-                  <Link
-                      key={item.path}
-                      href={item.path}
-                      className={`uppercase font-bold px-2 py-1 transition-colors border-2 ${
-                          pathname.startsWith(item.path)
-                              ? 'bg-retro-neon text-black border-retro-neon'
-                              : 'bg-transparent text-[#9CA3AF] border-transparent hover:border-retro-neon hover:text-white'
-                      }`}
-                  >
-                      {item.name}
-                  </Link>
-              ))}
+              {navItems.map((item) => {
+                  const isActive = pathname.startsWith(item.path);
+                  return (
+                      <Link
+                          key={item.path}
+                          href={item.path}
+                          className={`group relative uppercase font-pixel text-[10px] md:text-xs px-2 py-1 transition-colors ${
+                              isActive ? 'text-white' : 'text-[#9CA3AF] hover:text-white'
+                          }`}
+                      >
+                          {item.name}
+                          <span
+                              className={`absolute bottom-0 left-0 h-[2px] bg-retro-neon transition-all duration-300 ease-out ${
+                                  isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                              }`}
+                          />
+                      </Link>
+                  );
+              })}
           </div>
       </nav>
     </div>
