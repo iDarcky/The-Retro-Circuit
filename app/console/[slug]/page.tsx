@@ -64,17 +64,9 @@ export default async function ConsoleSpecsPage(props: Props) {
             <p className="font-mono text-gray-400 mb-8">SYSTEM ARCHIVE NOT FOUND.</p>
             {error && (
                 <div className="bg-red-900/20 border border-red-500 p-4 mb-8 max-w-lg overflow-auto w-full text-left">
-                    <p className="font-mono text-red-400 text-xs mb-2 font-bold uppercase border-b border-red-500 pb-1">DIAGNOSTIC REPORT</p>
+                    <p className="font-mono text-red-400 text-xs mb-2 font-bold uppercase border-b border-red-500 pb-1">SYSTEM ERROR</p>
                     <div className="font-mono text-red-300 text-xs whitespace-pre-wrap">
                         <div className="mb-2"><span className="text-red-500">ERROR:</span> {error.message}</div>
-                        {error.details && Array.isArray(error.details) && (
-                            <div className="mt-2 border-t border-red-800/50 pt-2">
-                                <p className="text-gray-500 mb-1">SUCCESSFUL STEPS:</p>
-                                {error.details.map((step: string, i: number) => (
-                                    <div key={i} className="text-green-400/80">✓ {step}</div>
-                                ))}
-                            </div>
-                        )}
                         <div className="mt-4 text-[10px] text-gray-500">
                              TIMESTAMP: {new Date().toISOString()}<br/>
                              SLUG: {params.slug}
