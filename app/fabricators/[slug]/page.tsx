@@ -78,7 +78,14 @@ export default async function FabricatorDetailPage({ params }: Props) {
     }
 
     if (!profile) {
-        return <div className="p-12 text-center font-mono text-gray-500">FABRICATOR ENTITY NOT FOUND IN DATABASE.</div>;
+        return (
+             <div className="p-12 text-center font-mono text-gray-500">
+                FABRICATOR ENTITY NOT FOUND IN DATABASE.
+                <div className="mt-4 text-xs text-red-500 opacity-50">
+                    ID: {slug}
+                </div>
+             </div>
+        );
     }
 
     const theme = getBrandTheme(profile.name);

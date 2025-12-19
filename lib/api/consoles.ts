@@ -111,8 +111,9 @@ export const fetchConsoleList = async (): Promise<{name: string, slug: string, i
     return data || [];
 };
 
-export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails | null> => {
+export const fetchConsoleBySlug = async (slug: string): Promise<{ data: ConsoleDetails | null, error: any }> => {
     try {
+        // Use .limit(1) instead of .single() to avoid errors on duplicate slugs
         const { data, error } = await supabase
             .from('consoles')
             .select(`
@@ -121,11 +122,17 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
                 variants:console_variants (*)
             `)
             .eq('slug', slug)
-            .single();
+            .limit(1);
             
-        if (error) throw error;
+        if (error) {
+            return { data: null, error };
+        }
 
-        const rawData: any = data;
+        if (!data || data.length === 0) {
+            return { data: null, error: { message: "No data found for slug" } };
+        }
+
+        const rawData: any = data[0];
         
         const variants = rawData.variants || [];
         const defaultVariant = variants.find((v: any) => v.is_default) || variants[0];
@@ -140,9 +147,9 @@ export const fetchConsoleBySlug = async (slug: string): Promise<ConsoleDetails |
              rawData.release_year = defaultVariant.release_year;
         }
 
-        return rawData as ConsoleDetails;
-    } catch {
-        return null;
+        return { data: rawData as ConsoleDetails, error: null };
+    } catch (e: any) {
+        return { data: null, error: e };
     }
 };
 

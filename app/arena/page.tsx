@@ -34,7 +34,7 @@ function VSModeContent() {
 
     const loadSelection = async (slug: string, variantSlug: string | null, setSelection: Dispatch<SetStateAction<SelectionState>>) => {
         setSelection(prev => ({ ...prev, loading: true, slug }));
-        const details = await fetchConsoleBySlug(slug);
+        const { data: details } = await fetchConsoleBySlug(slug);
         if (details) {
             const variants = details.variants || [];
             let variant = variantSlug ? variants.find(v => v.slug === variantSlug) : null;

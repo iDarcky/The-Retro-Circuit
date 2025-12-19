@@ -50,13 +50,21 @@ export async function generateStaticParams() {
 
 export default async function ConsoleSpecsPage({ params }: Props) {
   // Parallel Fetching using API helpers
-  const consoleData = await fetchConsoleBySlug(params.slug);
+  const { data: consoleData, error } = await fetchConsoleBySlug(params.slug);
 
   if (!consoleData) {
     return (
-        <div className="flex flex-col items-center justify-center min-h-[50vh]">
+        <div className="flex flex-col items-center justify-center min-h-[50vh] p-4 text-center">
             <h2 className="font-pixel text-accent text-2xl mb-4">ERROR 404</h2>
             <p className="font-mono text-gray-400 mb-8">SYSTEM ARCHIVE NOT FOUND.</p>
+            {error && (
+                <div className="bg-red-900/20 border border-red-500 p-4 mb-8 max-w-lg overflow-auto">
+                    <p className="font-mono text-red-400 text-xs mb-2">DEBUG INFO:</p>
+                    <pre className="font-mono text-red-300 text-xs whitespace-pre-wrap">
+                        {error.message || JSON.stringify(error, null, 2)}
+                    </pre>
+                </div>
+            )}
             <Link href="/console">
                 <Button variant="secondary">RETURN TO VAULT</Button>
             </Link>
