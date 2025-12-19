@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowDownLeft, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { createClient } from '../../lib/supabase/server';
 import { fetchLatestConsoles } from '../../lib/api/latest';
 
@@ -38,33 +38,6 @@ export default async function LandingPage() {
       */}
 
       {/*
-          BLOCK 1 & 2: Merged Strip Bar
-          Non-sticky separation strip
-      */}
-      <div className="w-full flex flex-col md:flex-row items-center justify-between px-4 py-2 banner">
-        {/* Left: Welcome Text */}
-        <div className="font-bold text-black text-[10px] md:text-sm tracking-widest">
-            {'/// WELCOME TO THE VAULT ///'}
-        </div>
-
-        {/* Right Content: Metadata (Desktop) */}
-        <div className="hidden md:flex flex-row gap-6 text-black font-tech tracking-wider uppercase text-[12px] font-bold">
-            <div className="flex items-center">
-                STATUS: ONLINE
-            </div>
-            <div>
-                INDEXED: {count || 0} SYSTEMS
-            </div>
-            <div>
-                ARCHIVE: v0.1
-            </div>
-            <div>
-                UPDATED: {new Date().toISOString().split('T')[0]}
-            </div>
-        </div>
-      </div>
-
-      {/*
           BLOCK 3: Main Content Grid
           Hero expanded to full width
       */}
@@ -73,43 +46,58 @@ export default async function LandingPage() {
         {/* Full Width Hero - 12/12 columns */}
         <div className="col-span-1 md:col-span-12 flex flex-col h-[600px] bg-bg-primary relative p-8 md:p-12">
 
-            {/* Top Content Group */}
-            <div>
-                <div className="absolute top-4 right-4 text-xs text-gray-500">
-                    EST. 2024<br/>ARCHIVE_V1.0
-                </div>
+            {/* Top Row: Label and Stats */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center w-full mb-16">
+                 {/* Left: Label */}
+                 <div className="text-sm font-bold text-gray-500 font-mono tracking-widest uppercase">
+                    RC://RETRO_CIRCUIT
+                 </div>
 
+                 {/* Right: Metadata Stats */}
+                 <div className="flex flex-row gap-6 text-gray-500 font-tech tracking-wider uppercase text-[12px] font-bold mt-2 md:mt-0">
+                    <div className="flex items-center">
+                        STATUS: ONLINE
+                    </div>
+                    <div>
+                        INDEXED: {count || 0} SYSTEMS
+                    </div>
+                    <div>
+                        ARCHIVE: v0.1
+                    </div>
+                    <div>
+                        UPDATED: {new Date().toISOString().split('T')[0]}
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Content Group */}
+            <div>
                 <div className="mt-8">
                     <h2 className="text-7xl md:text-[7rem] font-black text-white leading-[0.85] tracking-tighter mix-blend-difference mb-8">
-                        RC://<br/>
-                        RETRO_CIRCUIT
+                        DATA BASE_
                     </h2>
-                    <p className="text-xl font-bold text-gray-400 border-l-4 border-accent pl-6 py-2">
-                        COMPREHENSIVE SPECIFICATIONS FOR<br/>VIDEO GAME CONSOLES.
+                    <p className="text-xl font-bold text-gray-400 py-2">
+                        Compare retro handhelds across generations.
                     </p>
                 </div>
             </div>
 
             {/* Bottom/Interactive Content Group */}
-            {/* Left aligned as requested */}
-            <div className="flex flex-col items-start gap-4 mt-auto">
+            {/* Right aligned as requested */}
+            <div className="flex flex-col items-end gap-4 mt-auto ml-auto">
 
                 <div className="flex gap-4">
-                    <Link href="/console" className="bg-white text-black text-xl font-bold px-6 py-3 flex items-center gap-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_var(--color-accent)]">
-                        <span className="font-tech tracking-widest text-lg">BROWSE DATABASE</span>
-                        <ArrowDownLeft size={24} />
+                     <Link href="/arena" className="bg-white text-black text-xl font-bold px-6 py-3 flex items-center gap-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_var(--color-accent)]">
+                        <span className="font-tech tracking-widest text-lg">COMPARE</span>
+                        <ArrowUpRight size={24} />
                     </Link>
 
-                    <Link href="/arena" className="bg-white text-black text-xl font-bold px-6 py-3 flex items-center gap-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_var(--color-accent)]">
-                        <span className="font-tech tracking-widest text-lg">COMPARE</span>
+                    <Link href="/console" className="bg-white text-black text-xl font-bold px-6 py-3 flex items-center gap-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_var(--color-accent)]">
+                        <span className="font-tech tracking-widest text-lg">BROWSE DATABASE</span>
                         <ArrowUpRight size={24} />
                     </Link>
                 </div>
 
-                {/* Real Data Count */}
-                <div className="text-sm text-gray-500 font-tech tracking-wider">
-                    {count || 0} SYSTEMS INDEXED
-                </div>
             </div>
         </div>
 
