@@ -1,5 +1,26 @@
 'use client';
 
+import { Press_Start_2P, JetBrains_Mono, Share_Tech_Mono } from "next/font/google";
+
+// Load fonts locally within the error boundary to ensure they are available even if RootLayout fails
+const pressStart = Press_Start_2P({
+  weight: "400",
+  subsets: ["latin"],
+  variable: '--font-press-start'
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  variable: '--font-mono'
+});
+
+const shareTechMono = Share_Tech_Mono({
+  weight: "400",
+  subsets: ["latin"],
+  variable: '--font-share-tech'
+});
+
 export default function GlobalError({
   error,
   reset,
@@ -8,8 +29,8 @@ export default function GlobalError({
   reset: () => void;
 }) {
   return (
-    <html>
-      <body className="bg-bg-primary text-primary font-mono h-screen flex flex-col items-center justify-center p-4 overflow-hidden">
+    <html lang="en">
+      <body className={`${pressStart.variable} ${jetBrainsMono.variable} ${shareTechMono.variable} bg-bg-primary text-primary font-mono h-screen flex flex-col items-center justify-center p-4 overflow-hidden`}>
 
         {/* CRT Scanline Effect */}
         <div className="fixed inset-0 pointer-events-none z-50 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%]"></div>
