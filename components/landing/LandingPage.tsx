@@ -37,7 +37,7 @@ export default async function LandingPage() {
 
   return (
     // Outer Container: No borders, no padding
-    <div className="min-h-screen bg-bg-primary font-mono selection:bg-accent selection:text-white flex flex-col">
+    <div className="bg-bg-primary font-mono selection:bg-accent selection:text-white flex flex-col">
       {/*
           NOTE: The parent MainLayout removes padding-top, and DesktopHeader is fixed/sticky above.
       */}
