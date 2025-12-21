@@ -1,24 +1,11 @@
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
-import { createClient } from '../../lib/supabase/server';
+import { siteConfig } from '../../config/site';
 import { fetchLatestConsoles } from '../../lib/api/latest';
 import { fetchConsoleList } from '../../lib/api/consoles';
 import QuickCompare from './QuickCompare';
 
 export default async function LandingPage() {
-  const supabase = await createClient();
-
-  // Fetch count of consoles (with error handling for missing DB connection)
-  let count = 0;
-  try {
-      const { count: dbCount, error } = await supabase.from('consoles').select('*', { count: 'exact', head: true });
-      if (!error && dbCount !== null) {
-          count = dbCount;
-      }
-  } catch (e) {
-      console.error('Failed to fetch console count:', e);
-  }
-
   // Fetch latest consoles
   const latestConsoles = await fetchLatestConsoles(3);
 
@@ -53,18 +40,15 @@ export default async function LandingPage() {
            </div>
 
            {/* Right: Metadata Stats */}
-           <div className="flex flex-row gap-6 text-gray-500 font-tech tracking-wider uppercase text-[12px] font-bold mt-2 md:mt-0">
+           <div className="flex flex-row items-center gap-6 text-gray-500 font-tech tracking-wider uppercase text-[12px] font-bold mt-2 md:mt-0">
               <div className="flex items-center">
                   STATUS: ONLINE
               </div>
               <div>
-                  INDEXED: {count || 0} SYSTEMS
+                  ARCHIVE: {siteConfig.version}
               </div>
-              <div>
-                  ARCHIVE: v0.1
-              </div>
-              <div>
-                  UPDATED: {new Date().toISOString().split('T')[0]}
+              <div className="font-mono text-[10px] text-gray-600 border border-gray-700 px-2 py-1">
+                  DOC_ID: INDEX_CORE_V1
               </div>
           </div>
       </div>
