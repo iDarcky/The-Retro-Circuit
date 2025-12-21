@@ -1,9 +1,8 @@
 {
   "redirects": [
-    { "source": "/Consoles.html", "destination": "/console", "permanent": true },
-    { "source": "/consoles", "destination": "/console", "permanent": true },
-    { "source": "/systems", "destination": "/console", "permanent": true },
-    { "source": "/systems/:slug", "destination": "/console/:slug", "permanent": true },
+    { "source": "/Consoles.html", "destination": "/consoles", "permanent": true },
+    { "source": "/systems", "destination": "/consoles", "permanent": true },
+    { "source": "/systems/:slug", "destination": "/consoles/:slug", "permanent": true },
     { "source": "/comparer", "destination": "/arena", "permanent": true }
   ]
 }

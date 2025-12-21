@@ -13,6 +13,8 @@ import { SpecCard } from '../ui/specs/SpecCard';
 import { SpecField } from '../ui/specs/SpecField';
 import { TechBadge } from '../ui/specs/TechBadge';
 import { getConsoleImage } from '../../lib/utils';
+import { getDocVersion } from '../../lib/utils/doc-version';
+import RetroStatusBar from '../ui/RetroStatusBar';
 
 interface ConsoleDetailViewProps {
   consoleData: ConsoleDetails;
@@ -113,8 +115,13 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
     // --- RENDER ---
 
     return (
-        <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn relative">
+        <div className="w-full animate-fadeIn relative">
+            <RetroStatusBar
+                rcPath={`RC://RETRO_CIRCUIT/VAULT/CONSOLES/${consoleData.slug.toUpperCase()}`}
+                docId={`HW_${consoleData.name.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase()}_${consoleData.release_year || 'XXXX'}${getDocVersion(consoleData.slug)}`}
+            />
             
+            <div className="max-w-7xl mx-auto p-4">
             {/* ADMIN TRIGGER (FIXED: EDIT VARIANT) */}
             {selectedVariantId !== 'base' && (
                 <AdminEditTrigger 
@@ -128,7 +135,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
             {/* TOP NAVIGATION & HEADER */}
             <div className="mb-8 flex flex-col md:flex-row justify-between items-start border-b-4 border-border-normal pb-6 gap-6">
                 <div className="flex-1">
-                     <Link href="/console" className="inline-block text-xs font-mono text-primary hover:text-secondary transition-colors mb-2">
+                     <Link href="/consoles" className="inline-block text-xs font-mono text-primary hover:text-secondary transition-colors mb-2">
                         &lt; BACK TO CONSOLE VAULT
                      </Link>
                      <div className="flex flex-wrap items-center gap-4">
@@ -422,6 +429,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
             </div>
 
+        </div>
         </div>
     );
 };

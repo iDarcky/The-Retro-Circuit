@@ -10,7 +10,7 @@ export default function DesktopHeader() {
   const { openSearch } = useSearch();
 
   const navItems = [
-    { name: 'CONSOLES', path: '/console' },
+    { name: 'CONSOLES', path: '/consoles' },
     { name: 'FABRICATORS', path: '/fabricators' },
     { name: 'VS MODE', path: '/arena' },
     { name: 'NEWS', path: '/news' },

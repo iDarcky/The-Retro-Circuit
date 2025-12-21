@@ -173,7 +173,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
            <SidebarItem to="/" icon={IconHome} label="CONTROL ROOM" exact />
            
            <div className="px-6 mt-6 mb-2 text-xs font-mono text-primary uppercase tracking-widest opacity-80">DATABASE</div>
-           <SidebarItem to="/console" icon={IconDatabase} label="CONSOLES" />
+           <SidebarItem to="/consoles" icon={IconDatabase} label="CONSOLES" />
            <SidebarItem to="/fabricators" icon={IconChip} label="FABRICATORS" />
            
            <div className="px-6 mt-6 mb-2 text-xs font-mono text-accent uppercase tracking-widest opacity-80">TOOLS</div>

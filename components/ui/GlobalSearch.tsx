@@ -68,7 +68,7 @@ const GlobalSearch: FC = () => {
         
         switch (result.type) {
             case 'CONSOLE':
-                path = `/console/${result.slug}`;
+                path = `/consoles/${result.slug}`;
                 break;
             case 'FABRICATOR':
                 path = `/fabricators/${result.slug}`;
