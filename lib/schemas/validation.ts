@@ -33,6 +33,7 @@ export const ConsoleSchema = z.object({
     description: safeString,
     image_url: safeString,
     form_factor: safeString,
+    play_mode: safeString,
 });
 
 export const ConsoleVariantSchema = z.object({
