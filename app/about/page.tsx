@@ -47,10 +47,23 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* SECTION 2: SYSTEM ARCHITECTURE */}
+      {/* SECTION 2: CREDITS */}
       <section className="mb-16">
         <h2 className="font-pixel text-xl text-white mb-6 flex items-center gap-3">
-            <span className="text-primary">[ 02 ]</span>
+            <span className="text-secondary">[ 02 ]</span>
+            CREDITS & ACKNOWLEDGEMENTS
+        </h2>
+        <div className="pl-6">
+            <p className="font-mono text-lg text-gray-300 leading-relaxed">
+                This project wouldn’t exist without a wider retro-gaming community. The Retro Circuit doesn’t aim to replace existing work — it connects it, structures it, and makes it easier to explore.
+            </p>
+        </div>
+      </section>
+
+      {/* SECTION 3: SYSTEM ARCHITECTURE */}
+      <section className="mb-16">
+        <h2 className="font-pixel text-xl text-white mb-6 flex items-center gap-3">
+            <span className="text-primary">[ 03 ]</span>
             SYSTEM ARCHITECTURE
         </h2>
         
@@ -63,7 +76,7 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-12 font-mono text-sm relative z-10">
                 <div className="flex justify-between border-b border-gray-800 pb-2">
                     <span className="text-gray-500">CORE_FRAMEWORK</span>
-                    <span className="text-secondary">NEXT.JS 14 (APP ROUTER)</span>
+                    <span className="text-secondary">NEXT.JS 16 (APP ROUTER)</span>
                 </div>
                 <div className="flex justify-between border-b border-gray-800 pb-2">
                     <span className="text-gray-500">DATA_LAYER</span>
@@ -89,10 +102,10 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* SECTION 3: OPERATOR */}
+      {/* SECTION 4: OPERATOR */}
       <section className="mb-16">
         <h2 className="font-pixel text-xl text-white mb-6 flex items-center gap-3">
-            <span className="text-gray-500">[ 03 ]</span>
+            <span className="text-gray-500">[ 04 ]</span>
             OPERATOR LOG
         </h2>
         
