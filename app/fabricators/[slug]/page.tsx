@@ -110,12 +110,13 @@ export default async function FabricatorDetailPage(props: Props) {
     const themeColorClass = theme.color.split(' ')[0]; // Extract text color class
 
     return (
-        <div className="w-full max-w-7xl mx-auto p-4 animate-[fadeIn_0.5s_ease-in-out]">
+        <div className="w-full animate-[fadeIn_0.5s_ease-in-out]">
             <RetroStatusBar
                 rcPath={`RC://RETRO_CIRCUIT/VAULT/MANUFACTURERS/${profile.slug.toUpperCase()}`}
                 docId={`FABRICATOR_PROFILE_${profile.name.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase()}${getDocVersion(profile.slug)}`}
             />
 
+            <div className="max-w-7xl mx-auto p-4">
             {/* Header / Dossier */}
             <div className={`border-l-8 ${theme.color} bg-bg-primary p-6 md:p-8 mb-8 shadow-lg`}>
                 <div className="flex flex-col md:flex-row justify-between items-start border-b border-gray-800 pb-6 mb-6 gap-6">
@@ -232,6 +233,7 @@ export default async function FabricatorDetailPage(props: Props) {
                     </div>
                 )}
             </div>
+        </div>
         </div>
     );
 }

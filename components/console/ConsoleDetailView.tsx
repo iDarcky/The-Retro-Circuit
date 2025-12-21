@@ -115,12 +115,13 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
     // --- RENDER ---
 
     return (
-        <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn relative">
+        <div className="w-full animate-fadeIn relative">
             <RetroStatusBar
                 rcPath={`RC://RETRO_CIRCUIT/VAULT/CONSOLES/${consoleData.slug.toUpperCase()}`}
                 docId={`HW_${consoleData.name.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase()}_${consoleData.release_year || 'XXXX'}${getDocVersion(consoleData.slug)}`}
             />
             
+            <div className="max-w-7xl mx-auto p-4">
             {/* ADMIN TRIGGER (FIXED: EDIT VARIANT) */}
             {selectedVariantId !== 'base' && (
                 <AdminEditTrigger 
@@ -428,6 +429,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
             </div>
 
+        </div>
         </div>
     );
 };
