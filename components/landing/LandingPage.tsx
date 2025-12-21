@@ -84,8 +84,8 @@ export default async function LandingPage() {
                   <div className="w-0 h-0 border-t-[12px] border-t-transparent border-l-[20px] border-l-accent border-b-[12px] border-b-transparent mt-4 md:mt-6 shrink-0 animate-pulse"></div>
 
                   <div>
-                      <h2 className="text-6xl md:text-[6rem] font-black text-white leading-[0.85] tracking-tighter mix-blend-difference mb-6">
-                          CONSOLE<br/>VAULT_
+                      <h2 className="text-4xl md:text-6xl font-pixel text-white leading-tight drop-shadow-[4px_4px_0_rgba(255,0,255,0.5)] mb-6">
+                          CONSOLE<br/><span className="text-secondary">VAULT_</span>
                       </h2>
                       <p className="text-lg md:text-xl font-bold text-gray-400 max-w-2xl leading-relaxed border-l-4 border-accent pl-6">
                           Find and compare your favorite handhelds...
@@ -119,7 +119,7 @@ export default async function LandingPage() {
                   <div className="flex items-center gap-3 mb-2">
                        {/* Blue Triangle (Breathing) */}
                        <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-primary border-b-[8px] border-b-transparent animate-pulse"></div>
-                       <h3 className="text-xl font-bold text-white font-mono tracking-tight">QUICK COMPARE_</h3>
+                       <h3 className="text-xl font-pixel text-white">QUICK COMPARE_</h3>
                   </div>
                   <p className="text-xs text-gray-500 font-mono ml-7">
                       Select two devices to view a head-to-head performance analysis.
@@ -142,8 +142,8 @@ export default async function LandingPage() {
              {/* Green Triangle (Breathing) */}
              <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-secondary border-b-[8px] border-b-transparent animate-pulse"></div>
 
-             {/* JetBrains Mono Header */}
-             <h2 className="text-2xl md:text-3xl font-mono font-bold text-white tracking-tight">
+             {/* Pixel Header */}
+             <h2 className="text-xl md:text-2xl font-pixel text-white tracking-tight">
                 NEW IN THE VAULT_
              </h2>
         </div>
