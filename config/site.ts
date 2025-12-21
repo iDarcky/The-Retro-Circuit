@@ -12,6 +12,7 @@ export const siteConfig = {
   routes: [
     { label: "About Us", href: "/about" },
     { label: "Privacy Policy", href: "/privacy" },
-    { label: "Terms of Service", href: "/terms" }
+    { label: "Terms of Service", href: "/terms" },
+    { label: "Credits", href: "/credits" }
   ]
 };

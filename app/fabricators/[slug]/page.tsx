@@ -6,6 +6,8 @@ import { ConsoleDetails } from '../../../lib/types';
 import { getBrandTheme } from '../../../data/static';
 import AdminEditTrigger from '../../../components/admin/AdminEditTrigger';
 import Button from '../../../components/ui/Button';
+import RetroStatusBar from '../../../components/ui/RetroStatusBar';
+import { getDocVersion } from '../../../lib/utils/doc-version';
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -109,6 +111,11 @@ export default async function FabricatorDetailPage(props: Props) {
 
     return (
         <div className="w-full max-w-7xl mx-auto p-4 animate-[fadeIn_0.5s_ease-in-out]">
+            <RetroStatusBar
+                rcPath={`RC://RETRO_CIRCUIT/VAULT/MANUFACTURERS/${profile.slug.toUpperCase()}`}
+                docId={`FABRICATOR_PROFILE_${profile.name.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase()}${getDocVersion(profile.slug)}`}
+            />
+
             {/* Header / Dossier */}
             <div className={`border-l-8 ${theme.color} bg-bg-primary p-6 md:p-8 mb-8 shadow-lg`}>
                 <div className="flex flex-col md:flex-row justify-between items-start border-b border-gray-800 pb-6 mb-6 gap-6">

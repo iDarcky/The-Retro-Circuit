@@ -1,4 +1,5 @@
 import { siteConfig } from '../../config/site';
+import RetroStatusBar from '../../components/ui/RetroStatusBar';
 
 export const metadata = {
   title: 'Terms of Use | The Retro Circuit',
@@ -7,27 +8,30 @@ export const metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="w-full max-w-3xl mx-auto p-4 py-12 md:py-20 animate-fadeIn">
+    <div className="w-full">
+      <RetroStatusBar
+        rcPath="RC://RETRO_CIRCUIT/SYSTEM/TERMS"
+        docId="LEGAL_TERMS_OF_USE_V1"
+      />
 
-      {/* HEADER LOG */}
-      <div className="mb-16 border-b-2 border-dashed border-gray-700 pb-8 relative">
-        <div className="absolute top-0 right-0 font-mono text-[10px] text-gray-600 border border-gray-700 px-2 py-1">
-          DOC_ID: TERMS_OF_USE_V1
-        </div>
-        <h1 className="text-4xl md:text-6xl font-pixel text-white mb-4 drop-shadow-[4px_4px_0_rgba(255,0,255,0.5)]">
-          TERMS OF <br />
-          <span className="text-secondary">SERVICE //</span>
-        </h1>
-        <div className="font-mono text-xs md:text-sm text-primary flex gap-4">
-            <span>FIRMWARE: {siteConfig.version}</span>
-            <span>{'//'}</span>
-            <span>EST: {siteConfig.est}</span>
-            <span>{'//'}</span>
-            <span className="animate-pulse">STATUS: BINDING</span>
-        </div>
-      </div>
+      <div className="max-w-3xl mx-auto p-4 py-12 md:py-20 animate-fadeIn">
 
-      {/* SECTION 1: ACCEPTANCE */}
+        {/* HEADER LOG */}
+        <div className="mb-16 border-b-2 border-dashed border-gray-700 pb-8 relative">
+          <h1 className="text-4xl md:text-6xl font-pixel text-white mb-4 drop-shadow-[4px_4px_0_rgba(255,0,255,0.5)]">
+            TERMS OF <br />
+            <span className="text-secondary">SERVICE //</span>
+          </h1>
+          <div className="font-mono text-xs md:text-sm text-primary flex gap-4">
+              <span>FIRMWARE: {siteConfig.version}</span>
+              <span>{'//'}</span>
+              <span>EST: {siteConfig.est}</span>
+              <span>{'//'}</span>
+              <span className="animate-pulse">STATUS: BINDING</span>
+          </div>
+        </div>
+
+        {/* SECTION 1: ACCEPTANCE */}
       <section className="mb-16 relative">
         <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-accent via-purple-500 to-transparent"></div>
         <h2 className="font-pixel text-xl text-white mb-6 flex items-center gap-3">
@@ -96,6 +100,7 @@ export default function TermsPage() {
         </div>
       </section>
 
+      </div>
     </div>
   );
 }

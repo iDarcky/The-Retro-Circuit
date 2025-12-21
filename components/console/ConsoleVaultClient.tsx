@@ -7,6 +7,7 @@ import { fetchManufacturers, fetchAllConsoles } from '../../lib/api';
 import { ConsoleDetails, ConsoleFilterState, Manufacturer } from '../../lib/types';
 import RetroLoader from '../ui/RetroLoader';
 import Button from '../ui/Button';
+import RetroStatusBar from '../ui/RetroStatusBar';
 
 const ConsoleVaultClient: FC = () => {
   const [allConsoles, setAllConsoles] = useState<ConsoleDetails[]>([]);
@@ -143,28 +144,10 @@ const ConsoleVaultClient: FC = () => {
   return (
     <div className="w-full">
         {/* HEADER: RC:// Metadata (Full Width) */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center px-6 md:px-8 mt-4 md:mt-8 mb-4">
-             {/* Left: Label */}
-             <div className="text-sm font-bold text-gray-500 font-mono tracking-widest uppercase">
-                RC://RETRO_CIRCUIT/CONSOLES
-             </div>
-
-             {/* Right: Metadata Stats */}
-             <div className="flex flex-row gap-6 text-gray-500 font-tech tracking-wider uppercase text-[12px] font-bold mt-2 md:mt-0">
-                <div className="flex items-center">
-                    STATUS: ONLINE
-                </div>
-                <div>
-                    INDEXED: {allConsoles.length} SYSTEMS
-                </div>
-                <div>
-                    ARCHIVE: v0.1
-                </div>
-                <div>
-                    UPDATED: {new Date().toISOString().split('T')[0]}
-                </div>
-            </div>
-        </div>
+        <RetroStatusBar
+            rcPath="RC://RETRO_CIRCUIT/VAULT/CONSOLES"
+            docId="VAULT_CONSOLES_V1"
+        />
 
         {/* MAIN CONTENT CONTAINER */}
         <div className="max-w-7xl mx-auto p-4">
