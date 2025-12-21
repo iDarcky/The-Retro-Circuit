@@ -29,7 +29,14 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
 
     useEffect(() => {
         if (initialData) {
-            setFormData(initialData);
+            const loadedData = { ...initialData };
+            // Parse play_mode string into array for UI
+            if (typeof loadedData.play_mode === 'string') {
+                loadedData.play_mode = loadedData.play_mode.split(',').filter((s: string) => s.trim().length > 0);
+            } else {
+                loadedData.play_mode = [];
+            }
+            setFormData(loadedData);
         }
     }, [initialData]);
 
@@ -79,6 +86,7 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
         consoleData.chassis_features = formData.chassis_features;
         consoleData.has_cartridge_slot = formData.has_cartridge_slot;
         consoleData.supported_cartridge_types = formData.supported_cartridge_types;
+        consoleData.play_mode = formData.play_mode ? formData.play_mode.join(',') : null;
 
         const consoleResult = ConsoleSchema.safeParse(consoleData);
         if (!consoleResult.success) { 
@@ -187,6 +195,36 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                                 <option value="legacy">Legacy Console</option>
                             </select>
                         </div>
+
+                        <div>
+                            <label className="text-[10px] mb-1 block uppercase text-gray-500">Play Mode</label>
+                            <div className="flex gap-2">
+                                {['Handheld', 'Docked', 'Hybrid'].map(mode => {
+                                    const currentModes = (formData.play_mode || []) as string[];
+                                    const isActive = currentModes.includes(mode);
+                                    return (
+                                        <button
+                                            key={mode}
+                                            type="button"
+                                            onClick={() => {
+                                                const newModes = isActive
+                                                    ? currentModes.filter(m => m !== mode)
+                                                    : [...currentModes, mode];
+                                                handleInputChange('play_mode', newModes);
+                                            }}
+                                            className={`flex-1 p-3 text-xs font-mono border uppercase transition-all ${
+                                                isActive
+                                                    ? 'bg-secondary text-black border-secondary font-bold'
+                                                    : 'bg-black text-gray-500 border-gray-800 hover:border-gray-600'
+                                            }`}
+                                        >
+                                            {mode}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
                         <AdminInput field={{ key: 'chassis_features', label: 'Special Chassis Features', placeholder: 'e.g., Dual Screen, Swivel' }} value={formData.chassis_features} onChange={handleInputChange} />
                     </div>
                 </div>

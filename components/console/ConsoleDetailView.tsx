@@ -221,8 +221,8 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                             <div className="text-secondary font-mono text-sm">{mergedSpecs.price_launch_usd ? `$${mergedSpecs.price_launch_usd}` : 'N/A'}</div>
                         </div>
                         <div className="bg-bg-primary p-3">
-                            <div className="text-[10px] text-gray-500 font-mono uppercase">Generation</div>
-                            <div className="text-white font-mono text-sm">{consoleData.generation || 'Unknown'}</div>
+                            <div className="text-[10px] text-gray-500 font-mono uppercase">Play Mode</div>
+                            <div className="text-white font-mono text-sm">{consoleData.play_mode ? consoleData.play_mode.replace(/,/g, ' / ').toUpperCase() : 'N/A'}</div>
                         </div>
                         <div className="bg-bg-primary p-3">
                             <div className="text-[10px] text-gray-500 font-mono uppercase">Release</div>
