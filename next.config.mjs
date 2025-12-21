@@ -12,7 +12,7 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/console/brand/:slug',
+        source: '/consoles/brand/:slug',
         destination: '/fabricators/:slug',
         permanent: true,
       },

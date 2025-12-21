@@ -13,7 +13,7 @@ const MobileBottomNav = () => {
     const navItems = [
         { label: 'Home', icon: IconHome, path: '/', exact: true },
         { label: 'Fabricators', icon: IconChip, path: '/fabricators' },
-        { label: 'Consoles', icon: IconDatabase, path: '/console' },
+      { label: 'Consoles', icon: IconDatabase, path: '/consoles' },
         { label: 'VS Mode', icon: IconVS, path: '/arena' },
     ];
 

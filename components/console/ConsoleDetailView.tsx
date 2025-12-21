@@ -128,7 +128,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
             {/* TOP NAVIGATION & HEADER */}
             <div className="mb-8 flex flex-col md:flex-row justify-between items-start border-b-4 border-border-normal pb-6 gap-6">
                 <div className="flex-1">
-                     <Link href="/console" className="inline-block text-xs font-mono text-primary hover:text-secondary transition-colors mb-2">
+                     <Link href="/consoles" className="inline-block text-xs font-mono text-primary hover:text-secondary transition-colors mb-2">
                         &lt; BACK TO CONSOLE VAULT
                      </Link>
                      <div className="flex flex-wrap items-center gap-4">
