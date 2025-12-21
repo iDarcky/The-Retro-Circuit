@@ -29,7 +29,7 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
 
     useEffect(() => {
         if (initialData) {
-            const loadedData = { ...initialData };
+            const loadedData: any = { ...initialData };
             // Parse play_mode string into array for UI
             if (typeof loadedData.play_mode === 'string') {
                 loadedData.play_mode = loadedData.play_mode.split(',').filter((s: string) => s.trim().length > 0);
