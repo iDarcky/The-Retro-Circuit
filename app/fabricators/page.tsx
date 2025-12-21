@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { fetchManufacturers } from '../../lib/api';
 import { getBrandTheme } from '../../data/static';
+import RetroStatusBar from '../../components/ui/RetroStatusBar';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +14,13 @@ export default async function FabricatorsPage() {
   const manufacturers = await fetchManufacturers();
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-4">
+    <div className="w-full">
+      <RetroStatusBar
+        rcPath="RC://RETRO_CIRCUIT/VAULT/MANUFACTURERS"
+        docId="FABRICATORS_INDEX_V1"
+      />
+
+      <div className="max-w-7xl mx-auto p-4">
       <div className="text-center mb-10">
         <h2 className="text-3xl md:text-5xl font-pixel text-secondary mb-4 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
             FABRICATOR ARCHIVES
@@ -57,6 +64,7 @@ export default async function FabricatorsPage() {
                 </Link>
             );
         })}
+      </div>
       </div>
     </div>
   );

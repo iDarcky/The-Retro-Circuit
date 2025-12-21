@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
-import { siteConfig } from '../../config/site';
 import { fetchLatestConsoles } from '../../lib/api/latest';
 import { fetchConsoleList } from '../../lib/api/consoles';
 import QuickCompare from './QuickCompare';
+import RetroStatusBar from '../ui/RetroStatusBar';
 
 export default async function LandingPage() {
   // Fetch latest consoles
@@ -33,25 +33,10 @@ export default async function LandingPage() {
           BLOCK: Hero Header Metadata
           Moved outside the box as per requirement.
       */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center px-6 md:px-8 mt-4 md:mt-8 mb-4">
-           {/* Left: Label */}
-           <div className="text-sm font-bold text-gray-500 font-mono tracking-widest uppercase">
-              RC://RETRO_CIRCUIT
-           </div>
-
-           {/* Right: Metadata Stats */}
-           <div className="flex flex-row items-center gap-6 text-gray-500 font-tech tracking-wider uppercase text-[12px] font-bold mt-2 md:mt-0">
-              <div className="flex items-center">
-                  STATUS: ONLINE
-              </div>
-              <div>
-                  ARCHIVE: {siteConfig.version}
-              </div>
-              <div className="font-mono text-[10px] text-gray-600 border border-gray-700 px-2 py-1">
-                  DOC_ID: INDEX_CORE_V1
-              </div>
-          </div>
-      </div>
+      <RetroStatusBar
+        rcPath="RC://RETRO_CIRCUIT/INDEX"
+        docId="INDEX_CORE_V1"
+      />
 
       {/*
           BLOCK: Hero Grid Split
