@@ -91,6 +91,7 @@ export interface EmulationProfile {
   x3ds_state: string;
   switch_state: string;
   vita_state: string;
+  ps3_state?: string;
   dreamcast_state?: string;
   saturn_state?: string;
 

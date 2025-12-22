@@ -9,7 +9,7 @@ export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
             .select(`
                 *,
                 manufacturer:manufacturer(*),
-                variants:console_variants(*)
+                variants:console_variants(*, emulation_profiles(*))
             `)
             .order('name', { ascending: true });
 

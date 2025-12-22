@@ -1,7 +1,7 @@
 'use server';
 
 import { fetchAllConsoles } from '../../lib/api/consoles';
-import { calculateFormFactorScore } from '../../lib/finder/scoring';
+import { calculateFormFactorScore, calculateTierScore } from '../../lib/finder/scoring';
 
 // We reuse the interface but map the existing domain type to it if needed
 export interface FinderResultConsole {
@@ -16,10 +16,14 @@ export interface FinderResultConsole {
   release_year?: number;
 }
 
-export async function getFinderResults(formFactorPref: string | null): Promise<FinderResultConsole[]> {
+export async function getFinderResults(
+  formFactorPref: string | null,
+  targetTier: string | null
+): Promise<FinderResultConsole[]> {
   try {
     // Reuse the existing, proven API function that powers the main vault
     // This handles joins, normalization, and public access correctly.
+    // fetchAllConsoles now includes emulation_profiles in variants.
     const allConsoles = await fetchAllConsoles();
 
     if (!allConsoles || allConsoles.length === 0) {
@@ -29,8 +33,13 @@ export async function getFinderResults(formFactorPref: string | null): Promise<F
 
     // Calculate Scores
     const scoredConsoles = allConsoles.map((consoleItem) => {
-      // Use the normalized form_factor from the API result
-      const score = calculateFormFactorScore(consoleItem.form_factor, formFactorPref || '');
+      // 1. Form Factor Score
+      const ffScore = calculateFormFactorScore(consoleItem.form_factor, formFactorPref || '');
+
+      // 2. Tier Score (Emulation Performance)
+      const tierScore = calculateTierScore(consoleItem, targetTier);
+
+      const totalScore = ffScore + tierScore;
 
       // Map domain type to finder result type
       return {
@@ -41,7 +50,7 @@ export async function getFinderResults(formFactorPref: string | null): Promise<F
         form_factor: consoleItem.form_factor || null,
         manufacturer: consoleItem.manufacturer ? { name: consoleItem.manufacturer.name } : null,
         release_year: consoleItem.release_year,
-        _score: score
+        _score: totalScore
       };
     });
 

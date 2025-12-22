@@ -13,6 +13,7 @@ interface FinderResultsProps {
 export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
   const searchParams = useSearchParams();
   const formFactorPref = searchParams.get('form_factor_pref');
+  const targetTier = searchParams.get('target_tier');
 
   const [results, setResults] = useState<FinderResultConsole[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +21,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
   useEffect(() => {
     async function fetchResults() {
       try {
-        const data = await getFinderResults(formFactorPref);
+        const data = await getFinderResults(formFactorPref, targetTier);
         setResults(data);
       } catch (err) {
         console.error('Failed to fetch results', err);
@@ -29,7 +30,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
       }
     }
     fetchResults();
-  }, [formFactorPref]);
+  }, [formFactorPref, targetTier]);
 
   if (loading) {
     return (
