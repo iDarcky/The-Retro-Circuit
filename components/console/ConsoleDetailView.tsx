@@ -3,6 +3,7 @@
 
 import { useState, useEffect, type FC } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ConsoleDetails, ConsoleSpecs, ConsoleVariant } from '../../lib/types';
 import AdminEditTrigger from '../admin/AdminEditTrigger';
@@ -178,7 +179,17 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                     {/* Main Image Viewer */}
                     <div className="bg-black border-2 border-border-normal p-8 flex items-center justify-center min-h-[300px] relative shadow-[0_0_20px_rgba(0,0,0,0.5)] group overflow-hidden">
                         {currentImage ? (
-                            <img src={currentImage} alt={consoleData.name} className="w-full h-auto object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-500 relative z-10" key={currentImage} />
+                            <div className="relative w-full h-[300px]">
+                                <Image
+                                    src={currentImage}
+                                    alt={consoleData.name}
+                                    fill
+                                    className="object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-500 relative z-10"
+                                    key={currentImage}
+                                    priority
+                                    sizes="(max-width: 1024px) 100vw, 33vw"
+                                />
+                            </div>
                         ) : (
                             <div className="text-muted font-pixel text-4xl opacity-50">NO SIGNAL</div>
                         )}
@@ -204,7 +215,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                         <div className="absolute top-0 right-0 p-1">
                             <svg className="w-4 h-4 text-muted" viewBox="0 0 24 24" fill="currentColor"><path d="M22 2v20h-20v-20h20zm2-2h-24v24h24v-24z"/></svg>
                         </div>
-                        <h3 className="font-pixel text-[10px] text-primary mb-4 uppercase">System Analysis</h3>
+                        <h2 className="font-pixel text-[10px] text-primary mb-4 uppercase">System Analysis</h2>
                         <p className="font-mono text-gray-300 leading-relaxed text-sm whitespace-pre-line">
                             {consoleData.description}
                         </p>
