@@ -1,14 +1,59 @@
 'use client';
 
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import Button from '../ui/Button';
-import { Gamepad2, Smartphone, Monitor } from 'lucide-react';
+import { getFinderResults, FinderResultConsole } from '../../app/finder/actions';
 
 interface FinderResultsProps {
   onRestart: () => void;
 }
 
 export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
+  const searchParams = useSearchParams();
+  const formFactorPref = searchParams.get('form_factor_pref');
+
+  const [results, setResults] = useState<FinderResultConsole[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchResults() {
+      try {
+        const data = await getFinderResults(formFactorPref);
+        setResults(data);
+      } catch (err) {
+        console.error('Failed to fetch results', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchResults();
+  }, [formFactorPref]);
+
+  if (loading) {
+    return (
+        <div className="w-full h-96 flex flex-col items-center justify-center p-4">
+            <div className="w-16 h-16 border-4 border-secondary border-t-transparent rounded-full animate-spin mb-6 shadow-[0_0_15px_rgba(0,255,157,0.3)]"></div>
+            <div className="font-pixel text-secondary text-sm animate-pulse">CALCULATING MATCHES...</div>
+        </div>
+    );
+  }
+
+  if (results.length === 0) {
+      return (
+        <div className="max-w-4xl mx-auto text-center py-20 px-4">
+            <h2 className="text-3xl font-pixel text-red-500 mb-6">NO MATCHES FOUND</h2>
+            <p className="font-mono text-gray-400 mb-8">
+                It seems no handhelds matched your specific criteria in our database yet.
+            </p>
+            <Button variant="secondary" onClick={onRestart}>
+              TRY AGAIN
+            </Button>
+        </div>
+      );
+  }
+
   return (
     <div className="max-w-6xl mx-auto px-4 w-full animate-in zoom-in-95 duration-500">
       <div className="text-center mb-12">
@@ -16,73 +61,62 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
           Your Matches
         </h2>
         <p className="text-gray-400 font-mono text-lg">
-          Based on your answers, these handhelds are perfect for you.
+          Based on your preference for <span className="text-secondary font-bold uppercase">{formFactorPref || 'Any'}</span> form factor.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-        {/* Placeholder Result 1 */}
-        <div className="bg-bg-secondary/80 border border-secondary/30 rounded-xl overflow-hidden relative group hover:border-secondary transition-all">
-          <div className="h-48 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative">
-            <Gamepad2 className="w-16 h-16 text-gray-600 group-hover:text-secondary transition-colors" />
-             <div className="absolute top-4 right-4 bg-secondary text-bg-primary font-bold px-2 py-1 text-xs rounded">
-              98% MATCH
-            </div>
-          </div>
-          <div className="p-6">
-            <h3 className="text-2xl font-bold text-white mb-2">Result A</h3>
-            <div className="flex gap-2 mb-4">
-               <span className="text-xs border border-white/20 px-2 py-1 rounded text-gray-400">Emulation King</span>
-               <span className="text-xs border border-white/20 px-2 py-1 rounded text-gray-400">$50-100</span>
-            </div>
-            <p className="text-gray-400 text-sm mb-6 leading-relaxed">
-              A placeholder description for the first recommended handheld console. Ideally fits retro gamers.
-            </p>
-            <Button className="w-full text-sm">View Details</Button>
-          </div>
-        </div>
+        {results.map((console) => (
+            <div key={console.id} className="bg-bg-secondary/80 border border-secondary/30 rounded-xl overflow-hidden relative group hover:border-secondary transition-all flex flex-col">
+              <div className="h-48 bg-black/50 flex items-center justify-center relative p-4">
+                {console.image_url ? (
+                     <img
+                        src={console.image_url}
+                        alt={console.name}
+                        className="max-h-full max-w-full object-contain drop-shadow-xl group-hover:scale-105 transition-transform duration-300"
+                     />
+                ) : (
+                    <span className="font-pixel text-4xl text-gray-700">?</span>
+                )}
+                {/* Match Badge - Placeholder 95% for now as we aren't doing real scoring yet */}
+                <div className="absolute top-4 right-4 bg-secondary text-bg-primary font-bold px-2 py-1 text-xs rounded shadow-[0_0_10px_rgba(0,255,157,0.5)]">
+                  MATCH
+                </div>
+              </div>
 
-        {/* Placeholder Result 2 */}
-        <div className="bg-bg-secondary/80 border border-secondary/30 rounded-xl overflow-hidden relative group hover:border-secondary transition-all">
-          <div className="h-48 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative">
-            <Smartphone className="w-16 h-16 text-gray-600 group-hover:text-secondary transition-colors" />
-            <div className="absolute top-4 right-4 bg-secondary text-bg-primary font-bold px-2 py-1 text-xs rounded">
-              95% MATCH
-            </div>
-          </div>
-          <div className="p-6">
-            <h3 className="text-2xl font-bold text-white mb-2">Result B</h3>
-             <div className="flex gap-2 mb-4">
-               <span className="text-xs border border-white/20 px-2 py-1 rounded text-gray-400">Pocketable</span>
-               <span className="text-xs border border-white/20 px-2 py-1 rounded text-gray-400">$100+</span>
-            </div>
-            <p className="text-gray-400 text-sm mb-6 leading-relaxed">
-              A placeholder description for the second recommended handheld console. Great for on-the-go gaming.
-            </p>
-            <Button className="w-full text-sm">View Details</Button>
-          </div>
-        </div>
+              <div className="p-6 flex-1 flex flex-col">
+                <div className="flex justify-between items-start mb-2">
+                    <div>
+                        <div className="text-[10px] font-mono text-gray-500 uppercase tracking-wider mb-1">
+                            {console.manufacturer?.name || 'UNKNOWN'}
+                        </div>
+                        <h3 className="text-xl font-bold text-white leading-tight group-hover:text-secondary transition-colors">
+                            {console.name}
+                        </h3>
+                    </div>
+                </div>
 
-         {/* Placeholder Result 3 */}
-         <div className="bg-bg-secondary/80 border border-secondary/30 rounded-xl overflow-hidden relative group hover:border-secondary transition-all">
-          <div className="h-48 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative">
-            <Monitor className="w-16 h-16 text-gray-600 group-hover:text-secondary transition-colors" />
-            <div className="absolute top-4 right-4 bg-secondary text-bg-primary font-bold px-2 py-1 text-xs rounded">
-              88% MATCH
+                <div className="flex gap-2 mb-6 mt-2 flex-wrap">
+                   {console.form_factor && (
+                       <span className="text-[10px] border border-white/10 bg-white/5 px-2 py-1 rounded text-gray-300 uppercase">
+                           {console.form_factor}
+                       </span>
+                   )}
+                   {console.release_year && (
+                       <span className="text-[10px] border border-white/10 bg-white/5 px-2 py-1 rounded text-gray-300">
+                           {console.release_year}
+                       </span>
+                   )}
+                </div>
+
+                <div className="mt-auto">
+                    <Link href={`/console/${console.slug}`} className="block w-full">
+                        <Button className="w-full text-sm">View Details</Button>
+                    </Link>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="p-6">
-            <h3 className="text-2xl font-bold text-white mb-2">Result C</h3>
-             <div className="flex gap-2 mb-4">
-               <span className="text-xs border border-white/20 px-2 py-1 rounded text-gray-400">Powerhouse</span>
-               <span className="text-xs border border-white/20 px-2 py-1 rounded text-gray-400">$200+</span>
-            </div>
-            <p className="text-gray-400 text-sm mb-6 leading-relaxed">
-              A placeholder description for the third recommended handheld console. For those who want max performance.
-            </p>
-            <Button className="w-full text-sm">View Details</Button>
-          </div>
-        </div>
+        ))}
       </div>
 
       <div className="flex justify-center">
