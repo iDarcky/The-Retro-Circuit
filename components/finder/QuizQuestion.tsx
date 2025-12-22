@@ -2,30 +2,13 @@
 
 import { FC, ReactNode } from 'react';
 import { clsx } from 'clsx';
-import { IconGames } from '../ui/Icons';
-import { Gamepad2, Trophy, Zap, Smartphone, Heart, Monitor, Cpu, HardDrive, Wifi, ChevronRight } from 'lucide-react';
-
-// Create a local map for the icons we need since the main Icons export is missing them
-// or we can use lucide-react directly
-const IconMap = {
-  Gamepad: IconGames,
-  Gamepad2: Gamepad2,
-  Trophy: Trophy,
-  Zap: Zap,
-  Smartphone: Smartphone,
-  Heart: Heart,
-  Monitor: Monitor,
-  Cpu: Cpu,
-  HardDrive: HardDrive,
-  Wifi: Wifi,
-  ChevronRight: ChevronRight,
-};
+// No icon imports needed as we removed them from config
 
 export interface QuizOption {
   id: string;
   label: string;
   description?: string;
-  icon?: keyof typeof IconMap | ReactNode;
+  icon?: ReactNode; // Kept as optional but will likely be undefined in config now
 }
 
 interface QuizQuestionProps {
@@ -101,17 +84,7 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
             {designStyle === 'card' ? (
               // CARD LAYOUT
               <>
-                <div className="text-secondary opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-transform duration-300">
-                  {typeof option.icon === 'string' && IconMap[option.icon as keyof typeof IconMap]
-                    ? (
-                        (() => {
-                          const IconComp = IconMap[option.icon as keyof typeof IconMap];
-                          return <IconComp className="w-8 h-8" />;
-                        })()
-                      )
-                    : option.icon
-                  }
-                </div>
+                {/* Removed icon rendering block entirely as per request */}
                 <div>
                   <h3 className="text-lg font-bold text-white group-hover:text-secondary mb-1">
                     {option.label}
@@ -126,17 +99,7 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
             ) : (
               // BUTTON LAYOUT
               <>
-                 <div className="text-secondary shrink-0">
-                  {typeof option.icon === 'string' && IconMap[option.icon as keyof typeof IconMap]
-                    ? (
-                        (() => {
-                          const IconComp = IconMap[option.icon as keyof typeof IconMap];
-                          return <IconComp className="w-6 h-6" />;
-                        })()
-                      )
-                    : option.icon
-                  }
-                </div>
+                 {/* Removed icon rendering block entirely as per request */}
                 <div className="flex-1">
                   <span className="block text-lg font-bold text-white group-hover:text-secondary">
                     {option.label}
@@ -148,8 +111,10 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
                     </span>
                   )}
                 </div>
+                {/* We can use a simple SVG chevron here or just > text if we want to remove ALL icons imports,
+                    but chevron is UI navigation, not 'icon/emoji' content. Keeping it simple. */}
                 <div className="opacity-0 group-hover:opacity-100 text-secondary transition-opacity">
-                  <IconMap.ChevronRight className="w-5 h-5" />
+                  <span className="font-pixel text-xl">&gt;</span>
                 </div>
               </>
             )}

@@ -1,13 +1,13 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import RetroStatusBar from '../ui/RetroStatusBar';
 import { FinderLanding } from './FinderLanding';
 import { QuizQuestion } from './QuizQuestion';
 import { FinderResults } from './FinderResults';
 import Button from '../ui/Button';
-import { calculateWeights, ProfileType } from '../../lib/finder/scoring';
+import { calculateWeights, ProfileType, calculateFormFactorScore } from '../../lib/finder/scoring';
 
 // Configuration
 const QUESTIONS = [
@@ -16,23 +16,34 @@ const QUESTIONS = [
     question: "What best describes you?",
     subtitle: "This helps us understand what you’ll care about most when we pick your top matches.",
     options: [
-      { id: 'nostalgia', label: 'Nostalgia hunter', description: 'Reliving childhood classics', icon: 'Gamepad' },
-      { id: 'completionist', label: 'Completionist', description: "Gotta catch 'em all", icon: 'Trophy' },
-      { id: 'performance', label: 'Performance chaser', description: 'Wants the most powerful option', icon: 'Zap' },
-      { id: 'onthego', label: 'On-the-go', description: 'Commuter, traveler', icon: 'Smartphone' },
-      { id: 'gift', label: 'Finding the perfect gift', description: 'For someone special', icon: 'Heart' },
+      { id: 'nostalgia', label: 'Nostalgia hunter', description: 'Reliving childhood classics' },
+      { id: 'completionist', label: 'Completionist', description: "Gotta catch 'em all" },
+      { id: 'performance', label: 'Performance chaser', description: 'Wants the most powerful option' },
+      { id: 'onthego', label: 'On-the-go', description: 'Commuter, traveler' },
+      { id: 'gift', label: 'Finding the perfect gift', description: 'For someone special' },
     ]
   },
-  // Placeholders Q2-Q6
-  ...Array.from({ length: 5 }).map((_, i) => ({
-    id: `q${i + 2}`,
-    question: `Question ${i + 2}`,
+  {
+    id: 'q2',
+    question: "Form Factor - How do you want to hold it?",
+    subtitle: "This is mostly about comfort and nostalgia — we’ll prioritize your preferred shape when we can.",
+    options: [
+      { id: 'horizontal', label: 'Classic horizontal (like Game Boy Advance)' },
+      { id: 'vertical', label: 'Vertical pocket device (like original Game Boy)' },
+      { id: 'clamshell', label: 'Clamshell flip-style (like DS / GBA SP)' },
+      { id: 'surprise', label: 'Surprise me' },
+    ]
+  },
+  // Placeholders Q3-Q6
+  ...Array.from({ length: 4 }).map((_, i) => ({
+    id: `q${i + 3}`,
+    question: `Question ${i + 3}`,
     subtitle: "_Placeholder subtitle text_",
     options: [
-      { id: 'a', label: 'Option A', description: 'Description for option A', icon: 'Monitor' },
-      { id: 'b', label: 'Option B', description: 'Description for option B', icon: 'Cpu' },
-      { id: 'c', label: 'Option C', description: 'Description for option C', icon: 'HardDrive' },
-      { id: 'd', label: 'Option D', description: 'Description for option D', icon: 'Wifi' },
+      { id: 'a', label: 'Option A', description: 'Description for option A' },
+      { id: 'b', label: 'Option B', description: 'Description for option B' },
+      { id: 'c', label: 'Option C', description: 'Description for option C' },
+      { id: 'd', label: 'Option D', description: 'Description for option D' },
     ]
   })),
   // Q7 Optional
@@ -42,8 +53,8 @@ const QUESTIONS = [
     subtitle: "_Optional Question_",
     isOptional: true,
     options: [
-       { id: 'a', label: 'Option A', description: 'Description for option A', icon: 'Monitor' },
-       { id: 'b', label: 'Option B', description: 'Description for option B', icon: 'Cpu' },
+       { id: 'a', label: 'Option A', description: 'Description for option A' },
+       { id: 'b', label: 'Option B', description: 'Description for option B' },
     ]
   },
   // Q8 Bonus
@@ -53,8 +64,8 @@ const QUESTIONS = [
     subtitle: "_Bonus Round_",
     isBonus: true,
     options: [
-       { id: 'a', label: 'Option A', description: 'Description for option A', icon: 'Monitor' },
-       { id: 'b', label: 'Option B', description: 'Description for option B', icon: 'Cpu' },
+       { id: 'a', label: 'Option A', description: 'Description for option A' },
+       { id: 'b', label: 'Option B', description: 'Description for option B' },
     ]
   }
 ];
@@ -63,6 +74,11 @@ const FinderFlowContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [designStyle, setDesignStyle] = useState<'card' | 'button'>('card');
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const stepParam = searchParams.get('step');
 
@@ -98,6 +114,18 @@ const FinderFlowContent = () => {
       console.log('Calculated Weights:', weights);
     }
 
+    // Q2 Logic: Form Factor
+    if (stepIndex === 1) {
+        params.set('form_factor_pref', optionId);
+        // Example check for logic (Bonus/Penalty logic would happen at matching time)
+        console.log('Form Factor Preference:', optionId);
+        // Just for verification that logic exists
+        if (optionId !== 'surprise') {
+            const score = calculateFormFactorScore('Horizontal', optionId); // Example check
+            console.log(`Score check for 'Horizontal' vs '${optionId}':`, score);
+        }
+    }
+
     // Navigation
     if (stepIndex < QUESTIONS.length - 1) {
       params.set('step', `q${stepIndex + 2}`);
@@ -115,6 +143,9 @@ const FinderFlowContent = () => {
   const toggleStyle = () => {
     setDesignStyle(prev => prev === 'card' ? 'button' : 'card');
   };
+
+  // Prevent hydration mismatch by rendering nothing until client side (or use Suspense properly)
+  if (!isClient) return null;
 
   return (
     <div className="relative min-h-screen pb-12">
@@ -164,7 +195,7 @@ const FinderFlowContent = () => {
 
 export const FinderFlow = () => {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center font-pixel text-white">LOADING...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-bg-primary" />}>
       <FinderFlowContent />
     </Suspense>
   );

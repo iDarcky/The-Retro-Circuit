@@ -48,3 +48,21 @@ export const calculateWeights = (profile: ProfileType): FinderWeights => {
 
   return weights;
 };
+
+// Logic for Q2 Form Factor Bonus
+export const calculateFormFactorScore = (consoleFormFactor: string | undefined, preference: string): number => {
+    if (!consoleFormFactor) return 0;
+    if (preference === 'surprise') return 0; // Neutral
+
+    const normalizedConsole = consoleFormFactor.toLowerCase();
+    const normalizedPref = preference.toLowerCase();
+
+    // Direct Match
+    if (normalizedConsole === normalizedPref) {
+        return 5; // Small bonus example
+    }
+
+    // Penalty for mismatch (if strict matching desired, or just 0)
+    // User requested "Add a small penalty if it doesn’t match"
+    return -5;
+};
