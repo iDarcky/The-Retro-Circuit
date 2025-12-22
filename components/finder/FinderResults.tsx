@@ -110,7 +110,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                 </div>
 
                 <div className="mt-auto">
-                    <Link href={`/console/${console.slug}`} className="block w-full">
+                    <Link href={`/consoles/${console.slug}`} className="block w-full">
                         <Button className="w-full text-sm">View Details</Button>
                     </Link>
                 </div>
