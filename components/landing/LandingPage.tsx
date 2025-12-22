@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowUpRight } from 'lucide-react';
 import { fetchLatestConsoles } from '../../lib/api/latest';
 import { fetchConsoleList } from '../../lib/api/consoles';
@@ -53,9 +54,9 @@ export default async function LandingPage() {
                   <div className="w-0 h-0 border-t-[12px] border-t-transparent border-l-[20px] border-l-accent border-b-[12px] border-b-transparent mt-4 md:mt-6 shrink-0 animate-pulse"></div>
 
                   <div>
-                      <h2 className="text-4xl md:text-6xl font-pixel text-white leading-tight drop-shadow-[4px_4px_0_rgba(120,120,120,0.4)] mb-6">
+                      <h1 className="text-4xl md:text-6xl font-pixel text-white leading-tight drop-shadow-[4px_4px_0_rgba(120,120,120,0.4)] mb-6">
                           CONSOLE<br/><span className="text-secondary">VAULT_</span>
-                      </h2>
+                      </h1>
                       <p className="text-lg md:text-xl font-bold text-gray-400 max-w-2xl leading-relaxed border-l-4 border-accent pl-6">
                           Find and compare your favorite handhelds...
                       </p>
@@ -135,7 +136,15 @@ export default async function LandingPage() {
                     {/* Image Area */}
                     <div className="h-[200px] w-full flex items-center justify-center mb-6 bg-slate-900/50 rounded-sm relative overflow-hidden">
                         {console.image_url ? (
-                            <img src={console.image_url} alt={console.name} className="max-h-[160px] object-contain group-hover:scale-110 transition-transform duration-500" />
+                            <div className="relative w-full h-[160px]">
+                                <Image
+                                    src={console.image_url}
+                                    alt={console.name}
+                                    fill
+                                    className="object-contain group-hover:scale-110 transition-transform duration-500"
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
+                                />
+                            </div>
                         ) : (
                             <span className="text-slate-700 font-pixel text-4xl">?</span>
                         )}

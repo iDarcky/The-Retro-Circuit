@@ -5,6 +5,7 @@ import { createClient } from '../../../lib/supabase/server';
 import { fetchConsoleBySlug } from '../../../lib/api';
 import Button from '../../../components/ui/Button';
 import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
+import StructuredData from '../../../components/seo/StructuredData';
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -81,5 +82,30 @@ export default async function ConsoleSpecsPage(props: Props) {
     );
   }
 
-  return <ConsoleDetailView consoleData={consoleData} />;
+  // Construct JSON-LD Structured Data
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: consoleData.name,
+    description: consoleData.description,
+    image: consoleData.image_url || '/logo.png',
+    brand: {
+      '@type': 'Brand',
+      name: consoleData.manufacturer?.name || 'Unknown',
+    },
+    offers: {
+      '@type': 'Offer',
+      price: consoleData.specs?.price_launch_usd || '0',
+      priceCurrency: 'USD',
+      description: 'Launch Price',
+      availability: 'https://schema.org/OutOfStock', // Default for legacy hardware
+    },
+  };
+
+  return (
+    <>
+      <StructuredData data={jsonLd} />
+      <ConsoleDetailView consoleData={consoleData} />
+    </>
+  );
 }
