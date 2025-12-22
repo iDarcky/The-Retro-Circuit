@@ -1,8 +1,9 @@
 'use server';
 
-import { createClient } from '../../lib/supabase/server';
+import { fetchAllConsoles } from '../../lib/api/consoles';
 import { calculateFormFactorScore } from '../../lib/finder/scoring';
 
+// We reuse the interface but map the existing domain type to it if needed
 export interface FinderResultConsole {
   id: string;
   name: string;
@@ -17,44 +18,29 @@ export interface FinderResultConsole {
 
 export async function getFinderResults(formFactorPref: string | null): Promise<FinderResultConsole[]> {
   try {
-    const supabase = await createClient();
+    // Reuse the existing, proven API function that powers the main vault
+    // This handles joins, normalization, and public access correctly.
+    const allConsoles = await fetchAllConsoles();
 
-    // Fetch all consoles
-    // Using manufacturer:manufacturer(*) based on proven pattern in lib/api/consoles.ts
-    const { data, error } = await supabase
-      .from('consoles')
-      .select(`
-        id,
-        name,
-        slug,
-        image_url,
-        form_factor,
-        release_year,
-        manufacturer:manufacturer(*)
-      `)
-      .limit(100);
-
-    if (error) {
-      console.error('Supabase Finder Error:', error.message, error.details);
-      return [];
-    }
-
-    if (!data || data.length === 0) {
-      console.warn('Supabase Finder: No data returned from consoles table.');
+    if (!allConsoles || allConsoles.length === 0) {
+      console.warn('Finder: fetchAllConsoles returned empty array.');
       return [];
     }
 
     // Calculate Scores
-    const scoredConsoles = data.map((consoleItem) => {
+    const scoredConsoles = allConsoles.map((consoleItem) => {
+      // Use the normalized form_factor from the API result
       const score = calculateFormFactorScore(consoleItem.form_factor, formFactorPref || '');
 
-      // Normalize manufacturer (handle array vs object)
-      const rawManufacturer = consoleItem.manufacturer;
-      const manufacturerObj = Array.isArray(rawManufacturer) ? rawManufacturer[0] : rawManufacturer;
-
+      // Map domain type to finder result type
       return {
-        ...consoleItem,
-        manufacturer: manufacturerObj ? { name: manufacturerObj.name } : null,
+        id: consoleItem.id,
+        name: consoleItem.name,
+        slug: consoleItem.slug,
+        image_url: consoleItem.image_url || null,
+        form_factor: consoleItem.form_factor || null,
+        manufacturer: consoleItem.manufacturer ? { name: consoleItem.manufacturer.name } : null,
+        release_year: consoleItem.release_year,
         _score: score
       };
     });
@@ -70,7 +56,7 @@ export async function getFinderResults(formFactorPref: string | null): Promise<F
     });
 
     // Return Top 3
-    return scoredConsoles.slice(0, 3).map(({ _score, ...rest }) => rest) as FinderResultConsole[];
+    return scoredConsoles.slice(0, 3).map(({ _score, ...rest }) => rest);
 
   } catch (err) {
     console.error('Unexpected Finder Exception:', err);
