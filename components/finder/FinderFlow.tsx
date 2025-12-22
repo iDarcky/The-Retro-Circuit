@@ -34,10 +34,22 @@ const QUESTIONS = [
       { id: 'surprise', label: 'Surprise me' },
     ]
   },
-  // Placeholders Q3-Q6
-  ...Array.from({ length: 4 }).map((_, i) => ({
-    id: `q${i + 3}`,
-    question: `Question ${i + 3}`,
+  {
+    id: 'q3',
+    question: "What do you mainly want to play?",
+    subtitle: "Choose the highest era you want to play comfortably. This has the biggest impact on results.",
+    options: [
+      { id: '8bit', label: '8-bit & 16-bit era (NES, SNES, Genesis, Game Boy, GBA)', description: 'Think: Mario, Sonic, Pokémon Red/Blue' },
+      { id: '32bit', label: '32-bit & 64-bit era (PS1, N64, Dreamcast)', description: 'Think: Final Fantasy VII, GoldenEye, Crash Bandicoot' },
+      { id: '2000s', label: '2000s handhelds (PSP, Nintendo DS, GBA)', description: 'Think: God of War PSP, Pokémon Diamond, Advance Wars' },
+      { id: '6thgen', label: '6th gen consoles (PS2, GameCube, Xbox, Wii)', description: 'Think: GTA San Andreas, Super Smash Bros Melee' },
+      { id: 'modern', label: 'Everything modern (PS3, Switch, PC games)', description: 'Think: Breath of the Wild, The Last of Us' },
+    ]
+  },
+  // Placeholders Q4-Q6
+  ...Array.from({ length: 3 }).map((_, i) => ({
+    id: `q${i + 4}`,
+    question: `Question ${i + 4}`,
     subtitle: "_Placeholder subtitle text_",
     options: [
       { id: 'a', label: 'Option A', description: 'Description for option A' },
@@ -124,6 +136,12 @@ const FinderFlowContent = () => {
             const score = calculateFormFactorScore('Horizontal', optionId); // Example check
             console.log(`Score check for 'Horizontal' vs '${optionId}':`, score);
         }
+    }
+
+    // Q3 Logic: Target Tier
+    if (stepIndex === 2) {
+        params.set('target_tier', optionId);
+        console.log('Target Tier:', optionId);
     }
 
     // Navigation
