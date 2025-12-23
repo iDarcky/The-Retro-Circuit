@@ -107,8 +107,9 @@ export async function getFinderResults(
     }
 
     // --- SCORING ---
-    // Score everything first
-    const scoredConsoles = filteredConsoles.map((consoleItem) => {
+    // Score everything first. Explicitly type the array to FinderResultConsole[]
+    // so that objects in it are known to have optional match_label/match_reason fields.
+    const scoredConsoles: FinderResultConsole[] = filteredConsoles.map((consoleItem) => {
       const scoreData = calculateConsoleScore(consoleItem, inputs);
       const price = (consoleItem.specs as any)?.price_launch_usd || null;
 
@@ -124,7 +125,10 @@ export async function getFinderResults(
         _score: scoreData.total,
         _badges: scoreData.badges,
         _breakdown: scoreData,
-        _relaxed_features: relaxedFeatures.length > 0 ? relaxedFeatures : undefined
+        _relaxed_features: relaxedFeatures.length > 0 ? relaxedFeatures : undefined,
+        // Explicitly undefined to satisfy strict types if needed, though explicit array type handles it
+        match_label: undefined,
+        match_reason: undefined
       };
     });
 
@@ -200,13 +204,6 @@ export async function getFinderResults(
                 case 'b_120_180': maxBudget = 180; break;
                 case 'b_180_300': maxBudget = 300; break;
             }
-
-            // Look for Upgrade Candidates
-            // Criteria:
-            // 1. Price is > Max and <= Max+50
-            // 2. Justifies cost:
-            //    - Tier Fit improves by >= 0.20 VS Best Match
-            //    - OR Power Ceiling increases by >= 1 Tier Level VS Best Match
 
             const candidates = remaining.filter(c => {
                 if (!c.price) return false;

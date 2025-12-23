@@ -69,15 +69,6 @@ const TIER_ANCHORS: Record<string, string[]> = {
     'modern': ['switch_state', 'ps3_state']
 };
 
-// Map Tiers to numeric levels for comparison
-const TIER_LEVELS: Record<string, number> = {
-    '8bit': 1,
-    '32bit': 2,
-    '2000s': 3,
-    '6thgen': 4,
-    'modern': 5
-};
-
 // Helpers
 const normalize = (val: number, min: number, max: number) => {
     if (val <= min) return 0;
