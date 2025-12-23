@@ -252,10 +252,7 @@ export const calculateConsoleScore = (
     // Tier Penalty
     let tierPenalty = 0;
     if (inputs.targetTier) {
-        // Find required weight for this tier
-        const requiredWeight = SYSTEM_WEIGHTS[`${inputs.targetTier}_state`] || 0; // e.g. 'ps2_state' -> 1.0
-        // Wait, 'targetTier' from Q3 is like '32bit'.
-        // I need to map 'targetTier' (e.g. '32bit') to a weight threshold.
+        // Map 'targetTier' (e.g. '32bit') to a weight threshold.
 
         let threshold = 0;
         switch (inputs.targetTier) {
