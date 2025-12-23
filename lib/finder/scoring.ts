@@ -318,7 +318,7 @@ export const calculateConsoleScore = (
     // I will add a `setup_bonus` to the total.
 
     let setupBonus = 0;
-    const deviceEase = consoleItem.finder_traits?.setup_ease_score || 3;
+    const deviceEase = consoleItem.setup_ease_score || 3;
 
     if (inputs.setupAnswer === 'power' || inputs.setupAnswer === 'tinker') {
         // User likes complexity/power.
@@ -346,7 +346,7 @@ export const calculateConsoleScore = (
     // 6. Badges
     const badges: string[] = [];
     if (deviceEase >= 4) badges.push("Easy to set up");
-    if ((consoleItem.finder_traits?.community_score || 0) >= 4) badges.push("Good community support");
+    if ((consoleItem.community_score || 0) >= 4) badges.push("Good community support");
 
     return {
         power: sPower,
