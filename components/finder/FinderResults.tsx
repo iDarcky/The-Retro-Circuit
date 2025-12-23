@@ -88,9 +88,15 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                     <span className="font-pixel text-4xl text-gray-700">?</span>
                 )}
                 {/* Match Badge */}
-                <div className="absolute top-4 right-4 bg-secondary text-bg-primary font-bold px-2 py-1 text-xs rounded shadow-[0_0_10px_rgba(0,255,157,0.5)]">
-                  MATCH
-                </div>
+                {console.match_label && (
+                    <div className={`absolute top-4 right-4 text-bg-primary font-bold px-2 py-1 text-xs rounded shadow-lg uppercase ${
+                        console.match_label.includes('Best') ? 'bg-secondary shadow-[0_0_10px_rgba(0,255,157,0.5)]' :
+                        console.match_label.includes('Upgrade') ? 'bg-retro-pink shadow-[0_0_10px_rgba(255,107,157,0.5)]' :
+                        'bg-retro-cyan shadow-[0_0_10px_rgba(0,217,255,0.5)]'
+                    }`}>
+                      {console.match_label}
+                    </div>
+                )}
               </div>
 
               <div className="p-6 flex-1 flex flex-col">
@@ -105,11 +111,18 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                     </div>
                 </div>
 
+                {/* Match Reason */}
+                {console.match_reason && (
+                    <div className="mb-3 text-xs text-gray-400 italic border-l-2 border-white/10 pl-2">
+                        "{console.match_reason}"
+                    </div>
+                )}
+
                 {/* Badges */}
                 {(console as any)._badges && (console as any)._badges.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                    <div className="flex flex-wrap gap-2 mt-1 mb-2">
                         {(console as any)._badges.map((badge: string) => (
-                            <span key={badge} className="text-[10px] bg-retro-cyan/10 text-retro-cyan border border-retro-cyan/20 px-1.5 py-0.5 rounded">
+                            <span key={badge} className="text-[10px] bg-white/5 text-gray-300 border border-white/10 px-1.5 py-0.5 rounded">
                                 {badge}
                             </span>
                         ))}

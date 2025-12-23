@@ -61,12 +61,12 @@ const QUESTIONS = [
   {
     id: 'q5',
     question: "How portable do you want it to be?",
-    subtitle: "Portability usually trades off with screen size and comfort — we’ll balance based on your pick.",
+    subtitle: "We score devices based on how well they fit your portability style, rather than filtering them out.",
     options: [
-      { id: 'pocket', label: 'Pocket carry (jeans-pocket size)' },
-      { id: 'jacket', label: 'Bag/jacket carry (some bulk is fine for a better screen)' },
-      { id: 'home', label: 'Home-focused (bigger screens welcome)' },
-      { id: 'versatile', label: 'Versatile (balanced portability + screen)' },
+      { id: 'pocket', label: 'Prefer pocket-friendly devices (Jeans pocket)' },
+      { id: 'jacket', label: 'Prefer bag/jacket friendly (Some bulk is fine)' },
+      { id: 'home', label: 'Prioritize comfort & screen size (Portability not important)' },
+      { id: 'versatile', label: 'Balanced preference (Good mix of both)' },
     ]
   },
   // Q6: Setup
