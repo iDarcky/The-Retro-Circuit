@@ -1,9 +1,8 @@
 'use server';
 
 import { fetchAllConsoles } from '../../lib/api/consoles';
-import { calculateFormFactorScore, calculateTierScore, calculateBudgetScore } from '../../lib/finder/scoring';
+import { calculateConsoleScore, ScoreBreakdown } from '../../lib/finder/scoring';
 
-// We reuse the interface but map the existing domain type to it if needed
 export interface FinderResultConsole {
   id: string;
   name: string;
@@ -15,17 +14,17 @@ export interface FinderResultConsole {
   } | null;
   release_year?: number;
   price?: number | null;
+
+  // Scoring Debug/Display
+  _score: number;
+  _badges: string[];
+  _breakdown?: ScoreBreakdown; // Optional for debug
 }
 
 export async function getFinderResults(
-  formFactorPref: string | null,
-  targetTier: string | null,
-  budgetBand: string | null
+  searchParams: Record<string, string>
 ): Promise<FinderResultConsole[]> {
   try {
-    // Reuse the existing, proven API function that powers the main vault
-    // This handles joins, normalization, and public access correctly.
-    // fetchAllConsoles now includes emulation_profiles in variants.
     const allConsoles = await fetchAllConsoles();
 
     if (!allConsoles || allConsoles.length === 0) {
@@ -33,24 +32,23 @@ export async function getFinderResults(
       return [];
     }
 
+    // Extract Inputs
+    const inputs = {
+        profile: searchParams.profile || 'default',
+        toneMode: searchParams.tone_mode || null,
+        setupAnswer: searchParams.setup || null, // Q6
+        budgetBand: searchParams.budget_band || null,
+        targetTier: searchParams.target_tier || null,
+        portabilityPref: searchParams.portability || null,
+        // Features could be passed if we had a filter for them
+    };
+
     // Calculate Scores
     const scoredConsoles = allConsoles.map((consoleItem) => {
-      // 1. Form Factor Score
-      const ffScore = calculateFormFactorScore(consoleItem.form_factor, formFactorPref || '');
+      const scoreData = calculateConsoleScore(consoleItem, inputs);
 
-      // 2. Tier Score (Emulation Performance)
-      const tierScore = calculateTierScore(consoleItem, targetTier);
+      const price = (consoleItem.specs as any)?.price_launch_usd || null;
 
-      // 3. Budget Score
-      // fetchAllConsoles normalizes 'release_year' and 'specs' but maybe not 'price_launch_usd' on root.
-      // Usually it's on variants. fetchAllConsoles populates item.specs = defaultVariant.
-      // Let's look for price in specs (which is default variant) or fallback to 0.
-      const price = (consoleItem.specs as any)?.price_launch_usd;
-      const budgetScore = calculateBudgetScore(price, budgetBand);
-
-      const totalScore = ffScore + tierScore + budgetScore;
-
-      // Map domain type to finder result type
       return {
         id: consoleItem.id,
         name: consoleItem.name,
@@ -59,23 +57,18 @@ export async function getFinderResults(
         form_factor: consoleItem.form_factor || null,
         manufacturer: consoleItem.manufacturer ? { name: consoleItem.manufacturer.name } : null,
         release_year: consoleItem.release_year,
-        price: price || null,
-        _score: totalScore
+        price: price,
+        _score: scoreData.total,
+        _badges: scoreData.badges,
+        _breakdown: scoreData // Internal use if needed
       };
     });
 
-    // Sort: Primary = Score DESC, Secondary = Release Year DESC
-    scoredConsoles.sort((a, b) => {
-      if (b._score !== a._score) {
-        return b._score - a._score;
-      }
-      const yearA = a.release_year || 0;
-      const yearB = b.release_year || 0;
-      return yearB - yearA;
-    });
+    // Sort: Score DESC
+    scoredConsoles.sort((a, b) => b._score - a._score);
 
     // Return Top 3
-    return scoredConsoles.slice(0, 3).map(({ _score, ...rest }) => rest);
+    return scoredConsoles.slice(0, 3).map(({ _breakdown, ...rest }) => rest);
 
   } catch (err) {
     console.error('Unexpected Finder Exception:', err);

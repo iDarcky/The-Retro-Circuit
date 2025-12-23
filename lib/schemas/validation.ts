@@ -33,6 +33,9 @@ export const ConsoleSchema = z.object({
     description: safeString,
     image_url: safeString,
     form_factor: safeString,
+    // New Finder Traits
+    setup_ease_score: safeNumber,
+    community_score: safeNumber,
 });
 
 export const ConsoleVariantSchema = z.object({

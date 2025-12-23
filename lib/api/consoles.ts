@@ -3,13 +3,14 @@ import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant } from
 
 export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
     try {
-        // The 'Vacuum' Strategy: Fetch everything including nested variants
+        // The 'Vacuum' Strategy: Fetch everything including nested variants and finder traits
         const { data, error } = await supabase
             .from('consoles')
             .select(`
                 *,
                 manufacturer:manufacturer(*),
-                variants:console_variants(*, emulation_profiles(*))
+                variants:console_variants(*, emulation_profiles(*)),
+                finder_traits:console_finder_traits(setup_ease_score, community_score)
             `)
             .order('name', { ascending: true });
 
@@ -30,6 +31,11 @@ export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
             } else {
                 item.specs = {};
             }
+
+            // Flatten finder_traits array (one-to-one) or object
+            const traits = Array.isArray(item.finder_traits) ? item.finder_traits[0] : item.finder_traits;
+            item.finder_traits = traits || null;
+
             return item;
         }) as ConsoleDetails[];
 

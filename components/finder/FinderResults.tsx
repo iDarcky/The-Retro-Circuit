@@ -12,9 +12,7 @@ interface FinderResultsProps {
 
 export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
   const searchParams = useSearchParams();
-  const formFactorPref = searchParams.get('form_factor_pref');
-  const targetTier = searchParams.get('target_tier');
-  const budgetBand = searchParams.get('budget_band');
+  const isGift = searchParams.get('tone_mode') === 'gift';
 
   const [results, setResults] = useState<FinderResultConsole[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +20,13 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
   useEffect(() => {
     async function fetchResults() {
       try {
-        const data = await getFinderResults(formFactorPref, targetTier, budgetBand);
+        // Convert ReadonlyURLSearchParams to a plain object
+        const params: Record<string, string> = {};
+        searchParams.forEach((value, key) => {
+            params[key] = value;
+        });
+
+        const data = await getFinderResults(params);
         setResults(data);
       } catch (err) {
         console.error('Failed to fetch results', err);
@@ -31,7 +35,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
       }
     }
     fetchResults();
-  }, [formFactorPref, targetTier, budgetBand]);
+  }, [searchParams]);
 
   if (loading) {
     return (
