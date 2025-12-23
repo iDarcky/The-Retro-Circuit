@@ -1,26 +1,27 @@
 'use client';
 
-import { FC, ReactNode } from 'react';
+import { FC, ReactNode, useState, useEffect } from 'react';
 import { clsx } from 'clsx';
-// No icon imports needed as we removed them from config
+import Button from '../ui/Button';
 
 export interface QuizOption {
   id: string;
   label: string;
   description?: string;
-  icon?: ReactNode; // Kept as optional but will likely be undefined in config now
+  icon?: ReactNode;
 }
 
 interface QuizQuestionProps {
   question: string;
   subtitle?: string;
   options: QuizOption[];
-  onAnswer: (optionId: string) => void;
+  onAnswer: (answer: string | string[]) => void;
   designStyle: 'card' | 'button';
   stepNumber: number;
   totalSteps: number;
   isOptional?: boolean;
   isBonus?: boolean;
+  multiSelect?: boolean;
 }
 
 export const QuizQuestion: FC<QuizQuestionProps> = ({
@@ -33,25 +34,78 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
   totalSteps,
   isOptional,
   isBonus,
+  multiSelect = false,
 }) => {
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  // Reset selection when question changes (stepNumber changes)
+  useEffect(() => {
+    setSelectedIds([]);
+  }, [stepNumber]);
+
+  const handleOptionClick = (id: string) => {
+    if (multiSelect) {
+      // Check if it's the "None" option (assuming id='none')
+      if (id === 'none') {
+        // If selecting none, clear everything else and select none
+        // If unselecting none, just remove it
+        if (selectedIds.includes('none')) {
+             setSelectedIds([]);
+        } else {
+             setSelectedIds(['none']);
+        }
+      } else {
+        // Normal option
+        // If "none" was selected, remove it
+        let newSelection = selectedIds.filter(sid => sid !== 'none');
+
+        if (newSelection.includes(id)) {
+          newSelection = newSelection.filter(sid => sid !== id);
+        } else {
+          newSelection.push(id);
+        }
+        setSelectedIds(newSelection);
+      }
+    } else {
+      // Single select: just replace
+      setSelectedIds([id]);
+    }
+  };
+
+  const handleNext = () => {
+    if (selectedIds.length === 0) return;
+
+    if (multiSelect) {
+      onAnswer(selectedIds);
+    } else {
+      onAnswer(selectedIds[0]);
+    }
+  };
+
+  // Enforce selection always, even for optional (User explicit request)
+  const isNextDisabled = selectedIds.length === 0;
+
   return (
-    <div className="max-w-4xl mx-auto px-4 w-full animate-in slide-in-from-right duration-300">
+    <div className="max-w-4xl mx-auto px-4 w-full animate-in slide-in-from-right duration-300 pb-24">
       <div className="mb-8 text-center">
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <span className="font-tech text-secondary text-sm tracking-wider">
-            QUESTION {stepNumber} / {totalSteps}
-          </span>
-          {isOptional && (
-            <span className="px-2 py-0.5 bg-gray-800 text-gray-400 text-xs font-mono rounded border border-gray-700">
-              OPTIONAL
+        {isBonus ? (
+            <div className="flex items-center justify-center gap-3 mb-4 animate-pulse">
+                <span className="px-3 py-1 bg-accent/20 text-accent text-lg font-pixel tracking-widest border border-accent/40 rounded shadow-[0_0_15px_rgba(255,107,157,0.5)]">
+                  BONUS ROUND
+                </span>
+            </div>
+        ) : (
+            <div className="flex items-center justify-center gap-3 mb-4">
+            <span className="font-tech text-secondary text-sm tracking-wider">
+                QUESTION {stepNumber} / {totalSteps}
             </span>
-          )}
-          {isBonus && (
-            <span className="px-2 py-0.5 bg-accent/20 text-accent text-xs font-mono rounded border border-accent/40 animate-pulse">
-              BONUS ROUND
-            </span>
-          )}
-        </div>
+            {isOptional && (
+                <span className="px-2 py-0.5 bg-gray-800 text-gray-400 text-xs font-mono rounded border border-gray-700">
+                OPTIONAL
+                </span>
+            )}
+            </div>
+        )}
 
         <h2 className="text-2xl md:text-4xl font-pixel text-white mb-2 leading-tight">
           {question}
@@ -65,62 +119,85 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
       </div>
 
       <div className={clsx(
-        "grid gap-4",
+        "grid gap-4 mb-8",
         designStyle === 'card'
           ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
           : "grid-cols-1 max-w-xl mx-auto"
       )}>
-        {options.map((option) => (
-          <button
-            key={option.id}
-            onClick={() => onAnswer(option.id)}
-            className={clsx(
-              "group relative text-left transition-all duration-200 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-bg-primary",
-              designStyle === 'card'
-                ? "bg-bg-secondary/50 border border-white/10 hover:border-secondary p-6 rounded-lg backdrop-blur-sm flex flex-col gap-3 h-full"
-                : "bg-transparent border-2 border-white/20 hover:border-secondary hover:bg-white/5 p-4 rounded flex items-center gap-4"
-            )}
-          >
-            {designStyle === 'card' ? (
-              // CARD LAYOUT
-              <>
-                {/* Removed icon rendering block entirely as per request */}
-                <div>
-                  <h3 className="text-lg font-bold text-white group-hover:text-secondary mb-1">
-                    {option.label}
-                  </h3>
-                  {option.description && (
-                    <p className="text-sm text-gray-400 font-mono leading-relaxed group-hover:text-gray-300">
-                      {option.description}
-                    </p>
-                  )}
-                </div>
-              </>
-            ) : (
-              // BUTTON LAYOUT
-              <>
-                 {/* Removed icon rendering block entirely as per request */}
-                <div className="flex-1">
-                  <span className="block text-lg font-bold text-white group-hover:text-secondary">
-                    {option.label}
-                  </span>
-                  {/* In button mode, we might hide description or keep it minimal. Let's keep it but smaller */}
-                  {option.description && (
-                    <span className="block text-xs text-gray-400 font-mono mt-0.5">
-                      {option.description}
+        {options.map((option) => {
+          const isSelected = selectedIds.includes(option.id);
+          return (
+            <button
+                key={option.id}
+                onClick={() => handleOptionClick(option.id)}
+                className={clsx(
+                "group relative text-left transition-all duration-200 focus:outline-none",
+                // Base styles
+                designStyle === 'card'
+                    ? "p-6 rounded-lg backdrop-blur-sm flex flex-col gap-3 h-full border"
+                    : "p-4 rounded flex items-center gap-4 border-2",
+                // Active/Inactive styles
+                isSelected
+                    ? "bg-secondary/20 border-secondary ring-1 ring-secondary shadow-[0_0_15px_rgba(0,255,136,0.3)]"
+                    : designStyle === 'card'
+                        ? "bg-bg-secondary/50 border-white/10 hover:border-secondary hover:bg-bg-secondary/80"
+                        : "bg-transparent border-white/20 hover:border-secondary hover:bg-white/5"
+                )}
+            >
+                {designStyle === 'card' ? (
+                // CARD LAYOUT
+                <>
+                    <div>
+                    <h3 className={clsx("text-lg font-bold mb-1", isSelected ? "text-secondary" : "text-white group-hover:text-secondary")}>
+                        {option.label}
+                    </h3>
+                    {option.description && (
+                        <p className={clsx("text-sm font-mono leading-relaxed", isSelected ? "text-gray-200" : "text-gray-400 group-hover:text-gray-300")}>
+                        {option.description}
+                        </p>
+                    )}
+                    </div>
+                </>
+                ) : (
+                // BUTTON LAYOUT
+                <>
+                    <div className="flex-1">
+                    <span className={clsx("block text-lg font-bold", isSelected ? "text-secondary" : "text-white group-hover:text-secondary")}>
+                        {option.label}
                     </span>
-                  )}
-                </div>
-                {/* We can use a simple SVG chevron here or just > text if we want to remove ALL icons imports,
-                    but chevron is UI navigation, not 'icon/emoji' content. Keeping it simple. */}
-                <div className="opacity-0 group-hover:opacity-100 text-secondary transition-opacity">
-                  <span className="font-pixel text-xl">&gt;</span>
-                </div>
-              </>
-            )}
-          </button>
-        ))}
+                    {option.description && (
+                        <span className="block text-xs text-gray-400 font-mono mt-0.5">
+                        {option.description}
+                        </span>
+                    )}
+                    </div>
+                    {/* Checkmark or indicator */}
+                    <div className={clsx("transition-opacity", isSelected ? "opacity-100 text-secondary" : "opacity-0 group-hover:opacity-50")}>
+                        <span className="font-pixel text-xl">{isSelected ? '✓' : '>'}</span>
+                    </div>
+                </>
+                )}
+            </button>
+          );
+        })}
       </div>
+
+      {/* NEXT BUTTON */}
+      <div className="flex justify-center">
+         <Button
+            variant="primary"
+            size="lg"
+            onClick={handleNext}
+            disabled={isNextDisabled}
+            className={clsx(
+                "px-12 py-4 text-xl min-w-[200px] transition-all duration-200",
+                isNextDisabled && "opacity-50 cursor-not-allowed grayscale"
+            )}
+         >
+            NEXT
+         </Button>
+      </div>
+
     </div>
   );
 };
