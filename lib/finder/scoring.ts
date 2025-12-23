@@ -226,6 +226,56 @@ export const calculateConsoleScore = (
         }
     }
 
+    // 3c. Budget & Tier Penalties (Restoring Q3/Q4 Impact)
+    // Budget Penalty
+    let budgetPenalty = 0;
+    if (inputs.budgetBand && price !== null && price !== undefined) {
+        let max = 9999;
+        switch (inputs.budgetBand) {
+            case 'b_under_60': max = 60; break;
+            case 'b_60_120': max = 120; break;
+            case 'b_120_180': max = 180; break;
+            case 'b_180_300': max = 300; break;
+            case 'b_300_plus': max = 9999; break;
+        }
+
+        // If price significantly exceeds budget, penalize
+        if (price > max) {
+            // Normalized penalty based on how much over
+            // e.g. 10% over = small penalty. 50% over = big penalty.
+            // Let's just apply a flat significant penalty to deprioritize it
+            // but keep it in list if it's amazing otherwise.
+            budgetPenalty = -0.25;
+        }
+    }
+
+    // Tier Penalty
+    let tierPenalty = 0;
+    if (inputs.targetTier) {
+        // Find required weight for this tier
+        const requiredWeight = SYSTEM_WEIGHTS[`${inputs.targetTier}_state`] || 0; // e.g. 'ps2_state' -> 1.0
+        // Wait, 'targetTier' from Q3 is like '32bit'.
+        // I need to map 'targetTier' (e.g. '32bit') to a weight threshold.
+
+        let threshold = 0;
+        switch (inputs.targetTier) {
+            case '8bit': threshold = 0.25; break;
+            case '32bit': threshold = 0.5; break;
+            case '2000s': threshold = 0.75; break;
+            case '6thgen': threshold = 1.0; break;
+            case 'modern': threshold = 1.25; break;
+        }
+
+        // Compare against device's max capability (Power Score roughly correlates to max weight)
+        // powerRaw is (maxWeight / 1.25). So maxWeight = powerRaw * 1.25.
+        const deviceMaxWeight = powerRaw * 1.25;
+
+        if (deviceMaxWeight < threshold) {
+             // Device is underpowered for user's goal. Heavy penalty.
+             tierPenalty = -0.50;
+        }
+    }
+
     // 4. Gift Mode Logic (Q6 Override)
     // If Gift AND (Setup = Tinker/Power), reduce the implicit "bonus" of complex devices.
     // In our scoring, "Ease" score is high for simple devices.
@@ -293,7 +343,7 @@ export const calculateConsoleScore = (
     // Add setup bonus to total
 
     // 5. Total Sum
-    const total = sPower + sLibrary + sPortability + sEase + sValue + setupBonus + formFactorBonus;
+    const total = sPower + sLibrary + sPortability + sEase + sValue + setupBonus + formFactorBonus + budgetPenalty + tierPenalty;
 
     // 6. Badges
     const badges: string[] = [];
