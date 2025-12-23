@@ -58,38 +58,57 @@ const QUESTIONS = [
       { id: 'b_300_plus', label: 'No budget limit ($300+)' },
     ]
   },
-  // Placeholders Q5-Q6
-  ...Array.from({ length: 2 }).map((_, i) => ({
-    id: `q${i + 5}`,
-    question: `Question ${i + 5}`,
-    subtitle: "_Placeholder subtitle text_",
-    options: [
-      { id: 'a', label: 'Option A', description: 'Description for option A' },
-      { id: 'b', label: 'Option B', description: 'Description for option B' },
-      { id: 'c', label: 'Option C', description: 'Description for option C' },
-      { id: 'd', label: 'Option D', description: 'Description for option D' },
-    ]
-  })),
-  // Q7 Optional
+  // Q5: Portability
   {
-    id: 'q7',
-    question: "Question 7",
-    subtitle: "_Optional Question_",
-    isOptional: true,
+    id: 'q5',
+    question: "How portable do you want it to be?",
+    subtitle: "Portability usually trades off with screen size and comfort — we’ll balance based on your pick.",
     options: [
-       { id: 'a', label: 'Option A', description: 'Description for option A' },
-       { id: 'b', label: 'Option B', description: 'Description for option B' },
+      { id: 'pocket', label: 'Pocket carry (jeans-pocket size)' },
+      { id: 'jacket', label: 'Bag/jacket carry (some bulk is fine for a better screen)' },
+      { id: 'home', label: 'Home-focused (bigger screens welcome)' },
+      { id: 'versatile', label: 'Versatile (balanced portability + screen)' },
     ]
   },
-  // Q8 Bonus
+  // Q6: Setup
+  {
+    id: 'q6',
+    question: "How much setup are you willing to do?",
+    subtitle: "Some handhelds are plug-and-play, others need a bit of tuning. This keeps recommendations realistic.",
+    options: [
+      { id: 'beginner', label: 'Total beginner - want it to work out of the box' },
+      { id: 'intermediate', label: 'I can follow a guide or tutorial' },
+      { id: 'tinker', label: 'Happy to tinker and customize' },
+      { id: 'power', label: 'Power user - give me all the options' },
+    ]
+  },
+  // Q7: Features (Multi-select)
+  {
+    id: 'q7',
+    question: "Any must-have features?",
+    subtitle: "Optional — select only if it’s a deal-breaker. Leaving this blank gives the best recommendations.",
+    isOptional: true,
+    multiSelect: true,
+    options: [
+       { id: 'hdmi', label: 'Must have HDMI / video output' },
+       { id: 'bluetooth', label: 'Must have Bluetooth (wireless audio/controllers)' },
+       { id: 'wifi', label: 'Must have Wi-Fi (updates, scraping, online features)' },
+       { id: 'dual_sticks', label: 'Must have dual analog sticks' },
+       { id: 'dual_screen', label: 'Must support dual-screen for DS games' },
+       { id: 'none', label: 'None of these matter' },
+    ]
+  },
+  // Q8: Aesthetic (Bonus)
   {
     id: 'q8',
-    question: "Question 8",
-    subtitle: "_Bonus Round_",
+    question: "What look do you prefer?",
+    subtitle: "We’ll try to match the vibe, but performance and budget come first.",
     isBonus: true,
     options: [
-       { id: 'a', label: 'Option A', description: 'Description for option A' },
-       { id: 'b', label: 'Option B', description: 'Description for option B' },
+       { id: 'retro', label: 'Classic retro (grey/beige, 90s vibes)' },
+       { id: 'transparent', label: 'Transparent (see-through, atomic purple, cyberpunk)' },
+       { id: 'modern', label: 'Sleek & modern (black/white/metal, minimal)' },
+       { id: 'colorful', label: 'Colorful & fun (bright colors, playful)' },
     ]
   }
 ];
@@ -121,8 +140,12 @@ const FinderFlowContent = () => {
     router.push('/finder?step=q1');
   };
 
-  const handleAnswer = (optionId: string) => {
+  const handleAnswer = (answer: string | string[]) => {
     const params = new URLSearchParams(searchParams.toString());
+
+    // For single select questions, 'answer' is string.
+    // For multi select (Q7), it is string[].
+    const optionId = Array.isArray(answer) ? answer.join(',') : answer;
 
     // Q1 Logic: Set Profile and Initial Weights
     if (stepIndex === 0) {
@@ -141,11 +164,8 @@ const FinderFlowContent = () => {
     // Q2 Logic: Form Factor
     if (stepIndex === 1) {
         params.set('form_factor_pref', optionId);
-        // Example check for logic (Bonus/Penalty logic would happen at matching time)
-        console.log('Form Factor Preference:', optionId);
-        // Just for verification that logic exists
         if (optionId !== 'surprise') {
-            const score = calculateFormFactorScore('Horizontal', optionId); // Example check
+            const score = calculateFormFactorScore('Horizontal', optionId);
             console.log(`Score check for 'Horizontal' vs '${optionId}':`, score);
         }
     }
@@ -160,6 +180,42 @@ const FinderFlowContent = () => {
     if (stepIndex === 3) {
         params.set('budget_band', optionId);
         console.log('Budget Band:', optionId);
+    }
+
+    // Q5 Logic: Portability
+    if (stepIndex === 4) {
+        params.set('portability', optionId);
+        console.log('Portability:', optionId);
+    }
+
+    // Q6 Logic: Setup
+    if (stepIndex === 5) {
+        params.set('setup', optionId);
+        console.log('Setup:', optionId);
+    }
+
+    // Q7 Logic: Features
+    if (stepIndex === 6) {
+        // Handle "none" logic or empty
+        if (Array.isArray(answer)) {
+             if (answer.includes('none')) {
+                 params.set('features', 'none');
+             } else if (answer.length > 0) {
+                 params.set('features', answer.join(','));
+             } else {
+                 params.set('features', 'none'); // Fallback
+             }
+        } else {
+             // Fallback if somehow single string passed
+             params.set('features', optionId);
+        }
+        console.log('Features:', params.get('features'));
+    }
+
+    // Q8 Logic: Aesthetic
+    if (stepIndex === 7) {
+        params.set('aesthetic', optionId);
+        console.log('Aesthetic:', optionId);
     }
 
     // Navigation
@@ -180,12 +236,10 @@ const FinderFlowContent = () => {
     setDesignStyle(prev => prev === 'card' ? 'button' : 'card');
   };
 
-  // Prevent hydration mismatch by rendering nothing until client side (or use Suspense properly)
   if (!isClient) return null;
 
   return (
     <div className="relative min-h-screen pb-12">
-      {/* Dev Toggle */}
       {stepIndex >= 0 && stepIndex < QUESTIONS.length && (
         <div className="fixed bottom-4 right-4 z-50">
            <Button
@@ -198,7 +252,6 @@ const FinderFlowContent = () => {
         </div>
       )}
 
-      {/* Status Bar - Placed at top like other pages */}
       <RetroStatusBar
         docId="FINDER_V1"
         rcPath={`RC://FINDER/${stepIndex === -1 ? 'START' : stepIndex === QUESTIONS.length ? 'RESULTS' : `Q${stepIndex + 1}`}`}
@@ -218,6 +271,7 @@ const FinderFlowContent = () => {
             totalSteps={QUESTIONS.length}
             isOptional={QUESTIONS[stepIndex].isOptional}
             isBonus={QUESTIONS[stepIndex].isBonus}
+            multiSelect={(QUESTIONS[stepIndex] as any).multiSelect}
           />
         )}
 
