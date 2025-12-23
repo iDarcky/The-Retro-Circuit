@@ -7,7 +7,6 @@ import { FinderLanding } from './FinderLanding';
 import { QuizQuestion } from './QuizQuestion';
 import { FinderResults } from './FinderResults';
 import Button from '../ui/Button';
-import { ProfileType } from '../../lib/finder/scoring';
 
 // Configuration
 const QUESTIONS = [

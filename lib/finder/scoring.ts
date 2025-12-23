@@ -181,6 +181,7 @@ export const calculateConsoleScore = (
         budgetBand: string | null;
         targetTier: string | null; // Used for exclusion logic if needed, but strict weights handled by power
         portabilityPref: string | null; // Could add specific bias if needed
+        formFactorPref?: string | null; // Q2
     }
 ): ScoreBreakdown => {
     // 1. Raw Scores (Normalized 0-1)
@@ -202,6 +203,28 @@ export const calculateConsoleScore = (
     let sPortability = portabilityRaw * weights.portability;
     let sEase = easeRaw * weights.ease;
     let sValue = valueRaw * weights.value;
+
+    // 3b. Form Factor Bonus (Q2)
+    // Add a bonus if the form factor matches preference
+    let formFactorBonus = 0;
+    if (inputs.formFactorPref && consoleItem.form_factor) {
+        // Normalize comparison
+        const pref = inputs.formFactorPref.toLowerCase();
+        const factor = consoleItem.form_factor.toLowerCase();
+
+        if (pref === 'surprise') {
+            // Neutral
+        } else if (factor === pref) {
+            formFactorBonus = 0.15; // Bonus for match
+        } else {
+            // Slight penalty for mismatch? Or just no bonus.
+            // User prompt implied "bonus" or +/- scoring.
+            // Previous code used +/- 5.
+            // Here 0.15 is significant (comparable to full weights).
+            // Let's use 0.10 to be safe.
+            formFactorBonus = 0.10;
+        }
+    }
 
     // 4. Gift Mode Logic (Q6 Override)
     // If Gift AND (Setup = Tinker/Power), reduce the implicit "bonus" of complex devices.
@@ -270,7 +293,7 @@ export const calculateConsoleScore = (
     // Add setup bonus to total
 
     // 5. Total Sum
-    const total = sPower + sLibrary + sPortability + sEase + sValue + setupBonus;
+    const total = sPower + sLibrary + sPortability + sEase + sValue + setupBonus + formFactorBonus;
 
     // 6. Badges
     const badges: string[] = [];

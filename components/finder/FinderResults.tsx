@@ -64,10 +64,13 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
     <div className="max-w-6xl mx-auto px-4 w-full animate-in zoom-in-95 duration-500">
       <div className="text-center mb-12">
         <h2 className="text-3xl md:text-5xl font-pixel text-white mb-4 drop-shadow-[0_0_10px_rgba(0,255,136,0.3)]">
-          Your Matches
+          {isGift ? 'GIFT-FRIENDLY PICKS_' : 'YOUR MATCHES_'}
         </h2>
         <p className="text-gray-400 font-mono text-lg">
-          Based on your preference for <span className="text-secondary font-bold uppercase">{formFactorPref || 'Any'}</span> form factor.
+          {isGift
+             ? <span className="italic">Easy setup, reliable, great guides</span>
+             : "Based on your choices, these devices offer the best balance of performance, budget, and features for you."
+          }
         </p>
       </div>
 
@@ -84,7 +87,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                 ) : (
                     <span className="font-pixel text-4xl text-gray-700">?</span>
                 )}
-                {/* Match Badge - Placeholder 95% for now as we aren't doing real scoring yet */}
+                {/* Match Badge */}
                 <div className="absolute top-4 right-4 bg-secondary text-bg-primary font-bold px-2 py-1 text-xs rounded shadow-[0_0_10px_rgba(0,255,157,0.5)]">
                   MATCH
                 </div>
@@ -101,6 +104,17 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                         </h3>
                     </div>
                 </div>
+
+                {/* Badges */}
+                {(console as any)._badges && (console as any)._badges.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                        {(console as any)._badges.map((badge: string) => (
+                            <span key={badge} className="text-[10px] bg-retro-cyan/10 text-retro-cyan border border-retro-cyan/20 px-1.5 py-0.5 rounded">
+                                {badge}
+                            </span>
+                        ))}
+                    </div>
+                )}
 
                 <div className="flex gap-2 mb-6 mt-2 flex-wrap">
                    {console.form_factor && (
