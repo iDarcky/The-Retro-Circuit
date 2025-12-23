@@ -16,6 +16,24 @@ export const CONSOLE_FORM_FIELDS = [
     { label: 'Form Factor (Handheld, Console, etc.)', key: 'form_factor', type: 'text', required: false },
     { label: 'Description', key: 'description', type: 'textarea', required: false },
     { label: 'Image URL', key: 'image_url', type: 'url', required: false },
+
+    { subHeader: 'Finder Traits' },
+    {
+        label: 'Setup Ease (1=Hard, 5=Easy)',
+        key: 'setup_ease_score',
+        type: 'number',
+        required: false,
+        width: 'half',
+        note: '1: Expert/Linux, 3: Guided, 5: Plug & Play'
+    },
+    {
+        label: 'Community Score (1-5)',
+        key: 'community_score',
+        type: 'number',
+        required: false,
+        width: 'half',
+        note: '1: None, 5: Massive/Active'
+    },
 ];
 
 export const VARIANT_FORM_GROUPS = [

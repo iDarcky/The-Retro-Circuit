@@ -229,4 +229,8 @@ export interface ConsoleDetails {
     has_cartridge_slot: boolean;
     supported_cartridge_types: string | null;
     chassis_features: string | null;
+
+    // Finder Traits (Now direct columns)
+    setup_ease_score?: number | null; // 1-5
+    community_score?: number | null; // 1-5
 }

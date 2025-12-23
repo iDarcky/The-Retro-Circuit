@@ -7,7 +7,6 @@ import { FinderLanding } from './FinderLanding';
 import { QuizQuestion } from './QuizQuestion';
 import { FinderResults } from './FinderResults';
 import Button from '../ui/Button';
-import { calculateWeights, ProfileType, calculateFormFactorScore } from '../../lib/finder/scoring';
 
 // Configuration
 const QUESTIONS = [
@@ -156,18 +155,11 @@ const FinderFlowContent = () => {
       } else {
         params.delete('tone_mode'); // Default
       }
-
-      const weights = calculateWeights(optionId as ProfileType);
-      console.log('Calculated Weights:', weights);
     }
 
     // Q2 Logic: Form Factor
     if (stepIndex === 1) {
         params.set('form_factor_pref', optionId);
-        if (optionId !== 'surprise') {
-            const score = calculateFormFactorScore('Horizontal', optionId);
-            console.log(`Score check for 'Horizontal' vs '${optionId}':`, score);
-        }
     }
 
     // Q3 Logic: Target Tier
@@ -263,7 +255,16 @@ const FinderFlowContent = () => {
         {stepIndex >= 0 && stepIndex < QUESTIONS.length && (
           <QuizQuestion
             question={QUESTIONS[stepIndex].question}
-            subtitle={QUESTIONS[stepIndex].subtitle}
+            subtitle={
+                // Dynamic Subtitle Logic for Gift Mode
+                (searchParams.get('tone_mode') === 'gift')
+                    ? (QUESTIONS[stepIndex].id === 'q3'
+                        ? "Choose what the person you’re gifting this to would enjoy playing most."
+                        : QUESTIONS[stepIndex].id === 'q6'
+                            ? "For gifts, we usually recommend simpler setup unless you know they like tinkering."
+                            : QUESTIONS[stepIndex].subtitle)
+                    : QUESTIONS[stepIndex].subtitle
+            }
             options={QUESTIONS[stepIndex].options as any}
             onAnswer={handleAnswer}
             designStyle={designStyle}

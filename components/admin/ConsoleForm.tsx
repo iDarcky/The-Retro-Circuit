@@ -72,7 +72,11 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
         }
 
         const consoleData: any = { manufacturer_id: formData.manufacturer_id };
-        CONSOLE_FORM_FIELDS.forEach(f => { if(formData[f.key] !== undefined) consoleData[f.key] = formData[f.key]; });
+        CONSOLE_FORM_FIELDS.forEach((f: any) => {
+            if(f.key && formData[f.key] !== undefined) {
+                consoleData[f.key] = formData[f.key];
+            }
+        });
         
         // Include new fields
         consoleData.device_category = formData.device_category;
@@ -145,7 +149,15 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                     {fieldErrors.manufacturer_id && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {fieldErrors.manufacturer_id}</div>}
                 </div>
 
-                {CONSOLE_FORM_FIELDS.map(field => {
+                {CONSOLE_FORM_FIELDS.map((field: any, idx) => {
+                     if (!field.key && field.subHeader) {
+                         return (
+                             <div key={`sub-${idx}`} className="col-span-1 md:col-span-2 mt-4 mb-2">
+                                 <h4 className="font-pixel text-secondary text-sm border-b border-gray-800 pb-1">{field.subHeader}</h4>
+                             </div>
+                         );
+                     }
+
                      if (field.key === 'slug') {
                         return (
                             <div key={field.key}>
