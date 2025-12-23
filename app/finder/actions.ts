@@ -126,7 +126,6 @@ export async function getFinderResults(
         _badges: scoreData.badges,
         _breakdown: scoreData,
         _relaxed_features: relaxedFeatures.length > 0 ? relaxedFeatures : undefined,
-        // Explicitly undefined to satisfy strict types if needed, though explicit array type handles it
         match_label: undefined,
         match_reason: undefined
       };
@@ -152,7 +151,9 @@ export async function getFinderResults(
             const overage = (price - max) / max;
             if (overage <= 0.10) return 0.95;
             if (overage <= 0.25) return 0.85;
-            return 0.70;
+            if (overage <= 0.50) return 0.70;
+            if (overage <= 1.0) return 0.50; // New strict penalty
+            return 0.10; // Killing penalty
         }
         return 1.0;
     };
