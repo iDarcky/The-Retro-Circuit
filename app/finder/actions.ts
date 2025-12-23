@@ -1,7 +1,7 @@
 'use server';
 
 import { fetchAllConsoles } from '../../lib/api/consoles';
-import { calculateFormFactorScore, calculateTierScore } from '../../lib/finder/scoring';
+import { calculateFormFactorScore, calculateTierScore, calculateBudgetScore } from '../../lib/finder/scoring';
 
 // We reuse the interface but map the existing domain type to it if needed
 export interface FinderResultConsole {
@@ -14,11 +14,13 @@ export interface FinderResultConsole {
     name: string;
   } | null;
   release_year?: number;
+  price?: number | null;
 }
 
 export async function getFinderResults(
   formFactorPref: string | null,
-  targetTier: string | null
+  targetTier: string | null,
+  budgetBand: string | null
 ): Promise<FinderResultConsole[]> {
   try {
     // Reuse the existing, proven API function that powers the main vault
@@ -39,7 +41,14 @@ export async function getFinderResults(
       // 2. Tier Score (Emulation Performance)
       const tierScore = calculateTierScore(consoleItem, targetTier);
 
-      const totalScore = ffScore + tierScore;
+      // 3. Budget Score
+      // fetchAllConsoles normalizes 'release_year' and 'specs' but maybe not 'price_launch_usd' on root.
+      // Usually it's on variants. fetchAllConsoles populates item.specs = defaultVariant.
+      // Let's look for price in specs (which is default variant) or fallback to 0.
+      const price = (consoleItem.specs as any)?.price_launch_usd;
+      const budgetScore = calculateBudgetScore(price, budgetBand);
+
+      const totalScore = ffScore + tierScore + budgetScore;
 
       // Map domain type to finder result type
       return {
@@ -50,6 +59,7 @@ export async function getFinderResults(
         form_factor: consoleItem.form_factor || null,
         manufacturer: consoleItem.manufacturer ? { name: consoleItem.manufacturer.name } : null,
         release_year: consoleItem.release_year,
+        price: price || null,
         _score: totalScore
       };
     });

@@ -46,10 +46,22 @@ const QUESTIONS = [
       { id: 'modern', label: 'Everything modern (PS3, Switch, PC games)', description: 'Think: Breath of the Wild, The Last of Us' },
     ]
   },
-  // Placeholders Q4-Q6
-  ...Array.from({ length: 3 }).map((_, i) => ({
-    id: `q${i + 4}`,
-    question: `Question ${i + 4}`,
+  {
+    id: 'q4',
+    question: "What’s your budget?",
+    subtitle: "We’ll aim to stay inside your range. If your performance target needs more power, we’ll show the closest option and explain why.",
+    options: [
+      { id: 'b_under_60', label: 'Budget-friendly (Under $60)' },
+      { id: 'b_60_120', label: 'Sweet spot ($60–$120)' },
+      { id: 'b_120_180', label: 'Mid-range ($120–$180)' },
+      { id: 'b_180_300', label: 'High-end ($180–$300)' },
+      { id: 'b_300_plus', label: 'No budget limit ($300+)' },
+    ]
+  },
+  // Placeholders Q5-Q6
+  ...Array.from({ length: 2 }).map((_, i) => ({
+    id: `q${i + 5}`,
+    question: `Question ${i + 5}`,
     subtitle: "_Placeholder subtitle text_",
     options: [
       { id: 'a', label: 'Option A', description: 'Description for option A' },
@@ -142,6 +154,12 @@ const FinderFlowContent = () => {
     if (stepIndex === 2) {
         params.set('target_tier', optionId);
         console.log('Target Tier:', optionId);
+    }
+
+    // Q4 Logic: Budget
+    if (stepIndex === 3) {
+        params.set('budget_band', optionId);
+        console.log('Budget Band:', optionId);
     }
 
     // Navigation

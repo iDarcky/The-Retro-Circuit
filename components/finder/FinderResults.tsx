@@ -14,6 +14,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
   const searchParams = useSearchParams();
   const formFactorPref = searchParams.get('form_factor_pref');
   const targetTier = searchParams.get('target_tier');
+  const budgetBand = searchParams.get('budget_band');
 
   const [results, setResults] = useState<FinderResultConsole[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +22,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
   useEffect(() => {
     async function fetchResults() {
       try {
-        const data = await getFinderResults(formFactorPref, targetTier);
+        const data = await getFinderResults(formFactorPref, targetTier, budgetBand);
         setResults(data);
       } catch (err) {
         console.error('Failed to fetch results', err);
@@ -30,7 +31,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
       }
     }
     fetchResults();
-  }, [formFactorPref, targetTier]);
+  }, [formFactorPref, targetTier, budgetBand]);
 
   if (loading) {
     return (
@@ -106,6 +107,11 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                    {console.release_year && (
                        <span className="text-[10px] border border-white/10 bg-white/5 px-2 py-1 rounded text-gray-300">
                            {console.release_year}
+                       </span>
+                   )}
+                   {console.price && (
+                       <span className="text-[10px] border border-secondary/20 bg-secondary/10 px-2 py-1 rounded text-secondary font-bold">
+                           ${console.price}
                        </span>
                    )}
                 </div>

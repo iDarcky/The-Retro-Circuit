@@ -84,26 +84,13 @@ export const calculateTierScore = (consoleItem: ConsoleDetails, targetTier: stri
 
     const variants = consoleItem.variants || [];
 
-    // Safety: If no variants, we can't judge emulation, but we shouldn't crash.
-    // However, user said "default to FAIL".
     if (variants.length === 0) return -100;
-
-    // Check if ANY variant passes the tier requirements.
-    // We calculate a score for each variant, then take the best one.
-    // If best variant fails -> -100.
-    // If best variant passes -> +10 (or bonus).
 
     let bestVariantScore = -100;
 
     for (const variant of variants) {
         let score = -100; // Default fail
 
-        // Handle "emulation_profiles" being an array or object depending on fetch
-        // PostgREST usually returns array for one-to-many, but if 1:1 it might be obj.
-        // Based on types, it's EmulationProfile | null.
-        // BUT wait, types say `emulation_profile` (singular) in `ConsoleVariant`,
-        // but `emulation_profiles` (plural) in fetch.
-        // We'll handle it dynamically.
         const rawProfile = (variant as any).emulation_profiles;
         const profile = Array.isArray(rawProfile) ? rawProfile[0] : rawProfile;
 
@@ -112,9 +99,6 @@ export const calculateTierScore = (consoleItem: ConsoleDetails, targetTier: stri
 
         switch (targetTier) {
             case '8bit': // 16-bit era
-                // Anchors: snes_state, gba_state.
-                // "Reality: almost everything passes; don’t over-filter here."
-                // Pass if ANY anchor is good, or if it's PC.
                 if (isPC) {
                     score = 10;
                 } else if (profile) {
@@ -125,7 +109,6 @@ export const calculateTierScore = (consoleItem: ConsoleDetails, targetTier: stri
                 break;
 
             case '32bit': // PS1, N64, Dreamcast
-                // Rule: >= 2 of 3 pass
                 if (isPC) {
                     score = 10;
                 } else if (profile) {
@@ -139,7 +122,6 @@ export const calculateTierScore = (consoleItem: ConsoleDetails, targetTier: stri
                 break;
 
             case '2000s': // PSP, NDS
-                // Rule: >= 1 of 2 passes
                 if (isPC) {
                     score = 10;
                 } else if (profile) {
@@ -150,7 +132,6 @@ export const calculateTierScore = (consoleItem: ConsoleDetails, targetTier: stri
                 break;
 
             case '6thgen': // PS2, GC, Wii
-                // Rule: >= 2 of 3 pass
                 if (isPC) {
                     score = 10;
                 } else if (profile) {
@@ -173,14 +154,13 @@ export const calculateTierScore = (consoleItem: ConsoleDetails, targetTier: stri
                     // Rule: Switch OR PS3 passes (>= 1 of 2)
                     if (switchState || ps3) {
                         score = 10;
-                        // Stronger boost if both pass
                         if (switchState && ps3) score = 20;
                     }
                 }
                 break;
 
             default:
-                score = 0; // Unknown tier? No penalty.
+                score = 0;
         }
 
         if (score > bestVariantScore) {
@@ -189,4 +169,58 @@ export const calculateTierScore = (consoleItem: ConsoleDetails, targetTier: stri
     }
 
     return bestVariantScore;
+};
+
+// --- Q4 BUDGET LOGIC ---
+
+export const calculateBudgetScore = (price: number | undefined | null, band: string | null): number => {
+    // If no band selected, neutral
+    if (!band) return 0;
+
+    // If price is missing, slight penalty? Or neutral?
+    // User logic implies filtering/ranking. Missing price is hard to judge.
+    // Let's give it -10 so it falls below priced items that match range.
+    if (price === undefined || price === null) return -10;
+
+    // Define Ranges
+    let min = 0;
+    let max = 0;
+    let noLimit = false;
+
+    switch (band) {
+        case 'b_under_60': max = 60; break;
+        case 'b_60_120': min = 60; max = 120; break;
+        case 'b_120_180': min = 120; max = 180; break;
+        case 'b_180_300': min = 180; max = 300; break;
+        case 'b_300_plus': min = 300; noLimit = true; break;
+        default: return 0;
+    }
+
+    // Logic:
+    // In Range -> +10
+    // Cheaper -> +5
+    // Over Budget -> -20
+
+    if (noLimit) {
+        // If 300+, anything > 300 is In Range (+10).
+        // What about < 300? Is it "Cheaper"? Yes.
+        if (price > 300) return 10;
+        return 5;
+    }
+
+    if (price > min && price <= max) {
+        return 10;
+    }
+
+    // "Under 60" special case: min=0
+    if (band === 'b_under_60' && price <= 60) {
+        return 10;
+    }
+
+    if (price <= min) {
+        return 5;
+    }
+
+    // If we are here, price > max (Over Budget)
+    return -20;
 };
