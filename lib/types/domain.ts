@@ -230,9 +230,7 @@ export interface ConsoleDetails {
     supported_cartridge_types: string | null;
     chassis_features: string | null;
 
-    // Finder Traits (Joined from console_finder_traits)
-    finder_traits?: {
-        setup_ease_score: number | null; // 1-5
-        community_score: number | null; // 1-5
-    } | null;
+    // Finder Traits (Now direct columns)
+    setup_ease_score?: number | null; // 1-5
+    community_score?: number | null; // 1-5
 }

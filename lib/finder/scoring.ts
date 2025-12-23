@@ -134,7 +134,8 @@ export const calculatePortabilityScore = (consoleItem: ConsoleDetails): number =
 };
 
 export const calculateEaseScore = (consoleItem: ConsoleDetails): number => {
-    const score = consoleItem.finder_traits?.setup_ease_score;
+    // Now on root object
+    const score = consoleItem.setup_ease_score;
     if (!score) return 0.5; // Neutral default if missing
     // 1-5 -> 0-1
     return normalize(score, 1, 5);
