@@ -3,13 +3,13 @@ import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant } from
 
 export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
     try {
-        // The 'Vacuum' Strategy: Fetch everything including nested variants
+        // The 'Vacuum' Strategy: Fetch everything including nested variants and finder traits (now on root)
         const { data, error } = await supabase
             .from('consoles')
             .select(`
                 *,
                 manufacturer:manufacturer(*),
-                variants:console_variants(*)
+                variants:console_variants(*, emulation_profiles(*))
             `)
             .order('name', { ascending: true });
 
@@ -30,6 +30,7 @@ export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
             } else {
                 item.specs = {};
             }
+
             return item;
         }) as ConsoleDetails[];
 
