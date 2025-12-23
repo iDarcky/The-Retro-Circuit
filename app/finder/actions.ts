@@ -40,7 +40,7 @@ export async function getFinderResults(
         budgetBand: searchParams.budget_band || null,
         targetTier: searchParams.target_tier || null,
         portabilityPref: searchParams.portability || null,
-        // Features could be passed if we had a filter for them
+        formFactorPref: searchParams.form_factor_pref || null,
     };
 
     // Calculate Scores
