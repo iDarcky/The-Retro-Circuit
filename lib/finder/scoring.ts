@@ -312,8 +312,12 @@ export const calculateConsoleScore = (
                 budgetMultiplier = 0.95;
             } else if (overage <= 0.25) {
                 budgetMultiplier = 0.85;
-            } else {
+            } else if (overage <= 0.50) {
                 budgetMultiplier = 0.70;
+            } else if (overage <= 1.0) {
+                budgetMultiplier = 0.50;
+            } else {
+                budgetMultiplier = 0.10;
             }
         }
     }
@@ -353,7 +357,7 @@ export const calculateConsoleScore = (
 
         if (pref === 'surprise') {
         } else if (factor === pref) {
-            formFactorBonus = 0.03;
+            formFactorBonus = 0.10;
         }
     }
 

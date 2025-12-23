@@ -152,7 +152,7 @@ export async function getFinderResults(
             if (overage <= 0.10) return 0.95;
             if (overage <= 0.25) return 0.85;
             if (overage <= 0.50) return 0.70;
-            if (overage <= 1.0) return 0.50; // New strict penalty
+            if (overage <= 1.0) return 0.50;
             return 0.10; // Killing penalty
         }
         return 1.0;
