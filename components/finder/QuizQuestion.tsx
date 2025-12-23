@@ -186,7 +186,6 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
       <div className="flex justify-center">
          <Button
             variant="primary"
-            size="lg"
             onClick={handleNext}
             disabled={isNextDisabled}
             className={clsx(
