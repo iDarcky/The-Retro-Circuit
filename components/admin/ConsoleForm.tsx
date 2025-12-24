@@ -196,7 +196,7 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                                 <option value="emulation">Emulation Handheld</option>
                                 <option value="pc_gaming">PC Gaming Handheld</option>
                                 <option value="fpga">FPGA Handheld</option>
-                                <option value="legacy">Legacy Console</option>
+                                <option value="legacy">Original Hardware</option>
                             </select>
                         </div>
                         <AdminInput field={{ key: 'chassis_features', label: 'Special Chassis Features', placeholder: 'e.g., Dual Screen, Swivel' }} value={formData.chassis_features} onChange={handleInputChange} />

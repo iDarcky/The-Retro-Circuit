@@ -30,12 +30,12 @@ export const METRICS: ComparisonMetric[] = [
     { label: 'Aspect Ratio', key: 'aspect_ratio', type: 'string' },
     
     // --- Secondary Display ---
-    { label: '2nd Screen Size', key: 'second_screen_size_inch', type: 'number', unit: '\"' },
+    { label: '2nd Screen Size', key: 'second_screen_size', type: 'number', unit: '"' },
     { label: '2nd Screen Touch', key: 'second_screen_touch', type: 'boolean' },
     { label: '2nd Screen PPI', key: 'second_screen_ppi', type: 'number', unit: 'PPI' },
     { label: '2nd Screen Aspect Ratio', key: 'second_screen_aspect_ratio', type: 'string' },
-    { label: '2nd Screen Refresh Rate', key: 'second_screen_refresh_rate_hz', type: 'number', unit: 'Hz' },
-    { label: '2nd Screen Brightness', key: 'second_screen_brightness_nits', type: 'number', unit: 'nits' },
+    { label: '2nd Screen Refresh Rate', key: 'second_screen_refresh_rate', type: 'number', unit: 'Hz' },
+    { label: '2nd Screen Brightness', key: 'second_screen_nits', type: 'number', unit: 'nits' },
 
     // --- PROCESSING ---
     { label: 'CPU Model', key: 'cpu_model', type: 'string' },
@@ -43,7 +43,7 @@ export const METRICS: ComparisonMetric[] = [
     { label: 'Process Node', key: 'cpu_process_node', type: 'string' },
     { label: 'CPU Cores', key: 'cpu_cores', type: 'number' },
     { label: 'CPU Threads', key: 'cpu_threads', type: 'number' },
-    { label: 'CPU Clock', key: 'cpu_clock_mhz', type: 'number', unit: ' MHz' },
+    { label: 'CPU Clock (Max)', key: 'cpu_clock_max_mhz', type: 'number', unit: ' MHz' },
     
     { label: 'GPU Model', key: 'gpu_model', type: 'string' },
     { label: 'GPU Arch', key: 'gpu_architecture', type: 'string' },
