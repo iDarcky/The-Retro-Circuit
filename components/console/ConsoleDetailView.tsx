@@ -229,6 +229,9 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                             <div className="text-white font-mono text-sm">{currentYear || 'TBA'}</div>
                         </div>
                     </div>
+
+                    {/* EMULATION PERFORMANCE GRID (MOVED TO LEFT COLUMN) */}
+                    <PlayabilityMatrix profile={mergedSpecs.emulation_profile || (mergedSpecs as any).emulation_profiles} />
                 </div>
 
                 {/* RIGHT COLUMN: TECHNICAL SPECS (lg:col-span-8) */}
@@ -253,9 +256,6 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                             ))}
                         </div>
                     )}
-
-                    {/* EMULATION PERFORMANCE GRID */}
-                    <PlayabilityMatrix profile={mergedSpecs.emulation_profile || (mergedSpecs as any).emulation_profiles} />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         

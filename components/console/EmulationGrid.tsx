@@ -103,8 +103,16 @@ const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) 
         return 'bg-gray-800 text-gray-500 border-gray-700';
     };
 
-    // Filter tiers that have at least one system with data (or N/A)
-    // Actually, we want to show all tiers usually, or at least calculate scores.
+    // Filter out completely empty matrices (if no data at all)
+    // (Checked but logic is handled by hiding individual tiers, leaving this for future use if needed)
+    // const hasAnyProfileData = SYSTEM_TIERS.some(tier =>
+    //    tier.systems.some(sys => {
+    //        const status = (profile as any)[sys.key];
+    //        return status && status !== 'N/A';
+    //    })
+    // );
+    // But user requirement #2 says "If a list is empty, don't show it".
+    // I interpret this as: hide individual Tiers if they have NO data.
 
     return (
         <div className="bg-bg-primary border border-border-normal mb-6 relative overflow-hidden animate-fadeIn">
@@ -123,22 +131,27 @@ const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) 
                     // Calculate Average for this Tier
                     let totalScore = 0;
                     let count = 0;
-                    let hasAnyData = false;
+                    let activeSystems: { key: string, label: string, status: string }[] = [];
 
                     tier.systems.forEach(sys => {
                         const status = (profile as any)[sys.key];
-                        if (status) {
-                            hasAnyData = true;
+
+                        // REQUIREMENT: "If a list is empty, don't show it... not even a key from inside"
+                        // STRICT Interpret: If status is 'N/A', it counts as empty/untested, so hide it.
+                        // Only show systems with a valid rating (Unplayable to Perfect).
+
+                        if (status && status !== 'N/A') {
+                            activeSystems.push({ ...sys, status });
                             const score = SCORE_MAP[status] || 0;
-                            if (score > 0) { // Ignore N/A (0) for average
+                            if (score > 0) { // Ignore N/A (0) for average (redundant check now but safe)
                                 totalScore += score;
                                 count++;
                             }
                         }
                     });
 
-                    // If absolutely no data for this tier (all undefined), maybe skip it?
-                    // Or treat as Untested.
+                    // If no active systems, hide the entire Tier
+                    if (activeSystems.length === 0) return null;
 
                     const average = count > 0 ? totalScore / count : 0;
                     const badge = getAverageBadge(average);
@@ -151,25 +164,20 @@ const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) 
                                 className="w-full flex justify-between items-center px-4 py-3 hover:bg-white/5 transition-colors"
                             >
                                 <span className="font-mono text-xs text-gray-300 uppercase tracking-wider">{tier.title}</span>
-                                <div className={`px-2 py-0.5 border text-[10px] font-pixel ${hasAnyData ? badge.color : 'text-gray-600 border-gray-800'}`}>
-                                    {hasAnyData ? badge.label : 'NO DATA'}
+                                <div className={`px-2 py-0.5 border text-[10px] font-pixel ${badge.color}`}>
+                                    {badge.label}
                                 </div>
                             </button>
 
                             {isOpen && (
                                 <div className="p-4 border-t border-white/10 bg-black/40 animate-fadeIn">
                                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                                        {tier.systems.map((sys) => {
-                                            const status = (profile as any)[sys.key] || 'N/A';
-                                            // Only render if it exists or we want to show N/A slots
-                                            // User said "show every console", so we show N/A too.
-                                            return (
-                                                <div key={sys.key} className={`border px-3 py-2 flex flex-col items-center justify-center text-center transition-all hover:brightness-110 ${getStatusStyle(status)}`}>
-                                                    <div className="text-[9px] font-mono uppercase opacity-70 mb-1">{sys.label}</div>
-                                                    <div className="font-pixel text-[9px] uppercase tracking-wider">{status}</div>
-                                                </div>
-                                            );
-                                        })}
+                                        {activeSystems.map((sys) => (
+                                            <div key={sys.key} className={`border px-3 py-2 flex flex-col items-center justify-center text-center transition-all hover:brightness-110 ${getStatusStyle(sys.status)}`}>
+                                                <div className="text-[9px] font-mono uppercase opacity-70 mb-1">{sys.label}</div>
+                                                <div className="font-pixel text-[9px] uppercase tracking-wider">{sys.status}</div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             )}

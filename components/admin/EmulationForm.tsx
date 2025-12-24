@@ -32,22 +32,6 @@ const SYSTEM_TIERS = [
             { key: 'n64_state', label: 'Nintendo 64' },
             { key: 'saturn_state', label: 'Sega Saturn' },
             { key: 'nds_state', label: 'Nintendo DS' },
-            // User requested re-order: Dreamcast moved from legacy location if needed,
-            // but checked user list: "PlayStation, Nintendo 64, Sega Saturn, Nintendo DS"
-            // Wait, Dreamcast is missing from User's Tier 2 list in the prompt text!
-            // Prompt said:
-            // Tier 2: PS, N64, Sega Saturn, NDS.
-            // Tier 3: PSP, 3DS, PS Vita.
-            // Tier 4: PS2, GameCube, Xbox.
-            // Tier 5: Wii, Wii U, PS3, 360, Switch, PC.
-            // Dreamcast is MISSING in the user's specific text list.
-            // HOWEVER, Dreamcast exists in the DB. I should probably leave it in Tier 2 or ask?
-            // "Add and reorder consoles in the admin panel like the tier bellow."
-            // I will strictly follow the list. If Dreamcast is not in the list, where does it go?
-            // Usually Dreamcast is with PS2/GC (Tier 4) or N64 (Tier 2).
-            // I will add it to Tier 2 as it's closest to Early 3D/High-End.
-            // Actually, looking at the previous file, Dreamcast was in 32/64 bit.
-            // I will append it to Tier 2 for now to avoid data loss in UI, but keep it at end.
             { key: 'dreamcast_state', label: 'Dreamcast' }
         ]
     },
