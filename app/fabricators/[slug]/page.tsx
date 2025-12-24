@@ -7,18 +7,11 @@ import AdminEditTrigger from '../../../components/admin/AdminEditTrigger';
 import Button from '../../../components/ui/Button';
 import RetroStatusBar from '../../../components/ui/RetroStatusBar';
 import { getDocVersion } from '../../../lib/utils/doc-version';
+import { ensureHighContrast, hexToRgb } from '../../../lib/utils/colors';
 
 type Props = {
   params: Promise<{ slug: string }>
 };
-
-// Helper: Convert Hex to RGB for Tailwind opacity modifiers
-function hexToRgb(hex: string): string {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result
-        ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`
-        : '0, 255, 157'; // Default Secondary Green
-}
 
 export async function generateMetadata(props: Props) {
     const params = await props.params;
@@ -127,10 +120,12 @@ export default async function FabricatorDetailPage(props: Props) {
     };
 
     const brandColor = profile.brand_color || staticHexMap[profile.name] || '#00ff9d'; // Default to Secondary
+    const readableText = ensureHighContrast(brandColor);
     const brandRgb = hexToRgb(brandColor);
 
     const cssVars = {
         '--brand-color': brandColor,
+        '--brand-text': readableText,
         '--brand-rgb': brandRgb,
     } as React.CSSProperties;
 
@@ -154,7 +149,7 @@ export default async function FabricatorDetailPage(props: Props) {
                              <div className="font-mono text-xs text-gray-500">
                                 <Link href="/" className="hover:text-white">HOME</Link> &gt; <Link href="/console" className="hover:text-white">FABRICATORS</Link> &gt; {profile.name.toUpperCase()}
                              </div>
-                             <div className={`font-mono text-xs border px-2 py-0.5 border-[var(--brand-color)] text-[var(--brand-color)]`}>CONFIDENTIAL</div>
+                             <div className={`font-mono text-xs border px-2 py-0.5 border-[var(--brand-color)] text-[var(--brand-text)]`}>CONFIDENTIAL</div>
                         </div>
                         
                         <div className="flex flex-wrap items-center gap-4 mt-4">
@@ -164,7 +159,7 @@ export default async function FabricatorDetailPage(props: Props) {
                                 </div>
                             )}
                             <h1
-                                className={`text-3xl sm:text-4xl md:text-6xl font-pixel opacity-90 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] break-words leading-tight text-[var(--brand-color)]`}
+                                className={`text-3xl sm:text-4xl md:text-6xl font-pixel opacity-90 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] break-words leading-tight text-[var(--brand-text)]`}
                             >
                                 {profile.name}
                             </h1>
@@ -202,7 +197,7 @@ export default async function FabricatorDetailPage(props: Props) {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="md:col-span-2">
-                        <h3 className={`font-pixel text-lg mb-4 text-[var(--brand-color)]`}>CORPORATE HISTORY</h3>
+                        <h3 className={`font-pixel text-lg mb-4 text-[var(--brand-text)]`}>CORPORATE HISTORY</h3>
                         <p className="font-mono text-gray-300 text-sm md:text-base leading-relaxed border-l-2 border-gray-700 pl-4 whitespace-pre-line">
                             {profile.description}
                         </p>
@@ -213,7 +208,7 @@ export default async function FabricatorDetailPage(props: Props) {
                             <h4 className="font-pixel text-xs text-gray-500 mb-4 border-b border-gray-800 pb-2">KEY FRANCHISES</h4>
                             <div className="flex flex-wrap gap-2">
                                 {(profile.key_franchises || "").split(',').map((f: string) => (
-                                    <span key={f.trim()} className={`font-mono text-xs border px-2 py-1 bg-black/50 border-[var(--brand-color)] text-[var(--brand-color)]`}>
+                                    <span key={f.trim()} className={`font-mono text-xs border px-2 py-1 bg-black/50 border-[var(--brand-color)] text-[var(--brand-text)]`}>
                                         {f.trim()}
                                     </span>
                                 ))}
@@ -226,7 +221,7 @@ export default async function FabricatorDetailPage(props: Props) {
             {/* Hardware Grid */}
             <div className="mb-12">
                 <div className="flex items-center gap-4 mb-6">
-                    <h3 className={`font-pixel text-xl md:text-2xl text-[var(--brand-color)]`}>KNOWN HARDWARE UNITS</h3>
+                    <h3 className={`font-pixel text-xl md:text-2xl text-[var(--brand-text)]`}>KNOWN HARDWARE UNITS</h3>
                     <div className="flex-1 h-px bg-gray-800"></div>
                 </div>
                 
@@ -250,7 +245,7 @@ export default async function FabricatorDetailPage(props: Props) {
                                         <span>{console.release_year || 'TBA'}</span>
                                         <span>{console.generation}</span>
                                     </div>
-                                    <h3 className="font-pixel text-xs text-white group-hover:text-[var(--brand-color)] truncate">
+                                    <h3 className="font-pixel text-xs text-white group-hover:text-[var(--brand-text)] truncate">
                                         {console.name}
                                     </h3>
                                 </div>
