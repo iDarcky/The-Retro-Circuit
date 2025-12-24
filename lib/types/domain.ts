@@ -75,30 +75,39 @@ export interface EmulationProfile {
   id: string;
   variant_id: string;
 
-  // New 8/16-bit
+  // Tier 1: Classic 2D
   nes_state?: string;
   snes_state?: string;
+  master_system?: string; // New
   genesis_state?: string;
   gb_state?: string;
   gbc_state?: string;
   gba_state?: string;
 
-  // Existing
+  // Tier 2: Early 3D
   ps1_state?: string;
-  ps2_state: 'Perfect' | 'Great' | 'Playable' | 'Struggles' | 'Unplayable' | 'N/A';
-  psp_state?: string;
-  gamecube_state: string;
-  wii_state: string;
-  x3ds_state: string;
-  switch_state: string;
-  vita_state: string;
-  ps3_state?: string;
-  dreamcast_state?: string;
-  saturn_state?: string;
-
-  // New 32/64-bit
   n64_state?: string;
+  saturn_state?: string;
   nds_state?: string;
+  dreamcast_state?: string; // Often categorized here or next tier, user put it in Early 3D
+
+  // Tier 3: Advanced Handhelds
+  psp_state?: string;
+  x3ds_state: string;
+  vita_state: string;
+
+  // Tier 4: Classic Home
+  ps2_state: string;
+  gamecube_state: string;
+  xbox?: string; // New
+
+  // Tier 5: Modern & HD
+  wii_state: string;
+  wii_u?: string; // New
+  ps3_state?: string;
+  xbox_360?: string; // New
+  switch_state: string;
+  // pc_games intentionally omitted from DB schema as per user instruction
 
   summary_text: string;
 
