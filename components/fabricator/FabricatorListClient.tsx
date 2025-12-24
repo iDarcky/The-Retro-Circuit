@@ -6,7 +6,7 @@ import { Manufacturer } from '../../lib/types';
 import RetroStatusBar from '../ui/RetroStatusBar';
 import { hexToRgb } from '../../lib/utils/colors';
 
-type ListMode = 'accent' | 'neon' | 'slab' | 'border' | 'sticker';
+type ListMode = 'accent' | 'neon' | 'slab' | 'border' | 'sticker' | 'hybrid';
 type LogoMode = 'original' | 'white' | 'coin' | 'glow';
 
 interface Props {
@@ -50,6 +50,16 @@ export default function FabricatorListClient({ manufacturers }: Props) {
                     circleText: circleTextBase,
                     button: `mt-auto font-mono text-xs border border-dashed border-[var(--brand-color)] px-6 py-2 text-gray-400 group-hover:text-white group-hover:border-solid group-hover:bg-[var(--brand-color)] group-hover:text-black transition-all`,
                     corner: `absolute top-0 right-0 p-2 border-b border-l border-[var(--brand-color)] bg-black/50`
+                };
+
+            case 'hybrid': // Green Box + Brand Circle + White Text
+                return {
+                    container: `${base} bg-bg-primary border-2 border-secondary hover:bg-secondary/5 hover:shadow-[0_0_25px_rgba(0,255,136,0.2)]`,
+                    text: `font-pixel text-2xl text-white mb-8 text-center uppercase tracking-widest transition-colors`,
+                    circle: circleBase, // Keeps the brand color from base
+                    circleText: circleTextBase,
+                    button: `mt-auto font-mono text-xs border border-dashed border-secondary px-6 py-2 text-gray-400 group-hover:text-secondary group-hover:border-solid group-hover:bg-secondary/10 transition-all`,
+                    corner: `absolute top-0 right-0 p-2 border-b border-l border-secondary bg-black/50 text-secondary`
                 };
 
             case 'neon': // Glowing Text + Dark Card
@@ -120,7 +130,7 @@ export default function FabricatorListClient({ manufacturers }: Props) {
                 <div className="bg-black/90 border border-secondary p-4 shadow-[0_0_20px_rgba(0,0,0,0.8)] rounded-lg max-w-[200px] pointer-events-auto">
                      <h4 className="font-pixel text-[10px] text-secondary mb-2 border-b border-gray-800 pb-1">CARD_STYLE</h4>
                      <div className="grid grid-cols-2 gap-2 mb-4">
-                        {(['accent', 'neon', 'slab', 'border', 'sticker'] as ListMode[]).map(m => (
+                        {(['accent', 'hybrid', 'neon', 'slab', 'border', 'sticker'] as ListMode[]).map(m => (
                             <button
                                 key={m}
                                 onClick={() => setMode(m)}
@@ -195,7 +205,7 @@ export default function FabricatorListClient({ manufacturers }: Props) {
 
                                 {/* Avatar Circle */}
                                 <div className={styles.circle}>
-                                    {mode === 'accent' && logoMode !== 'coin' && <div className={`absolute inset-0 rounded-full border-2 border-[var(--brand-color)] opacity-50 animate-pulse`}></div>}
+                                    {(mode === 'accent' || mode === 'hybrid') && logoMode !== 'coin' && <div className={`absolute inset-0 rounded-full border-2 border-[var(--brand-color)] opacity-50 animate-pulse`}></div>}
                                     {brand.image_url ? (
                                         <div className="w-full h-full rounded-full overflow-hidden p-4 flex items-center justify-center relative z-10">
                                             <img
