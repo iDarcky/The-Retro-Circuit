@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { fetchManufacturers } from '../../lib/api';
 import RetroStatusBar from '../../components/ui/RetroStatusBar';
-import { ensureHighContrast, hexToRgb } from '../../lib/utils/colors';
+import { hexToRgb } from '../../lib/utils/colors';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,14 +43,12 @@ export default async function FabricatorsPage() {
         {manufacturers.map((brand) => {
             const initial = brand.name.charAt(0).toUpperCase();
 
-            // Resolve Colors
+            // Resolve Colors - REVERTED TO RAW COLOR (No high contrast enforcement)
             const rawBrandColor = brand.brand_color || staticHexMap[brand.name] || '#00ff9d';
-            const readableText = ensureHighContrast(rawBrandColor);
             const brandRgb = hexToRgb(rawBrandColor);
 
             const cssVars = {
                 '--brand-color': rawBrandColor,
-                '--brand-text': readableText,
                 '--brand-rgb': brandRgb,
             } as React.CSSProperties;
 
@@ -69,16 +67,16 @@ export default async function FabricatorsPage() {
                     {/* Avatar Circle */}
                     <div className={`w-32 h-32 rounded-full border-4 border-[var(--brand-color)] flex items-center justify-center mb-8 shadow-[0_0_20px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform bg-black relative`}>
                         <div className={`absolute inset-0 rounded-full border-2 border-[var(--brand-color)] opacity-50 animate-pulse`}></div>
-                        <span className={`font-pixel text-6xl text-[var(--brand-text)] drop-shadow-[0_0_5px_var(--brand-color)]`}>{initial}</span>
+                        <span className={`font-pixel text-6xl text-[var(--brand-color)] drop-shadow-[0_0_5px_var(--brand-color)]`}>{initial}</span>
                     </div>
 
                     {/* Name */}
-                    <h3 className={`font-pixel text-2xl text-white mb-8 text-center uppercase tracking-widest group-hover:text-[var(--brand-text)] transition-colors`}>
+                    <h3 className={`font-pixel text-2xl text-white mb-8 text-center uppercase tracking-widest group-hover:text-[var(--brand-color)] transition-colors`}>
                         {brand.name}
                     </h3>
 
                     {/* Button */}
-                    <div className={`mt-auto font-mono text-xs border border-dashed border-[var(--brand-color)] px-6 py-2 text-gray-400 group-hover:text-[var(--brand-text)] group-hover:border-solid group-hover:bg-[rgba(var(--brand-rgb),0.2)] transition-all`}>
+                    <div className={`mt-auto font-mono text-xs border border-dashed border-[var(--brand-color)] px-6 py-2 text-gray-400 group-hover:text-[var(--brand-color)] group-hover:border-solid group-hover:bg-[rgba(var(--brand-rgb),0.2)] transition-all`}>
                         ACCESS FOLDER &gt;
                     </div>
                 </Link>
