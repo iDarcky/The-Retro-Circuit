@@ -7,6 +7,7 @@ import RetroStatusBar from '../ui/RetroStatusBar';
 import { hexToRgb } from '../../lib/utils/colors';
 
 type ListMode = 'accent' | 'neon' | 'slab' | 'border' | 'sticker';
+type LogoMode = 'original' | 'white' | 'coin' | 'glow';
 
 interface Props {
     manufacturers: Manufacturer[];
@@ -14,6 +15,7 @@ interface Props {
 
 export default function FabricatorListClient({ manufacturers }: Props) {
     const [mode, setMode] = useState<ListMode>('accent');
+    const [logoMode, setLogoMode] = useState<LogoMode>('original');
 
     // Map existing static themes to Hex for fallback consistency
     const staticHexMap: Record<string, string> = {
@@ -29,13 +31,23 @@ export default function FabricatorListClient({ manufacturers }: Props) {
     const getCardStyles = () => {
         const base = "group relative flex flex-col items-center justify-center transition-all duration-300 overflow-hidden min-h-[300px] cursor-pointer";
 
+        // Base Circle Style (can be overridden by LogoMode)
+        let circleBase = `w-32 h-32 rounded-full border-4 border-[var(--brand-color)] flex items-center justify-center mb-8 shadow-[0_0_20px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform bg-black relative`;
+        let circleTextBase = `font-pixel text-5xl text-white`; // Reduced from 6xl to 5xl
+
+        // Logo Mode Overrides for Circle/Text
+        if (logoMode === 'coin') {
+            circleBase = circleBase.replace('bg-black', 'bg-white');
+            circleTextBase = circleTextBase.replace('text-white', 'text-black');
+        }
+
         switch (mode) {
             case 'accent': // Hollow Card (White Text + Colored Border)
                 return {
                     container: `${base} bg-bg-primary border-2 border-[var(--brand-color)] hover:bg-[rgba(var(--brand-rgb),0.1)] hover:shadow-[0_0_25px_rgba(var(--brand-rgb),0.3)]`,
                     text: `font-pixel text-2xl text-white mb-8 text-center uppercase tracking-widest group-hover:text-white transition-colors`,
-                    circle: `w-32 h-32 rounded-full border-4 border-[var(--brand-color)] flex items-center justify-center mb-8 shadow-[0_0_20px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform bg-black relative`,
-                    circleText: `font-pixel text-6xl text-white`,
+                    circle: circleBase,
+                    circleText: circleTextBase,
                     button: `mt-auto font-mono text-xs border border-dashed border-[var(--brand-color)] px-6 py-2 text-gray-400 group-hover:text-white group-hover:border-solid group-hover:bg-[var(--brand-color)] group-hover:text-black transition-all`,
                     corner: `absolute top-0 right-0 p-2 border-b border-l border-[var(--brand-color)] bg-black/50`
                 };
@@ -44,8 +56,8 @@ export default function FabricatorListClient({ manufacturers }: Props) {
                 return {
                     container: `${base} bg-black border border-gray-800 hover:border-[var(--brand-color)] shadow-[inset_0_0_20px_rgba(0,0,0,1)] hover:shadow-[0_0_20px_rgba(var(--brand-rgb),0.4)]`,
                     text: `font-pixel text-2xl text-[var(--brand-color)] mb-8 text-center uppercase tracking-widest drop-shadow-[0_0_8px_var(--brand-color)] transition-all`,
-                    circle: `w-32 h-32 rounded-full border-2 border-[var(--brand-color)] flex items-center justify-center mb-8 bg-black/50 shadow-[0_0_15px_var(--brand-color)] group-hover:scale-110 transition-transform relative`,
-                    circleText: `font-pixel text-6xl text-[var(--brand-color)] drop-shadow-[0_0_10px_var(--brand-color)]`,
+                    circle: circleBase.replace('border-4', 'border-2').replace('bg-black', 'bg-black/50') + ' shadow-[0_0_15px_var(--brand-color)]',
+                    circleText: `font-pixel text-5xl text-[var(--brand-color)] drop-shadow-[0_0_10px_var(--brand-color)]`,
                     button: `mt-auto font-mono text-xs text-[var(--brand-color)] px-6 py-2 border border-[var(--brand-color)] hover:bg-[var(--brand-color)] hover:text-black transition-all shadow-[0_0_10px_rgba(var(--brand-rgb),0.4)]`,
                     corner: `absolute top-0 right-0 p-2 text-[var(--brand-color)] font-mono text-[10px]`
                 };
@@ -55,7 +67,7 @@ export default function FabricatorListClient({ manufacturers }: Props) {
                     container: `${base} bg-black border border-gray-800 hover:border-[var(--brand-color)] group`,
                     text: `font-pixel text-2xl text-white mb-8 text-center uppercase tracking-widest relative z-10 mt-8`,
                     circle: `w-full h-32 bg-[var(--brand-color)] absolute top-0 left-0 flex items-center justify-center mb-0 rounded-none shadow-lg`,
-                    circleText: `font-pixel text-6xl text-black mix-blend-multiply opacity-70`,
+                    circleText: `font-pixel text-6xl text-black mix-blend-multiply opacity-70`, // Keep slab text big
                     button: `mt-auto font-mono text-xs border border-white/20 px-6 py-2 text-gray-400 group-hover:text-white group-hover:border-white transition-all mb-8`,
                     corner: `hidden`
                 };
@@ -83,6 +95,19 @@ export default function FabricatorListClient({ manufacturers }: Props) {
         return {} as any;
     };
 
+    const getLogoStyle = () => {
+        switch (logoMode) {
+            case 'white':
+                return 'brightness-0 invert';
+            case 'glow':
+                return 'drop-shadow-[0_0_8px_var(--brand-color)]';
+            case 'coin':
+            case 'original':
+            default:
+                return 'drop-shadow-[0_0_2px_rgba(255,255,255,0.5)]'; // Default subtle lift
+        }
+    };
+
     return (
         <div className="w-full">
             <RetroStatusBar
@@ -91,10 +116,10 @@ export default function FabricatorListClient({ manufacturers }: Props) {
             />
 
             {/* DEBUGGER */}
-            <div className="fixed bottom-20 right-4 z-[9999] flex flex-col items-end gap-2">
-                <div className="bg-black/90 border border-secondary p-4 shadow-[0_0_20px_rgba(0,0,0,0.8)] rounded-lg max-w-[200px]">
-                     <h4 className="font-pixel text-[10px] text-secondary mb-2 border-b border-gray-800 pb-1">LIST_VISUALIZER</h4>
-                     <div className="grid grid-cols-2 gap-2">
+            <div className="fixed bottom-20 right-4 z-[9999] flex flex-col items-end gap-2 pointer-events-none">
+                <div className="bg-black/90 border border-secondary p-4 shadow-[0_0_20px_rgba(0,0,0,0.8)] rounded-lg max-w-[200px] pointer-events-auto">
+                     <h4 className="font-pixel text-[10px] text-secondary mb-2 border-b border-gray-800 pb-1">CARD_STYLE</h4>
+                     <div className="grid grid-cols-2 gap-2 mb-4">
                         {(['accent', 'neon', 'slab', 'border', 'sticker'] as ListMode[]).map(m => (
                             <button
                                 key={m}
@@ -102,6 +127,24 @@ export default function FabricatorListClient({ manufacturers }: Props) {
                                 className={`
                                     text-[9px] font-mono px-2 py-1 border text-left uppercase transition-all
                                     ${mode === m
+                                        ? 'bg-secondary text-black border-secondary font-bold'
+                                        : 'bg-transparent text-gray-400 border-gray-800 hover:border-gray-500 hover:text-white'}
+                                `}
+                            >
+                                {m}
+                            </button>
+                        ))}
+                     </div>
+
+                     <h4 className="font-pixel text-[10px] text-secondary mb-2 border-b border-gray-800 pb-1">LOGO_MODE</h4>
+                     <div className="grid grid-cols-2 gap-2">
+                        {(['original', 'white', 'coin', 'glow'] as LogoMode[]).map(m => (
+                             <button
+                                key={m}
+                                onClick={() => setLogoMode(m)}
+                                className={`
+                                    text-[9px] font-mono px-2 py-1 border text-left uppercase transition-all
+                                    ${logoMode === m
                                         ? 'bg-secondary text-black border-secondary font-bold'
                                         : 'bg-transparent text-gray-400 border-gray-800 hover:border-gray-500 hover:text-white'}
                                 `}
@@ -136,6 +179,8 @@ export default function FabricatorListClient({ manufacturers }: Props) {
                             '--brand-rgb': brandRgb,
                         } as React.CSSProperties;
 
+                        const logoClass = getLogoStyle();
+
                         return (
                             <Link
                                 href={`/fabricators/${brand.slug}`}
@@ -150,13 +195,13 @@ export default function FabricatorListClient({ manufacturers }: Props) {
 
                                 {/* Avatar Circle */}
                                 <div className={styles.circle}>
-                                    {mode === 'accent' && <div className={`absolute inset-0 rounded-full border-2 border-[var(--brand-color)] opacity-50 animate-pulse`}></div>}
+                                    {mode === 'accent' && logoMode !== 'coin' && <div className={`absolute inset-0 rounded-full border-2 border-[var(--brand-color)] opacity-50 animate-pulse`}></div>}
                                     {brand.image_url ? (
                                         <div className="w-full h-full rounded-full overflow-hidden p-4 flex items-center justify-center relative z-10">
                                             <img
                                                 src={brand.image_url}
                                                 alt={brand.name}
-                                                className="w-full h-full object-contain filter drop-shadow-[0_0_2px_rgba(255,255,255,0.5)]"
+                                                className={`w-full h-full object-contain filter transition-all duration-300 ${logoClass}`}
                                             />
                                         </div>
                                     ) : (
