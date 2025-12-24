@@ -151,7 +151,17 @@ export default function FabricatorListClient({ manufacturers }: Props) {
                                 {/* Avatar Circle */}
                                 <div className={styles.circle}>
                                     {mode === 'accent' && <div className={`absolute inset-0 rounded-full border-2 border-[var(--brand-color)] opacity-50 animate-pulse`}></div>}
-                                    <span className={styles.circleText}>{initial}</span>
+                                    {brand.image_url ? (
+                                        <div className="w-full h-full rounded-full overflow-hidden p-4 flex items-center justify-center relative z-10">
+                                            <img
+                                                src={brand.image_url}
+                                                alt={brand.name}
+                                                className="w-full h-full object-contain filter drop-shadow-[0_0_2px_rgba(255,255,255,0.5)]"
+                                            />
+                                        </div>
+                                    ) : (
+                                        <span className={styles.circleText}>{initial}</span>
+                                    )}
                                 </div>
 
                                 {/* Name */}
