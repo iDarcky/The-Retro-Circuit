@@ -11,32 +11,58 @@ interface EmulationFormProps {
     onSave?: () => void;
 }
 
-const SYSTEM_GROUPS = {
-    '8/16-Bit': [
-        { key: 'nes_state', label: 'NES' },
-        { key: 'snes_state', label: 'SNES' },
-        { key: 'genesis_state', label: 'Genesis/Mega Drive' },
-        { key: 'gb_state', label: 'Game Boy' },
-        { key: 'gbc_state', label: 'Game Boy Color' },
-        { key: 'gba_state', label: 'Game Boy Advance' },
-    ],
-    '32/64-Bit': [
-        { key: 'n64_state', label: 'Nintendo 64' },
-        { key: 'nds_state', label: 'Nintendo DS' },
-        { key: 'ps1_state', label: 'PlayStation 1' },
-        { key: 'saturn_state', label: 'Saturn' },
-        { key: 'dreamcast_state', label: 'Dreamcast' },
-    ],
-    'Modern & Handheld': [
-        { key: 'ps2_state', label: 'PlayStation 2' },
-        { key: 'psp_state', label: 'PSP' },
-        { key: 'gamecube_state', label: 'GameCube' },
-        { key: 'wii_state', label: 'Wii' },
-        { key: 'x3ds_state', label: 'Nintendo 3DS' },
-        { key: 'vita_state', label: 'PS Vita' },
-        { key: 'switch_state', label: 'Switch' },
-    ]
-};
+// User Defined Tiers
+const SYSTEM_TIERS = [
+    {
+        title: 'Tier 1: Classic 2D',
+        systems: [
+            { key: 'nes_state', label: 'NES' },
+            { key: 'snes_state', label: 'SNES' },
+            { key: 'master_system', label: 'Sega Master System' },
+            { key: 'genesis_state', label: 'Genesis / Mega Drive' },
+            { key: 'gb_state', label: 'Game Boy' },
+            { key: 'gbc_state', label: 'Game Boy Color' },
+            { key: 'gba_state', label: 'Game Boy Advance' },
+        ]
+    },
+    {
+        title: 'Tier 2: Early 3D',
+        systems: [
+            { key: 'ps1_state', label: 'PlayStation' },
+            { key: 'n64_state', label: 'Nintendo 64' },
+            { key: 'saturn_state', label: 'Sega Saturn' },
+            { key: 'nds_state', label: 'Nintendo DS' },
+            { key: 'dreamcast_state', label: 'Dreamcast' }
+        ]
+    },
+    {
+        title: 'Tier 3: Advanced Handhelds',
+        systems: [
+            { key: 'psp_state', label: 'PlayStation Portable' },
+            { key: 'x3ds_state', label: 'Nintendo 3DS' },
+            { key: 'vita_state', label: 'PlayStation Vita' },
+        ]
+    },
+    {
+        title: 'Tier 4: Classic Home Consoles',
+        systems: [
+            { key: 'ps2_state', label: 'PlayStation 2' },
+            { key: 'gamecube_state', label: 'GameCube' },
+            { key: 'xbox', label: 'Xbox' },
+        ]
+    },
+    {
+        title: 'Tier 5: Modern & HD Systems',
+        systems: [
+            { key: 'wii_state', label: 'Wii' },
+            { key: 'wii_u', label: 'Wii U' },
+            { key: 'ps3_state', label: 'PlayStation 3' },
+            { key: 'xbox_360', label: 'Xbox 360' },
+            { key: 'switch_state', label: 'Nintendo Switch' },
+            // PC Games intentionally omitted from UI/DB as per latest instruction "ignore pc_games"
+        ]
+    }
+];
 
 const RATINGS = ['N/A', 'Unplayable', 'Struggles', 'Playable', 'Great', 'Perfect'];
 
@@ -99,11 +125,11 @@ export const EmulationForm: FC<EmulationFormProps> = ({ variantId, onSave }) => 
         <div className="bg-black/80 border border-border-normal p-6 animate-fadeIn">
             {message && <div className={`mb-4 p-2 text-xs font-mono border ${message.includes('ERROR') ? 'border-accent text-accent' : 'border-secondary text-secondary'}`}>{message}</div>}
 
-            {Object.entries(SYSTEM_GROUPS).map(([group, systems]) => (
-                <div key={group} className="mb-8">
-                    <h4 className="font-pixel text-primary text-sm mb-4 border-b border-border-normal/50 pb-2">{group}</h4>
+            {SYSTEM_TIERS.map((tier) => (
+                <div key={tier.title} className="mb-8">
+                    <h4 className="font-pixel text-primary text-sm mb-4 border-b border-border-normal/50 pb-2">{tier.title}</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {systems.map((sys) => {
+                        {tier.systems.map((sys) => {
                             const currentValue = (profile as any)[sys.key] || 'N/A';
                             return (
                                 <div key={sys.key}>

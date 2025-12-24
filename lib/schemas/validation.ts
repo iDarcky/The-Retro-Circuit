@@ -34,6 +34,13 @@ export const ConsoleSchema = z.object({
     description: safeString,
     image_url: safeString,
     form_factor: safeString,
+
+    // Feature Flags & Config
+    device_category: safeString,
+    chassis_features: safeString,
+    has_cartridge_slot: safeBoolean,
+    supported_cartridge_types: safeString,
+
     // New Finder Traits
     setup_ease_score: safeNumber,
     community_score: safeNumber,
