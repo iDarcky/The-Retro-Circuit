@@ -26,7 +26,7 @@ interface Props {
 }
 
 export default function FabricatorDetailClient({ profile, consoles }: Props) {
-    const [mode, setMode] = useState<VisualizationMode>('neon');
+    const [mode] = useState<VisualizationMode>('accent');
 
     // Color Setup
     const staticHexMap: Record<string, string> = {
@@ -125,28 +125,7 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                 docId={`FABRICATOR_PROFILE_${profile.name.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase()}${getDocVersion(profile.slug)}`}
             />
 
-            {/* DEBUG / MODE SWITCHER */}
-            <div className="fixed bottom-20 right-4 z-[9999] flex flex-col items-end gap-2">
-                <div className="bg-black/90 border border-secondary p-4 shadow-[0_0_20px_rgba(0,0,0,0.8)] rounded-lg max-w-[200px]">
-                     <h4 className="font-pixel text-[10px] text-secondary mb-2 border-b border-gray-800 pb-1">VISUALIZER_MODE</h4>
-                     <div className="grid grid-cols-2 gap-2">
-                        {(['raw', 'neon', 'accent', 'pill', 'glass', 'glitch', 'gradient', 'stroke', 'high_contrast', 'underline'] as VisualizationMode[]).map(m => (
-                            <button
-                                key={m}
-                                onClick={() => setMode(m)}
-                                className={`
-                                    text-[9px] font-mono px-2 py-1 border text-left uppercase transition-all
-                                    ${mode === m
-                                        ? 'bg-secondary text-black border-secondary font-bold'
-                                        : 'bg-transparent text-gray-400 border-gray-800 hover:border-gray-500 hover:text-white'}
-                                `}
-                            >
-                                {m.replace('_', ' ')}
-                            </button>
-                        ))}
-                     </div>
-                </div>
-            </div>
+            {/* DEBUGGER REMOVED - LOCKED TO ACCENT MODE */}
 
             <div className="max-w-7xl mx-auto p-4">
                 {/* Header / Dossier */}
