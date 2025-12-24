@@ -132,7 +132,8 @@ export interface ConsoleVariant {
   cpu_process_node?: string;
   cpu_cores?: number;
   cpu_threads?: number;
-  cpu_clock_mhz?: number;
+  cpu_clock_max_mhz?: number;
+  cpu_clock_min_mhz?: number;
   
   gpu_model?: string;
   gpu_architecture?: string;
@@ -160,14 +161,14 @@ export interface ConsoleVariant {
   ppi?: number;
   touchscreen?: boolean;
 
-  second_screen_size_inch?: number;
+  second_screen_size?: number;
   second_screen_resolution_x?: number;
   second_screen_resolution_y?: number;
   second_screen_touch?: boolean;
   second_screen_ppi?: number;
   second_screen_aspect_ratio?: string;
-  second_screen_refresh_rate_hz?: number;
-  second_screen_brightness_nits?: number;
+  second_screen_refresh_rate?: number;
+  second_screen_nits?: number;
 
   battery_capacity_mah?: number;
   battery_capacity_wh?: number;
@@ -191,7 +192,7 @@ export interface ConsoleVariant {
   bluetooth_specs?: string;
   wifi_specs?: string;
   other_connectivity?: string;
-  cellular_connectivity?: boolean;
+  cellular_connectivity?: string;
   video_out?: string | null;
   haptics?: string;
   gyro?: boolean;
