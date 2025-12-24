@@ -155,9 +155,9 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                         <Link href={`/fabricators/${consoleData.manufacturer?.slug}`} className="hover:text-secondary transition-colors border-b border-transparent hover:border-secondary">
                             {consoleData.manufacturer?.name.toUpperCase()}
                         </Link>
-                        <span>//</span>
+                        <span>{'//'}</span>
                         <span className="text-accent">{currentYear || 'TBA'}</span>
-                        <span>//</span>
+                        <span>{'//'}</span>
                         <span>{consoleData.generation}</span>
                      </div>
                 </div>
@@ -271,7 +271,17 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                             <SpecField label="Process Node" value={mergedSpecs.cpu_process_node} />
                             <div className="grid grid-cols-2 gap-4">
                                 <SpecField label="Cores" value={mergedSpecs.cpu_cores} small />
-                                <SpecField label="Clock" value={mergedSpecs.cpu_clock_mhz} unit="MHz" small highlight />
+                                <SpecField
+                                    label="Clock"
+                                    value={
+                                        mergedSpecs.cpu_clock_min_mhz && mergedSpecs.cpu_clock_max_mhz && mergedSpecs.cpu_clock_min_mhz !== mergedSpecs.cpu_clock_max_mhz
+                                        ? `${mergedSpecs.cpu_clock_min_mhz} - ${mergedSpecs.cpu_clock_max_mhz}`
+                                        : mergedSpecs.cpu_clock_max_mhz
+                                    }
+                                    unit="MHz"
+                                    small
+                                    highlight
+                                />
                             </div>
                             
                             <div className="mt-4 pt-4 border-t border-white/5">
@@ -306,7 +316,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                         {/* 3. DISPLAY */}
                         <SpecCard title="DISPLAY">
                             <div className="flex justify-between items-end mb-2">
-                                <span className="font-mono text-2xl text-white">{mergedSpecs.screen_size_inch}"</span>
+                                <span className="font-mono text-2xl text-white">{mergedSpecs.screen_size_inch}&quot;</span>
                                 <span className="font-mono text-xs text-primary border border-primary px-1.5">{mergedSpecs.display_type}</span>
                             </div>
                             <SpecField label="Resolution" value={`${mergedSpecs.screen_resolution_x} x ${mergedSpecs.screen_resolution_y}`} />
@@ -327,8 +337,16 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                             {mergedSpecs.second_screen_size && (
                                 <div className="mt-3 pt-2 border-t border-white/5">
                                     <div className="text-[9px] text-gray-500 uppercase mb-1">Secondary Display</div>
-                                    <SpecField label="Size" value={mergedSpecs.second_screen_size} unit='"' small />
-                                    <SpecField label="Resolution" value={`${mergedSpecs.second_screen_resolution_x} x ${mergedSpecs.second_screen_resolution_y}`} small />
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <SpecField label="Size" value={mergedSpecs.second_screen_size} unit="&quot;" small />
+                                        <SpecField label="Resolution" value={`${mergedSpecs.second_screen_resolution_x} x ${mergedSpecs.second_screen_resolution_y}`} small />
+                                        <SpecField label="Refresh Rate" value={mergedSpecs.second_screen_refresh_rate} unit="Hz" small />
+                                        <SpecField label="Brightness" value={mergedSpecs.second_screen_nits} unit="nits" small />
+                                        <div className="col-span-2 flex items-center gap-2 mt-1">
+                                            <span className="font-mono text-[10px] text-gray-500 uppercase">Touch Support</span>
+                                            <TechBadge label="TOUCHSCREEN" active={mergedSpecs.second_screen_touch} />
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </SpecCard>

@@ -193,6 +193,14 @@ const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) 
                         </p>
                     </div>
                 )}
+
+                {/* Source Verification Footer */}
+                {(profile.source || profile.last_verified) && (
+                     <div className="mt-4 pt-3 border-t border-white/5 flex flex-wrap justify-between items-center text-[10px] font-mono text-gray-600">
+                        {profile.source && <div>SOURCE: <span className="text-gray-400">{profile.source}</span></div>}
+                        {profile.last_verified && <div>VERIFIED: <span className="text-gray-400">{new Date(profile.last_verified).toLocaleDateString()}</span></div>}
+                     </div>
+                )}
             </div>
         </div>
     );

@@ -64,7 +64,8 @@ export const ConsoleVariantSchema = z.object({
   cpu_process_node: safeString,
   cpu_cores: safeNumber,
   cpu_threads: safeNumber,
-  cpu_clock_mhz: safeNumber,
+  cpu_clock_max_mhz: safeNumber,
+  cpu_clock_min_mhz: safeNumber,
   
   gpu_model: safeString,
   gpu_architecture: safeString,
@@ -100,6 +101,10 @@ export const ConsoleVariantSchema = z.object({
   second_screen_resolution_x: safeNumber,
   second_screen_resolution_y: safeNumber,
   second_screen_touch: safeBoolean,
+  second_screen_ppi: safeNumber,
+  second_screen_aspect_ratio: safeString,
+  second_screen_refresh_rate: safeNumber,
+  second_screen_nits: safeNumber,
 
   // Power & Chassis
   battery_capacity_mah: safeNumber,
@@ -126,7 +131,7 @@ export const ConsoleVariantSchema = z.object({
   wifi_specs: safeString,
   bluetooth_specs: safeString,
   other_connectivity: safeString,
-  cellular_connectivity: safeBoolean,
+  cellular_connectivity: safeString,
   video_out: safeString,
   haptics: safeString,
   gyro: safeBoolean,
@@ -145,6 +150,7 @@ export const ConsoleVariantSchema = z.object({
   trigger_mechanism: safeString,
   action_button_mechanism: safeString,
   has_back_buttons: safeBoolean,
+  has_keyboard: safeBoolean,
 
   // Body
   width_mm: safeNumber,

@@ -61,11 +61,12 @@ export const VARIANT_FORM_GROUPS = [
 
             { label: 'CPU Cores', key: 'cpu_cores', type: 'number', required: false, width: 'third' },
             { label: 'CPU Threads', key: 'cpu_threads', type: 'number', required: false, width: 'third' },
-            { label: 'CPU Clock (MHz)', key: 'cpu_clock_mhz', type: 'number', required: false, width: 'third' },
+            { label: 'CPU Clock (Min-Max)', key: 'cpu_clock_max_mhz', type: 'custom_clock', required: false, width: 'third' },
             
             { label: 'GPU Model', key: 'gpu_model', type: 'text', required: false, width: 'third' },
             { label: 'GPU Architecture', key: 'gpu_architecture', type: 'text', required: false, width: 'third' },
             { label: 'CUs / Execution Units', key: 'gpu_compute_units', type: 'text', required: false, width: 'third' },
+            { label: 'GPU Cores', key: 'gpu_cores', type: 'number', required: false, width: 'third' },
             
             { label: 'GPU Clock (MHz)', key: 'gpu_clock_mhz', type: 'number', required: false, width: 'third' },
             { label: 'GPU Teraflops', key: 'gpu_teraflops', type: 'number', required: false, step: '0.01', width: 'third' },
@@ -115,7 +116,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Touchscreen?', key: 'touchscreen', type: 'checkbox', required: false, width: 'half' },
 
             { subHeader: 'Secondary Display' },
-            { label: '2nd Screen Size', key: 'second_screen_size_inch', type: 'number', required: false, step: '0.1', width: 'third' },
+            { label: '2nd Screen Size (inch)', key: 'second_screen_size', type: 'number', required: false, step: '0.1', width: 'third' },
             { label: '2nd Res X', key: 'second_screen_resolution_x', type: 'number', required: false, width: 'third' },
             { label: '2nd Res Y', key: 'second_screen_resolution_y', type: 'number', required: false, width: 'third' },
 
@@ -133,8 +134,9 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Input Layout', key: 'input_layout', type: 'select', required: false, width: 'half', options: ['Xbox', 'Nintendo', 'PlayStation', 'Retroid/Unique'] },
             { label: 'Start, Select, Home', key: 'other_buttons', type: 'text', required: false, width: 'half' },
 
-            { label: 'D-Pad Mech', key: 'dpad_mechanism', type: 'text', required: false, width: 'half', note: 'Rubber Dome, Dome Switch...' },
-            { label: 'Face Btn Mech', key: 'action_button_mechanism', type: 'text', required: false, width: 'half', note: 'Conductive Rubber, Microswitch...' },
+            { label: 'D-Pad Mech', key: 'dpad_mechanism', type: 'text', required: false, width: 'third', note: 'Rubber Dome, Dome Switch...' },
+            { label: 'D-Pad Shape', key: 'dpad_shape', type: 'text', required: false, width: 'third', note: 'Cross, Disc...' },
+            { label: 'Face Btn Mech', key: 'action_button_mechanism', type: 'text', required: false, width: 'third', note: 'Conductive Rubber, Microswitch...' },
 
             { label: 'Stick Tech', key: 'thumbstick_mechanism', type: 'text', required: false, width: 'quarter', note: 'Hall Effect, ALPS...' },
             { label: 'Stick Layout', key: 'thumbstick_layout', type: 'text', required: false, width: 'quarter', note: 'Staggered, Inline...' },
@@ -156,7 +158,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Wi-Fi Specs', key: 'wifi_specs', type: 'text', required: false, width: 'quarter' },
             { label: 'Bluetooth Specs', key: 'bluetooth_specs', type: 'text', required: false, width: 'quarter' },
             { label: 'Legacy/Other (IR, NFC)', key: 'other_connectivity', type: 'text', required: false, width: 'quarter' },
-            { label: 'Cellular?', key: 'cellular_connectivity', type: 'checkbox', required: false, width: 'quarter' },
+            { label: 'Cellular?', key: 'cellular_connectivity', type: 'text', required: false, width: 'quarter' },
 
             { label: 'Video Output', key: 'video_out', type: 'text', required: false, width: 'full' },
 
@@ -189,9 +191,10 @@ export const VARIANT_FORM_GROUPS = [
     {
         title: "AUDIO & MISC",
         fields: [
-            { label: 'Speakers', key: 'audio_speakers', type: 'text', required: false, width: 'half', note: 'Front-facing Stereo, Mono...' },
-            { label: 'Headphone Jack?', key: 'has_headphone_jack', type: 'checkbox', required: false, width: 'quarter' },
-            { label: 'Microphone?', key: 'has_microphone', type: 'checkbox', required: false, width: 'quarter' },
+            { label: 'Speakers', key: 'audio_speakers', type: 'text', required: false, width: 'third', note: 'Front-facing Stereo, Mono...' },
+            { label: 'Audio Tech', key: 'audio_tech', type: 'text', required: false, width: 'third', note: 'DTS, Dolby...' },
+            { label: 'Headphone Jack?', key: 'has_headphone_jack', type: 'checkbox', required: false, width: 'sixth' },
+            { label: 'Microphone?', key: 'has_microphone', type: 'checkbox', required: false, width: 'sixth' },
 
             { label: 'Biometrics', key: 'biometrics', type: 'text', required: false, width: 'half', note: 'Fingerprint Sensor, Face Unlock...' },
             { label: 'Camera Specs', key: 'camera_specs', type: 'text', required: false, width: 'half', note: '2MP Front...' },
