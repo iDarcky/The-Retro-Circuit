@@ -8,7 +8,7 @@ import { ConsoleDetails, ConsoleSpecs, ConsoleVariant } from '../../lib/types';
 import AdminEditTrigger from '../admin/AdminEditTrigger';
 import { IconVS } from '../ui/Icons';
 import Button from '../ui/Button';
-import EmulationGrid from './EmulationGrid';
+import PlayabilityMatrix from './EmulationGrid';
 import { SpecCard } from '../ui/specs/SpecCard';
 import { SpecField } from '../ui/specs/SpecField';
 import { TechBadge } from '../ui/specs/TechBadge';
@@ -255,7 +255,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                     )}
 
                     {/* EMULATION PERFORMANCE GRID */}
-                    <EmulationGrid profile={mergedSpecs.emulation_profile || (mergedSpecs as any).emulation_profiles} />
+                    <PlayabilityMatrix profile={mergedSpecs.emulation_profile || (mergedSpecs as any).emulation_profiles} />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         
