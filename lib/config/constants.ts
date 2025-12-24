@@ -61,7 +61,8 @@ export const VARIANT_FORM_GROUPS = [
 
             { label: 'CPU Cores', key: 'cpu_cores', type: 'number', required: false, width: 'third' },
             { label: 'CPU Threads', key: 'cpu_threads', type: 'number', required: false, width: 'third' },
-            { label: 'CPU Clock (Min-Max)', key: 'cpu_clock_max_mhz', type: 'custom_clock', required: false, width: 'third' },
+            { label: 'CPU Clock Min', key: 'cpu_clock_min_mhz', type: 'custom_cpu_clock', required: false, width: 'third' },
+            { label: 'CPU Clock Max', key: 'cpu_clock_max_mhz', type: 'custom_cpu_clock', required: false, width: 'third' },
             
             { label: 'GPU Model', key: 'gpu_model', type: 'text', required: false, width: 'third' },
             { label: 'GPU Architecture', key: 'gpu_architecture', type: 'text', required: false, width: 'third' },
@@ -142,6 +143,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Stick Layout', key: 'thumbstick_layout', type: 'text', required: false, width: 'quarter', note: 'Staggered, Inline...' },
             { label: 'L3/R3 Clicks?', key: 'has_stick_clicks', type: 'checkbox', required: false, width: 'quarter' },
             { label: 'Cap Type', key: 'thumbstick_cap', type: 'text', required: false, width: 'quarter', note: 'Concave, Convex...' },
+            { label: 'Has Keyboard?', key: 'has_keyboard', type: 'checkbox', required: false, width: 'quarter' },
 
             { label: 'L1/R1 Mech', key: 'bumper_mechanism', type: 'text', required: false, width: 'third' },
             { label: 'L2/R2 Mech', key: 'trigger_mechanism', type: 'text', required: false, width: 'third', note: 'Analog, Digital...' },

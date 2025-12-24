@@ -35,6 +35,8 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     const [selectedTemplate, setSelectedTemplate] = useState<string>('');
 
     const [ramInput, setRamInput] = useState<{ value: string | number, unit: 'GB' | 'MB' }>({ value: '', unit: 'GB' });
+    const [cpuMinInput, setCpuMinInput] = useState<{ value: string | number, unit: 'GHz' | 'MHz' }>({ value: '', unit: 'GHz' });
+    const [cpuMaxInput, setCpuMaxInput] = useState<{ value: string | number, unit: 'GHz' | 'MHz' }>({ value: '', unit: 'GHz' });
 
     useEffect(() => {
         if (initialData) {
@@ -47,6 +49,19 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                      setRamInput({ value: mb, unit: 'MB' });
                  }
             }
+
+            // CPU Clock Init
+            const initClock = (mhz: number, setter: any) => {
+                if (!isNaN(mhz) && mhz > 0) {
+                    if (mhz >= 1000 && mhz % 100 === 0) {
+                        setter({ value: mhz / 1000, unit: 'GHz' });
+                    } else {
+                        setter({ value: mhz, unit: 'MHz' });
+                    }
+                }
+            };
+            initClock(Number(initialData.cpu_clock_min_mhz), setCpuMinInput);
+            initClock(Number(initialData.cpu_clock_max_mhz), setCpuMaxInput);
         } else if (preSelectedConsoleId) {
             setFormData(prev => ({ ...prev, console_id: preSelectedConsoleId }));
         }
@@ -59,6 +74,21 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             handleInputChange('ram_mb', newUnit === 'GB' ? val * 1024 : val);
         } else {
             handleInputChange('ram_mb', 0);
+        }
+    };
+
+    const handleCpuClockChange = (type: 'min' | 'max', newVal: string | number, newUnit: 'GHz' | 'MHz') => {
+        const setter = type === 'min' ? setCpuMinInput : setCpuMaxInput;
+        const key = type === 'min' ? 'cpu_clock_min_mhz' : 'cpu_clock_max_mhz';
+
+        setter({ value: newVal, unit: newUnit });
+
+        const val = Number(newVal);
+        if (!isNaN(val) && val > 0) {
+            const mhz = newUnit === 'GHz' ? Math.round(val * 1000) : val;
+            handleInputChange(key, mhz);
+        } else {
+            handleInputChange(key, null);
         }
     };
 
@@ -260,6 +290,33 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                         <div className="flex gap-2">
                                                             <input type="number" className={`flex-1 border p-3 outline-none font-mono text-sm bg-black text-white ${error ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`} value={ramInput.value} onChange={(e) => handleRamChange(e.target.value, ramInput.unit)} />
                                                             <select className="w-24 bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm" value={ramInput.unit} onChange={(e) => handleRamChange(ramInput.value, e.target.value as 'GB' | 'MB')}><option value="GB">GB</option><option value="MB">MB</option></select>
+                                                        </div>
+                                                        {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
+                                                    </div>
+                                                );
+                                            }
+
+                                            if (field.type === 'custom_cpu_clock') {
+                                                const isMax = field.key === 'cpu_clock_max_mhz';
+                                                const inputState = isMax ? cpuMaxInput : cpuMinInput;
+                                                return (
+                                                    <div key={field.key || `field-${fieldIdx}`} className={`${colSpan}`}>
+                                                        <label className={`text-[10px] mb-1 block uppercase ${error ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
+                                                        <div className="flex gap-2">
+                                                            <input
+                                                                type="number"
+                                                                className={`flex-1 border p-3 outline-none font-mono text-sm bg-black text-white ${error ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`}
+                                                                value={inputState.value}
+                                                                onChange={(e) => handleCpuClockChange(isMax ? 'max' : 'min', e.target.value, inputState.unit)}
+                                                            />
+                                                            <select
+                                                                className="w-24 bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm"
+                                                                value={inputState.unit}
+                                                                onChange={(e) => handleCpuClockChange(isMax ? 'max' : 'min', inputState.value, e.target.value as 'GHz' | 'MHz')}
+                                                            >
+                                                                <option value="GHz">GHz</option>
+                                                                <option value="MHz">MHz</option>
+                                                            </select>
                                                         </div>
                                                         {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
                                                     </div>
