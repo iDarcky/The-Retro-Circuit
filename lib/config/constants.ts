@@ -52,9 +52,11 @@ export const VARIANT_FORM_GROUPS = [
     {
         title: "SILICON CORE",
         fields: [
+            { subHeader: 'OS', width: 'full' },
             { label: 'OS / Firmware', key: 'os', type: 'text', required: false },
             { label: 'UI Skin', key: 'ui_skin', type: 'text', required: false },
             
+            { subHeader: 'CPU', width: 'full' },
             { label: 'CPU Model', key: 'cpu_model', type: 'text', required: false, width: 'third' },
             { label: 'CPU Architecture', key: 'cpu_architecture', type: 'text', required: false, width: 'third' },
             { label: 'Process Node', key: 'cpu_process_node', type: 'text', required: false, width: 'third' },
@@ -64,6 +66,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'CPU Clock Min', key: 'cpu_clock_min_mhz', type: 'custom_cpu_clock', required: false, width: 'third' },
             { label: 'CPU Clock Max', key: 'cpu_clock_max_mhz', type: 'custom_cpu_clock', required: false, width: 'third' },
             
+            { subHeader: 'GPU', width: 'full' },
             { label: 'GPU Model', key: 'gpu_model', type: 'text', required: false, width: 'third' },
             { label: 'GPU Architecture', key: 'gpu_architecture', type: 'text', required: false, width: 'third' },
             { label: 'CUs / Execution Units', key: 'gpu_compute_units', type: 'text', required: false, width: 'third' },
@@ -116,7 +119,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Display Tech (VRR etc)', key: 'display_tech', type: 'text', required: false, width: 'half' },
             { label: 'Touchscreen?', key: 'touchscreen', type: 'checkbox', required: false, width: 'half' },
 
-            { subHeader: 'Secondary Display' },
+            { subHeader: 'Secondary Display', width: 'full' },
             { label: '2nd Screen Size (inch)', key: 'second_screen_size', type: 'number', required: false, step: '0.1', width: 'third' },
             { label: '2nd Res X', key: 'second_screen_resolution_x', type: 'number', required: false, width: 'third' },
             { label: '2nd Res Y', key: 'second_screen_resolution_y', type: 'number', required: false, width: 'third' },
