@@ -3,7 +3,6 @@ export const dynamic = 'force-dynamic';
 import Link from 'next/link';
 import { createClient } from '../../../lib/supabase/server';
 import { ConsoleDetails } from '../../../lib/types';
-import { getBrandTheme } from '../../../data/static';
 import AdminEditTrigger from '../../../components/admin/AdminEditTrigger';
 import Button from '../../../components/ui/Button';
 import RetroStatusBar from '../../../components/ui/RetroStatusBar';
@@ -12,6 +11,14 @@ import { getDocVersion } from '../../../lib/utils/doc-version';
 type Props = {
   params: Promise<{ slug: string }>
 };
+
+// Helper: Convert Hex to RGB for Tailwind opacity modifiers
+function hexToRgb(hex: string): string {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result
+        ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`
+        : '0, 255, 157'; // Default Secondary Green
+}
 
 export async function generateMetadata(props: Props) {
     const params = await props.params;
@@ -106,11 +113,32 @@ export default async function FabricatorDetailPage(props: Props) {
         );
     }
 
-    const theme = getBrandTheme(profile.name);
-    const themeColorClass = theme.color.split(' ')[0]; // Extract text color class
+    // Determine Theme Color (DB > Static Map > Fallback)
+    // Extract hex from static theme class if needed, but simpler to rely on DB or a manual map for Hex consistency
+    // Map existing static themes to Hex for fallback consistency
+    const staticHexMap: Record<string, string> = {
+        'Nintendo': '#ef4444', // red-500
+        'Sega': '#3b82f6',     // blue-500
+        'Sony': '#facc15',     // yellow-400
+        'Atari': '#f97316',    // orange-500
+        'Microsoft': '#22c55e',// green-500
+        'NEC': '#c084fc',      // purple-400
+        'SNK': '#2dd4bf',      // teal-400
+    };
+
+    const brandColor = profile.brand_color || staticHexMap[profile.name] || '#00ff9d'; // Default to Secondary
+    const brandRgb = hexToRgb(brandColor);
+
+    const cssVars = {
+        '--brand-color': brandColor,
+        '--brand-rgb': brandRgb,
+    } as React.CSSProperties;
 
     return (
-        <div className="w-full animate-[fadeIn_0.5s_ease-in-out]">
+        <div
+            className="w-full animate-[fadeIn_0.5s_ease-in-out]"
+            style={cssVars}
+        >
             <RetroStatusBar
                 rcPath={`RC://RETRO_CIRCUIT/VAULT/MANUFACTURERS/${profile.slug.toUpperCase()}`}
                 docId={`FABRICATOR_PROFILE_${profile.name.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase()}${getDocVersion(profile.slug)}`}
@@ -118,7 +146,7 @@ export default async function FabricatorDetailPage(props: Props) {
 
             <div className="max-w-7xl mx-auto p-4">
             {/* Header / Dossier */}
-            <div className={`border-l-8 ${theme.color} bg-bg-primary p-6 md:p-8 mb-8 shadow-lg`}>
+            <div className={`border-l-8 bg-bg-primary p-6 md:p-8 mb-8 shadow-lg border-[var(--brand-color)] shadow-[0_0_20px_rgba(var(--brand-rgb),0.3)]`}>
                 <div className="flex flex-col md:flex-row justify-between items-start border-b border-gray-800 pb-6 mb-6 gap-6">
                     {/* Left Column: Title & Identity */}
                     <div className="flex-1 w-full">
@@ -126,7 +154,7 @@ export default async function FabricatorDetailPage(props: Props) {
                              <div className="font-mono text-xs text-gray-500">
                                 <Link href="/" className="hover:text-white">HOME</Link> &gt; <Link href="/console" className="hover:text-white">FABRICATORS</Link> &gt; {profile.name.toUpperCase()}
                              </div>
-                             <div className={`font-mono text-xs border inline-block px-2 py-0.5 ${theme.color}`}>CONFIDENTIAL</div>
+                             <div className={`font-mono text-xs border px-2 py-0.5 border-[var(--brand-color)] text-[var(--brand-color)]`}>CONFIDENTIAL</div>
                         </div>
                         
                         <div className="flex flex-wrap items-center gap-4 mt-4">
@@ -135,7 +163,9 @@ export default async function FabricatorDetailPage(props: Props) {
                                      <img src={profile.image_url} className="h-12 w-auto object-contain" />
                                 </div>
                             )}
-                            <h1 className={`text-3xl sm:text-4xl md:text-6xl font-pixel ${themeColorClass} opacity-90 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] break-words leading-tight`}>
+                            <h1
+                                className={`text-3xl sm:text-4xl md:text-6xl font-pixel opacity-90 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] break-words leading-tight text-[var(--brand-color)]`}
+                            >
                                 {profile.name}
                             </h1>
                             
@@ -172,7 +202,7 @@ export default async function FabricatorDetailPage(props: Props) {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="md:col-span-2">
-                        <h3 className={`font-pixel text-lg mb-4 ${themeColorClass}`}>CORPORATE HISTORY</h3>
+                        <h3 className={`font-pixel text-lg mb-4 text-[var(--brand-color)]`}>CORPORATE HISTORY</h3>
                         <p className="font-mono text-gray-300 text-sm md:text-base leading-relaxed border-l-2 border-gray-700 pl-4 whitespace-pre-line">
                             {profile.description}
                         </p>
@@ -183,7 +213,7 @@ export default async function FabricatorDetailPage(props: Props) {
                             <h4 className="font-pixel text-xs text-gray-500 mb-4 border-b border-gray-800 pb-2">KEY FRANCHISES</h4>
                             <div className="flex flex-wrap gap-2">
                                 {(profile.key_franchises || "").split(',').map((f: string) => (
-                                    <span key={f.trim()} className={`font-mono text-xs border px-2 py-1 ${theme.color} bg-black/50`}>
+                                    <span key={f.trim()} className={`font-mono text-xs border px-2 py-1 bg-black/50 border-[var(--brand-color)] text-[var(--brand-color)]`}>
                                         {f.trim()}
                                     </span>
                                 ))}
@@ -196,7 +226,7 @@ export default async function FabricatorDetailPage(props: Props) {
             {/* Hardware Grid */}
             <div className="mb-12">
                 <div className="flex items-center gap-4 mb-6">
-                    <h3 className={`font-pixel text-xl md:text-2xl ${themeColorClass}`}>KNOWN HARDWARE UNITS</h3>
+                    <h3 className={`font-pixel text-xl md:text-2xl text-[var(--brand-color)]`}>KNOWN HARDWARE UNITS</h3>
                     <div className="flex-1 h-px bg-gray-800"></div>
                 </div>
                 
@@ -204,9 +234,9 @@ export default async function FabricatorDetailPage(props: Props) {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {consoles.map((console) => (
                             <Link 
-                                href={`/console/${console.slug}`} 
+                                href={`/consoles/${console.slug}`}
                                 key={console.id}
-                                className={`group block border border-border-normal bg-bg-primary relative overflow-hidden transition-all ${theme.hover}`}
+                                className={`group block border border-border-normal bg-bg-primary relative overflow-hidden transition-all hover:bg-[rgba(var(--brand-rgb),0.2)]`}
                             >
                                 <div className="h-32 bg-black/40 flex items-center justify-center p-4 relative">
                                     {console.image_url ? (
@@ -220,7 +250,7 @@ export default async function FabricatorDetailPage(props: Props) {
                                         <span>{console.release_year || 'TBA'}</span>
                                         <span>{console.generation}</span>
                                     </div>
-                                    <h3 className="font-pixel text-xs text-white group-hover:text-secondary truncate">
+                                    <h3 className="font-pixel text-xs text-white group-hover:text-[var(--brand-color)] truncate">
                                         {console.name}
                                     </h3>
                                 </div>

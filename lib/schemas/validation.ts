@@ -24,6 +24,7 @@ export const ManufacturerSchema = z.object({
   website: safeString,
   key_franchises: safeString,
   image_url: safeString,
+  brand_color: safeString,
 });
 
 export const ConsoleSchema = z.object({
