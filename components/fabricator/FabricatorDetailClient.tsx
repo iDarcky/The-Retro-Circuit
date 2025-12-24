@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { ConsoleDetails, Manufacturer } from '../../lib/types';
 import AdminEditTrigger from '../admin/AdminEditTrigger';
@@ -8,26 +7,12 @@ import RetroStatusBar from '../ui/RetroStatusBar';
 import { getDocVersion } from '../../lib/utils/doc-version';
 import { hexToRgb, ensureHighContrast } from '../../lib/utils/colors';
 
-type VisualizationMode =
-    | 'raw'
-    | 'neon'
-    | 'accent'
-    | 'pill'
-    | 'glass'
-    | 'glitch'
-    | 'gradient'
-    | 'stroke'
-    | 'high_contrast'
-    | 'underline';
-
 interface Props {
     profile: Manufacturer;
     consoles: ConsoleDetails[];
 }
 
 export default function FabricatorDetailClient({ profile, consoles }: Props) {
-    const [mode] = useState<VisualizationMode>('accent');
-
     // Color Setup
     const staticHexMap: Record<string, string> = {
         'Nintendo': '#ef4444',
@@ -43,73 +28,20 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
     const brandRgb = hexToRgb(brandColor);
     const highContrastText = ensureHighContrast(brandColor);
 
-    // Dynamic Styles based on Mode
+    // Accent Style Logic (Hardcoded)
     const getStyles = (elementType: 'title' | 'subtitle' | 'text' | 'container' | 'card_text') => {
         const base = "transition-all duration-300";
 
-        switch (mode) {
-            case 'raw':
-                if (elementType === 'title') return `${base} text-[var(--brand-color)]`;
-                if (elementType === 'subtitle') return `${base} text-[var(--brand-color)]`;
-                if (elementType === 'card_text') return `text-white group-hover:text-[var(--brand-color)]`;
+        switch (elementType) {
+            case 'title':
+                return `${base} text-white border-l-8 border-[var(--brand-color)] pl-4`;
+            case 'subtitle':
+                return `${base} text-white border-b-2 border-[var(--brand-color)] inline-block pb-1`;
+            case 'card_text':
+                return `text-white group-hover:text-white group-hover:border-b group-hover:border-[var(--brand-color)]`;
+            default:
                 return base;
-
-            case 'neon':
-                if (elementType === 'title') return `${base} text-[var(--brand-color)] drop-shadow-[0_0_10px_var(--brand-color)]`;
-                if (elementType === 'subtitle') return `${base} text-[var(--brand-color)] drop-shadow-[0_0_5px_var(--brand-color)]`;
-                if (elementType === 'card_text') return `text-white group-hover:text-[var(--brand-color)] group-hover:drop-shadow-[0_0_5px_var(--brand-color)]`;
-                return base;
-
-            case 'accent':
-                if (elementType === 'title') return `${base} text-white border-l-8 border-[var(--brand-color)] pl-4`;
-                if (elementType === 'subtitle') return `${base} text-white border-b-2 border-[var(--brand-color)] inline-block pb-1`;
-                if (elementType === 'card_text') return `text-white group-hover:text-white group-hover:border-b group-hover:border-[var(--brand-color)]`;
-                return base;
-
-            case 'pill':
-                if (elementType === 'title') return `${base} bg-[var(--brand-color)] text-black px-4 py-1 inline-block transform -skew-x-12`;
-                if (elementType === 'subtitle') return `${base} bg-[var(--brand-color)] text-black px-2 inline-block`;
-                if (elementType === 'card_text') return `text-white group-hover:bg-[var(--brand-color)] group-hover:text-black group-hover:px-2`;
-                return base;
-
-            case 'glass':
-                if (elementType === 'title') return `${base} text-[var(--brand-color)] bg-black/80 backdrop-blur-sm p-4 border border-[var(--brand-color)]/30 rounded`;
-                if (elementType === 'subtitle') return `${base} text-[var(--brand-color)] bg-black/60 backdrop-blur-sm px-3 py-1 rounded`;
-                if (elementType === 'card_text') return `text-white group-hover:text-[var(--brand-color)]`;
-                return base;
-
-            case 'glitch':
-                if (elementType === 'title') return `${base} text-white drop-shadow-[3px_3px_0_var(--brand-color)]`;
-                if (elementType === 'subtitle') return `${base} text-white drop-shadow-[2px_2px_0_var(--brand-color)]`;
-                if (elementType === 'card_text') return `text-white group-hover:drop-shadow-[2px_2px_0_var(--brand-color)]`;
-                return base;
-
-            case 'gradient':
-                if (elementType === 'title') return `${base} text-transparent bg-clip-text bg-gradient-to-b from-white to-[var(--brand-color)]`;
-                if (elementType === 'subtitle') return `${base} text-[var(--brand-color)]`;
-                if (elementType === 'card_text') return `text-white group-hover:text-[var(--brand-color)]`;
-                return base;
-
-            case 'stroke':
-                 // Simulating stroke with text-shadow or webkit if available, using shadow for compatibility
-                if (elementType === 'title') return `${base} text-black [text-shadow:-1px_-1px_0_var(--brand-color),1px_-1px_0_var(--brand-color),-1px_1px_0_var(--brand-color),1px_1px_0_var(--brand-color)]`;
-                if (elementType === 'subtitle') return `${base} text-[var(--brand-color)]`;
-                if (elementType === 'card_text') return `text-white group-hover:text-[var(--brand-color)]`;
-                return base;
-
-            case 'high_contrast':
-                if (elementType === 'title') return `${base} text-[var(--hc-color)]`;
-                if (elementType === 'subtitle') return `${base} text-[var(--hc-color)]`;
-                if (elementType === 'card_text') return `text-white group-hover:text-[var(--hc-color)]`;
-                return base;
-
-            case 'underline':
-                 if (elementType === 'title') return `${base} text-white underline decoration-[var(--brand-color)] decoration-4 underline-offset-8`;
-                 if (elementType === 'subtitle') return `${base} text-white underline decoration-[var(--brand-color)] decoration-2 underline-offset-4`;
-                 if (elementType === 'card_text') return `text-white group-hover:underline group-hover:decoration-[var(--brand-color)]`;
-                 return base;
         }
-        return base;
     };
 
     const cssVars = {
@@ -125,8 +57,6 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                 docId={`FABRICATOR_PROFILE_${profile.name.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase()}${getDocVersion(profile.slug)}`}
             />
 
-            {/* DEBUGGER REMOVED - LOCKED TO ACCENT MODE */}
-
             <div className="max-w-7xl mx-auto p-4">
                 {/* Header / Dossier */}
                 <div className={`border-l-8 bg-bg-primary p-6 md:p-8 mb-8 shadow-lg border-[var(--brand-color)] shadow-[0_0_20px_rgba(var(--brand-rgb),0.3)]`}>
@@ -135,7 +65,7 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                         <div className="flex-1 w-full">
                             <div className="flex flex-wrap gap-2 mb-2 items-center justify-between md:justify-start">
                                 <div className="font-mono text-xs text-gray-500">
-                                    <Link href="/" className="hover:text-white">HOME</Link> &gt; <Link href="/console" className="hover:text-white">FABRICATORS</Link> &gt; {profile.name.toUpperCase()}
+                                    <Link href="/" className="hover:text-white">HOME</Link> &gt; <Link href="/fabricators" className="hover:text-white">FABRICATORS</Link> &gt; {profile.name.toUpperCase()}
                                 </div>
                                 <div className={`font-mono text-xs border px-2 py-0.5 border-[var(--brand-color)] text-[var(--brand-color)]`}>CONFIDENTIAL</div>
                             </div>
