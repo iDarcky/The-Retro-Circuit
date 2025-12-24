@@ -171,11 +171,11 @@ const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) 
 
                             {isOpen && (
                                 <div className="p-4 border-t border-white/10 bg-black/40 animate-fadeIn">
-                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                                    <div className="grid grid-cols-2 gap-3">
                                         {activeSystems.map((sys) => (
-                                            <div key={sys.key} className={`border px-3 py-2 flex flex-col items-center justify-center text-center transition-all hover:brightness-110 ${getStatusStyle(sys.status)}`}>
-                                                <div className="text-[9px] font-mono uppercase opacity-70 mb-1">{sys.label}</div>
-                                                <div className="font-pixel text-[9px] uppercase tracking-wider">{sys.status}</div>
+                                            <div key={sys.key} className={`border px-2 py-2 flex flex-col items-center justify-center text-center transition-all hover:brightness-110 ${getStatusStyle(sys.status)}`}>
+                                                <div className="text-[9px] font-mono uppercase opacity-70 mb-1 truncate w-full">{sys.label}</div>
+                                                <div className="font-pixel text-[8px] uppercase tracking-wide break-all">{sys.status}</div>
                                             </div>
                                         ))}
                                     </div>
