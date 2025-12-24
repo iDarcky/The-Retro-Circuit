@@ -93,7 +93,7 @@ const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) 
 
     const getStatusStyle = (status?: string) => {
         if (!status) return 'bg-gray-800 text-gray-500 border-gray-700';
-        
+
         const s = status.toLowerCase();
         if (s.includes('perfect')) return 'bg-green-500/20 text-green-400 border-green-500 shadow-[0_0_10px_rgba(34,197,94,0.2)]';
         if (s.includes('great')) return 'bg-blue-500/20 text-blue-400 border-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.2)]';
@@ -116,7 +116,7 @@ const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) 
 
     return (
         <div className="bg-bg-primary border border-border-normal mb-6 relative overflow-hidden animate-fadeIn">
-             
+
              {/* Header */}
             <div className="bg-black/40 border-b border-border-normal px-4 py-3 flex justify-between items-center">
                 <h3 className="font-pixel text-sm text-secondary uppercase tracking-widest">PLAYABILITY MATRIX</h3>
@@ -184,7 +184,7 @@ const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) 
                         </div>
                     );
                 })}
-                
+
                 {profile.summary_text && (
                     <div className="mt-6 pt-4 border-t border-white/10">
                         <p className="font-mono text-xs text-gray-400 leading-relaxed">

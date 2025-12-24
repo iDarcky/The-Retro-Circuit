@@ -8,7 +8,7 @@ import { ConsoleDetails, ConsoleSpecs, ConsoleVariant } from '../../lib/types';
 import AdminEditTrigger from '../admin/AdminEditTrigger';
 import { IconVS } from '../ui/Icons';
 import Button from '../ui/Button';
-import PlayabilityMatrix from './EmulationGrid';
+import PlayabilityMatrix from './PlayabilityMatrix';
 import { SpecCard } from '../ui/specs/SpecCard';
 import { SpecField } from '../ui/specs/SpecField';
 import { TechBadge } from '../ui/specs/TechBadge';
