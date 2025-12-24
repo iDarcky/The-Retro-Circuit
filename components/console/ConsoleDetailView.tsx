@@ -112,6 +112,31 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
     
     const ramData = formatRam(mergedSpecs.ram_mb);
 
+    // Helper for CPU Clock Display
+    const formatCpuClock = (min?: number, max?: number) => {
+        if (!min && !max) return { value: undefined, unit: 'MHz' };
+
+        // Determine target unit based on Max (or Min if Max missing)
+        const refValue = max || min || 0;
+        const useGhz = refValue >= 1000;
+
+        const unit = useGhz ? 'GHz' : 'MHz';
+        const divisor = useGhz ? 1000 : 1;
+
+        const formatNum = (n: number) => {
+            const val = n / divisor;
+            return parseFloat(val.toFixed(2));
+        };
+
+        if (min && max && min !== max) {
+            return { value: `${formatNum(min)} - ${formatNum(max)}`, unit };
+        }
+
+        return { value: formatNum(max || min || 0), unit };
+    };
+
+    const cpuClockData = formatCpuClock(mergedSpecs.cpu_clock_min_mhz, mergedSpecs.cpu_clock_max_mhz);
+
     // --- RENDER ---
 
     return (
@@ -273,12 +298,8 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                                 <SpecField label="Cores" value={mergedSpecs.cpu_cores} small />
                                 <SpecField
                                     label="Clock"
-                                    value={
-                                        mergedSpecs.cpu_clock_min_mhz && mergedSpecs.cpu_clock_max_mhz && mergedSpecs.cpu_clock_min_mhz !== mergedSpecs.cpu_clock_max_mhz
-                                        ? `${mergedSpecs.cpu_clock_min_mhz} - ${mergedSpecs.cpu_clock_max_mhz}`
-                                        : mergedSpecs.cpu_clock_max_mhz
-                                    }
-                                    unit="MHz"
+                                    value={cpuClockData.value}
+                                    unit={cpuClockData.unit}
                                     small
                                     highlight
                                 />
