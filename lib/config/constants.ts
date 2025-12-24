@@ -6,6 +6,7 @@ export const MANUFACTURER_FORM_FIELDS = [
   { label: 'Country', key: 'country', type: 'text', required: false },
   { label: 'Website URL', key: 'website', type: 'url', required: false },
   { label: 'Image URL', key: 'image_url', type: 'url', required: false },
+  { label: 'Brand Color', key: 'brand_color', type: 'color', required: false, note: 'Hex code or use picker' },
   { label: 'Key Franchises', key: 'key_franchises', type: 'text', required: false },
   { label: 'Description', key: 'description', type: 'textarea', required: false },
 ];

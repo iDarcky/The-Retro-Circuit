@@ -29,10 +29,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     
     const isEditMode = !!initialData;
     const [showEmulationForm, setShowEmulationForm] = useState(false);
-    const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-        "IDENTITY & ORIGIN": true,
-        "INPUT & MECHANICS": true, // Also open this section
-    });
+    const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
     
     const [existingVariants, setExistingVariants] = useState<ConsoleVariant[]>([]);
     const [selectedTemplate, setSelectedTemplate] = useState<string>('');
