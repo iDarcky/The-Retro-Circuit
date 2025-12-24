@@ -31,6 +31,38 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
     const isComputed = field.visualStyle === 'computed';
     const computedBg = isComputed ? 'bg-gray-900 text-gray-400 cursor-not-allowed' : 'bg-black text-white';
     
+    if (type === 'color') {
+        return (
+            <div>
+                <label className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
+                <div className="flex gap-2 h-[46px]">
+                    <div className="relative w-12 h-full">
+                        <input
+                            type="color"
+                            className="absolute inset-0 w-full h-full p-0 border-0 outline-none cursor-pointer opacity-0"
+                            value={val || '#000000'}
+                            onChange={(e) => onChange(field.key, e.target.value)}
+                        />
+                        <div
+                            className="w-full h-full border border-gray-700"
+                            style={{ backgroundColor: val || '#000000' }}
+                        ></div>
+                    </div>
+                    <input
+                        type="text"
+                        className={`flex-1 bg-black border p-3 outline-none font-mono text-sm ${borderColor} text-white uppercase`}
+                        value={val}
+                        placeholder="#RRGGBB"
+                        onChange={(e) => onChange(field.key, e.target.value)}
+                        maxLength={7}
+                    />
+                </div>
+                {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{field.note}</div>}
+                {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
+            </div>
+        );
+    }
+
     if (type === 'textarea') {
         return (
             <div className="col-span-1 md:col-span-2">

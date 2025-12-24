@@ -53,6 +53,7 @@ export interface Manufacturer {
   website?: string;
   key_franchises: string;
   image_url?: string;
+  brand_color?: string;
 }
 
 export interface ConsoleFilterState {
