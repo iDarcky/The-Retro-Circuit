@@ -137,6 +137,17 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
     const cpuClockData = formatCpuClock(mergedSpecs.cpu_clock_min_mhz, mergedSpecs.cpu_clock_max_mhz);
 
+    // Helper for Device Category Label
+    const getSystemTypeLabel = (cat?: string) => {
+        switch (cat) {
+            case 'emulation': return 'EMULATION';
+            case 'pc_gaming': return 'PC GAMING';
+            case 'fpga': return 'FPGA';
+            case 'legacy': return 'ORIGINAL HARDWARE';
+            default: return 'SYSTEM';
+        }
+    };
+
     // --- RENDER ---
 
     return (
@@ -183,7 +194,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                         <span>{'//'}</span>
                         <span className="text-accent">{currentYear || 'TBA'}</span>
                         <span>{'//'}</span>
-                        <span>{consoleData.generation}</span>
+                        <span>{getSystemTypeLabel(consoleData.device_category)}</span>
                      </div>
                 </div>
                 <div className="flex items-center gap-2 md:gap-4">
@@ -246,8 +257,8 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                             <div className="text-secondary font-mono text-sm">{mergedSpecs.price_launch_usd ? `$${mergedSpecs.price_launch_usd}` : 'N/A'}</div>
                         </div>
                         <div className="bg-bg-primary p-3">
-                            <div className="text-[10px] text-gray-500 font-mono uppercase">Generation</div>
-                            <div className="text-white font-mono text-sm">{consoleData.generation || 'Unknown'}</div>
+                            <div className="text-[10px] text-gray-500 font-mono uppercase">System Type</div>
+                            <div className="text-white font-mono text-sm">{getSystemTypeLabel(consoleData.device_category)}</div>
                         </div>
                         <div className="bg-bg-primary p-3">
                             <div className="text-[10px] text-gray-500 font-mono uppercase">Release</div>
