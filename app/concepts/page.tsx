@@ -62,6 +62,12 @@ const concepts = [
     desc: 'Modern frosted glass, blurs, soft shadows.',
     colors: ['rgba(255,255,255,0.1)', '#FFFFFF', '#000000']
   },
+  {
+    id: 'cowboy',
+    name: 'Cowboy',
+    desc: 'Western, sepia tones, wanted posters, rugged.',
+    colors: ['#dccfb4', '#4a3b2a', '#8b4513']
+  },
 ];
 
 export default function ConceptsIndex() {
