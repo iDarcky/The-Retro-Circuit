@@ -218,6 +218,61 @@ export interface ConsoleVariant {
   ui_skin?: string;
 
   emulation_profile?: EmulationProfile | null;
+  input_profile?: VariantInputProfile | null;
+}
+
+export interface VariantInputProfile {
+    variant_id: string;
+
+    // D-Pad
+    dpad_tech?: 'membrane' | 'microswitch' | 'mechanical' | 'hall' | 'potentiometer' | 'spring' | 'optical' | 'unknown';
+    dpad_shape?: 'cross' | 'disc' | 'segmented' | 'unknown';
+    dpad_placement?: 'left' | 'right' | 'center' | 'unknown';
+
+    // Face Buttons
+    face_button_count?: 2 | 4 | 6 | null;
+    face_button_layout?: 'diamond' | 'inline' | 'arcade_6' | 'split' | 'unknown';
+    face_button_tech?: 'membrane' | 'microswitch' | 'mechanical' | 'hall' | 'potentiometer' | 'spring' | 'optical' | 'unknown';
+    face_label_scheme?: 'nintendo' | 'xbox' | 'playstation' | 'generic' | 'unknown';
+
+    // Analog Sticks
+    stick_count?: 0 | 1 | 2 | null;
+    stick_tech?: 'membrane' | 'microswitch' | 'mechanical' | 'hall' | 'potentiometer' | 'spring' | 'optical' | 'unknown';
+    stick_layout?: 'symmetric' | 'asymmetric' | 'centered' | 'unknown';
+    stick_clicks?: boolean | null;
+    stick_cap?: 'concave' | 'convex' | 'flat' | 'domed' | 'textured' | 'unknown';
+
+    // Bumpers
+    bumper_tech?: 'membrane' | 'microswitch' | 'mechanical' | 'hall' | 'potentiometer' | 'spring' | 'optical' | 'unknown';
+
+    // Triggers
+    trigger_tech?: 'membrane' | 'microswitch' | 'mechanical' | 'hall' | 'potentiometer' | 'spring' | 'optical' | 'unknown';
+    trigger_type?: 'digital' | 'analog' | 'unknown';
+    trigger_layout?: 'inline' | 'stacked' | 'unknown';
+
+    // Back Buttons
+    back_button_count?: 0 | 2 | 4 | null;
+
+    // System Buttons
+    system_button_set?: 'minimal' | 'standard' | 'extended' | 'unknown';
+    system_buttons_text?: string | null;
+
+    // Keyboard
+    has_keyboard?: boolean | null;
+    keyboard_type?: 'physical' | 'touch' | 'unknown';
+
+    // Touchpads
+    touchpad_count?: 0 | 1 | 2 | null;
+    touchpad_clickable?: boolean | null;
+
+    // Gyro
+    has_gyro?: boolean | null;
+
+    // Meta
+    input_confidence?: 'confirmed' | 'inferred' | 'unknown';
+    input_notes?: string | null;
+
+    updated_at?: string;
 }
 
 export interface ConsoleDetails {
