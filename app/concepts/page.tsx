@@ -68,6 +68,66 @@ const concepts = [
     desc: 'Western, sepia tones, wanted posters, rugged.',
     colors: ['#dccfb4', '#4a3b2a', '#8b4513']
   },
+  {
+    id: 'luxury',
+    name: 'Luxury Fashion',
+    desc: 'High-end lookbook, massive whitespace, editorial.',
+    colors: ['#ffffff', '#000000', '#f3f4f6']
+  },
+  {
+    id: 'journal',
+    name: 'Scientific Journal',
+    desc: 'Academic paper, two-column, formal citations.',
+    colors: ['#f8f9fa', '#2c3e50', '#bdc3c7']
+  },
+  {
+    id: 'estate',
+    name: 'Real Estate',
+    desc: 'Luxury listings, full-width imagery, property specs.',
+    colors: ['#f5f5f7', '#1d1d1f', '#d2d2d7']
+  },
+  {
+    id: 'menu',
+    name: 'Tasting Menu',
+    desc: 'Michelin-star menu, serif headers, course structure.',
+    colors: ['#fffcf5', '#2c2c2c', '#e5e5e5']
+  },
+  {
+    id: 'airport',
+    name: 'Airport Departure',
+    desc: 'Flight information display, high contrast tables.',
+    colors: ['#222222', '#f0c420', '#ffffff']
+  },
+  {
+    id: 'audio',
+    name: 'Audio Guide',
+    desc: 'Museum audio device, dark mode, large buttons.',
+    colors: ['#333333', '#ff6600', '#ffffff']
+  },
+  {
+    id: 'psych',
+    name: 'Personality Test',
+    desc: 'Soft gradients, therapy tools, friendly UI.',
+    colors: ['#fdfbf7', '#ff9a9e', '#6b7c93']
+  },
+  {
+    id: 'weather',
+    name: 'Weather Forecast',
+    desc: 'Climate dashboard, icons, temporal structure.',
+    colors: ['#4facfe', '#00f2fe', '#ffffff']
+  },
+  {
+    id: 'legal',
+    name: 'Legal Contract',
+    desc: 'Terms sheet, dense text, monochrome formal.',
+    colors: ['#ffffff', '#000000', '#e5e5e5']
+  },
+  {
+    id: 'auction',
+    name: 'Auction House',
+    desc: 'Christie’s style catalog, elegant, provenance focused.',
+    colors: ['#f3f4f6', '#c5a059', '#333333']
+  },
 ];
 
 export default function ConceptsIndex() {
