@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { ArrowUpRight, ArrowRight } from 'lucide-react';
-import { fetchLatestConsoles } from '@/lib/api/latest';
-import { fetchRealWorldLatest } from '@/lib/api/real-world';
+import { fetchLatestConsoles, fetchRealWorldLatest } from '@/lib/api/latest';
 import { fetchConsoleList } from '@/lib/api/consoles';
 import QuickCompare from './QuickCompare';
 
