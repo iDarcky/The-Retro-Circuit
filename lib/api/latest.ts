@@ -38,6 +38,33 @@ export const fetchLatestConsoles = async (limit: number = 3): Promise<ConsoleDet
     }
 };
 
+// Fetch consoles sorted by release_year DESC (Real World Latest)
+export const fetchRealWorldLatest = async (limit: number = 3): Promise<ConsoleDetails[]> => {
+    try {
+        const { data, error } = await supabase
+            .from('consoles')
+            .select(`
+                *,
+                manufacturer:manufacturer(*),
+                variants:console_variants(*)
+            `)
+            // Sort by release_year DESC, nulls last
+            .order('release_year', { ascending: false, nullsFirst: false })
+            .limit(limit);
+
+        if (error) {
+            console.error('[API] fetchRealWorldLatest DB Error:', error.message);
+            return [];
+        }
+
+        return normalizeConsoles(data);
+
+    } catch (e) {
+        console.error('[API] Fetch Real World Latest Exception:', e);
+        return [];
+    }
+};
+
 function normalizeConsoles(data: any[] | null): ConsoleDetails[] {
     return (data || []).map((item: any) => {
         const variants = item.variants || [];
