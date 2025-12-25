@@ -4,7 +4,7 @@ import { fetchLatestConsoles } from '@/lib/api/latest';
 import { fetchConsoleList } from '@/lib/api/consoles';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Search } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 export default async function MuseumConcept() {
   const [realWorldLatest, dbLatest] = await Promise.all([

@@ -3,7 +3,7 @@ import { fetchRealWorldLatest } from '@/lib/api/real-world';
 import { fetchLatestConsoles } from '@/lib/api/latest';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Star, Zap, MessageSquare, Flame } from 'lucide-react';
+import { Flame } from 'lucide-react';
 
 export default async function MagazineConcept() {
   const [realWorldLatest, dbLatest] = await Promise.all([

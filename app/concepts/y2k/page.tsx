@@ -3,7 +3,7 @@ import { fetchRealWorldLatest } from '@/lib/api/real-world';
 import { fetchLatestConsoles } from '@/lib/api/latest';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, Globe, Music, Battery, Monitor, ChevronRight } from 'lucide-react';
+import { Search, Globe, Battery, Monitor, ChevronRight } from 'lucide-react';
 
 export default async function Y2KConcept() {
   const [realWorldLatest, dbLatest] = await Promise.all([

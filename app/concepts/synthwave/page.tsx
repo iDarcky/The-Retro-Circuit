@@ -3,7 +3,7 @@ import { fetchRealWorldLatest } from '@/lib/api/real-world';
 import { fetchLatestConsoles } from '@/lib/api/latest';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Sun, Play, Disc } from 'lucide-react';
+import { Play, Disc } from 'lucide-react';
 
 export default async function SynthwaveConcept() {
   const [realWorldLatest, dbLatest] = await Promise.all([

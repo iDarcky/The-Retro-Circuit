@@ -3,7 +3,7 @@ import { fetchRealWorldLatest } from '@/lib/api/real-world';
 import { fetchLatestConsoles } from '@/lib/api/latest';
 import { fetchConsoleList } from '@/lib/api/consoles';
 import Link from 'next/link';
-import { ArrowRight, Terminal, Zap, Database, Activity, Cpu } from 'lucide-react';
+import { ArrowRight, Terminal, Zap, Activity, Cpu } from 'lucide-react';
 import Image from 'next/image';
 
 // --- COMPONENTS ---
