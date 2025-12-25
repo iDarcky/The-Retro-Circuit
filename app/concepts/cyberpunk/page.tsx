@@ -1,7 +1,6 @@
 
 import { fetchRealWorldLatest } from '@/lib/api/real-world';
 import { fetchLatestConsoles } from '@/lib/api/latest';
-import { fetchConsoleList } from '@/lib/api/consoles';
 import Link from 'next/link';
 import { ArrowRight, Terminal, Zap, Activity, Cpu } from 'lucide-react';
 import Image from 'next/image';
@@ -40,10 +39,9 @@ const CyberCard = ({ children, className = "" }: { children: React.ReactNode, cl
 // --- PAGE ---
 
 export default async function CyberpunkConcept() {
-  const [realWorldLatest, dbLatest, allConsoles] = await Promise.all([
+  const [realWorldLatest, dbLatest] = await Promise.all([
     fetchRealWorldLatest(4),
-    fetchLatestConsoles(5),
-    fetchConsoleList()
+    fetchLatestConsoles(5)
   ]);
 
   return (

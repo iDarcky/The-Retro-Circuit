@@ -1,7 +1,6 @@
 
 import { fetchRealWorldLatest } from '@/lib/api/real-world';
 import { fetchLatestConsoles } from '@/lib/api/latest';
-import { fetchConsoleList } from '@/lib/api/consoles';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
