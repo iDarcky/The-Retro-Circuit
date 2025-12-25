@@ -1,11 +1,11 @@
 export const revalidate = 60;
 
-import LandingPage from '@/components/landing/LandingPage';
+import HomepageV1 from '@/components/landing/HomepageV1';
 
 export default async function ControlRoomPage() {
   return (
     <div className="w-full">
-      <LandingPage />
+      <HomepageV1 />
     </div>
   );
 }
