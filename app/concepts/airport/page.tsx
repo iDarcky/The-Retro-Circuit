@@ -2,7 +2,6 @@
 import { fetchRealWorldLatest } from '@/lib/api/real-world';
 import { fetchLatestConsoles } from '@/lib/api/latest';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Plane, ArrowRight } from 'lucide-react';
 
 export default async function AirportConcept() {
