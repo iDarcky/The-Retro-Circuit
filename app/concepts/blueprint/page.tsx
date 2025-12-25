@@ -145,9 +145,9 @@ export default async function BlueprintConcept() {
             <div>
                <h3 className="font-bold mb-4 uppercase text-sm">Database Append Logs</h3>
                <ul className="space-y-2 text-xs font-mono">
-                  {dbLatest.map((c, i) => (
+                  {dbLatest.map((c) => (
                      <li key={c.id} className="flex gap-4 opacity-70 hover:opacity-100">
-                        <span>[LOG_00{i+1}]</span>
+                        <span>[LOG_{c.id.substring(0,4)}]</span>
                         <span>{c.name}</span>
                         <span className="ml-auto">OK</span>
                      </li>

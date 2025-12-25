@@ -63,12 +63,12 @@ export default async function AirportConcept() {
                      </tr>
                   </thead>
                   <tbody className="text-sm font-bold">
-                     {realWorldLatest.map((c, i) => (
+                     {realWorldLatest.map((c) => (
                         <tr key={c.id} className="border-b border-[#222] hover:bg-[#222] transition-colors">
                            <td className="p-3 text-white">{c.release_year}</td>
                            <td className="p-3 text-[#f0c420] uppercase">{c.name}</td>
                            <td className="p-3 text-white uppercase">{c.manufacturer?.name}</td>
-                           <td className="p-3 text-white">A{i+1}</td>
+                           <td className="p-3 text-white">A{c.id.substring(0,2)}</td>
                            <td className="p-3 text-[#00ff00] uppercase">BOARDING</td>
                         </tr>
                      ))}

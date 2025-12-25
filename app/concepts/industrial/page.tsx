@@ -56,9 +56,9 @@ export default async function IndustrialConcept() {
                <span className="font-mono text-xs text-[#666]">SCROLL &rarr;</span>
             </div>
             <div className="flex overflow-x-auto divide-x divide-[#333]">
-               {realWorldLatest.map((c, i) => (
+               {realWorldLatest.map((c) => (
                   <div key={c.id} className="min-w-[300px] md:min-w-[400px] p-8 md:p-12 hover:bg-[#222] transition-colors group">
-                     <span className="font-mono text-xs text-[#666] mb-8 block">UNIT {i+1}</span>
+                     <span className="font-mono text-xs text-[#666] mb-8 block">UNIT {c.id.substring(0,3)}</span>
                      <div className="h-40 mb-8 grayscale group-hover:grayscale-0 transition-all opacity-60 group-hover:opacity-100 flex items-center">
                          {c.image_url ? (
                             <Image src={c.image_url} alt={c.name} width={200} height={150} className="object-contain" />

@@ -129,9 +129,9 @@ export default async function CowboyConcept() {
                Town Ledger (Recent Arrivals)
             </h3>
             <ul className="space-y-4 font-mono text-sm">
-               {dbLatest.map((c, i) => (
+               {dbLatest.map((c) => (
                   <li key={c.id} className="flex justify-between border-b border-dashed border-[#4a3b2a] pb-1 items-end">
-                     <span>{i+1}. {c.name.toUpperCase()}</span>
+                     <span>{c.name.toUpperCase()}</span>
                      <span className="opacity-50">....... CHECKED IN</span>
                   </li>
                ))}

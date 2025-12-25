@@ -57,9 +57,9 @@ export default async function TerminalConcept() {
                       </tr>
                    </thead>
                    <tbody>
-                      {realWorldLatest.map((c, i) => (
+                      {realWorldLatest.map((c) => (
                          <tr key={c.id} className="hover:bg-[#002200] hover:text-white cursor-pointer group">
-                            <td className="py-1 pr-4 text-[#005500] group-hover:text-white">0x0{i}</td>
+                            <td className="py-1 pr-4 text-[#005500] group-hover:text-white">0x{c.id.substring(0,3)}</td>
                             <td className="py-1 pr-4">{c.name}</td>
                             <td className="py-1 pr-4">{c.manufacturer?.name}</td>
                             <td className="py-1">{c.release_year}</td>

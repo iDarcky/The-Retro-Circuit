@@ -42,8 +42,8 @@ export default async function LuxuryConcept() {
          {/* LATEST RELEASED (Runway) */}
          <section className="mb-32">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-12 items-end">
-               {realWorldLatest.map((c, i) => (
-                  <div key={c.id} className={`flex flex-col ${i === 1 ? 'md:-translate-y-24' : ''}`}>
+               {realWorldLatest.map((c) => (
+                  <div key={c.id} className="flex flex-col">
                      <div className="bg-gray-50 aspect-[3/4] mb-6 flex items-center justify-center p-8 relative group cursor-pointer overflow-hidden">
                         {c.image_url ? (
                            <Image src={c.image_url} alt={c.name} width={400} height={500} className="object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-700" />
@@ -87,10 +87,10 @@ export default async function LuxuryConcept() {
          <section className="max-w-2xl mx-auto">
             <h3 className="text-center text-xs tracking-[0.3em] uppercase mb-16 text-gray-400">Archive Index</h3>
             <div className="space-y-8">
-               {dbLatest.map((c, i) => (
+               {dbLatest.map((c) => (
                   <div key={c.id} className="flex items-baseline justify-between group cursor-pointer">
                      <div className="flex items-baseline gap-8">
-                        <span className="text-[10px] text-gray-300">00{i+1}</span>
+                        <span className="text-[10px] text-gray-300">00{c.id.substring(0,2)}</span>
                         <span className="text-2xl font-light group-hover:underline underline-offset-8 decoration-1 decoration-gray-200">{c.name}</span>
                      </div>
                      <span className="text-[10px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">View Look</span>

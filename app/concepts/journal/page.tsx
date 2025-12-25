@@ -53,7 +53,7 @@ export default async function JournalConcept() {
             <div className="lg:col-span-8">
                <h2 className="font-sans text-xs font-bold uppercase text-gray-400 mb-6 tracking-wider border-b border-gray-300 pb-2">Recent Publications</h2>
                <div className="space-y-8">
-                  {realWorldLatest.map((c, i) => (
+                  {realWorldLatest.map((c) => (
                      <div key={c.id} className="flex gap-6 items-start group cursor-pointer hover:bg-white p-4 -ml-4 transition-colors rounded-sm">
                         <div className="w-24 h-32 bg-gray-100 border border-gray-200 shrink-0 flex items-center justify-center p-2">
                            {c.image_url ? (

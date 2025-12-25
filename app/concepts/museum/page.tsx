@@ -97,10 +97,10 @@ export default async function MuseumConcept() {
            <div className="max-w-4xl mx-auto">
               <h3 className="text-center font-sans text-xs font-bold tracking-[0.3em] mb-12 text-gray-400">ARCHIVE UPDATES</h3>
               <div className="space-y-8">
-                 {dbLatest.map((c, i) => (
+                 {dbLatest.map((c) => (
                    <div key={c.id} className="flex items-center justify-between border-b border-gray-100 pb-8 group hover:pl-4 transition-all">
                       <div className="flex items-baseline gap-6">
-                        <span className="font-sans text-xs text-[#d4af37]">0{i+1}</span>
+                        <span className="font-sans text-xs text-[#d4af37]">REF-{c.id.substring(0,3)}</span>
                         <h4 className="text-2xl font-light group-hover:italic transition-all">{c.name}</h4>
                       </div>
                       <span className="font-sans text-xs text-gray-300 uppercase tracking-widest group-hover:text-black transition-colors">View Record</span>

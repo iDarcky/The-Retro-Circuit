@@ -85,9 +85,9 @@ export default async function EightBitConcept() {
          <section className="bg-[#000088] border-4 border-white p-6 text-white text-xs md:text-sm leading-loose shadow-[8px_8px_0_black]">
              <h3 className="text-center mb-6 text-[#00ccff]">HIGH SCORES (DB)</h3>
              <ul className="space-y-2">
-                {dbLatest.map((c, i) => (
+                {dbLatest.map((c) => (
                    <li key={c.id} className="flex justify-between border-b border-blue-800 pb-1">
-                      <span>{i+1}. {c.name.toUpperCase()}</span>
+                      <span>{c.name.toUpperCase()}</span>
                       <span>{Math.floor(Math.random() * 50000)} PTS</span>
                    </li>
                 ))}
