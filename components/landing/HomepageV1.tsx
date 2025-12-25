@@ -68,22 +68,22 @@ export default async function HomepageV1() {
       {/* GRID CONTAINER */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8">
 
-        {/* 2. FINDER HERO (XL) - col-span-12 */}
-        <div className="col-span-1 md:col-span-12 relative group">
+        {/* 2. FINDER HERO (XL) - col-span-12, Inner Grid 8/4 */}
+        <div className="col-span-1 md:col-span-12 relative group w-full">
           {/* Glow Effect */}
           <div className="absolute -inset-1 bg-gradient-to-r from-accent/20 to-primary/20 blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
 
-          <div className="relative bg-black/80 border-2 border-accent p-8 md:p-12 lg:p-16 flex flex-col md:flex-row items-start md:items-center justify-between gap-8 backdrop-blur-sm min-h-[300px]">
-            <div className="max-w-3xl">
+          <div className="relative bg-black/80 border-2 border-accent p-8 md:p-12 lg:p-16 grid grid-cols-1 md:grid-cols-12 gap-8 items-center backdrop-blur-sm min-h-[300px]">
+            <div className="md:col-span-8">
               <h2 className="text-5xl md:text-7xl font-pixel text-white mb-6 drop-shadow-[4px_4px_0_rgba(255,107,157,0.4)]">
                 FINDER<span className="animate-pulse">_</span>
               </h2>
-              <p className="text-xl md:text-2xl text-gray-300 font-tech leading-relaxed max-w-xl">
+              <p className="text-xl md:text-2xl text-gray-300 font-tech leading-relaxed">
                 Identify the perfect handheld for your library and budget.
               </p>
             </div>
 
-            <div className="flex flex-col items-start md:items-end gap-4 shrink-0">
+            <div className="md:col-span-4 flex flex-col items-start md:items-end gap-4">
               <Link
                 href="/finder"
                 className="bg-accent hover:bg-white text-black text-xl md:text-2xl font-bold font-pixel px-10 py-6 shadow-[8px_8px_0_rgba(0,0,0,0.5)] hover:shadow-[10px_10px_0_rgba(255,255,255,0.2)] hover:-translate-y-1 transition-all flex items-center gap-4"
@@ -98,12 +98,12 @@ export default async function HomepageV1() {
           </div>
         </div>
 
-        {/* 3. DATABASE MODULE (L) - col-span-12 */}
-        <div className="col-span-1 md:col-span-12 bg-bg-secondary/5 border-y border-white/5 p-8 md:p-10">
+        {/* 3. DATABASE MODULE (L) - col-span-12, w-full */}
+        <div className="col-span-1 md:col-span-12 w-full bg-bg-secondary/5 border-y border-white/5 p-8 md:p-10">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-            <div>
+            <div className="max-w-4xl"> {/* Relaxed max-w slightly but kept for readability */}
               <SectionHeader title="CONSOLE VAULT" iconColor="primary" />
-              <p className="text-sm md:text-base text-gray-500 font-mono max-w-lg -mt-4 mb-2">
+              <p className="text-sm md:text-base text-gray-500 font-mono -mt-4 mb-2">
                 Comprehensive specifications for {allConsoles.length}+ devices. Search, filter, and analyze the entire history of handhelds.
               </p>
             </div>
@@ -127,8 +127,8 @@ export default async function HomepageV1() {
           </div>
         </div>
 
-        {/* 4. VS MODULE (M) - Split 4/8 */}
-        <div className="col-span-1 md:col-span-12 border border-white/5 bg-black/20 p-8 rounded-sm grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12">
+        {/* 4. VS MODULE (M) - Split 4/8, col-span-12, w-full */}
+        <div className="col-span-1 md:col-span-12 w-full border border-white/5 bg-black/20 p-8 rounded-sm grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12">
           {/* Left Text: col-span-4 */}
           <div className="md:col-span-4 flex flex-col justify-center">
               <SectionHeader title="QUICK COMPARE" iconColor="secondary" />
@@ -146,13 +146,13 @@ export default async function HomepageV1() {
           </div>
 
           {/* Right Widget: col-span-8 */}
-          <div className="md:col-span-8">
+          <div className="md:col-span-8 w-full">
              <QuickCompare consoles={allConsoles} />
           </div>
         </div>
 
-        {/* 5. RAILS (S) - Side-by-side 6/6 */}
-        <div className="col-span-1 md:col-span-6 flex flex-col h-full">
+        {/* 5. RAILS (S) - Side-by-side 6/6, w-full */}
+        <div className="col-span-1 md:col-span-6 w-full flex flex-col h-full">
             <h3 className="text-xs font-mono text-gray-500 uppercase tracking-widest mb-6 border-b border-white/5 pb-2">
               LATEST ADDED
             </h3>
@@ -168,7 +168,7 @@ export default async function HomepageV1() {
             </div>
         </div>
 
-        <div className="col-span-1 md:col-span-6 flex flex-col h-full">
+        <div className="col-span-1 md:col-span-6 w-full flex flex-col h-full">
             <h3 className="text-xs font-mono text-gray-500 uppercase tracking-widest mb-6 border-b border-white/5 pb-2">
               LATEST RELEASED
             </h3>
@@ -184,8 +184,8 @@ export default async function HomepageV1() {
             </div>
         </div>
 
-        {/* 6. SIGNALS TEASER (XS) - col-span-12 */}
-        <div className="col-span-1 md:col-span-12 mt-4 pt-8 border-t border-white/5 opacity-80 hover:opacity-100 transition-opacity">
+        {/* 6. SIGNALS TEASER (XS) - col-span-12, w-full */}
+        <div className="col-span-1 md:col-span-12 w-full mt-4 pt-8 border-t border-white/5 opacity-80 hover:opacity-100 transition-opacity">
           <div className="flex flex-col md:flex-row items-baseline gap-4 md:gap-8">
              <h3 className="text-xs font-pixel text-gray-600 shrink-0">SIGNALS_</h3>
              <div className="flex-1">
