@@ -82,7 +82,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             if (initialData.release_date_precision) {
                 setDatePrecision(initialData.release_date_precision as any);
                 if (initialData.release_date) {
-                    const [y, m, d] = initialData.release_date.split('-');
+                    const [y, m] = initialData.release_date.split('-');
                     if (initialData.release_date_precision === 'year') setDateValue(y);
                     else if (initialData.release_date_precision === 'month') setDateValue(`${y}-${m}`);
                     else setDateValue(initialData.release_date);
