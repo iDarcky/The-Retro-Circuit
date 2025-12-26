@@ -458,51 +458,106 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                                 {/* NEW PROFILE DATA */}
                                 {mergedSpecs.variant_input_profile ? (
                                     <>
+                                        {/* D-Pad */}
                                         <div className="grid grid-cols-2 gap-4">
-                                            <SpecField label="D-Pad Shape" value={mergedSpecs.variant_input_profile.dpad_shape} small />
-                                            <SpecField label="D-Pad Tech" value={mergedSpecs.variant_input_profile.dpad_tech} small />
+                                            <SpecField label="D-pad tech" value={mergedSpecs.variant_input_profile.dpad_tech} small />
+                                            <SpecField label="D-pad shape" value={mergedSpecs.variant_input_profile.dpad_shape} small />
                                         </div>
-                                        <div className="grid grid-cols-2 gap-4 mt-2">
-                                            <SpecField label="Face Layout" value={mergedSpecs.variant_input_profile.face_button_layout} small />
-                                            <SpecField label="Face Tech" value={mergedSpecs.variant_input_profile.face_button_tech} small />
-                                        </div>
+                                        {mergedSpecs.variant_input_profile.dpad_placement && (
+                                            <SpecField label="D-pad placement" value={mergedSpecs.variant_input_profile.dpad_placement} small />
+                                        )}
 
-                                        <div className="mt-3 pt-2 border-t border-white/5">
-                                            <div className="text-[9px] text-gray-500 uppercase mb-1">Analog Sticks ({mergedSpecs.variant_input_profile.stick_count || 0})</div>
-                                            <SpecField label="Tech" value={mergedSpecs.variant_input_profile.stick_tech} small />
-                                            <SpecField label="Layout" value={mergedSpecs.variant_input_profile.stick_layout} small />
-                                            <SpecField label="Cap" value={mergedSpecs.variant_input_profile.stick_cap} small />
-                                            <div className="flex justify-between items-center py-1">
-                                                <span className="font-mono text-[10px] text-gray-500 uppercase">L3/R3</span>
-                                                <TechBadge label="CLICKABLE" active={mergedSpecs.variant_input_profile.stick_clicks} />
-                                            </div>
-                                        </div>
-
+                                        {/* Face Buttons */}
                                         <div className="mt-3 pt-2 border-t border-white/5">
                                             <div className="grid grid-cols-2 gap-4">
-                                                <SpecField label="Bumper" value={mergedSpecs.variant_input_profile.bumper_tech} small />
-                                                <SpecField label="Trigger" value={mergedSpecs.variant_input_profile.trigger_tech} small />
+                                                <SpecField label="Face buttons" value={mergedSpecs.variant_input_profile.face_button_count} small />
+                                                <SpecField label="Face button layout" value={mergedSpecs.variant_input_profile.face_button_layout} small />
                                             </div>
                                             <div className="grid grid-cols-2 gap-4 mt-1">
-                                                <SpecField label="Trig Type" value={mergedSpecs.variant_input_profile.trigger_type} small />
-                                                <SpecField label="Layout" value={mergedSpecs.variant_input_profile.trigger_layout} small />
+                                                <SpecField label="Face button tech" value={mergedSpecs.variant_input_profile.face_button_tech} small />
+                                                <SpecField label="Button labels" value={mergedSpecs.variant_input_profile.face_label_scheme} small />
                                             </div>
                                         </div>
 
+                                        {/* Analog Sticks */}
                                         <div className="mt-3 pt-2 border-t border-white/5">
-                                            <SpecField label="Haptics" value={mergedSpecs.haptics} small />
-                                            <SpecField label="Sys Buttons" value={mergedSpecs.variant_input_profile.system_buttons_text} small />
-                                            <div className="flex flex-wrap gap-2 mt-2">
-                                                <TechBadge label="GYROSCOPE" active={mergedSpecs.variant_input_profile.has_gyro} />
-                                                {mergedSpecs.variant_input_profile.back_button_count ? (
-                                                    <TechBadge label={`BACK BTNS (${mergedSpecs.variant_input_profile.back_button_count})`} active={true} />
-                                                ) : null}
-                                                <TechBadge label="KEYBOARD" active={mergedSpecs.variant_input_profile.has_keyboard} />
-                                                {mergedSpecs.variant_input_profile.touchpad_count ? (
-                                                    <TechBadge label={`TOUCHPAD (${mergedSpecs.variant_input_profile.touchpad_count})`} active={true} />
-                                                ) : null}
+                                            <div className="text-[9px] text-gray-500 uppercase mb-1">Analog sticks ({mergedSpecs.variant_input_profile.stick_count || 0})</div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <SpecField label="Stick tech" value={mergedSpecs.variant_input_profile.stick_tech} small />
+                                                <SpecField label="Stick layout" value={mergedSpecs.variant_input_profile.stick_layout} small />
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4 mt-1">
+                                                <SpecField label="Stick cap" value={mergedSpecs.variant_input_profile.stick_cap} small />
+                                                <div className="flex items-center">
+                                                    <span className="font-mono text-[10px] text-gray-500 uppercase mr-2">Stick clicks (L3/R3)</span>
+                                                    <TechBadge label="YES" active={mergedSpecs.variant_input_profile.stick_clicks} />
+                                                </div>
                                             </div>
                                         </div>
+
+                                        {/* Bumpers & Triggers */}
+                                        <div className="mt-3 pt-2 border-t border-white/5">
+                                            <SpecField label="Bumper tech (L1/R1)" value={mergedSpecs.variant_input_profile.bumper_tech} small />
+                                            <div className="grid grid-cols-2 gap-4 mt-1">
+                                                <SpecField label="Trigger type (L2/R2)" value={mergedSpecs.variant_input_profile.trigger_type} small />
+                                                <SpecField label="Trigger tech (L2/R2)" value={mergedSpecs.variant_input_profile.trigger_tech} small />
+                                            </div>
+                                            <SpecField label="Trigger layout" value={mergedSpecs.variant_input_profile.trigger_layout} small />
+                                        </div>
+
+                                        {/* Extra Inputs */}
+                                        <div className="mt-3 pt-2 border-t border-white/5">
+                                            <SpecField label="Back buttons" value={mergedSpecs.variant_input_profile.back_button_count} small />
+
+                                            <div className="flex items-center justify-between py-1 border-b border-white/5 mb-2">
+                                                <span className="font-mono text-[10px] text-gray-500 uppercase">Gyro / motion controls</span>
+                                                <TechBadge label="ENABLED" active={mergedSpecs.variant_input_profile.has_gyro} />
+                                            </div>
+
+                                            {mergedSpecs.variant_input_profile.has_keyboard && (
+                                                <div className="grid grid-cols-2 gap-4 mb-2">
+                                                    <div className="flex items-center">
+                                                        <span className="font-mono text-[10px] text-gray-500 uppercase mr-2">Keyboard</span>
+                                                        <TechBadge label="YES" active={true} />
+                                                    </div>
+                                                    <SpecField label="Keyboard type" value={mergedSpecs.variant_input_profile.keyboard_type} small />
+                                                </div>
+                                            )}
+
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <SpecField label="System buttons" value={mergedSpecs.variant_input_profile.system_button_set} small />
+                                                <SpecField label="Extra buttons (details)" value={mergedSpecs.variant_input_profile.system_buttons_text} small />
+                                            </div>
+
+                                            {mergedSpecs.variant_input_profile.touchpad_count ? (
+                                                <div className="grid grid-cols-2 gap-4 mt-2">
+                                                    <SpecField label="Touchpads" value={mergedSpecs.variant_input_profile.touchpad_count} small />
+                                                    <div className="flex items-center">
+                                                        <span className="font-mono text-[10px] text-gray-500 uppercase mr-2">Touchpad clicks</span>
+                                                        <TechBadge label="YES" active={mergedSpecs.variant_input_profile.touchpad_clickable} />
+                                                    </div>
+                                                </div>
+                                            ) : null}
+                                        </div>
+
+                                        {/* Meta */}
+                                        {(mergedSpecs.variant_input_profile.input_notes || mergedSpecs.variant_input_profile.input_confidence) && (
+                                            <div className="mt-3 pt-2 border-t border-white/5">
+                                                {mergedSpecs.variant_input_profile.input_confidence && (
+                                                    <div className="text-[9px] font-mono text-gray-500 mb-1">
+                                                        Data confidence: <span className={mergedSpecs.variant_input_profile.input_confidence === 'confirmed' ? 'text-secondary' : 'text-accent'}>{mergedSpecs.variant_input_profile.input_confidence.toUpperCase()}</span>
+                                                    </div>
+                                                )}
+                                                {mergedSpecs.variant_input_profile.input_notes && (
+                                                    <div className="mt-1">
+                                                        <span className="text-[9px] font-mono text-gray-500 uppercase block">Notes</span>
+                                                        <p className="text-[10px] font-mono text-gray-400 italic">
+                                                            "{mergedSpecs.variant_input_profile.input_notes}"
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
                                     </>
                                 ) : (
                                     <div className="opacity-50 text-xs font-mono text-gray-500 text-center py-4">
