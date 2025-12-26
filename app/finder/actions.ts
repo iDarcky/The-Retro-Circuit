@@ -70,6 +70,12 @@ export async function getFinderResults(
                 case 'wifi':
                     return !!variant.wifi_specs;
                 case 'dual_sticks':
+                    // Check new input profile first, fallback to legacy checks if needed (though deprecated)
+                    if (variant.variant_input_profile) {
+                         const count = variant.variant_input_profile.stick_count;
+                         return count !== null && count >= 2;
+                    }
+                    // Fallback for legacy data/structure if input_profile is missing
                     const sticks = (variant.thumbstick_layout || '') + (variant.input_layout || '');
                     return sticks.toLowerCase().includes('dual') || sticks.toLowerCase().includes('twin');
                 case 'dual_screen':

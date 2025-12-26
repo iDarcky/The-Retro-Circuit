@@ -385,38 +385,94 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                         {/* 4. INPUT & CONTROLS */}
                         <SpecCard title="INPUT & CONTROLS">
-                            <SpecField label="Layout" value={mergedSpecs.input_layout} />
-                            <SpecField label="Buttons" value={mergedSpecs.other_buttons} small />
-                            <div className="grid grid-cols-2 gap-4 mt-2">
-                                <SpecField label="D-Pad" value={mergedSpecs.dpad_mechanism} small />
-                                <SpecField label="Face Btn" value={mergedSpecs.action_button_mechanism} small />
-                            </div>
-                            
-                            <div className="mt-3 pt-2 border-t border-white/5">
-                                <div className="text-[9px] text-gray-500 uppercase mb-1">Analog Sticks</div>
-                                <SpecField label="Tech" value={mergedSpecs.thumbstick_mechanism} small />
-                                <SpecField label="Layout" value={mergedSpecs.thumbstick_layout} small />
-                                <div className="flex justify-between items-center py-1">
-                                    <span className="font-mono text-[10px] text-gray-500 uppercase">L3/R3</span>
-                                    <TechBadge label="CLICKABLE" active={mergedSpecs.has_stick_clicks} />
-                                </div>
-                            </div>
+                            {/* NEW PROFILE DATA */}
+                            {mergedSpecs.variant_input_profile ? (
+                                <>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <SpecField label="D-Pad Shape" value={mergedSpecs.variant_input_profile.dpad_shape} small />
+                                        <SpecField label="D-Pad Tech" value={mergedSpecs.variant_input_profile.dpad_tech} small />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4 mt-2">
+                                        <SpecField label="Face Layout" value={mergedSpecs.variant_input_profile.face_button_layout} small />
+                                        <SpecField label="Face Tech" value={mergedSpecs.variant_input_profile.face_button_tech} small />
+                                    </div>
 
-                            <div className="mt-3 pt-2 border-t border-white/5">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <SpecField label="L1/R1" value={mergedSpecs.bumper_mechanism} small />
-                                    <SpecField label="L2/R2" value={mergedSpecs.trigger_mechanism} small />
-                                </div>
-                                <SpecField label="Shoulder Style" value={mergedSpecs.shoulder_layout} small />
-                            </div>
+                                    <div className="mt-3 pt-2 border-t border-white/5">
+                                        <div className="text-[9px] text-gray-500 uppercase mb-1">Analog Sticks ({mergedSpecs.variant_input_profile.stick_count || 0})</div>
+                                        <SpecField label="Tech" value={mergedSpecs.variant_input_profile.stick_tech} small />
+                                        <SpecField label="Layout" value={mergedSpecs.variant_input_profile.stick_layout} small />
+                                        <SpecField label="Cap" value={mergedSpecs.variant_input_profile.stick_cap} small />
+                                        <div className="flex justify-between items-center py-1">
+                                            <span className="font-mono text-[10px] text-gray-500 uppercase">L3/R3</span>
+                                            <TechBadge label="CLICKABLE" active={mergedSpecs.variant_input_profile.stick_clicks} />
+                                        </div>
+                                    </div>
 
-                            <div className="mt-3 pt-2 border-t border-white/5">
-                                <SpecField label="Haptics" value={mergedSpecs.haptics} small />
-                                <div className="flex flex-wrap gap-2 mt-2">
-                                    <TechBadge label="GYROSCOPE" active={mergedSpecs.gyro} />
-                                    <TechBadge label="BACK BUTTONS" active={mergedSpecs.has_back_buttons} />
-                                </div>
-                            </div>
+                                    <div className="mt-3 pt-2 border-t border-white/5">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <SpecField label="Bumper" value={mergedSpecs.variant_input_profile.bumper_tech} small />
+                                            <SpecField label="Trigger" value={mergedSpecs.variant_input_profile.trigger_tech} small />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4 mt-1">
+                                            <SpecField label="Trig Type" value={mergedSpecs.variant_input_profile.trigger_type} small />
+                                            <SpecField label="Layout" value={mergedSpecs.variant_input_profile.trigger_layout} small />
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-3 pt-2 border-t border-white/5">
+                                        <SpecField label="Haptics" value={mergedSpecs.haptics} small />
+                                        <SpecField label="Sys Buttons" value={mergedSpecs.variant_input_profile.system_buttons_text} small />
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            <TechBadge label="GYROSCOPE" active={mergedSpecs.variant_input_profile.has_gyro} />
+                                            {mergedSpecs.variant_input_profile.back_button_count ? (
+                                                <TechBadge label={`BACK BTNS (${mergedSpecs.variant_input_profile.back_button_count})`} active={true} />
+                                            ) : null}
+                                            <TechBadge label="KEYBOARD" active={mergedSpecs.variant_input_profile.has_keyboard} />
+                                            {mergedSpecs.variant_input_profile.touchpad_count ? (
+                                                <TechBadge label={`TOUCHPAD (${mergedSpecs.variant_input_profile.touchpad_count})`} active={true} />
+                                            ) : null}
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    {/* LEGACY FALLBACK (Read Only) */}
+                                    <div className="opacity-70">
+                                        <SpecField label="Layout" value={mergedSpecs.input_layout} />
+                                        <SpecField label="Buttons" value={mergedSpecs.other_buttons} small />
+                                        <div className="grid grid-cols-2 gap-4 mt-2">
+                                            <SpecField label="D-Pad" value={mergedSpecs.dpad_mechanism} small />
+                                            <SpecField label="Face Btn" value={mergedSpecs.action_button_mechanism} small />
+                                        </div>
+
+                                        <div className="mt-3 pt-2 border-t border-white/5">
+                                            <div className="text-[9px] text-gray-500 uppercase mb-1">Analog Sticks</div>
+                                            <SpecField label="Tech" value={mergedSpecs.thumbstick_mechanism} small />
+                                            <SpecField label="Layout" value={mergedSpecs.thumbstick_layout} small />
+                                            <div className="flex justify-between items-center py-1">
+                                                <span className="font-mono text-[10px] text-gray-500 uppercase">L3/R3</span>
+                                                <TechBadge label="CLICKABLE" active={mergedSpecs.has_stick_clicks} />
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-3 pt-2 border-t border-white/5">
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <SpecField label="L1/R1" value={mergedSpecs.bumper_mechanism} small />
+                                                <SpecField label="L2/R2" value={mergedSpecs.trigger_mechanism} small />
+                                            </div>
+                                            <SpecField label="Shoulder Style" value={mergedSpecs.shoulder_layout} small />
+                                        </div>
+
+                                        <div className="mt-3 pt-2 border-t border-white/5">
+                                            <SpecField label="Haptics" value={mergedSpecs.haptics} small />
+                                            <div className="flex flex-wrap gap-2 mt-2">
+                                                <TechBadge label="GYROSCOPE" active={mergedSpecs.gyro} />
+                                                <TechBadge label="BACK BUTTONS" active={mergedSpecs.has_back_buttons} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </SpecCard>
 
                         {/* 5. CONNECTIVITY & IO */}
