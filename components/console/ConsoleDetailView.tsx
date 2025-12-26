@@ -31,8 +31,14 @@ const hasData = (keys: string[], specs: any): boolean => {
              // We treat input profile as 'having data' if the object exists AND has at least one meaningful field
              const profile = specs.variant_input_profile;
              if (!profile) return false;
-             // Check a few core fields
-             return !!profile.dpad_tech || !!profile.face_button_tech || !!profile.stick_tech || !!profile.trigger_tech;
+
+             // Check if ANY value in the profile object is truthy (excluding id, timestamps, etc if needed, but loosely checking keys is safer)
+             // We exclude 'variant_id' and 'input_confidence' being 'unknown'
+             return Object.entries(profile).some(([k, v]) => {
+                 if (k === 'variant_id' || k === 'created_at' || k === 'updated_at') return false;
+                 if (k === 'input_confidence' && v === 'unknown') return false;
+                 return v !== null && v !== undefined && v !== '';
+             });
         }
 
         const val = specs[key];
