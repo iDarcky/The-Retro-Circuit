@@ -546,7 +546,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                                             <div className="mt-3 pt-2 border-t border-white/5">
                                                 {mergedSpecs.variant_input_profile.input_confidence && (
                                                     <div className="text-[9px] font-mono text-gray-500 mb-1">
-                                                        Data confidence: <span className={mergedSpecs.variant_input_profile.input_confidence === 'confirmed' ? 'text-secondary' : 'text-accent'}>{formatInputEnum('rc_confidence', mergedSpecs.variant_input_profile.input_confidence).toUpperCase()}</span>
+                                                        Data confidence: <span className={mergedSpecs.variant_input_profile.input_confidence === 'confirmed' ? 'text-secondary' : 'text-accent'}>{(formatInputEnum('rc_confidence', mergedSpecs.variant_input_profile.input_confidence) || '').toUpperCase()}</span>
                                                     </div>
                                                 )}
                                                 {mergedSpecs.variant_input_profile.input_notes && (

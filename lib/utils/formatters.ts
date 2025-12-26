@@ -2,39 +2,41 @@
 // Map of Enum Keys to Human Readable Labels
 export const INPUT_ENUM_LABELS: Record<string, Record<string, string>> = {
     rc_button_tech: {
-        'membrane': 'Rubber membrane',
-        'microswitch': 'Microswitch (clicky)',
-        'mechanical': 'Mechanical switch',
-        'hall': 'Hall effect',
+        'membrane': 'Membrane',
+        'microswitch': 'Microswitch',
+        'mechanical': 'Mechanical',
+        'hall': 'Hall',
         'potentiometer': 'Potentiometer',
-        'spring': 'Spring mechanism',
-        'optical': 'Optical sensor',
+        'spring': 'Spring',
+        'optical': 'Optical',
         'unknown': 'Unknown',
     },
     rc_dpad_shape: {
         'cross': 'Cross',
         'disc': 'Disc',
-        'segmented': 'Segmented / split',
+        'segmented': 'Segmented',
         'unknown': 'Unknown',
     },
     rc_placement: {
         'left': 'Left',
         'right': 'Right',
-        'center': 'Centered',
+        'center': 'Center',
+        'top': 'Top',
+        'bottom': 'Bottom',
         'unknown': 'Unknown',
     },
     rc_face_layout: {
-        'diamond': 'Diamond (4-button)',
+        'diamond': 'Diamond',
         'inline': 'Inline',
-        'arcade_6': 'Arcade (6-button)',
-        'split': 'Split layout',
+        'arcade_6': 'Arcade_6',
+        'split': 'Split',
         'unknown': 'Unknown',
     },
     rc_label_scheme: {
-        'nintendo': 'Nintendo (A/B/X/Y)',
-        'xbox': 'Xbox (A/B/X/Y)',
-        'playstation': 'PlayStation (△ ○ × □)',
-        'generic': 'Generic / unbranded',
+        'nintendo': 'Nintendo',
+        'xbox': 'Xbox',
+        'playstation': 'Playstation',
+        'generic': 'Generic',
         'unknown': 'Unknown',
     },
     rc_stick_layout: {
@@ -52,8 +54,8 @@ export const INPUT_ENUM_LABELS: Record<string, Record<string, string>> = {
         'unknown': 'Unknown',
     },
     rc_trigger_type: {
-        'digital': 'Digital (on/off)',
-        'analog': 'Analog (pressure)',
+        'digital': 'Digital',
+        'analog': 'Analog',
         'unknown': 'Unknown',
     },
     rc_trigger_layout: {
@@ -62,14 +64,14 @@ export const INPUT_ENUM_LABELS: Record<string, Record<string, string>> = {
         'unknown': 'Unknown',
     },
     rc_keyboard_type: {
-        'physical': 'Physical keyboard',
-        'touch': 'Touch keyboard',
+        'physical': 'Physical',
+        'touch': 'Touch',
         'unknown': 'Unknown',
     },
     rc_system_button_set: {
-        'minimal': 'Minimal (Start/Select/Menu)',
-        'standard': 'Standard (+ Home)',
-        'extended': 'Extended (extra shortcuts)',
+        'minimal': 'Minimal',
+        'standard': 'Standard',
+        'extended': 'Extended',
         'unknown': 'Unknown',
     },
     rc_confidence: {
@@ -79,8 +81,8 @@ export const INPUT_ENUM_LABELS: Record<string, Record<string, string>> = {
     }
 };
 
-export function formatInputEnum(type: keyof typeof INPUT_ENUM_LABELS, value: string | null | undefined): string {
-    if (!value) return '---';
+export function formatInputEnum(type: keyof typeof INPUT_ENUM_LABELS, value: string | null | undefined): string | null {
+    if (!value || value === 'unknown') return null; // Hide unknown or null values
     const map = INPUT_ENUM_LABELS[type];
     if (map && map[value]) {
         return map[value];
