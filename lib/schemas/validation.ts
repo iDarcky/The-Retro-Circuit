@@ -65,7 +65,7 @@ export const VariantInputProfileSchema = z.object({
     back_button_count: safeNumber,
     has_gyro: safeBoolean,
     has_keyboard: safeBoolean,
-    keyboard_type: safeString,
+    // keyboard_type: safeString, - Removed
     system_button_set: safeString,
     system_buttons_text: safeString,
     touchpad_count: safeNumber,

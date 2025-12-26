@@ -169,7 +169,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Sys Btn Text', key: 'system_buttons_text', type: 'text', required: false, width: 'two-thirds', note: 'e.g. Start, Select, Home, Share' },
 
             { label: 'Has Keyboard?', key: 'has_keyboard', type: 'checkbox', required: false, width: 'half' },
-            { label: 'Keyboard Type', key: 'keyboard_type', type: 'select', required: false, width: 'half', options: ['physical', 'touch', 'unknown'] },
+            // Removed keyboard_type
 
             { label: 'Confidence', key: 'input_confidence', type: 'select', required: true, width: 'full', options: ['confirmed', 'inferred', 'unknown'] },
             { label: 'Notes', key: 'input_notes', type: 'textarea', required: false, width: 'full' },

@@ -38,6 +38,9 @@ const hasData = (keys: string[], specs: any): boolean => {
              return Object.entries(profile).some(([k, v]) => {
                  if (k === 'variant_id' || k === 'created_at' || k === 'updated_at') return false;
                  if (k === 'input_confidence' && v === 'unknown') return false;
+                 // Don't count system_button_set or confidence as "data" for showing the card if they are the only things present, as we hide them.
+                 if (k === 'system_button_set') return false;
+
                  return v !== null && v !== undefined && v !== '';
              });
         }
@@ -509,57 +512,59 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                                         {/* Extra Inputs */}
                                         <div className="mt-3 pt-2 border-t border-white/5">
-                                            <SpecField label="Back buttons" value={mergedSpecs.variant_input_profile.back_button_count} small />
+                                            {/* Back Buttons */}
+                                            {mergedSpecs.variant_input_profile.back_button_count && mergedSpecs.variant_input_profile.back_button_count > 0 ? (
+                                                <SpecField label="Back buttons" value={mergedSpecs.variant_input_profile.back_button_count} small />
+                                            ) : null}
 
-                                            {mergedSpecs.variant_input_profile.has_gyro !== null && (
+                                            {/* Gyro */}
+                                            {mergedSpecs.variant_input_profile.has_gyro === true && (
                                                 <div className="flex items-center justify-between py-1 border-b border-white/5 mb-2">
                                                     <span className="font-mono text-[10px] text-gray-500 uppercase">Gyro / motion controls</span>
-                                                    <TechBadge label="ENABLED" active={mergedSpecs.variant_input_profile.has_gyro} />
+                                                    <TechBadge label="ENABLED" active={true} />
                                                 </div>
                                             )}
 
-                                            {mergedSpecs.variant_input_profile.has_keyboard && (
+                                            {/* Keyboard */}
+                                            {mergedSpecs.variant_input_profile.has_keyboard === true && (
                                                 <div className="grid grid-cols-2 gap-4 mb-2">
                                                     <div className="flex items-center">
                                                         <span className="font-mono text-[10px] text-gray-500 uppercase mr-2">Keyboard</span>
                                                         <TechBadge label="YES" active={true} />
                                                     </div>
-                                                    <SpecField label="Keyboard type" value={formatInputEnum('rc_keyboard_type', mergedSpecs.variant_input_profile.keyboard_type)} small />
                                                 </div>
                                             )}
 
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <SpecField label="System buttons" value={formatInputEnum('rc_system_button_set', mergedSpecs.variant_input_profile.system_button_set)} small />
-                                                <SpecField label="Extra buttons (details)" value={mergedSpecs.variant_input_profile.system_buttons_text} small />
-                                            </div>
+                                            {/* System Buttons Text */}
+                                            {mergedSpecs.variant_input_profile.system_buttons_text && (
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <SpecField label="Extra buttons (details)" value={mergedSpecs.variant_input_profile.system_buttons_text} small />
+                                                </div>
+                                            )}
 
-                                            {mergedSpecs.variant_input_profile.touchpad_count ? (
+                                            {/* Touchpads */}
+                                            {mergedSpecs.variant_input_profile.touchpad_count && mergedSpecs.variant_input_profile.touchpad_count > 0 ? (
                                                 <div className="grid grid-cols-2 gap-4 mt-2">
                                                     <SpecField label="Touchpads" value={mergedSpecs.variant_input_profile.touchpad_count} small />
-                                                    <div className="flex items-center">
-                                                        <span className="font-mono text-[10px] text-gray-500 uppercase mr-2">Touchpad clicks</span>
-                                                        <TechBadge label="YES" active={mergedSpecs.variant_input_profile.touchpad_clickable} />
-                                                    </div>
+                                                    {mergedSpecs.variant_input_profile.touchpad_clickable !== null && (
+                                                        <div className="flex items-center">
+                                                            <span className="font-mono text-[10px] text-gray-500 uppercase mr-2">Touchpad clicks</span>
+                                                            <TechBadge label="YES" active={mergedSpecs.variant_input_profile.touchpad_clickable} />
+                                                        </div>
+                                                    )}
                                                 </div>
                                             ) : null}
                                         </div>
 
-                                        {/* Meta */}
-                                        {(mergedSpecs.variant_input_profile.input_notes || mergedSpecs.variant_input_profile.input_confidence) && (
+                                        {/* Notes */}
+                                        {mergedSpecs.variant_input_profile.input_notes && (
                                             <div className="mt-3 pt-2 border-t border-white/5">
-                                                {mergedSpecs.variant_input_profile.input_confidence && (
-                                                    <div className="text-[9px] font-mono text-gray-500 mb-1">
-                                                        Data confidence: <span className={mergedSpecs.variant_input_profile.input_confidence === 'confirmed' ? 'text-secondary' : 'text-accent'}>{(formatInputEnum('rc_confidence', mergedSpecs.variant_input_profile.input_confidence) || '').toUpperCase()}</span>
-                                                    </div>
-                                                )}
-                                                {mergedSpecs.variant_input_profile.input_notes && (
-                                                    <div className="mt-1">
-                                                        <span className="text-[9px] font-mono text-gray-500 uppercase block">Notes</span>
-                                                        <p className="text-[10px] font-mono text-gray-400 italic">
-                                                            "{mergedSpecs.variant_input_profile.input_notes}"
-                                                        </p>
-                                                    </div>
-                                                )}
+                                                <div className="mt-1">
+                                                    <span className="text-[9px] font-mono text-gray-500 uppercase block">Notes</span>
+                                                    <p className="text-[10px] font-mono text-gray-400 italic">
+                                                        "{mergedSpecs.variant_input_profile.input_notes}"
+                                                    </p>
+                                                </div>
                                             </div>
                                         )}
                                     </>

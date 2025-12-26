@@ -56,11 +56,6 @@ export const INPUT_ENUM_LABELS: Record<string, Record<string, string>> = {
         'stacked': 'Stacked',
         'unknown': 'Unknown',
     },
-    rc_keyboard_type: {
-        'physical': 'Physical',
-        'touch': 'Touch',
-        'unknown': 'Unknown',
-    },
     rc_system_button_set: {
         'minimal': 'Minimal',
         'standard': 'Standard',

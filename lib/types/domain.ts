@@ -125,7 +125,7 @@ export type RcStickLayout = 'symmetric' | 'asymmetric' | 'centered' | 'unknown';
 export type RcStickCap = 'concave' | 'convex' | 'flat' | 'domed' | 'textured' | 'unknown';
 export type RcTriggerType = 'digital' | 'analog' | 'unknown';
 export type RcTriggerLayout = 'inline' | 'stacked' | 'unknown';
-export type RcKeyboardType = 'physical' | 'touch' | 'unknown';
+// RcKeyboardType removed
 export type RcSystemButtonSet = 'minimal' | 'standard' | 'extended' | 'unknown';
 export type RcConfidence = 'confirmed' | 'inferred' | 'unknown';
 
@@ -149,7 +149,7 @@ export interface VariantInputProfile {
   back_button_count: number | null; // check ((back_button_count = any (array[0, 2, 4])))
   has_gyro: boolean | null;
   has_keyboard: boolean | null;
-  keyboard_type: RcKeyboardType | null;
+  // keyboard_type: RcKeyboardType | null; - Removed
   system_button_set: RcSystemButtonSet | null;
   system_buttons_text: string | null;
   touchpad_count: number | null; // check ((touchpad_count = any (array[0, 1, 2])))
