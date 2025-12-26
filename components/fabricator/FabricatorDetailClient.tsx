@@ -6,6 +6,7 @@ import AdminEditTrigger from '../admin/AdminEditTrigger';
 import RetroStatusBar from '../ui/RetroStatusBar';
 import { getDocVersion } from '../../lib/utils/doc-version';
 import { hexToRgb, ensureHighContrast } from '../../lib/utils/colors';
+import { formatReleaseDate } from '../../lib/utils/date-formatter';
 
 interface Props {
     profile: Manufacturer;
@@ -158,7 +159,7 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                                     </div>
                                     <div className="p-3 border-t border-border-normal">
                                         <div className="flex justify-between text-[10px] font-mono text-gray-500 mb-1">
-                                            <span>{console.release_year || 'TBA'}</span>
+                                            <span>{formatReleaseDate(console.specs?.release_date, console.specs?.release_date_precision) || 'TBA'}</span>
                                             <span>{console.generation}</span>
                                         </div>
                                         <h3 className={`font-pixel text-xs truncate ${getStyles('card_text')}`}>

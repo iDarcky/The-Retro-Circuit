@@ -61,14 +61,20 @@ export const compareConsoles = async (slugA: string, slugB: string): Promise<Com
         const points: ComparisonPoint[] = [];
 
         // 1. Generation (Prioritize variant release year if available)
-        const yearA = specsA.release_year || cA.release_year;
-        const yearB = specsB.release_year || cB.release_year;
+        const dateA = specsA.release_date ? new Date(specsA.release_date) : null;
+        const dateB = specsB.release_date ? new Date(specsB.release_date) : null;
+
+        const yearA = dateA ? dateA.getFullYear() : 'XXXX';
+        const yearB = dateB ? dateB.getFullYear() : 'XXXX';
+
+        const timeA = dateA ? dateA.getTime() : 9999999999999;
+        const timeB = dateB ? dateB.getTime() : 9999999999999;
 
         points.push({
             feature: 'Generation',
             consoleAValue: `${yearA} (${cA.generation || 'N/A'})`,
             consoleBValue: `${yearB} (${cB.generation || 'N/A'})`,
-            winner: yearA < yearB ? 'A' : (yearB < yearA ? 'B' : 'Tie'),
+            winner: timeA < timeB ? 'A' : (timeB < timeA ? 'B' : 'Tie'),
             aScore: 50,
             bScore: 50
         });

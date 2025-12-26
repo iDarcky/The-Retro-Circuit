@@ -61,8 +61,7 @@ const ConsoleVaultClient: FC = () => {
 
     // Filter: Year
     result = result.filter(c => {
-        // Prefer release_date, fallback to release_year
-        let year = c.release_year;
+        let year = 9999;
         const specs: any = c.specs || {};
 
         if (specs.release_date) {
@@ -70,7 +69,7 @@ const ConsoleVaultClient: FC = () => {
             if (!isNaN(dateYear)) year = dateYear;
         }
 
-        if (!year) return true; // Keep items with unknown year
+        if (year === 9999) return true; // Keep items with unknown year
         return year >= filters.minYear && year <= filters.maxYear;
     });
 
@@ -101,7 +100,6 @@ const ConsoleVaultClient: FC = () => {
         const getSortValue = (item: any) => {
             const specs: any = item.specs || {};
             if (specs.release_date) return new Date(specs.release_date).getTime();
-            if (item.release_year) return new Date(`${item.release_year}-01-01`).getTime();
             return 0; // Unknown
         };
 
@@ -286,7 +284,7 @@ const ConsoleVaultClient: FC = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
                                 {paginatedConsoles.map((console) => {
                                     const specs: any = console.specs || {};
-                                    const releaseDisplay = formatReleaseDate(specs.release_date, specs.release_date_precision) || console.release_year || 'TBA';
+                                    const releaseDisplay = formatReleaseDate(specs.release_date, specs.release_date_precision) || 'TBA';
 
                                     return (
                                         <Link

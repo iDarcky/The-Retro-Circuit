@@ -19,7 +19,6 @@ function normalizeConsoleList(data: any[] | null): ConsoleDetails[] {
         const defaultVariant = variants.find((v: any) => v.is_default) || variants[0];
 
         if (defaultVariant) {
-            if (!item.release_year) item.release_year = defaultVariant.release_year;
             if (!item.image_url) item.image_url = defaultVariant.image_url;
             item.specs = defaultVariant;
         } else {
@@ -78,15 +77,16 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
         // IN-MEMORY SORTING & FILTERING
         if (filters.minYear > 1970 || filters.maxYear < new Date().getFullYear()) {
             normalizedData = normalizedData.filter((item: any) => {
-                const year = item.release_year || 9999;
+                const dateStr = item.specs?.release_date;
+                const year = dateStr ? new Date(dateStr).getFullYear() : 9999;
                 return year >= filters.minYear && year <= filters.maxYear;
             });
         }
 
         normalizedData.sort((a: any, b: any) => {
-            const yearA = a.release_year || 9999;
-            const yearB = b.release_year || 9999;
-            return yearB - yearA;
+             const dateA = a.specs?.release_date ? new Date(a.specs.release_date).getTime() : 0;
+             const dateB = b.specs?.release_date ? new Date(b.specs.release_date).getTime() : 0;
+             return dateB - dateA;
         });
 
         return { data: normalizedData as ConsoleDetails[], count: count || 0 };
