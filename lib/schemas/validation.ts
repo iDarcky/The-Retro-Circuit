@@ -81,9 +81,11 @@ export const ConsoleVariantSchema = z.object({
   slug: safeString,
   is_default: safeBoolean,
   
-  release_year: safeNumber,
-  price_launch_usd: safeNumber,
+  release_year: safeNumber, // Deprecated, but optional
+  release_date: safeString.nullable(),
+  release_date_precision: z.enum(['year', 'month', 'day']).nullable().optional(),
   model_no: safeString,
+  price_launch_usd: safeNumber,
   image_url: safeString,
 
   // Silicon

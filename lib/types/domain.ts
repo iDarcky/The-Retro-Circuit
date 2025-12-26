@@ -166,7 +166,9 @@ export interface ConsoleVariant {
   variant_name: string;
   slug?: string;
   is_default: boolean;
-  release_year?: number;
+  release_year?: number; // Deprecated
+  release_date?: string | null;
+  release_date_precision?: 'year' | 'month' | 'day' | null;
   model_no?: string;
   price_launch_usd?: number;
   image_url?: string; 

@@ -38,6 +38,10 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     const [cpuMinInput, setCpuMinInput] = useState<{ value: string | number, unit: 'GHz' | 'MHz' }>({ value: '', unit: 'GHz' });
     const [cpuMaxInput, setCpuMaxInput] = useState<{ value: string | number, unit: 'GHz' | 'MHz' }>({ value: '', unit: 'GHz' });
 
+    // Date Logic
+    const [datePrecision, setDatePrecision] = useState<'year' | 'month' | 'day' | ''>('');
+    const [dateValue, setDateValue] = useState<string>(''); // YYYY, YYYY-MM, or YYYY-MM-DD
+
     useEffect(() => {
         if (initialData) {
             // Flatten input profile data if present
@@ -73,6 +77,22 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             };
             initClock(Number(initialData.cpu_clock_min_mhz), setCpuMinInput);
             initClock(Number(initialData.cpu_clock_max_mhz), setCpuMaxInput);
+
+            // Date Init
+            if (initialData.release_date_precision) {
+                setDatePrecision(initialData.release_date_precision as any);
+                if (initialData.release_date) {
+                    const [y, m, d] = initialData.release_date.split('-');
+                    if (initialData.release_date_precision === 'year') setDateValue(y);
+                    else if (initialData.release_date_precision === 'month') setDateValue(`${y}-${m}`);
+                    else setDateValue(initialData.release_date);
+                }
+            } else if (initialData.release_year) {
+                // Fallback for legacy
+                setDatePrecision('year');
+                setDateValue(initialData.release_year.toString());
+            }
+
         } else if (preSelectedConsoleId) {
             setFormData(prev => ({ ...prev, console_id: preSelectedConsoleId }));
         }
@@ -102,6 +122,37 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             handleInputChange(key, null);
         }
     };
+
+    // Date Handler
+    useEffect(() => {
+        if (!datePrecision || !dateValue) {
+            handleInputChange('release_date', null);
+            handleInputChange('release_date_precision', null);
+            handleInputChange('release_year', null);
+            return;
+        }
+
+        let fullDate = null;
+        let yearVal = null;
+
+        if (datePrecision === 'year' && dateValue.length === 4) {
+            fullDate = `${dateValue}-01-01`;
+            yearVal = parseInt(dateValue);
+        } else if (datePrecision === 'month' && dateValue.length === 7) {
+            fullDate = `${dateValue}-01`;
+            yearVal = parseInt(dateValue.split('-')[0]);
+        } else if (datePrecision === 'day' && dateValue.length === 10) {
+            fullDate = dateValue;
+            yearVal = parseInt(dateValue.split('-')[0]);
+        }
+
+        if (fullDate) {
+            handleInputChange('release_date', fullDate);
+            handleInputChange('release_date_precision', datePrecision);
+            handleInputChange('release_year', yearVal);
+        }
+    }, [datePrecision, dateValue]);
+
 
     useEffect(() => {
         const fetchTemplates = async () => {
@@ -217,7 +268,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             'face_button_count', 'face_button_tech', 'face_label_scheme',
             'stick_count', 'stick_tech', 'stick_layout', 'stick_clicks', 'stick_cap',
             'bumper_tech', 'trigger_tech', 'trigger_type', 'trigger_layout',
-            'back_button_count', 'has_gyro', 'has_keyboard', 'keyboard_type',
+            'back_button_count', 'has_gyro', 'has_keyboard',
             'system_button_set', 'system_buttons_text', 'touchpad_count', 'touchpad_clickable',
             'input_confidence', 'input_notes'
         ];
@@ -282,6 +333,8 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     if (mode === 'SAVE') {
                         setFormData({ console_id: rawVariant.console_id });
                         setRamInput({ value: '', unit: 'GB' });
+                        setDatePrecision('');
+                        setDateValue('');
                         setSelectedTemplate('');
                         setOpenSections({ "IDENTITY & ORIGIN": true });
                     } else {
@@ -341,12 +394,49 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                             let colSpan = 'md:col-span-6';
                                             if (field.width === 'full') colSpan = 'md:col-span-12';
                                             if (field.width === 'third') colSpan = 'md:col-span-4';
-                                            if (field.width === 'quarter') colSpan = 'md:col-span-3'; // Added support for 'quarter'
+                                            if (field.width === 'quarter') colSpan = 'md:col-span-3';
                                             if (field.width === 'half') colSpan = 'md:col-span-6';
                                             if (field.width === 'two-thirds') colSpan = 'md:col-span-8';
                                             if (field.width === 'sixth') colSpan = 'md:col-span-2';
 
                                             const error = field.key ? fieldErrors[field.key as keyof typeof fieldErrors] : undefined;
+
+                                            if (field.type === 'custom_date') {
+                                                return (
+                                                    <div key="date-input" className={`${colSpan} grid grid-cols-2 gap-4`}>
+                                                        <div>
+                                                            <label className="text-[10px] mb-1 block uppercase text-gray-500">Date Precision</label>
+                                                            <select
+                                                                className="w-full bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm"
+                                                                value={datePrecision}
+                                                                onChange={(e) => {
+                                                                    setDatePrecision(e.target.value as any);
+                                                                    setDateValue('');
+                                                                }}
+                                                            >
+                                                                <option value="">-- None --</option>
+                                                                <option value="year">Year Only</option>
+                                                                <option value="month">Month + Year</option>
+                                                                <option value="day">Exact Day</option>
+                                                            </select>
+                                                        </div>
+                                                        {datePrecision && (
+                                                            <div>
+                                                                <label className="text-[10px] mb-1 block uppercase text-gray-500">
+                                                                    {datePrecision === 'year' ? 'Year (YYYY)' : datePrecision === 'month' ? 'Month (YYYY-MM)' : 'Date'}
+                                                                </label>
+                                                                <input
+                                                                    type={datePrecision === 'year' ? 'number' : datePrecision === 'month' ? 'month' : 'date'}
+                                                                    className="w-full bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm"
+                                                                    value={dateValue}
+                                                                    onChange={(e) => setDateValue(e.target.value)}
+                                                                    placeholder={datePrecision === 'year' ? 'YYYY' : ''}
+                                                                />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            }
 
                                             if (field.type === 'custom_ram') {
                                                 return (
