@@ -13,7 +13,8 @@ export interface FinderResultConsole {
   manufacturer: {
     name: string;
   } | null;
-  release_year?: number;
+  // release_year?: number; // REMOVED
+  release_date?: string | null; // NEW
   price?: number | null;
 
   // Match Metadata
@@ -118,6 +119,8 @@ export async function getFinderResults(
     const scoredConsoles: FinderResultConsole[] = filteredConsoles.map((consoleItem) => {
       const scoreData = calculateConsoleScore(consoleItem, inputs);
       const price = (consoleItem.specs as any)?.price_launch_usd || null;
+      // Extract formatted release date or just return the date string if available
+      const releaseDate = (consoleItem.specs as any)?.release_date || null;
 
       return {
         id: consoleItem.id,
@@ -126,7 +129,8 @@ export async function getFinderResults(
         image_url: consoleItem.image_url || null,
         form_factor: consoleItem.form_factor || null,
         manufacturer: consoleItem.manufacturer ? { name: consoleItem.manufacturer.name } : null,
-        release_year: consoleItem.release_year,
+        // release_year: consoleItem.release_year, // REMOVED
+        release_date: releaseDate,
         price: price,
         _score: scoreData.total,
         _badges: scoreData.badges,
