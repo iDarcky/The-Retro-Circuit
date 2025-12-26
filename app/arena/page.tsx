@@ -9,6 +9,7 @@ import { useSound } from '../../components/ui/SoundContext';
 import { METRICS } from '../../lib/config/arena-metrics';
 import { ComparisonRow } from '../../components/arena/ComparisonRow';
 import { ConsoleSearch } from '../../components/arena/ConsoleSearch';
+import { VariantSelector } from '../../components/arena/VariantSelector';
 import RetroStatusBar from '../../components/ui/RetroStatusBar';
 
 interface SelectionState {
@@ -95,8 +96,7 @@ function VSModeContent() {
         playClick();
     };
 
-    const handleVariantChange = (setter: Dispatch<SetStateAction<SelectionState>>, isPlayer1: boolean) => (e: ChangeEvent<HTMLSelectElement>) => {
-        const slug = e.target.value;
+    const handleVariantChange = (setter: Dispatch<SetStateAction<SelectionState>>, isPlayer1: boolean) => (slug: string) => {
         const selection = isPlayer1 ? selectionA : selectionB;
         const variant = selection.details?.variants?.find(v => v.slug === slug) || null;
         setter(prev => ({ ...prev, selectedVariant: variant }));
@@ -109,27 +109,28 @@ function VSModeContent() {
 
     return (
         <div className="w-full">
-            <RetroStatusBar
-                rcPath="RC://RETRO_CIRCUIT/ARENA/VS"
-                docId="VS_PROTOCOL_V1"
-            />
+            <div className="hidden md:block">
+                <RetroStatusBar
+                    rcPath="RC://RETRO_CIRCUIT/ARENA/VS"
+                    docId="VS_PROTOCOL_V1"
+                />
+            </div>
 
         <div className="w-full max-w-7xl mx-auto p-4 flex flex-col min-h-screen">
             <h1 className="text-3xl md:text-5xl font-pixel text-center text-white mb-8 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
                 VS MODE <span className="text-secondary">ARENA</span>
             </h1>
 
-            <div className="grid grid-cols-2 gap-2 md:gap-8 mb-4 md:mb-8 relative">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-4 md:mb-8 relative z-10">
                 {/* VS Badge - Centered */}
-                <div className="absolute left-1/2 top-3 md:top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none flex justify-center">
-                    <span className="md:hidden font-pixel text-[10px] text-white bg-bg-primary px-1 shadow-sm border border-white/10 rounded">VS</span>
+                <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none flex justify-center">
                     <div className="hidden md:flex w-16 h-16 bg-black rounded-full items-center justify-center border-4 border-white shadow-[0_0_20px_rgba(255,255,255,0.5)]">
                         <span className="font-pixel text-xl italic text-white">VS</span>
                     </div>
                 </div>
 
                 {/* Player 1 Card - Cyan */}
-                <div className="border border-primary bg-primary/5 relative overflow-hidden shadow-lg hover:shadow-primary/20 transition-shadow md:-skew-x-10">
+                <div className="border border-primary bg-primary/5 relative shadow-lg hover:shadow-primary/20 transition-shadow md:-skew-x-10 z-10">
                      <div className="md:skew-x-10 p-2 md:p-6 flex flex-col h-full">
                         <h2 className="font-pixel text-[10px] md:text-base text-primary mb-2 text-left">[ PLAYER 1 ]</h2>
                         <ConsoleSearch 
@@ -159,15 +160,12 @@ function VSModeContent() {
                                      </div>
                                  </Link>
 
-                                 {selectionA.details.variants && selectionA.details.variants.length > 1 && (
-                                     <select 
-                                        className="w-full bg-black border border-primary text-primary font-mono text-[10px] md:text-xs p-1 md:p-2 outline-none"
-                                        value={selectionA.selectedVariant?.slug || ''}
-                                        onChange={handleVariantChange(setSelectionA, true)}
-                                     >
-                                         {selectionA.details.variants.map(v => <option key={v.id} value={v.slug || ''}>{v.variant_name}</option>)}
-                                     </select>
-                                 )}
+                                 <VariantSelector
+                                    variants={selectionA.details.variants || []}
+                                    selectedSlug={selectionA.selectedVariant?.slug || ''}
+                                    onSelect={handleVariantChange(setSelectionA, true)}
+                                    themeColor="cyan"
+                                 />
                              </div>
                         ) : (
                              <div className="flex-1 flex items-center justify-center text-gray-600 font-pixel text-[8px] md:text-xs opacity-50 mt-4">SELECT FIGHTER</div>
@@ -176,9 +174,9 @@ function VSModeContent() {
                 </div>
 
                 {/* Player 2 Card - Pink */}
-                <div className="border border-accent bg-accent/5 relative overflow-hidden shadow-lg hover:shadow-accent/20 transition-shadow md:skew-x-10">
+                <div className="border border-accent bg-accent/5 relative shadow-lg hover:shadow-accent/20 transition-shadow md:skew-x-10 z-0">
                      <div className="md:-skew-x-10 p-2 md:p-6 flex flex-col h-full">
-                        <h2 className="font-pixel text-[10px] md:text-base text-accent mb-2 text-right">[ PLAYER 2 ]</h2>
+                        <h2 className="font-pixel text-[10px] md:text-base text-accent mb-2 text-left md:text-right">[ PLAYER 2 ]</h2>
                         <ConsoleSearch 
                             consoles={allConsoles} 
                             onSelect={(slug) => handleSelect(setSelectionB, false)(slug)} 
@@ -206,15 +204,12 @@ function VSModeContent() {
                                      </div>
                                  </Link>
 
-                                 {selectionB.details.variants && selectionB.details.variants.length > 1 && (
-                                     <select 
-                                        className="w-full bg-black border border-accent text-accent font-mono text-[10px] md:text-xs p-1 md:p-2 outline-none"
-                                        value={selectionB.selectedVariant?.slug || ''}
-                                        onChange={handleVariantChange(setSelectionB, false)}
-                                     >
-                                         {selectionB.details.variants.map(v => <option key={v.id} value={v.slug || ''}>{v.variant_name}</option>)}
-                                     </select>
-                                 )}
+                                 <VariantSelector
+                                    variants={selectionB.details.variants || []}
+                                    selectedSlug={selectionB.selectedVariant?.slug || ''}
+                                    onSelect={handleVariantChange(setSelectionB, false)}
+                                    themeColor="pink"
+                                 />
                              </div>
                         ) : (
                              <div className="flex-1 flex items-center justify-center text-gray-600 font-pixel text-[8px] md:text-xs opacity-50 mt-4">SELECT FIGHTER</div>
