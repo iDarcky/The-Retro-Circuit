@@ -131,26 +131,50 @@ export const VARIANT_FORM_GROUPS = [
     {
         title: "INPUT & MECHANICS",
         fields: [
-            { label: 'Input Layout', key: 'input_layout', type: 'select', required: false, width: 'half', options: ['Xbox', 'Nintendo', 'PlayStation', 'Retroid/Unique'] },
-            { label: 'Start, Select, Home', key: 'other_buttons', type: 'text', required: false, width: 'half' },
+            // PRIMARY INPUTS
+            { subHeader: 'Core Controls' },
+            { label: 'Face Btn Count', key: 'face_button_count', type: 'select', required: false, width: 'third', options: ['2', '4', '6'] },
+            { label: 'Face Layout', key: 'face_button_layout', type: 'select', required: false, width: 'third', options: ['diamond', 'inline', 'arcade_6', 'split', 'unknown'] },
+            { label: 'Label Scheme', key: 'face_label_scheme', type: 'select', required: false, width: 'third', options: ['nintendo', 'xbox', 'playstation', 'generic', 'unknown'] },
 
-            { label: 'D-Pad Mech', key: 'dpad_mechanism', type: 'text', required: false, width: 'third', note: 'Rubber Dome, Dome Switch...' },
-            { label: 'D-Pad Shape', key: 'dpad_shape', type: 'text', required: false, width: 'third', note: 'Cross, Disc...' },
-            { label: 'Face Btn Mech', key: 'action_button_mechanism', type: 'text', required: false, width: 'third', note: 'Conductive Rubber, Microswitch...' },
+            { label: 'Face Btn Tech', key: 'face_button_tech', type: 'select', required: false, width: 'half', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'potentiometer', 'spring', 'optical', 'unknown'] },
 
-            { label: 'Stick Tech', key: 'thumbstick_mechanism', type: 'text', required: false, width: 'quarter', note: 'Hall Effect, ALPS...' },
-            { label: 'Stick Layout', key: 'thumbstick_layout', type: 'text', required: false, width: 'quarter', note: 'Staggered, Inline...' },
-            { label: 'L3/R3 Clicks?', key: 'has_stick_clicks', type: 'checkbox', required: false, width: 'quarter' },
-            { label: 'Cap Type', key: 'thumbstick_cap', type: 'text', required: false, width: 'quarter', note: 'Concave, Convex...' },
-            { label: 'Has Keyboard?', key: 'has_keyboard', type: 'checkbox', required: false, width: 'quarter' },
+            // DPAD
+            { subHeader: 'Directional Input' },
+            { label: 'D-Pad Shape', key: 'dpad_shape', type: 'select', required: false, width: 'third', options: ['cross', 'disc', 'segmented', 'unknown'] },
+            { label: 'D-Pad Tech', key: 'dpad_tech', type: 'select', required: false, width: 'third', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'potentiometer', 'spring', 'optical', 'unknown'] },
+            { label: 'Placement', key: 'dpad_placement', type: 'select', required: false, width: 'third', options: ['left', 'right', 'center', 'unknown'] },
 
-            { label: 'L1/R1 Mech', key: 'bumper_mechanism', type: 'text', required: false, width: 'third' },
-            { label: 'L2/R2 Mech', key: 'trigger_mechanism', type: 'text', required: false, width: 'third', note: 'Analog, Digital...' },
-            { label: 'Stacked vs Inline', key: 'shoulder_layout', type: 'text', required: false, width: 'third' },
+            // STICKS
+            { subHeader: 'Analog Sticks' },
+            { label: 'Stick Count', key: 'stick_count', type: 'select', required: false, width: 'quarter', options: ['0', '1', '2'] },
+            { label: 'Stick Tech', key: 'stick_tech', type: 'select', required: false, width: 'quarter', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'potentiometer', 'spring', 'optical', 'unknown'] },
+            { label: 'Layout', key: 'stick_layout', type: 'select', required: false, width: 'quarter', options: ['symmetric', 'asymmetric', 'centered', 'unknown'] },
+            { label: 'Cap Style', key: 'stick_cap', type: 'select', required: false, width: 'quarter', options: ['concave', 'convex', 'flat', 'domed', 'textured', 'unknown'] },
+            { label: 'L3/R3 Clicks?', key: 'stick_clicks', type: 'checkbox', required: false, width: 'full' },
 
-            { label: 'Haptics', key: 'haptics', type: 'text', required: false, width: 'third' },
-            { label: 'Gyroscope?', key: 'gyro', type: 'checkbox', required: false, width: 'third' },
-            { label: 'Back Buttons?', key: 'has_back_buttons', type: 'checkbox', required: false, width: 'third' },
+            // TRIGGERS
+            { subHeader: 'Shoulders & Triggers' },
+            { label: 'Bumper Tech', key: 'bumper_tech', type: 'select', required: false, width: 'quarter', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'potentiometer', 'spring', 'optical', 'unknown'] },
+            { label: 'Trigger Tech', key: 'trigger_tech', type: 'select', required: false, width: 'quarter', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'potentiometer', 'spring', 'optical', 'unknown'] },
+            { label: 'Trigger Type', key: 'trigger_type', type: 'select', required: false, width: 'quarter', options: ['digital', 'analog', 'unknown'] },
+            { label: 'Layout', key: 'trigger_layout', type: 'select', required: false, width: 'quarter', options: ['inline', 'stacked', 'unknown'] },
+
+            // EXTRAS
+            { subHeader: 'Additional Inputs' },
+            { label: 'Back Btn Count', key: 'back_button_count', type: 'select', required: false, width: 'quarter', options: ['0', '2', '4'] },
+            { label: 'Touchpads', key: 'touchpad_count', type: 'select', required: false, width: 'quarter', options: ['0', '1', '2'] },
+            { label: 'Touchpad Click?', key: 'touchpad_clickable', type: 'checkbox', required: false, width: 'quarter' },
+            { label: 'Gyro?', key: 'has_gyro', type: 'checkbox', required: false, width: 'quarter' },
+
+            { label: 'System Btns', key: 'system_button_set', type: 'select', required: false, width: 'third', options: ['minimal', 'standard', 'extended', 'unknown'] },
+            { label: 'Sys Btn Text', key: 'system_buttons_text', type: 'text', required: false, width: 'two-thirds', note: 'e.g. Start, Select, Home, Share' },
+
+            { label: 'Has Keyboard?', key: 'has_keyboard', type: 'checkbox', required: false, width: 'half' },
+            { label: 'Keyboard Type', key: 'keyboard_type', type: 'select', required: false, width: 'half', options: ['physical', 'touch', 'unknown'] },
+
+            { label: 'Confidence', key: 'input_confidence', type: 'select', required: true, width: 'full', options: ['confirmed', 'inferred', 'unknown'] },
+            { label: 'Notes', key: 'input_notes', type: 'textarea', required: false, width: 'full' },
         ]
     },
     {
