@@ -229,7 +229,13 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             if (inputProfileKeys.includes(key)) {
                 // Ensure empty strings are converted to null for Enums
                 const val = validData[key];
-                inputProfilePayload[key] = (val === '') ? null : val;
+
+                // Explicitly default 'unknown' for input_confidence if null/empty
+                if (key === 'input_confidence' && !val) {
+                    inputProfilePayload[key] = 'unknown';
+                } else {
+                    inputProfilePayload[key] = (val === '') ? null : val;
+                }
             } else {
                 variantPayload[key] = validData[key];
             }
