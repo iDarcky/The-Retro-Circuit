@@ -29,6 +29,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     
     const isEditMode = !!initialData;
     const [showEmulationForm, setShowEmulationForm] = useState(false);
+    const [showInputProfileForm, setShowInputProfileForm] = useState(false);
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
     
     const [existingVariants, setExistingVariants] = useState<ConsoleVariant[]>([]);
