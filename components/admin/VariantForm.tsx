@@ -345,20 +345,47 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 </div>
 
                 {isEditMode && initialData?.id && (
-                    <div className="mt-8 border-t-2 border-dashed border-border-normal pt-8">
-                        {!showEmulationForm ? (
-                            <button type="button" onClick={() => setShowEmulationForm(true)} className="w-full py-4 border-2 border-primary bg-primary/10 text-primary font-pixel text-sm hover:bg-primary hover:text-black">
-                                [ EDIT EMULATION PERFORMANCE ]
-                            </button>
-                        ) : (
-                            <div className="border-2 border-primary">
-                                <div className="bg-primary/20 p-2 flex justify-between items-center border-b border-primary/50">
-                                    <span className="text-[10px] font-mono text-primary px-2">PERFORMANCE MATRIX</span>
-                                    <button type="button" onClick={() => setShowEmulationForm(false)} className="text-[10px] font-mono text-primary hover:text-white px-2 py-1">[ CLOSE ]</button>
+                    <div className="mt-8 space-y-8 border-t-2 border-dashed border-border-normal pt-8">
+
+                        {/* INPUT PROFILE SECTION */}
+                        <div>
+                            {!showInputProfileForm ? (
+                                <button type="button" onClick={() => setShowInputProfileForm(true)} className="w-full py-4 border-2 border-secondary bg-secondary/10 text-secondary font-pixel text-sm hover:bg-secondary hover:text-black">
+                                    [ EDIT INPUT & MECHANICS ]
+                                </button>
+                            ) : (
+                                <div className="border-2 border-secondary">
+                                    <div className="bg-secondary/20 p-2 flex justify-between items-center border-b border-secondary/50">
+                                        <span className="text-[10px] font-mono text-secondary px-2">INPUT HARDWARE CONFIG</span>
+                                        <button type="button" onClick={() => setShowInputProfileForm(false)} className="text-[10px] font-mono text-secondary hover:text-white px-2 py-1">[ CLOSE ]</button>
+                                    </div>
+                                    <div className="p-4 bg-black/80">
+                                        <VariantInputProfileForm
+                                            variantId={initialData.id!}
+                                            variantName={initialData.variant_name || 'Unnamed Variant'}
+                                            onSave={() => onSuccess("INPUT PROFILE UPDATED.")}
+                                        />
+                                    </div>
                                 </div>
-                                <EmulationForm variantId={initialData.id} onSave={() => onSuccess("EMULATION DATA SYNCED.")} />
-                            </div>
-                        )}
+                            )}
+                        </div>
+
+                        {/* EMULATION SECTION */}
+                        <div>
+                            {!showEmulationForm ? (
+                                <button type="button" onClick={() => setShowEmulationForm(true)} className="w-full py-4 border-2 border-primary bg-primary/10 text-primary font-pixel text-sm hover:bg-primary hover:text-black">
+                                    [ EDIT EMULATION PERFORMANCE ]
+                                </button>
+                            ) : (
+                                <div className="border-2 border-primary">
+                                    <div className="bg-primary/20 p-2 flex justify-between items-center border-b border-primary/50">
+                                        <span className="text-[10px] font-mono text-primary px-2">PERFORMANCE MATRIX</span>
+                                        <button type="button" onClick={() => setShowEmulationForm(false)} className="text-[10px] font-mono text-primary hover:text-white px-2 py-1">[ CLOSE ]</button>
+                                    </div>
+                                    <EmulationForm variantId={initialData.id} onSave={() => onSuccess("EMULATION DATA SYNCED.")} />
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
                 
