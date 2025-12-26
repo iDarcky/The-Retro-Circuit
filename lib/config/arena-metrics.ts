@@ -1,13 +1,12 @@
 
-import type { ConsoleVariant } from '../types';
-
 export type ComparisonMetric = {
-    key: keyof ConsoleVariant;
+    key: string; // Changed from keyof ConsoleVariant to allow string for nested path access
     label: string;
     type: 'number' | 'string' | 'boolean' | 'currency' | 'resolution';
     unit?: string;
     lowerIsBetter?: boolean;
     category?: string;
+    path?: string[]; // Path to nested property if not on root
 };
 
 export const METRICS: ComparisonMetric[] = [
@@ -81,19 +80,24 @@ export const METRICS: ComparisonMetric[] = [
     { label: 'Camera', key: 'camera_specs', type: 'string' },
     { label: 'Biometrics', key: 'biometrics', type: 'string' },
 
-    // --- CONTROLS & SENSORS ---
-    { label: 'Input Layout', key: 'input_layout', type: 'string' },
-    { label: 'D-Pad Mech', key: 'dpad_mechanism', type: 'string' },
-    { label: 'D-Pad Shape', key: 'dpad_shape', type: 'string' },
-    { label: 'Stick Mech', key: 'thumbstick_mechanism', type: 'string' },
-    { label: 'Stick Layout', key: 'thumbstick_layout', type: 'string' },
-    { label: 'Stick Cap', key: 'thumbstick_cap', type: 'string' },
-    { label: 'Triggers', key: 'trigger_mechanism', type: 'string' },
-    { label: 'Shoulders', key: 'shoulder_layout', type: 'string' },
-    { label: 'Action Buttons', key: 'action_button_mechanism', type: 'string' },
-    { label: 'Back Buttons', key: 'has_back_buttons', type: 'boolean' },
-    { label: 'Haptics', key: 'haptics', type: 'string' },
-    { label: 'Gyroscope', key: 'gyro', type: 'boolean' },
+    // --- CONTROLS & SENSORS (New Profile Fields) ---
+    { label: 'D-Pad Tech', key: 'dpad_tech', type: 'string', path: ['variant_input_profile', 'dpad_tech'] },
+    { label: 'D-Pad Shape', key: 'dpad_shape', type: 'string', path: ['variant_input_profile', 'dpad_shape'] },
+    { label: 'Stick Tech', key: 'stick_tech', type: 'string', path: ['variant_input_profile', 'stick_tech'] },
+    { label: 'Stick Layout', key: 'stick_layout', type: 'string', path: ['variant_input_profile', 'stick_layout'] },
+    { label: 'Stick Cap', key: 'stick_cap', type: 'string', path: ['variant_input_profile', 'stick_cap'] },
+    { label: 'Stick Count', key: 'stick_count', type: 'number', path: ['variant_input_profile', 'stick_count'] },
+
+    { label: 'Face Btn Tech', key: 'face_button_tech', type: 'string', path: ['variant_input_profile', 'face_button_tech'] },
+    { label: 'Face Btn Layout', key: 'face_button_layout', type: 'string', path: ['variant_input_profile', 'face_button_layout'] },
+
+    { label: 'Trigger Tech', key: 'trigger_tech', type: 'string', path: ['variant_input_profile', 'trigger_tech'] },
+    { label: 'Trigger Type', key: 'trigger_type', type: 'string', path: ['variant_input_profile', 'trigger_type'] },
+    { label: 'Bumper Tech', key: 'bumper_tech', type: 'string', path: ['variant_input_profile', 'bumper_tech'] },
+
+    { label: 'Back Buttons', key: 'back_button_count', type: 'number', path: ['variant_input_profile', 'back_button_count'] },
+    { label: 'Gyroscope', key: 'has_gyro', type: 'boolean', path: ['variant_input_profile', 'has_gyro'] },
+    { label: 'Haptics', key: 'haptics', type: 'string' }, // Kept on root variant for now per schema
 
     // --- PHYSICAL ---
     { label: 'Width (mm)', key: 'width_mm', type: 'number' },

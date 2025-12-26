@@ -17,8 +17,20 @@ export const ComparisonRow: FC<ComparisonRowProps> = ({
     varB,
     showDiffOnly
 }) => {
-    const rawA = varA[metric.key];
-    const rawB = varB[metric.key];
+    const getValue = (variant: any, metric: ComparisonMetric) => {
+        if (metric.path && metric.path.length > 0) {
+            let current = variant;
+            for (const key of metric.path) {
+                if (current == null) return undefined;
+                current = current[key];
+            }
+            return current;
+        }
+        return variant[metric.key];
+    };
+
+    const rawA = getValue(varA, metric);
+    const rawB = getValue(varB, metric);
 
     const exists = (v: any) => v !== undefined && v !== null && v !== '';
     const hasA = exists(rawA);
