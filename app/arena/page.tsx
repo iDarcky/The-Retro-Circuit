@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense, type ChangeEvent, type Dispatch, type SetStateAction } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { fetchConsoleList, fetchConsoleBySlug } from '../../lib/api';
 import { ConsoleDetails, ConsoleVariant } from '../../lib/types';
 import { useSound } from '../../components/ui/SoundContext';
@@ -118,15 +119,19 @@ function VSModeContent() {
                 VS MODE <span className="text-secondary">ARENA</span>
             </h1>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 relative">
-                <div className="hidden md:flex absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 w-16 h-16 bg-black rounded-full items-center justify-center border-4 border-white shadow-[0_0_20px_rgba(255,255,255,0.5)]">
-                    <span className="font-pixel text-xl italic text-white">VS</span>
+            <div className="grid grid-cols-2 gap-2 md:gap-8 mb-4 md:mb-8 relative">
+                {/* VS Badge - Centered */}
+                <div className="absolute left-1/2 top-3 md:top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none flex justify-center">
+                    <span className="md:hidden font-pixel text-[10px] text-white bg-bg-primary px-1 shadow-sm border border-white/10 rounded">VS</span>
+                    <div className="hidden md:flex w-16 h-16 bg-black rounded-full items-center justify-center border-4 border-white shadow-[0_0_20px_rgba(255,255,255,0.5)]">
+                        <span className="font-pixel text-xl italic text-white">VS</span>
+                    </div>
                 </div>
 
-                {/* Player 1 Card */}
-                <div className="border-2 border-secondary bg-secondary/5 relative min-h-[300px] -skew-x-10 overflow-hidden shadow-lg hover:shadow-secondary/20 transition-shadow">
-                     <div className="skew-x-10 p-6 flex flex-col h-full">
-                        <h2 className="font-pixel text-secondary mb-4">PLAYER 1</h2>
+                {/* Player 1 Card - Cyan */}
+                <div className="border border-primary bg-primary/5 relative overflow-hidden shadow-lg hover:shadow-primary/20 transition-shadow md:-skew-x-10">
+                     <div className="md:skew-x-10 p-2 md:p-6 flex flex-col h-full">
+                        <h2 className="font-pixel text-[10px] md:text-base text-primary mb-2 text-left">[ PLAYER 1 ]</h2>
                         <ConsoleSearch 
                             consoles={allConsoles} 
                             onSelect={(slug) => handleSelect(setSelectionA, true)(slug)} 
@@ -134,21 +139,29 @@ function VSModeContent() {
                             currentSelection={selectionA.details?.name}
                         />
                         {selectionA.loading ? (
-                             <div className="flex-1 flex items-center justify-center text-secondary font-mono animate-pulse">LOADING SPEC SHEET...</div>
+                             <div className="flex-1 flex items-center justify-center text-primary font-mono animate-pulse text-[10px] md:text-base mt-4">LOADING...</div>
                         ) : selectionA.details ? (
-                             <div className="mt-6 flex-1 flex flex-col items-center animate-fadeIn">
-                                 <div className="relative w-full h-32 mb-4">
-                                     {(selectionA.selectedVariant?.image_url || selectionA.details.image_url) ? (
-                                         <img src={selectionA.selectedVariant?.image_url || selectionA.details.image_url} alt={selectionA.details.name} className="w-full h-full object-contain drop-shadow-lg" />
-                                     ) : (
-                                         <div className="w-full h-full flex items-center justify-center text-secondary opacity-50 font-pixel">NO IMAGE</div>
-                                     )}
-                                 </div>
-                                 <h3 className="font-pixel text-xl text-white text-center mb-1">{selectionA.details.name}</h3>
-                                 <div className="font-mono text-xs text-secondary mb-4">{selectionA.details.manufacturer?.name}</div>
+                             <div className="mt-2 md:mt-6 flex-1 flex flex-col md:items-center animate-fadeIn">
+                                 <Link
+                                    href={`/consoles/${selectionA.details.slug}`}
+                                    className="flex flex-row md:flex-col items-center gap-2 md:gap-4 mb-2 md:mb-4 group w-full"
+                                 >
+                                     <div className="relative w-10 h-10 md:w-full md:h-32 flex-shrink-0">
+                                         {(selectionA.selectedVariant?.image_url || selectionA.details.image_url) ? (
+                                             <img src={selectionA.selectedVariant?.image_url || selectionA.details.image_url} alt={selectionA.details.name} className="w-full h-full object-contain drop-shadow-lg" />
+                                         ) : (
+                                             <div className="w-full h-full flex items-center justify-center text-primary opacity-50 font-pixel text-[8px] md:text-xs">NO IMG</div>
+                                         )}
+                                     </div>
+                                     <div className="flex flex-col text-left md:text-center min-w-0 overflow-hidden w-full">
+                                         <h3 className="font-pixel text-[10px] md:text-xl text-white truncate group-hover:text-primary transition-colors">{selectionA.details.name}</h3>
+                                         <div className="font-mono text-[8px] md:text-xs text-primary truncate">{selectionA.details.manufacturer?.name}</div>
+                                     </div>
+                                 </Link>
+
                                  {selectionA.details.variants && selectionA.details.variants.length > 1 && (
                                      <select 
-                                        className="w-full bg-black border border-secondary text-secondary font-mono text-xs p-2 outline-none"
+                                        className="w-full bg-black border border-primary text-primary font-mono text-[10px] md:text-xs p-1 md:p-2 outline-none"
                                         value={selectionA.selectedVariant?.slug || ''}
                                         onChange={handleVariantChange(setSelectionA, true)}
                                      >
@@ -157,15 +170,15 @@ function VSModeContent() {
                                  )}
                              </div>
                         ) : (
-                             <div className="flex-1 flex items-center justify-center text-gray-600 font-pixel text-xs opacity-50">SELECT FIGHTER</div>
+                             <div className="flex-1 flex items-center justify-center text-gray-600 font-pixel text-[8px] md:text-xs opacity-50 mt-4">SELECT FIGHTER</div>
                         )}
                      </div>
                 </div>
 
-                {/* Player 2 Card */}
-                <div className="border-2 border-accent bg-accent/5 relative min-h-[300px] skew-x-10 overflow-hidden shadow-lg hover:shadow-accent/20 transition-shadow">
-                     <div className="-skew-x-10 p-6 flex flex-col h-full">
-                        <h2 className="font-pixel text-accent mb-4 text-right">PLAYER 2</h2>
+                {/* Player 2 Card - Pink */}
+                <div className="border border-accent bg-accent/5 relative overflow-hidden shadow-lg hover:shadow-accent/20 transition-shadow md:skew-x-10">
+                     <div className="md:-skew-x-10 p-2 md:p-6 flex flex-col h-full">
+                        <h2 className="font-pixel text-[10px] md:text-base text-accent mb-2 text-right">[ PLAYER 2 ]</h2>
                         <ConsoleSearch 
                             consoles={allConsoles} 
                             onSelect={(slug) => handleSelect(setSelectionB, false)(slug)} 
@@ -173,21 +186,29 @@ function VSModeContent() {
                             currentSelection={selectionB.details?.name}
                         />
                         {selectionB.loading ? (
-                             <div className="flex-1 flex items-center justify-center text-accent font-mono animate-pulse">LOADING SPEC SHEET...</div>
+                             <div className="flex-1 flex items-center justify-center text-accent font-mono animate-pulse text-[10px] md:text-base mt-4">LOADING...</div>
                         ) : selectionB.details ? (
-                             <div className="mt-6 flex-1 flex flex-col items-center animate-fadeIn">
-                                 <div className="relative w-full h-32 mb-4">
-                                     {(selectionB.selectedVariant?.image_url || selectionB.details.image_url) ? (
-                                         <img src={selectionB.selectedVariant?.image_url || selectionB.details.image_url} alt={selectionB.details.name} className="w-full h-full object-contain drop-shadow-lg" />
-                                     ) : (
-                                         <div className="w-full h-full flex items-center justify-center text-accent opacity-50 font-pixel">NO IMAGE</div>
-                                     )}
-                                 </div>
-                                 <h3 className="font-pixel text-xl text-white text-center mb-1">{selectionB.details.name}</h3>
-                                 <div className="font-mono text-xs text-accent mb-4">{selectionB.details.manufacturer?.name}</div>
+                             <div className="mt-2 md:mt-6 flex-1 flex flex-col md:items-center animate-fadeIn">
+                                 <Link
+                                    href={`/consoles/${selectionB.details.slug}`}
+                                    className="flex flex-row md:flex-col items-center gap-2 md:gap-4 mb-2 md:mb-4 group w-full"
+                                 >
+                                     <div className="relative w-10 h-10 md:w-full md:h-32 flex-shrink-0">
+                                         {(selectionB.selectedVariant?.image_url || selectionB.details.image_url) ? (
+                                             <img src={selectionB.selectedVariant?.image_url || selectionB.details.image_url} alt={selectionB.details.name} className="w-full h-full object-contain drop-shadow-lg" />
+                                         ) : (
+                                             <div className="w-full h-full flex items-center justify-center text-accent opacity-50 font-pixel text-[8px] md:text-xs">NO IMG</div>
+                                         )}
+                                     </div>
+                                     <div className="flex flex-col text-left md:text-center min-w-0 overflow-hidden w-full">
+                                         <h3 className="font-pixel text-[10px] md:text-xl text-white truncate group-hover:text-accent transition-colors">{selectionB.details.name}</h3>
+                                         <div className="font-mono text-[8px] md:text-xs text-accent truncate">{selectionB.details.manufacturer?.name}</div>
+                                     </div>
+                                 </Link>
+
                                  {selectionB.details.variants && selectionB.details.variants.length > 1 && (
                                      <select 
-                                        className="w-full bg-black border border-accent text-accent font-mono text-xs p-2 outline-none"
+                                        className="w-full bg-black border border-accent text-accent font-mono text-[10px] md:text-xs p-1 md:p-2 outline-none"
                                         value={selectionB.selectedVariant?.slug || ''}
                                         onChange={handleVariantChange(setSelectionB, false)}
                                      >
@@ -196,7 +217,7 @@ function VSModeContent() {
                                  )}
                              </div>
                         ) : (
-                             <div className="flex-1 flex items-center justify-center text-gray-600 font-pixel text-xs opacity-50">SELECT FIGHTER</div>
+                             <div className="flex-1 flex items-center justify-center text-gray-600 font-pixel text-[8px] md:text-xs opacity-50 mt-4">SELECT FIGHTER</div>
                         )}
                      </div>
                 </div>
