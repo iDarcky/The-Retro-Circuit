@@ -1,5 +1,5 @@
 import { supabase } from "../supabase/singleton";
-import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant } from "../types";
+import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant, VariantInputProfile } from "../types";
 
 export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
     try {
@@ -9,7 +9,7 @@ export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
             .select(`
                 *,
                 manufacturer:manufacturer(*),
-                variants:console_variants(*, emulation_profiles(*))
+                variants:console_variants(*, emulation_profiles(*), variant_input_profile(*))
             `)
             .order('name', { ascending: true });
 
@@ -45,7 +45,7 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
         // Query consoles. We sort by NAME by default in the DB to ensure we get a stable list
         // regardless of whether 'release_year' is null or missing in the parent table.
         let query = supabase.from('consoles')
-            .select('*, manufacturer:manufacturer(*), variants:console_variants(*)', { count: 'exact' });
+            .select('*, manufacturer:manufacturer(*), variants:console_variants(*, variant_input_profile(*))', { count: 'exact' });
 
         if (filters.manufacturer_id) query = query.eq('manufacturer_id', filters.manufacturer_id);
         
@@ -119,7 +119,7 @@ export const fetchConsoleBySlug = async (slug: string): Promise<{ data: ConsoleD
             .select(`
                 *,
                 manufacturer:manufacturer(*),
-                variants:console_variants(*, emulation_profiles(*))
+                variants:console_variants(*, emulation_profiles(*), variant_input_profile(*))
             `)
             .eq('slug', slug)
             .limit(1);
@@ -169,7 +169,7 @@ export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs |
         // Try to find default variant first
         const { data } = await supabase
             .from('console_variants')
-            .select('*')
+            .select('*, variant_input_profile(*)')
             .eq('console_id', consoleId)
             .eq('is_default', true)
             .maybeSingle();
@@ -179,7 +179,7 @@ export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs |
         // Fallback to any variant
         const { data: anyVar } = await supabase
             .from('console_variants')
-            .select('*')
+            .select('*, variant_input_profile(*)')
             .eq('console_id', consoleId)
             .limit(1)
             .maybeSingle();
@@ -194,7 +194,7 @@ export const getVariantsByConsole = async (consoleId: string): Promise<ConsoleVa
     try {
         const { data, error } = await supabase
             .from('console_variants')
-            .select('*')
+            .select('*, variant_input_profile(*)')
             .eq('console_id', consoleId)
             .order('is_default', { ascending: false }); // Defaults first
         if (error) throw error;
@@ -208,7 +208,7 @@ export const getVariantById = async (variantId: string): Promise<ConsoleVariant 
     try {
         const { data, error } = await supabase
             .from('console_variants')
-            .select('*')
+            .select('*, variant_input_profile(*)')
             .eq('id', variantId)
             .single();
         if (error) throw error;
@@ -222,7 +222,7 @@ export const getConsolesByManufacturer = async (manufacturerId: string): Promise
     try {
         const { data, error } = await supabase
             .from('consoles')
-            .select('*, variants:console_variants(*)')
+            .select('*, variants:console_variants(*, variant_input_profile(*))')
             .eq('manufacturer_id', manufacturerId);
             
         if (error) throw error;
@@ -273,8 +273,34 @@ export const updateConsole = async (
 
 export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>): Promise<{ success: boolean, message?: string }> => {
     try {
-        const { error } = await supabase.from('console_variants').insert([variantData]);
-        if (error) return { success: false, message: error.message };
+        // Extract Input Profile data
+        const { variant_input_profile, ...mainVariantData } = variantData;
+
+        // 1. Insert Variant
+        const { data: newVariant, error: variantError } = await supabase
+            .from('console_variants')
+            .insert([mainVariantData])
+            .select('id')
+            .single();
+
+        if (variantError) return { success: false, message: "Variant Insert Failed: " + variantError.message };
+        if (!newVariant) return { success: false, message: "Variant Insert Failed: No Data" };
+
+        // 2. Insert Input Profile (if exists)
+        if (variant_input_profile) {
+            const profileData: VariantInputProfile = {
+                ...variant_input_profile,
+                variant_id: newVariant.id
+            };
+            // Clean up undefined/nulls if needed, assuming Supabase handles it or schema is strict
+            const { error: profileError } = await supabase.from('variant_input_profile').insert([profileData]);
+
+            if (profileError) {
+                console.error("Input Profile Insert Failed:", profileError);
+                return { success: true, message: "Variant saved, but Input Profile failed: " + profileError.message };
+            }
+        }
+
         return { success: true };
     } catch (e: any) {
         return { success: false, message: e.message };
@@ -283,8 +309,27 @@ export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>)
 
 export const updateConsoleVariant = async (id: string, variantData: Partial<ConsoleVariant>): Promise<{ success: boolean, message?: string }> => {
     try {
-        const { error } = await supabase.from('console_variants').update(variantData).eq('id', id);
-        if (error) return { success: false, message: error.message };
+        // Extract Input Profile data
+        const { variant_input_profile, ...mainVariantData } = variantData;
+
+        // 1. Update Variant
+        const { error: variantError } = await supabase.from('console_variants').update(mainVariantData).eq('id', id);
+        if (variantError) return { success: false, message: variantError.message };
+
+        // 2. Upsert Input Profile
+        if (variant_input_profile) {
+            const profileData = {
+                ...variant_input_profile,
+                variant_id: id // Ensure ID links match
+            };
+            const { error: profileError } = await supabase.from('variant_input_profile').upsert([profileData]);
+
+            if (profileError) {
+                console.error("Input Profile Update Failed:", profileError);
+                 return { success: true, message: "Variant updated, but Input Profile failed: " + profileError.message };
+            }
+        }
+
         return { success: true };
     } catch (e: any) {
         return { success: false, message: e.message };
