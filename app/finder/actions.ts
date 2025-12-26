@@ -13,8 +13,7 @@ export interface FinderResultConsole {
   manufacturer: {
     name: string;
   } | null;
-  // release_year?: number; // REMOVED
-  release_date?: string | null; // NEW
+  release_date?: string | null;
   price?: number | null;
 
   // Match Metadata

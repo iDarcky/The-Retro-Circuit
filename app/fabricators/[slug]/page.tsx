@@ -68,17 +68,18 @@ export default async function FabricatorDetailPage(props: Props) {
              if (!c.image_url && defaultVar?.image_url) {
                  c.image_url = defaultVar.image_url;
              }
-             if (!c.release_year && defaultVar?.release_year) {
-                 c.release_year = defaultVar.release_year;
+             if (!c.release_date && defaultVar?.release_date) {
+                 c.release_date = defaultVar.release_date;
              }
+             c.specs = defaultVar;
              return c;
         });
 
         // Manual Sort: Newest First (handling TBA/Nulls at top)
         consoles.sort((a, b) => {
-            const yA = Number(a.release_year) || 9999;
-            const yB = Number(b.release_year) || 9999;
-            return yB - yA;
+             const dateA = a.specs?.release_date ? new Date(a.specs.release_date).getTime() : 0;
+             const dateB = b.specs?.release_date ? new Date(b.specs.release_date).getTime() : 0;
+             return dateB - dateA;
         });
     }
 
