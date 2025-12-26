@@ -199,14 +199,44 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             return; 
         }
 
+        // Structure data for API: Separate Variant vs Input Profile
+        const validData = result.data as any;
+        const inputProfileKeys = [
+            'dpad_tech', 'dpad_shape', 'dpad_placement',
+            'face_button_count', 'face_button_layout', 'face_button_tech', 'face_label_scheme',
+            'stick_count', 'stick_tech', 'stick_layout', 'stick_clicks', 'stick_cap',
+            'bumper_tech', 'trigger_tech', 'trigger_type', 'trigger_layout',
+            'back_button_count', 'has_gyro', 'has_keyboard', 'keyboard_type',
+            'system_button_set', 'system_buttons_text', 'touchpad_count', 'touchpad_clickable',
+            'input_confidence', 'input_notes'
+        ];
+
+        const variantPayload: any = {};
+        const inputProfilePayload: any = {};
+
+        Object.keys(validData).forEach(key => {
+            if (inputProfileKeys.includes(key)) {
+                // Ensure empty strings are converted to null for Enums
+                const val = validData[key];
+                inputProfilePayload[key] = (val === '') ? null : val;
+            } else {
+                variantPayload[key] = validData[key];
+            }
+        });
+
+        // Attach input profile as nested object for the API to handle
+        if (Object.keys(inputProfilePayload).length > 0) {
+            variantPayload.variant_input_profile = inputProfilePayload;
+        }
+
         setLoading(true);
         try {
             const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Database timeout")), 10000));
             let promise;
             if (isEditMode && initialData?.id) {
-                promise = updateConsoleVariant(initialData.id, result.data as any);
+                promise = updateConsoleVariant(initialData.id, variantPayload);
             } else {
-                promise = addConsoleVariant(result.data as any);
+                promise = addConsoleVariant(variantPayload);
             }
             const response: any = await Promise.race([promise, timeout]);
             if (response.success) {
