@@ -15,6 +15,7 @@ import { TechBadge } from '../ui/specs/TechBadge';
 import { getConsoleImage } from '../../lib/utils';
 import { getDocVersion } from '../../lib/utils/doc-version';
 import RetroStatusBar from '../ui/RetroStatusBar';
+import { formatTech, formatLayout, formatShape } from '../../lib/utils/formatters';
 
 interface ConsoleDetailViewProps {
   consoleData: ConsoleDetails;
