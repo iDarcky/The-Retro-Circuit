@@ -11,7 +11,6 @@ export type ComparisonMetric = {
 
 export const METRICS: ComparisonMetric[] = [
     // --- IDENTITY ---
-    { label: 'Release Year', key: 'release_year', type: 'number' },
     { label: 'Launch Price', key: 'price_launch_usd', type: 'currency', lowerIsBetter: true },
     { label: 'Model Number', key: 'model_no', type: 'string' },
     { label: 'OS / Firmware', key: 'os', type: 'string' },

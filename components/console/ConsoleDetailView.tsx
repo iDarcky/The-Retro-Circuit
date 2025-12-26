@@ -15,6 +15,7 @@ import { TechBadge } from '../ui/specs/TechBadge';
 import { getConsoleImage } from '../../lib/utils';
 import { getDocVersion } from '../../lib/utils/doc-version';
 import { formatInputEnum } from '../../lib/utils/formatters';
+import { formatReleaseDate } from '../../lib/utils/date-formatter';
 import RetroStatusBar from '../ui/RetroStatusBar';
 
 interface ConsoleDetailViewProps {
@@ -146,7 +147,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
     
     // Get the correct image using the centralized helper
     const currentImage = getConsoleImage({ console: consoleData, variant: currentVariant });
-    const currentYear = currentVariant?.release_year || consoleData.release_year;
+    const currentYear = currentVariant?.release_date ? new Date(currentVariant.release_date).getFullYear() : 'XXXX';
     
     // Construct VS Mode URL (Using p1 as requested)
     const compareUrl = `/arena/${consoleData.slug}${currentVariant?.slug ? `-${currentVariant.slug}` : ''}-vs-select`;
@@ -221,7 +222,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
         <div className="w-full animate-fadeIn relative">
             <RetroStatusBar
                 rcPath={`RC://RETRO_CIRCUIT/VAULT/CONSOLES/${consoleData.slug.toUpperCase()}`}
-                docId={`HW_${consoleData.name.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase()}_${consoleData.release_year || 'XXXX'}${getDocVersion(consoleData.slug)}`}
+                docId={`HW_${consoleData.name.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase()}_${currentYear}${getDocVersion(consoleData.slug)}`}
             />
             
             <div className="max-w-7xl mx-auto p-4">
@@ -259,7 +260,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                             {consoleData.manufacturer?.name.toUpperCase()}
                         </Link>
                         <span>{'//'}</span>
-                        <span className="text-accent">{currentYear || 'TBA'}</span>
+                        <span className="text-accent">{currentYear}</span>
                         <span>{'//'}</span>
                         <span>{getSystemTypeLabel(consoleData.device_category)}</span>
                      </div>
@@ -329,7 +330,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                         </div>
                         <div className="bg-bg-primary p-3">
                             <div className="text-[10px] text-gray-500 font-mono uppercase">Release</div>
-                            <div className="text-white font-mono text-sm">{currentYear || 'TBA'}</div>
+                            <div className="text-white font-mono text-sm">{formatReleaseDate(currentVariant?.release_date, currentVariant?.release_date_precision) || 'TBA'}</div>
                         </div>
                     </div>
 

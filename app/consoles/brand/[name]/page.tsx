@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { createClient } from '../../../../lib/supabase/server';
 import { ConsoleDetails } from '../../../../lib/types';
 import { getBrandTheme } from '../../../../data/static';
+import { formatReleaseDate } from '../../../../lib/utils/date-formatter';
 
 type Props = {
   params: Promise<{ name: string }>
@@ -47,14 +48,14 @@ export default async function ManufacturerDetailPage(props: Props) {
             // UPDATED
             .select('*, manufacturer:manufacturer(*), variants:console_variants(*)')
             .eq('manufacturer_id', profile.id)
-            .order('release_year', { ascending: true });
+            .order('release_date', { foreignTable: 'console_variants', ascending: true });
 
         // Normalize
         consoles = ((data as any) || []).map((c: any) => {
              const variants = c.variants || [];
              const defaultVar = variants.find((v: any) => v.is_default) || variants[0];
              if (!c.image_url && defaultVar?.image_url) c.image_url = defaultVar.image_url;
-             if (!c.release_year && defaultVar?.release_year) c.release_year = defaultVar.release_year;
+             c.specs = defaultVar;
              return c;
         });
     }
@@ -157,7 +158,7 @@ export default async function ManufacturerDetailPage(props: Props) {
                                 </div>
                                 <div className="p-3 border-t border-border-normal">
                                     <div className="flex justify-between text-[10px] font-mono text-gray-500 mb-1">
-                                        <span>{console.release_year}</span>
+                                        <span>{formatReleaseDate(console.specs?.release_date, console.specs?.release_date_precision) || 'TBA'}</span>
                                         <span>{console.generation}</span>
                                     </div>
                                     <h3 className="font-pixel text-xs text-white group-hover:text-secondary truncate">

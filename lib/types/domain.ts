@@ -166,7 +166,6 @@ export interface ConsoleVariant {
   variant_name: string;
   slug?: string;
   is_default: boolean;
-  release_year?: number; // Deprecated
   release_date?: string | null;
   release_date_precision?: 'year' | 'month' | 'day' | null;
   model_no?: string;
@@ -269,7 +268,6 @@ export interface ConsoleDetails {
     variants?: ConsoleVariant[];
     specs?: ConsoleSpecs | Partial<ConsoleVariant>;
     
-    release_year?: number; 
     generation?: string;
 
     device_category: 'emulation' | 'pc_gaming' | 'fpga' | 'legacy';

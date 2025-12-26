@@ -96,7 +96,6 @@ export const fetchRealWorldLatest = async (limit: number = 3): Promise<ConsoleDe
                 // Attach this variant as the default/specs for display context
                 const consoleData = v.console;
                 consoleData.specs = v;
-                consoleData.release_year = v.release_year; // Legacy fallback
                 consoleData.image_url = v.image_url || consoleData.image_url;
 
                 uniqueConsoles.set(v.console.id, consoleData);
@@ -118,7 +117,6 @@ function normalizeConsoles(data: any[] | null): ConsoleDetails[] {
         const defaultVariant = variants.find((v: any) => v.is_default) || variants[0];
 
         if (defaultVariant) {
-            if (!item.release_year) item.release_year = defaultVariant.release_year;
             if (!item.image_url) item.image_url = defaultVariant.image_url;
             item.specs = defaultVariant;
         } else {
