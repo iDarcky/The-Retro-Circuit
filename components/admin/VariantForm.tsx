@@ -10,6 +10,7 @@ import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
 import ImageUpload from '../ui/ImageUpload';
 import { EmulationForm } from './EmulationForm';
+import { VariantInputProfileForm } from './VariantInputProfileForm';
 
 interface VariantFormProps {
     consoleList: {name: string, id: string}[];
