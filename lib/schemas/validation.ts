@@ -46,6 +46,35 @@ export const ConsoleSchema = z.object({
     community_score: safeNumber,
 });
 
+export const VariantInputProfileSchema = z.object({
+    dpad_tech: safeString,
+    dpad_shape: safeString,
+    dpad_placement: safeString,
+    face_button_count: safeNumber,
+    face_button_layout: safeString,
+    face_button_tech: safeString,
+    face_label_scheme: safeString,
+    stick_count: safeNumber,
+    stick_tech: safeString,
+    stick_layout: safeString,
+    stick_clicks: safeBoolean,
+    stick_cap: safeString,
+    bumper_tech: safeString,
+    trigger_tech: safeString,
+    trigger_type: safeString,
+    trigger_layout: safeString,
+    back_button_count: safeNumber,
+    has_gyro: safeBoolean,
+    has_keyboard: safeBoolean,
+    keyboard_type: safeString,
+    system_button_set: safeString,
+    system_buttons_text: safeString,
+    touchpad_count: safeNumber,
+    touchpad_clickable: safeBoolean,
+    input_confidence: safeString,
+    input_notes: safeString,
+});
+
 export const ConsoleVariantSchema = z.object({
   id: z.string().optional(),
   console_id: safeString,
@@ -134,27 +163,15 @@ export const ConsoleVariantSchema = z.object({
   cellular_connectivity: safeString,
   video_out: safeString,
   haptics: safeString,
-  gyro: safeBoolean,
+  gyro: safeBoolean, // Legacy field, kept but usually unused
 
-  // Controls
-  input_layout: safeString,
-  other_buttons: safeString,
-  dpad_mechanism: safeString,
-  dpad_shape: safeString,
-  thumbstick_mechanism: safeString,
-  thumbstick_layout: safeString,
-  thumbstick_cap: safeString,
-  has_stick_clicks: safeBoolean,
-  shoulder_layout: safeString,
-  bumper_mechanism: safeString,
-  trigger_mechanism: safeString,
-  action_button_mechanism: safeString,
-  has_back_buttons: safeBoolean,
-  has_keyboard: safeBoolean,
+  // CONTROLS - REPLACED BY VARIANT INPUT PROFILE (below)
+  // We remove the old fields to prevent Zod from stripping new ones if we merged,
+  // but actually we merge them below.
 
   // Body
   width_mm: safeNumber,
   height_mm: safeNumber,
   depth_mm: safeNumber,
   ui_skin: safeString,
-});
+}).merge(VariantInputProfileSchema.partial()); // Merging the new schema allows the new keys to pass validation
