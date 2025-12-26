@@ -119,7 +119,7 @@ export interface EmulationProfile {
 export type RcButtonTech = 'membrane' | 'microswitch' | 'mechanical' | 'hall' | 'potentiometer' | 'spring' | 'optical' | 'unknown';
 export type RcDpadShape = 'cross' | 'disc' | 'segmented' | 'unknown';
 export type RcPlacement = 'left' | 'right' | 'center' | 'unknown';
-export type RcFaceLayout = 'diamond' | 'inline' | 'arcade_6' | 'split' | 'unknown';
+// RcFaceLayout removed
 export type RcLabelScheme = 'nintendo' | 'xbox' | 'playstation' | 'generic' | 'unknown';
 export type RcStickLayout = 'symmetric' | 'asymmetric' | 'centered' | 'unknown';
 export type RcStickCap = 'concave' | 'convex' | 'flat' | 'domed' | 'textured' | 'unknown';
@@ -135,7 +135,6 @@ export interface VariantInputProfile {
   dpad_shape: RcDpadShape | null;
   dpad_placement: RcPlacement | null;
   face_button_count: number | null; // check ((face_button_count = any (array[2, 4, 6])))
-  face_button_layout: RcFaceLayout | null;
   face_button_tech: RcButtonTech | null;
   face_label_scheme: RcLabelScheme | null;
   stick_count: number | null; // check ((stick_count = any (array[0, 1, 2])))

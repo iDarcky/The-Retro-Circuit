@@ -214,7 +214,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         const validData = result.data as any;
         const inputProfileKeys = [
             'dpad_tech', 'dpad_shape', 'dpad_placement',
-            'face_button_count', 'face_button_layout', 'face_button_tech', 'face_label_scheme',
+            'face_button_count', 'face_button_tech', 'face_label_scheme',
             'stick_count', 'stick_tech', 'stick_layout', 'stick_clicks', 'stick_cap',
             'bumper_tech', 'trigger_tech', 'trigger_type', 'trigger_layout',
             'back_button_count', 'has_gyro', 'has_keyboard', 'keyboard_type',
@@ -341,6 +341,11 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                             let colSpan = 'md:col-span-6';
                                             if (field.width === 'full') colSpan = 'md:col-span-12';
                                             if (field.width === 'third') colSpan = 'md:col-span-4';
+                                            if (field.width === 'quarter') colSpan = 'md:col-span-3'; // Added support for 'quarter'
+                                            if (field.width === 'half') colSpan = 'md:col-span-6';
+                                            if (field.width === 'two-thirds') colSpan = 'md:col-span-8';
+                                            if (field.width === 'sixth') colSpan = 'md:col-span-2';
+
                                             const error = field.key ? fieldErrors[field.key as keyof typeof fieldErrors] : undefined;
 
                                             if (field.type === 'custom_ram') {

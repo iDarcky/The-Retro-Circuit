@@ -51,7 +51,6 @@ export const VariantInputProfileSchema = z.object({
     dpad_shape: safeString,
     dpad_placement: safeString,
     face_button_count: safeNumber,
-    face_button_layout: safeString,
     face_button_tech: safeString,
     face_label_scheme: safeString,
     stick_count: safeNumber,

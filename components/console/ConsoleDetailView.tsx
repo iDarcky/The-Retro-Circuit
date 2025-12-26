@@ -472,10 +472,9 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                                         <div className="mt-3 pt-2 border-t border-white/5">
                                             <div className="grid grid-cols-2 gap-4">
                                                 <SpecField label="Face buttons" value={mergedSpecs.variant_input_profile.face_button_count} small />
-                                                <SpecField label="Face button layout" value={formatInputEnum('rc_face_layout', mergedSpecs.variant_input_profile.face_button_layout)} small />
+                                                <SpecField label="Face button tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.face_button_tech)} small />
                                             </div>
                                             <div className="grid grid-cols-2 gap-4 mt-1">
-                                                <SpecField label="Face button tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.face_button_tech)} small />
                                                 <SpecField label="Button labels" value={formatInputEnum('rc_label_scheme', mergedSpecs.variant_input_profile.face_label_scheme)} small />
                                             </div>
                                         </div>

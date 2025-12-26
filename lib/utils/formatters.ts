@@ -25,13 +25,6 @@ export const INPUT_ENUM_LABELS: Record<string, Record<string, string>> = {
         'bottom': 'Bottom',
         'unknown': 'Unknown',
     },
-    rc_face_layout: {
-        'diamond': 'Diamond',
-        'inline': 'Inline',
-        'arcade_6': 'Arcade_6',
-        'split': 'Split',
-        'unknown': 'Unknown',
-    },
     rc_label_scheme: {
         'nintendo': 'Nintendo',
         'xbox': 'Xbox',
