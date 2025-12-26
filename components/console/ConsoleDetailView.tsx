@@ -14,6 +14,7 @@ import { SpecField } from '../ui/specs/SpecField';
 import { TechBadge } from '../ui/specs/TechBadge';
 import { getConsoleImage } from '../../lib/utils';
 import { getDocVersion } from '../../lib/utils/doc-version';
+import { formatInputEnum } from '../../lib/utils/formatters';
 import RetroStatusBar from '../ui/RetroStatusBar';
 
 interface ConsoleDetailViewProps {
@@ -460,22 +461,22 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                                     <>
                                         {/* D-Pad */}
                                         <div className="grid grid-cols-2 gap-4">
-                                            <SpecField label="D-pad tech" value={mergedSpecs.variant_input_profile.dpad_tech} small />
-                                            <SpecField label="D-pad shape" value={mergedSpecs.variant_input_profile.dpad_shape} small />
+                                            <SpecField label="D-pad tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.dpad_tech)} small />
+                                            <SpecField label="D-pad shape" value={formatInputEnum('rc_dpad_shape', mergedSpecs.variant_input_profile.dpad_shape)} small />
                                         </div>
                                         {mergedSpecs.variant_input_profile.dpad_placement && (
-                                            <SpecField label="D-pad placement" value={mergedSpecs.variant_input_profile.dpad_placement} small />
+                                            <SpecField label="D-pad placement" value={formatInputEnum('rc_placement', mergedSpecs.variant_input_profile.dpad_placement)} small />
                                         )}
 
                                         {/* Face Buttons */}
                                         <div className="mt-3 pt-2 border-t border-white/5">
                                             <div className="grid grid-cols-2 gap-4">
                                                 <SpecField label="Face buttons" value={mergedSpecs.variant_input_profile.face_button_count} small />
-                                                <SpecField label="Face button layout" value={mergedSpecs.variant_input_profile.face_button_layout} small />
+                                                <SpecField label="Face button layout" value={formatInputEnum('rc_face_layout', mergedSpecs.variant_input_profile.face_button_layout)} small />
                                             </div>
                                             <div className="grid grid-cols-2 gap-4 mt-1">
-                                                <SpecField label="Face button tech" value={mergedSpecs.variant_input_profile.face_button_tech} small />
-                                                <SpecField label="Button labels" value={mergedSpecs.variant_input_profile.face_label_scheme} small />
+                                                <SpecField label="Face button tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.face_button_tech)} small />
+                                                <SpecField label="Button labels" value={formatInputEnum('rc_label_scheme', mergedSpecs.variant_input_profile.face_label_scheme)} small />
                                             </div>
                                         </div>
 
@@ -483,11 +484,11 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                                         <div className="mt-3 pt-2 border-t border-white/5">
                                             <div className="text-[9px] text-gray-500 uppercase mb-1">Analog sticks ({mergedSpecs.variant_input_profile.stick_count || 0})</div>
                                             <div className="grid grid-cols-2 gap-4">
-                                                <SpecField label="Stick tech" value={mergedSpecs.variant_input_profile.stick_tech} small />
-                                                <SpecField label="Stick layout" value={mergedSpecs.variant_input_profile.stick_layout} small />
+                                                <SpecField label="Stick tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.stick_tech)} small />
+                                                <SpecField label="Stick layout" value={formatInputEnum('rc_stick_layout', mergedSpecs.variant_input_profile.stick_layout)} small />
                                             </div>
                                             <div className="grid grid-cols-2 gap-4 mt-1">
-                                                <SpecField label="Stick cap" value={mergedSpecs.variant_input_profile.stick_cap} small />
+                                                <SpecField label="Stick cap" value={formatInputEnum('rc_stick_cap', mergedSpecs.variant_input_profile.stick_cap)} small />
                                                 <div className="flex items-center">
                                                     <span className="font-mono text-[10px] text-gray-500 uppercase mr-2">Stick clicks (L3/R3)</span>
                                                     <TechBadge label="YES" active={mergedSpecs.variant_input_profile.stick_clicks} />
@@ -497,12 +498,12 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                                         {/* Bumpers & Triggers */}
                                         <div className="mt-3 pt-2 border-t border-white/5">
-                                            <SpecField label="Bumper tech (L1/R1)" value={mergedSpecs.variant_input_profile.bumper_tech} small />
+                                            <SpecField label="Bumper tech (L1/R1)" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.bumper_tech)} small />
                                             <div className="grid grid-cols-2 gap-4 mt-1">
-                                                <SpecField label="Trigger type (L2/R2)" value={mergedSpecs.variant_input_profile.trigger_type} small />
-                                                <SpecField label="Trigger tech (L2/R2)" value={mergedSpecs.variant_input_profile.trigger_tech} small />
+                                                <SpecField label="Trigger type (L2/R2)" value={formatInputEnum('rc_trigger_type', mergedSpecs.variant_input_profile.trigger_type)} small />
+                                                <SpecField label="Trigger tech (L2/R2)" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.trigger_tech)} small />
                                             </div>
-                                            <SpecField label="Trigger layout" value={mergedSpecs.variant_input_profile.trigger_layout} small />
+                                            <SpecField label="Trigger layout" value={formatInputEnum('rc_trigger_layout', mergedSpecs.variant_input_profile.trigger_layout)} small />
                                         </div>
 
                                         {/* Extra Inputs */}
@@ -520,12 +521,12 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                                                         <span className="font-mono text-[10px] text-gray-500 uppercase mr-2">Keyboard</span>
                                                         <TechBadge label="YES" active={true} />
                                                     </div>
-                                                    <SpecField label="Keyboard type" value={mergedSpecs.variant_input_profile.keyboard_type} small />
+                                                    <SpecField label="Keyboard type" value={formatInputEnum('rc_keyboard_type', mergedSpecs.variant_input_profile.keyboard_type)} small />
                                                 </div>
                                             )}
 
                                             <div className="grid grid-cols-2 gap-4">
-                                                <SpecField label="System buttons" value={mergedSpecs.variant_input_profile.system_button_set} small />
+                                                <SpecField label="System buttons" value={formatInputEnum('rc_system_button_set', mergedSpecs.variant_input_profile.system_button_set)} small />
                                                 <SpecField label="Extra buttons (details)" value={mergedSpecs.variant_input_profile.system_buttons_text} small />
                                             </div>
 
@@ -545,7 +546,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                                             <div className="mt-3 pt-2 border-t border-white/5">
                                                 {mergedSpecs.variant_input_profile.input_confidence && (
                                                     <div className="text-[9px] font-mono text-gray-500 mb-1">
-                                                        Data confidence: <span className={mergedSpecs.variant_input_profile.input_confidence === 'confirmed' ? 'text-secondary' : 'text-accent'}>{mergedSpecs.variant_input_profile.input_confidence.toUpperCase()}</span>
+                                                        Data confidence: <span className={mergedSpecs.variant_input_profile.input_confidence === 'confirmed' ? 'text-secondary' : 'text-accent'}>{formatInputEnum('rc_confidence', mergedSpecs.variant_input_profile.input_confidence).toUpperCase()}</span>
                                                     </div>
                                                 )}
                                                 {mergedSpecs.variant_input_profile.input_notes && (
