@@ -133,17 +133,16 @@ export const VARIANT_FORM_GROUPS = [
         fields: [
             // DPAD
             { subHeader: 'D-pad' },
-            { label: 'D-Pad Tech', key: 'dpad_tech', type: 'select', required: false, width: 'third', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'potentiometer', 'spring', 'optical', 'unknown'] },
             { label: 'D-Pad Shape', key: 'dpad_shape', type: 'select', required: false, width: 'third', options: ['cross', 'disc', 'segmented', 'unknown'] },
+            { label: 'D-Pad Tech', key: 'dpad_tech', type: 'select', required: false, width: 'third', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'potentiometer', 'spring', 'optical', 'unknown'] },
             { label: 'Placement', key: 'dpad_placement', type: 'select', required: false, width: 'third', options: ['left', 'right', 'center', 'top', 'bottom', 'unknown'] },
 
             // PRIMARY INPUTS
             { subHeader: 'Core Controls' },
             { label: 'Face Btn Count', key: 'face_button_count', type: 'select', required: false, width: 'third', options: ['2', '4', '6'] },
             { label: 'Face Layout', key: 'face_button_layout', type: 'select', required: false, width: 'third', options: ['diamond', 'inline', 'arcade_6', 'split', 'unknown'] },
-            { label: 'Label Scheme', key: 'face_label_scheme', type: 'select', required: false, width: 'third', options: ['nintendo', 'xbox', 'playstation', 'generic', 'unknown'] },
-
-            { label: 'Face Btn Tech', key: 'face_button_tech', type: 'select', required: false, width: 'half', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'potentiometer', 'spring', 'optical', 'unknown'] },
+            { label: 'Face Btn Tech', key: 'face_button_tech', type: 'select', required: false, width: 'third', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'potentiometer', 'spring', 'optical', 'unknown'] },
+            { label: 'Label Scheme', key: 'face_label_scheme', type: 'select', required: false, width: 'full', options: ['nintendo', 'xbox', 'playstation', 'generic', 'unknown'] },
 
             // STICKS
             { subHeader: 'Analog Sticks' },
