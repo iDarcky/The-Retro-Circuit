@@ -44,9 +44,24 @@ const hasData = (keys: string[], specs: any): boolean => {
 };
 
 const SectionPlaceholder = ({ title }: { title: string }) => (
-    <div className="bg-black/20 border border-white/5 p-6 flex flex-col items-center justify-center text-center opacity-50">
-        <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-1">{title}</span>
-        <span className="text-xs font-pixel text-gray-600">NOT DOCUMENTED YET</span>
+    <div className="bg-black/20 border border-white/5 h-full min-h-[200px] flex flex-col">
+        {/* Header */}
+        <div className="flex justify-between items-center p-3 border-b border-white/5 bg-white/[0.02]">
+            <h3 className="font-pixel text-xs text-primary uppercase tracking-wide drop-shadow-[0_0_8px_rgba(0,217,255,0.4)]">
+                {title}
+            </h3>
+            <div className="flex gap-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-white/10"></div>
+                <div className="w-1.5 h-1.5 rounded-full bg-white/10"></div>
+            </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 p-6 flex items-start">
+            <span className="font-mono text-sm text-gray-500 italic">
+                Inputs not documented yet.
+            </span>
+        </div>
     </div>
 );
 
