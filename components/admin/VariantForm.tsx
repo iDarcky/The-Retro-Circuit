@@ -38,9 +38,24 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     const [cpuMinInput, setCpuMinInput] = useState<{ value: string | number, unit: 'GHz' | 'MHz' }>({ value: '', unit: 'GHz' });
     const [cpuMaxInput, setCpuMaxInput] = useState<{ value: string | number, unit: 'GHz' | 'MHz' }>({ value: '', unit: 'GHz' });
 
+    // Date Logic
+    const [datePrecision, setDatePrecision] = useState<'year' | 'month' | 'day' | ''>('');
+    const [dateValue, setDateValue] = useState<string>(''); // YYYY, YYYY-MM, or YYYY-MM-DD
+
     useEffect(() => {
         if (initialData) {
-            setFormData(initialData);
+            // Flatten input profile data if present
+            const flattenedData = { ...initialData };
+
+            // Normalize: API fixes should handle array unwrapping, but safety check here
+            let profile = initialData.variant_input_profile;
+            if (Array.isArray(profile)) profile = profile[0];
+
+            if (profile) {
+                Object.assign(flattenedData, profile);
+            }
+
+            setFormData(flattenedData);
             const mb = Number(initialData.ram_mb);
             if (!isNaN(mb) && mb > 0) {
                  if (mb >= 1024 && mb % 1024 === 0) {
@@ -62,6 +77,22 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             };
             initClock(Number(initialData.cpu_clock_min_mhz), setCpuMinInput);
             initClock(Number(initialData.cpu_clock_max_mhz), setCpuMaxInput);
+
+            // Date Init
+            if (initialData.release_date_precision) {
+                setDatePrecision(initialData.release_date_precision as any);
+                if (initialData.release_date) {
+                    const [y, m] = initialData.release_date.split('-');
+                    if (initialData.release_date_precision === 'year') setDateValue(y);
+                    else if (initialData.release_date_precision === 'month') setDateValue(`${y}-${m}`);
+                    else setDateValue(initialData.release_date);
+                }
+            } else if (initialData.release_year) {
+                // Fallback for legacy
+                setDatePrecision('year');
+                setDateValue(initialData.release_year.toString());
+            }
+
         } else if (preSelectedConsoleId) {
             setFormData(prev => ({ ...prev, console_id: preSelectedConsoleId }));
         }
@@ -91,6 +122,37 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             handleInputChange(key, null);
         }
     };
+
+    // Date Handler
+    useEffect(() => {
+        if (!datePrecision || !dateValue) {
+            handleInputChange('release_date', null);
+            handleInputChange('release_date_precision', null);
+            handleInputChange('release_year', null);
+            return;
+        }
+
+        let fullDate = null;
+        let yearVal = null;
+
+        if (datePrecision === 'year' && dateValue.length === 4) {
+            fullDate = `${dateValue}-01-01`;
+            yearVal = parseInt(dateValue);
+        } else if (datePrecision === 'month' && dateValue.length === 7) {
+            fullDate = `${dateValue}-01`;
+            yearVal = parseInt(dateValue.split('-')[0]);
+        } else if (datePrecision === 'day' && dateValue.length === 10) {
+            fullDate = dateValue;
+            yearVal = parseInt(dateValue.split('-')[0]);
+        }
+
+        if (fullDate) {
+            handleInputChange('release_date', fullDate);
+            handleInputChange('release_date_precision', datePrecision);
+            handleInputChange('release_year', yearVal);
+        }
+    }, [datePrecision, dateValue]);
+
 
     useEffect(() => {
         const fetchTemplates = async () => {
@@ -199,19 +261,68 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             return; 
         }
 
+        // Structure data for API: Separate Variant vs Input Profile
+        const validData = result.data as any;
+        const inputProfileKeys = [
+            'dpad_tech', 'dpad_shape', 'dpad_placement',
+            'face_button_count', 'face_button_tech', 'face_label_scheme',
+            'stick_count', 'stick_tech', 'stick_layout', 'stick_clicks', 'stick_cap',
+            'bumper_tech', 'trigger_tech', 'trigger_type', 'trigger_layout',
+            'back_button_count', 'has_gyro', 'has_keyboard',
+            'system_button_set', 'system_buttons_text', 'touchpad_count', 'touchpad_clickable',
+            'input_confidence', 'input_notes'
+        ];
+
+        const variantPayload: any = {};
+        const inputProfilePayload: any = {};
+
+        // 1. Process Input Profile Fields (Strict Iteration)
+        // We iterate over the whitelist to ensure EVERY field is sent, even if undefined in validData
+        inputProfileKeys.forEach(key => {
+            let val = validData[key];
+
+            // Convert undefined, null, or empty string to explicit NULL
+            if (val === undefined || val === null || val === '') {
+                val = null;
+            }
+
+            // Explicitly default 'unknown' for input_confidence if missing (NOT NULL constraint)
+            if (key === 'input_confidence' && !val) {
+                val = 'unknown';
+            }
+
+            inputProfilePayload[key] = val;
+        });
+
+        // 2. Process Remaining Variant Fields
+        // Iterate over validData keys that are NOT in the input profile list
+        Object.keys(validData).forEach(key => {
+            if (!inputProfileKeys.includes(key)) {
+                variantPayload[key] = validData[key];
+            }
+        });
+
+        // Attach input profile as nested object for the API to handle
+        if (Object.keys(inputProfilePayload).length > 0) {
+            variantPayload.variant_input_profile = inputProfilePayload;
+        }
+
         setLoading(true);
         try {
             const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Database timeout")), 10000));
             let promise;
             if (isEditMode && initialData?.id) {
-                promise = updateConsoleVariant(initialData.id, result.data as any);
+                promise = updateConsoleVariant(initialData.id, variantPayload);
             } else {
-                promise = addConsoleVariant(result.data as any);
+                promise = addConsoleVariant(variantPayload);
             }
             const response: any = await Promise.race([promise, timeout]);
             if (response.success) {
                 await purgeCache();
-                onSuccess(isEditMode ? "VARIANT UPDATED." : "VARIANT SAVED.");
+                // Append optional warning message if available (e.g., input profile failure)
+                const successMsg = isEditMode ? "VARIANT UPDATED." : "VARIANT SAVED.";
+                onSuccess(response.message ? `${successMsg} (${response.message})` : successMsg);
+
                 setFieldErrors({});
                 router.refresh();
                 if (rawVariant.console_id) {
@@ -222,6 +333,8 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     if (mode === 'SAVE') {
                         setFormData({ console_id: rawVariant.console_id });
                         setRamInput({ value: '', unit: 'GB' });
+                        setDatePrecision('');
+                        setDateValue('');
                         setSelectedTemplate('');
                         setOpenSections({ "IDENTITY & ORIGIN": true });
                     } else {
@@ -281,7 +394,49 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                             let colSpan = 'md:col-span-6';
                                             if (field.width === 'full') colSpan = 'md:col-span-12';
                                             if (field.width === 'third') colSpan = 'md:col-span-4';
+                                            if (field.width === 'quarter') colSpan = 'md:col-span-3';
+                                            if (field.width === 'half') colSpan = 'md:col-span-6';
+                                            if (field.width === 'two-thirds') colSpan = 'md:col-span-8';
+                                            if (field.width === 'sixth') colSpan = 'md:col-span-2';
+
                                             const error = field.key ? fieldErrors[field.key as keyof typeof fieldErrors] : undefined;
+
+                                            if (field.type === 'custom_date') {
+                                                return (
+                                                    <div key="date-input" className={`${colSpan} grid grid-cols-2 gap-4`}>
+                                                        <div>
+                                                            <label className="text-[10px] mb-1 block uppercase text-gray-500">Date Precision</label>
+                                                            <select
+                                                                className="w-full bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm"
+                                                                value={datePrecision}
+                                                                onChange={(e) => {
+                                                                    setDatePrecision(e.target.value as any);
+                                                                    setDateValue('');
+                                                                }}
+                                                            >
+                                                                <option value="">-- None --</option>
+                                                                <option value="year">Year Only</option>
+                                                                <option value="month">Month + Year</option>
+                                                                <option value="day">Exact Day</option>
+                                                            </select>
+                                                        </div>
+                                                        {datePrecision && (
+                                                            <div>
+                                                                <label className="text-[10px] mb-1 block uppercase text-gray-500">
+                                                                    {datePrecision === 'year' ? 'Year (YYYY)' : datePrecision === 'month' ? 'Month (YYYY-MM)' : 'Date'}
+                                                                </label>
+                                                                <input
+                                                                    type={datePrecision === 'year' ? 'number' : datePrecision === 'month' ? 'month' : 'date'}
+                                                                    className="w-full bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm"
+                                                                    value={dateValue}
+                                                                    onChange={(e) => setDateValue(e.target.value)}
+                                                                    placeholder={datePrecision === 'year' ? 'YYYY' : ''}
+                                                                />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            }
 
                                             if (field.type === 'custom_ram') {
                                                 return (
@@ -337,19 +492,6 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                 </div>
                                             );
                                         })}
-                                        {/* ---- HAS KEYBOARD CHECKBOX ---- */}
-                                        {group.title === 'INPUT & MECHANICS' && (
-                                            <div className="md:col-span-12 flex items-center space-x-3 pt-4 border-t border-gray-800">
-                                                <input 
-                                                    type="checkbox" 
-                                                    id="has_keyboard"
-                                                    checked={!!formData.has_keyboard}
-                                                    onChange={(e) => handleInputChange('has_keyboard', e.target.checked)}
-                                                    className="form-checkbox h-5 w-5 bg-black border-secondary text-secondary focus:ring-secondary/50"
-                                                />
-                                                <label htmlFor="has_keyboard" className="font-mono text-white">Has Physical Keyboard?</label>
-                                            </div>
-                                        )}
                                     </div>
                                 )}
                             </div>

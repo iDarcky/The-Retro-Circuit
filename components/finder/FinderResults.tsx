@@ -1,3 +1,4 @@
+
 'use client';
 
 import { FC, useEffect, useState } from 'react';
@@ -135,9 +136,9 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                            {console.form_factor}
                        </span>
                    )}
-                   {console.release_year && (
+                   {console.release_date && (
                        <span className="text-[10px] border border-white/10 bg-white/5 px-2 py-1 rounded text-gray-300">
-                           {console.release_year}
+                           {console.release_date.substring(0, 4)}
                        </span>
                    )}
                    {console.price && (

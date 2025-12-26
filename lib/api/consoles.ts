@@ -1,15 +1,43 @@
 import { supabase } from "../supabase/singleton";
-import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant } from "../types";
+import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant, VariantInputProfile } from "../types";
+
+// Helper: Normalize Variant (Unwrap 1:1 relations that Supabase returns as arrays)
+function normalizeVariant(v: any): any {
+    if (!v) return v;
+    if (Array.isArray(v.variant_input_profile)) {
+        v.variant_input_profile = v.variant_input_profile[0] || null;
+    }
+    return v;
+}
+
+// Helper: Normalize Console List (Apply variant normalization and defaults)
+function normalizeConsoleList(data: any[] | null): ConsoleDetails[] {
+    return (data || []).map((item: any) => {
+        const variants = (item.variants || []).map(normalizeVariant);
+        item.variants = variants;
+
+        const defaultVariant = variants.find((v: any) => v.is_default) || variants[0];
+
+        if (defaultVariant) {
+            if (!item.release_year) item.release_year = defaultVariant.release_year;
+            if (!item.image_url) item.image_url = defaultVariant.image_url;
+            item.specs = defaultVariant;
+        } else {
+            item.specs = {};
+        }
+
+        return item;
+    }) as ConsoleDetails[];
+}
 
 export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
     try {
-        // The 'Vacuum' Strategy: Fetch everything including nested variants and finder traits (now on root)
         const { data, error } = await supabase
             .from('consoles')
             .select(`
                 *,
                 manufacturer:manufacturer(*),
-                variants:console_variants(*, emulation_profiles(*))
+                variants:console_variants(*, emulation_profiles(*), variant_input_profile(*))
             `)
             .order('name', { ascending: true });
 
@@ -18,21 +46,7 @@ export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
             throw error;
         }
 
-        // Normalize
-        return (data || []).map((item: any) => {
-            const variants = item.variants || [];
-            const defaultVariant = variants.find((v: any) => v.is_default) || variants[0];
-            
-            if (defaultVariant) {
-                if (!item.release_year) item.release_year = defaultVariant.release_year;
-                if (!item.image_url) item.image_url = defaultVariant.image_url;
-                item.specs = defaultVariant;
-            } else {
-                item.specs = {};
-            }
-
-            return item;
-        }) as ConsoleDetails[];
+        return normalizeConsoleList(data);
 
     } catch (e) {
         console.error('[API] Fetch All Consoles Exception:', e);
@@ -42,20 +56,16 @@ export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
 
 export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: number = 1, limit: number = 20): Promise<{ data: ConsoleDetails[], count: number }> => {
     try {
-        // Query consoles. We sort by NAME by default in the DB to ensure we get a stable list
-        // regardless of whether 'release_year' is null or missing in the parent table.
         let query = supabase.from('consoles')
-            .select('*, manufacturer:manufacturer(*), variants:console_variants(*)', { count: 'exact' });
+            .select('*, manufacturer:manufacturer(*), variants:console_variants(*, variant_input_profile(*))', { count: 'exact' });
 
         if (filters.manufacturer_id) query = query.eq('manufacturer_id', filters.manufacturer_id);
         
         if (filters.form_factors.length > 0) query = query.in('form_factor', filters.form_factors);
 
-        // Pagination (fetch a bit more to handle in-memory filtering if needed, but for now strict range)
         const from = (page - 1) * limit;
         const to = from + limit - 1;
 
-        // Perform query
         const { data, count, error } = await query.order('name', { ascending: true }).range(from, to);
         
         if (error) {
@@ -63,40 +73,20 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
             throw error;
         }
 
-        // Normalize data: Populate 'specs' and missing root fields from the default variant
-        let normalizedData = (data || []).map((item: any) => {
-            const variants = item.variants || [];
-            // Prioritize default variant, else take the first one
-            const defaultVariant = variants.find((v: any) => v.is_default) || variants[0];
-            
-            if (defaultVariant) {
-                // If console 'folder' lacks info, pull from variant
-                if (!item.release_year) item.release_year = defaultVariant.release_year;
-                if (!item.image_url) item.image_url = defaultVariant.image_url;
-                
-                // Populate legacy 'specs' property so older components don't crash
-                item.specs = defaultVariant;
-            } else {
-                item.specs = {};
-            }
-            
-            return item;
-        });
+        let normalizedData = normalizeConsoleList(data);
 
-        // IN-MEMORY SORTING & FILTERING (Crucial for split schema)
-        // 1. Filter by Year (now that we've backfilled it from variants)
+        // IN-MEMORY SORTING & FILTERING
         if (filters.minYear > 1970 || filters.maxYear < new Date().getFullYear()) {
             normalizedData = normalizedData.filter((item: any) => {
-                const year = item.release_year || 9999; // Keep TBA items if looking for new
+                const year = item.release_year || 9999;
                 return year >= filters.minYear && year <= filters.maxYear;
             });
         }
 
-        // 2. Sort by Release Year Descending (Newest First)
         normalizedData.sort((a: any, b: any) => {
             const yearA = a.release_year || 9999;
             const yearB = b.release_year || 9999;
-            return yearB - yearA; // Descending
+            return yearB - yearA;
         });
 
         return { data: normalizedData as ConsoleDetails[], count: count || 0 };
@@ -119,7 +109,7 @@ export const fetchConsoleBySlug = async (slug: string): Promise<{ data: ConsoleD
             .select(`
                 *,
                 manufacturer:manufacturer(*),
-                variants:console_variants(*, emulation_profiles(*))
+                variants:console_variants(*, emulation_profiles(*), variant_input_profile(*))
             `)
             .eq('slug', slug)
             .limit(1);
@@ -132,22 +122,9 @@ export const fetchConsoleBySlug = async (slug: string): Promise<{ data: ConsoleD
             return { data: null, error: { message: "Console not found in database" } };
         }
 
-        const rawData: any = data[0];
-        
-        const variants = rawData.variants || [];
-        const defaultVariant = variants.find((v: any) => v.is_default) || variants[0];
-
-        // Backfill specs and display properties from variant if needed
-        rawData.specs = defaultVariant || {};
-        
-        if (!rawData.image_url && defaultVariant?.image_url) {
-            rawData.image_url = defaultVariant.image_url;
-        }
-        if (!rawData.release_year && defaultVariant?.release_year) {
-             rawData.release_year = defaultVariant.release_year;
-        }
-
-        return { data: rawData as ConsoleDetails, error: null };
+        // Normalize single item
+        const list = normalizeConsoleList(data);
+        return { data: list[0], error: null };
     } catch (e: any) {
         return { data: null, error: { message: `EXCEPTION: ${e.message}` } };
     }
@@ -164,27 +141,24 @@ export const getConsoleById = async (id: string): Promise<ConsoleDetails | null>
 };
 
 export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs | null> => {
-    // Legacy support: Fetch from console_variants since console_specs is deprecated
     try {
-        // Try to find default variant first
         const { data } = await supabase
             .from('console_variants')
-            .select('*')
+            .select('*, variant_input_profile(*)')
             .eq('console_id', consoleId)
             .eq('is_default', true)
             .maybeSingle();
             
-        if (data) return data as ConsoleSpecs;
+        if (data) return normalizeVariant(data) as ConsoleSpecs;
 
-        // Fallback to any variant
         const { data: anyVar } = await supabase
             .from('console_variants')
-            .select('*')
+            .select('*, variant_input_profile(*)')
             .eq('console_id', consoleId)
             .limit(1)
             .maybeSingle();
             
-        return anyVar as ConsoleSpecs;
+        return normalizeVariant(anyVar) as ConsoleSpecs;
     } catch {
         return null;
     }
@@ -194,11 +168,11 @@ export const getVariantsByConsole = async (consoleId: string): Promise<ConsoleVa
     try {
         const { data, error } = await supabase
             .from('console_variants')
-            .select('*')
+            .select('*, variant_input_profile(*)')
             .eq('console_id', consoleId)
-            .order('is_default', { ascending: false }); // Defaults first
+            .order('is_default', { ascending: false });
         if (error) throw error;
-        return data as ConsoleVariant[];
+        return (data || []).map(normalizeVariant) as ConsoleVariant[];
     } catch {
         return [];
     }
@@ -208,11 +182,11 @@ export const getVariantById = async (variantId: string): Promise<ConsoleVariant 
     try {
         const { data, error } = await supabase
             .from('console_variants')
-            .select('*')
+            .select('*, variant_input_profile(*)')
             .eq('id', variantId)
             .single();
         if (error) throw error;
-        return data as ConsoleVariant;
+        return normalizeVariant(data) as ConsoleVariant;
     } catch {
         return null;
     }
@@ -222,19 +196,12 @@ export const getConsolesByManufacturer = async (manufacturerId: string): Promise
     try {
         const { data, error } = await supabase
             .from('consoles')
-            .select('*, variants:console_variants(*)')
+            .select('*, variants:console_variants(*, variant_input_profile(*))')
             .eq('manufacturer_id', manufacturerId);
             
         if (error) throw error;
         
-        // Normalize
-        return (data || []).map((item: any) => {
-             const variants = item.variants || [];
-             const defaultVariant = variants.find((v: any) => v.is_default) || variants[0];
-             item.specs = defaultVariant || {};
-             if (defaultVariant && !item.image_url) item.image_url = defaultVariant.image_url;
-             return item;
-        }) as ConsoleDetails[];
+        return normalizeConsoleList(data);
     } catch {
         return [];
     }
@@ -273,8 +240,30 @@ export const updateConsole = async (
 
 export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>): Promise<{ success: boolean, message?: string }> => {
     try {
-        const { error } = await supabase.from('console_variants').insert([variantData]);
-        if (error) return { success: false, message: error.message };
+        const { variant_input_profile, ...mainVariantData } = variantData;
+
+        const { data: newVariant, error: variantError } = await supabase
+            .from('console_variants')
+            .insert([mainVariantData])
+            .select('id')
+            .single();
+
+        if (variantError) return { success: false, message: "Variant Insert Failed: " + variantError.message };
+        if (!newVariant) return { success: false, message: "Variant Insert Failed: No Data" };
+
+        if (variant_input_profile) {
+            const profileData: VariantInputProfile = {
+                ...variant_input_profile,
+                variant_id: newVariant.id
+            };
+            const { error: profileError } = await supabase.from('variant_input_profile').insert([profileData]);
+
+            if (profileError) {
+                console.error("Input Profile Insert Failed:", profileError);
+                return { success: true, message: "Variant saved, but Input Profile failed: " + profileError.message };
+            }
+        }
+
         return { success: true };
     } catch (e: any) {
         return { success: false, message: e.message };
@@ -283,8 +272,24 @@ export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>)
 
 export const updateConsoleVariant = async (id: string, variantData: Partial<ConsoleVariant>): Promise<{ success: boolean, message?: string }> => {
     try {
-        const { error } = await supabase.from('console_variants').update(variantData).eq('id', id);
-        if (error) return { success: false, message: error.message };
+        const { variant_input_profile, ...mainVariantData } = variantData;
+
+        const { error: variantError } = await supabase.from('console_variants').update(mainVariantData).eq('id', id);
+        if (variantError) return { success: false, message: variantError.message };
+
+        if (variant_input_profile) {
+            const profileData = {
+                ...variant_input_profile,
+                variant_id: id
+            };
+            const { error: profileError } = await supabase.from('variant_input_profile').upsert([profileData]);
+
+            if (profileError) {
+                console.error("Input Profile Update Failed:", profileError);
+                 return { success: true, message: "Variant updated, but Input Profile failed: " + profileError.message };
+            }
+        }
+
         return { success: true };
     } catch (e: any) {
         return { success: false, message: e.message };

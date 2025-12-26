@@ -8,6 +8,7 @@ import { ConsoleDetails, ConsoleFilterState, Manufacturer } from '../../lib/type
 import RetroLoader from '../ui/RetroLoader';
 import Button from '../ui/Button';
 import RetroStatusBar from '../ui/RetroStatusBar';
+import { formatReleaseDate } from '../../lib/utils/date-formatter';
 
 const ConsoleVaultClient: FC = () => {
   const [allConsoles, setAllConsoles] = useState<ConsoleDetails[]>([]);
@@ -60,9 +61,17 @@ const ConsoleVaultClient: FC = () => {
 
     // Filter: Year
     result = result.filter(c => {
-        const y = c.release_year;
-        if (!y) return true; // Keep items with unknown year
-        return y >= filters.minYear && y <= filters.maxYear;
+        // Prefer release_date, fallback to release_year
+        let year = c.release_year;
+        const specs: any = c.specs || {};
+
+        if (specs.release_date) {
+            const dateYear = parseInt(specs.release_date.substring(0, 4));
+            if (!isNaN(dateYear)) year = dateYear;
+        }
+
+        if (!year) return true; // Keep items with unknown year
+        return year >= filters.minYear && year <= filters.maxYear;
     });
 
     // Filter: Form Factor
@@ -88,9 +97,15 @@ const ConsoleVaultClient: FC = () => {
 
     // Sort: Newest First
     result.sort((a, b) => {
-        const yA = a.release_year || 9999;
-        const yB = b.release_year || 9999;
-        return yB - yA;
+        // Prioritize release_date for sorting
+        const getSortValue = (item: any) => {
+            const specs: any = item.specs || {};
+            if (specs.release_date) return new Date(specs.release_date).getTime();
+            if (item.release_year) return new Date(`${item.release_year}-01-01`).getTime();
+            return 0; // Unknown
+        };
+
+        return getSortValue(b) - getSortValue(a);
     });
 
     setFilteredConsoles(result);
@@ -269,42 +284,47 @@ const ConsoleVaultClient: FC = () => {
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
-                                {paginatedConsoles.map(console => (
-                                    <Link
-                                        href={`/consoles/${console.slug}`}
-                                        key={console.id}
-                                        className="group block bg-black border border-border-normal hover:border-secondary transition-all relative overflow-hidden"
-                                    >
-                                        <div className="aspect-video bg-gray-900/50 relative flex items-center justify-center p-4">
-                                             {console.image_url ? (
-                                                 <img src={console.image_url} alt={console.name} className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform" />
-                                             ) : (
-                                                 <span className="font-pixel text-gray-700 text-2xl">?</span>
-                                             )}
+                                {paginatedConsoles.map((console) => {
+                                    const specs: any = console.specs || {};
+                                    const releaseDisplay = formatReleaseDate(specs.release_date, specs.release_date_precision) || console.release_year || 'TBA';
 
-                                             {/* Form Factor & Feature Badges */}
-                                             <div className="absolute top-2 right-2 z-10 flex flex-col gap-1 items-end">
-                                                 {console.form_factor && (
-                                                     <div className={`bg-black/90 border px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase shadow-lg ${getFormFactorColor(console.form_factor)}`}>
-                                                         {console.form_factor}
-                                                     </div>
+                                    return (
+                                        <Link
+                                            href={`/consoles/${console.slug}`}
+                                            key={console.id}
+                                            className="group block bg-black border border-border-normal hover:border-secondary transition-all relative overflow-hidden"
+                                        >
+                                            <div className="aspect-video bg-gray-900/50 relative flex items-center justify-center p-4">
+                                                 {console.image_url ? (
+                                                     <img src={console.image_url} alt={console.name} className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform" />
+                                                 ) : (
+                                                     <span className="font-pixel text-gray-700 text-2xl">?</span>
                                                  )}
-                                                 {console.chassis_features && (
-                                                     <div className="bg-black/90 border border-secondary text-secondary px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase shadow-lg">
-                                                         {console.chassis_features}
-                                                     </div>
-                                                 )}
-                                             </div>
-                                        </div>
-                                        <div className="p-4 border-t border-border-normal">
-                                            <h3 className="font-pixel text-xs text-white group-hover:text-secondary mb-1">{console.name}</h3>
-                                            <div className="flex justify-between items-center text-[10px] font-mono text-gray-500">
-                                                <span>{console.manufacturer?.name}</span>
-                                                <span>{console.release_year || 'TBA'}</span>
+
+                                                 {/* Form Factor & Feature Badges */}
+                                                 <div className="absolute top-2 right-2 z-10 flex flex-col gap-1 items-end">
+                                                     {console.form_factor && (
+                                                         <div className={`bg-black/90 border px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase shadow-lg ${getFormFactorColor(console.form_factor)}`}>
+                                                             {console.form_factor}
+                                                         </div>
+                                                     )}
+                                                     {console.chassis_features && (
+                                                         <div className="bg-black/90 border border-secondary text-secondary px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase shadow-lg">
+                                                             {console.chassis_features}
+                                                         </div>
+                                                     )}
+                                                 </div>
                                             </div>
-                                        </div>
-                                    </Link>
-                                ))}
+                                            <div className="p-4 border-t border-border-normal">
+                                                <h3 className="font-pixel text-xs text-white group-hover:text-secondary mb-1">{console.name}</h3>
+                                                <div className="flex justify-between items-center text-[10px] font-mono text-gray-500">
+                                                    <span>{console.manufacturer?.name}</span>
+                                                    <span>{releaseDisplay}</span>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    );
+                                })}
                             </div>
                         )}
 

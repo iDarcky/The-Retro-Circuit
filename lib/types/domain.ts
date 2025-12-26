@@ -78,7 +78,7 @@ export interface EmulationProfile {
   // Tier 1: Classic 2D
   nes_state?: string;
   snes_state?: string;
-  master_system?: string; // New
+  master_system?: string;
   genesis_state?: string;
   gb_state?: string;
   gbc_state?: string;
@@ -89,7 +89,7 @@ export interface EmulationProfile {
   n64_state?: string;
   saturn_state?: string;
   nds_state?: string;
-  dreamcast_state?: string; // Often categorized here or next tier, user put it in Early 3D
+  dreamcast_state?: string;
 
   // Tier 3: Advanced Handhelds
   psp_state?: string;
@@ -99,15 +99,14 @@ export interface EmulationProfile {
   // Tier 4: Classic Home
   ps2_state: string;
   gamecube_state: string;
-  xbox?: string; // New
+  xbox?: string;
 
   // Tier 5: Modern & HD
   wii_state: string;
-  wii_u?: string; // New
+  wii_u?: string;
   ps3_state?: string;
-  xbox_360?: string; // New
+  xbox_360?: string;
   switch_state: string;
-  // pc_games intentionally omitted from DB schema as per user instruction
 
   summary_text: string;
 
@@ -116,13 +115,60 @@ export interface EmulationProfile {
   last_verified: string | Date;
 }
 
+// --- New Input Enums ---
+export type RcButtonTech = 'membrane' | 'microswitch' | 'mechanical' | 'hall' | 'potentiometer' | 'spring' | 'optical' | 'unknown';
+export type RcDpadShape = 'cross' | 'disc' | 'segmented' | 'unknown';
+export type RcPlacement = 'left' | 'right' | 'center' | 'unknown';
+// RcFaceLayout removed
+export type RcLabelScheme = 'nintendo' | 'xbox' | 'playstation' | 'generic' | 'unknown';
+export type RcStickLayout = 'symmetric' | 'asymmetric' | 'centered' | 'unknown';
+export type RcStickCap = 'concave' | 'convex' | 'flat' | 'domed' | 'textured' | 'unknown';
+export type RcTriggerType = 'digital' | 'analog' | 'unknown';
+export type RcTriggerLayout = 'inline' | 'stacked' | 'unknown';
+// RcKeyboardType removed
+export type RcSystemButtonSet = 'minimal' | 'standard' | 'extended' | 'unknown';
+export type RcConfidence = 'confirmed' | 'inferred' | 'unknown';
+
+export interface VariantInputProfile {
+  variant_id: string;
+  dpad_tech: RcButtonTech | null;
+  dpad_shape: RcDpadShape | null;
+  dpad_placement: RcPlacement | null;
+  face_button_count: number | null; // check ((face_button_count = any (array[2, 4, 6])))
+  face_button_tech: RcButtonTech | null;
+  face_label_scheme: RcLabelScheme | null;
+  stick_count: number | null; // check ((stick_count = any (array[0, 1, 2])))
+  stick_tech: RcButtonTech | null;
+  stick_layout: RcStickLayout | null;
+  stick_clicks: boolean | null;
+  stick_cap: RcStickCap | null;
+  bumper_tech: RcButtonTech | null;
+  trigger_tech: RcButtonTech | null;
+  trigger_type: RcTriggerType | null;
+  trigger_layout: RcTriggerLayout | null;
+  back_button_count: number | null; // check ((back_button_count = any (array[0, 2, 4])))
+  has_gyro: boolean | null;
+  has_keyboard: boolean | null;
+  // keyboard_type: RcKeyboardType | null; - Removed
+  system_button_set: RcSystemButtonSet | null;
+  system_buttons_text: string | null;
+  touchpad_count: number | null; // check ((touchpad_count = any (array[0, 1, 2])))
+  touchpad_clickable: boolean | null;
+  input_confidence: RcConfidence;
+  input_notes: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface ConsoleVariant {
   id: string;
   console_id: string;
   variant_name: string;
   slug?: string;
   is_default: boolean;
-  release_year?: number;
+  release_year?: number; // Deprecated
+  release_date?: string | null;
+  release_date_precision?: 'year' | 'month' | 'day' | null;
   model_no?: string;
   price_launch_usd?: number;
   image_url?: string; 
@@ -195,22 +241,12 @@ export interface ConsoleVariant {
   cellular_connectivity?: string;
   video_out?: string | null;
   haptics?: string;
-  gyro?: boolean;
   
-  input_layout?: string;
-  other_buttons?: string;
-  dpad_mechanism?: string;
-  dpad_shape?: string;
-  thumbstick_mechanism?: string;
-  thumbstick_layout?: string;
-  thumbstick_cap?: string;
-  has_stick_clicks?: boolean;
-  shoulder_layout?: string;
-  bumper_mechanism?: string;
-  trigger_mechanism?: string;
-  action_button_mechanism?: string;
-  has_back_buttons?: boolean;
-  has_keyboard?: boolean; // New
+  // Deprecated Fields Removed:
+  // input_layout, other_buttons, dpad_mechanism, dpad_shape,
+  // thumbstick_mechanism, thumbstick_layout, thumbstick_cap, has_stick_clicks,
+  // shoulder_layout, bumper_mechanism, trigger_mechanism, action_button_mechanism,
+  // has_back_buttons, has_keyboard (moved to profile), gyro (moved to profile as has_gyro)
 
   width_mm?: number;
   height_mm?: number;
@@ -218,6 +254,7 @@ export interface ConsoleVariant {
   ui_skin?: string;
 
   emulation_profile?: EmulationProfile | null;
+  variant_input_profile?: VariantInputProfile | null;
 }
 
 export interface ConsoleDetails {
@@ -235,13 +272,11 @@ export interface ConsoleDetails {
     release_year?: number; 
     generation?: string;
 
-    // New Fields
     device_category: 'emulation' | 'pc_gaming' | 'fpga' | 'legacy';
     has_cartridge_slot: boolean;
     supported_cartridge_types: string | null;
     chassis_features: string | null;
 
-    // Finder Traits (Now direct columns)
-    setup_ease_score?: number | null; // 1-5
-    community_score?: number | null; // 1-5
+    setup_ease_score?: number | null;
+    community_score?: number | null;
 }
