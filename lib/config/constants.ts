@@ -146,8 +146,8 @@ export const VARIANT_FORM_GROUPS = [
             // STICKS
             { subHeader: 'Analog Sticks', width: 'full' },
             { label: 'Stick Count', key: 'stick_count', type: 'select', required: false, width: 'quarter', options: ['0', '1', '2'] },
-            { label: 'Stick Tech', key: 'stick_tech', type: 'select', required: false, width: 'quarter', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'potentiometer', 'spring', 'optical', 'unknown'] },
             { label: 'Layout', key: 'stick_layout', type: 'select', required: false, width: 'quarter', options: ['symmetric', 'asymmetric', 'centered', 'unknown'] },
+            { label: 'Stick Tech', key: 'stick_tech', type: 'select', required: false, width: 'quarter', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'potentiometer', 'spring', 'optical', 'unknown'] },
             { label: 'Cap Style', key: 'stick_cap', type: 'select', required: false, width: 'quarter', options: ['concave', 'convex', 'flat', 'domed', 'textured', 'unknown'] },
             { label: 'L3/R3 Clicks?', key: 'stick_clicks', type: 'checkbox', required: false, width: 'full' },
 
