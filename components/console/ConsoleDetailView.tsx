@@ -384,7 +384,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                         </SpecCard>
 
                         {/* 4. INPUT & MECHANICS (New Profile) */}
-                        <SpecCard title="INPUT & MECHANICS" icon="gamepad">
+                        <SpecCard title="INPUT & MECHANICS">
                             {!mergedSpecs.input_profile ? (
                                 <div className="text-xs text-gray-500 font-mono italic p-2">
                                     Inputs not documented yet.
