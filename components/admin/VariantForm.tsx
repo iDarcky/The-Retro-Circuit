@@ -225,26 +225,28 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         const variantPayload: any = {};
         const inputProfilePayload: any = {};
 
+        // 1. Process Input Profile Fields (Strict Iteration)
+        // We iterate over the whitelist to ensure EVERY field is sent, even if undefined in validData
+        inputProfileKeys.forEach(key => {
+            let val = validData[key];
+
+            // Convert undefined, null, or empty string to explicit NULL
+            if (val === undefined || val === null || val === '') {
+                val = null;
+            }
+
+            // Explicitly default 'unknown' for input_confidence if missing (NOT NULL constraint)
+            if (key === 'input_confidence' && !val) {
+                val = 'unknown';
+            }
+
+            inputProfilePayload[key] = val;
+        });
+
+        // 2. Process Remaining Variant Fields
+        // Iterate over validData keys that are NOT in the input profile list
         Object.keys(validData).forEach(key => {
-            if (inputProfileKeys.includes(key)) {
-                let val = validData[key];
-
-                // Convert undefined, null, or empty string to explicit NULL
-                // This ensures Supabase actually updates the field (clearing it) instead of ignoring it
-                if (val === undefined || val === null || val === '') {
-                    val = null;
-                }
-
-                // Explicitly default 'unknown' for input_confidence if missing (NOT NULL constraint)
-                if (key === 'input_confidence' && !val) {
-                    val = 'unknown';
-                }
-
-                inputProfilePayload[key] = val;
-            } else {
-                // Same logic for regular variant fields?
-                // Usually Supabase handles partial updates fine, but undefined might be ignored.
-                // For now, keep existing behavior for variant fields to avoid regression.
+            if (!inputProfileKeys.includes(key)) {
                 variantPayload[key] = validData[key];
             }
         });
