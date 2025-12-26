@@ -383,40 +383,75 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                             )}
                         </SpecCard>
 
-                        {/* 4. INPUT & CONTROLS */}
-                        <SpecCard title="INPUT & CONTROLS">
-                            <SpecField label="Layout" value={mergedSpecs.input_layout} />
-                            <SpecField label="Buttons" value={mergedSpecs.other_buttons} small />
-                            <div className="grid grid-cols-2 gap-4 mt-2">
-                                <SpecField label="D-Pad" value={mergedSpecs.dpad_mechanism} small />
-                                <SpecField label="Face Btn" value={mergedSpecs.action_button_mechanism} small />
-                            </div>
-                            
-                            <div className="mt-3 pt-2 border-t border-white/5">
-                                <div className="text-[9px] text-gray-500 uppercase mb-1">Analog Sticks</div>
-                                <SpecField label="Tech" value={mergedSpecs.thumbstick_mechanism} small />
-                                <SpecField label="Layout" value={mergedSpecs.thumbstick_layout} small />
-                                <div className="flex justify-between items-center py-1">
-                                    <span className="font-mono text-[10px] text-gray-500 uppercase">L3/R3</span>
-                                    <TechBadge label="CLICKABLE" active={mergedSpecs.has_stick_clicks} />
+                        {/* 4. INPUT & MECHANICS (New Profile) */}
+                        <SpecCard title="INPUT & MECHANICS" icon="gamepad">
+                            {!mergedSpecs.input_profile ? (
+                                <div className="text-xs text-gray-500 font-mono italic p-2">
+                                    Inputs not documented yet.
                                 </div>
-                            </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {/* D-Pad */}
+                                    <div className="grid grid-cols-3 gap-2">
+                                        <SpecField label="D-Pad Tech" value={formatTech(mergedSpecs.input_profile.dpad_tech)} small />
+                                        <SpecField label="Shape" value={formatShape(mergedSpecs.input_profile.dpad_shape)} small />
+                                        <SpecField label="Pos" value={formatShape(mergedSpecs.input_profile.dpad_placement)} small />
+                                    </div>
 
-                            <div className="mt-3 pt-2 border-t border-white/5">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <SpecField label="L1/R1" value={mergedSpecs.bumper_mechanism} small />
-                                    <SpecField label="L2/R2" value={mergedSpecs.trigger_mechanism} small />
-                                </div>
-                                <SpecField label="Shoulder Style" value={mergedSpecs.shoulder_layout} small />
-                            </div>
+                                    {/* Face Buttons */}
+                                    <div className="border-t border-white/5 pt-2">
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <SpecField label="Face Tech" value={formatTech(mergedSpecs.input_profile.face_button_tech)} small />
+                                            <SpecField label="Layout" value={formatLayout(mergedSpecs.input_profile.face_button_layout)} small />
+                                        </div>
+                                    </div>
 
-                            <div className="mt-3 pt-2 border-t border-white/5">
-                                <SpecField label="Haptics" value={mergedSpecs.haptics} small />
-                                <div className="flex flex-wrap gap-2 mt-2">
-                                    <TechBadge label="GYROSCOPE" active={mergedSpecs.gyro} />
-                                    <TechBadge label="BACK BUTTONS" active={mergedSpecs.has_back_buttons} />
+                                    {/* Analog Sticks */}
+                                    <div className="border-t border-white/5 pt-2">
+                                        <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-1 flex justify-between">
+                                            <span>STICKS ({mergedSpecs.input_profile.stick_count ?? '?'})</span>
+                                            {mergedSpecs.input_profile.stick_clicks && <span className="text-secondary">L3/R3</span>}
+                                        </div>
+                                        <div className="grid grid-cols-3 gap-2">
+                                            <SpecField label="Tech" value={formatTech(mergedSpecs.input_profile.stick_tech)} small />
+                                            <SpecField label="Layout" value={formatLayout(mergedSpecs.input_profile.stick_layout)} small />
+                                            <SpecField label="Cap" value={formatShape(mergedSpecs.input_profile.stick_cap)} small />
+                                        </div>
+                                    </div>
+
+                                    {/* Triggers & Bumpers */}
+                                    <div className="border-t border-white/5 pt-2 grid grid-cols-2 gap-2">
+                                        <SpecField label="L1/R1" value={formatTech(mergedSpecs.input_profile.bumper_tech)} small />
+                                        <div>
+                                            <SpecField label="L2/R2" value={`${formatTech(mergedSpecs.input_profile.trigger_tech)} (${formatLayout(mergedSpecs.input_profile.trigger_type)})`} small />
+                                            <div className="text-[9px] text-gray-600 mt-0.5">{formatLayout(mergedSpecs.input_profile.trigger_layout)}</div>
+                                        </div>
+                                    </div>
+
+                                    {/* Badges */}
+                                    <div className="mt-2 pt-2 border-t border-white/5 flex flex-wrap gap-2">
+                                        <TechBadge label="GYRO" active={mergedSpecs.input_profile.has_gyro} />
+                                        <TechBadge label="KEYBOARD" active={mergedSpecs.input_profile.has_keyboard} />
+                                        <TechBadge label={`BACK BTNS (${mergedSpecs.input_profile.back_button_count || 0})`} active={(mergedSpecs.input_profile.back_button_count || 0) > 0} />
+                                        <TechBadge label={`TOUCHPADS (${mergedSpecs.input_profile.touchpad_count || 0})`} active={(mergedSpecs.input_profile.touchpad_count || 0) > 0} />
+                                    </div>
+
+                                    {/* System & Notes */}
+                                    {(mergedSpecs.input_profile.system_buttons_text || mergedSpecs.input_profile.input_notes) && (
+                                        <div className="mt-2 pt-2 border-t border-white/5 text-[10px] text-gray-400 font-mono">
+                                            {mergedSpecs.input_profile.system_buttons_text && <div>SYS: {mergedSpecs.input_profile.system_buttons_text}</div>}
+                                            {mergedSpecs.input_profile.input_notes && <div className="italic mt-1">"{mergedSpecs.input_profile.input_notes}"</div>}
+                                        </div>
+                                    )}
+
+                                    {/* Haptics (Legacy Field preserved as per audit instructions) */}
+                                    {mergedSpecs.haptics && (
+                                        <div className="mt-2 pt-2 border-t border-white/5">
+                                            <SpecField label="Haptics" value={mergedSpecs.haptics} small />
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
+                            )}
                         </SpecCard>
 
                         {/* 5. CONNECTIVITY & IO */}

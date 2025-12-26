@@ -82,18 +82,26 @@ export const METRICS: ComparisonMetric[] = [
     { label: 'Biometrics', key: 'biometrics', type: 'string' },
 
     // --- CONTROLS & SENSORS ---
-    { label: 'Input Layout', key: 'input_layout', type: 'string' },
-    { label: 'D-Pad Mech', key: 'dpad_mechanism', type: 'string' },
-    { label: 'D-Pad Shape', key: 'dpad_shape', type: 'string' },
-    { label: 'Stick Mech', key: 'thumbstick_mechanism', type: 'string' },
-    { label: 'Stick Layout', key: 'thumbstick_layout', type: 'string' },
-    { label: 'Stick Cap', key: 'thumbstick_cap', type: 'string' },
-    { label: 'Triggers', key: 'trigger_mechanism', type: 'string' },
-    { label: 'Shoulders', key: 'shoulder_layout', type: 'string' },
-    { label: 'Action Buttons', key: 'action_button_mechanism', type: 'string' },
-    { label: 'Back Buttons', key: 'has_back_buttons', type: 'boolean' },
+    // Using dot notation for nested input_profile access
+    { label: 'D-Pad Tech', key: 'input_profile.dpad_tech' as any, type: 'string' },
+    { label: 'D-Pad Shape', key: 'input_profile.dpad_shape' as any, type: 'string' },
+    { label: 'Face Btn Tech', key: 'input_profile.face_button_tech' as any, type: 'string' },
+
+    { label: 'Stick Count', key: 'input_profile.stick_count' as any, type: 'number' },
+    { label: 'Stick Tech', key: 'input_profile.stick_tech' as any, type: 'string' },
+    { label: 'Stick Layout', key: 'input_profile.stick_layout' as any, type: 'string' },
+    { label: 'Stick Cap', key: 'input_profile.stick_cap' as any, type: 'string' },
+    { label: 'L3/R3 Clicks', key: 'input_profile.stick_clicks' as any, type: 'boolean' },
+
+    { label: 'L1/R1 Tech', key: 'input_profile.bumper_tech' as any, type: 'string' },
+    { label: 'L2/R2 Tech', key: 'input_profile.trigger_tech' as any, type: 'string' },
+    { label: 'Trigger Type', key: 'input_profile.trigger_type' as any, type: 'string' },
+    { label: 'Trigger Layout', key: 'input_profile.trigger_layout' as any, type: 'string' },
+
+    { label: 'Back Buttons', key: 'input_profile.back_button_count' as any, type: 'number' },
     { label: 'Haptics', key: 'haptics', type: 'string' },
-    { label: 'Gyroscope', key: 'gyro', type: 'boolean' },
+    { label: 'Gyroscope', key: 'input_profile.has_gyro' as any, type: 'boolean' },
+    { label: 'Keyboard', key: 'input_profile.has_keyboard' as any, type: 'boolean' },
 
     // --- PHYSICAL ---
     { label: 'Width (mm)', key: 'width_mm', type: 'number' },

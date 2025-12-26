@@ -128,31 +128,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: '2nd Touch?', key: 'second_screen_touch', type: 'checkbox', required: false, width: 'third' },
         ]
     },
-    {
-        title: "INPUT & MECHANICS",
-        fields: [
-            { label: 'Input Layout', key: 'input_layout', type: 'select', required: false, width: 'half', options: ['Xbox', 'Nintendo', 'PlayStation', 'Retroid/Unique'] },
-            { label: 'Start, Select, Home', key: 'other_buttons', type: 'text', required: false, width: 'half' },
-
-            { label: 'D-Pad Mech', key: 'dpad_mechanism', type: 'text', required: false, width: 'third', note: 'Rubber Dome, Dome Switch...' },
-            { label: 'D-Pad Shape', key: 'dpad_shape', type: 'text', required: false, width: 'third', note: 'Cross, Disc...' },
-            { label: 'Face Btn Mech', key: 'action_button_mechanism', type: 'text', required: false, width: 'third', note: 'Conductive Rubber, Microswitch...' },
-
-            { label: 'Stick Tech', key: 'thumbstick_mechanism', type: 'text', required: false, width: 'quarter', note: 'Hall Effect, ALPS...' },
-            { label: 'Stick Layout', key: 'thumbstick_layout', type: 'text', required: false, width: 'quarter', note: 'Staggered, Inline...' },
-            { label: 'L3/R3 Clicks?', key: 'has_stick_clicks', type: 'checkbox', required: false, width: 'quarter' },
-            { label: 'Cap Type', key: 'thumbstick_cap', type: 'text', required: false, width: 'quarter', note: 'Concave, Convex...' },
-            { label: 'Has Keyboard?', key: 'has_keyboard', type: 'checkbox', required: false, width: 'quarter' },
-
-            { label: 'L1/R1 Mech', key: 'bumper_mechanism', type: 'text', required: false, width: 'third' },
-            { label: 'L2/R2 Mech', key: 'trigger_mechanism', type: 'text', required: false, width: 'third', note: 'Analog, Digital...' },
-            { label: 'Stacked vs Inline', key: 'shoulder_layout', type: 'text', required: false, width: 'third' },
-
-            { label: 'Haptics', key: 'haptics', type: 'text', required: false, width: 'third' },
-            { label: 'Gyroscope?', key: 'gyro', type: 'checkbox', required: false, width: 'third' },
-            { label: 'Back Buttons?', key: 'has_back_buttons', type: 'checkbox', required: false, width: 'third' },
-        ]
-    },
+    // INPUT & MECHANICS REMOVED - Migrated to VariantInputProfile
     {
         title: "CONNECTIVITY & IO",
         fields: [

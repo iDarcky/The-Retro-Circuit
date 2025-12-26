@@ -70,8 +70,8 @@ export async function getFinderResults(
                 case 'wifi':
                     return !!variant.wifi_specs;
                 case 'dual_sticks':
-                    const sticks = (variant.thumbstick_layout || '') + (variant.input_layout || '');
-                    return sticks.toLowerCase().includes('dual') || sticks.toLowerCase().includes('twin');
+                    const sticks = (variant.input_profile?.stick_count ?? 0);
+                    return sticks >= 2;
                 case 'dual_screen':
                     return (variant.second_screen_size_inch || 0) > 0;
                 default:

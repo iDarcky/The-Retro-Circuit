@@ -337,19 +337,6 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                 </div>
                                             );
                                         })}
-                                        {/* ---- HAS KEYBOARD CHECKBOX ---- */}
-                                        {group.title === 'INPUT & MECHANICS' && (
-                                            <div className="md:col-span-12 flex items-center space-x-3 pt-4 border-t border-gray-800">
-                                                <input 
-                                                    type="checkbox" 
-                                                    id="has_keyboard"
-                                                    checked={!!formData.has_keyboard}
-                                                    onChange={(e) => handleInputChange('has_keyboard', e.target.checked)}
-                                                    className="form-checkbox h-5 w-5 bg-black border-secondary text-secondary focus:ring-secondary/50"
-                                                />
-                                                <label htmlFor="has_keyboard" className="font-mono text-white">Has Physical Keyboard?</label>
-                                            </div>
-                                        )}
                                     </div>
                                 )}
                             </div>

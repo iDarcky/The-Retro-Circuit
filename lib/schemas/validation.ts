@@ -134,23 +134,8 @@ export const ConsoleVariantSchema = z.object({
   cellular_connectivity: safeString,
   video_out: safeString,
   haptics: safeString,
-  gyro: safeBoolean,
 
-  // Controls
-  input_layout: safeString,
-  other_buttons: safeString,
-  dpad_mechanism: safeString,
-  dpad_shape: safeString,
-  thumbstick_mechanism: safeString,
-  thumbstick_layout: safeString,
-  thumbstick_cap: safeString,
-  has_stick_clicks: safeBoolean,
-  shoulder_layout: safeString,
-  bumper_mechanism: safeString,
-  trigger_mechanism: safeString,
-  action_button_mechanism: safeString,
-  has_back_buttons: safeBoolean,
-  has_keyboard: safeBoolean,
+  // Controls (Legacy Inputs removed)
 
   // Body
   width_mm: safeNumber,
