@@ -40,7 +40,18 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
     useEffect(() => {
         if (initialData) {
-            setFormData(initialData);
+            // Flatten input profile data if present
+            const flattenedData = { ...initialData };
+
+            // Normalize: API fixes should handle array unwrapping, but safety check here
+            let profile = initialData.variant_input_profile;
+            if (Array.isArray(profile)) profile = profile[0];
+
+            if (profile) {
+                Object.assign(flattenedData, profile);
+            }
+
+            setFormData(flattenedData);
             const mb = Number(initialData.ram_mb);
             if (!isNaN(mb) && mb > 0) {
                  if (mb >= 1024 && mb % 1024 === 0) {
@@ -241,7 +252,10 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             const response: any = await Promise.race([promise, timeout]);
             if (response.success) {
                 await purgeCache();
-                onSuccess(isEditMode ? "VARIANT UPDATED." : "VARIANT SAVED.");
+                // Append optional warning message if available (e.g., input profile failure)
+                const successMsg = isEditMode ? "VARIANT UPDATED." : "VARIANT SAVED.";
+                onSuccess(response.message ? `${successMsg} (${response.message})` : successMsg);
+
                 setFieldErrors({});
                 router.refresh();
                 if (rawVariant.console_id) {
