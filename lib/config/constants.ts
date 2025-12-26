@@ -42,7 +42,7 @@ export const VARIANT_FORM_GROUPS = [
         title: "IDENTITY & ORIGIN",
         fields: [
             { label: 'Variant Name (e.g. "OLED Model")', key: 'variant_name', type: 'text', required: false, width: 'full' },
-            { label: 'Release Year', key: 'release_year', type: 'number', required: false },
+            { label: 'Release Date', key: 'release_date', type: 'custom_date', required: false, width: 'full' },
             { label: 'Launch Price ($)', key: 'price_launch_usd', type: 'number', required: false },
             { label: 'Is Default/Base Model?', key: 'is_default', type: 'checkbox', required: false },
             { label: 'Model No.', key: 'model_no', type: 'text', required: false },
