@@ -15,6 +15,7 @@ const ConsoleVaultClient: FC = () => {
   const [filteredConsoles, setFilteredConsoles] = useState<ConsoleDetails[]>([]);
   const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   
   // Mobile Sidebar State
   const [showMobileFilters, setShowMobileFilters] = useState(false);
@@ -38,15 +39,25 @@ const ConsoleVaultClient: FC = () => {
     const init = async () => {
         try {
             setLoading(true);
-            const [manus, allData] = await Promise.all([
-                fetchManufacturers(),
-                fetchAllConsoles()
-            ]);
+            setErrorMsg(null);
+
+            // Create a timeout promise
+            const timeout = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error("Request timed out")), 15000)
+            );
+
+            // Race the fetch against the timeout
+            const [manus, allData] = await Promise.race([
+                Promise.all([fetchManufacturers(), fetchAllConsoles()]),
+                timeout
+            ]) as [Manufacturer[], ConsoleDetails[]];
+
             setManufacturers(manus);
             setAllConsoles(allData);
-            setFilteredConsoles(allData); // Init filtered list with everything
-        } catch (error) {
+            setFilteredConsoles(allData);
+        } catch (error: any) {
             console.error("Failed to load vault data", error);
+            setErrorMsg(error.message || "Unknown error occurred.");
         } finally {
             setLoading(false);
         }
@@ -185,6 +196,15 @@ const ConsoleVaultClient: FC = () => {
                     {showMobileFilters ? 'HIDE FILTERS' : 'ADVANCED FILTERS +'}
                 </Button>
             </div>
+
+            {errorMsg && (
+                <div className="mb-8 p-4 border-2 border-red-500 bg-red-900/20 text-red-400 font-mono text-sm flex justify-between items-center animate-pulse">
+                    <span>CONNECTION ERROR: {errorMsg}</span>
+                    <Button variant="danger" onClick={() => window.location.reload()} className="text-xs py-1 px-3">
+                        RETRY SIGNAL
+                    </Button>
+                </div>
+            )}
 
             {loading ? <RetroLoader /> : (
                 <div className="flex flex-col lg:flex-row gap-8 animate-fadeIn">
