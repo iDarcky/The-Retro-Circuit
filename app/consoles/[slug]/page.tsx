@@ -54,8 +54,18 @@ export async function generateStaticParams() {
 
 export default async function ConsoleSpecsPage(props: Props) {
   const params = await props.params;
+  const supabase = await createClient();
+
+  // Check Admin Status
+  let isAdmin = false;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+      const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+      isAdmin = profile?.role === 'admin';
+  }
+
   // Parallel Fetching using API helpers
-  const { data: consoleData, error } = await fetchConsoleBySlug(params.slug);
+  const { data: consoleData, error } = await fetchConsoleBySlug(params.slug, isAdmin);
 
   if (!consoleData) {
     return (
@@ -74,7 +84,7 @@ export default async function ConsoleSpecsPage(props: Props) {
                     </div>
                 </div>
             )}
-            <Link href="/console">
+            <Link href="/consoles">
                 <Button variant="secondary">RETURN TO VAULT</Button>
             </Link>
         </div>

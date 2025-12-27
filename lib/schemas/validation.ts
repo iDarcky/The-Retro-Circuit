@@ -44,6 +44,9 @@ export const ConsoleSchema = z.object({
     // New Finder Traits
     setup_ease_score: safeNumber,
     community_score: safeNumber,
+
+    // Status
+    status: safeString,
 });
 
 export const VariantInputProfileSchema = z.object({

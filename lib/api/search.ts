@@ -13,6 +13,7 @@ export const searchDatabase = async (query: string): Promise<SearchResult[]> => 
             supabase
                 .from('consoles')
                 .select('id, name, slug, image_url, manufacturer:manufacturer(name)')
+                .eq('status', 'published') // Enforce published status
                 .ilike('name', term)
                 .limit(5),
             supabase
