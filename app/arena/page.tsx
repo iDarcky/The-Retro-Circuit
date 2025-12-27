@@ -175,7 +175,6 @@ function VSModeContent() {
                                 consoles={allConsoles}
                                 onSelect={(slug) => handleSelect(setSelectionA, true)(slug)}
                                 themeColor="cyan"
-                                currentSelection={selectionA.details?.name}
                             />
                         )}
                         {selectionA.loading ? (
@@ -230,7 +229,6 @@ function VSModeContent() {
                                 consoles={allConsoles}
                                 onSelect={(slug) => handleSelect(setSelectionB, false)(slug)}
                                 themeColor="pink"
-                                currentSelection={selectionB.details?.name}
                             />
                         )}
                         {selectionB.loading ? (
