@@ -22,7 +22,6 @@ export const VariantSelector: FC<VariantSelectorProps> = ({ variants, selectedSl
     // Theme styles
     const textColor = themeColor === 'cyan' ? 'text-primary' : 'text-accent';
     const borderColor = themeColor === 'cyan' ? 'border-primary' : 'border-accent';
-    const hoverBg = themeColor === 'cyan' ? 'hover:bg-primary/10' : 'hover:bg-accent/10';
     const scrollbarColor = themeColor === 'cyan'
         ? '[&::-webkit-scrollbar-thumb]:bg-primary [&::-webkit-scrollbar-track]:border-primary/30'
         : '[&::-webkit-scrollbar-thumb]:bg-accent [&::-webkit-scrollbar-track]:border-accent/30';
@@ -66,7 +65,7 @@ export const VariantSelector: FC<VariantSelectorProps> = ({ variants, selectedSl
                             key={v.id}
                             onClick={() => handleSelect(v.slug || '')}
                             onMouseEnter={playHover}
-                            className={`p-2 text-[10px] md:text-xs font-mono cursor-pointer ${textColor} border-b border-white/5 last:border-0 ${hoverBg} ${v.slug === selectedSlug ? 'bg-white/5' : ''}`}
+                            className={`p-2 text-[10px] md:text-xs font-mono cursor-pointer ${textColor} border-b border-white/5 last:border-0 hover:bg-white/10 ${v.slug === selectedSlug ? 'bg-white/5' : ''}`}
                         >
                             {v.variant_name}
                         </div>
