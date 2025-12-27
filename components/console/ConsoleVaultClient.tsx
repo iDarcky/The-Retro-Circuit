@@ -36,15 +36,20 @@ const ConsoleVaultClient: FC = () => {
   // 1. Initial Load: Fetch Everything
   useEffect(() => {
     const init = async () => {
-        setLoading(true);
-        const [manus, allData] = await Promise.all([
-            fetchManufacturers(),
-            fetchAllConsoles()
-        ]);
-        setManufacturers(manus);
-        setAllConsoles(allData);
-        setFilteredConsoles(allData); // Init filtered list with everything
-        setLoading(false);
+        try {
+            setLoading(true);
+            const [manus, allData] = await Promise.all([
+                fetchManufacturers(),
+                fetchAllConsoles()
+            ]);
+            setManufacturers(manus);
+            setAllConsoles(allData);
+            setFilteredConsoles(allData); // Init filtered list with everything
+        } catch (error) {
+            console.error("Failed to load vault data", error);
+        } finally {
+            setLoading(false);
+        }
     };
     init();
   }, []);
