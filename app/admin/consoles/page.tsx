@@ -10,28 +10,43 @@ import Button from '@/components/ui/Button';
 function ConsoleIndex() {
     const [consoles, setConsoles] = useState<{name: string, slug: string, id: string, status?: string}[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [isDenied, setIsDenied] = useState(false);
+
     const [filter, setFilter] = useState<'ALL' | 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'>('ALL');
     const [search, setSearch] = useState('');
 
     useEffect(() => {
         const load = async () => {
-            const isAdmin = await retroAuth.isAdmin();
-            if (isAdmin) {
-                const list = await fetchConsoleList(true); // includeHidden = true
-                setConsoles(list);
+            try {
+                const isAdmin = await retroAuth.isAdmin();
+                if (isAdmin) {
+                    const list = await fetchConsoleList(true); // includeHidden = true
+                    setConsoles(list);
+                } else {
+                    setIsDenied(true);
+                }
+            } catch (err: any) {
+                console.error("Failed to load console index", err);
+                setError(err.message || "Unknown Error");
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
         load();
     }, []);
 
     const filteredConsoles = consoles.filter(c => {
-        const matchesSearch = c.name.toLowerCase().includes(search.toLowerCase()) || c.slug.toLowerCase().includes(search.toLowerCase());
+        const nameMatch = c.name ? c.name.toLowerCase().includes(search.toLowerCase()) : false;
+        const slugMatch = c.slug ? c.slug.toLowerCase().includes(search.toLowerCase()) : false;
+        const matchesSearch = nameMatch || slugMatch;
         const matchesFilter = filter === 'ALL' || c.status?.toUpperCase() === filter;
         return matchesSearch && matchesFilter;
     });
 
     if (loading) return <div className="p-8 text-center font-mono text-secondary animate-pulse">LOADING INDEX...</div>;
+    if (isDenied) return <div className="p-8 text-center font-mono text-accent border-2 border-accent m-8">ACCESS DENIED. ADMIN CLEARANCE REQUIRED.</div>;
+    if (error) return <div className="p-8 text-center font-mono text-accent border-2 border-accent m-8">SYSTEM ERROR: {error}</div>;
 
     return (
         <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn">
