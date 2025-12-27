@@ -158,7 +158,7 @@ function VSModeContent() {
                 VS MODE <span className="text-secondary">ARENA</span>
             </h1>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-4 md:mb-8 relative z-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-4 md:mb-8 relative z-30">
                 {/* VS Badge - Centered */}
                 <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none flex justify-center">
                     <div className="hidden md:flex w-16 h-16 bg-black rounded-full items-center justify-center border-4 border-white shadow-[0_0_20px_rgba(255,255,255,0.5)]">
