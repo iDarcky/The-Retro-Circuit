@@ -30,9 +30,17 @@ function VSModeContent() {
     const [selectionB, setSelectionB] = useState<SelectionState>({ slug: null, details: null, selectedVariant: null, loading: false });
     
     const [showDiffOnly, setShowDiffOnly] = useState(false);
+    const [isArenaMode, setIsArenaMode] = useState(false);
 
     useEffect(() => {
         fetchConsoleList().then((list) => setAllConsoles(list));
+
+        // Auto-enter arena mode if both players are present in URL on mount
+        const p1 = searchParams?.get('p1');
+        const p2 = searchParams?.get('p2');
+        if (p1 && p2) {
+            setIsArenaMode(true);
+        }
     }, []);
 
     const loadSelection = async (slug: string, variantSlug: string | null, setSelection: Dispatch<SetStateAction<SelectionState>>) => {
@@ -88,6 +96,8 @@ function VSModeContent() {
 
     const handleSelect = (setter: Dispatch<SetStateAction<SelectionState>>, isPlayer1: boolean) => (slug: string) => {
         setter(prev => ({ ...prev, loading: true }));
+        // Selecting a new fighter resets Arena Mode
+        setIsArenaMode(false);
         if (isPlayer1) {
             updateUrl(slug, null, undefined, undefined);
         } else {
@@ -105,6 +115,33 @@ function VSModeContent() {
         } else {
             updateUrl(undefined, undefined, undefined, slug);
         }
+    };
+
+    const handleChangeFighter = (isPlayer1: boolean) => {
+        playClick();
+        setIsArenaMode(false);
+        if (isPlayer1) {
+            setSelectionA({ slug: null, details: null, selectedVariant: null, loading: false });
+            updateUrl(null, null, undefined, undefined);
+        } else {
+            setSelectionB({ slug: null, details: null, selectedVariant: null, loading: false });
+            updateUrl(undefined, undefined, null, null);
+        }
+    };
+
+    const handleFight = () => {
+        if (selectionA.selectedVariant && selectionB.selectedVariant) {
+            playClick();
+            setIsArenaMode(true);
+        }
+    };
+
+    const handleNewMatch = () => {
+        playClick();
+        setIsArenaMode(false);
+        setSelectionA({ slug: null, details: null, selectedVariant: null, loading: false });
+        setSelectionB({ slug: null, details: null, selectedVariant: null, loading: false });
+        router.replace('?', { scroll: false });
     };
 
     return (
@@ -131,14 +168,16 @@ function VSModeContent() {
 
                 {/* Player 1 Card - Cyan */}
                 <div className="border border-primary bg-primary/5 relative shadow-lg hover:shadow-primary/20 transition-shadow md:-skew-x-10 z-10">
-                     <div className="md:skew-x-10 p-2 md:p-6 flex flex-col h-full">
+                     <div className="md:skew-x-10 p-2 md:p-6 flex flex-col h-full relative">
                         <h2 className="font-pixel text-[10px] md:text-base text-primary mb-2 text-left">[ PLAYER 1 ]</h2>
-                        <ConsoleSearch 
-                            consoles={allConsoles} 
-                            onSelect={(slug) => handleSelect(setSelectionA, true)(slug)} 
-                            themeColor="cyan"
-                            currentSelection={selectionA.details?.name}
-                        />
+                        {!selectionA.details && (
+                            <ConsoleSearch
+                                consoles={allConsoles}
+                                onSelect={(slug) => handleSelect(setSelectionA, true)(slug)}
+                                themeColor="cyan"
+                                currentSelection={selectionA.details?.name}
+                            />
+                        )}
                         {selectionA.loading ? (
                              <div className="flex-1 flex items-center justify-center text-primary font-mono animate-pulse text-[10px] md:text-base mt-4">LOADING...</div>
                         ) : selectionA.details ? (
@@ -166,6 +205,15 @@ function VSModeContent() {
                                     onSelect={handleVariantChange(setSelectionA, true)}
                                     themeColor="cyan"
                                  />
+
+                                 {!isArenaMode && (
+                                     <button
+                                         onClick={() => handleChangeFighter(true)}
+                                         className="mt-4 text-[10px] text-primary/70 hover:text-primary underline font-mono"
+                                     >
+                                         [ CHANGE ]
+                                     </button>
+                                 )}
                              </div>
                         ) : (
                              <div className="flex-1 flex items-center justify-center text-gray-600 font-pixel text-[8px] md:text-xs opacity-50 mt-4">SELECT FIGHTER</div>
@@ -175,14 +223,16 @@ function VSModeContent() {
 
                 {/* Player 2 Card - Pink */}
                 <div className="border border-accent bg-accent/5 relative shadow-lg hover:shadow-accent/20 transition-shadow md:skew-x-10 z-0">
-                     <div className="md:-skew-x-10 p-2 md:p-6 flex flex-col h-full">
+                     <div className="md:-skew-x-10 p-2 md:p-6 flex flex-col h-full relative">
                         <h2 className="font-pixel text-[10px] md:text-base text-accent mb-2 text-left md:text-right">[ PLAYER 2 ]</h2>
-                        <ConsoleSearch 
-                            consoles={allConsoles} 
-                            onSelect={(slug) => handleSelect(setSelectionB, false)(slug)} 
-                            themeColor="pink"
-                            currentSelection={selectionB.details?.name}
-                        />
+                        {!selectionB.details && (
+                            <ConsoleSearch
+                                consoles={allConsoles}
+                                onSelect={(slug) => handleSelect(setSelectionB, false)(slug)}
+                                themeColor="pink"
+                                currentSelection={selectionB.details?.name}
+                            />
+                        )}
                         {selectionB.loading ? (
                              <div className="flex-1 flex items-center justify-center text-accent font-mono animate-pulse text-[10px] md:text-base mt-4">LOADING...</div>
                         ) : selectionB.details ? (
@@ -210,6 +260,15 @@ function VSModeContent() {
                                     onSelect={handleVariantChange(setSelectionB, false)}
                                     themeColor="pink"
                                  />
+
+                                 {!isArenaMode && (
+                                     <button
+                                         onClick={() => handleChangeFighter(false)}
+                                         className="mt-4 text-[10px] text-accent/70 hover:text-accent underline font-mono"
+                                     >
+                                         [ CHANGE ]
+                                     </button>
+                                 )}
                              </div>
                         ) : (
                              <div className="flex-1 flex items-center justify-center text-gray-600 font-pixel text-[8px] md:text-xs opacity-50 mt-4">SELECT FIGHTER</div>
@@ -218,7 +277,37 @@ function VSModeContent() {
                 </div>
             </div>
 
-            {selectionA.selectedVariant && selectionB.selectedVariant && (
+            {/* FIGHT / NEW MATCH CONTROL BAR */}
+            <div className="w-full flex flex-col items-center justify-center mb-8 relative z-20">
+                {!isArenaMode ? (
+                    <div className="flex flex-col items-center gap-2">
+                        <button
+                            onClick={handleFight}
+                            disabled={!selectionA.details || !selectionB.details}
+                            className={`
+                                font-pixel text-xl md:text-2xl px-8 py-4 border-4 transition-all duration-300
+                                ${selectionA.details && selectionB.details
+                                    ? 'bg-secondary/20 border-secondary text-secondary hover:bg-secondary hover:text-black cursor-pointer shadow-[0_0_20px_rgba(0,255,136,0.3)] hover:shadow-[0_0_40px_rgba(0,255,136,0.6)]'
+                                    : 'bg-gray-900/50 border-gray-700 text-gray-700 cursor-not-allowed opacity-50'}
+                            `}
+                        >
+                            [ F I G H T ]
+                        </button>
+                        {selectionA.details && selectionB.details && (
+                            <div className="font-mono text-xs text-secondary animate-pulse">READY TO FIGHT</div>
+                        )}
+                    </div>
+                ) : (
+                    <button
+                        onClick={handleNewMatch}
+                        className="font-pixel text-sm md:text-base px-6 py-3 border border-gray-600 text-gray-400 hover:text-white hover:border-white transition-all bg-black/50"
+                    >
+                        [ NEW MATCH ]
+                    </button>
+                )}
+            </div>
+
+            {selectionA.selectedVariant && selectionB.selectedVariant && isArenaMode && (
                 <div className="bg-black/80 border border-gray-800 p-4 mb-12 animate-slideDown shadow-2xl">
                     <div className="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
                         <h3 className="font-pixel text-lg text-white">TALE OF THE TAPE</h3>
