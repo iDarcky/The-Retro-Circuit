@@ -29,9 +29,9 @@ function normalizeConsoleList(data: any[] | null): ConsoleDetails[] {
     }) as ConsoleDetails[];
 }
 
-export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
+export const fetchAllConsoles = async (includeHidden: boolean = false): Promise<ConsoleDetails[]> => {
     try {
-        const { data, error } = await supabase
+        let query = supabase
             .from('consoles')
             .select(`
                 *,
@@ -39,6 +39,12 @@ export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
                 variants:console_variants(*, emulation_profiles(*), variant_input_profile(*))
             `)
             .order('name', { ascending: true });
+
+        if (!includeHidden) {
+            query = query.eq('status', 'published');
+        }
+
+        const { data, error } = await query;
 
         if (error) {
             console.error('[API] fetchAllConsoles DB Error:', error.message);
@@ -55,8 +61,10 @@ export const fetchAllConsoles = async (): Promise<ConsoleDetails[]> => {
 
 export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: number = 1, limit: number = 20): Promise<{ data: ConsoleDetails[], count: number }> => {
     try {
+        // Public search always enforces published status
         let query = supabase.from('consoles')
-            .select('*, manufacturer:manufacturer(*), variants:console_variants(*, variant_input_profile(*))', { count: 'exact' });
+            .select('*, manufacturer:manufacturer(*), variants:console_variants(*, variant_input_profile(*))', { count: 'exact' })
+            .eq('status', 'published');
 
         if (filters.manufacturer_id) query = query.eq('manufacturer_id', filters.manufacturer_id);
         
@@ -97,22 +105,33 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
     }
 };
 
-export const fetchConsoleList = async (): Promise<{name: string, slug: string, id: string}[]> => {
-    const { data } = await supabase.from('consoles').select('id, name, slug').order('name');
+export const fetchConsoleList = async (includeHidden: boolean = false): Promise<{name: string, slug: string, id: string, status?: string}[]> => {
+    let query = supabase.from('consoles').select('id, name, slug, status').order('name');
+
+    if (!includeHidden) {
+        query = query.eq('status', 'published');
+    }
+
+    const { data } = await query;
     return data || [];
 };
 
-export const fetchConsoleBySlug = async (slug: string): Promise<{ data: ConsoleDetails | null, error: any }> => {
+export const fetchConsoleBySlug = async (slug: string, includeHidden: boolean = false): Promise<{ data: ConsoleDetails | null, error: any }> => {
     try {
-        const { data, error } = await supabase
+        let query = supabase
             .from('consoles')
             .select(`
                 *,
                 manufacturer:manufacturer(*),
                 variants:console_variants(*, emulation_profiles(*), variant_input_profile(*))
             `)
-            .eq('slug', slug)
-            .limit(1);
+            .eq('slug', slug);
+
+        if (!includeHidden) {
+            query = query.eq('status', 'published');
+        }
+
+        const { data, error } = await query.limit(1);
             
         if (error) {
             return { data: null, error: { message: error.message } };
@@ -132,6 +151,7 @@ export const fetchConsoleBySlug = async (slug: string): Promise<{ data: ConsoleD
 
 export const getConsoleById = async (id: string): Promise<ConsoleDetails | null> => {
     try {
+        // Admin use primarily, but let's leave as is (usually used by ID for editing)
         const { data, error } = await supabase.from('consoles').select('*').eq('id', id).single();
         if (error) throw error;
         return data as ConsoleDetails;
@@ -197,7 +217,8 @@ export const getConsolesByManufacturer = async (manufacturerId: string): Promise
         const { data, error } = await supabase
             .from('consoles')
             .select('*, variants:console_variants(*, variant_input_profile(*))')
-            .eq('manufacturer_id', manufacturerId);
+            .eq('manufacturer_id', manufacturerId)
+            .eq('status', 'published'); // Enforce published
             
         if (error) throw error;
         

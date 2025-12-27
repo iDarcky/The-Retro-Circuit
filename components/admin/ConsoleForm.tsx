@@ -20,7 +20,7 @@ interface ConsoleFormProps {
 
 export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, onConsoleCreated, onError }) => {
     const router = useRouter();
-    const [formData, setFormData] = useState<Record<string, any>>({ device_category: 'emulation' });
+    const [formData, setFormData] = useState<Record<string, any>>({ device_category: 'emulation', status: 'draft' });
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
     const [isSlugLocked, setIsSlugLocked] = useState(true);
@@ -83,6 +83,7 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
         consoleData.chassis_features = formData.chassis_features;
         consoleData.has_cartridge_slot = formData.has_cartridge_slot;
         consoleData.supported_cartridge_types = formData.supported_cartridge_types;
+        consoleData.status = formData.status;
 
         const consoleResult = ConsoleSchema.safeParse(consoleData);
         if (!consoleResult.success) { 
@@ -131,8 +132,29 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
              <div className={`border-l-4 p-4 mb-4 ${isEditMode ? 'bg-secondary/10 border-secondary' : 'bg-primary/10 border-primary'}`}>
-                <h3 className={`font-bold text-sm uppercase ${isEditMode ? 'text-secondary' : 'text-primary'}`}>{isEditMode ? 'Edit Mode: Console Identity' : 'Step 1: System Identity'}</h3>
-                <p className="text-xs text-gray-400">{isEditMode ? 'Update core details of the console folder.' : 'Create the main folder for this console family.'}</p>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <h3 className={`font-bold text-sm uppercase ${isEditMode ? 'text-secondary' : 'text-primary'}`}>{isEditMode ? 'Edit Mode: Console Identity' : 'Step 1: System Identity'}</h3>
+                        <p className="text-xs text-gray-400">{isEditMode ? 'Update core details of the console folder.' : 'Create the main folder for this console family.'}</p>
+                    </div>
+
+                    {/* STATUS SELECTOR */}
+                    <div className="bg-black border border-gray-700 p-2 ml-4">
+                        <label className="text-[10px] block uppercase text-gray-500 mb-1">Status</label>
+                        <select
+                            value={formData.status || 'draft'}
+                            onChange={(e) => handleInputChange('status', e.target.value)}
+                            className={`text-xs font-mono font-bold bg-transparent outline-none uppercase cursor-pointer ${
+                                formData.status === 'published' ? 'text-secondary' :
+                                formData.status === 'archived' ? 'text-red-500' : 'text-yellow-500'
+                            }`}
+                        >
+                            <option value="draft">DRAFT</option>
+                            <option value="published">PUBLISHED</option>
+                            <option value="archived">ARCHIVED</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
