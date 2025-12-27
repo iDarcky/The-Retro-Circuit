@@ -25,6 +25,10 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
     const [loading, setLoading] = useState(false);
     const [isSlugLocked, setIsSlugLocked] = useState(true);
     
+    // Status Confirmation Modal State
+    const [showStatusModal, setShowStatusModal] = useState(false);
+    const [pendingStatus, setPendingStatus] = useState<string | null>(null);
+
     const isEditMode = !!initialData;
 
     useEffect(() => {
@@ -41,6 +45,16 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
     };
 
     const handleInputChange = (key: string, value: any) => {
+        // Intercept Status Change
+        if (key === 'status') {
+            const oldStatus = formData.status || 'draft';
+            if (oldStatus === 'draft' && value === 'published') {
+                setPendingStatus(value);
+                setShowStatusModal(true);
+                return;
+            }
+        }
+
         setFormData(prev => {
             const newData = { ...prev, [key]: value };
             if (key === 'name' && isSlugLocked && !isEditMode) {
@@ -56,6 +70,19 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                 return next;
             });
         }
+    };
+
+    const confirmStatusChange = () => {
+        if (pendingStatus) {
+            setFormData(prev => ({ ...prev, status: pendingStatus }));
+            setPendingStatus(null);
+            setShowStatusModal(false);
+        }
+    };
+
+    const cancelStatusChange = () => {
+        setPendingStatus(null);
+        setShowStatusModal(false);
     };
 
     const handleSubmit = async (e: FormEvent) => {
@@ -130,7 +157,36 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6 relative">
+             {/* Simple Status Confirmation Modal */}
+             {showStatusModal && (
+                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fadeIn">
+                     <div className="bg-bg-primary border-2 border-secondary p-6 max-w-sm w-full shadow-[0_0_50px_rgba(0,255,157,0.3)]">
+                         <h3 className="font-pixel text-lg text-secondary mb-4">CONFIRM PUBLISH</h3>
+                         <p className="font-mono text-sm text-gray-300 mb-6">
+                             This console will become <strong className="text-white">publicly visible</strong>. Are you sure?
+                         </p>
+                         <div className="flex justify-end gap-4">
+                             <button
+                                 type="button"
+                                 onClick={cancelStatusChange}
+                                 className="text-xs font-mono text-gray-500 hover:text-white uppercase"
+                             >
+                                 Cancel
+                             </button>
+                             <Button
+                                 type="button"
+                                 variant="secondary"
+                                 onClick={confirmStatusChange}
+                                 className="text-xs"
+                             >
+                                 PUBLISH NOW
+                             </Button>
+                         </div>
+                     </div>
+                 </div>
+             )}
+
              <div className={`border-l-4 p-4 mb-4 ${isEditMode ? 'bg-secondary/10 border-secondary' : 'bg-primary/10 border-primary'}`}>
                 <div className="flex justify-between items-start">
                     <div>

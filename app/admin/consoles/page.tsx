@@ -4,11 +4,14 @@
 import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { retroAuth } from '@/lib/auth';
+import { useRouter } from 'next/navigation';
 import { fetchConsoleList } from '@/lib/api/consoles';
+import { timeAgo } from '@/lib/utils/date-formatter';
 import Button from '@/components/ui/Button';
 
 function ConsoleIndex() {
-    const [consoles, setConsoles] = useState<{name: string, slug: string, id: string, status?: string}[]>([]);
+    const router = useRouter();
+    const [consoles, setConsoles] = useState<{name: string, slug: string, id: string, status?: string, updated_at?: string}[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isDenied, setIsDenied] = useState(false);
@@ -114,12 +117,17 @@ function ConsoleIndex() {
                                 <th className="p-4 w-16">ID</th>
                                 <th className="p-4">Console Name</th>
                                 <th className="p-4">Status</th>
+                                <th className="p-4">Last Updated</th>
                                 <th className="p-4 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredConsoles.map((console) => (
-                                <tr key={console.id} className="border-b border-gray-800 hover:bg-white/5 transition-colors group">
+                                <tr
+                                    key={console.id}
+                                    onClick={() => router.push(`/admin/consoles/${console.slug}`)}
+                                    className="border-b border-gray-800 hover:bg-white/5 transition-colors group cursor-pointer"
+                                >
                                     <td className="p-4 text-gray-600 font-xs truncate max-w-[50px]">{console.id.substring(0,4)}</td>
                                     <td className="p-4 font-bold text-white group-hover:text-secondary">
                                         {console.name}
@@ -134,15 +142,30 @@ function ConsoleIndex() {
                                             {console.status || 'DRAFT'}
                                         </span>
                                     </td>
+                                    <td className="p-4 font-mono text-xs text-gray-500">
+                                        {timeAgo(console.updated_at)}
+                                    </td>
                                     <td className="p-4 text-right space-x-2">
-                                        <Link href={`/admin/consoles/${console.slug}`}>
-                                            <button className="text-xs border border-gray-600 text-gray-400 px-3 py-1 hover:border-white hover:text-white transition-colors">
-                                                EDIT
-                                            </button>
-                                        </Link>
-                                        <Link href={`/consoles/${console.slug}`} target="_blank">
-                                            <button className="text-xs border border-gray-800 text-gray-600 px-3 py-1 hover:border-cyan-400 hover:text-cyan-400 transition-colors">
-                                                VIEW
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                router.push(`/admin/consoles/${console.slug}`);
+                                            }}
+                                            className="text-xs border border-gray-600 text-gray-400 px-3 py-1 hover:border-white hover:text-white transition-colors"
+                                        >
+                                            EDIT
+                                        </button>
+
+                                        <Link href={`/consoles/${console.slug}`} target="_blank" onClick={(e) => e.stopPropagation()}>
+                                            <button
+                                                className={`text-xs border px-3 py-1 transition-colors ${
+                                                    console.status === 'draft'
+                                                    ? 'border-dashed border-gray-700 text-gray-500 hover:border-yellow-500 hover:text-yellow-500'
+                                                    : 'border-gray-800 text-gray-600 hover:border-cyan-400 hover:text-cyan-400'
+                                                }`}
+                                                title={console.status === 'draft' ? "Admin preview (not public)" : undefined}
+                                            >
+                                                {console.status === 'draft' ? 'PREVIEW' : 'VIEW'}
                                             </button>
                                         </Link>
                                     </td>
@@ -150,7 +173,7 @@ function ConsoleIndex() {
                             ))}
                             {filteredConsoles.length === 0 && (
                                 <tr>
-                                    <td colSpan={4} className="p-8 text-center text-gray-500">
+                                    <td colSpan={5} className="p-8 text-center text-gray-500">
                                         NO RECORDS FOUND.
                                     </td>
                                 </tr>

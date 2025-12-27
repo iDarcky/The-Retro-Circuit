@@ -105,8 +105,8 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
     }
 };
 
-export const fetchConsoleList = async (includeHidden: boolean = false): Promise<{name: string, slug: string, id: string, status?: string}[]> => {
-    let query = supabase.from('consoles').select('id, name, slug, status').order('name');
+export const fetchConsoleList = async (includeHidden: boolean = false): Promise<{name: string, slug: string, id: string, status?: string, updated_at?: string}[]> => {
+    let query = supabase.from('consoles').select('id, name, slug, status, updated_at').order('name');
 
     if (!includeHidden) {
         query = query.eq('status', 'published');
