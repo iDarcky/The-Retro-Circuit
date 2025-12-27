@@ -208,9 +208,9 @@ function VSModeContent() {
                                  {!isArenaMode && (
                                      <button
                                          onClick={() => handleChangeFighter(true)}
-                                         className="mt-4 text-[10px] text-primary/70 hover:text-primary underline font-mono"
+                                         className="mt-4 text-[10px] text-secondary/70 hover:text-secondary underline font-mono"
                                      >
-                                         [ CHANGE ]
+                                         [CHANGE]
                                      </button>
                                  )}
                              </div>
@@ -262,9 +262,9 @@ function VSModeContent() {
                                  {!isArenaMode && (
                                      <button
                                          onClick={() => handleChangeFighter(false)}
-                                         className="mt-4 text-[10px] text-accent/70 hover:text-accent underline font-mono"
+                                         className="mt-4 text-[10px] text-secondary/70 hover:text-secondary underline font-mono"
                                      >
-                                         [ CHANGE ]
+                                         [CHANGE]
                                      </button>
                                  )}
                              </div>
