@@ -256,6 +256,8 @@ export interface ConsoleVariant {
   variant_input_profile?: VariantInputProfile | null;
 }
 
+export type ContentStatus = 'draft' | 'published' | 'archived';
+
 export interface ConsoleDetails {
     id: string;
     manufacturer_id: string;
@@ -277,4 +279,6 @@ export interface ConsoleDetails {
 
     setup_ease_score?: number | null;
     community_score?: number | null;
+
+    status?: ContentStatus;
 }

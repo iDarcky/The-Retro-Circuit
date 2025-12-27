@@ -150,14 +150,25 @@ function AdminPortalContent() {
                     <h1 className="text-4xl md:text-6xl font-pixel text-secondary mb-2 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
                         ROOT TERMINAL
                     </h1>
-                    <p className="font-mono text-xs text-gray-500 tracking-widest">
-                        // SECURE DATABASE CONNECTION ESTABLISHED
-                    </p>
+                    <div className="flex gap-4">
+                        <p className="font-mono text-xs text-gray-500 tracking-widest">
+                            // SECURE DATABASE CONNECTION ESTABLISHED
+                        </p>
+                    </div>
                 </div>
-                <div className="bg-black border border-cyan-400 px-3 py-1 shadow-[0_0_10px_rgba(34,211,238,0.2)]">
-                    <span className="font-pixel text-[10px] text-cyan-400 tracking-widest animate-pulse">
-                        ADMIN_MODE_ACTIVE
-                    </span>
+
+                {/* NEW INDEX LINK */}
+                <div className="flex items-center gap-4">
+                     <a href="/admin/consoles">
+                        <Button variant="secondary" className="font-pixel text-xs px-4 py-2 border-2 border-secondary hover:bg-secondary hover:text-black transition-colors shadow-[0_0_15px_rgba(0,255,136,0.3)]">
+                            &gt; CONSOLE INDEX
+                        </Button>
+                     </a>
+                    <div className="bg-black border border-cyan-400 px-3 py-1 shadow-[0_0_10px_rgba(34,211,238,0.2)]">
+                        <span className="font-pixel text-[10px] text-cyan-400 tracking-widest animate-pulse">
+                            ADMIN_MODE_ACTIVE
+                        </span>
+                    </div>
                 </div>
             </div>
 

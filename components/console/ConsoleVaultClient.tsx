@@ -3,18 +3,23 @@
 
 import { useEffect, useState, type ChangeEvent, type FC } from 'react';
 import Link from 'next/link';
-import { fetchManufacturers, fetchAllConsoles } from '../../lib/api';
 import { ConsoleDetails, ConsoleFilterState, Manufacturer } from '../../lib/types';
 import RetroLoader from '../ui/RetroLoader';
 import Button from '../ui/Button';
 import RetroStatusBar from '../ui/RetroStatusBar';
 import { formatReleaseDate } from '../../lib/utils/date-formatter';
 
-const ConsoleVaultClient: FC = () => {
-  const [allConsoles, setAllConsoles] = useState<ConsoleDetails[]>([]);
-  const [filteredConsoles, setFilteredConsoles] = useState<ConsoleDetails[]>([]);
-  const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
-  const [loading, setLoading] = useState(true);
+interface ConsoleVaultClientProps {
+    initialManufacturers: Manufacturer[];
+    initialConsoles: ConsoleDetails[];
+}
+
+const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers, initialConsoles }) => {
+  const [allConsoles] = useState<ConsoleDetails[]>(initialConsoles);
+  const [filteredConsoles, setFilteredConsoles] = useState<ConsoleDetails[]>(initialConsoles);
+  const [manufacturers] = useState<Manufacturer[]>(initialManufacturers);
+  const [loading] = useState(false); // No initial load needed
+  const [errorMsg] = useState<string | null>(null);
   
   // Mobile Sidebar State
   const [showMobileFilters, setShowMobileFilters] = useState(false);
@@ -33,21 +38,7 @@ const ConsoleVaultClient: FC = () => {
       panel_types: []
   });
 
-  // 1. Initial Load: Fetch Everything
-  useEffect(() => {
-    const init = async () => {
-        setLoading(true);
-        const [manus, allData] = await Promise.all([
-            fetchManufacturers(),
-            fetchAllConsoles()
-        ]);
-        setManufacturers(manus);
-        setAllConsoles(allData);
-        setFilteredConsoles(allData); // Init filtered list with everything
-        setLoading(false);
-    };
-    init();
-  }, []);
+  // No initial fetch effect needed anymore.
 
   // 2. Client-Side Filter Logic
   useEffect(() => {
@@ -180,6 +171,15 @@ const ConsoleVaultClient: FC = () => {
                     {showMobileFilters ? 'HIDE FILTERS' : 'ADVANCED FILTERS +'}
                 </Button>
             </div>
+
+            {errorMsg && (
+                <div className="mb-8 p-4 border-2 border-red-500 bg-red-900/20 text-red-400 font-mono text-sm flex justify-between items-center animate-pulse">
+                    <span>CONNECTION ERROR: {errorMsg}</span>
+                    <Button variant="danger" onClick={() => window.location.reload()} className="text-xs py-1 px-3">
+                        RETRY SIGNAL
+                    </Button>
+                </div>
+            )}
 
             {loading ? <RetroLoader /> : (
                 <div className="flex flex-col lg:flex-row gap-8 animate-fadeIn">
