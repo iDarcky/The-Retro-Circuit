@@ -1,4 +1,4 @@
-import { supabase } from "../supabase/singleton";
+import { createClient } from "../supabase/client";
 import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant, VariantInputProfile } from "../types";
 
 // Helper: Normalize Variant (Unwrap 1:1 relations that Supabase returns as arrays)
@@ -31,6 +31,7 @@ function normalizeConsoleList(data: any[] | null): ConsoleDetails[] {
 
 export const fetchAllConsoles = async (includeHidden: boolean = false): Promise<ConsoleDetails[]> => {
     try {
+        const supabase = createClient();
         let query = supabase
             .from('consoles')
             .select(`
@@ -48,19 +49,20 @@ export const fetchAllConsoles = async (includeHidden: boolean = false): Promise<
 
         if (error) {
             console.error('[API] fetchAllConsoles DB Error:', error.message);
-            throw error;
+            throw new Error(error.message);
         }
 
         return normalizeConsoleList(data);
 
-    } catch (e) {
+    } catch (e: any) {
         console.error('[API] Fetch All Consoles Exception:', e);
-        return [];
+        throw e;
     }
 };
 
 export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: number = 1, limit: number = 20): Promise<{ data: ConsoleDetails[], count: number }> => {
     try {
+        const supabase = createClient();
         // Public search always enforces published status
         let query = supabase.from('consoles')
             .select('*, manufacturer:manufacturer(*), variants:console_variants(*, variant_input_profile(*))', { count: 'exact' })
@@ -106,6 +108,7 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
 };
 
 export const fetchConsoleList = async (includeHidden: boolean = false): Promise<{name: string, slug: string, id: string, status?: string, updated_at?: string}[]> => {
+    const supabase = createClient();
     let query = supabase.from('consoles').select('id, name, slug, status, updated_at').order('name');
 
     if (!includeHidden) {
@@ -118,6 +121,7 @@ export const fetchConsoleList = async (includeHidden: boolean = false): Promise<
 
 export const fetchConsoleBySlug = async (slug: string, includeHidden: boolean = false): Promise<{ data: ConsoleDetails | null, error: any }> => {
     try {
+        const supabase = createClient();
         let query = supabase
             .from('consoles')
             .select(`
@@ -151,7 +155,7 @@ export const fetchConsoleBySlug = async (slug: string, includeHidden: boolean = 
 
 export const getConsoleById = async (id: string): Promise<ConsoleDetails | null> => {
     try {
-        // Admin use primarily, but let's leave as is (usually used by ID for editing)
+        const supabase = createClient();
         const { data, error } = await supabase.from('consoles').select('*').eq('id', id).single();
         if (error) throw error;
         return data as ConsoleDetails;
@@ -162,6 +166,7 @@ export const getConsoleById = async (id: string): Promise<ConsoleDetails | null>
 
 export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs | null> => {
     try {
+        const supabase = createClient();
         const { data } = await supabase
             .from('console_variants')
             .select('*, variant_input_profile(*)')
@@ -186,6 +191,7 @@ export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs |
 
 export const getVariantsByConsole = async (consoleId: string): Promise<ConsoleVariant[]> => {
     try {
+        const supabase = createClient();
         const { data, error } = await supabase
             .from('console_variants')
             .select('*, variant_input_profile(*)')
@@ -200,6 +206,7 @@ export const getVariantsByConsole = async (consoleId: string): Promise<ConsoleVa
 
 export const getVariantById = async (variantId: string): Promise<ConsoleVariant | null> => {
     try {
+        const supabase = createClient();
         const { data, error } = await supabase
             .from('console_variants')
             .select('*, variant_input_profile(*)')
@@ -214,6 +221,7 @@ export const getVariantById = async (variantId: string): Promise<ConsoleVariant 
 
 export const getConsolesByManufacturer = async (manufacturerId: string): Promise<ConsoleDetails[]> => {
     try {
+        const supabase = createClient();
         const { data, error } = await supabase
             .from('consoles')
             .select('*, variants:console_variants(*, variant_input_profile(*))')
@@ -232,6 +240,7 @@ export const addConsole = async (
     consoleData: Omit<ConsoleDetails, 'id' | 'manufacturer' | 'specs' | 'variants'>
 ): Promise<{ success: boolean, message?: string, id?: string }> => {
     try {
+        const supabase = createClient();
         const { data: newConsole, error: consoleError } = await supabase.from('consoles').insert([consoleData]).select('id').single();
         if (consoleError) {
              console.error('SUPABASE CONSOLE INSERT ERROR:', consoleError.code, consoleError.message, consoleError.details);
@@ -251,6 +260,7 @@ export const updateConsole = async (
     consoleData: Partial<ConsoleDetails>
 ): Promise<{ success: boolean, message?: string }> => {
     try {
+        const supabase = createClient();
         const { error } = await supabase.from('consoles').update(consoleData).eq('id', id);
         if (error) return { success: false, message: error.message };
         return { success: true };
@@ -261,6 +271,7 @@ export const updateConsole = async (
 
 export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>): Promise<{ success: boolean, message?: string }> => {
     try {
+        const supabase = createClient();
         const { variant_input_profile, ...mainVariantData } = variantData;
 
         const { data: newVariant, error: variantError } = await supabase
@@ -293,6 +304,7 @@ export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>)
 
 export const updateConsoleVariant = async (id: string, variantData: Partial<ConsoleVariant>): Promise<{ success: boolean, message?: string }> => {
     try {
+        const supabase = createClient();
         const { variant_input_profile, ...mainVariantData } = variantData;
 
         const { error: variantError } = await supabase.from('console_variants').update(mainVariantData).eq('id', id);
