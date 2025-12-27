@@ -74,7 +74,7 @@ export default async function ConsoleSpecsPage(props: Props) {
                     </div>
                 </div>
             )}
-            <Link href="/console">
+            <Link href="/consoles">
                 <Button variant="secondary">RETURN TO VAULT</Button>
             </Link>
         </div>
