@@ -32,6 +32,9 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
     const borderColor = themeColor === 'cyan' ? 'border-primary' : 'border-accent';
     const textColor = themeColor === 'cyan' ? 'text-primary' : 'text-accent';
     const focusColor = themeColor === 'cyan' ? 'focus:border-primary' : 'focus:border-accent';
+    const scrollbarColor = themeColor === 'cyan'
+        ? '[&::-webkit-scrollbar-thumb]:bg-primary [&::-webkit-scrollbar-track]:border-primary/30'
+        : '[&::-webkit-scrollbar-thumb]:bg-accent [&::-webkit-scrollbar-track]:border-accent/30';
 
     return (
         <div className="relative w-full" ref={wrapperRef}>
@@ -44,7 +47,7 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                 className={`w-full bg-black/80 border-b-2 ${borderColor} p-2 font-mono text-xs md:text-sm text-white outline-none ${focusColor} transition-colors placeholder-gray-500`}
             />
             {isOpen && (
-                <div className={`absolute left-0 right-0 top-full max-h-60 overflow-y-auto bg-black border border-gray-700 z-[100] custom-scrollbar`}>
+                <div className={`absolute left-0 right-0 top-full max-h-60 overflow-y-auto bg-black border border-gray-700 z-[100] ${scrollbarColor}`}>
                     {filtered.map(c => (
                         <div 
                             key={c.slug}
