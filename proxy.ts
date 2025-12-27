@@ -1,4 +1,4 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function proxy(request: NextRequest) {
@@ -11,7 +11,7 @@ export async function proxy(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
 
-  // SKIP Supabase checks if env vars are missing/placeholder to prevent crashes (DNS errors, 400s)
+  // SKIP Supabase checks if env vars are missing/placeholder to prevent crashes
   const isPlaceholder = supabaseUrl.includes('placeholder.supabase.co') || supabaseKey === 'placeholder';
 
   if (!isPlaceholder) {
@@ -24,9 +24,9 @@ export async function proxy(request: NextRequest) {
             getAll() {
               return request.cookies.getAll();
             },
-            setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
-              cookiesToSet.forEach(({ name, value, options }) => {
-                request.cookies.set({ name, value, ...options });
+            setAll(cookiesToSet) {
+              cookiesToSet.forEach(({ name, value }) => {
+                request.cookies.set(name, value);
               });
               response = NextResponse.next({
                 request: {
@@ -34,7 +34,7 @@ export async function proxy(request: NextRequest) {
                 },
               });
               cookiesToSet.forEach(({ name, value, options }) => {
-                response.cookies.set({ name, value, ...options });
+                response.cookies.set(name, value, options);
               });
             },
           },
@@ -46,13 +46,10 @@ export async function proxy(request: NextRequest) {
 
       // 3. Protect Admin Routes
       if (request.nextUrl.pathname.startsWith('/admin')) {
-
-        // Check Authentication
         if (!user) {
           return NextResponse.redirect(new URL('/login', request.url));
         }
 
-        // Check Authorization (Role) via profiles table
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('role')
@@ -63,14 +60,12 @@ export async function proxy(request: NextRequest) {
             console.error('[Middleware] Profile Fetch Error:', profileError.message);
         }
 
-        // If no profile or role is not 'admin', redirect to home
         if (!profile || profile.role !== 'admin') {
           return NextResponse.redirect(new URL('/', request.url));
         }
       }
     } catch (e) {
-      console.error('[Middleware] Supabase Client Error (Skipping Auth):', e);
-      // Proceed without auth if client fails seriously
+      console.error('[Middleware] Supabase Client Error:', e);
     }
   }
 
@@ -85,13 +80,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public assets (images, etc)
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
