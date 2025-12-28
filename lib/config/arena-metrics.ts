@@ -107,3 +107,46 @@ export const METRICS: ComparisonMetric[] = [
     { label: 'Cooling', key: 'cooling_solution', type: 'string' },
     { label: 'Colors', key: 'available_colors', type: 'string' },
 ];
+
+export const TALE_METRICS: ComparisonMetric[] = [
+    // --- IDENTITY ---
+    { label: 'Release Date', key: 'release_date', type: 'string' }, // Re-added as it's key identity
+    { label: 'Model Number', key: 'model_no', type: 'string' },
+    { label: 'UI Skin', key: 'ui_skin', type: 'string' },
+
+    // --- DISPLAY (Deep Dive) ---
+    { label: 'Pixel Density', key: 'ppi', type: 'number', unit: 'PPI' },
+    { label: 'Brightness', key: 'brightness_nits', type: 'number', unit: ' nits' },
+    { label: 'Touchscreen', key: 'touchscreen', type: 'boolean' },
+
+    // --- POWER (Deep Dive) ---
+    { label: 'Charging Speed', key: 'charging_speed_w', type: 'number', unit: 'W' },
+    { label: 'TDP', key: 'tdp_wattage', type: 'number', unit: 'W' },
+
+    // --- CONNECTIVITY & IO ---
+    { label: 'Wi-Fi', key: 'wifi_specs', type: 'string' },
+    { label: 'Bluetooth', key: 'bluetooth_specs', type: 'string' },
+    { label: 'Video Output', key: 'video_out', type: 'string' },
+    { label: 'Ports', key: 'ports', type: 'string' },
+
+    // --- AUDIO & MISC ---
+    { label: 'Audio Tech', key: 'audio_tech', type: 'string' },
+    { label: 'Headphone Jack', key: 'has_headphone_jack', type: 'boolean' },
+    { label: 'Camera', key: 'camera_specs', type: 'string' },
+    { label: 'Biometrics', key: 'biometrics', type: 'string' },
+
+    // --- CONTROLS ---
+    { label: 'D-Pad Tech', key: 'dpad_tech', type: 'string', path: ['variant_input_profile', 'dpad_tech'] },
+    { label: 'Stick Tech', key: 'stick_tech', type: 'string', path: ['variant_input_profile', 'stick_tech'] },
+    { label: 'Stick Layout', key: 'stick_layout', type: 'string', path: ['variant_input_profile', 'stick_layout'] },
+    { label: 'Trigger Type', key: 'trigger_type', type: 'string', path: ['variant_input_profile', 'trigger_type'] },
+    { label: 'Back Buttons', key: 'back_button_count', type: 'number', path: ['variant_input_profile', 'back_button_count'] },
+    { label: 'Gyroscope', key: 'has_gyro', type: 'boolean', path: ['variant_input_profile', 'has_gyro'] },
+    { label: 'Haptics', key: 'haptics', type: 'string' },
+
+    // --- PHYSICAL ---
+    { label: 'Weight', key: 'weight_g', type: 'number', unit: 'g', lowerIsBetter: true },
+    { label: 'Dimensions', key: 'width_mm', type: 'string' }, // Placeholder for composite dimension check if needed
+    { label: 'Body Material', key: 'body_material', type: 'string' },
+    { label: 'Cooling', key: 'cooling_solution', type: 'string' },
+];

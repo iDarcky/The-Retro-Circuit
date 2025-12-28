@@ -6,11 +6,12 @@ import Link from 'next/link';
 import { fetchConsoleList, fetchConsoleBySlug } from '../../lib/api';
 import { ConsoleDetails, ConsoleVariant } from '../../lib/types';
 import { useSound } from '../../components/ui/SoundContext';
-import { METRICS } from '../../lib/config/arena-metrics';
+import { METRICS, TALE_METRICS } from '../../lib/config/arena-metrics';
 import { ComparisonRow } from '../../components/arena/ComparisonRow';
 import { ConsoleSearch } from '../../components/arena/ConsoleSearch';
 import { VariantSelector } from '../../components/arena/VariantSelector';
 import { MatchSummary } from '../../components/arena/MatchSummary';
+import { StickyScoreboard } from '../../components/arena/StickyScoreboard';
 import RetroStatusBar from '../../components/ui/RetroStatusBar';
 
 interface SelectionState {
@@ -24,6 +25,7 @@ function VSModeContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const matchSummaryRef = useRef<HTMLDivElement>(null);
+    const taleOfTapeRef = useRef<HTMLDivElement>(null);
     const { playClick } = useSound();
 
     const [allConsoles, setAllConsoles] = useState<{name: string, slug: string}[]>([]);
@@ -31,8 +33,10 @@ function VSModeContent() {
     const [selectionA, setSelectionA] = useState<SelectionState>({ slug: null, details: null, selectedVariant: null, loading: false });
     const [selectionB, setSelectionB] = useState<SelectionState>({ slug: null, details: null, selectedVariant: null, loading: false });
     
-    const [showDiffOnly, setShowDiffOnly] = useState(false);
+    const [showDiffOnly, setShowDiffOnly] = useState(true);
     const [isArenaMode, setIsArenaMode] = useState(false);
+    const [activeSection, setActiveSection] = useState('MATCH SUMMARY');
+    const [showScoreboard, setShowScoreboard] = useState(false);
 
     useEffect(() => {
         fetchConsoleList().then((list) => setAllConsoles(list));
@@ -44,6 +48,30 @@ function VSModeContent() {
             setIsArenaMode(true);
         }
     }, []);
+
+    // Scroll Tracking for Sticky Scoreboard
+    useEffect(() => {
+        if (!isArenaMode) return;
+
+        const handleScroll = () => {
+            const summary = matchSummaryRef.current;
+            const tale = taleOfTapeRef.current;
+            const scrollY = window.scrollY;
+
+            // Show scoreboard after scrolling past hero (approx 300px)
+            setShowScoreboard(scrollY > 300);
+
+            // Determine active section
+            if (tale && scrollY >= tale.offsetTop - 200) {
+                setActiveSection('TALE OF THE TAPE');
+            } else if (summary && scrollY >= summary.offsetTop - 200) {
+                setActiveSection('MATCH SUMMARY');
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [isArenaMode]);
 
     const loadSelection = async (slug: string, variantSlug: string | null, setSelection: Dispatch<SetStateAction<SelectionState>>) => {
         setSelection(prev => ({ ...prev, loading: true, slug }));
@@ -322,7 +350,7 @@ function VSModeContent() {
                         />
                     </div>
 
-                    <div className="bg-black/80 border border-gray-800 p-4 mb-12 animate-slideDown shadow-2xl">
+                    <div ref={taleOfTapeRef} className="bg-black/80 border border-gray-800 p-4 mb-12 animate-slideDown shadow-2xl scroll-mt-24">
                         <div className="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
                             <h3 className="font-pixel text-lg text-white">TALE OF THE TAPE</h3>
                             <label className="flex items-center gap-2 cursor-pointer">
@@ -336,7 +364,7 @@ function VSModeContent() {
                             </label>
                         </div>
                         <div className="space-y-1">
-                            {METRICS.map(metric => (
+                            {TALE_METRICS.map(metric => (
                                 <ComparisonRow
                                     key={metric.key}
                                     metric={metric}
@@ -350,6 +378,14 @@ function VSModeContent() {
                 </>
             )}
         </div>
+
+        {/* Sticky Scoreboard */}
+        <StickyScoreboard
+            visible={isArenaMode && showScoreboard}
+            variantA={selectionA.selectedVariant}
+            variantB={selectionB.selectedVariant}
+            activeSection={activeSection}
+        />
         </div>
     );
 }

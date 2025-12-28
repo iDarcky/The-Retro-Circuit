@@ -131,12 +131,19 @@ const formatBattery = (a: ConsoleVariant, b: ConsoleVariant): { label: string, v
     return null;
 };
 
-const Row = ({ label, valA, valB, highlightDiff = false }: { label: string, valA: string, valB: string, highlightDiff?: boolean }) => {
-    // Simple check for difference if highlight requested
+const Row = ({ label, valA, valB, highlightDiff = false, isHeader = false }: { label: string, valA: string, valB: string, highlightDiff?: boolean, isHeader?: boolean }) => {
+    // Difference check: if values differ, we highlight them
     const isDifferent = highlightDiff && valA !== valB && valA !== '—' && valB !== '—';
 
+    // Group Header Spacer
+    if (isHeader) {
+        return (
+            <div className="col-span-full h-4 border-b border-white/5 mb-4 hidden md:block" />
+        );
+    }
+
     return (
-        <div className="flex flex-col md:contents border-b border-gray-800 md:border-none last:border-0">
+        <div className="flex flex-col md:contents border-b border-gray-800 md:border-none last:border-0 group">
             {/* Mobile: Stacked Label */}
             <div className="md:hidden pt-3 pb-1 text-[10px] font-mono text-gray-500 uppercase tracking-widest px-4 bg-gray-900/30">
                 {label}
@@ -144,18 +151,26 @@ const Row = ({ label, valA, valB, highlightDiff = false }: { label: string, valA
 
             {/* Desktop: Table Row */}
             <div className="grid grid-cols-2 md:contents">
-                {/* Label Column (Desktop Only) */}
-                <div className="hidden md:flex items-center py-3 text-xs font-mono text-gray-500 uppercase tracking-widest border-b border-gray-800/50">
+                {/* Label Column */}
+                <div className="hidden md:flex items-center py-2 text-xs font-mono text-gray-500 uppercase tracking-widest border-b border-gray-800/30 group-hover:text-gray-400 transition-colors">
                     {label}
                 </div>
 
                 {/* Value A */}
-                <div className={`px-4 py-2 md:py-3 text-sm md:text-sm font-mono text-left md:border-b md:border-gray-800/50 flex items-center ${isDifferent ? 'text-primary' : 'text-gray-300'}`}>
+                <div className={`
+                    px-4 py-2 md:py-2 text-sm md:text-sm font-mono text-left md:border-b md:border-gray-800/30 flex items-center
+                    ${isDifferent ? 'text-primary brightness-110 drop-shadow-[0_0_8px_rgba(0,217,255,0.2)]' : 'text-gray-300'}
+                `}>
+                    {isDifferent && <span className="mr-2 text-[10px] opacity-70">▲</span>}
                     <span className="truncate">{valA || '—'}</span>
                 </div>
 
                 {/* Value B */}
-                <div className={`px-4 py-2 md:py-3 text-sm md:text-sm font-mono text-left md:border-b md:border-gray-800/50 flex items-center ${isDifferent ? 'text-accent' : 'text-gray-300'}`}>
+                <div className={`
+                    px-4 py-2 md:py-2 text-sm md:text-sm font-mono text-left md:border-b md:border-gray-800/30 flex items-center
+                    ${isDifferent ? 'text-accent brightness-110 drop-shadow-[0_0_8px_rgba(255,107,157,0.2)]' : 'text-gray-300'}
+                `}>
+                    {isDifferent && <span className="mr-2 text-[10px] opacity-70">▲</span>}
                     <span className="truncate">{valB || '—'}</span>
                 </div>
             </div>
@@ -167,10 +182,10 @@ export const MatchSummary = ({ variantA, variantB, profileA, profileB }: MatchSu
     const batteryRow = formatBattery(variantA, variantB);
 
     return (
-        <div className="w-full max-w-5xl mx-auto mb-12 animate-fadeIn">
+        <div id="match-summary" className="w-full max-w-5xl mx-auto mb-12 animate-slideUpFade">
             {/* Header / Terminal Bar */}
             <div className="bg-gray-900 border-t border-l border-r border-gray-700 p-2 flex justify-between items-center">
-                <div className="font-pixel text-xs text-secondary tracking-widest pl-2">MATCH READOUT</div>
+                <div className="font-pixel text-xs text-secondary tracking-widest pl-2">MATCH SUMMARY</div>
                 <div className="flex gap-1 pr-2">
                     <div className="w-2 h-2 bg-gray-600 rounded-full animate-pulse"></div>
                 </div>
@@ -180,13 +195,19 @@ export const MatchSummary = ({ variantA, variantB, profileA, profileB }: MatchSu
             <div className="bg-black/80 border border-gray-700 shadow-2xl backdrop-blur-sm">
 
                 {/* Desktop Grid Layout Setup */}
-                <div className="md:grid md:grid-cols-[140px_1fr_1fr] md:gap-x-8 md:px-6">
+                <div className="md:grid md:grid-cols-[140px_1fr_1fr] md:gap-x-8 md:px-6 md:py-2">
 
-                    {/* Render Rows Explicitly for control */}
+                    {/* Group 1: Core Silicon */}
                     <Row label="PLATFORM" valA={variantA.os || '—'} valB={variantB.os || '—'} />
-                    <Row label="CHIPSET" valA={variantA.cpu_model || '—'} valB={variantB.cpu_model || '—'} />
-                    <Row label="GPU" valA={variantA.gpu_model || '—'} valB={variantB.gpu_model || '—'} />
-                    <Row label="DISPLAY" valA={formatDisplay(variantA)} valB={formatDisplay(variantB)} />
+                    <Row label="CHIPSET" valA={variantA.cpu_model || '—'} valB={variantB.cpu_model || '—'} highlightDiff />
+                    <Row label="GPU" valA={variantA.gpu_model || '—'} valB={variantB.gpu_model || '—'} highlightDiff />
+
+                    {/* Group 2: Visuals */}
+                    <div className="md:col-span-3 h-px bg-white/5 my-2 mx-4 md:mx-0" />
+                    <Row label="DISPLAY" valA={formatDisplay(variantA)} valB={formatDisplay(variantB)} highlightDiff />
+
+                    {/* Group 3: Internals */}
+                    <div className="md:col-span-3 h-px bg-white/5 my-2 mx-4 md:mx-0" />
                     <Row label="MEMORY" valA={formatMemory(variantA)} valB={formatMemory(variantB)} />
                     <Row label="STORAGE" valA={formatStorage(variantA)} valB={formatStorage(variantB)} />
 
@@ -194,6 +215,8 @@ export const MatchSummary = ({ variantA, variantB, profileA, profileB }: MatchSu
                         <Row label={batteryRow.label} valA={batteryRow.valA} valB={batteryRow.valB} />
                     )}
 
+                    {/* Group 4: Value & Capability */}
+                    <div className="md:col-span-3 h-px bg-secondary/20 my-2 mx-4 md:mx-0" />
                     <Row label="EMULATION CAP" valA={getMaxTier(profileA)} valB={getMaxTier(profileB)} highlightDiff={true} />
 
                     {(variantA.price_launch_usd || variantB.price_launch_usd) && (
