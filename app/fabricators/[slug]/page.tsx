@@ -1,6 +1,7 @@
 
 import Link from 'next/link';
-import { createClient } from '../../../lib/supabase/server';
+// Switch to public client only
+import { createClient } from '../../../lib/supabase/client';
 import { ConsoleDetails } from '../../../lib/types';
 import Button from '../../../components/ui/Button';
 import FabricatorDetailClient from '../../../components/fabricator/FabricatorDetailClient';
@@ -14,7 +15,7 @@ type Props = {
 export async function generateMetadata(props: Props) {
     try {
         const params = await props.params;
-        const supabase = await createClient();
+        const supabase = createClient(); // Use browser client (auth-agnostic in SSR if no cookies passed)
         const { data: profile } = await supabase
             .from('manufacturer')
             .select('name')
@@ -35,9 +36,8 @@ export async function generateMetadata(props: Props) {
     }
 }
 
-export async function generateStaticParams() {
-    return []; // Disable static param generation to enforce dynamic fetching on demand
-}
+// Remove generateStaticParams entirely
+// export async function generateStaticParams() { return []; }
 
 export default async function FabricatorDetailPage(props: Props) {
     const params = await props.params;
@@ -48,7 +48,7 @@ export default async function FabricatorDetailPage(props: Props) {
     let fetchError: any = null;
 
     try {
-        const supabase = await createClient();
+        const supabase = createClient(); // Public client
 
         // 1. Fetch Profile
         const { data: manuProfile, error: manuError } = await supabase
@@ -67,6 +67,7 @@ export default async function FabricatorDetailPage(props: Props) {
                 .from('consoles')
                 .select('*, manufacturer:manufacturer(*), variants:console_variants(*)')
                 .eq('manufacturer_id', profile.id)
+                .eq('status', 'published') // Enforce published only
                 .order('name', { ascending: true });
 
             if (error) {

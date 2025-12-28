@@ -1,6 +1,5 @@
 
 import Link from 'next/link';
-import { createClient } from '../../../lib/supabase/server';
 import { fetchConsoleBySlug } from '../../../lib/api';
 import Button from '../../../components/ui/Button';
 import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
@@ -14,17 +13,12 @@ type Props = {
 export async function generateMetadata(props: Props) {
     try {
         const params = await props.params;
-        const slug = decodeURIComponent(params.slug); // Ensure slug is decoded
-        const supabase = await createClient();
+        const slug = decodeURIComponent(params.slug);
 
-        // Fetch console identity + variants for robust image fallback
-        const { data } = await supabase
-          .from('consoles')
-          .select('name, description, image_url, variants:console_variants(image_url, is_default)')
-          .eq('slug', slug)
-          .single();
+        // Use a lightweight fetch or the same API helper
+        const { data, error } = await fetchConsoleBySlug(slug, false);
 
-        if (!data) return { title: 'Unknown Hardware | The Retro Circuit' };
+        if (!data || error) return { title: 'Unknown Hardware | The Retro Circuit' };
 
         // Logic to determine best image: Console Image -> Default Variant Image -> First Variant Image
         let finalImage = data.image_url;
@@ -46,7 +40,7 @@ export async function generateMetadata(props: Props) {
             images: [{ url: finalImage }]
           },
           alternates: {
-            canonical: `/console/${slug}`,
+            canonical: `/consoles/${slug}`,
           },
         };
     } catch (e) {
@@ -54,9 +48,8 @@ export async function generateMetadata(props: Props) {
     }
 }
 
-export async function generateStaticParams() {
-    return []; // Disable static param generation to enforce dynamic fetching on demand
-}
+// Remove generateStaticParams entirely as requested
+// export async function generateStaticParams() { return []; }
 
 export default async function ConsoleSpecsPage(props: Props) {
   const params = await props.params;
@@ -66,18 +59,10 @@ export default async function ConsoleSpecsPage(props: Props) {
   let fetchError = null;
 
   try {
-      const supabase = await createClient();
-
-      // Check Admin Status
-      let isAdmin = false;
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-          const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-          isAdmin = profile?.role === 'admin';
-      }
-
-      // Parallel Fetching using API helpers
-      const { data, error } = await fetchConsoleBySlug(slug, isAdmin);
+      // PURELY PUBLIC FETCH
+      // No auth checks, no cookies.
+      // Force includeHidden = false.
+      const { data, error } = await fetchConsoleBySlug(slug, false);
       consoleData = data;
       fetchError = error;
 
