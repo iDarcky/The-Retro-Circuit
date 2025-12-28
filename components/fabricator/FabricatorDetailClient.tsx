@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { ConsoleDetails, Manufacturer } from '../../lib/types';
 import AdminEditTrigger from '../admin/AdminEditTrigger';
 import RetroStatusBar from '../ui/RetroStatusBar';
@@ -74,7 +75,7 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                             <div className="flex flex-wrap items-center gap-4 mt-4">
                                 {profile.image_url && (
                                     <div className="bg-black/20 p-2 border border-gray-700 rounded md:hidden">
-                                        <img src={profile.image_url} className="h-12 w-auto object-contain" />
+                                        <Image src={profile.image_url} alt={profile.name} width={48} height={48} className="h-12 w-auto object-contain" />
                                     </div>
                                 )}
                                 <h1 className={`text-3xl sm:text-4xl md:text-6xl font-pixel opacity-90 break-words leading-tight ${getStyles('title')}`}>
@@ -99,7 +100,7 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                         {/* Right Column: Stats & Logo (Desktop) */}
                         <div className="flex flex-row md:flex-col items-center md:items-end justify-between w-full md:w-auto gap-4 md:gap-2">
                             {profile.image_url && (
-                                <img src={profile.image_url} className="hidden md:block h-20 lg:h-24 w-auto object-contain mb-4" />
+                                <Image src={profile.image_url} alt={profile.name} width={96} height={96} className="hidden md:block h-20 lg:h-24 w-auto object-contain mb-4" />
                             )}
                             <div className="flex flex-col md:items-end">
                                 <div className="font-mono text-gray-500 text-[10px] uppercase">FOUNDED</div>
@@ -152,7 +153,13 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                                 >
                                     <div className="h-32 bg-black/40 flex items-center justify-center p-4 relative">
                                         {console.image_url ? (
-                                            <img src={console.image_url} className="max-h-full object-contain" />
+                                            <Image
+                                                src={console.image_url}
+                                                alt={console.name}
+                                                width={200}
+                                                height={150}
+                                                className="max-h-full w-auto h-auto object-contain"
+                                            />
                                         ) : (
                                             <span className="font-pixel text-gray-700 text-2xl">?</span>
                                         )}
