@@ -80,9 +80,21 @@ export default function RootLayout({
     description: siteConfig.description,
     potentialAction: {
       '@type': 'SearchAction',
-      target: `${siteConfig.url}/search?q={search_term_string}`,
+      target: `${siteConfig.url}/finder?q={search_term_string}`,
       'query-input': 'required name=search_term_string'
     }
+  };
+
+  const orgLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: siteConfig.name,
+    url: siteConfig.url,
+    logo: `${siteConfig.url}/favicon-v2.png`,
+    sameAs: [
+      siteConfig.links.github,
+      siteConfig.links.linkedin
+    ]
   };
 
   return (
@@ -91,6 +103,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgLd) }}
         />
 
         {/* CRT Overlay Effects */}
