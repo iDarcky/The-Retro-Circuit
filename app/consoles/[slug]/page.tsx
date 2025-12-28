@@ -67,6 +67,56 @@ export default async function ConsoleSpecsPage(props: Props) {
   // Parallel Fetching using API helpers
   const { data: consoleData, error } = await fetchConsoleBySlug(params.slug, isAdmin);
 
+  // Construct JSON-LD for Product Schema
+  let jsonLd = null;
+  if (consoleData) {
+      jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: consoleData.name,
+        description: consoleData.description,
+        image: consoleData.image_url || `https://theretrocircuit.com/og-v2.png`,
+        brand: {
+            '@type': 'Brand',
+            name: consoleData.manufacturer?.name || 'Unknown Manufacturer'
+        },
+        offers: {
+            '@type': 'Offer',
+            priceCurrency: 'USD',
+            price: consoleData.specs?.price_launch_usd || '0',
+            availability: 'https://schema.org/Discontinued',
+            itemCondition: 'https://schema.org/UsedCondition'
+        },
+        // We can add aggregate rating if/when we have user reviews
+      };
+  }
+
+  // Construct Breadcrumb Schema
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+        {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: 'https://theretrocircuit.com'
+        },
+        {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Consoles',
+            item: 'https://theretrocircuit.com/consoles'
+        },
+        {
+            '@type': 'ListItem',
+            position: 3,
+            name: consoleData ? consoleData.name : 'Unknown Console',
+            item: `https://theretrocircuit.com/consoles/${params.slug}`
+        }
+    ]
+  };
+
   if (!consoleData) {
     return (
         <div className="flex flex-col items-center justify-center min-h-[50vh] p-4 text-center">
@@ -91,5 +141,19 @@ export default async function ConsoleSpecsPage(props: Props) {
     );
   }
 
-  return <ConsoleDetailView consoleData={consoleData} />;
+  return (
+    <>
+        {jsonLd && (
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+        )}
+        <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+        />
+        <ConsoleDetailView consoleData={consoleData} />
+    </>
+  );
 }
