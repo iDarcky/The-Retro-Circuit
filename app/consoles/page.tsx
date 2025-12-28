@@ -1,7 +1,7 @@
 import { fetchManufacturers, fetchAllConsoles } from '../../lib/api';
 import ConsoleVaultClient from '../../components/console/ConsoleVaultClient';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export const metadata = {
   title: 'Console Vault | The Retro Circuit',

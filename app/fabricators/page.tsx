@@ -1,7 +1,7 @@
 import { fetchManufacturers } from '../../lib/api';
 import FabricatorListClient from '../../components/fabricator/FabricatorListClient';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export const metadata = {
   title: 'Fabricators | Manufacturer Database',

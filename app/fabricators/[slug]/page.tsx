@@ -1,10 +1,11 @@
-export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
 import { createClient } from '../../../lib/supabase/server';
 import { ConsoleDetails } from '../../../lib/types';
 import Button from '../../../components/ui/Button';
 import FabricatorDetailClient from '../../../components/fabricator/FabricatorDetailClient';
+
+export const revalidate = 3600; // 1 hour
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -31,7 +32,7 @@ export async function generateMetadata(props: Props) {
 }
 
 export async function generateStaticParams() {
-    return []; // Disable static param generation to enforce dynamic fetching
+    return []; // Disable static param generation to enforce dynamic fetching on demand
 }
 
 export default async function FabricatorDetailPage(props: Props) {
