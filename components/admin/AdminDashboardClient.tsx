@@ -44,6 +44,12 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
             const type = searchParams?.get('type');
             const id = searchParams?.get('id');
 
+            // Check for new console ID passed via URL (from Editor)
+            const newConsoleId = searchParams?.get('new_console_id');
+            if (newConsoleId) {
+                setNewlyCreatedConsoleId(newConsoleId);
+            }
+
             // 1. Edit Variant
             const variantId = searchParams?.get('variant_id') || (type === 'variant' ? id : null);
             if (mode === 'edit' && variantId) {
