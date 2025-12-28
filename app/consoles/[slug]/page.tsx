@@ -91,6 +91,32 @@ export default async function ConsoleSpecsPage(props: Props) {
       };
   }
 
+  // Construct Breadcrumb Schema
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+        {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: 'https://theretrocircuit.com'
+        },
+        {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Consoles',
+            item: 'https://theretrocircuit.com/consoles'
+        },
+        {
+            '@type': 'ListItem',
+            position: 3,
+            name: consoleData ? consoleData.name : 'Unknown Console',
+            item: `https://theretrocircuit.com/consoles/${params.slug}`
+        }
+    ]
+  };
+
   if (!consoleData) {
     return (
         <div className="flex flex-col items-center justify-center min-h-[50vh] p-4 text-center">
@@ -123,6 +149,10 @@ export default async function ConsoleSpecsPage(props: Props) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
         )}
+        <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+        />
         <ConsoleDetailView consoleData={consoleData} />
     </>
   );
