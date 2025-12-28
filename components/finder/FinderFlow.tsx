@@ -124,6 +124,11 @@ const FinderFlowContent = () => {
 
   const stepParam = searchParams.get('step');
 
+  // Scroll to top on step change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [stepParam]);
+
   // Calculate step index based on URL param
   let stepIndex = -1;
   if (stepParam === 'results') {
