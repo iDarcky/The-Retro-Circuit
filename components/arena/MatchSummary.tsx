@@ -164,19 +164,6 @@ const Row = ({ label, valA, valB, highlightDiff = false }: { label: string, valA
 };
 
 export const MatchSummary = ({ variantA, variantB, profileA, profileB }: MatchSummaryProps) => {
-    // Pre-calculate rows
-    const rows = [
-        { label: 'PLATFORM', valA: variantA.os, valB: variantB.os },
-        { label: 'CHIPSET', valA: variantA.cpu_model, valB: variantB.cpu_model },
-        { label: 'GPU', valA: variantA.gpu_model, valB: variantB.gpu_model },
-        { label: 'DISPLAY', valA: formatDisplay(variantA), valB: formatDisplay(variantB) },
-        { label: 'MEMORY', valA: formatMemory(variantA), valB: formatMemory(variantB) },
-        { label: 'STORAGE', valA: formatStorage(variantA), valB: formatStorage(variantB) },
-        // Battery handled dynamically below
-        { label: 'EMULATION CAP', valA: getMaxTier(profileA), valB: getMaxTier(profileB) },
-        { label: 'LAUNCH PRICE', valA: variantA.price_launch_usd ? `$${variantA.price_launch_usd}` : '—', valB: variantB.price_launch_usd ? `$${variantB.price_launch_usd}` : '—' }
-    ];
-
     const batteryRow = formatBattery(variantA, variantB);
 
     return (
