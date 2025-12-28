@@ -29,9 +29,10 @@ export default async function AdminPage() {
     }
 
     // 3. Fetch Initial Data Server-Side (Parallel)
+    // We pass 'true' to includeHidden so draft consoles are available in the dropdown
     const [manufacturers, consoleList] = await Promise.all([
         fetchManufacturers(),
-        fetchConsoleList()
+        fetchConsoleList(true)
     ]);
 
     return (
