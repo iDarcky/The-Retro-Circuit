@@ -1,7 +1,7 @@
 import { fetchManufacturers } from '../../lib/api';
 import FabricatorListClient from '../../components/fabricator/FabricatorListClient';
 
-export const revalidate = 60;
+export const revalidate = 600; // 10 minutes
 
 export const metadata = {
   title: 'Fabricators | Manufacturer Database',

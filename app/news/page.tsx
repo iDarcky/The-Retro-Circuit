@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import RetroStatusBar from '../../components/ui/RetroStatusBar';
 
+export const revalidate = 300; // 5 minutes
+
 export default function NewsPage() {
   return (
     <div className="w-full">
