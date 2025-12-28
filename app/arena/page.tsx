@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense, type Dispatch, type SetStateAction } from 'react';
+import { useState, useEffect, Suspense, useRef, type Dispatch, type SetStateAction } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { fetchConsoleList, fetchConsoleBySlug } from '../../lib/api';
@@ -10,6 +10,7 @@ import { METRICS } from '../../lib/config/arena-metrics';
 import { ComparisonRow } from '../../components/arena/ComparisonRow';
 import { ConsoleSearch } from '../../components/arena/ConsoleSearch';
 import { VariantSelector } from '../../components/arena/VariantSelector';
+import { MatchSummary } from '../../components/arena/MatchSummary';
 import RetroStatusBar from '../../components/ui/RetroStatusBar';
 
 interface SelectionState {
@@ -22,6 +23,7 @@ interface SelectionState {
 function VSModeContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const matchSummaryRef = useRef<HTMLDivElement>(null);
     const { playClick } = useSound();
 
     const [allConsoles, setAllConsoles] = useState<{name: string, slug: string}[]>([]);
@@ -133,6 +135,10 @@ function VSModeContent() {
         if (selectionA.selectedVariant && selectionB.selectedVariant) {
             playClick();
             setIsArenaMode(true);
+            // Smooth scroll to match readout on fight
+            setTimeout(() => {
+                matchSummaryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
         }
     };
 
@@ -306,31 +312,42 @@ function VSModeContent() {
             </div>
 
             {selectionA.selectedVariant && selectionB.selectedVariant && isArenaMode && (
-                <div className="bg-black/80 border border-gray-800 p-4 mb-12 animate-slideDown shadow-2xl">
-                    <div className="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
-                        <h3 className="font-pixel text-lg text-white">TALE OF THE TAPE</h3>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                            <input 
-                                type="checkbox" 
-                                checked={showDiffOnly} 
-                                onChange={() => setShowDiffOnly(!showDiffOnly)}
-                                className="accent-secondary"
-                            />
-                            <span className="font-mono text-xs text-gray-400 uppercase">Show Differences Only</span>
-                        </label>
+                <>
+                    <div ref={matchSummaryRef} className="scroll-mt-24">
+                        <MatchSummary
+                            variantA={selectionA.selectedVariant}
+                            variantB={selectionB.selectedVariant}
+                            profileA={selectionA.selectedVariant.emulation_profile}
+                            profileB={selectionB.selectedVariant.emulation_profile}
+                        />
                     </div>
-                    <div className="space-y-1">
-                        {METRICS.map(metric => (
-                            <ComparisonRow 
-                                key={metric.key} 
-                                metric={metric} 
-                                varA={selectionA.selectedVariant!} 
-                                varB={selectionB.selectedVariant!}
-                                showDiffOnly={showDiffOnly}
-                            />
-                        ))}
+
+                    <div className="bg-black/80 border border-gray-800 p-4 mb-12 animate-slideDown shadow-2xl">
+                        <div className="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
+                            <h3 className="font-pixel text-lg text-white">TALE OF THE TAPE</h3>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={showDiffOnly}
+                                    onChange={() => setShowDiffOnly(!showDiffOnly)}
+                                    className="accent-secondary"
+                                />
+                                <span className="font-mono text-xs text-gray-400 uppercase">Show Differences Only</span>
+                            </label>
+                        </div>
+                        <div className="space-y-1">
+                            {METRICS.map(metric => (
+                                <ComparisonRow
+                                    key={metric.key}
+                                    metric={metric}
+                                    varA={selectionA.selectedVariant!}
+                                    varB={selectionB.selectedVariant!}
+                                    showDiffOnly={showDiffOnly}
+                                />
+                            ))}
+                        </div>
                     </div>
-                </div>
+                </>
             )}
         </div>
         </div>
