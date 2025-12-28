@@ -14,13 +14,14 @@ type Props = {
 export async function generateMetadata(props: Props) {
     try {
         const params = await props.params;
+        const slug = decodeURIComponent(params.slug); // Ensure slug is decoded
         const supabase = await createClient();
 
         // Fetch console identity + variants for robust image fallback
         const { data } = await supabase
           .from('consoles')
           .select('name, description, image_url, variants:console_variants(image_url, is_default)')
-          .eq('slug', params.slug)
+          .eq('slug', slug)
           .single();
 
         if (!data) return { title: 'Unknown Hardware | The Retro Circuit' };
@@ -45,7 +46,7 @@ export async function generateMetadata(props: Props) {
             images: [{ url: finalImage }]
           },
           alternates: {
-            canonical: `/console/${params.slug}`,
+            canonical: `/console/${slug}`,
           },
         };
     } catch (e) {
@@ -59,6 +60,7 @@ export async function generateStaticParams() {
 
 export default async function ConsoleSpecsPage(props: Props) {
   const params = await props.params;
+  const slug = decodeURIComponent(params.slug);
 
   let consoleData = null;
   let fetchError = null;
@@ -75,7 +77,7 @@ export default async function ConsoleSpecsPage(props: Props) {
       }
 
       // Parallel Fetching using API helpers
-      const { data, error } = await fetchConsoleBySlug(params.slug, isAdmin);
+      const { data, error } = await fetchConsoleBySlug(slug, isAdmin);
       consoleData = data;
       fetchError = error;
 
@@ -96,7 +98,7 @@ export default async function ConsoleSpecsPage(props: Props) {
                         <div className="mb-2"><span className="text-red-500">ERROR:</span> {fetchError.message}</div>
                         <div className="mt-4 text-[10px] text-gray-500">
                              TIMESTAMP: {new Date().toISOString()}<br/>
-                             SLUG: {params.slug}
+                             SLUG: {slug}
                         </div>
                     </div>
                 </div>

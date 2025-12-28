@@ -12,7 +12,11 @@ function normalizeVariant(v: any): any {
 
 // Helper: Normalize Console List (Apply variant normalization and defaults)
 function normalizeConsoleList(data: any[] | null): ConsoleDetails[] {
-    return (data || []).map((item: any) => {
+    if (!data || !Array.isArray(data)) return []; // DEFENSIVE CHECK
+
+    return data.map((item: any) => {
+        if (!item) return null; // Skip invalid items
+
         const variants = (item.variants || []).map(normalizeVariant);
         item.variants = variants;
 
@@ -26,7 +30,7 @@ function normalizeConsoleList(data: any[] | null): ConsoleDetails[] {
         }
 
         return item;
-    }) as ConsoleDetails[];
+    }).filter(Boolean) as ConsoleDetails[];
 }
 
 export const fetchAllConsoles = async (includeHidden: boolean = false): Promise<ConsoleDetails[]> => {
@@ -49,14 +53,15 @@ export const fetchAllConsoles = async (includeHidden: boolean = false): Promise<
 
         if (error) {
             console.error('[API] fetchAllConsoles DB Error:', error.message);
-            throw new Error(error.message);
+            // Instead of throwing, return empty to prevent page crash
+            return [];
         }
 
         return normalizeConsoleList(data);
 
     } catch (e: any) {
         console.error('[API] Fetch All Consoles Exception:', e);
-        throw e;
+        return [];
     }
 };
 
@@ -79,7 +84,7 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
         
         if (error) {
             console.error('[API] fetchConsolesFiltered DB Error:', error.message);
-            throw error;
+            return { data: [], count: 0 };
         }
 
         let normalizedData = normalizeConsoleList(data);
@@ -135,20 +140,25 @@ export const fetchConsoleBySlug = async (slug: string, includeHidden: boolean = 
             query = query.eq('status', 'published');
         }
 
-        const { data, error } = await query.limit(1);
+        // Use maybeSingle to avoid 406/JSON errors if 0 or >1 rows
+        // But .limit(1).maybeSingle() or just .limit(1) and check length
+        // Standard .single() throws if 0 rows.
+
+        const { data, error } = await query.maybeSingle();
             
         if (error) {
             return { data: null, error: { message: error.message } };
         }
 
-        if (!data || data.length === 0) {
+        if (!data) {
             return { data: null, error: { message: "Console not found in database" } };
         }
 
-        // Normalize single item
-        const list = normalizeConsoleList(data);
-        return { data: list[0], error: null };
+        // Normalize single item (wrap in array then unwrap)
+        const list = normalizeConsoleList([data]);
+        return { data: list[0] || null, error: null };
     } catch (e: any) {
+        // Return a structured error object instead of throwing
         return { data: null, error: { message: `EXCEPTION: ${e.message}` } };
     }
 };
