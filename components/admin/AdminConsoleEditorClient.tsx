@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { ConsoleDetails, Manufacturer } from '@/lib/types';
 import { ConsoleForm } from '@/components/admin/ConsoleForm';
@@ -12,7 +12,7 @@ type EditorClientProps = {
 };
 
 export default function AdminConsoleEditorClient({ initialConsole, initialManufacturers }: EditorClientProps) {
-    const [consoleData, setConsoleData] = useState<ConsoleDetails>(initialConsole);
+    const [consoleData] = useState<ConsoleDetails>(initialConsole);
     const [error, setError] = useState<string | null>(null);
 
     return (
