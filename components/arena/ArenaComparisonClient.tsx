@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense, type Dispatch, type SetStateAction } from 'react';
+import { useState, useEffect, type Dispatch, type SetStateAction } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { fetchConsoleList, fetchConsoleBySlug } from '../../lib/api';

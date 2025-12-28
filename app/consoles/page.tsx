@@ -9,10 +9,18 @@ export const metadata = {
 };
 
 export default async function ConsoleVaultPage() {
-  const [manufacturers, allConsoles] = await Promise.all([
-      fetchManufacturers(),
-      fetchAllConsoles()
-  ]);
+  let manufacturers: any[] = [];
+  let allConsoles: any[] = [];
+
+  try {
+      [manufacturers, allConsoles] = await Promise.all([
+          fetchManufacturers(),
+          fetchAllConsoles()
+      ]);
+  } catch (error) {
+      console.warn('Build Warning: Failed to fetch console vault data. Returning empty state.', error);
+      // Fallback is empty arrays, allowing build to complete
+  }
 
   return <ConsoleVaultClient initialManufacturers={manufacturers} initialConsoles={allConsoles} />;
 }
