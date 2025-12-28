@@ -12,23 +12,27 @@ type Props = {
 };
 
 export async function generateMetadata(props: Props) {
-    const params = await props.params;
-    const supabase = await createClient();
-    const { data: profile } = await supabase
-        .from('manufacturer')
-        .select('name')
-        .eq('slug', params.slug)
-        .single();
+    try {
+        const params = await props.params;
+        const supabase = await createClient();
+        const { data: profile } = await supabase
+            .from('manufacturer')
+            .select('name')
+            .eq('slug', params.slug)
+            .single();
+
+        const titleName = profile?.name || decodeURIComponent(params.slug);
         
-    const titleName = profile?.name || decodeURIComponent(params.slug);
-    
-    return {
-        title: `${titleName} Handheld History | The Retro Circuit`,
-        description: `Explore the complete hardware archive of ${titleName}.`,
-        alternates: {
-            canonical: `/fabricators/${params.slug}`,
-        },
-    };
+        return {
+            title: `${titleName} Handheld History | The Retro Circuit`,
+            description: `Explore the complete hardware archive of ${titleName}.`,
+            alternates: {
+                canonical: `/fabricators/${params.slug}`,
+            },
+        };
+    } catch (e) {
+        return { title: 'Fabricator Archive | The Retro Circuit' };
+    }
 }
 
 export async function generateStaticParams() {
@@ -37,51 +41,63 @@ export async function generateStaticParams() {
 
 export default async function FabricatorDetailPage(props: Props) {
     const params = await props.params;
-    const supabase = await createClient();
     const slug = params.slug;
 
-    // 1. Fetch Profile
-    const { data: profile, error: fetchError } = await supabase
-        .from('manufacturer')
-        .select('*')
-        .eq('slug', slug)
-        .single();
-
-    // 2. Fetch Consoles (Only if profile loaded)
+    let profile = null;
     let consoles: ConsoleDetails[] = [];
-    if (profile) {
-        // Query by name first to ensure we get everything, regardless of NULL release years in parent table
-        const { data, error } = await supabase
-            .from('consoles')
-            .select('*, manufacturer:manufacturer(*), variants:console_variants(*)')
-            .eq('manufacturer_id', profile.id)
-            .order('name', { ascending: true });
+    let fetchError: any = null;
+
+    try {
+        const supabase = await createClient();
+
+        // 1. Fetch Profile
+        const { data: manuProfile, error: manuError } = await supabase
+            .from('manufacturer')
+            .select('*')
+            .eq('slug', slug)
+            .single();
         
-        if (error) {
-            console.error('[FabricatorPage] Console Fetch Error:', error.message);
+        if (manuError) throw manuError;
+        profile = manuProfile;
+
+        // 2. Fetch Consoles (Only if profile loaded)
+        if (profile) {
+            // Query by name first to ensure we get everything, regardless of NULL release years in parent table
+            const { data, error } = await supabase
+                .from('consoles')
+                .select('*, manufacturer:manufacturer(*), variants:console_variants(*)')
+                .eq('manufacturer_id', profile.id)
+                .order('name', { ascending: true });
+
+            if (error) {
+                console.error('[FabricatorPage] Console Fetch Error:', error.message);
+            }
+
+            // Normalize & Backfill data from variants
+            consoles = ((data as any) || []).map((c: any) => {
+                 const variants = c.variants || [];
+                 const defaultVar = variants.find((v: any) => v.is_default) || variants[0];
+                 // Polyfill image if missing
+                 if (!c.image_url && defaultVar?.image_url) {
+                     c.image_url = defaultVar.image_url;
+                 }
+                 if (!c.release_date && defaultVar?.release_date) {
+                     c.release_date = defaultVar.release_date;
+                 }
+                 c.specs = defaultVar;
+                 return c;
+            });
+
+            // Manual Sort: Newest First (handling TBA/Nulls at top)
+            consoles.sort((a, b) => {
+                 const dateA = a.specs?.release_date ? new Date(a.specs.release_date).getTime() : 0;
+                 const dateB = b.specs?.release_date ? new Date(b.specs.release_date).getTime() : 0;
+                 return dateB - dateA;
+            });
         }
-
-        // Normalize & Backfill data from variants
-        consoles = ((data as any) || []).map((c: any) => {
-             const variants = c.variants || [];
-             const defaultVar = variants.find((v: any) => v.is_default) || variants[0];
-             // Polyfill image if missing
-             if (!c.image_url && defaultVar?.image_url) {
-                 c.image_url = defaultVar.image_url;
-             }
-             if (!c.release_date && defaultVar?.release_date) {
-                 c.release_date = defaultVar.release_date;
-             }
-             c.specs = defaultVar;
-             return c;
-        });
-
-        // Manual Sort: Newest First (handling TBA/Nulls at top)
-        consoles.sort((a, b) => {
-             const dateA = a.specs?.release_date ? new Date(a.specs.release_date).getTime() : 0;
-             const dateB = b.specs?.release_date ? new Date(b.specs.release_date).getTime() : 0;
-             return dateB - dateA;
-        });
+    } catch (err: any) {
+        console.error("[FabricatorDetailPage] Error:", err);
+        fetchError = err;
     }
 
     if (!profile) {
@@ -98,7 +114,7 @@ export default async function FabricatorDetailPage(props: Props) {
                         </div>
                     </div>
                 </div>
-                 <Link href="/console">
+                 <Link href="/fabricators">
                     <Button variant="secondary">RETURN TO VAULT</Button>
                 </Link>
              </div>
