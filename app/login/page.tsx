@@ -2,15 +2,11 @@
 
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { retroAuth } from '../../lib/auth';
 import { supabase } from '../../lib/supabase/singleton';
 import Button from '../../components/ui/Button';
-import AvatarSelector from '../../components/ui/AvatarSelector';
-import { RETRO_AVATARS } from '../../data/avatars';
-import type { User } from '@supabase/supabase-js';
 
-type AuthMode = 'LOGIN' | 'SIGNUP' | 'RECOVERY' | 'UPDATE_PASSWORD' | 'PROFILE';
+type AuthMode = 'LOGIN' | 'SIGNUP' | 'RECOVERY' | 'UPDATE_PASSWORD';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -20,25 +16,16 @@ export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
-    const [user, setUser] = useState<User | null>(null);
-    const [isAdmin, setIsAdmin] = useState(false);
-    const [avatarId, setAvatarId] = useState('pilot');
     
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'error' | 'success', text: string } | null>(null);
-    const [editingAvatar, setEditingAvatar] = useState(false);
 
     useEffect(() => {
+        // If already logged in, redirect to profile
         const checkUser = async () => {
             const currentUser = await retroAuth.getUser();
             if (currentUser) {
-                setUser(currentUser);
-                setMode('PROFILE');
-                setAvatarId(currentUser.user_metadata?.avatar_id || 'pilot');
-                
-                // Check Admin
-                const adminStatus = await retroAuth.isAdmin();
-                setIsAdmin(adminStatus);
+                router.replace('/profile');
             }
         };
         checkUser();
@@ -54,20 +41,12 @@ export default function LoginPage() {
                 setMode('UPDATE_PASSWORD');
                 setMessage({ type: 'success', text: 'IDENTITY VERIFIED. ENTER NEW PASSCODE.' });
             } else if (event === "SIGNED_IN" && session) {
-                setUser(session.user);
-                setAvatarId(session.user.user_metadata?.avatar_id || 'pilot');
-                setMode('PROFILE');
-                
-                const adminStatus = await retroAuth.isAdmin();
-                setIsAdmin(adminStatus);
-            } else if (event === "SIGNED_OUT") {
-                setUser(null);
-                setMode('LOGIN');
-                setIsAdmin(false);
+                 // Redirect to profile on sign in
+                 router.replace('/profile');
             }
         });
         return () => subscription.unsubscribe();
-    }, []);
+    }, [router]);
 
     const handleAuth = async (e: FormEvent) => {
         e.preventDefault();
@@ -84,15 +63,10 @@ export default function LoginPage() {
                 const { error } = await retroAuth.signIn(email, password);
                 if (error) throw error;
 
-                // 2. Refresh Admin Status but DO NOT REDIRECT
-                const adminCheck = await retroAuth.isAdmin();
-                setIsAdmin(adminCheck);
+                // 2. Success - Redirect handled by onAuthStateChange listener or manual push
+                setMessage({ type: 'success', text: 'ACCESS GRANTED. INITIALIZING...' });
+                router.push('/profile');
                 
-                // 3. Set Success Message
-                setMessage({ type: 'success', text: 'ACCESS GRANTED. INITIALIZING PROFILE...' });
-                
-                // Mode switch happens automatically via onAuthStateChange listener
-
             } else if (mode === 'RECOVERY') {
                 const { error } = await retroAuth.resetPassword(email);
                 if (error) throw error;
@@ -101,7 +75,7 @@ export default function LoginPage() {
                 const { error } = await retroAuth.updateUserPassword(password);
                 if (error) throw error;
                 setMessage({ type: 'success', text: 'PASSCODE UPDATED. REDIRECTING...' });
-                setTimeout(() => setMode('PROFILE'), 2000);
+                setTimeout(() => router.push('/profile'), 2000);
             }
         } catch (err: any) {
             console.error(err);
@@ -110,61 +84,6 @@ export default function LoginPage() {
             setLoading(false);
         }
     };
-
-    const handleLogout = async () => {
-        await retroAuth.signOut();
-        router.push('/');
-    };
-
-    const handleAvatarUpdate = async (id: string) => {
-        setAvatarId(id);
-        await retroAuth.updateAvatar(id);
-        setEditingAvatar(false);
-    };
-
-    if (mode === 'PROFILE' && user) {
-        const CurrentAvatar = RETRO_AVATARS.find(a => a.id === avatarId)?.svg || RETRO_AVATARS[0].svg;
-
-        return (
-            <div className="w-full max-w-4xl mx-auto p-4 animate-fadeIn">
-                <div className="flex justify-center">
-                    {/* User Card */}
-                    <div className="bg-bg-primary border-2 border-border-normal p-6 text-center h-fit w-full max-w-md">
-                        <div className="relative inline-block mb-4">
-                            <div className="w-24 h-24 border-2 border-secondary rounded-full flex items-center justify-center bg-secondary/10 mx-auto shadow-[0_0_15px_rgba(0,255,157,0.3)]">
-                                <CurrentAvatar className="w-16 h-16 text-secondary" />
-                            </div>
-                            <button 
-                                onClick={() => setEditingAvatar(!editingAvatar)}
-                                className="absolute bottom-0 right-0 bg-primary text-black text-xs px-2 py-1 font-bold border border-white hover:bg-white transition-colors"
-                            >
-                                EDIT
-                            </button>
-                        </div>
-                        
-                        {editingAvatar && (
-                            <div className="mb-4 animate-fadeIn bg-black p-2 border border-border-normal">
-                                <AvatarSelector selectedId={avatarId} onSelect={handleAvatarUpdate} />
-                            </div>
-                        )}
-
-                        <h2 className="text-xl font-pixel text-white mb-1 truncate px-2">{user.user_metadata?.username || 'User'}</h2>
-                        <div className="text-xs font-mono text-gray-500 mb-6 truncate px-2">{user.email}</div>
-                        
-                        {isAdmin && (
-                            <Link href="/admin">
-                                <Button variant="secondary" className="w-full text-xs mb-3 border-accent text-accent hover:bg-accent hover:text-white">
-                                    ACCESS ADMIN PANEL
-                                </Button>
-                            </Link>
-                        )}
-
-                        <Button onClick={handleLogout} variant="danger" className="w-full text-xs">DISCONNECT</Button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="w-full max-w-md mx-auto p-4 min-h-[60vh] flex flex-col justify-center">
