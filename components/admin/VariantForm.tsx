@@ -90,9 +90,10 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             }
 
         } else if (preSelectedConsoleId) {
+            // Force update formData when preSelectedConsoleId changes
             setFormData(prev => ({ ...prev, console_id: preSelectedConsoleId }));
         }
-    }, [initialData, preSelectedConsoleId]);
+    }, [initialData, preSelectedConsoleId]); // Dependency array handles prop changes
 
     const handleRamChange = (newVal: string | number, newUnit: 'GB' | 'MB') => {
         setRamInput({ value: newVal, unit: newUnit });
@@ -520,4 +521,4 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             </form>
         </div>
     );
-};
+}
