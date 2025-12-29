@@ -130,10 +130,9 @@ export default function ConsoleIdentitySection({
                         &lt; BACK TO CONSOLE VAULT
                     </Link>
 
-                    {/* HERO ROW: Icon + Text Column */}
-                    <div className="flex flex-row items-end gap-8">
-                        {/* Icon (64x64) */}
-                        <div className="shrink-0 mb-2">
+                    {/* ROW 1: Icon + Title */}
+                    <div className="flex items-center gap-6">
+                        <div className="shrink-0">
                             {currentImage ? (
                                 <img
                                     src={currentImage}
@@ -144,59 +143,54 @@ export default function ConsoleIdentitySection({
                                 <div className="w-[64px] h-[64px] bg-gray-800 rounded-full" />
                             )}
                         </div>
+                        <h1
+                            className="font-pixel text-[55px] text-white leading-none tracking-tight uppercase"
+                            style={{
+                                textShadow: '4px 4px 0px rgba(0, 255, 157, 0.5)',
+                            }}
+                        >
+                            <span className="mr-4 text-white">{fabName}</span>
+                            <span>{console.name}</span>
+                        </h1>
+                    </div>
 
-                        {/* Text Column */}
-                        <div className="flex flex-col gap-4 flex-1">
-                            {/* Title */}
-                            <h1
-                                className="font-pixel text-[55px] text-white leading-none tracking-tight uppercase"
-                                style={{
-                                    textShadow: '4px 4px 0px rgba(0, 255, 157, 0.5)',
-                                }}
-                            >
-                                <span className="mr-4 text-white">{fabName}</span>
-                                <span>{console.name}</span>
-                            </h1>
+                    {/* ROW 2: Metadata */}
+                    <div className="flex items-center gap-3 font-mono text-sm md:text-base text-gray-400 uppercase tracking-widest">
+                        {manufacturer ? (
+                            <Link href={`/fabricators/${manufacturer.slug}`} className="text-white hover:text-secondary transition-colors border-b border-transparent hover:border-secondary">
+                                {fabName}
+                            </Link>
+                        ) : (
+                            <span className="text-white">{fabName}</span>
+                        )}
+                        <span className="text-gray-600 px-1">{'//'}</span>
+                        <span>{formFactor}</span>
+                        <span className="text-gray-600 px-1">{'//'}</span>
+                        <span>{deviceCategory}</span>
+                        <span className="text-gray-600 px-1">{'//'}</span>
+                        <span className="text-accent">{currentYear}</span>
+                    </div>
 
-                            {/* Metadata */}
-                            <div className="flex items-center gap-3 font-mono text-sm md:text-base text-gray-400 uppercase tracking-widest">
-                                {manufacturer ? (
-                                    <Link href={`/fabricators/${manufacturer.slug}`} className="text-white hover:text-secondary transition-colors border-b border-transparent hover:border-secondary">
-                                        {fabName}
-                                    </Link>
-                                ) : (
-                                    <span className="text-white">{fabName}</span>
-                                )}
-                                <span className="text-gray-600 px-1">{'//'}</span>
-                                <span>{formFactor}</span>
-                                <span className="text-gray-600 px-1">{'//'}</span>
-                                <span>{deviceCategory}</span>
-                                <span className="text-gray-600 px-1">{'//'}</span>
-                                <span className="text-accent">{currentYear}</span>
-                            </div>
+                    {/* ROW 3: Controls & Jump Links */}
+                    <div className="flex flex-wrap items-center gap-6 mt-2">
+                        <VariantDropdown />
 
-                            {/* Controls (Above Divider) */}
-                            <div className="flex flex-wrap items-center gap-6 mt-2">
-                                <VariantDropdown />
+                        {/* Divider if Variants exist */}
+                        {variants.length > 1 && <div className="h-6 w-px bg-white/10 mx-2 hidden md:block"></div>}
 
-                                {/* Divider if Variants exist */}
-                                {variants.length > 1 && <div className="h-6 w-px bg-white/10 mx-2 hidden md:block"></div>}
+                        <div className="flex-1 flex items-center justify-between">
+                            <JumpLinks />
 
-                                <div className="flex-1 flex items-center justify-between">
-                                    <JumpLinks />
-
-                                    <div className="flex items-center gap-4">
-                                        <CompareButton />
-                                        <Button variant="secondary" className="text-xs px-6 py-2 border-gray-600 text-gray-400 hover:text-white hover:border-white">
-                                            SHARE
-                                        </Button>
-                                    </div>
-                                </div>
+                            <div className="flex items-center gap-4">
+                                <CompareButton />
+                                <Button variant="secondary" className="text-xs px-6 py-2 border-gray-600 text-gray-400 hover:text-white hover:border-white">
+                                    SHARE
+                                </Button>
                             </div>
                         </div>
                     </div>
 
-                    {/* CUSTOM DIVIDER (Full Width, outside the text flex) */}
+                    {/* CUSTOM DIVIDER (Full Width) */}
                     <div className="w-full flex flex-col mt-4">
                         <div className="w-full h-[2px] bg-[#2F323C]"></div>
                         <div className="w-full h-[2px] bg-[#2E303A]"></div>
