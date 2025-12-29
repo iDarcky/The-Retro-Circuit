@@ -65,6 +65,33 @@ export const fetchAllConsoles = async (includeHidden: boolean = false): Promise<
     }
 };
 
+export const fetchVaultConsoles = async (): Promise<ConsoleDetails[]> => {
+    try {
+        const supabase = createClient();
+        // Optimized query: Excludes heavy 'emulation_profiles' and 'variant_input_profile'
+        // Only fetches core console data, manufacturer, and variant specs needed for list view filtering
+        const { data, error } = await supabase
+            .from('consoles')
+            .select(`
+                *,
+                manufacturer:manufacturer(*),
+                variants:console_variants(*)
+            `)
+            .eq('status', 'published')
+            .order('name', { ascending: true });
+
+        if (error) {
+            console.error('[API] fetchVaultConsoles DB Error:', error.message);
+            return [];
+        }
+
+        return normalizeConsoleList(data);
+    } catch (e: any) {
+        console.error('[API] Fetch Vault Consoles Exception:', e);
+        return [];
+    }
+};
+
 export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: number = 1, limit: number = 20): Promise<{ data: ConsoleDetails[], count: number }> => {
     try {
         const supabase = createClient();
