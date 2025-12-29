@@ -43,8 +43,8 @@ export default function ConsoleIdentitySection({
             },
             {
                 threshold: [0],
-                // Root margin to trigger swap after scrolling past hero
-                rootMargin: '-200px 0px 0px 0px',
+                // Adjusted rootMargin to trigger transition after scrolling past the initial header block
+                rootMargin: '-300px 0px 0px 0px',
             }
         );
 
@@ -151,10 +151,10 @@ export default function ConsoleIdentitySection({
                                 <img
                                     src={currentImage}
                                     alt="Icon"
-                                    className="w-[64px] h-[64px] object-contain drop-shadow-lg"
+                                    className="w-[128px] h-[128px] object-contain drop-shadow-lg"
                                 />
                             ) : (
-                                <div className="w-[64px] h-[64px] bg-gray-800 rounded-full" />
+                                <div className="w-[128px] h-[128px] bg-gray-800 rounded-full" />
                             )}
                         </div>
                         <h1
@@ -168,8 +168,8 @@ export default function ConsoleIdentitySection({
                         </h1>
                     </div>
 
-                    {/* ROW 2: Metadata (Left Aligned, No Indent) */}
-                    <div className="flex items-center gap-3 font-mono text-sm md:text-base text-gray-400 uppercase tracking-widest">
+                    {/* ROW 2: Metadata */}
+                    <div className="flex items-center gap-3 font-mono text-sm md:text-base text-gray-400 uppercase tracking-widest pl-[160px]">
                         {manufacturer ? (
                             <Link href={`/fabricators/${manufacturer.slug}`} className="text-white hover:text-secondary transition-colors border-b border-transparent hover:border-secondary">
                                 {fabName}
@@ -185,8 +185,8 @@ export default function ConsoleIdentitySection({
                         <span className="text-accent">{currentYear}</span>
                     </div>
 
-                    {/* ROW 3: Controls & Jump Links (Left Aligned, Above Divider) */}
-                    <div className="flex flex-wrap items-center gap-6">
+                    {/* ROW 3: Controls & Jump Links (Above Divider) */}
+                    <div className="flex flex-wrap items-center gap-6 pl-[160px]">
                         <VariantDropdown />
 
                         {/* Divider if Variants exist */}
@@ -205,7 +205,7 @@ export default function ConsoleIdentitySection({
                     </div>
 
                     {/* CUSTOM DIVIDER (Full Width) */}
-                    <div className="w-full flex flex-col mt-2">
+                    <div className="w-full flex flex-col mt-2 pl-[160px]">
                         <div className="w-full h-[2px] bg-[#2F323C]"></div>
                         <div className="w-full h-[2px] bg-[#2E303A]"></div>
                     </div>
@@ -214,45 +214,33 @@ export default function ConsoleIdentitySection({
             </div>
 
             {/* --- STATE B: STICKY COMPACT (Fixed Overlay) --- */}
-            {/* Sticks below the global header (approx 57px-64px) */}
             <div
                 className={`
                     fixed top-[57px] md:top-[64px] left-0 w-full z-50 bg-black/95 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.5)] py-2 transition-transform duration-300 ease-out
                     ${isSticky ? 'translate-y-0' : '-translate-y-[200%]'}
                 `}
             >
-                <div className="w-full px-4 md:px-8 flex items-center justify-between gap-4">
+                <div className="w-full px-4 md:px-8 flex items-center gap-8">
 
-                    {/* Left: Identity */}
-                    <div className="flex items-center gap-4 min-w-0">
-                        <div className="shrink-0">
-                            {currentImage && <img src={currentImage} alt="Icon" className="w-8 h-8 object-contain" />}
-                        </div>
+                    {/* Name */}
+                    <div className="shrink-0">
                         <h2
                             className="font-pixel text-[30px] text-white truncate uppercase"
                             style={{ textShadow: '2px 2px 0px rgba(0, 255, 157, 0.5)' }}
                         >
-                            <span className="hidden md:inline opacity-70 mr-2">{fabName}</span>
+                            <span className="hidden md:inline mr-2">{fabName}</span>
                             {console.name}
                         </h2>
                     </div>
 
-                    {/* Middle: Controls + Nav */}
-                    <div className="flex items-center gap-4 md:gap-8 overflow-x-auto no-scrollbar">
-                        <div className="shrink-0">
-                            <VariantDropdown compact />
-                        </div>
-
-                        <div className="hidden lg:block h-6 w-px bg-white/10"></div>
-
-                        <div className="hidden md:block">
-                            <JumpLinks compact />
-                        </div>
+                    {/* Variant Selector */}
+                    <div className="shrink-0">
+                        <VariantDropdown compact />
                     </div>
 
-                    {/* Right: Compare */}
-                    <div className="shrink-0">
-                        <CompareButton compact />
+                    {/* Jump Links (Fill remaining space) */}
+                    <div className="flex-1 hidden md:flex">
+                        <JumpLinks compact />
                     </div>
 
                 </div>
