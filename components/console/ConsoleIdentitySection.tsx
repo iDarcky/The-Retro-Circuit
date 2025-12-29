@@ -44,8 +44,8 @@ export default function ConsoleIdentitySection({
             },
             {
                 threshold: [0],
-                // Adjusted rootMargin for the taller header (128px icon)
-                rootMargin: '-300px 0px 0px 0px',
+                // Reverted rootMargin for standard height header (approx 200px)
+                rootMargin: '-200px 0px 0px 0px',
             }
         );
 
@@ -138,74 +138,71 @@ export default function ConsoleIdentitySection({
             {/* HEADER WRAPPER (State 1) - Normal Flow */}
             <div className="relative w-full">
 
-                <div className={`w-full px-4 md:px-8 pt-8 pb-12 flex flex-col transition-opacity duration-300 ${isSticky ? 'opacity-0' : 'opacity-100'}`}>
+                <div className={`w-full px-4 md:px-8 pt-8 pb-8 flex flex-col gap-6 transition-opacity duration-300 ${isSticky ? 'opacity-0' : 'opacity-100'}`}>
 
                     {/* BACK LINK */}
-                    <Link href="/consoles" className="text-primary font-mono text-xs mb-4 hover:text-white transition-colors inline-block w-fit">
+                    <Link href="/consoles" className="text-primary font-mono text-xs hover:text-white transition-colors inline-block w-fit">
                         &lt; BACK TO CONSOLE VAULT
                     </Link>
 
-                    <div className="flex flex-col gap-6">
-                        {/* ROW 1: Icon + Title */}
-                        <div className="flex items-center gap-8">
-                            <div className="shrink-0">
-                                {currentImage ? (
-                                    <img
-                                        src={currentImage}
-                                        alt="Icon"
-                                        className="w-[128px] h-[128px] object-contain drop-shadow-lg"
-                                    />
-                                ) : (
-                                    <div className="w-[128px] h-[128px] bg-gray-800 rounded-full" />
-                                )}
-                            </div>
-                            <div className="flex flex-col gap-2">
-                                <h1
-                                    className="font-pixel text-4xl md:text-6xl text-white leading-none tracking-tight uppercase drop-shadow-[4px_4px_0_rgba(0,255,157,0.5)]"
-                                >
-                                    {console.name}
-                                </h1>
-                                {/* Metadata moved here to align with text if desired, but sticking to requested row layout below */}
-                            </div>
+                    {/* ROW 1: Icon + Title */}
+                    <div className="flex items-center gap-6">
+                        <div className="shrink-0">
+                            {currentImage ? (
+                                <img
+                                    src={currentImage}
+                                    alt="Icon"
+                                    className="w-[64px] h-[64px] object-contain drop-shadow-lg"
+                                />
+                            ) : (
+                                <div className="w-[64px] h-[64px] bg-gray-800 rounded-full" />
+                            )}
                         </div>
+                        <h1
+                            className="font-pixel text-3xl md:text-5xl lg:text-6xl text-white leading-none tracking-tight uppercase"
+                            style={{
+                                textShadow: '4px 4px 0px #00FF88', // Green Hard Drop Shadow
+                            }}
+                        >
+                            <span className="opacity-70 mr-4">{fabName}</span>
+                            <span>{console.name}</span>
+                        </h1>
+                    </div>
 
-                        {/* ROW 2: Metadata (Aligned with Text start - 128px icon + 32px gap = 160px approx offset?)
-                            Actually, let's keep it below.
-                        */}
-                        <div className="flex items-center gap-3 font-mono text-sm md:text-base text-gray-400 uppercase tracking-widest pl-0 md:pl-[160px]">
-                            <span className="text-white">{fabName}</span>
-                            <span className="text-gray-600 px-1">{'//'}</span>
-                            <span>{formFactor}</span>
-                            <span className="text-gray-600 px-1">{'//'}</span>
-                            <span>{deviceCategory}</span>
-                            <span className="text-gray-600 px-1">{'//'}</span>
-                            <span className="text-accent">{currentYear}</span>
+                    {/* ROW 2: Metadata */}
+                    <div className="flex items-center gap-3 font-mono text-sm md:text-base text-gray-400 uppercase tracking-widest pl-[88px]">
+                        <span className="text-white">{fabName}</span>
+                        <span className="text-gray-600 px-1">{'//'}</span>
+                        <span>{formFactor}</span>
+                        <span className="text-gray-600 px-1">{'//'}</span>
+                        <span>{deviceCategory}</span>
+                        <span className="text-gray-600 px-1">{'//'}</span>
+                        <span className="text-accent">{currentYear}</span>
+                    </div>
+
+                    {/* ROW 3: Controls & Jump Links (Merged, Moved ABOVE divider) */}
+                    <div className="flex flex-wrap items-center gap-6 pl-[88px]">
+                        <VariantDropdown />
+
+                        {/* Divider if Variants exist */}
+                        {variants.length > 1 && <div className="h-6 w-px bg-white/10 mx-2 hidden md:block"></div>}
+
+                        <div className="flex-1 flex items-center justify-between">
+                             <JumpLinks />
+
+                             <div className="flex items-center gap-4">
+                                <CompareButton />
+                                <Button variant="secondary" className="text-xs px-6 py-2 border-gray-600 text-gray-400 hover:text-white hover:border-white">
+                                    SHARE
+                                </Button>
+                             </div>
                         </div>
+                    </div>
 
-                        {/* CUSTOM DIVIDER */}
-                        <div className="w-full flex flex-col mt-4 mb-4">
-                            <div className="w-full h-[2px] bg-[#2F323C]"></div>
-                            <div className="w-full h-[2px] bg-[#2E303A]"></div>
-                        </div>
-
-                        {/* ROW 3: Controls & Jump Links (Merged) */}
-                        <div className="flex flex-wrap items-center gap-6 pl-0 md:pl-[160px]">
-                            <VariantDropdown />
-
-                            {/* Divider if Variants exist */}
-                            {variants.length > 1 && <div className="h-6 w-px bg-white/10 mx-2 hidden md:block"></div>}
-
-                            <div className="flex-1 flex items-center justify-between">
-                                 <JumpLinks />
-
-                                 <div className="flex items-center gap-4">
-                                    <CompareButton />
-                                    <Button variant="secondary" className="text-xs px-6 py-2 border-gray-600 text-gray-400 hover:text-white hover:border-white">
-                                        SHARE
-                                    </Button>
-                                 </div>
-                            </div>
-                        </div>
+                    {/* CUSTOM DIVIDER (Moved to Bottom) */}
+                    <div className="w-full flex flex-col mt-2 pl-[88px]">
+                        <div className="w-full h-[2px] bg-[#2F323C]"></div>
+                        <div className="w-full h-[2px] bg-[#2E303A]"></div>
                     </div>
 
                 </div>
@@ -226,7 +223,10 @@ export default function ConsoleIdentitySection({
                         <div className="shrink-0">
                             {currentImage && <img src={currentImage} alt="Icon" className="w-8 h-8 object-contain" />}
                         </div>
-                        <h2 className="font-pixel text-sm md:text-lg text-white truncate uppercase drop-shadow-[2px_2px_0_rgba(0,255,157,0.5)]">
+                        <h2
+                            className="font-pixel text-sm md:text-lg text-white truncate uppercase"
+                            style={{ textShadow: '1px 1px 0px #00FF88' }}
+                        >
                             <span className="hidden md:inline opacity-70 mr-2">{fabName}</span>
                             {console.name}
                         </h2>
