@@ -44,8 +44,8 @@ export default function ConsoleIdentitySection({
             },
             {
                 threshold: [0],
-                // Adjust rootMargin to trigger transition after scrolling past the initial header block
-                rootMargin: '-150px 0px 0px 0px',
+                // Trigger after scrolling past the hero section (approx 200px)
+                rootMargin: '-200px 0px 0px 0px',
             }
         );
 
@@ -98,7 +98,7 @@ export default function ConsoleIdentitySection({
     };
 
     const JumpLinks = ({ compact = false }: { compact?: boolean }) => (
-        <div className={`flex items-center ${compact ? 'gap-2' : 'gap-4'}`}>
+        <div className={`flex items-center ${compact ? 'gap-4' : 'gap-6'}`}>
             {!compact && <span className="font-mono text-xs text-gray-500 uppercase tracking-widest">[ JUMP TO ] :</span>}
             {['Analysis', 'Emulation', 'Tech', 'Buy'].map((link) => (
                 <button
@@ -135,7 +135,7 @@ export default function ConsoleIdentitySection({
             {/* Sentinel for Scroll Detection */}
             <div ref={sentinelRef} className="absolute top-0 left-0 w-full h-[1px] pointer-events-none opacity-0" />
 
-            {/* HEADER WRAPPER (State 1) - Normal Flow, Transparent Background */}
+            {/* HEADER WRAPPER (State 1) - Normal Flow */}
             <div className="relative w-full border-b border-white/10">
 
                 <div className={`w-full px-4 md:px-8 py-8 md:py-12 flex flex-col gap-6 transition-opacity duration-300 ${isSticky ? 'opacity-0' : 'opacity-100'}`}>
@@ -154,13 +154,9 @@ export default function ConsoleIdentitySection({
                             )}
                         </div>
                         <h1
-                            className="font-pixel text-3xl md:text-5xl lg:text-6xl text-white leading-none tracking-tight uppercase"
-                            style={{
-                                textShadow: '4px 4px 0px #00FF88', // Green Hard Drop Shadow
-                            }}
+                            className="font-pixel text-4xl md:text-6xl text-white leading-none tracking-tight uppercase drop-shadow-[4px_4px_0_rgba(0,255,157,0.5)]"
                         >
-                            <span className="opacity-70 mr-4">{fabName}</span>
-                            <span>{console.name}</span>
+                            {fabName} {console.name}
                         </h1>
                     </div>
 
@@ -175,6 +171,9 @@ export default function ConsoleIdentitySection({
                         <span className="text-accent">{currentYear}</span>
                     </div>
 
+                    {/* Divider Bar (State 1 only) */}
+                    <div className="w-full h-px bg-white/10 mt-2 pl-[88px]"></div>
+
                     {/* ROW 3: Controls & Jump Links (Merged) */}
                     <div className="flex flex-wrap items-center gap-6 pl-[88px] mt-2">
                         <VariantDropdown />
@@ -182,14 +181,16 @@ export default function ConsoleIdentitySection({
                         {/* Divider if Variants exist */}
                         {variants.length > 1 && <div className="h-6 w-px bg-white/10 mx-2 hidden md:block"></div>}
 
-                        <JumpLinks />
+                        <div className="flex-1 flex items-center justify-between">
+                             <JumpLinks />
 
-                        <div className="flex-1"></div> {/* Spacer */}
-
-                        <CompareButton />
-                        <Button variant="secondary" className="text-xs px-6 py-2 border-gray-600 text-gray-400 hover:text-white hover:border-white">
-                            SHARE
-                        </Button>
+                             <div className="flex items-center gap-4">
+                                <CompareButton />
+                                <Button variant="secondary" className="text-xs px-6 py-2 border-gray-600 text-gray-400 hover:text-white hover:border-white">
+                                    SHARE
+                                </Button>
+                             </div>
+                        </div>
                     </div>
 
                 </div>
@@ -210,10 +211,7 @@ export default function ConsoleIdentitySection({
                         <div className="shrink-0">
                             {currentImage && <img src={currentImage} alt="Icon" className="w-8 h-8 object-contain" />}
                         </div>
-                        <h2
-                            className="font-pixel text-sm md:text-lg text-white truncate uppercase"
-                            style={{ textShadow: '1px 1px 0px #00FF88' }}
-                        >
+                        <h2 className="font-pixel text-sm md:text-lg text-white truncate uppercase drop-shadow-[2px_2px_0_rgba(0,255,157,0.5)]">
                             <span className="hidden md:inline opacity-70 mr-2">{fabName}</span>
                             {console.name}
                         </h2>
