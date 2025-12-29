@@ -7,6 +7,9 @@ function normalizeVariant(v: any): any {
     if (Array.isArray(v.variant_input_profile)) {
         v.variant_input_profile = v.variant_input_profile[0] || null;
     }
+    if (Array.isArray(v.emulation_profiles)) {
+        v.emulation_profile = v.emulation_profiles[0] || null;
+    }
     return v;
 }
 
@@ -204,7 +207,7 @@ export const getVariantsByConsole = async (consoleId: string): Promise<ConsoleVa
         const supabase = createClient();
         const { data, error } = await supabase
             .from('console_variants')
-            .select('*, variant_input_profile(*)')
+            .select('*, variant_input_profile(*), emulation_profiles(*)')
             .eq('console_id', consoleId)
             .order('is_default', { ascending: false });
         if (error) throw error;
@@ -282,7 +285,7 @@ export const updateConsole = async (
 export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>): Promise<{ success: boolean, message?: string }> => {
     try {
         const supabase = createClient();
-        const { variant_input_profile, ...mainVariantData } = variantData;
+        const { variant_input_profile, emulation_profile, ...mainVariantData } = variantData;
 
         const { data: newVariant, error: variantError } = await supabase
             .from('console_variants')
@@ -303,6 +306,24 @@ export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>)
             if (profileError) {
                 console.error("Input Profile Insert Failed:", profileError);
                 return { success: true, message: "Variant saved, but Input Profile failed: " + profileError.message };
+            }
+        }
+
+        if (emulation_profile) {
+            // Emulation profiles might be auto-created by DB triggers, so we use upsert
+            const { id, ...emuDataWithoutId } = emulation_profile as any;
+            const emuPayload = {
+                ...emuDataWithoutId,
+                variant_id: newVariant.id
+            };
+
+            const { error: emuError } = await supabase
+                .from('emulation_profiles')
+                .upsert(emuPayload, { onConflict: 'variant_id' });
+
+            if (emuError) {
+                console.error("Emulation Profile Copy Failed:", emuError);
+                // Non-fatal error, we still return success for the variant
             }
         }
 
