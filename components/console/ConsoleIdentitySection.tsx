@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ConsoleDetails, ConsoleVariant, Manufacturer } from '../../lib/types';
 import { getConsoleImage } from '../../lib/utils';
@@ -23,7 +23,6 @@ export default function ConsoleIdentitySection({
     onVariantChange
 }: ConsoleIdentitySectionProps) {
     const [isSticky, setIsSticky] = useState(false);
-    const sentinelRef = useRef<HTMLDivElement>(null);
 
     const currentVariant = variants.find(v => v.id === selectedVariantId) || null;
     const currentImage = getConsoleImage({ console, variant: currentVariant });
@@ -36,23 +35,13 @@ export default function ConsoleIdentitySection({
     const deviceCategory = console.device_category || 'SYSTEM';
 
     useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                // Trigger sticky state when the sentinel (top of the section) leaves the viewport upwards.
-                setIsSticky(!entry.isIntersecting && entry.boundingClientRect.top < 0);
-            },
-            {
-                threshold: [0],
-                // Adjusted rootMargin to trigger transition after scrolling past the initial header block
-                rootMargin: '-300px 0px 0px 0px',
-            }
-        );
+        const handleScroll = () => {
+            // Trigger sticky state after scrolling past the header (approx 300px)
+            setIsSticky(window.scrollY > 300);
+        };
 
-        if (sentinelRef.current) {
-            observer.observe(sentinelRef.current);
-        }
-
-        return () => observer.disconnect();
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
     const scrollToSection = (id: string) => {
@@ -131,22 +120,20 @@ export default function ConsoleIdentitySection({
 
     return (
         <>
-            {/* Sentinel for Scroll Detection */}
-            <div ref={sentinelRef} className="absolute top-0 left-0 w-full h-[1px] pointer-events-none opacity-0" />
-
             {/* HEADER WRAPPER (State 1) - Normal Flow */}
             <div className="relative w-full">
 
-                <div className={`w-full px-4 md:px-8 pt-8 pb-8 flex flex-col gap-6 transition-opacity duration-300 ${isSticky ? 'opacity-0' : 'opacity-100'}`}>
+                <div className={`w-full px-4 md:px-8 pt-8 pb-4 flex flex-col gap-6 transition-opacity duration-300 ${isSticky ? 'opacity-0' : 'opacity-100'}`}>
 
                     {/* BACK LINK */}
                     <Link href="/consoles" className="text-primary font-mono text-xs hover:text-white transition-colors inline-block w-fit">
                         &lt; BACK TO CONSOLE VAULT
                     </Link>
 
-                    {/* ROW 1: Icon + Title */}
-                    <div className="flex items-center gap-6">
-                        <div className="shrink-0">
+                    {/* HERO ROW: Icon + Text Column */}
+                    <div className="flex flex-row items-end gap-8">
+                        {/* Icon (128x128) */}
+                        <div className="shrink-0 mb-2">
                             {currentImage ? (
                                 <img
                                     src={currentImage}
@@ -157,55 +144,60 @@ export default function ConsoleIdentitySection({
                                 <div className="w-[128px] h-[128px] bg-gray-800 rounded-full" />
                             )}
                         </div>
-                        <h1
-                            className="font-pixel text-[55px] text-white leading-none tracking-tight uppercase"
-                            style={{
-                                textShadow: '4px 4px 0px rgba(0, 255, 157, 0.5)',
-                            }}
-                        >
-                            <span className="mr-4 text-white">{fabName}</span>
-                            <span>{console.name}</span>
-                        </h1>
-                    </div>
 
-                    {/* ROW 2: Metadata */}
-                    <div className="flex items-center gap-3 font-mono text-sm md:text-base text-gray-400 uppercase tracking-widest pl-[160px]">
-                        {manufacturer ? (
-                            <Link href={`/fabricators/${manufacturer.slug}`} className="text-white hover:text-secondary transition-colors border-b border-transparent hover:border-secondary">
-                                {fabName}
-                            </Link>
-                        ) : (
-                            <span className="text-white">{fabName}</span>
-                        )}
-                        <span className="text-gray-600 px-1">{'//'}</span>
-                        <span>{formFactor}</span>
-                        <span className="text-gray-600 px-1">{'//'}</span>
-                        <span>{deviceCategory}</span>
-                        <span className="text-gray-600 px-1">{'//'}</span>
-                        <span className="text-accent">{currentYear}</span>
-                    </div>
+                        {/* Text Column */}
+                        <div className="flex flex-col gap-4 flex-1">
+                            {/* Title */}
+                            <h1
+                                className="font-pixel text-[55px] text-white leading-none tracking-tight uppercase"
+                                style={{
+                                    textShadow: '4px 4px 0px rgba(0, 255, 157, 0.5)',
+                                }}
+                            >
+                                <span className="mr-4 text-white">{fabName}</span>
+                                <span>{console.name}</span>
+                            </h1>
 
-                    {/* ROW 3: Controls & Jump Links (Above Divider) */}
-                    <div className="flex flex-wrap items-center gap-6 pl-[160px]">
-                        <VariantDropdown />
+                            {/* Metadata */}
+                            <div className="flex items-center gap-3 font-mono text-sm md:text-base text-gray-400 uppercase tracking-widest">
+                                {manufacturer ? (
+                                    <Link href={`/fabricators/${manufacturer.slug}`} className="text-white hover:text-secondary transition-colors border-b border-transparent hover:border-secondary">
+                                        {fabName}
+                                    </Link>
+                                ) : (
+                                    <span className="text-white">{fabName}</span>
+                                )}
+                                <span className="text-gray-600 px-1">{'//'}</span>
+                                <span>{formFactor}</span>
+                                <span className="text-gray-600 px-1">{'//'}</span>
+                                <span>{deviceCategory}</span>
+                                <span className="text-gray-600 px-1">{'//'}</span>
+                                <span className="text-accent">{currentYear}</span>
+                            </div>
 
-                        {/* Divider if Variants exist */}
-                        {variants.length > 1 && <div className="h-6 w-px bg-white/10 mx-2 hidden md:block"></div>}
+                            {/* Controls (Above Divider) */}
+                            <div className="flex flex-wrap items-center gap-6 mt-2">
+                                <VariantDropdown />
 
-                        <div className="flex-1 flex items-center justify-between">
-                             <JumpLinks />
+                                {/* Divider if Variants exist */}
+                                {variants.length > 1 && <div className="h-6 w-px bg-white/10 mx-2 hidden md:block"></div>}
 
-                             <div className="flex items-center gap-4">
-                                <CompareButton />
-                                <Button variant="secondary" className="text-xs px-6 py-2 border-gray-600 text-gray-400 hover:text-white hover:border-white">
-                                    SHARE
-                                </Button>
-                             </div>
+                                <div className="flex-1 flex items-center justify-between">
+                                    <JumpLinks />
+
+                                    <div className="flex items-center gap-4">
+                                        <CompareButton />
+                                        <Button variant="secondary" className="text-xs px-6 py-2 border-gray-600 text-gray-400 hover:text-white hover:border-white">
+                                            SHARE
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    {/* CUSTOM DIVIDER (Full Width) */}
-                    <div className="w-full flex flex-col mt-2 pl-[160px]">
+                    {/* CUSTOM DIVIDER (Full Width, outside the text flex) */}
+                    <div className="w-full flex flex-col mt-4">
                         <div className="w-full h-[2px] bg-[#2F323C]"></div>
                         <div className="w-full h-[2px] bg-[#2E303A]"></div>
                     </div>
@@ -214,16 +206,20 @@ export default function ConsoleIdentitySection({
             </div>
 
             {/* --- STATE B: STICKY COMPACT (Fixed Overlay) --- */}
+            {/* Sticks below the global header (approx 57px-64px) */}
             <div
                 className={`
                     fixed top-[57px] md:top-[64px] left-0 w-full z-50 bg-black/95 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.5)] py-2 transition-transform duration-300 ease-out
                     ${isSticky ? 'translate-y-0' : '-translate-y-[200%]'}
                 `}
             >
-                <div className="w-full px-4 md:px-8 flex items-center gap-8">
+                <div className="w-full px-4 md:px-8 flex items-center justify-between gap-4">
 
-                    {/* Name */}
-                    <div className="shrink-0">
+                    {/* Left: Identity */}
+                    <div className="flex items-center gap-4 min-w-0">
+                        <div className="shrink-0">
+                            {currentImage && <img src={currentImage} alt="Icon" className="w-8 h-8 object-contain" />}
+                        </div>
                         <h2
                             className="font-pixel text-[30px] text-white truncate uppercase"
                             style={{ textShadow: '2px 2px 0px rgba(0, 255, 157, 0.5)' }}
@@ -233,14 +229,22 @@ export default function ConsoleIdentitySection({
                         </h2>
                     </div>
 
-                    {/* Variant Selector */}
-                    <div className="shrink-0">
-                        <VariantDropdown compact />
+                    {/* Middle: Controls + Nav */}
+                    <div className="flex items-center gap-4 md:gap-8 overflow-x-auto no-scrollbar">
+                        <div className="shrink-0">
+                            <VariantDropdown compact />
+                        </div>
+
+                        <div className="hidden lg:block h-6 w-px bg-white/10"></div>
+
+                        <div className="hidden md:block">
+                            <JumpLinks compact />
+                        </div>
                     </div>
 
-                    {/* Jump Links (Fill remaining space) */}
-                    <div className="flex-1 hidden md:flex">
-                        <JumpLinks compact />
+                    {/* Right: Compare */}
+                    <div className="shrink-0">
+                        <CompareButton compact />
                     </div>
 
                 </div>
