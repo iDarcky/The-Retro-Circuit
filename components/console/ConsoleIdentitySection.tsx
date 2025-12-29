@@ -44,8 +44,8 @@ export default function ConsoleIdentitySection({
             },
             {
                 threshold: [0],
-                // Trigger after scrolling past the hero section (approx 200px)
-                rootMargin: '-200px 0px 0px 0px',
+                // Adjusted rootMargin for the taller header (128px icon)
+                rootMargin: '-300px 0px 0px 0px',
             }
         );
 
@@ -98,7 +98,7 @@ export default function ConsoleIdentitySection({
     };
 
     const JumpLinks = ({ compact = false }: { compact?: boolean }) => (
-        <div className={`flex items-center ${compact ? 'gap-4' : 'gap-6'}`}>
+        <div className={`flex items-center ${compact ? 'gap-2' : 'gap-4'}`}>
             {!compact && <span className="font-mono text-xs text-gray-500 uppercase tracking-widest">[ JUMP TO ] :</span>}
             {['Analysis', 'Emulation', 'Tech', 'Buy'].map((link) => (
                 <button
@@ -136,60 +136,75 @@ export default function ConsoleIdentitySection({
             <div ref={sentinelRef} className="absolute top-0 left-0 w-full h-[1px] pointer-events-none opacity-0" />
 
             {/* HEADER WRAPPER (State 1) - Normal Flow */}
-            <div className="relative w-full border-b border-white/10">
+            <div className="relative w-full">
 
-                <div className={`w-full px-4 md:px-8 py-8 md:py-12 flex flex-col gap-6 transition-opacity duration-300 ${isSticky ? 'opacity-0' : 'opacity-100'}`}>
+                <div className={`w-full px-4 md:px-8 pt-8 pb-12 flex flex-col transition-opacity duration-300 ${isSticky ? 'opacity-0' : 'opacity-100'}`}>
 
-                    {/* ROW 1: Icon + Title */}
-                    <div className="flex items-center gap-6">
-                        <div className="shrink-0">
-                            {currentImage ? (
-                                <img
-                                    src={currentImage}
-                                    alt="Icon"
-                                    className="w-[64px] h-[64px] object-contain drop-shadow-lg"
-                                />
-                            ) : (
-                                <div className="w-[64px] h-[64px] bg-gray-800 rounded-full" />
-                            )}
+                    {/* BACK LINK */}
+                    <Link href="/consoles" className="text-primary font-mono text-xs mb-4 hover:text-white transition-colors inline-block w-fit">
+                        &lt; BACK TO CONSOLE VAULT
+                    </Link>
+
+                    <div className="flex flex-col gap-6">
+                        {/* ROW 1: Icon + Title */}
+                        <div className="flex items-center gap-8">
+                            <div className="shrink-0">
+                                {currentImage ? (
+                                    <img
+                                        src={currentImage}
+                                        alt="Icon"
+                                        className="w-[128px] h-[128px] object-contain drop-shadow-lg"
+                                    />
+                                ) : (
+                                    <div className="w-[128px] h-[128px] bg-gray-800 rounded-full" />
+                                )}
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <h1
+                                    className="font-pixel text-4xl md:text-6xl text-white leading-none tracking-tight uppercase drop-shadow-[4px_4px_0_rgba(0,255,157,0.5)]"
+                                >
+                                    {console.name}
+                                </h1>
+                                {/* Metadata moved here to align with text if desired, but sticking to requested row layout below */}
+                            </div>
                         </div>
-                        <h1
-                            className="font-pixel text-4xl md:text-6xl text-white leading-none tracking-tight uppercase drop-shadow-[4px_4px_0_rgba(0,255,157,0.5)]"
-                        >
-                            {fabName} {console.name}
-                        </h1>
-                    </div>
 
-                    {/* ROW 2: Metadata */}
-                    <div className="flex items-center gap-3 font-mono text-sm md:text-base text-gray-400 uppercase tracking-widest pl-[88px]">
-                        <span className="text-white">{fabName}</span>
-                        <span className="text-gray-600 px-1">{'//'}</span>
-                        <span>{formFactor}</span>
-                        <span className="text-gray-600 px-1">{'//'}</span>
-                        <span>{deviceCategory}</span>
-                        <span className="text-gray-600 px-1">{'//'}</span>
-                        <span className="text-accent">{currentYear}</span>
-                    </div>
+                        {/* ROW 2: Metadata (Aligned with Text start - 128px icon + 32px gap = 160px approx offset?)
+                            Actually, let's keep it below.
+                        */}
+                        <div className="flex items-center gap-3 font-mono text-sm md:text-base text-gray-400 uppercase tracking-widest pl-0 md:pl-[160px]">
+                            <span className="text-white">{fabName}</span>
+                            <span className="text-gray-600 px-1">{'//'}</span>
+                            <span>{formFactor}</span>
+                            <span className="text-gray-600 px-1">{'//'}</span>
+                            <span>{deviceCategory}</span>
+                            <span className="text-gray-600 px-1">{'//'}</span>
+                            <span className="text-accent">{currentYear}</span>
+                        </div>
 
-                    {/* Divider Bar (State 1 only) */}
-                    <div className="w-full h-px bg-white/10 mt-2 pl-[88px]"></div>
+                        {/* CUSTOM DIVIDER */}
+                        <div className="w-full flex flex-col mt-4 mb-4">
+                            <div className="w-full h-[2px] bg-[#2F323C]"></div>
+                            <div className="w-full h-[2px] bg-[#2E303A]"></div>
+                        </div>
 
-                    {/* ROW 3: Controls & Jump Links (Merged) */}
-                    <div className="flex flex-wrap items-center gap-6 pl-[88px] mt-2">
-                        <VariantDropdown />
+                        {/* ROW 3: Controls & Jump Links (Merged) */}
+                        <div className="flex flex-wrap items-center gap-6 pl-0 md:pl-[160px]">
+                            <VariantDropdown />
 
-                        {/* Divider if Variants exist */}
-                        {variants.length > 1 && <div className="h-6 w-px bg-white/10 mx-2 hidden md:block"></div>}
+                            {/* Divider if Variants exist */}
+                            {variants.length > 1 && <div className="h-6 w-px bg-white/10 mx-2 hidden md:block"></div>}
 
-                        <div className="flex-1 flex items-center justify-between">
-                             <JumpLinks />
+                            <div className="flex-1 flex items-center justify-between">
+                                 <JumpLinks />
 
-                             <div className="flex items-center gap-4">
-                                <CompareButton />
-                                <Button variant="secondary" className="text-xs px-6 py-2 border-gray-600 text-gray-400 hover:text-white hover:border-white">
-                                    SHARE
-                                </Button>
-                             </div>
+                                 <div className="flex items-center gap-4">
+                                    <CompareButton />
+                                    <Button variant="secondary" className="text-xs px-6 py-2 border-gray-600 text-gray-400 hover:text-white hover:border-white">
+                                        SHARE
+                                    </Button>
+                                 </div>
+                            </div>
                         </div>
                     </div>
 
