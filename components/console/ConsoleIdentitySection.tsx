@@ -132,16 +132,16 @@ export default function ConsoleIdentitySection({
 
                     {/* HERO ROW: Icon + Text Column */}
                     <div className="flex flex-row items-end gap-8">
-                        {/* Icon (128x128) */}
+                        {/* Icon (64x64) */}
                         <div className="shrink-0 mb-2">
                             {currentImage ? (
                                 <img
                                     src={currentImage}
                                     alt="Icon"
-                                    className="w-[128px] h-[128px] object-contain drop-shadow-lg"
+                                    className="w-[64px] h-[64px] object-contain drop-shadow-lg"
                                 />
                             ) : (
-                                <div className="w-[128px] h-[128px] bg-gray-800 rounded-full" />
+                                <div className="w-[64px] h-[64px] bg-gray-800 rounded-full" />
                             )}
                         </div>
 
