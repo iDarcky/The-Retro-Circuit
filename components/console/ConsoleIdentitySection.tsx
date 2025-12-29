@@ -26,7 +26,7 @@ export default function ConsoleIdentitySection({
     const [isSticky, setIsSticky] = useState(false);
     const [showShareTooltip, setShowShareTooltip] = useState(false);
 
-    // Sentinel ref for Intersection Observer
+    // Sentinel ref for Intersection Observer (Placed at the bottom of the main section)
     const sentinelRef = useRef<HTMLDivElement>(null);
 
     const currentVariant = variants.find(v => v.id === selectedVariantId) || null;
@@ -42,13 +42,15 @@ export default function ConsoleIdentitySection({
     useEffect(() => {
         const observer = new IntersectionObserver(
             ([entry]) => {
-                // When sentinel (at top) scrolls up out of view (top < 0), sticky is active
-                setIsSticky(entry.boundingClientRect.top < 0);
+                // sticky is active ONLY when the sentinel (bottom of section) has scrolled UP out of view
+                // entry.boundingClientRect.top < 64 means it has passed the header line
+                setIsSticky(!entry.isIntersecting && entry.boundingClientRect.top < 64);
             },
             {
                 root: null,
                 threshold: 0,
-                rootMargin: '0px'
+                // Offset top by 64px (header height) so it triggers exactly when the section clears the header
+                rootMargin: '-64px 0px 0px 0px'
             }
         );
 
@@ -65,7 +67,15 @@ export default function ConsoleIdentitySection({
     const scrollToSection = (id: string) => {
         const el = document.getElementById(id);
         if (el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Adjust scroll position to account for sticky header + global header (~130px total)
+            const y = el.getBoundingClientRect().top + window.scrollY - 140;
+            const scrollContainer = document.querySelector('main > div.overflow-y-auto');
+            if (scrollContainer) {
+                 scrollContainer.scrollTo({ top: scrollContainer.scrollTop + el.getBoundingClientRect().top - 140, behavior: 'smooth' });
+            } else {
+                 // Fallback
+                 window.scrollTo({ top: y, behavior: 'smooth' });
+            }
         }
     };
 
@@ -142,13 +152,9 @@ export default function ConsoleIdentitySection({
 
     return (
         <>
-            {/* SENTINEL for Intersection Observer */}
-            <div ref={sentinelRef} className="absolute top-0 w-full h-px pointer-events-none opacity-0" />
-
-            {/* HEADER WRAPPER (State 1) - Normal Flow */}
+            {/* --- STATE A: NORMAL FLOW --- */}
             <div className="relative w-full">
-
-                <div className={`w-full px-4 md:px-8 pt-8 pb-4 flex flex-col gap-6 transition-opacity duration-300 ${isSticky ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+                <div className="w-full px-4 md:px-8 pt-8 pb-4 flex flex-col gap-6">
 
                     {/* BACK LINK */}
                     <Link href="/consoles" className="text-primary font-mono text-xs hover:text-white transition-colors inline-block w-fit">
@@ -222,13 +228,17 @@ export default function ConsoleIdentitySection({
                     </div>
 
                 </div>
+
+                {/* SENTINEL: Placed at the very bottom of the content flow */}
+                <div ref={sentinelRef} className="absolute bottom-0 left-0 w-full h-px pointer-events-none opacity-0" />
             </div>
 
             {/* --- STATE B: STICKY COMPACT (Fixed Overlay) --- */}
-            {/* Sticks below the global header (Mobile: 64px, Desktop: 65px) */}
+            {/* Positioned at top-[64px] to sit below global header.
+                Hidden by sliding UP behind the global header. */}
             <div
                 className={`
-                    fixed top-[64px] md:top-[65px] left-0 w-full z-[100] bg-black/95 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.5)] py-3 transition-transform duration-300 ease-out
+                    fixed top-[64px] md:top-[65px] left-0 w-full z-40 bg-black/95 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.5)] py-3 transition-transform duration-500 ease-out
                     ${isSticky ? 'translate-y-0' : '-translate-y-[200%]'}
                 `}
             >
