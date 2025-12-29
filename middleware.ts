@@ -1,8 +1,8 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-// Renamed from 'middleware' to 'proxy' to satisfy Next.js 16 deprecation warning in this environment
-export async function proxy(request: NextRequest) {
+// Restored to 'middleware' to enable security headers and auth checks
+export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
     request: {
       headers: request.headers,
