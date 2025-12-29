@@ -38,13 +38,12 @@ export default function ConsoleIdentitySection({
     useEffect(() => {
         const observer = new IntersectionObserver(
             ([entry]) => {
-                // Determine if we've scrolled PAST the sentinel (which is at the top)
-                // When sentinel is NOT intersecting and its top is negative, we are scrolled down.
+                // Trigger sticky state when the sentinel (top of the section) leaves the viewport upwards.
                 setIsSticky(!entry.isIntersecting && entry.boundingClientRect.top < 0);
             },
             {
                 threshold: [0],
-                // Root margin matches approx full header height to trigger switch naturally
+                // Root margin to trigger swap after scrolling past hero
                 rootMargin: '-200px 0px 0px 0px',
             }
         );
@@ -161,17 +160,23 @@ export default function ConsoleIdentitySection({
                         <h1
                             className="font-pixel text-[55px] text-white leading-none tracking-tight uppercase"
                             style={{
-                                textShadow: '4px 4px 0px rgba(0, 255, 157, 0.5)', // Specific Drop Shadow requested
+                                textShadow: '4px 4px 0px rgba(0, 255, 157, 0.5)',
                             }}
                         >
-                            <span className="opacity-70 mr-4">{fabName}</span>
+                            <span className="mr-4 text-white">{fabName}</span>
                             <span>{console.name}</span>
                         </h1>
                     </div>
 
-                    {/* ROW 2: Metadata */}
-                    <div className="flex items-center gap-3 font-mono text-sm md:text-base text-gray-400 uppercase tracking-widest pl-[88px]">
-                        <span className="text-white">{fabName}</span>
+                    {/* ROW 2: Metadata (Left Aligned, No Indent) */}
+                    <div className="flex items-center gap-3 font-mono text-sm md:text-base text-gray-400 uppercase tracking-widest">
+                        {manufacturer ? (
+                            <Link href={`/fabricators/${manufacturer.slug}`} className="text-white hover:text-secondary transition-colors border-b border-transparent hover:border-secondary">
+                                {fabName}
+                            </Link>
+                        ) : (
+                            <span className="text-white">{fabName}</span>
+                        )}
                         <span className="text-gray-600 px-1">{'//'}</span>
                         <span>{formFactor}</span>
                         <span className="text-gray-600 px-1">{'//'}</span>
@@ -180,8 +185,8 @@ export default function ConsoleIdentitySection({
                         <span className="text-accent">{currentYear}</span>
                     </div>
 
-                    {/* ROW 3: Controls & Jump Links (Merged, Moved ABOVE divider) */}
-                    <div className="flex flex-wrap items-center gap-6 pl-[88px]">
+                    {/* ROW 3: Controls & Jump Links (Left Aligned, Above Divider) */}
+                    <div className="flex flex-wrap items-center gap-6">
                         <VariantDropdown />
 
                         {/* Divider if Variants exist */}
@@ -199,8 +204,8 @@ export default function ConsoleIdentitySection({
                         </div>
                     </div>
 
-                    {/* CUSTOM DIVIDER (Moved to Bottom) */}
-                    <div className="w-full flex flex-col mt-2 pl-[88px]">
+                    {/* CUSTOM DIVIDER (Full Width) */}
+                    <div className="w-full flex flex-col mt-2">
                         <div className="w-full h-[2px] bg-[#2F323C]"></div>
                         <div className="w-full h-[2px] bg-[#2E303A]"></div>
                     </div>
