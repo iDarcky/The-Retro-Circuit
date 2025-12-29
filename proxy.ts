@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+// Renamed from 'middleware' to 'proxy' to satisfy Next.js 16 deprecation warning in this environment
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({
     request: {
@@ -14,6 +15,10 @@ export async function proxy(request: NextRequest) {
   // SKIP Supabase checks if env vars are missing/placeholder to prevent crashes
   const isPlaceholder = supabaseUrl.includes('placeholder.supabase.co') || supabaseKey === 'placeholder';
 
+  // NOTE: In this environment, likely running with placeholders.
+  // If placeholders are present, middleware cannot verify auth via Supabase.
+
+  // If we are in a verifiable environment:
   if (!isPlaceholder) {
     try {
       const supabase = createServerClient(
@@ -44,7 +49,27 @@ export async function proxy(request: NextRequest) {
       // 2. Refresh the session
       const { data: { user } } = await supabase.auth.getUser();
 
-      // 3. Protect Admin Routes
+      // 3. Auth Redirection Logic
+      const url = request.nextUrl.clone();
+
+      // IF USER IS LOGGED IN
+      if (user) {
+        // Redirect from /login to /profile
+        if (url.pathname.startsWith('/login')) {
+            url.pathname = '/profile';
+            return NextResponse.redirect(url);
+        }
+      }
+      // IF USER IS NOT LOGGED IN
+      else {
+        // Protect /profile
+        if (url.pathname.startsWith('/profile')) {
+            url.pathname = '/login';
+            return NextResponse.redirect(url);
+        }
+      }
+
+      // 4. Protect Admin Routes (Original Logic)
       if (request.nextUrl.pathname.startsWith('/admin')) {
         if (!user) {
           return NextResponse.redirect(new URL('/login', request.url));
@@ -69,7 +94,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // 4. Security Headers
+  // 5. Security Headers
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');

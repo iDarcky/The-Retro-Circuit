@@ -37,7 +37,10 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
       panel_types: []
   });
 
-  // No initial fetch effect needed anymore.
+  // Scroll to top on page change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [page]);
 
   // 2. Client-Side Filter Logic
   useEffect(() => {

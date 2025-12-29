@@ -132,7 +132,11 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                                             EDIT
                                         </button>
 
-                                        <Link href={`/consoles/${console.slug}`} target="_blank" onClick={(e) => e.stopPropagation()}>
+                                        <Link
+                                            href={console.status === 'published' ? `/consoles/${console.slug}` : `/admin/preview/consoles/${console.slug}`}
+                                            target="_blank"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
                                             <button
                                                 className={`text-xs border px-3 py-1 transition-colors ${
                                                     console.status === 'draft'
