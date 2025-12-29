@@ -44,7 +44,7 @@ export default function ConsoleIdentitySection({
             },
             {
                 threshold: [0],
-                // Reverted rootMargin for standard height header (approx 200px)
+                // Root margin matches approx full header height to trigger switch naturally
                 rootMargin: '-200px 0px 0px 0px',
             }
         );
@@ -159,9 +159,9 @@ export default function ConsoleIdentitySection({
                             )}
                         </div>
                         <h1
-                            className="font-pixel text-3xl md:text-5xl lg:text-6xl text-white leading-none tracking-tight uppercase"
+                            className="font-pixel text-[55px] text-white leading-none tracking-tight uppercase"
                             style={{
-                                textShadow: '4px 4px 0px #00FF88', // Green Hard Drop Shadow
+                                textShadow: '4px 4px 0px rgba(0, 255, 157, 0.5)', // Specific Drop Shadow requested
                             }}
                         >
                             <span className="opacity-70 mr-4">{fabName}</span>
@@ -224,8 +224,8 @@ export default function ConsoleIdentitySection({
                             {currentImage && <img src={currentImage} alt="Icon" className="w-8 h-8 object-contain" />}
                         </div>
                         <h2
-                            className="font-pixel text-sm md:text-lg text-white truncate uppercase"
-                            style={{ textShadow: '1px 1px 0px #00FF88' }}
+                            className="font-pixel text-[30px] text-white truncate uppercase"
+                            style={{ textShadow: '2px 2px 0px rgba(0, 255, 157, 0.5)' }}
                         >
                             <span className="hidden md:inline opacity-70 mr-2">{fabName}</span>
                             {console.name}
