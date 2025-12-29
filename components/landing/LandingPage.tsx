@@ -4,7 +4,6 @@ import { ArrowUpRight } from 'lucide-react';
 import { fetchLatestConsoles } from '../../lib/api/latest';
 import { fetchConsoleList } from '../../lib/api/consoles';
 import QuickCompare from './QuickCompare';
-import RetroStatusBar from '../ui/RetroStatusBar';
 
 export default async function LandingPage() {
   // Fetch latest consoles
@@ -34,10 +33,6 @@ export default async function LandingPage() {
           BLOCK: Hero Header Metadata
           Moved outside the box as per requirement.
       */}
-      <RetroStatusBar
-        rcPath="RC://RETRO_CIRCUIT/INDEX"
-        docId="INDEX_CORE_V1"
-      />
 
       {/*
           BLOCK: Hero Grid Split

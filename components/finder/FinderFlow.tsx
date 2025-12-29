@@ -2,7 +2,6 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import RetroStatusBar from '../ui/RetroStatusBar';
 import { FinderLanding } from './FinderLanding';
 import { QuizQuestion } from './QuizQuestion';
 import { FinderResults } from './FinderResults';
@@ -243,11 +242,6 @@ const FinderFlowContent = () => {
           </Button>
         </div>
       )}
-
-      <RetroStatusBar
-        docId="FINDER_V1"
-        rcPath={`RC://FINDER/${stepIndex === -1 ? 'START' : stepIndex === QUESTIONS.length ? 'RESULTS' : `Q${stepIndex + 1}`}`}
-      />
 
       <div className="container mx-auto pt-8 md:pt-16">
         {stepIndex === -1 && <FinderLanding onStart={handleStart} />}

@@ -11,7 +11,6 @@ import { ComparisonRow } from '../../components/arena/ComparisonRow';
 import { ConsoleSearch } from '../../components/arena/ConsoleSearch';
 import { VariantSelector } from '../../components/arena/VariantSelector';
 import { MatchSummary } from '../../components/arena/MatchSummary';
-import RetroStatusBar from '../../components/ui/RetroStatusBar';
 
 interface SelectionState {
     slug: string | null;
@@ -152,12 +151,6 @@ function VSModeContent() {
 
     return (
         <div className="w-full">
-            <div className="hidden md:block">
-                <RetroStatusBar
-                    rcPath="RC://RETRO_CIRCUIT/ARENA/VS"
-                    docId="VS_PROTOCOL_V1"
-                />
-            </div>
 
         <div className="w-full max-w-7xl mx-auto p-4 flex flex-col min-h-screen">
             <h1 className="text-3xl md:text-5xl font-pixel text-center text-white mb-8 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">

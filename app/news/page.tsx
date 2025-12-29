@@ -1,14 +1,9 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import RetroStatusBar from '../../components/ui/RetroStatusBar';
 
 export default function NewsPage() {
   return (
     <div className="w-full">
-      <RetroStatusBar
-        rcPath="RC://RETRO_CIRCUIT/BROADCAST/NEWS"
-        docId="SIGNAL_FEED_V1"
-      />
 
       <div className="min-h-screen bg-bg-primary font-mono text-white flex flex-col items-center justify-center p-4">
         <div className="max-w-2xl w-full border border-white/10 p-8 md:p-12 relative overflow-hidden">

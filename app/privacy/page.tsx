@@ -1,5 +1,4 @@
 import { siteConfig } from '../../config/site';
-import RetroStatusBar from '../../components/ui/RetroStatusBar';
 
 export const metadata = {
   title: 'Privacy Protocol | The Retro Circuit',
@@ -9,10 +8,6 @@ export const metadata = {
 export default function PrivacyPage() {
   return (
     <div className="w-full">
-      <RetroStatusBar
-        rcPath="RC://RETRO_CIRCUIT/SYSTEM/PRIVACY"
-        docId="LEGAL_PRIVACY_PROTOCOL_V1"
-      />
 
       <div className="max-w-3xl mx-auto p-4 py-12 md:py-20 animate-fadeIn">
 

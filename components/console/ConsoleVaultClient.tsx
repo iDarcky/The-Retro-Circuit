@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { ConsoleDetails, ConsoleFilterState, Manufacturer } from '../../lib/types';
 import RetroLoader from '../ui/RetroLoader';
 import Button from '../ui/Button';
-import RetroStatusBar from '../ui/RetroStatusBar';
 import { formatReleaseDate } from '../../lib/utils/date-formatter';
 
 interface ConsoleVaultClientProps {
@@ -147,11 +146,6 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
 
   return (
     <div className="w-full">
-        {/* HEADER: RC:// Metadata (Full Width) */}
-        <RetroStatusBar
-            rcPath="RC://RETRO_CIRCUIT/VAULT/CONSOLES"
-            docId="VAULT_CONSOLES_V1"
-        />
 
         {/* MAIN CONTENT CONTAINER */}
         <div className="max-w-7xl mx-auto p-4">
