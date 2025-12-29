@@ -38,12 +38,14 @@ export default function ConsoleIdentitySection({
     useEffect(() => {
         const observer = new IntersectionObserver(
             ([entry]) => {
-                // When sentinel (at top of component) scrolls out of view upwards, activate sticky
+                // Determine if we've scrolled PAST the sentinel (which is at the top)
+                // When sentinel is NOT intersecting and its top is negative, we are scrolled down.
                 setIsSticky(!entry.isIntersecting && entry.boundingClientRect.top < 0);
             },
             {
-                threshold: 0,
-                rootMargin: '-100px 0px 0px 0px', // Trigger after scrolling 100px past the start
+                threshold: [0],
+                // Adjust rootMargin to trigger transition after scrolling past the initial header block
+                rootMargin: '-150px 0px 0px 0px',
             }
         );
 
@@ -133,12 +135,10 @@ export default function ConsoleIdentitySection({
             {/* Sentinel for Scroll Detection */}
             <div ref={sentinelRef} className="absolute top-0 left-0 w-full h-[1px] pointer-events-none opacity-0" />
 
-            {/* HEADER WRAPPER (Relative to page) */}
-            <div className="relative w-full border-b border-white/10 bg-bg-primary">
+            {/* HEADER WRAPPER (State 1) - Normal Flow, Transparent Background */}
+            <div className="relative w-full border-b border-white/10">
 
-                {/* --- STATE A: FULL HEADER (Normal Flow) --- */}
-                {/* Removed max-w constraint to ensure full width */}
-                <div className={`w-full px-4 md:px-8 py-8 md:py-12 flex flex-col gap-6 transition-opacity duration-300 ${isSticky ? 'opacity-20' : 'opacity-100'}`}>
+                <div className={`w-full px-4 md:px-8 py-8 md:py-12 flex flex-col gap-6 transition-opacity duration-300 ${isSticky ? 'opacity-0' : 'opacity-100'}`}>
 
                     {/* ROW 1: Icon + Title */}
                     <div className="flex items-center gap-6">
@@ -154,26 +154,24 @@ export default function ConsoleIdentitySection({
                             )}
                         </div>
                         <h1
-                            className="font-pixel text-3xl md:text-5xl lg:text-6xl leading-none tracking-tight capitalize"
+                            className="font-pixel text-3xl md:text-5xl lg:text-6xl text-white leading-none tracking-tight uppercase"
                             style={{
-                                color: 'white',
-                                WebkitTextStroke: '1px #00FF88', // Green Outline
-                                textShadow: '0 0 10px rgba(0, 255, 136, 0.3)'
+                                textShadow: '4px 4px 0px #00FF88', // Green Hard Drop Shadow
                             }}
                         >
-                            <span className="opacity-70 mr-4 capitalize">{fabName}</span>
-                            <span className="capitalize">{console.name}</span>
+                            <span className="opacity-70 mr-4">{fabName}</span>
+                            <span>{console.name}</span>
                         </h1>
                     </div>
 
                     {/* ROW 2: Metadata */}
                     <div className="flex items-center gap-3 font-mono text-sm md:text-base text-gray-400 uppercase tracking-widest pl-[88px]">
                         <span className="text-white">{fabName}</span>
-                        <span className="text-gray-700">•</span>
+                        <span className="text-gray-600 px-1">{'//'}</span>
                         <span>{formFactor}</span>
-                        <span className="text-gray-700">•</span>
+                        <span className="text-gray-600 px-1">{'//'}</span>
                         <span>{deviceCategory}</span>
-                        <span className="text-gray-700">•</span>
+                        <span className="text-gray-600 px-1">{'//'}</span>
                         <span className="text-accent">{currentYear}</span>
                     </div>
 
@@ -184,10 +182,9 @@ export default function ConsoleIdentitySection({
                         {/* Divider if Variants exist */}
                         {variants.length > 1 && <div className="h-6 w-px bg-white/10 mx-2 hidden md:block"></div>}
 
-                        {/* Jump Links moved here */}
                         <JumpLinks />
 
-                        <div className="flex-1"></div> {/* Spacer to push actions to right */}
+                        <div className="flex-1"></div> {/* Spacer */}
 
                         <CompareButton />
                         <Button variant="secondary" className="text-xs px-6 py-2 border-gray-600 text-gray-400 hover:text-white hover:border-white">
@@ -199,6 +196,7 @@ export default function ConsoleIdentitySection({
             </div>
 
             {/* --- STATE B: STICKY COMPACT (Fixed Overlay) --- */}
+            {/* Sticks below the global header (approx 57px-64px) */}
             <div
                 className={`
                     fixed top-[57px] md:top-[64px] left-0 w-full z-50 bg-black/95 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.5)] py-2 transition-transform duration-300 ease-out
@@ -213,10 +211,10 @@ export default function ConsoleIdentitySection({
                             {currentImage && <img src={currentImage} alt="Icon" className="w-8 h-8 object-contain" />}
                         </div>
                         <h2
-                            className="font-pixel text-sm md:text-lg text-white truncate capitalize"
-                            style={{ WebkitTextStroke: '0.5px #00FF88' }}
+                            className="font-pixel text-sm md:text-lg text-white truncate uppercase"
+                            style={{ textShadow: '1px 1px 0px #00FF88' }}
                         >
-                            <span className="hidden md:inline opacity-70 mr-2 capitalize">{fabName}</span>
+                            <span className="hidden md:inline opacity-70 mr-2">{fabName}</span>
                             {console.name}
                         </h2>
                     </div>
