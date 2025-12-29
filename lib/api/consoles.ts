@@ -7,6 +7,15 @@ function normalizeVariant(v: any): any {
     if (Array.isArray(v.variant_input_profile)) {
         v.variant_input_profile = v.variant_input_profile[0] || null;
     }
+    if (Array.isArray(v.emulation_profiles)) {
+        v.emulation_profile = v.emulation_profiles[0] || null; // Map emulation_profiles -> emulation_profile (singular in type)
+        delete v.emulation_profiles;
+    } else if (v.emulation_profiles) {
+        // If it's already an object (unlikely with simple select(*)), map it.
+        // Supabase join usually returns array for 1:Many, even if 1:1 constraint exists.
+        v.emulation_profile = v.emulation_profiles;
+        delete v.emulation_profiles;
+    }
     return v;
 }
 
@@ -169,7 +178,7 @@ export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs |
         const supabase = createClient();
         const { data } = await supabase
             .from('console_variants')
-            .select('*, variant_input_profile(*)')
+            .select('*, variant_input_profile(*), emulation_profiles(*)')
             .eq('console_id', consoleId)
             .eq('is_default', true)
             .maybeSingle();
@@ -178,7 +187,7 @@ export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs |
 
         const { data: anyVar } = await supabase
             .from('console_variants')
-            .select('*, variant_input_profile(*)')
+            .select('*, variant_input_profile(*), emulation_profiles(*)')
             .eq('console_id', consoleId)
             .limit(1)
             .maybeSingle();
@@ -194,7 +203,7 @@ export const getVariantsByConsole = async (consoleId: string): Promise<ConsoleVa
         const supabase = createClient();
         const { data, error } = await supabase
             .from('console_variants')
-            .select('*, variant_input_profile(*)')
+            .select('*, variant_input_profile(*), emulation_profiles(*)')
             .eq('console_id', consoleId)
             .order('is_default', { ascending: false });
         if (error) throw error;
@@ -209,7 +218,7 @@ export const getVariantById = async (variantId: string): Promise<ConsoleVariant 
         const supabase = createClient();
         const { data, error } = await supabase
             .from('console_variants')
-            .select('*, variant_input_profile(*)')
+            .select('*, variant_input_profile(*), emulation_profiles(*)')
             .eq('id', variantId)
             .single();
         if (error) throw error;
