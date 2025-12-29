@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, type ChangeEvent, type DragEvent, type FC } from 'react';
+import { useState, useRef, type ChangeEvent, type DragEvent, type KeyboardEvent, type FC } from 'react';
 import { supabase } from '../../lib/supabase/singleton';
 
 interface ImageUploadProps {
@@ -77,6 +77,14 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
     if (inputRef.current) inputRef.current.value = '';
   };
 
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (disabled) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      inputRef.current?.click();
+    }
+  };
+
   return (
     <div className={`w-full ${className}`}>
       {value ? (
@@ -94,6 +102,7 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
                 disabled={disabled}
                 className="absolute top-2 right-2 bg-accent text-white w-8 h-8 flex items-center justify-center border border-white hover:bg-red-600 transition-colors shadow-lg z-10"
                 title="Remove Image"
+                aria-label="Remove Image"
             >
                 X
             </button>
@@ -103,12 +112,16 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
         </div>
       ) : (
         <div
+            role="button"
+            tabIndex={disabled ? -1 : 0}
+            aria-label="Upload image"
             onClick={() => inputRef.current?.click()}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
+            onKeyDown={handleKeyDown}
             className={`
-                relative h-32 border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all
+                relative h-32 border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary
                 ${isDragging 
                     ? 'border-secondary bg-secondary/10 scale-[1.02]'
                     : 'border-gray-700 bg-black/20 hover:border-primary hover:bg-black/40'
@@ -123,6 +136,7 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
                 onChange={handleFileSelect}
                 disabled={disabled || isUploading}
                 className="hidden"
+                tabIndex={-1}
             />
             
             {isUploading ? (
