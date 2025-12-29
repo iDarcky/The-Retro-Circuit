@@ -225,10 +225,10 @@ export default function ConsoleIdentitySection({
             </div>
 
             {/* --- STATE B: STICKY COMPACT (Fixed Overlay) --- */}
-            {/* Sticks below the global header. Increased top to 72px to be safe. DEBUG: bg-red-500 if failing. */}
+            {/* Sticks below the global header (Mobile: 64px, Desktop: 65px) */}
             <div
                 className={`
-                    fixed top-[72px] left-0 w-full z-[100] bg-black/95 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.5)] py-3 transition-transform duration-300 ease-out
+                    fixed top-[64px] md:top-[65px] left-0 w-full z-[100] bg-black/95 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.5)] py-3 transition-transform duration-300 ease-out
                     ${isSticky ? 'translate-y-0' : '-translate-y-[200%]'}
                 `}
             >
