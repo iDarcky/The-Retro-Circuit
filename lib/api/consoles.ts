@@ -288,11 +288,12 @@ export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>)
                 ...variant_input_profile,
                 variant_id: newVariant.id
             };
-            const { error: profileError } = await supabase.from('variant_input_profile').insert([profileData]);
+            // Use UPSERT because the trigger automatically creates a row on insert
+            const { error: profileError } = await supabase.from('variant_input_profile').upsert([profileData], { onConflict: 'variant_id' });
 
             if (profileError) {
-                console.error("Input Profile Insert Failed:", profileError);
-                return { success: true, message: "Variant saved, but Input Profile failed: " + profileError.message };
+                console.error("Input Profile Update Failed:", profileError);
+                return { success: true, message: "Variant saved, but Input Profile update failed: " + profileError.message };
             }
         }
 
