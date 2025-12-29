@@ -1,7 +1,6 @@
 
 import { siteConfig } from '../../config/site';
 import Button from '../../components/ui/Button';
-import RetroStatusBar from '../../components/ui/RetroStatusBar';
 
 export const metadata = {
   title: 'System Manifesto | The Retro Circuit',
@@ -11,10 +10,6 @@ export const metadata = {
 export default function AboutPage() {
   return (
     <div className="w-full">
-      <RetroStatusBar
-        rcPath="RC://RETRO_CIRCUIT/SYSTEM/ABOUT"
-        docId="MANIFESTO_V1"
-      />
       
       <div className="max-w-3xl mx-auto p-4 py-12 md:py-20 animate-fadeIn">
 

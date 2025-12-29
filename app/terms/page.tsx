@@ -1,5 +1,4 @@
 import { siteConfig } from '../../config/site';
-import RetroStatusBar from '../../components/ui/RetroStatusBar';
 
 export const metadata = {
   title: 'Terms of Use | The Retro Circuit',
@@ -9,10 +8,6 @@ export const metadata = {
 export default function TermsPage() {
   return (
     <div className="w-full">
-      <RetroStatusBar
-        rcPath="RC://RETRO_CIRCUIT/SYSTEM/TERMS"
-        docId="LEGAL_TERMS_OF_USE_V1"
-      />
 
       <div className="max-w-3xl mx-auto p-4 py-12 md:py-20 animate-fadeIn">
 

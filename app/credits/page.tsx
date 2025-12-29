@@ -1,12 +1,6 @@
-import RetroStatusBar from '../../components/ui/RetroStatusBar';
-
 export default function CreditsPage() {
   return (
     <div className="w-full min-h-screen bg-bg-primary text-gray-300 font-mono">
-      <RetroStatusBar
-        rcPath="RC://RETRO_CIRCUIT/SYSTEM/CREDITS"
-        docId="SOURCE_ATTRIBUTION_V1"
-      />
 
       <div className="max-w-4xl mx-auto px-6 py-12">
         <h1 className="text-3xl font-pixel text-white mb-8">

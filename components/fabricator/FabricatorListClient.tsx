@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { Manufacturer } from '../../lib/types';
-import RetroStatusBar from '../ui/RetroStatusBar';
 import { hexToRgb } from '../../lib/utils/colors';
 
 interface Props {
@@ -37,10 +36,6 @@ export default function FabricatorListClient({ manufacturers }: Props) {
 
     return (
         <div className="w-full">
-            <RetroStatusBar
-                rcPath="RC://RETRO_CIRCUIT/VAULT/MANUFACTURERS"
-                docId="FABRICATORS_INDEX_V1"
-            />
 
             <div className="max-w-7xl mx-auto p-4">
                 <div className="text-center mb-10">
