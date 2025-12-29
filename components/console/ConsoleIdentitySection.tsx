@@ -17,7 +17,7 @@ interface ConsoleIdentitySectionProps {
 }
 
 export default function ConsoleIdentitySection({
-    console,
+    console: consoleData,
     manufacturer,
     variants,
     selectedVariantId,
@@ -30,14 +30,14 @@ export default function ConsoleIdentitySection({
     const sentinelRef = useRef<HTMLDivElement>(null);
 
     const currentVariant = variants.find(v => v.id === selectedVariantId) || null;
-    const currentImage = getConsoleImage({ console, variant: currentVariant });
+    const currentImage = getConsoleImage({ console: consoleData, variant: currentVariant });
     const currentYear = currentVariant?.release_date ? new Date(currentVariant.release_date).getFullYear() : 'XXXX';
-    const compareUrl = `/arena/${console.slug}${currentVariant?.slug ? `-${currentVariant.slug}` : ''}-vs-select`;
+    const compareUrl = `/arena/${consoleData.slug}${currentVariant?.slug ? `-${currentVariant.slug}` : ''}-vs-select`;
 
     // Metadata Construction
     const fabName = manufacturer?.name || 'UNKNOWN';
-    const formFactor = console.form_factor || 'N/A';
-    const deviceCategory = console.device_category || 'SYSTEM';
+    const formFactor = consoleData.form_factor || 'N/A';
+    const deviceCategory = consoleData.device_category || 'SYSTEM';
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -175,7 +175,7 @@ export default function ConsoleIdentitySection({
                             }}
                         >
                             <span className="block md:inline mr-0 md:mr-4 text-white">{fabName}</span>
-                            <span>{console.name}</span>
+                            <span>{consoleData.name}</span>
                         </h1>
                     </div>
 
@@ -244,7 +244,7 @@ export default function ConsoleIdentitySection({
                             style={{ textShadow: '2px 2px 0px rgba(0, 255, 157, 0.5)' }}
                         >
                             <span className="hidden md:inline mr-2">{fabName}</span>
-                            {console.name}
+                            {consoleData.name}
                         </h2>
                     </div>
 
