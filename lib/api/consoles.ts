@@ -68,6 +68,33 @@ export const fetchAllConsoles = async (includeHidden: boolean = false): Promise<
     }
 };
 
+export const fetchVaultConsoles = async (): Promise<ConsoleDetails[]> => {
+    try {
+        const supabase = createClient();
+        // Optimized query: Excludes heavy 'emulation_profiles' and 'variant_input_profile'
+        // Only fetches core console data, manufacturer, and variant specs needed for list view filtering
+        const { data, error } = await supabase
+            .from('consoles')
+            .select(`
+                *,
+                manufacturer:manufacturer(*),
+                variants:console_variants(*)
+            `)
+            .eq('status', 'published')
+            .order('name', { ascending: true });
+
+        if (error) {
+            console.error('[API] fetchVaultConsoles DB Error:', error.message);
+            return [];
+        }
+
+        return normalizeConsoleList(data);
+    } catch (e: any) {
+        console.error('[API] Fetch Vault Consoles Exception:', e);
+        return [];
+    }
+};
+
 export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: number = 1, limit: number = 20): Promise<{ data: ConsoleDetails[], count: number }> => {
     try {
         const supabase = createClient();
@@ -182,7 +209,7 @@ export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs |
         const supabase = createClient();
         const { data } = await supabase
             .from('console_variants')
-            .select('*, variant_input_profile(*)')
+            .select('*, variant_input_profile(*), emulation_profiles(*)')
             .eq('console_id', consoleId)
             .eq('is_default', true)
             .maybeSingle();
@@ -191,7 +218,7 @@ export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs |
 
         const { data: anyVar } = await supabase
             .from('console_variants')
-            .select('*, variant_input_profile(*)')
+            .select('*, variant_input_profile(*), emulation_profiles(*)')
             .eq('console_id', consoleId)
             .limit(1)
             .maybeSingle();
@@ -222,7 +249,7 @@ export const getVariantById = async (variantId: string): Promise<ConsoleVariant 
         const supabase = createClient();
         const { data, error } = await supabase
             .from('console_variants')
-            .select('*, variant_input_profile(*)')
+            .select('*, variant_input_profile(*), emulation_profiles(*)')
             .eq('id', variantId)
             .single();
         if (error) throw error;
@@ -301,11 +328,12 @@ export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>)
                 ...variant_input_profile,
                 variant_id: newVariant.id
             };
-            const { error: profileError } = await supabase.from('variant_input_profile').insert([profileData]);
+            // Use UPSERT because the trigger automatically creates a row on insert
+            const { error: profileError } = await supabase.from('variant_input_profile').upsert([profileData], { onConflict: 'variant_id' });
 
             if (profileError) {
-                console.error("Input Profile Insert Failed:", profileError);
-                return { success: true, message: "Variant saved, but Input Profile failed: " + profileError.message };
+                console.error("Input Profile Update Failed:", profileError);
+                return { success: true, message: "Variant saved, but Input Profile update failed: " + profileError.message };
             }
         }
 
