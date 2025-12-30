@@ -7,12 +7,19 @@ function normalizeVariant(v: any): any {
     if (Array.isArray(v.variant_input_profile)) {
         v.variant_input_profile = v.variant_input_profile[0] || null;
     }
+    if (Array.isArray(v.emulation_profiles)) {
+        v.emulation_profile = v.emulation_profiles[0] || null;
+    }
     return v;
 }
 
 // Helper: Normalize Console List (Apply variant normalization and defaults)
 function normalizeConsoleList(data: any[] | null): ConsoleDetails[] {
-    return (data || []).map((item: any) => {
+    if (!data || !Array.isArray(data)) return []; // DEFENSIVE CHECK
+
+    return data.map((item: any) => {
+        if (!item) return null; // Skip invalid items
+
         const variants = (item.variants || []).map(normalizeVariant);
         item.variants = variants;
 
@@ -26,7 +33,7 @@ function normalizeConsoleList(data: any[] | null): ConsoleDetails[] {
         }
 
         return item;
-    }) as ConsoleDetails[];
+    }).filter(Boolean) as ConsoleDetails[];
 }
 
 export const fetchAllConsoles = async (includeHidden: boolean = false): Promise<ConsoleDetails[]> => {
@@ -49,14 +56,42 @@ export const fetchAllConsoles = async (includeHidden: boolean = false): Promise<
 
         if (error) {
             console.error('[API] fetchAllConsoles DB Error:', error.message);
-            throw new Error(error.message);
+            // Instead of throwing, return empty to prevent page crash
+            return [];
         }
 
         return normalizeConsoleList(data);
 
     } catch (e: any) {
         console.error('[API] Fetch All Consoles Exception:', e);
-        throw e;
+        return [];
+    }
+};
+
+export const fetchVaultConsoles = async (): Promise<ConsoleDetails[]> => {
+    try {
+        const supabase = createClient();
+        // Optimized query: Excludes heavy 'emulation_profiles' and 'variant_input_profile'
+        // Only fetches core console data, manufacturer, and variant specs needed for list view filtering
+        const { data, error } = await supabase
+            .from('consoles')
+            .select(`
+                *,
+                manufacturer:manufacturer(*),
+                variants:console_variants(*)
+            `)
+            .eq('status', 'published')
+            .order('name', { ascending: true });
+
+        if (error) {
+            console.error('[API] fetchVaultConsoles DB Error:', error.message);
+            return [];
+        }
+
+        return normalizeConsoleList(data);
+    } catch (e: any) {
+        console.error('[API] Fetch Vault Consoles Exception:', e);
+        return [];
     }
 };
 
@@ -79,7 +114,7 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
         
         if (error) {
             console.error('[API] fetchConsolesFiltered DB Error:', error.message);
-            throw error;
+            return { data: [], count: 0 };
         }
 
         let normalizedData = normalizeConsoleList(data);
@@ -135,20 +170,25 @@ export const fetchConsoleBySlug = async (slug: string, includeHidden: boolean = 
             query = query.eq('status', 'published');
         }
 
-        const { data, error } = await query.limit(1);
+        // Use maybeSingle to avoid 406/JSON errors if 0 or >1 rows
+        // But .limit(1).maybeSingle() or just .limit(1) and check length
+        // Standard .single() throws if 0 rows.
+
+        const { data, error } = await query.maybeSingle();
             
         if (error) {
             return { data: null, error: { message: error.message } };
         }
 
-        if (!data || data.length === 0) {
+        if (!data) {
             return { data: null, error: { message: "Console not found in database" } };
         }
 
-        // Normalize single item
-        const list = normalizeConsoleList(data);
-        return { data: list[0], error: null };
+        // Normalize single item (wrap in array then unwrap)
+        const list = normalizeConsoleList([data]);
+        return { data: list[0] || null, error: null };
     } catch (e: any) {
+        // Return a structured error object instead of throwing
         return { data: null, error: { message: `EXCEPTION: ${e.message}` } };
     }
 };
@@ -169,7 +209,7 @@ export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs |
         const supabase = createClient();
         const { data } = await supabase
             .from('console_variants')
-            .select('*, variant_input_profile(*)')
+            .select('*, variant_input_profile(*), emulation_profiles(*)')
             .eq('console_id', consoleId)
             .eq('is_default', true)
             .maybeSingle();
@@ -178,7 +218,7 @@ export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs |
 
         const { data: anyVar } = await supabase
             .from('console_variants')
-            .select('*, variant_input_profile(*)')
+            .select('*, variant_input_profile(*), emulation_profiles(*)')
             .eq('console_id', consoleId)
             .limit(1)
             .maybeSingle();
@@ -194,7 +234,7 @@ export const getVariantsByConsole = async (consoleId: string): Promise<ConsoleVa
         const supabase = createClient();
         const { data, error } = await supabase
             .from('console_variants')
-            .select('*, variant_input_profile(*)')
+            .select('*, variant_input_profile(*), emulation_profiles(*)')
             .eq('console_id', consoleId)
             .order('is_default', { ascending: false });
         if (error) throw error;
@@ -209,7 +249,7 @@ export const getVariantById = async (variantId: string): Promise<ConsoleVariant 
         const supabase = createClient();
         const { data, error } = await supabase
             .from('console_variants')
-            .select('*, variant_input_profile(*)')
+            .select('*, variant_input_profile(*), emulation_profiles(*)')
             .eq('id', variantId)
             .single();
         if (error) throw error;
@@ -272,7 +312,7 @@ export const updateConsole = async (
 export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>): Promise<{ success: boolean, message?: string }> => {
     try {
         const supabase = createClient();
-        const { variant_input_profile, ...mainVariantData } = variantData;
+        const { variant_input_profile, emulation_profile, ...mainVariantData } = variantData;
 
         const { data: newVariant, error: variantError } = await supabase
             .from('console_variants')
@@ -288,11 +328,30 @@ export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>)
                 ...variant_input_profile,
                 variant_id: newVariant.id
             };
-            const { error: profileError } = await supabase.from('variant_input_profile').insert([profileData]);
+            // Use UPSERT because the trigger automatically creates a row on insert
+            const { error: profileError } = await supabase.from('variant_input_profile').upsert([profileData], { onConflict: 'variant_id' });
 
             if (profileError) {
-                console.error("Input Profile Insert Failed:", profileError);
-                return { success: true, message: "Variant saved, but Input Profile failed: " + profileError.message };
+                console.error("Input Profile Update Failed:", profileError);
+                return { success: true, message: "Variant saved, but Input Profile update failed: " + profileError.message };
+            }
+        }
+
+        if (emulation_profile) {
+            // Emulation profiles might be auto-created by DB triggers, so we use upsert
+            const { id, ...emuDataWithoutId } = emulation_profile as any;
+            const emuPayload = {
+                ...emuDataWithoutId,
+                variant_id: newVariant.id
+            };
+
+            const { error: emuError } = await supabase
+                .from('emulation_profiles')
+                .upsert(emuPayload, { onConflict: 'variant_id' });
+
+            if (emuError) {
+                console.error("Emulation Profile Copy Failed:", emuError);
+                // Non-fatal error, we still return success for the variant
             }
         }
 

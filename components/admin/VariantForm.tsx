@@ -33,6 +33,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     
     const [existingVariants, setExistingVariants] = useState<ConsoleVariant[]>([]);
     const [selectedTemplate, setSelectedTemplate] = useState<string>('');
+    const [pendingEmulationData, setPendingEmulationData] = useState<any>(null);
 
     const [ramInput, setRamInput] = useState<{ value: string | number, unit: 'GB' | 'MB' }>({ value: '', unit: 'GB' });
     const [cpuMinInput, setCpuMinInput] = useState<{ value: string | number, unit: 'GHz' | 'MHz' }>({ value: '', unit: 'GHz' });
@@ -90,9 +91,10 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             }
 
         } else if (preSelectedConsoleId) {
+            // Force update formData when preSelectedConsoleId changes
             setFormData(prev => ({ ...prev, console_id: preSelectedConsoleId }));
         }
-    }, [initialData, preSelectedConsoleId]);
+    }, [initialData, preSelectedConsoleId]); // Dependency array handles prop changes
 
     const handleRamChange = (newVal: string | number, newUnit: 'GB' | 'MB') => {
         setRamInput({ value: newVal, unit: newUnit });
@@ -206,14 +208,38 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         if (isEditMode) return; 
         setSelectedTemplate(variantId);
         setFieldErrors({});
+        setPendingEmulationData(null);
+
         if (!variantId) return;
         const template = existingVariants.find(v => v.id === variantId);
         if (template) {
             const { id, variant_name, slug, is_default, price_launch_usd, model_no, ...specs } = template;
+
+            // Flatten specs (including Input Profile)
+            const flattenedSpecs = { ...specs };
+
+            // Explicitly handle variant_input_profile if it exists
+            if (template.variant_input_profile) {
+                // We must unwrap it or just spread it if it's already an object
+                const profile = Array.isArray(template.variant_input_profile)
+                    ? template.variant_input_profile[0]
+                    : template.variant_input_profile;
+
+                if (profile) {
+                    Object.assign(flattenedSpecs, profile);
+                }
+            }
+
+            // Handle Emulation Profile Staging
+            if (template.emulation_profile) {
+                 setPendingEmulationData(template.emulation_profile);
+            }
+
             setFormData(prev => ({
-                ...specs, console_id: prev.console_id, variant_name: '', slug: '',
+                ...flattenedSpecs, console_id: prev.console_id, variant_name: '', slug: '',
                 is_default: false, price_launch_usd: '', model_no: '', image_url: template.image_url
             }));
+
             const mb = Number(template.ram_mb);
             if (!isNaN(mb) && mb > 0) {
                  if (mb >= 1024 && mb % 1024 === 0) setRamInput({ value: mb / 1024, unit: 'GB' });
@@ -303,6 +329,11 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             variantPayload.variant_input_profile = inputProfilePayload;
         }
 
+        // Attach Pending Emulation Data if creating a new variant from a template
+        if (!isEditMode && pendingEmulationData) {
+            variantPayload.emulation_profile = pendingEmulationData;
+        }
+
         setLoading(true);
         try {
             const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Database timeout")), 10000));
@@ -332,9 +363,16 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                         setDatePrecision('');
                         setDateValue('');
                         setSelectedTemplate('');
+                        setPendingEmulationData(null);
                         setOpenSections({ "IDENTITY & ORIGIN": true });
                     } else {
                         setFormData(prev => ({ ...prev, variant_name: '', slug: '', is_default: false, model_no: '' }));
+                        // If cloning, we likely want to keep the pending emulation data?
+                        // Actually 'CLONE' here means "Save and add another similar one", not "Clone Database Row".
+                        // So we might want to keep the emulation data if the user intends to create another variant based on the same specs.
+                        // But typically we clear form. Let's strictly follow the 'SAVE' reset logic for simplicity unless user requested otherwise.
+                        // Actually CLONE usually just clears ID-related fields but keeps specs.
+                        // So we should NOT clear pendingEmulationData here.
                     }
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
@@ -520,4 +558,4 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             </form>
         </div>
     );
-};
+}

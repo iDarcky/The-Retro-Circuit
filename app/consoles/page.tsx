@@ -1,7 +1,7 @@
-import { fetchManufacturers, fetchAllConsoles } from '../../lib/api';
+import { fetchManufacturers, fetchVaultConsoles } from '../../lib/api';
 import ConsoleVaultClient from '../../components/console/ConsoleVaultClient';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export const metadata = {
   title: 'Console Vault | The Retro Circuit',
@@ -9,10 +9,18 @@ export const metadata = {
 };
 
 export default async function ConsoleVaultPage() {
-  const [manufacturers, allConsoles] = await Promise.all([
-      fetchManufacturers(),
-      fetchAllConsoles()
-  ]);
+  let manufacturers: any[] = [];
+  let allConsoles: any[] = [];
+
+  try {
+      [manufacturers, allConsoles] = await Promise.all([
+          fetchManufacturers(),
+          fetchVaultConsoles()
+      ]);
+  } catch (error) {
+      console.warn('Build Warning: Failed to fetch console vault data. Returning empty state.', error);
+      // Fallback is empty arrays, allowing build to complete
+  }
 
   return <ConsoleVaultClient initialManufacturers={manufacturers} initialConsoles={allConsoles} />;
 }

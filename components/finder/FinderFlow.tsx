@@ -123,7 +123,10 @@ const FinderFlowContent = () => {
 
   const stepParam = searchParams.get('step');
 
-  // Calculate step index based on URL param
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [stepParam]);
+
   let stepIndex = -1;
   if (stepParam === 'results') {
     stepIndex = QUESTIONS.length;
@@ -141,8 +144,6 @@ const FinderFlowContent = () => {
   const handleAnswer = (answer: string | string[]) => {
     const params = new URLSearchParams(searchParams.toString());
 
-    // For single select questions, 'answer' is string.
-    // For multi select (Q7), it is string[].
     const optionId = Array.isArray(answer) ? answer.join(',') : answer;
 
     // Q1 Logic: Set Profile and Initial Weights
@@ -164,30 +165,25 @@ const FinderFlowContent = () => {
     // Q3 Logic: Target Tier
     if (stepIndex === 2) {
         params.set('target_tier', optionId);
-        console.log('Target Tier:', optionId);
     }
 
     // Q4 Logic: Budget
     if (stepIndex === 3) {
         params.set('budget_band', optionId);
-        console.log('Budget Band:', optionId);
     }
 
     // Q5 Logic: Portability
     if (stepIndex === 4) {
         params.set('portability', optionId);
-        console.log('Portability:', optionId);
     }
 
     // Q6 Logic: Setup
     if (stepIndex === 5) {
         params.set('setup', optionId);
-        console.log('Setup:', optionId);
     }
 
     // Q7 Logic: Features
     if (stepIndex === 6) {
-        // Handle "none" logic or empty
         if (Array.isArray(answer)) {
              if (answer.includes('none')) {
                  params.set('features', 'none');
@@ -197,16 +193,13 @@ const FinderFlowContent = () => {
                  params.set('features', 'none'); // Fallback
              }
         } else {
-             // Fallback if somehow single string passed
              params.set('features', optionId);
         }
-        console.log('Features:', params.get('features'));
     }
 
     // Q8 Logic: Aesthetic
     if (stepIndex === 7) {
         params.set('aesthetic', optionId);
-        console.log('Aesthetic:', optionId);
     }
 
     // Navigation
@@ -250,7 +243,6 @@ const FinderFlowContent = () => {
           <QuizQuestion
             question={QUESTIONS[stepIndex].question}
             subtitle={
-                // Dynamic Subtitle Logic for Gift Mode
                 (searchParams.get('tone_mode') === 'gift')
                     ? (QUESTIONS[stepIndex].id === 'q3'
                         ? "Choose what the person you’re gifting this to would enjoy playing most."

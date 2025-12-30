@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
+export const revalidate = 300; // 5 minutes
+
 export default function NewsPage() {
   return (
     <div className="w-full">
