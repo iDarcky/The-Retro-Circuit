@@ -156,7 +156,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
              />
 
              {/* MAIN CONTENT GRID */}
-             <div className="w-full max-w-[1600px] mx-auto px-4 md:px-8 py-12">
+             <div className="w-full mx-auto px-4 md:px-8 py-12">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12 relative">
 
                     {/* --- LEFT COLUMN: STICKY SIDEBAR (lg:col-span-4) --- */}
@@ -220,7 +220,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                              {/* SILICON CORE */}
                              {hasData(SECTIONS.SILICON, mergedSpecs) ? (
-                                <SpecCard title="SILICON CORE" collapsible defaultOpen={true}>
+                                <SpecCard title="SILICON CORE">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-3">
                                             <SpecField label="OS / Firmware" value={mergedSpecs.os} />
@@ -250,7 +250,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                             {/* MEMORY & STORAGE */}
                             {hasData(SECTIONS.MEMORY, mergedSpecs) ? (
-                                <SpecCard title="MEMORY & STORAGE" collapsible defaultOpen={false}>
+                                <SpecCard title="MEMORY & STORAGE">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-3">
                                             <div className="grid grid-cols-2 gap-4">
@@ -273,7 +273,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                             {/* DISPLAY */}
                             {hasData(SECTIONS.DISPLAY, mergedSpecs) ? (
-                                <SpecCard title="DISPLAY" collapsible defaultOpen={false}>
+                                <SpecCard title="DISPLAY">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-3">
                                             <div className="flex justify-between items-end mb-2">
@@ -312,7 +312,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                             {/* INPUT & CONTROLS */}
                             {hasData(SECTIONS.INPUT, mergedSpecs) ? (
-                                <SpecCard title="INPUT & CONTROLS" collapsible defaultOpen={false}>
+                                <SpecCard title="INPUT & CONTROLS">
                                     {mergedSpecs.variant_input_profile ? (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                             {/* Left Column: Dpad & Face */}
@@ -407,7 +407,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                             {/* CONNECTIVITY & POWER */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {hasData(SECTIONS.CONNECTIVITY, mergedSpecs) ? (
-                                    <SpecCard title="CONNECTIVITY" collapsible defaultOpen={false}>
+                                    <SpecCard title="CONNECTIVITY">
                                         <SpecField label="Wi-Fi" value={mergedSpecs.wifi_specs} small />
                                         <SpecField label="Bluetooth" value={mergedSpecs.bluetooth_specs} small />
                                         <SpecField label="Other" value={mergedSpecs.other_connectivity} small />
@@ -427,7 +427,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                                 ) : null}
 
                                 {hasData(SECTIONS.POWER, mergedSpecs) ? (
-                                    <SpecCard title="POWER & CHASSIS" collapsible defaultOpen={false}>
+                                    <SpecCard title="POWER & CHASSIS">
                                         <div className="grid grid-cols-2 gap-4">
                                             <SpecField label="Capacity" value={mergedSpecs.battery_capacity_mah} unit="mAh" highlight />
                                             <SpecField label="Energy" value={mergedSpecs.battery_capacity_wh} unit="Wh" />
