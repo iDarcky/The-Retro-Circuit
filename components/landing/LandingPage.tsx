@@ -25,21 +25,21 @@ export default async function LandingPage() {
     <div className="bg-bg-primary font-mono selection:bg-accent selection:text-white flex flex-col w-full max-w-[1600px] mx-auto px-4 md:px-8 py-12">
 
       {/* SECTION I: WELCOME (H1) */}
-      <section className="mb-16 border-b-2 border-dashed border-gray-700 pb-12 relative">
+      <section className="mb-16 border-b-2 border-dashed border-gray-700 pb-12 relative text-center">
           <h1 className="text-4xl md:text-6xl font-pixel text-white mb-6 drop-shadow-[4px_4px_0_rgba(255,0,255,0.5)]">
             Welcome to the <br />
             <span className="text-secondary">Circuit_</span>
           </h1>
 
-          <div className="pl-1 border-l-4 border-accent ml-2 md:ml-4">
-              <p className="font-mono text-lg md:text-xl text-white font-bold mb-4 pl-4">
+          <div className="mx-auto max-w-3xl">
+              <p className="font-mono text-lg md:text-xl text-white font-bold mb-4">
                   A structured environment for understanding handheld gaming systems.
               </p>
-              <p className="font-mono text-gray-400 leading-relaxed max-w-3xl pl-4 mb-6">
+              <p className="font-mono text-gray-400 leading-relaxed mb-6">
                   The handheld market is fragmented across variants, revisions, and silent updates.
                   The Retro Circuit organizes that information into a consistent, comparable system.
               </p>
-              <div className="pl-4">
+              <div>
                 <Link href="/about" className="text-secondary hover:text-white transition-colors font-bold text-sm tracking-widest">
                     [about system]
                 </Link>
@@ -50,7 +50,7 @@ export default async function LandingPage() {
       {/* SECTION II: CONSOLE VAULT [01] */}
       <section className="mb-16">
         <h2 className="font-pixel text-xl text-white mb-8 flex items-center gap-3">
-            <span className="text-accent">[ 01 ]</span>
+            <span className="text-accent whitespace-nowrap">[ 01 ]</span>
             CONSOLE VAULT_
         </h2>
 
@@ -85,7 +85,7 @@ export default async function LandingPage() {
       {/* SECTION III: ANALYSIS TOOLS [02] */}
       <section className="mb-16">
         <h2 className="font-pixel text-xl text-white mb-8 flex items-center gap-3">
-            <span className="text-primary">[ 02 ]</span>
+            <span className="text-primary whitespace-nowrap">[ 02 ]</span>
             ANALYSIS TOOLS
         </h2>
 
@@ -114,7 +114,7 @@ export default async function LandingPage() {
             </div>
 
             {/* Right: QUICK COMPARE */}
-            <div className="vault-section p-8 border border-gray-800 bg-black/20">
+            <div className="vault-section p-8 border border-gray-800 bg-black/20 flex flex-col">
                 <div className="mb-6">
                     <div className="flex items-center gap-3 mb-2">
                         <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-secondary border-b-[8px] border-b-transparent animate-pulse"></div>
@@ -124,7 +124,14 @@ export default async function LandingPage() {
                         Select two devices to view a head-to-head performance analysis.
                     </p>
                 </div>
-                <QuickCompare consoles={allConsoles} />
+                {/*
+                  QuickCompare is set to flex-grow internally, but we need to ensure
+                  the container allows it to expand without overflowing.
+                  By adding flex-col to parent, it should fill available space.
+                */}
+                <div className="flex-grow">
+                     <QuickCompare consoles={allConsoles} />
+                </div>
             </div>
         </div>
       </section>
@@ -132,7 +139,7 @@ export default async function LandingPage() {
       {/* SECTION IV: LATEST TRANSMISSIONS [03] */}
       <section className="mb-16">
         <h2 className="font-pixel text-xl text-white mb-8 flex items-center gap-3">
-            <span className="text-gray-500">[ 03 ]</span>
+            <span className="text-gray-500 whitespace-nowrap">[ 03 ]</span>
             LATEST TRANSMISSIONS
         </h2>
 
