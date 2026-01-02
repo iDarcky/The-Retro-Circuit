@@ -98,7 +98,6 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <div className="h-screen flex flex-col relative overflow-hidden bg-bg-primary">
       
-      {/* SYSTEM BANNER - Always Top */}
       <SystemBanner />
 
       {/* BACKGROUND GRID */}

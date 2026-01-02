@@ -26,22 +26,7 @@ export default async function LandingPage() {
   };
 
   return (
-    // Outer Container: No borders, no padding
     <div className="bg-bg-primary font-mono selection:bg-accent selection:text-white flex flex-col">
-      {/*
-          NOTE: The parent MainLayout removes padding-top, and DesktopHeader is fixed/sticky above.
-      */}
-
-      {/*
-          BLOCK: Hero Header Metadata
-          Moved outside the box as per requirement.
-      */}
-
-      {/*
-          BLOCK: Hero Grid Split
-          Left: Text + Buttons
-          Right: Quick Compare
-      */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 px-4 md:px-8 min-h-[600px]">
 
           {/* Left Column (8 cols) - Console Vault Hero */}
@@ -85,7 +70,6 @@ export default async function LandingPage() {
           <div className="col-span-1 md:col-span-4 vault-section p-6 md:p-8 flex flex-col">
               <div className="mb-6">
                   <div className="flex items-center gap-3 mb-2">
-                       {/* Blue Triangle (Breathing) */}
                        <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-primary border-b-[8px] border-b-transparent animate-pulse"></div>
                        <h3 className="text-xl font-pixel text-white">QUICK COMPARE_</h3>
                   </div>
@@ -101,10 +85,6 @@ export default async function LandingPage() {
 
       </div>
 
-      {/*
-          BLOCK: Finder
-          Placed between Hero and New In The Vault
-      */}
       <div className="vault-section mx-4 md:mx-8 mt-2.5 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex flex-col gap-2">
               <div className="flex items-center gap-4">
@@ -133,13 +113,8 @@ export default async function LandingPage() {
           </Link>
       </div>
 
-       {/*
-          BLOCK: New In The Vault
-          10px gap from hero as requested (mt-2.5 is 10px)
-      */}
       <div className="vault-section mx-4 md:mx-8 mt-2.5 p-6 md:p-8">
         <div className="flex items-center gap-4 mb-8">
-             {/* Green Triangle (Breathing) */}
              <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-secondary border-b-[8px] border-b-transparent animate-pulse"></div>
 
              {/* Pixel Header */}
@@ -231,13 +206,8 @@ export default async function LandingPage() {
         </div>
       </div>
 
-       {/*
-          BLOCK: New & Upcoming
-          Stacked below New In The Vault
-      */}
       <div className="vault-section mx-4 md:mx-8 mt-2.5 p-6 md:p-8">
         <div className="flex items-center gap-4 mb-8">
-             {/* Pink Triangle (Breathing) */}
              <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-accent border-b-[8px] border-b-transparent animate-pulse"></div>
 
              {/* Pixel Header */}
