@@ -12,6 +12,7 @@ import { supabase, isSupabaseConfigured } from '../../lib/supabase/singleton';
 import MobileBottomNav from './MobileBottomNav';
 import MobileTopBar from './MobileTopBar';
 import DesktopHeader from './DesktopHeader';
+import SystemBanner from './SystemBanner';
 import { 
   IconDatabase, IconVS,
   IconHome, IconChip, IconSearch
@@ -97,6 +98,8 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <div className="h-screen flex flex-col relative overflow-hidden bg-bg-primary">
       
+      <SystemBanner />
+
       {/* BACKGROUND GRID */}
       <div className="absolute inset-0 z-0 pointer-events-none" 
            style={{ 

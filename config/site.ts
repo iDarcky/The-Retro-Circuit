@@ -2,7 +2,7 @@ export const siteConfig = {
   name: "The Retro Circuit | Ultimate Retro Console Comparisons & Specs",
   description: "The ultimate retro gaming hub. Compare deeply detailed console specs, analyze emulation performance, and find your perfect device with our comprehensive hardware database.",
   url: "https://theretrocircuit.com",
-  version: "v1.4.2",
+  version: "Pre-Alpha 0.4.2",
   est: "2025",
   links: {
     email: "mailto:contact@theretrocircuit.com",
