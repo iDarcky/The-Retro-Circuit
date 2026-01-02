@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Share2 } from 'lucide-react';
 import { ConsoleDetails, ConsoleVariant, Manufacturer } from '../../lib/types';
-import { getConsoleImage } from '../../lib/utils';
 import { IconVS } from '../ui/Icons';
 import Button from '../ui/Button';
 
@@ -248,7 +247,7 @@ export default function ConsoleIdentitySection({
                     {/* SECTION 1: IDENTITY {Title} (Icon + Fabricator + Console) */}
                     <div className="flex items-center gap-3 shrink-0">
                         <div className="shrink-0 hidden sm:block">
-                            {currentImage && <img src={currentImage} alt="Icon" className="w-8 h-8 object-contain" />}
+                            {consoleIcon && <img src={consoleIcon} alt="Icon" className="w-8 h-8 object-contain" />}
                         </div>
                         <h2
                             className="font-pixel text-[14px] md:text-[18px] text-white uppercase leading-tight"
