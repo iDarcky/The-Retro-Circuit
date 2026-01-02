@@ -98,6 +98,33 @@ export default async function LandingPage() {
 
       </div>
 
+      {/*
+          BLOCK: Finder
+          Placed between Hero and New In The Vault
+      */}
+      <div className="vault-section mx-4 md:mx-8 mt-2.5 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-4">
+                  {/* Primary Triangle (Breathing) */}
+                  <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-primary border-b-[8px] border-b-transparent animate-pulse"></div>
+                  <h2 className="text-xl md:text-3xl font-pixel text-white tracking-tight">
+                      FINDER_
+                  </h2>
+              </div>
+              <p className="text-gray-400 font-mono text-sm md:text-base md:ml-8">
+                  Take our short quiz and find your perfect handheld today.
+              </p>
+          </div>
+
+          <Link
+            href="/finder"
+            className="w-full md:w-auto bg-primary text-black font-tech font-bold text-lg px-8 py-3 flex items-center justify-center gap-2 hover:bg-white transition-colors shadow-[4px_4px_0_rgba(255,255,255,0.2)] hover:shadow-[4px_4px_0_rgba(255,255,255,0.5)]"
+          >
+              START QUIZ
+              <ArrowUpRight size={20} />
+          </Link>
+      </div>
+
        {/*
           BLOCK: New In The Vault
           10px gap from hero as requested (mt-2.5 is 10px)
