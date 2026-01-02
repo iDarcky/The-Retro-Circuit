@@ -119,14 +119,14 @@ export default function ConsoleIdentitySection({
 
     const JumpLinks = ({ compact = false }: { compact?: boolean }) => (
         <div className={`flex items-center shrink-0 ${compact ? 'gap-3' : 'gap-2'}`}>
-            {!compact && <span className="font-mono text-[10px] text-gray-500 uppercase tracking-widest">[ JUMP TO ] :</span>}
+            {!compact && <span className="font-mono text-[12px] text-gray-500 uppercase tracking-widest">[ JUMP TO ] :</span>}
             {['Analysis', 'Emulation', 'Tech', 'Buy'].map((link) => (
                 <button
                     key={link}
                     onClick={() => scrollToSection(link === 'Emulation' ? 'playability' : link.toLowerCase())}
                     className={`
                         font-mono text-gray-400 hover:text-secondary uppercase transition-colors whitespace-nowrap
-                        ${compact ? 'text-[10px]' : 'text-[10px] border-b border-transparent hover:border-secondary'}
+                        ${compact ? 'text-[10px]' : 'text-[12px] border-b border-transparent hover:border-secondary'}
                     `}
                 >
                     {compact ? `[ ${link} ]` : `[ ${link} ]`}
@@ -161,9 +161,10 @@ export default function ConsoleIdentitySection({
                         &lt; BACK TO CONSOLE VAULT
                     </Link>
 
-                    {/* ROW 1: Icon + Title */}
-                    <div className="flex items-center gap-4">
-                        <div className="shrink-0">
+                    {/* ROW 1: Icon + (Title & Metadata) */}
+                    <div className="flex gap-4">
+                        {/* Icon - Left of the stack */}
+                        <div className="shrink-0 pt-1">
                             {consoleIcon && (
                                 <img
                                     src={consoleIcon}
@@ -172,32 +173,36 @@ export default function ConsoleIdentitySection({
                                 />
                             )}
                         </div>
-                        <h1
-                            className="font-pixel text-[32px] md:text-[40px] text-white leading-none tracking-tight uppercase"
-                            style={{
-                                textShadow: '4px 4px 0px rgba(0, 255, 157, 0.5)',
-                            }}
-                        >
-                            <span className="block md:inline mr-0 md:mr-4 text-white">{fabName}</span>
-                            <span>{consoleData.name}</span>
-                        </h1>
-                    </div>
 
-                    {/* ROW 2: Metadata */}
-                    <div className="flex flex-wrap items-center gap-3 font-mono text-[10px] text-gray-400 uppercase tracking-widest">
-                        {manufacturer ? (
-                            <Link href={`/fabricators/${manufacturer.slug}`} className="text-white hover:text-secondary transition-colors border-b border-transparent hover:border-secondary">
-                                {fabName}
-                            </Link>
-                        ) : (
-                            <span className="text-white">{fabName}</span>
-                        )}
-                        <span className="text-gray-600 px-1">{'//'}</span>
-                        <span>{formFactor}</span>
-                        <span className="text-gray-600 px-1">{'//'}</span>
-                        <span>{deviceCategory}</span>
-                        <span className="text-gray-600 px-1">{'//'}</span>
-                        <span className="text-accent">{currentYear}</span>
+                        {/* Text Stack: Title above Metadata */}
+                        <div className="flex flex-col gap-1">
+                            <h1
+                                className="font-pixel text-[32px] md:text-[40px] text-white leading-none tracking-tight uppercase"
+                                style={{
+                                    textShadow: '4px 4px 0px rgba(0, 255, 157, 0.5)',
+                                }}
+                            >
+                                <span className="block md:inline mr-0 md:mr-4 text-white">{fabName}</span>
+                                <span>{consoleData.name}</span>
+                            </h1>
+
+                            {/* Metadata - Aligned with H1 */}
+                            <div className="flex flex-wrap items-center gap-3 font-mono text-[12px] text-gray-400 uppercase tracking-widest">
+                                {manufacturer ? (
+                                    <Link href={`/fabricators/${manufacturer.slug}`} className="text-white hover:text-secondary transition-colors border-b border-transparent hover:border-secondary">
+                                        {fabName}
+                                    </Link>
+                                ) : (
+                                    <span className="text-white">{fabName}</span>
+                                )}
+                                <span className="text-gray-600 px-1">{'//'}</span>
+                                <span>{formFactor}</span>
+                                <span className="text-gray-600 px-1">{'//'}</span>
+                                <span>{deviceCategory}</span>
+                                <span className="text-gray-600 px-1">{'//'}</span>
+                                <span className="text-accent">{currentYear}</span>
+                            </div>
+                        </div>
                     </div>
 
                     {/* ROW 3: Controls & Jump Links */}
