@@ -166,7 +166,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                         <div className="sticky top-[120px] space-y-6">
 
                             {/* 1. PHOTO */}
-                            <div className="bg-black border-2 border-border-normal p-8 flex items-center justify-center min-h-[300px] relative shadow-[0_0_20px_rgba(0,0,0,0.5)] group overflow-hidden">
+                            <div className="bg-black border-2 border-border-normal p-8 flex items-center justify-center min-h-[200px] relative shadow-[0_0_20px_rgba(0,0,0,0.5)] group overflow-hidden">
                                 {currentImage ? (
                                     <img src={currentImage} alt={consoleData.name} className="w-full h-auto object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-500 relative z-10" key={currentImage} />
                                 ) : (

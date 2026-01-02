@@ -30,7 +30,8 @@ export default function ConsoleIdentitySection({
     const sentinelRef = useRef<HTMLDivElement>(null);
 
     const currentVariant = variants.find(v => v.id === selectedVariantId) || null;
-    const currentImage = getConsoleImage({ console: consoleData, variant: currentVariant });
+    // Section I Icon: STRICTLY Console Image only. No variant fallback.
+    const consoleIcon = consoleData.image_url;
     const currentYear = currentVariant?.release_date ? new Date(currentVariant.release_date).getFullYear() : 'XXXX';
     const compareUrl = `/arena/${consoleData.slug}${currentVariant?.slug ? `-${currentVariant.slug}` : ''}-vs-select`;
 
@@ -118,15 +119,15 @@ export default function ConsoleIdentitySection({
     };
 
     const JumpLinks = ({ compact = false }: { compact?: boolean }) => (
-        <div className={`flex items-center shrink-0 ${compact ? 'gap-3' : 'gap-4'}`}>
-            {!compact && <span className="font-mono text-xs text-gray-500 uppercase tracking-widest">[ JUMP TO ] :</span>}
+        <div className={`flex items-center shrink-0 ${compact ? 'gap-3' : 'gap-2'}`}>
+            {!compact && <span className="font-mono text-[10px] text-gray-500 uppercase tracking-widest">[ JUMP TO ] :</span>}
             {['Analysis', 'Emulation', 'Tech', 'Buy'].map((link) => (
                 <button
                     key={link}
                     onClick={() => scrollToSection(link === 'Emulation' ? 'playability' : link.toLowerCase())}
                     className={`
                         font-mono text-gray-400 hover:text-secondary uppercase transition-colors whitespace-nowrap
-                        ${compact ? 'text-[10px]' : 'text-xs border-b border-transparent hover:border-secondary'}
+                        ${compact ? 'text-[10px]' : 'text-[10px] border-b border-transparent hover:border-secondary'}
                     `}
                 >
                     {compact ? `[ ${link} ]` : `[ ${link} ]`}
@@ -154,28 +155,26 @@ export default function ConsoleIdentitySection({
         <>
             {/* --- STATE A: NORMAL FLOW --- */}
             <div className="relative w-full">
-                <div className="w-full px-4 md:px-8 pt-8 pb-4 flex flex-col gap-6">
+                <div className="w-full px-4 md:px-8 pt-8 pb-4 flex flex-col gap-2">
 
                     {/* BACK LINK */}
-                    <Link href="/consoles" className="text-primary font-mono text-xs hover:text-white transition-colors inline-block w-fit">
+                    <Link href="/consoles" className="text-primary font-mono text-xs hover:text-white transition-colors inline-block w-fit mb-2">
                         &lt; BACK TO CONSOLE VAULT
                     </Link>
 
                     {/* ROW 1: Icon + Title */}
-                    <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-4">
                         <div className="shrink-0">
-                            {currentImage ? (
+                            {consoleIcon && (
                                 <img
-                                    src={currentImage}
+                                    src={consoleIcon}
                                     alt="Icon"
                                     className="w-[64px] h-[64px] object-contain drop-shadow-lg"
                                 />
-                            ) : (
-                                <div className="w-[64px] h-[64px] bg-gray-800 rounded-full" />
                             )}
                         </div>
                         <h1
-                            className="font-pixel text-[32px] md:text-[55px] text-white leading-none tracking-tight uppercase"
+                            className="font-pixel text-[32px] md:text-[40px] text-white leading-none tracking-tight uppercase"
                             style={{
                                 textShadow: '4px 4px 0px rgba(0, 255, 157, 0.5)',
                             }}
@@ -186,7 +185,7 @@ export default function ConsoleIdentitySection({
                     </div>
 
                     {/* ROW 2: Metadata */}
-                    <div className="flex flex-wrap items-center gap-3 font-mono text-sm md:text-base text-gray-400 uppercase tracking-widest">
+                    <div className="flex flex-wrap items-center gap-3 font-mono text-[10px] text-gray-400 uppercase tracking-widest">
                         {manufacturer ? (
                             <Link href={`/fabricators/${manufacturer.slug}`} className="text-white hover:text-secondary transition-colors border-b border-transparent hover:border-secondary">
                                 {fabName}
@@ -203,14 +202,16 @@ export default function ConsoleIdentitySection({
                     </div>
 
                     {/* ROW 3: Controls & Jump Links */}
-                    <div className="flex flex-wrap items-center gap-6 mt-2">
+                    <div className="flex flex-wrap items-center gap-2 mt-2">
                         <VariantDropdown />
 
                         {/* Divider if Variants exist */}
                         {variants.length > 1 && <div className="h-6 w-px bg-white/10 mx-2 hidden md:block"></div>}
 
-                        <div className="flex-1 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                            <JumpLinks />
+                        <div className="flex-1 flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
+                            <div className="text-[10px]">
+                                <JumpLinks />
+                            </div>
 
                             <div className="flex items-center gap-4">
                                 <CompareButton />
