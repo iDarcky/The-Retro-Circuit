@@ -1,13 +1,16 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUpRight } from 'lucide-react';
-import { fetchLatestConsoles } from '../../lib/api/latest';
+import { fetchLatestConsoles, fetchRealWorldLatest } from '../../lib/api/latest';
 import { fetchConsoleList } from '../../lib/api/consoles';
 import QuickCompare from './QuickCompare';
 
 export default async function LandingPage() {
-  // Fetch latest consoles
+  // Fetch latest consoles (Recently Added to DB)
   const latestConsoles = await fetchLatestConsoles(3);
+
+  // Fetch real-world latest (Recently Released Market)
+  const upcomingConsoles = await fetchRealWorldLatest(3);
 
   // Fetch full list for QuickCompare
   const allConsoles = await fetchConsoleList();
@@ -23,22 +26,7 @@ export default async function LandingPage() {
   };
 
   return (
-    // Outer Container: No borders, no padding
     <div className="bg-bg-primary font-mono selection:bg-accent selection:text-white flex flex-col">
-      {/*
-          NOTE: The parent MainLayout removes padding-top, and DesktopHeader is fixed/sticky above.
-      */}
-
-      {/*
-          BLOCK: Hero Header Metadata
-          Moved outside the box as per requirement.
-      */}
-
-      {/*
-          BLOCK: Hero Grid Split
-          Left: Text + Buttons
-          Right: Quick Compare
-      */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 px-4 md:px-8 min-h-[600px]">
 
           {/* Left Column (8 cols) - Console Vault Hero */}
@@ -82,7 +70,6 @@ export default async function LandingPage() {
           <div className="col-span-1 md:col-span-4 vault-section p-6 md:p-8 flex flex-col">
               <div className="mb-6">
                   <div className="flex items-center gap-3 mb-2">
-                       {/* Blue Triangle (Breathing) */}
                        <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-primary border-b-[8px] border-b-transparent animate-pulse"></div>
                        <h3 className="text-xl font-pixel text-white">QUICK COMPARE_</h3>
                   </div>
@@ -98,19 +85,47 @@ export default async function LandingPage() {
 
       </div>
 
-       {/*
-          BLOCK: New In The Vault
-          10px gap from hero as requested (mt-2.5 is 10px)
-      */}
+      <div className="vault-section mx-4 md:mx-8 mt-2.5 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-4">
+                  {/* Primary Triangle (Breathing) */}
+                  <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-primary border-b-[8px] border-b-transparent animate-pulse"></div>
+                  <h2 className="text-xl md:text-3xl font-pixel text-white tracking-tight">
+                      FINDER_
+                  </h2>
+              </div>
+              <div className="flex flex-col gap-1 md:ml-8">
+                  <p className="text-white font-mono text-sm md:text-base font-bold">
+                      Not sure which handheld to buy?
+                  </p>
+                  <p className="text-gray-500 font-mono text-xs md:text-sm">
+                      Answer a few questions and we'll narrow it down!
+                  </p>
+              </div>
+          </div>
+
+          <Link
+            href="/finder"
+            className="w-full md:w-auto bg-primary text-black font-tech font-bold text-lg px-8 py-3 flex items-center justify-center gap-2 hover:bg-white transition-colors shadow-[4px_4px_0_rgba(255,255,255,0.2)] hover:shadow-[4px_4px_0_rgba(255,255,255,0.5)]"
+          >
+              START QUIZ
+              <ArrowUpRight size={20} />
+          </Link>
+      </div>
+
       <div className="vault-section mx-4 md:mx-8 mt-2.5 p-6 md:p-8">
         <div className="flex items-center gap-4 mb-8">
-             {/* Green Triangle (Breathing) */}
              <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-secondary border-b-[8px] border-b-transparent animate-pulse"></div>
 
              {/* Pixel Header */}
-             <h2 className="text-xl md:text-2xl font-pixel text-white tracking-tight">
-                NEW IN THE VAULT_
-             </h2>
+             <div className="flex flex-col">
+                 <h2 className="text-xl md:text-2xl font-pixel text-white tracking-tight">
+                    NEW IN THE VAULT_
+                 </h2>
+                 <p className="text-sm text-gray-500 font-mono tracking-wide">
+                    Recently added or updated systems
+                 </p>
+             </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -166,6 +181,99 @@ export default async function LandingPage() {
 
                         {/* Price */}
                         <div className="text-lg font-tech tracking-widest text-accent font-bold border-b border-slate-800 pb-4 mb-4">
+                            {console.specs?.price_launch_usd ? `$${console.specs.price_launch_usd}` : 'PRICE UNKNOWN'}
+                        </div>
+
+                        {/* Specs Stack */}
+                        <div className="flex flex-wrap gap-2 mt-auto">
+                            {/* CPU */}
+                            <SpecBadge label="CPU" value={console.specs?.cpu_model || console.specs?.cpu_architecture} />
+
+                            {/* Screen */}
+                            <SpecBadge label="SCR" value={console.specs?.screen_size_inch ? `${console.specs.screen_size_inch}"` : null} />
+
+                            {/* OS */}
+                            <SpecBadge label="OS" value={console.specs?.os} />
+
+                             {/* Fallback if no specs */}
+                             {(!console.specs?.cpu_model && !console.specs?.screen_size_inch && !console.specs?.os) && (
+                                <span className="text-xs text-slate-600 font-mono italic">AWAITING SPECS...</span>
+                             )}
+                        </div>
+                    </div>
+                </Link>
+            ))}
+        </div>
+      </div>
+
+      <div className="vault-section mx-4 md:mx-8 mt-2.5 p-6 md:p-8">
+        <div className="flex items-center gap-4 mb-8">
+             <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-accent border-b-[8px] border-b-transparent animate-pulse"></div>
+
+             {/* Pixel Header */}
+             <div className="flex flex-col">
+                 <h2 className="text-xl md:text-2xl font-pixel text-white tracking-tight">
+                    NEW & UPCOMING RELEASES_
+                 </h2>
+                 <p className="text-sm text-gray-500 font-mono tracking-wide">
+                    The latest hardware hitting the market
+                 </p>
+             </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {upcomingConsoles.map((console) => (
+                <Link
+                    href={`/consoles/${console.slug}`}
+                    key={console.id}
+                    className="group flex flex-col device-card p-6 relative rounded-lg hover:border-accent transition-colors"
+                >
+
+                    {/* "NEW" Badge */}
+                    <div className="absolute top-4 right-4 z-10">
+                        <div className="bg-primary text-black text-[10px] font-tech font-bold tracking-widest px-2 py-1 border border-black shadow-[2px_2px_0_black]">
+                            LATEST RELEASE
+                        </div>
+                    </div>
+
+                    {/* Image Area */}
+                    <div className="h-[200px] w-full flex items-center justify-center mb-6 bg-slate-900/50 rounded-sm relative overflow-hidden">
+                        {console.image_url ? (
+                            <Image
+                                src={console.image_url}
+                                alt={console.name}
+                                width={300}
+                                height={200}
+                                className="max-h-[160px] w-auto h-auto object-contain group-hover:scale-110 transition-transform duration-500"
+                            />
+                        ) : (
+                            <span className="text-slate-700 font-pixel text-4xl">?</span>
+                        )}
+
+                         {/* Form Factor Badge (Top Left of Image) */}
+                        {console.form_factor && (
+                            <div className="absolute top-2 left-2">
+                                <div className="bg-black/90 border border-slate-500 text-slate-300 px-1.5 py-0.5 text-[9px] font-mono font-bold uppercase">
+                                    {console.form_factor}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Content Stack */}
+                    <div className="flex flex-col gap-2">
+                        {/* Manufacturer */}
+                        <span className="text-xs font-mono text-primary uppercase tracking-widest">
+                            {console.manufacturer?.name || 'UNKNOWN'}
+                        </span>
+
+                        {/* Name */}
+                        <h3 className="text-xl font-bold text-white group-hover:text-accent transition-colors font-pixel leading-tight">
+                            {console.name}
+                        </h3>
+
+                         {/* Price */}
+                         <div className="text-lg font-tech tracking-widest text-accent font-bold border-b border-slate-800 pb-4 mb-4">
                             {console.specs?.price_launch_usd ? `$${console.specs.price_launch_usd}` : 'PRICE UNKNOWN'}
                         </div>
 
