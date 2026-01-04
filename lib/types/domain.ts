@@ -256,7 +256,7 @@ export interface ConsoleVariant {
   variant_input_profile?: VariantInputProfile | null;
 }
 
-export type ContentStatus = 'draft' | 'published' | 'archived';
+export type ContentStatus = 'draft' | 'review' | 'published' | 'archived';
 
 export interface ConsoleDetails {
     id: string;

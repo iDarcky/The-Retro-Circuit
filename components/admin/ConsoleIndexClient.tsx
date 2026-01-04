@@ -16,7 +16,7 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
     const [consoles] = useState(initialConsoles);
     // Since we're moving filtering client-side for now based on the initial fetch,
     // we can keep using state for the *displayed* list.
-    const [filter, setFilter] = useState<'ALL' | 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'>('ALL');
+    const [filter, setFilter] = useState<'ALL' | 'DRAFT' | 'REVIEW' | 'PUBLISHED' | 'ARCHIVED'>('ALL');
     const [search, setSearch] = useState('');
 
     const filteredConsoles = consoles.filter(c => {
@@ -57,7 +57,7 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
             {/* Controls */}
             <div className="flex flex-col md:flex-row gap-4 mb-6 justify-between">
                 <div className="flex gap-2">
-                    {['ALL', 'DRAFT', 'PUBLISHED', 'ARCHIVED'].map((f) => (
+                    {['ALL', 'DRAFT', 'REVIEW', 'PUBLISHED', 'ARCHIVED'].map((f) => (
                         <button
                             key={f}
                             onClick={() => setFilter(f as any)}
@@ -112,6 +112,7 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                                     <td className="p-4">
                                         <span className={`text-[10px] px-2 py-1 border ${
                                             console.status === 'published' ? 'border-secondary text-secondary bg-secondary/10' :
+                                            console.status === 'review' ? 'border-accent text-accent bg-accent/10' :
                                             console.status === 'archived' ? 'border-red-500 text-red-500 bg-red-900/10' :
                                             'border-yellow-500 text-yellow-500 bg-yellow-900/10'
                                         }`}>
@@ -139,13 +140,13 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                                         >
                                             <button
                                                 className={`text-xs border px-3 py-1 transition-colors ${
-                                                    console.status === 'draft'
+                                                    console.status === 'draft' || console.status === 'review'
                                                     ? 'border-dashed border-gray-700 text-gray-500 hover:border-yellow-500 hover:text-yellow-500'
                                                     : 'border-gray-800 text-gray-600 hover:border-cyan-400 hover:text-cyan-400'
                                                 }`}
-                                                title={console.status === 'draft' ? "Admin preview (not public)" : undefined}
+                                                title={console.status !== 'published' ? "Admin preview (not public)" : undefined}
                                             >
-                                                {console.status === 'draft' ? 'PREVIEW' : 'VIEW'}
+                                                {console.status !== 'published' ? 'PREVIEW' : 'VIEW'}
                                             </button>
                                         </Link>
                                     </td>
