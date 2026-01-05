@@ -8,7 +8,14 @@ import { timeAgo } from '@/lib/utils/date-formatter';
 import Button from '@/components/ui/Button';
 
 interface ConsoleIndexClientProps {
-    initialConsoles: {name: string, slug: string, id: string, status?: string, updated_at?: string}[];
+    initialConsoles: {
+        name: string,
+        slug: string,
+        id: string,
+        status?: string,
+        updated_at?: string,
+        manufacturer?: { name: string } | null
+    }[];
 }
 
 export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClientProps) {
@@ -92,6 +99,7 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                             <tr className="border-b border-gray-800 bg-black/50 text-gray-500 text-xs uppercase">
                                 <th className="p-4 w-16">ID</th>
                                 <th className="p-4">Console Name</th>
+                                <th className="p-4">Manufacturer</th>
                                 <th className="p-4">Status</th>
                                 <th className="p-4">Last Updated</th>
                                 <th className="p-4 text-right">Actions</th>
@@ -108,6 +116,9 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                                     <td className="p-4 font-bold text-white group-hover:text-secondary">
                                         {console.name}
                                         <div className="text-[10px] text-gray-500 font-normal mt-1 lowercase opacity-50">{console.slug}</div>
+                                    </td>
+                                    <td className="p-4 text-gray-400">
+                                        {console.manufacturer?.name || '-'}
                                     </td>
                                     <td className="p-4">
                                         <span className={`text-[10px] px-2 py-1 border ${
@@ -154,7 +165,7 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                             ))}
                             {filteredConsoles.length === 0 && (
                                 <tr>
-                                    <td colSpan={5} className="p-8 text-center text-gray-500">
+                                    <td colSpan={6} className="p-8 text-center text-gray-500">
                                         NO RECORDS FOUND.
                                     </td>
                                 </tr>
