@@ -26,11 +26,22 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
     const [filter, setFilter] = useState<'ALL' | 'DRAFT' | 'REVIEW' | 'PUBLISHED' | 'ARCHIVED'>('ALL');
     const [search, setSearch] = useState('');
 
+    const counts = {
+        ALL: consoles.length,
+        DRAFT: consoles.filter(c => c.status === 'draft' || !c.status).length,
+        REVIEW: consoles.filter(c => c.status === 'review').length,
+        PUBLISHED: consoles.filter(c => c.status === 'published').length,
+        ARCHIVED: consoles.filter(c => c.status === 'archived').length,
+    };
+
     const filteredConsoles = consoles.filter(c => {
         const nameMatch = c.name ? c.name.toLowerCase().includes(search.toLowerCase()) : false;
         const slugMatch = c.slug ? c.slug.toLowerCase().includes(search.toLowerCase()) : false;
         const matchesSearch = nameMatch || slugMatch;
-        const matchesFilter = filter === 'ALL' || c.status?.toUpperCase() === filter;
+
+        const currentStatus = c.status ? c.status.toUpperCase() : 'DRAFT';
+        const matchesFilter = filter === 'ALL' || currentStatus === filter;
+
         return matchesSearch && matchesFilter;
     });
 
@@ -74,7 +85,7 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                                 : 'bg-black text-gray-500 border-gray-800 hover:text-white hover:border-gray-600'
                             }`}
                         >
-                            {f}
+                            {f} ({counts[f as keyof typeof counts]})
                         </button>
                     ))}
                 </div>
