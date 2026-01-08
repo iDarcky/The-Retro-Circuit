@@ -47,8 +47,7 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
     const handleInputChange = (key: string, value: any) => {
         // Intercept Status Change
         if (key === 'status') {
-            const oldStatus = formData.status || 'draft';
-            if (oldStatus === 'draft' && value === 'published') {
+            if (value === 'published') {
                 setPendingStatus(value);
                 setShowStatusModal(true);
                 return;
@@ -164,7 +163,11 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                      <div className="bg-bg-primary border-2 border-secondary p-6 max-w-sm w-full shadow-[0_0_50px_rgba(0,255,157,0.3)]">
                          <h3 className="font-pixel text-lg text-secondary mb-4">CONFIRM PUBLISH</h3>
                          <p className="font-mono text-sm text-gray-300 mb-6">
-                             This console will become <strong className="text-white">publicly visible</strong>. Are you sure?
+                             {formData.status === 'review' ? (
+                                 <>This console will become <strong className="text-white">publicly visible</strong>. Are you sure?</>
+                             ) : (
+                                 <>Publishing is normally done from <strong className="text-accent">REVIEW</strong>. Continue anyway?</>
+                             )}
                          </p>
                          <div className="flex justify-end gap-4">
                              <button
@@ -180,7 +183,7 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                                  onClick={confirmStatusChange}
                                  className="text-xs"
                              >
-                                 PUBLISH NOW
+                                 {formData.status === 'review' ? 'PUBLISH' : 'PUBLISH ANYWAY'}
                              </Button>
                          </div>
                      </div>
@@ -206,6 +209,7 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                             }`}
                         >
                             <option value="draft">DRAFT</option>
+                            <option value="review">REVIEW</option>
                             <option value="published">PUBLISHED</option>
                             <option value="archived">ARCHIVED</option>
                         </select>

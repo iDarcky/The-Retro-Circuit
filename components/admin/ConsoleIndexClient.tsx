@@ -8,7 +8,14 @@ import { timeAgo } from '@/lib/utils/date-formatter';
 import Button from '@/components/ui/Button';
 
 interface ConsoleIndexClientProps {
-    initialConsoles: {name: string, slug: string, id: string, status?: string, updated_at?: string}[];
+    initialConsoles: {
+        name: string,
+        slug: string,
+        id: string,
+        status?: string,
+        updated_at?: string,
+        manufacturer?: { name: string } | null
+    }[];
 }
 
 export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClientProps) {
@@ -16,14 +23,25 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
     const [consoles] = useState(initialConsoles);
     // Since we're moving filtering client-side for now based on the initial fetch,
     // we can keep using state for the *displayed* list.
-    const [filter, setFilter] = useState<'ALL' | 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'>('ALL');
+    const [filter, setFilter] = useState<'ALL' | 'DRAFT' | 'REVIEW' | 'PUBLISHED' | 'ARCHIVED'>('ALL');
     const [search, setSearch] = useState('');
+
+    const counts = {
+        ALL: consoles.length,
+        DRAFT: consoles.filter(c => c.status === 'draft' || !c.status).length,
+        REVIEW: consoles.filter(c => c.status === 'review').length,
+        PUBLISHED: consoles.filter(c => c.status === 'published').length,
+        ARCHIVED: consoles.filter(c => c.status === 'archived').length,
+    };
 
     const filteredConsoles = consoles.filter(c => {
         const nameMatch = c.name ? c.name.toLowerCase().includes(search.toLowerCase()) : false;
         const slugMatch = c.slug ? c.slug.toLowerCase().includes(search.toLowerCase()) : false;
         const matchesSearch = nameMatch || slugMatch;
-        const matchesFilter = filter === 'ALL' || c.status?.toUpperCase() === filter;
+
+        const currentStatus = c.status ? c.status.toUpperCase() : 'DRAFT';
+        const matchesFilter = filter === 'ALL' || currentStatus === filter;
+
         return matchesSearch && matchesFilter;
     });
 
@@ -57,7 +75,7 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
             {/* Controls */}
             <div className="flex flex-col md:flex-row gap-4 mb-6 justify-between">
                 <div className="flex gap-2">
-                    {['ALL', 'DRAFT', 'PUBLISHED', 'ARCHIVED'].map((f) => (
+                    {['ALL', 'DRAFT', 'REVIEW', 'PUBLISHED', 'ARCHIVED'].map((f) => (
                         <button
                             key={f}
                             onClick={() => setFilter(f as any)}
@@ -67,7 +85,7 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                                 : 'bg-black text-gray-500 border-gray-800 hover:text-white hover:border-gray-600'
                             }`}
                         >
-                            {f}
+                            {f} ({counts[f as keyof typeof counts]})
                         </button>
                     ))}
                 </div>
@@ -92,6 +110,7 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                             <tr className="border-b border-gray-800 bg-black/50 text-gray-500 text-xs uppercase">
                                 <th className="p-4 w-16">ID</th>
                                 <th className="p-4">Console Name</th>
+                                <th className="p-4">Manufacturer</th>
                                 <th className="p-4">Status</th>
                                 <th className="p-4">Last Updated</th>
                                 <th className="p-4 text-right">Actions</th>
@@ -109,9 +128,13 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                                         {console.name}
                                         <div className="text-[10px] text-gray-500 font-normal mt-1 lowercase opacity-50">{console.slug}</div>
                                     </td>
+                                    <td className="p-4 text-gray-400">
+                                        {console.manufacturer?.name || '-'}
+                                    </td>
                                     <td className="p-4">
                                         <span className={`text-[10px] px-2 py-1 border ${
                                             console.status === 'published' ? 'border-secondary text-secondary bg-secondary/10' :
+                                            console.status === 'review' ? 'border-accent text-accent bg-accent/10' :
                                             console.status === 'archived' ? 'border-red-500 text-red-500 bg-red-900/10' :
                                             'border-yellow-500 text-yellow-500 bg-yellow-900/10'
                                         }`}>
@@ -139,13 +162,13 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                                         >
                                             <button
                                                 className={`text-xs border px-3 py-1 transition-colors ${
-                                                    console.status === 'draft'
+                                                    console.status === 'draft' || console.status === 'review'
                                                     ? 'border-dashed border-gray-700 text-gray-500 hover:border-yellow-500 hover:text-yellow-500'
                                                     : 'border-gray-800 text-gray-600 hover:border-cyan-400 hover:text-cyan-400'
                                                 }`}
-                                                title={console.status === 'draft' ? "Admin preview (not public)" : undefined}
+                                                title={console.status !== 'published' ? "Admin preview (not public)" : undefined}
                                             >
-                                                {console.status === 'draft' ? 'PREVIEW' : 'VIEW'}
+                                                {console.status !== 'published' ? 'PREVIEW' : 'VIEW'}
                                             </button>
                                         </Link>
                                     </td>
@@ -153,7 +176,7 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                             ))}
                             {filteredConsoles.length === 0 && (
                                 <tr>
-                                    <td colSpan={5} className="p-8 text-center text-gray-500">
+                                    <td colSpan={6} className="p-8 text-center text-gray-500">
                                         NO RECORDS FOUND.
                                     </td>
                                 </tr>

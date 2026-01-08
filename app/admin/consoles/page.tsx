@@ -22,7 +22,7 @@ export default async function AdminConsolesPage() {
     try {
         const { data, error } = await supabase
             .from('consoles')
-            .select('id, name, slug, status, updated_at')
+            .select('id, name, slug, status, updated_at, manufacturer:manufacturer(name)')
             .order('name');
 
         if (error) {
