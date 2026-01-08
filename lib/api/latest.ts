@@ -59,7 +59,8 @@ export const fetchRealWorldLatest = async (limit: number = 3): Promise<ConsoleDe
                 // Attach this variant as the default/specs for display context
                 const consoleData = v.console;
                 consoleData.specs = v;
-                consoleData.image_url = v.image_url || consoleData.image_url;
+                // consoleData.image_url is already set from the console table join
+                // We do NOT overwrite it with variant image, per requirement
 
                 uniqueConsoles.set(v.console.id, consoleData);
                 if (uniqueConsoles.size >= limit) break;

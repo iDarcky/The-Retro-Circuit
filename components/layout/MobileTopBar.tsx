@@ -2,7 +2,6 @@
 
 import { type FC } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { IconSearch, IconMenu, IconClose } from '../ui/Icons';
 import { useSearch } from '../ui/SearchContext';
 
@@ -20,14 +19,8 @@ const MobileTopBar: FC<MobileTopBarProps> = ({ onMenuClick, isSidebarOpen }) => 
       <header className="z-50 h-16 md:hidden bg-bg-primary/90 backdrop-blur-md border-b border-[rgba(255,255,255,0.06)] flex items-center justify-between px-4 transition-all duration-300 shrink-0">
         {/* Left: Logo */}
         <div className="flex items-center">
-            <Link href="/">
-                <Image 
-                    src="/brand-logo.png" 
-                    alt="The Retro Circuit" 
-                    width={120} 
-                    height={32} 
-                    className="object-contain h-8 w-auto"
-                />
+            <Link href="/" className="flex items-center group">
+                <span className="font-pixel text-[14px] leading-tight text-white/40 group-hover:text-secondary transition-colors">RETRO CIRCUIT_</span>
             </Link>
         </div>
 
