@@ -26,94 +26,113 @@ export default async function LandingPage() {
   };
 
   return (
-    <div className="bg-bg-primary font-mono selection:bg-accent selection:text-white flex flex-col">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 px-4 md:px-8 min-h-[600px]">
+    <div className="bg-bg-primary font-mono selection:bg-accent selection:text-white flex flex-col gap-2.5 px-4 md:px-8 py-4">
 
-          {/* Left Column (8 cols) - Console Vault Hero */}
-          <div className="col-span-1 md:col-span-8 vault-section relative p-6 md:p-12 flex flex-col">
+      {/* SECTION I: WELCOME */}
+      <div className="vault-section p-6 md:p-12 w-full">
+        <div className="flex flex-col gap-6 max-w-4xl">
+          <h1 className="text-4xl md:text-6xl font-pixel text-white leading-tight drop-shadow-[4px_4px_0_rgba(120,120,120,0.4)]">
+            Welcome to the Circuit_
+          </h1>
 
-              <div className="flex items-start gap-6">
-                  {/* Pink Triangle Marker (Breathing) */}
-                  <div className="w-0 h-0 border-t-[12px] border-t-transparent border-l-[20px] border-l-accent border-b-[12px] border-b-transparent mt-4 md:mt-6 shrink-0 animate-pulse"></div>
-
-                  <div>
-                      <h1 className="text-4xl md:text-6xl font-pixel text-white leading-tight drop-shadow-[4px_4px_0_rgba(120,120,120,0.4)] mb-6">
-                          CONSOLE<br/><span className="text-secondary">VAULT_</span>
-                      </h1>
-                      <p className="text-lg md:text-xl font-bold text-gray-400 max-w-2xl leading-relaxed border-l-4 border-accent pl-6">
-                          Find and compare your favorite handhelds...
-                      </p>
-                  </div>
-              </div>
-
-              <div className="mt-16 md:mt-24 ml-0 md:ml-10">
-                   <p className="text-xs font-mono text-gray-500 mb-4 uppercase tracking-widest">
-                       Start by browsing all consoles or manufacturers
-                   </p>
-                   <div className="flex flex-col md:flex-row gap-6">
-                       {/* Browse Fabricators (Faded) */}
-                       <Link href="/fabricators" className="bg-transparent border border-gray-700 text-gray-400 hover:text-white hover:border-white text-lg font-bold px-8 py-4 flex items-center justify-center gap-3 transition-all">
-                          <span className="font-tech tracking-widest">BROWSE FABRICATORS</span>
-                          <ArrowUpRight size={20} />
-                      </Link>
-
-                      {/* Browse Consoles (Primary) */}
-                      <Link href="/consoles" className="bg-white text-black text-lg font-bold px-8 py-4 flex items-center justify-center gap-3 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_var(--color-accent)]">
-                          <span className="font-tech tracking-widest">BROWSE CONSOLES</span>
-                          <ArrowUpRight size={20} />
-                      </Link>
-                  </div>
-              </div>
-          </div>
-
-          {/* Right Column (4 cols) - Quick Compare */}
-          <div className="col-span-1 md:col-span-4 vault-section p-6 md:p-8 flex flex-col">
-              <div className="mb-6">
-                  <div className="flex items-center gap-3 mb-2">
-                       <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-primary border-b-[8px] border-b-transparent animate-pulse"></div>
-                       <h3 className="text-xl font-pixel text-white">QUICK COMPARE_</h3>
-                  </div>
-                  <p className="text-xs text-gray-500 font-mono ml-7">
-                      Select two devices to view a head-to-head performance analysis.
-                  </p>
-              </div>
-
-              <div className="flex-grow">
-                 <QuickCompare consoles={allConsoles} />
-              </div>
-          </div>
-
-      </div>
-
-      <div className="vault-section mx-4 md:mx-8 mt-2.5 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-4">
-                  {/* Primary Triangle (Breathing) */}
-                  <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-primary border-b-[8px] border-b-transparent animate-pulse"></div>
-                  <h2 className="text-xl md:text-3xl font-pixel text-white tracking-tight">
-                      FINDER_
-                  </h2>
-              </div>
-              <div className="flex flex-col gap-1 md:ml-8">
-                  <p className="text-white font-mono text-sm md:text-base font-bold">
-                      Not sure which handheld to buy?
-                  </p>
-                  <p className="text-gray-500 font-mono text-xs md:text-sm">
-                      Answer a few questions and we'll narrow it down!
-                  </p>
-              </div>
+          <div className="flex flex-col gap-4">
+            <p className="text-xl md:text-2xl font-bold text-white max-w-2xl leading-relaxed">
+              A structured environment for understanding handheld gaming systems.
+            </p>
+            <p className="text-sm md:text-base font-mono text-gray-400 max-w-3xl leading-relaxed">
+              The handheld market is fragmented across variants, revisions, and silent updates. The Retro Circuit organizes that information into a consistent, comparable system.
+            </p>
           </div>
 
           <Link
-            href="/finder"
-            className="w-full md:w-auto bg-primary text-black font-tech font-bold text-lg px-8 py-3 flex items-center justify-center gap-2 hover:bg-white transition-colors shadow-[4px_4px_0_rgba(255,255,255,0.2)] hover:shadow-[4px_4px_0_rgba(255,255,255,0.5)]"
+            href="/about"
+            className="text-primary font-mono text-sm hover:text-white transition-colors w-fit"
           >
-              START QUIZ
-              <ArrowUpRight size={20} />
+            [about system]
           </Link>
+        </div>
       </div>
 
-      <div className="vault-section mx-4 md:mx-8 mt-2.5 p-6 md:p-8">
+      {/* SECTION II: CONSOLE VAULT */}
+      <div className="vault-section p-6 md:p-8 w-full flex flex-col gap-8">
+
+        {/* Header */}
+        <div className="flex items-center gap-4">
+           <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-secondary border-b-[8px] border-b-transparent animate-pulse"></div>
+           <h2 className="text-2xl md:text-4xl font-pixel text-white tracking-tight">
+               CONSOLE VAULT_
+           </h2>
+        </div>
+
+        {/* Split Layout: Finder vs Quick Compare */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+
+            {/* Left: Finder */}
+            <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-3">
+                        <div className="w-0 h-0 border-t-[6px] border-t-transparent border-l-[10px] border-l-primary border-b-[6px] border-b-transparent animate-pulse"></div>
+                        <h3 className="text-xl font-pixel text-white tracking-tight">FINDER_</h3>
+                    </div>
+                    <div className="flex flex-col gap-1 ml-6">
+                        <p className="text-white font-mono text-sm font-bold">
+                            Not sure which handheld to buy?
+                        </p>
+                        <p className="text-gray-500 font-mono text-xs">
+                            Answer a few questions and we'll narrow it down!
+                        </p>
+                    </div>
+                </div>
+
+                <Link
+                  href="/finder"
+                  className="w-full bg-primary text-black font-tech font-bold text-lg px-8 py-4 flex items-center justify-center gap-2 hover:bg-white transition-colors shadow-[4px_4px_0_rgba(255,255,255,0.2)] hover:shadow-[4px_4px_0_rgba(255,255,255,0.5)] mt-auto"
+                >
+                    START QUIZ
+                    <ArrowUpRight size={20} />
+                </Link>
+            </div>
+
+            {/* Right: Quick Compare */}
+            <div className="flex flex-col gap-6">
+                 <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-3">
+                        <div className="w-0 h-0 border-t-[6px] border-t-transparent border-l-[10px] border-l-accent border-b-[6px] border-b-transparent animate-pulse"></div>
+                        <h3 className="text-xl font-pixel text-white tracking-tight">QUICK COMPARE_</h3>
+                    </div>
+                    <p className="text-xs text-gray-500 font-mono ml-6">
+                        Select two devices to view a head-to-head performance analysis.
+                    </p>
+                </div>
+
+                <div className="flex-grow">
+                   <QuickCompare consoles={allConsoles} />
+                </div>
+            </div>
+
+        </div>
+
+        {/* Footer: Navigation Buttons */}
+        <div className="mt-4 pt-8 border-t border-gray-800">
+             <div className="flex flex-col md:flex-row gap-6 justify-center">
+                 {/* Browse Fabricators */}
+                 <Link href="/fabricators" className="w-full md:w-auto bg-transparent border border-gray-700 text-gray-400 hover:text-white hover:border-white text-lg font-bold px-8 py-4 flex items-center justify-center gap-3 transition-all">
+                    <span className="font-tech tracking-widest">BROWSE FABRICATORS</span>
+                    <ArrowUpRight size={20} />
+                </Link>
+
+                {/* Browse Consoles */}
+                <Link href="/consoles" className="w-full md:w-auto bg-white text-black text-lg font-bold px-8 py-4 flex items-center justify-center gap-3 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-4 border-black shadow-[8px_8px_0_var(--color-accent)]">
+                    <span className="font-tech tracking-widest">BROWSE CONSOLES</span>
+                    <ArrowUpRight size={20} />
+                </Link>
+            </div>
+        </div>
+
+      </div>
+
+      {/* SECTION III: NEW IN VAULT */}
+      <div className="vault-section p-6 md:p-8 w-full">
         <div className="flex items-center gap-4 mb-8">
              <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-secondary border-b-[8px] border-b-transparent animate-pulse"></div>
 
@@ -206,7 +225,8 @@ export default async function LandingPage() {
         </div>
       </div>
 
-      <div className="vault-section mx-4 md:mx-8 mt-2.5 p-6 md:p-8">
+      {/* SECTION III: NEW RELEASES */}
+      <div className="vault-section p-6 md:p-8 w-full">
         <div className="flex items-center gap-4 mb-8">
              <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-accent border-b-[8px] border-b-transparent animate-pulse"></div>
 
