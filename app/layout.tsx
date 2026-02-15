@@ -109,10 +109,6 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgLd) }}
         />
 
-        {/* CRT Overlay Effects */}
-        <div className="scanlines"></div>
-        <div className="crt-flicker"></div>
-        
         {/* Auth Synchronization */}
         <AuthSync />
 
