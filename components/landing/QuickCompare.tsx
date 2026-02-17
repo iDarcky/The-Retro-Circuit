@@ -23,42 +23,38 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
   };
 
   return (
-    <div className="flex flex-col gap-8 h-full">
-      <div className="space-y-8 flex-grow">
+    <div className="flex flex-col gap-6 w-full max-w-2xl mx-auto">
+      <div className="flex flex-col lg:flex-row items-center gap-6">
+
         {/* Device A */}
-        <div className="space-y-2">
-            <label className="text-[10px] font-mono text-color-primary uppercase tracking-widest pl-1 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 bg-color-primary rounded-full"></span>
-                DEVICE A // INPUT
-            </label>
+        <div className="flex-1 w-full relative">
+            <span className="absolute -top-3 left-2 px-1 bg-bg-primary text-[10px] font-mono text-text-muted uppercase tracking-widest z-10">
+                SYSTEM A
+            </span>
             <ConsoleSearch
                 consoles={consoles}
                 onSelect={(slug, name) => setP1({ slug, name })}
-                placeholder="SELECT SYSTEM..."
+                placeholder="SELECT DEVICE..."
                 themeColor="primary"
                 currentSelection={p1?.name}
             />
         </div>
 
-        <div className="flex items-center justify-center opacity-30">
-             <div className="h-px w-full bg-border-normal"></div>
-             <div className="mx-4 p-2 rounded-full border border-border-normal bg-bg-tertiary">
-                <ArrowLeftRight size={14} className="text-text-muted" />
-             </div>
-             <div className="h-px w-full bg-border-normal"></div>
+        {/* Divider / VS */}
+        <div className="flex items-center justify-center shrink-0 w-8 h-8 rounded-full border border-border-normal text-text-muted bg-bg-secondary">
+             <ArrowLeftRight size={14} strokeWidth={1.5} />
         </div>
 
         {/* Device B */}
-        <div className="space-y-2">
-            <label className="text-[10px] font-mono text-color-secondary uppercase tracking-widest pl-1 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 bg-color-secondary rounded-full"></span>
-                DEVICE B // INPUT
-            </label>
+        <div className="flex-1 w-full relative">
+            <span className="absolute -top-3 left-2 px-1 bg-bg-primary text-[10px] font-mono text-text-muted uppercase tracking-widest z-10">
+                SYSTEM B
+            </span>
             <ConsoleSearch
                 consoles={consoles}
                 onSelect={(slug, name) => setP2({ slug, name })}
-                placeholder="SELECT SYSTEM..."
-                themeColor="secondary"
+                placeholder="SELECT DEVICE..."
+                themeColor="secondary" // In this theme, secondary is just white/neutral
                 currentSelection={p2?.name}
             />
         </div>
@@ -67,7 +63,7 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
       <button
         onClick={handleCompare}
         disabled={!p1 && !p2}
-        className="w-full bg-text-primary hover:bg-white text-bg-primary font-bold font-mono text-sm py-4 uppercase tracking-widest transition-all hover:scale-[1.01] disabled:opacity-20 disabled:hover:scale-100 flex items-center justify-center gap-2 rounded-sm"
+        className="w-full bg-text-primary hover:bg-color-primary text-bg-primary font-bold font-mono text-sm py-4 uppercase tracking-widest transition-colors disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:bg-text-primary flex items-center justify-center gap-2 border border-transparent rounded-none"
       >
         INITIATE ANALYSIS
         <ArrowRight size={16} />

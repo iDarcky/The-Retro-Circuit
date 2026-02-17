@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import type { Metadata } from "next";
-import { Press_Start_2P, JetBrains_Mono, Share_Tech_Mono, Space_Grotesk } from "next/font/google";
+import { Press_Start_2P, JetBrains_Mono, Share_Tech_Mono, Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "../styles/globals.css";
 import ClientShell from "../components/layout/ClientShell";
@@ -28,10 +28,10 @@ const shareTechMono = Share_Tech_Mono({
   variable: '--font-share-tech'
 });
 
-const spaceGrotesk = Space_Grotesk({
-  weight: ["300", "400", "500", "600", "700"],
+const inter = Inter({
   subsets: ["latin"],
-  variable: '--font-sans'
+  variable: '--font-sans',
+  display: 'swap',
 });
 
 export const viewport = {
@@ -105,7 +105,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${pressStart.variable} ${jetBrainsMono.variable} ${shareTechMono.variable} ${spaceGrotesk.variable} font-sans min-h-screen flex flex-col bg-bg-primary text-text-primary selection:bg-accent selection:text-white`}>
+      <body className={`${pressStart.variable} ${jetBrainsMono.variable} ${shareTechMono.variable} ${inter.variable} font-sans min-h-screen flex flex-col bg-bg-primary text-text-primary antialiased selection:bg-color-primary selection:text-white`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

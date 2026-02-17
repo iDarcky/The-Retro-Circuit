@@ -30,14 +30,13 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
 
     const filtered = consoles.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    // Theme mapping
+    // Theme mapping - In "Swiss", Primary is Orange, Secondary is White. Both are just "Active" borders.
     const isPrimary = themeColor === 'primary' || themeColor === 'cyan';
-
-    const focusClass = isPrimary ? 'focus:border-color-primary focus:ring-1 focus:ring-color-primary/50' : 'focus:border-color-secondary focus:ring-1 focus:ring-color-secondary/50';
-    const textClass = isPrimary ? 'text-color-primary' : 'text-color-secondary';
+    const activeBorder = isPrimary ? 'focus:border-color-primary' : 'focus:border-white';
+    const activeRing = isPrimary ? 'focus:ring-1 focus:ring-color-primary' : 'focus:ring-1 focus:ring-white';
 
     return (
-        <div className="relative w-full" ref={wrapperRef}>
+        <div className="relative w-full group" ref={wrapperRef}>
             <div className="relative">
                 <input
                     type="text"
@@ -45,15 +44,15 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                     onFocus={() => setIsOpen(true)}
                     placeholder={currentSelection || placeholder}
-                    className={`w-full bg-bg-tertiary border border-border-normal rounded-sm p-4 pl-10 font-mono text-sm text-text-primary outline-none ${focusClass} transition-all placeholder:text-text-muted`}
+                    className={`w-full bg-transparent border border-border-normal p-4 pl-10 font-mono text-sm text-text-primary uppercase tracking-wider outline-none rounded-none transition-all placeholder:text-text-muted ${activeBorder} ${activeRing}`}
                 />
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none">
-                    <Search size={16} />
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none group-focus-within:text-text-primary transition-colors">
+                    <Search size={14} strokeWidth={1.5} />
                 </div>
             </div>
 
             {isOpen && (
-                <div className="absolute left-0 right-0 top-[calc(100%+4px)] max-h-[300px] overflow-y-auto bg-bg-secondary border border-border-normal rounded-sm z-[100] shadow-2xl glass-panel">
+                <div className="absolute left-0 right-0 top-[calc(100%-1px)] max-h-[300px] overflow-y-auto bg-bg-primary border border-border-normal border-t-transparent z-[100] shadow-xl">
                     {filtered.map(c => (
                         <div 
                             key={c.slug}
@@ -63,14 +62,14 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                                 setIsOpen(false);
                             }}
                             onMouseEnter={playHover}
-                            className={`p-3 px-4 text-sm font-mono cursor-pointer hover:bg-bg-tertiary hover:text-white text-text-secondary border-b border-border-subtle last:border-0 flex justify-between items-center group transition-colors`}
+                            className={`p-3 px-4 text-xs font-mono cursor-pointer hover:bg-bg-tertiary hover:text-white text-text-secondary border-b border-border-subtle last:border-0 flex justify-between items-center group transition-colors uppercase tracking-wide`}
                         >
                             <span>{c.name}</span>
-                            <span className={`opacity-0 group-hover:opacity-100 ${textClass} text-xs`}>SELECT</span>
+                            <span className={`opacity-0 group-hover:opacity-100 text-[10px] text-color-primary`}>SELECT</span>
                         </div>
                     ))}
                     {filtered.length === 0 && (
-                        <div className="p-4 text-sm font-mono text-text-muted text-center italic">NO MATCHING SYSTEMS FOUND</div>
+                        <div className="p-4 text-xs font-mono text-text-muted text-center italic uppercase">NO MATCHES</div>
                     )}
                 </div>
             )}
