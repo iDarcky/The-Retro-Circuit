@@ -16,13 +16,16 @@ module.exports = {
         bg: {
           primary: 'var(--bg-primary)',
           secondary: 'var(--bg-secondary)',
+          tertiary: 'var(--bg-tertiary)',
           card: 'var(--bg-card)',
+          glass: 'var(--bg-glass)',
         },
 
         text: {
           primary: 'var(--text-primary)',
           secondary: 'var(--text-secondary)',
           muted: 'var(--text-muted)',
+          inverse: 'var(--text-inverse)',
         },
 
         border: {
@@ -32,6 +35,7 @@ module.exports = {
         }
       },
       fontFamily: {
+        'sans': ['var(--font-sans)', 'sans-serif'],
         'pixel': ['var(--font-press-start)', 'cursive'],
         'mono': ['var(--font-mono)', 'monospace'],
         'tech': ['var(--font-share-tech)', 'monospace']

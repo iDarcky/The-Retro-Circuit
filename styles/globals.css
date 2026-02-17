@@ -3,27 +3,38 @@
 @tailwind utilities;
 
 :root {
-  /* Backgrounds */
-  --bg-primary: #0a0e1a;
-  --bg-secondary: #161b22;
-  --bg-card: rgba(255, 255, 255, 0.04);
+  /*
+    THEME: INDUSTRIAL ARCHIVE
+    A clean, high-contrast dark mode inspired by precision engineering and schematics.
+  */
 
-  /* Text */
-  --text-primary: #e0e0e0;
-  --text-secondary: #8b949e;
-  --text-muted: #6e7681;
+  /* Backgrounds - Void & Deep Space */
+  --bg-primary: #050505;
+  --bg-secondary: #0A0A0A;
+  --bg-tertiary: #111111;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --bg-glass: rgba(5, 5, 5, 0.7);
 
-  /* Accent Colors (BY ROLE) */
-  --color-primary: #00D9FF;  /* Cyan - main UI */
-  --color-secondary: #00FF88; /* Green - positive */
-  --color-accent: #FF6B9D;    /* Pink - special */
-  --color-warning: #FFC857;   /* Yellow - caution */
+  /* Text - Concrete & Steel */
+  --text-primary: #EDEDED;
+  --text-secondary: #A1A1AA;
+  --text-muted: #52525B;
+  --text-inverse: #050505;
 
-  /* Borders */
-  --border-subtle: rgba(255, 255, 255, 0.1);
-  --border-normal: rgba(255, 255, 255, 0.15);
-  --border-strong: rgba(255, 255, 255, 0.3);
+  /* Accent Colors - Signal Lights */
+  --color-primary: #FF9900;   /* Signal Amber - Main UI Elements */
+  --color-secondary: #00E5FF; /* Electric Cyan - Information/Status */
+  --color-accent: #FF2E63;    /* Radical Red - Alerts/Special */
+  --color-success: #00FF9D;   /* Emerald - Success */
+  --color-warning: #FFD600;   /* Caution Yellow */
 
+  /* Borders - Structural Lines */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-normal: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.25);
+  --border-primary: var(--color-primary);
+
+  /* Semantic Mappings */
   --background: var(--bg-primary);
   --foreground: var(--text-primary);
 }
@@ -31,13 +42,15 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--bg-primary); border-left: 1px solid var(--bg-secondary); }
-::-webkit-scrollbar-thumb { background: var(--bg-secondary); border: 1px solid var(--color-secondary); }
-::-webkit-scrollbar-thumb:hover { background: var(--color-secondary); }
+/* Custom Scrollbar - Sleek & Minimal */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
 
 /* Utility to hide scrollbar but keep functionality */
 .no-scrollbar::-webkit-scrollbar {
@@ -50,26 +63,33 @@ body {
 
 /* Gradient Mask for scrolling containers */
 .mask-gradient {
-    mask-image: linear-gradient(to right, transparent, black 10px, black 90%, transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 10px, black 90%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 20px, black 95%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 20px, black 95%, transparent);
 }
 
-/* CRT Effects */
-.scanlines {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;
-  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
-  background-size: 100% 4px;
-  opacity: 0.15;
+/* Glassmorphism Utilities */
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
 }
 
-.crt-flicker {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9998;
-  background: rgba(18, 16, 16, 0.1);
-  opacity: 0;
-  animation: flicker 0.15s infinite;
+.glass-panel-hover:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--border-normal);
 }
 
-/* Glitch Animation for 404 */
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
 @keyframes glitch-shake {
   0% { transform: translate(0); }
   25% { transform: translate(-2px, 2px); }
@@ -80,32 +100,13 @@ body {
 
 .glitch-hover:hover {
   animation: glitch-shake 0.2s cubic-bezier(.36,.07,.19,.97) both infinite;
-  text-shadow: 2px 2px 0px var(--color-secondary), -2px -2px 0px var(--color-primary);
+  color: var(--color-primary);
+  text-shadow: 2px 0 0 var(--color-secondary), -2px 0 0 var(--color-accent);
 }
 
-/* Neon Pulse Animation */
-@keyframes neon-pulse {
-  0%, 100% {
-    text-shadow: 0 0 10px var(--color-accent), 0 0 20px var(--color-accent), 0 0 40px var(--color-accent);
-    opacity: 1;
-  }
-  50% {
-    text-shadow: 0 0 5px var(--color-accent), 0 0 10px var(--color-accent);
-    opacity: 0.8;
-  }
-}
-
-@keyframes flicker {
-  0% { opacity: 0.02; }
-  50% { opacity: 0.05; }
-  100% { opacity: 0.02; }
-}
-
-@keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
 
-/* Accessibility: Reduce motion */
+/* Accessibility */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -113,37 +114,4 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  
-  .scanlines,
-  .crt-flicker {
-    display: none;
-  }
-}
-
-/* Device cards - glass effect */
-.device-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-.device-card:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: #00D9FF;
-  box-shadow: 0 8px 16px rgba(0, 217, 255, 0.2);
-}
-
-/* Section backgrounds - subtle layering */
-.vault-section {
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
-  padding: 2rem;
-}
-
-/* Banner */
-.banner {
-  background: rgba(255, 107, 157, 0.15); /* Soft pink, semi-transparent */
-  backdrop-filter: blur(10px);
-  border: none;
 }
