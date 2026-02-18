@@ -35,10 +35,10 @@ module.exports = {
         }
       },
       fontFamily: {
-        'sans': ['var(--font-syne-mono)', 'monospace'],
+        'sans': ['var(--font-sans)', 'sans-serif'],
         'pixel': ['var(--font-press-start)', 'cursive'],
-        'mono': ['var(--font-dm-mono)', 'monospace'],
-        'tech': ['var(--font-syne-mono)', 'monospace']
+        'mono': ['var(--font-mono)', 'monospace'],
+        'tech': ['var(--font-share-tech)', 'monospace']
       },
       animation: {
         marquee: 'marquee 25s linear infinite',

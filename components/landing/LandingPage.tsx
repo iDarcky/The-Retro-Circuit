@@ -16,55 +16,70 @@ export default async function LandingPage() {
       {/* 1. HERO - TYPOGRAPHIC STATEMENT */}
       <header className="px-6 md:px-12 pt-32 pb-24 border-b border-border-subtle">
         <div className="max-w-[1800px] mx-auto">
-          <h1 className="text-[4vw] md:text-[5vw] leading-[1.3] font-pixel font-bold tracking-tighter uppercase mb-8 text-white">
-            Welcome to<br/>
-            the <span className="text-accent">Circuit_</span>
-          </h1>
+          <div className="flex flex-col items-center text-center">
+            <h1 className="text-[5vw] md:text-[6vw] leading-[1.3] font-pixel font-bold tracking-tighter uppercase mb-8 text-white max-w-5xl mx-auto">
+              Welcome to<br/>
+              the <span className="text-color-primary">Circuit_</span>
+            </h1>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center border-t border-border-subtle pt-8">
-            <div className="col-span-12 md:col-span-6">
-              <span className="font-mono text-xs uppercase tracking-widest text-text-muted block mb-2">SYSTEM STATUS</span>
-              <div className="flex items-center gap-2">
+            <Link
+              href="/consoles"
+              className="inline-flex items-center gap-3 bg-color-primary text-white font-mono text-sm md:text-base px-8 py-4 hover:bg-white hover:text-black transition-all uppercase tracking-widest border border-transparent hover:border-white"
+            >
+              Browse The Library <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center border-t border-border-subtle pt-12 mt-16 text-center md:text-left">
+            <div className="flex flex-col gap-2">
+              <span className="font-mono text-xs uppercase tracking-widest text-text-muted">SYSTEM STATUS</span>
+              <div className="flex items-center justify-center md:justify-start gap-2">
                  <div className="w-2 h-2 bg-color-success rounded-full animate-pulse"></div>
                  <span className="font-mono text-sm">ONLINE // V.2.0</span>
               </div>
             </div>
 
-            <div className="col-span-12 md:col-span-6 flex justify-start md:justify-end">
-               <Link
-                 href="/consoles"
-                 className="inline-block bg-accent text-inverse font-pixel text-xs md:text-sm px-6 py-4 hover:bg-white transition-colors uppercase tracking-widest"
-               >
-                 Browse The Library
-               </Link>
+            <div className="flex flex-col gap-2">
+              <span className="font-mono text-xs uppercase tracking-widest text-text-muted">DATABASE</span>
+              <span className="font-mono text-sm">{allConsoles.length} ENTRIES ARCHIVED</span>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <span className="font-mono text-xs uppercase tracking-widest text-text-muted">LATEST UPDATE</span>
+              <span className="font-mono text-sm">{new Date().toLocaleDateString()}</span>
             </div>
           </div>
         </div>
       </header>
 
-      {/* 2. FEATURED SECTIONS (VS MODE ONLY) */}
-      <section className="px-6 md:px-12 py-12 border-b border-border-subtle">
+      {/* 2. ANALYSIS & COMPARE */}
+      <section className="px-6 md:px-12 py-24 border-b border-border-subtle bg-bg-secondary/20">
         <div className="max-w-[1800px] mx-auto">
-           <div className="border border-border-subtle bg-bg-primary p-8 md:p-12">
-                 <div className="flex flex-col lg:flex-row gap-12 items-start">
-                    <div className="flex-1">
-                        <div className="flex items-center gap-4 mb-6">
-                           <Swords className="w-12 h-12 text-color-primary stroke-1" />
-                           <h2 className="text-4xl font-bold tracking-tighter">VS MODE</h2>
-                        </div>
-                        <p className="text-text-secondary text-lg font-light mb-8 max-w-xl">
-                           Directly compare technical specifications. Analyze CPU clock speeds, display density, and physical dimensions side-by-side.
-                        </p>
-                        <Link href="/arena" className="inline-flex items-center gap-2 text-sm font-mono uppercase tracking-widest hover:text-color-primary transition-colors border-b border-text-muted hover:border-color-primary pb-1">
-                           Enter Arena <ArrowRight size={14} />
-                        </Link>
-                    </div>
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border-subtle bg-bg-secondary text-xs font-mono uppercase tracking-widest text-text-muted mb-6">
+                    <Swords className="w-3 h-3" /> Analysis Tools
+                  </div>
+                  <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6">HEAD-TO-HEAD<br/>COMPARISON.</h2>
+                  <p className="text-text-secondary text-lg font-light mb-8 max-w-md leading-relaxed">
+                     Our arena mode allows for direct specification battles. Analyze CPU clock speeds, display density, and physical form factors in real-time.
+                  </p>
+                  <Link href="/arena" className="group inline-flex items-center gap-2 text-sm font-mono uppercase tracking-widest text-text-primary border-b border-color-primary pb-1 hover:text-color-primary transition-colors">
+                     Enter The Arena <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                  </Link>
+              </div>
 
-                    <div className="w-full lg:w-1/2 border border-border-subtle bg-bg-secondary/50 p-1">
-                        <QuickCompare consoles={allConsoles} />
-                    </div>
+              <div className="relative">
+                 {/* Decorative Grid Background */}
+                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-20 mask-gradient"></div>
+
+                 <div className="relative z-10 border border-border-subtle bg-bg-primary p-6 shadow-2xl">
+                    <div className="absolute -top-3 -left-3 w-6 h-6 border-t-2 border-l-2 border-color-primary"></div>
+                    <div className="absolute -bottom-3 -right-3 w-6 h-6 border-b-2 border-r-2 border-color-primary"></div>
+                    <QuickCompare consoles={allConsoles} />
                  </div>
               </div>
+           </div>
         </div>
       </section>
 

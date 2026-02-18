@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import type { Metadata } from "next";
-import { Press_Start_2P, Syne_Mono, DM_Mono } from "next/font/google";
+import { Press_Start_2P, JetBrains_Mono, Share_Tech_Mono, Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "../styles/globals.css";
 import ClientShell from "../components/layout/ClientShell";
@@ -15,16 +15,23 @@ const pressStart = Press_Start_2P({
   variable: '--font-press-start'
 });
 
-const syneMono = Syne_Mono({
-  weight: "400",
+// Replaced Share_Tech_Mono with JetBrains_Mono as requested
+const jetBrainsMono = JetBrains_Mono({
+  weight: ["400", "700"],
   subsets: ["latin"],
-  variable: '--font-syne-mono'
+  variable: '--font-mono'
 });
 
-const dmMono = DM_Mono({
-  weight: ["300", "400", "500"],
+const shareTechMono = Share_Tech_Mono({
+  weight: "400",
   subsets: ["latin"],
-  variable: '--font-dm-mono'
+  variable: '--font-share-tech'
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: '--font-sans',
+  display: 'swap',
 });
 
 export const viewport = {
@@ -32,7 +39,7 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#0b0e1f",
+  themeColor: "#0f0f1b",
 };
 
 export const metadata: Metadata = {
@@ -98,7 +105,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${pressStart.variable} ${syneMono.variable} ${dmMono.variable} font-sans min-h-screen flex flex-col bg-bg-primary text-text-primary antialiased selection:bg-color-primary selection:text-white`}>
+      <body className={`${pressStart.variable} ${jetBrainsMono.variable} ${shareTechMono.variable} ${inter.variable} font-sans min-h-screen flex flex-col bg-bg-primary text-text-primary antialiased selection:bg-color-primary selection:text-white`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
