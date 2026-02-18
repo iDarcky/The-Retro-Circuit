@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { ConsoleSearch } from '../arena/ConsoleSearch';
-import { ArrowRight, Search, List } from 'lucide-react';
+import { Search, List } from 'lucide-react';
 import Link from 'next/link';
 
 interface FinderSectionProps {
@@ -19,11 +19,14 @@ export default function FinderSection({ consoles }: FinderSectionProps) {
     const searchableConsoles = consoles.map(c => ({ name: c.name, slug: c.slug }));
 
     return (
-        <section className="py-24 border-b border-border-subtle bg-bg-secondary/10">
-            <div className="max-w-[1800px] mx-auto px-6 md:px-12">
+        <section className="py-24 border-b border-border-subtle bg-bg-secondary/10 relative overflow-hidden">
+            {/* Subtle Cyan Gradient */}
+            <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-cyan-900/5 via-transparent to-transparent pointer-events-none" />
+
+            <div className="max-w-[1800px] mx-auto px-6 md:px-12 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
                     <div className="md:col-span-5 lg:col-span-4">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border-subtle bg-bg-secondary text-xs font-mono uppercase tracking-widest text-text-muted mb-6">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-900/30 bg-cyan-950/10 text-xs font-mono uppercase tracking-widest text-cyan-400 mb-6">
                             <Search className="w-3 h-3" /> Database Access
                         </div>
                         <h2 className="text-4xl font-bold tracking-tighter mb-4">THE FINDER.</h2>
