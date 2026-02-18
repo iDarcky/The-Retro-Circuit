@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Box, Cpu, Swords, ChevronRight } from 'lucide-react';
+import { ArrowRight, Swords, ChevronRight } from 'lucide-react';
 import { fetchLatestConsoles } from '../../lib/api/latest';
 import { fetchConsoleList } from '../../lib/api/consoles';
 import QuickCompare from './QuickCompare';
@@ -16,9 +16,9 @@ export default async function LandingPage() {
       {/* 1. HERO - TYPOGRAPHIC STATEMENT */}
       <header className="px-6 md:px-12 pt-32 pb-24 border-b border-border-subtle">
         <div className="max-w-[1800px] mx-auto">
-          <h1 className="text-[5vw] md:text-[6vw] leading-[1.2] font-pixel font-bold tracking-tighter uppercase mb-8 text-white">
-            The Retro<br/>
-            <span className="text-accent">Circuit.</span>
+          <h1 className="text-[4vw] md:text-[5vw] leading-[1.3] font-pixel font-bold tracking-tighter uppercase mb-8 text-white">
+            Welcome to<br/>
+            the <span className="text-accent">Circuit_</span>
           </h1>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center border-t border-border-subtle pt-8">
@@ -42,41 +42,10 @@ export default async function LandingPage() {
         </div>
       </header>
 
-      {/* 2. THE BENTO GRID NAV */}
+      {/* 2. FEATURED SECTIONS (VS MODE ONLY) */}
       <section className="px-6 md:px-12 py-12 border-b border-border-subtle">
         <div className="max-w-[1800px] mx-auto">
-           <div className="grid grid-cols-1 md:grid-cols-12 gap-px bg-border-subtle border border-border-subtle">
-
-              {/* CARD 1: VAULT (Large Square) */}
-              <Link href="/consoles" className="col-span-12 md:col-span-6 lg:col-span-8 bg-bg-primary hover:bg-bg-secondary transition-colors group relative min-h-[400px] p-8 flex flex-col justify-between">
-                  <div className="flex justify-between items-start">
-                     <span className="font-mono text-xs uppercase tracking-widest text-text-muted">01 // INDEX</span>
-                     <ArrowRight className="w-6 h-6 text-text-muted group-hover:text-color-primary transition-colors" />
-                  </div>
-
-                  <div className="mt-auto">
-                     <Box className="w-16 h-16 mb-6 text-text-primary stroke-1" />
-                     <h2 className="text-4xl md:text-6xl font-bold tracking-tighter mb-4">CONSOLE VAULT</h2>
-                     <p className="text-text-secondary max-w-md font-light">Access the complete database. Filter by era, manufacturer, or chipset architecture.</p>
-                  </div>
-              </Link>
-
-              {/* CARD 2: FABRICATORS (Tall) */}
-              <Link href="/fabricators" className="col-span-12 md:col-span-6 lg:col-span-4 bg-bg-primary hover:bg-bg-secondary transition-colors group relative min-h-[400px] p-8 flex flex-col justify-between">
-                  <div className="flex justify-between items-start">
-                     <span className="font-mono text-xs uppercase tracking-widest text-text-muted">02 // MAKERS</span>
-                     <ArrowRight className="w-6 h-6 text-text-muted group-hover:text-color-primary transition-colors" />
-                  </div>
-
-                  <div className="mt-auto">
-                     <Cpu className="w-16 h-16 mb-6 text-text-primary stroke-1" />
-                     <h2 className="text-4xl font-bold tracking-tighter mb-4">FABRICATORS</h2>
-                     <p className="text-text-secondary font-light">Browse by manufacturer entity.</p>
-                  </div>
-              </Link>
-
-              {/* CARD 3: VS MODE (Wide) */}
-              <div className="col-span-12 bg-bg-primary p-8 md:p-12">
+           <div className="border border-border-subtle bg-bg-primary p-8 md:p-12">
                  <div className="flex flex-col lg:flex-row gap-12 items-start">
                     <div className="flex-1">
                         <div className="flex items-center gap-4 mb-6">
@@ -96,8 +65,6 @@ export default async function LandingPage() {
                     </div>
                  </div>
               </div>
-
-           </div>
         </div>
       </section>
 

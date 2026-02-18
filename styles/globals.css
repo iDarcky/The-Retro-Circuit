@@ -10,30 +10,30 @@
     No blur, no glow, no noise. Just grid and data.
   */
 
-  /* Backgrounds - Flat & Matte */
-  --bg-primary: #09090b;   /* Zinc 950 - Deepest black */
-  --bg-secondary: #18181b; /* Zinc 900 - Panel background */
-  --bg-tertiary: #27272a;  /* Zinc 800 - Input/Hover background */
-  --bg-card: #09090b;      /* Same as primary for seamless look */
-  --bg-glass: #09090b;     /* No glass effect in Swiss style, just solid */
+  /* Backgrounds */
+  --bg-primary: #0b0e1f;   /* Background Deep */
+  --bg-secondary: #131726; /* Background Surface */
+  --bg-tertiary: #1a1f35;  /* Background Elevated */
+  --bg-card: #131726;
+  --bg-glass: #0b0e1f;
 
-  /* Text - High Contrast */
-  --text-primary: #ffffff; /* Pure White */
-  --text-secondary: #a1a1aa; /* Zinc 400 - Subtitles */
-  --text-muted: #52525b;   /* Zinc 600 - Metadata */
-  --text-inverse: #09090b; /* Black text on white/accent */
+  /* Text */
+  --text-primary: #e2d9f3; /* Text Primary */
+  --text-secondary: #7a869a; /* Text Secondary */
+  --text-muted: #4a5568;   /* Text Muted */
+  --text-inverse: #0b0e1f; /* Inverse for buttons */
 
-  /* Accent Colors - The Single Signal */
-  --color-primary: #ff4f00;   /* International Orange - Action */
-  --color-secondary: #ffffff; /* Secondary is just White in this theme */
-  --color-accent: #ff4f00;    /* Alias for primary */
-  --color-success: #10b981;   /* Emerald 500 - Status only */
-  --color-warning: #f59e0b;   /* Amber 500 - Status only */
+  /* Accent Colors */
+  --color-primary: #67e8f9;   /* Primary Cyan */
+  --color-secondary: #86efac; /* Secondary Green */
+  --color-accent: #a78bfa;    /* Accent Purple */
+  --color-success: #86efac;
+  --color-warning: #fcd34d;   /* Warning Yellow */
 
-  /* Borders - Hairlines */
-  --border-subtle: #27272a;   /* Zinc 800 */
-  --border-normal: #3f3f46;   /* Zinc 700 */
-  --border-strong: #ffffff;   /* White for active states */
+  /* Borders */
+  --border-subtle: #1a1f35;
+  --border-normal: #2d3748;
+  --border-strong: #67e8f9;
   --border-primary: var(--color-primary);
 
   /* Semantic Mappings */
