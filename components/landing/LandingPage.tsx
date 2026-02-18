@@ -16,13 +16,13 @@ export default async function LandingPage() {
       {/* 1. HERO - TYPOGRAPHIC STATEMENT */}
       <header className="px-6 md:px-12 pt-32 pb-24 border-b border-border-subtle">
         <div className="max-w-[1800px] mx-auto">
-          <h1 className="text-[12vw] leading-[0.8] font-bold tracking-tighter uppercase mb-8">
+          <h1 className="text-[5vw] md:text-[6vw] leading-[1.2] font-pixel font-bold tracking-tighter uppercase mb-8 text-white">
             The Retro<br/>
-            <span className="text-color-primary">Archive.</span>
+            <span className="text-accent">Circuit.</span>
           </h1>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start border-t border-border-subtle pt-8">
-            <div className="col-span-12 md:col-span-4">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center border-t border-border-subtle pt-8">
+            <div className="col-span-12 md:col-span-6">
               <span className="font-mono text-xs uppercase tracking-widest text-text-muted block mb-2">SYSTEM STATUS</span>
               <div className="flex items-center gap-2">
                  <div className="w-2 h-2 bg-color-success rounded-full animate-pulse"></div>
@@ -30,10 +30,13 @@ export default async function LandingPage() {
               </div>
             </div>
 
-            <div className="col-span-12 md:col-span-8">
-               <p className="text-xl md:text-2xl font-light text-text-secondary leading-relaxed max-w-3xl">
-                 A comprehensive index of handheld gaming history. Precision data, technical specifications, and comparative analysis for the modern enthusiast.
-               </p>
+            <div className="col-span-12 md:col-span-6 flex justify-start md:justify-end">
+               <Link
+                 href="/consoles"
+                 className="inline-block bg-accent text-inverse font-pixel text-xs md:text-sm px-6 py-4 hover:bg-white transition-colors uppercase tracking-widest"
+               >
+                 Browse The Library
+               </Link>
             </div>
           </div>
         </div>
