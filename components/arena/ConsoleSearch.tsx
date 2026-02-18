@@ -6,7 +6,7 @@ import { Search } from 'lucide-react';
 
 interface ConsoleSearchProps {
     consoles: {name: string, slug: string}[];
-    onSelect: (slug: string, name: string) => void;
+    onSelect: (slug: string) => void;
     placeholder?: string;
     themeColor: 'primary' | 'secondary' | 'cyan' | 'pink'; // Backwards compatibility if needed
     currentSelection?: string;
@@ -57,7 +57,7 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                         <div 
                             key={c.slug}
                             onClick={() => {
-                                onSelect(c.slug, c.name);
+                                onSelect(c.slug);
                                 setSearchTerm('');
                                 setIsOpen(false);
                             }}
