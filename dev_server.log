@@ -1,0 +1,26 @@
+
+> retro-circuit@1.0.0 dev /app
+> next dev
+
+▲ Next.js 16.1.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+
+✓ Starting...
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+✓ Ready in 1507ms
+○ Compiling / ...
+[API] fetchLatestConsoles DB Error: TypeError: fetch failed
+[API] fetchRealWorldLatest DB Error: TypeError: fetch failed
+{
+  message: 'TypeError: fetch failed',
+  details: 'TypeError: fetch failed\n' +
+    '\n' +
+    'Caused by: Error: getaddrinfo ENOTFOUND placeholder.supabase.co (ENOTFOUND)\n' +
+    'Error: getaddrinfo ENOTFOUND placeholder.supabase.co\n' +
+    '    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26)\n' +
+    '    at GetAddrInfoReqWrap.callbackTrampoline (node:internal/async_hooks:130:17)',
+  hint: '',
+  code: ''
+}
+ GET / 200 in 8.1s (compile: 6.8s, proxy.ts: 143ms, render: 1162ms)
