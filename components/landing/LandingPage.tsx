@@ -5,6 +5,7 @@ import { fetchLatestConsoles, fetchRealWorldLatest } from '../../lib/api/latest'
 import { fetchConsoleList } from '../../lib/api/consoles';
 import QuickCompare from './QuickCompare';
 import FinderSection from './FinderSection';
+import FeaturedConsoles from './FeaturedConsoles';
 import { siteConfig } from '../../config/site';
 
 export default async function LandingPage() {
@@ -78,6 +79,9 @@ export default async function LandingPage() {
                   <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
                   {allConsoles.length} Consoles Archived
                 </div>
+
+                {/* FEATURED CONSOLES - NEWEST IN DB */}
+                <FeaturedConsoles consoles={latestAdded} />
             </div>
         </div>
 
