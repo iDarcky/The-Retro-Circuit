@@ -19,14 +19,14 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
         <h2 className="text-sm font-mono tracking-widest text-text-secondary uppercase">Featured Consoles</h2>
       </div>
 
-      {/* Grid Layout - Very Compact & Flat */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 max-w-4xl">
+      {/* Grid Layout - Compact Cards with Large Gaps */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
           {consoles.slice(0, 5).map((console) => {
             return (
               <Link
                 key={console.id}
                 href={`/consoles/${console.slug}`}
-                className="group relative block w-full aspect-[4/5] hover:z-10"
+                className="group relative block w-[75%] mx-auto aspect-[4/5] hover:z-10"
               >
                  {/* Card Content - Flat Design, Smaller Padding */}
                  <div className="absolute inset-0 bg-zinc-900/80 backdrop-blur-md rounded-lg border border-white/10 overflow-hidden
