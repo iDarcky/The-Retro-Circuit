@@ -9,9 +9,14 @@ import FeaturedConsoles from './FeaturedConsoles';
 import { siteConfig } from '../../config/site';
 
 export default async function LandingPage() {
-  const latestAdded = await fetchLatestConsoles(5);
-  const latestReleases = await fetchRealWorldLatest(5);
-  const allConsoles = await fetchConsoleList();
+  // OPTIMIZATION: Use Promise.all to fetch data concurrently instead of sequentially.
+  // This reduces the total server-side latency for the page generation by running independent
+  // database queries in parallel.
+  const [latestAdded, latestReleases, allConsoles] = await Promise.all([
+    fetchLatestConsoles(5),
+    fetchRealWorldLatest(5),
+    fetchConsoleList(),
+  ]);
 
   // Prepare simple console list for the finder
   const searchableConsoles = allConsoles.map(c => ({ name: c.name, slug: c.slug }));
@@ -116,7 +121,8 @@ export default async function LandingPage() {
                  <div className="relative z-10 border border-border-subtle bg-bg-primary p-6 shadow-2xl transition-transform duration-500 group-hover:-translate-y-2 hover:border-violet-500/30">
                     <div className="absolute -top-3 -left-3 w-6 h-6 border-t-2 border-l-2 border-violet-500 transition-all duration-300 group-hover:w-full group-hover:h-full group-hover:border-violet-500/20"></div>
                     <div className="absolute -bottom-3 -right-3 w-6 h-6 border-b-2 border-r-2 border-violet-500 transition-all duration-300 group-hover:w-full group-hover:h-full group-hover:border-violet-500/20"></div>
-                    <QuickCompare consoles={allConsoles} />
+                    {/* OPTIMIZATION: Pass only necessary data (searchableConsoles) to reduce client component payload */}
+                    <QuickCompare consoles={searchableConsoles} />
                  </div>
               </div>
            </div>
