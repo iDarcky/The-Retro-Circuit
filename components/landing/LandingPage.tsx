@@ -20,13 +20,13 @@ export default async function LandingPage() {
 
       {/* 1. HERO - TYPOGRAPHIC STATEMENT */}
       <header className="px-6 md:px-12 pt-24 pb-32 border-b border-border-subtle relative overflow-hidden min-h-[80vh] flex items-start">
-        {/* Background Image with Blur */}
+        {/* Background Image with Progressive Blur */}
         <div className="absolute inset-0 z-0">
             <Image
                 src="/gameboy_color.png"
                 alt="Background"
                 fill
-                className="object-cover opacity-40 blur-[2px]"
+                className="object-cover opacity-40 [mask-image:linear-gradient(to_right,rgba(0,0,0,1)_0%,rgba(0,0,0,0.3)_100%)] blur-[4px]"
                 priority
             />
             {/* Gradient Overlay for Text Readability */}
@@ -42,26 +42,21 @@ export default async function LandingPage() {
                 </div>
 
                 <h1 className="text-[4vw] md:text-[5vw] lg:text-[3vw] leading-[1.1] font-pixel font-bold tracking-tighter uppercase mb-8 text-white drop-shadow-2xl">
-                  <span className="whitespace-nowrap">WELCOME TO</span> <br /><span>THE CIRCUIT</span>
+                  <span className="whitespace-nowrap">WELCOME TO</span> <br /><span>THE CIRCUIT<span className="text-emerald-400 animate-pulse">_</span></span>
                 </h1>
 
                 <p className="text-xl md:text-2xl text-text-secondary font-light max-w-xl leading-relaxed mb-8">
                     Explore detailed specifications, compare hardware, and find your perfect handheld.
                 </p>
 
-                <div className="flex items-center gap-2 mb-8 text-emerald-400 font-mono text-sm tracking-widest uppercase">
-                  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-                  {allConsoles.length} Consoles Archived
-                </div>
-
                 {/* CTA Buttons */}
-                <div className="flex flex-col md:flex-row items-center gap-6 animate-fade-in w-full md:w-auto" style={{ animationDelay: '0.2s' }}>
+                <div className="flex flex-col md:flex-row items-center gap-6 animate-fade-in w-full md:w-auto mb-8" style={{ animationDelay: '0.2s' }}>
                     <div className="relative group w-full md:w-auto">
-                        <div className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-white transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-white/50"></div>
-                        <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-white transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-white/50"></div>
+                        <div className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-violet-500 transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-violet-400/50"></div>
+                        <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-violet-500 transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-violet-400/50"></div>
                         <Link
                           href="/consoles"
-                          className="relative z-10 inline-flex items-center gap-3 bg-color-primary text-white font-mono text-sm md:text-base px-8 py-4 hover:brightness-110 transition-all uppercase tracking-widest border border-color-primary shadow-lg shadow-color-primary/20 w-full justify-center"
+                          className="relative z-10 inline-flex items-center gap-3 bg-violet-600 text-white font-mono text-sm md:text-base px-8 py-4 hover:brightness-110 transition-all uppercase tracking-widest border border-violet-500 shadow-lg shadow-violet-500/20 w-full justify-center"
                         >
                           Browse Consoles <ArrowRight className="w-4 h-4" />
                         </Link>
@@ -72,6 +67,12 @@ export default async function LandingPage() {
                     >
                       Manifesto
                     </Link>
+                </div>
+
+                {/* Console Count - Moved below CTA per final feedback */}
+                <div className="flex items-center gap-2 mb-8 text-emerald-400 font-mono text-sm tracking-widest uppercase animate-fade-in" style={{ animationDelay: '0.1s' }}>
+                  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                  {allConsoles.length} Consoles Archived
                 </div>
             </div>
         </div>
