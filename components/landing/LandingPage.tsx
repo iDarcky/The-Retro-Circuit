@@ -34,9 +34,7 @@ export default async function LandingPage() {
         </div>
 
         <div className="max-w-[1800px] mx-auto w-full relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-
-            {/* Left: Title & Subtitle */}
+            {/* Title & Subtitle */}
             <div className="flex flex-col items-start text-left">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-900/30 bg-emerald-950/10 text-xs font-mono uppercase tracking-widest text-emerald-400 mb-8 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(16,185,129,0.1)]">
                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
@@ -44,7 +42,7 @@ export default async function LandingPage() {
                 </div>
 
                 <h1 className="text-[4vw] md:text-[5vw] lg:text-[3vw] leading-[1.1] font-pixel font-bold tracking-tighter uppercase mb-8 text-white drop-shadow-2xl">
-                  <span className="whitespace-nowrap">WELCOME TO THE</span> <br /><span className="text-color-primary">CIRCUIT_</span>
+                  <span className="whitespace-nowrap">WELCOME TO</span> <br /><span>THE CIRCUIT</span>
                 </h1>
 
                 <p className="text-xl md:text-2xl text-text-secondary font-light max-w-xl leading-relaxed mb-8">
@@ -55,28 +53,27 @@ export default async function LandingPage() {
                   <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
                   {allConsoles.length} Consoles Archived
                 </div>
-            </div>
 
-            {/* Right: CTA Buttons */}
-            <div className="flex flex-col items-end justify-center h-full gap-6 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                <div className="relative group w-full md:w-auto">
-                    <div className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-white transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-white/50"></div>
-                    <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-white transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-white/50"></div>
+                {/* CTA Buttons */}
+                <div className="flex flex-col md:flex-row items-center gap-6 animate-fade-in w-full md:w-auto" style={{ animationDelay: '0.2s' }}>
+                    <div className="relative group w-full md:w-auto">
+                        <div className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-white transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-white/50"></div>
+                        <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-white transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-white/50"></div>
+                        <Link
+                          href="/consoles"
+                          className="relative z-10 inline-flex items-center gap-3 bg-color-primary text-white font-mono text-sm md:text-base px-8 py-4 hover:brightness-110 transition-all uppercase tracking-widest border border-color-primary shadow-lg shadow-color-primary/20 w-full justify-center"
+                        >
+                          Browse Consoles <ArrowRight className="w-4 h-4" />
+                        </Link>
+                    </div>
                     <Link
-                      href="/consoles"
-                      className="relative z-10 inline-flex items-center gap-3 bg-color-primary text-white font-mono text-sm md:text-base px-8 py-4 hover:brightness-110 transition-all uppercase tracking-widest border border-color-primary shadow-lg shadow-color-primary/20 w-full justify-center"
+                      href="/about"
+                      className="inline-flex items-center gap-3 bg-transparent text-text-secondary font-mono text-sm md:text-base px-8 py-4 hover:text-white hover:bg-white/5 transition-all uppercase tracking-widest border border-border-normal hover:border-white w-full md:w-auto justify-center"
                     >
-                      Browse The Library <ArrowRight className="w-4 h-4" />
+                      Manifesto
                     </Link>
                 </div>
-                <Link
-                  href="/about"
-                  className="inline-flex items-center gap-3 bg-transparent text-text-secondary font-mono text-sm md:text-base px-8 py-4 hover:text-white hover:bg-white/5 transition-all uppercase tracking-widest border border-border-normal hover:border-white w-full md:w-auto justify-center"
-                >
-                  Manifesto
-                </Link>
             </div>
-          </div>
         </div>
 
         {/* Background Subtle Grid - Lower Opacity */}
