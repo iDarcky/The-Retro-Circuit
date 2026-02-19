@@ -5,6 +5,7 @@ import { fetchLatestConsoles, fetchRealWorldLatest } from '../../lib/api/latest'
 import { fetchConsoleList } from '../../lib/api/consoles';
 import QuickCompare from './QuickCompare';
 import FinderSection from './FinderSection';
+import { siteConfig } from '../../config/site';
 
 export default async function LandingPage() {
   const latestAdded = await fetchLatestConsoles(5);
@@ -25,7 +26,7 @@ export default async function LandingPage() {
                 src="/gameboy_color.png"
                 alt="Background"
                 fill
-                className="object-cover opacity-40 blur-sm"
+                className="object-cover opacity-40 blur-[2px]"
                 priority
             />
             {/* Gradient Overlay for Text Readability */}
@@ -39,12 +40,12 @@ export default async function LandingPage() {
             <div className="flex flex-col items-start text-left">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-900/30 bg-emerald-950/10 text-xs font-mono uppercase tracking-widest text-emerald-400 mb-8 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(16,185,129,0.1)]">
                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-                   System Online // V.2.0
+                   System Online // {siteConfig.version}
                 </div>
 
-                <h1 className="text-[5vw] md:text-[6vw] leading-[1.1] font-pixel font-bold tracking-tighter uppercase mb-8 text-white drop-shadow-2xl">
+                <h1 className="text-[4vw] md:text-[5vw] leading-[1.1] font-pixel font-bold tracking-tighter uppercase mb-8 text-white drop-shadow-2xl">
                   Welcome to<br/>
-                  the <span className="text-color-primary">Circuit_</span>
+                  The <span className="text-color-primary">Circuit_</span>
                 </h1>
 
                 <p className="text-xl md:text-2xl text-text-secondary font-light max-w-xl leading-relaxed mb-8">
@@ -56,13 +57,13 @@ export default async function LandingPage() {
             <div className="flex flex-col items-end justify-center h-full gap-6 animate-fade-in" style={{ animationDelay: '0.2s' }}>
                 <Link
                   href="/consoles"
-                  className="inline-flex items-center gap-3 bg-color-primary text-white font-mono text-sm md:text-base px-8 py-4 hover:bg-white hover:text-black transition-all uppercase tracking-widest border border-transparent hover:border-white shadow-lg shadow-color-primary/20 w-full md:w-auto justify-center"
+                  className="inline-flex items-center gap-3 bg-color-primary text-white font-mono text-sm md:text-base px-8 py-4 hover:brightness-110 transition-all uppercase tracking-widest border border-color-primary shadow-lg shadow-color-primary/20 w-full md:w-auto justify-center"
                 >
                   Browse The Library <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
                   href="/about"
-                  className="inline-flex items-center gap-3 bg-bg-primary/80 backdrop-blur-sm text-text-secondary font-mono text-sm md:text-base px-8 py-4 hover:text-white transition-all uppercase tracking-widest border border-border-normal hover:border-white w-full md:w-auto justify-center"
+                  className="inline-flex items-center gap-3 bg-transparent text-text-secondary font-mono text-sm md:text-base px-8 py-4 hover:text-white hover:bg-white/5 transition-all uppercase tracking-widest border border-border-normal hover:border-white w-full md:w-auto justify-center"
                 >
                   Manifesto
                 </Link>
