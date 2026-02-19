@@ -19,8 +19,8 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
         <h2 className="text-sm font-mono tracking-widest text-text-secondary uppercase">Featured Consoles</h2>
       </div>
 
-      {/* Grid Layout - Compact & Flat */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      {/* Grid Layout - Very Compact & Flat */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 max-w-4xl">
           {consoles.slice(0, 5).map((console) => {
             return (
               <Link
