@@ -21,3 +21,11 @@ https://nextjs.org/telemetry
 [API] fetchLatestConsoles DB Error: TypeError: fetch failed
 [API] fetchRealWorldLatest DB Error: TypeError: fetch failed
  GET / 200 in 262ms (compile: 8ms, proxy.ts: 9ms, render: 246ms)
+✓ Compiled in 580ms
+[API] fetchLatestConsoles DB Error: TypeError: fetch failed
+[API] fetchRealWorldLatest DB Error: TypeError: fetch failed
+ GET / 200 in 1282ms (compile: 407ms, proxy.ts: 34ms, render: 841ms)
+✓ Compiled in 260ms
+[API] fetchLatestConsoles DB Error: TypeError: fetch failed
+[API] fetchRealWorldLatest DB Error: TypeError: fetch failed
+ GET / 200 in 471ms (compile: 104ms, proxy.ts: 7ms, render: 361ms)

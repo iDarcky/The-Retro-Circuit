@@ -21,16 +21,18 @@ export default async function LandingPage() {
       {/* 1. HERO - TYPOGRAPHIC STATEMENT */}
       <header className="px-6 md:px-12 pt-32 pb-32 border-b border-border-subtle relative overflow-hidden min-h-[80vh] flex items-center">
         {/* Background Image with Blur */}
-        <div className="absolute inset-0 z-0">
-            <Image
-                src="/game_boy_backgroud.webp"
-                alt="Background"
-                fill
-                className="object-cover opacity-40 blur-2xl"
-                priority
-            />
+        <div className="absolute inset-0 z-0 flex justify-center items-center overflow-hidden select-none pointer-events-none">
+            <div className="relative w-full h-full">
+                <Image
+                    src="/game_boy_backgroud.webp"
+                    alt="Background"
+                    fill
+                    className="object-contain opacity-40 blur-lg"
+                    priority
+                />
+            </div>
             {/* Gradient Overlay for Text Readability */}
-            <div className="absolute inset-0 bg-gradient-to-r from-bg-primary via-bg-primary/80 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-bg-primary via-bg-primary/90 to-bg-primary/40" />
         </div>
 
         <div className="max-w-[1800px] mx-auto w-full relative z-10">
@@ -58,13 +60,13 @@ export default async function LandingPage() {
             <div className="flex flex-col items-end justify-center h-full gap-6 animate-fade-in" style={{ animationDelay: '0.2s' }}>
                 <Link
                   href="/consoles"
-                  className="inline-flex items-center gap-3 bg-color-primary text-white font-mono text-sm md:text-base px-8 py-4 hover:bg-white hover:text-black transition-all uppercase tracking-widest border border-transparent hover:border-white shadow-lg shadow-color-primary/20 w-full md:w-auto justify-center"
+                  className="inline-flex items-center gap-3 bg-color-primary text-white font-mono text-sm md:text-lg px-10 py-5 hover:bg-white hover:text-black transition-all uppercase tracking-widest border border-transparent hover:border-white shadow-[0_0_20px_rgba(255,79,0,0.4)] hover:shadow-[0_0_30px_rgba(255,255,255,0.6)] w-full md:w-auto justify-center font-bold"
                 >
-                  Browse The Library <ArrowRight className="w-4 h-4" />
+                  Browse The Library <ArrowRight className="w-5 h-5" />
                 </Link>
                 <Link
                   href="/about"
-                  className="inline-flex items-center gap-3 bg-bg-primary/80 backdrop-blur-sm text-text-secondary font-mono text-sm md:text-base px-8 py-4 hover:text-white transition-all uppercase tracking-widest border border-border-normal hover:border-white w-full md:w-auto justify-center"
+                  className="inline-flex items-center gap-3 text-text-muted font-mono text-xs md:text-sm px-6 py-3 hover:text-white transition-all uppercase tracking-widest border border-transparent hover:border-border-subtle w-full md:w-auto justify-center opacity-70 hover:opacity-100"
                 >
                   Manifesto
                 </Link>
