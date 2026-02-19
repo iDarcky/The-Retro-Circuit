@@ -22,7 +22,7 @@ export default async function LandingPage() {
         {/* Background Image with Blur */}
         <div className="absolute inset-0 z-0">
             <Image
-                src="/gba_backgroud.png"
+                src="/gameboy_color.png"
                 alt="Background"
                 fill
                 className="object-cover opacity-40 blur-sm"
