@@ -3,7 +3,6 @@
 import { type FC } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowUpRight } from 'lucide-react';
 import { type ConsoleDetails } from '../../lib/types/domain';
 
 interface FeaturedConsolesProps {
@@ -13,62 +12,62 @@ interface FeaturedConsolesProps {
 const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
   return (
     <div className="w-full mt-16 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+
+      {/* Title */}
       <div className="flex items-center gap-3 mb-6">
         <div className="w-2 h-2 bg-color-primary"></div>
         <h2 className="text-sm font-mono tracking-widest text-text-secondary uppercase">Featured Consoles</h2>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {consoles.slice(0, 4).map((console) => {
-          const price = console.specs?.price_launch_usd;
-          const formattedPrice = price
-            ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(price)
-            : 'LEGACY';
+      {/* Unified Dark Container */}
+      <div className="relative bg-zinc-900/80 backdrop-blur-md rounded-xl overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+        <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
 
-          return (
-            <Link
-              key={console.id}
-              href={`/consoles/${console.slug}`}
-              className="group block relative bg-bg-primary border border-border-normal hover:border-violet-500 transition-all duration-300"
-            >
-              {/* Image Container - Aspect 16:9 */}
-              <div className="relative aspect-video w-full bg-bg-secondary/30 flex items-center justify-center p-6 border-b border-border-subtle group-hover:bg-bg-secondary/50 transition-colors overflow-hidden">
-                {console.image_url ? (
-                  <Image
-                    src={console.image_url}
-                    alt={console.name}
-                    width={300}
-                    height={200}
-                    className="object-contain w-full h-full mix-blend-screen opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-                  />
-                ) : (
-                  <div className="text-xs font-mono text-text-muted">NO SIGNAL</div>
-                )}
+        {/* Seamless Row Layout */}
+        <div className="flex divide-x divide-white/5">
+            {consoles.slice(0, 5).map((console) => {
+              return (
+                <Link
+                  key={console.id}
+                  href={`/consoles/${console.slug}`}
+                  className="group relative flex-1 min-w-0 p-6 flex flex-col items-center justify-center transition-all duration-300 hover:bg-white/5"
+                >
+                  {/* Floating Image */}
+                  <div className="relative w-full aspect-square mb-4 transition-transform duration-500 group-hover:-translate-y-2">
+                    {console.image_url ? (
+                      <Image
+                        src={console.image_url}
+                        alt={console.name}
+                        fill
+                        className="object-contain drop-shadow-2xl opacity-90 group-hover:opacity-100 transition-opacity"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 20vw"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[10px] font-mono text-white/20">NO SIGNAL</div>
+                    )}
 
-                {/* Hover Indicator */}
-                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <ArrowUpRight className="w-4 h-4 text-violet-500" />
-                </div>
-              </div>
+                    {/* Shadow underneath image for depth */}
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-3/4 h-2 bg-black/40 blur-md rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-75"></div>
+                  </div>
 
-              {/* Text Content */}
-              <div className="p-4 flex flex-col gap-1">
-                 <div className="flex justify-between items-start">
-                    <span className="text-[10px] font-mono uppercase text-text-muted group-hover:text-violet-400 transition-colors truncate pr-2">
-                        {console.manufacturer?.name || 'UNKNOWN'}
-                    </span>
-                    <span className="text-[10px] font-mono text-text-muted bg-bg-secondary/50 px-1.5 py-0.5 rounded border border-transparent group-hover:border-violet-500/30 group-hover:text-violet-300 transition-colors">
-                        {formattedPrice}
-                    </span>
-                 </div>
+                  {/* Minimal Info */}
+                  <div className="text-center w-full">
+                     <h3 className="text-xs font-bold text-white tracking-tight uppercase truncate px-2 group-hover:text-violet-400 transition-colors">
+                        {console.name}
+                     </h3>
+                     <span className="text-[10px] font-mono text-zinc-500 mt-1 block">
+                        {console.manufacturer?.name}
+                     </span>
+                  </div>
+                </Link>
+              );
+            })}
 
-                 <h3 className="text-sm font-bold uppercase tracking-tight text-white group-hover:text-white transition-colors truncate">
-                    {console.name}
-                 </h3>
-              </div>
-            </Link>
-          );
-        })}
+            {/* Fill empty space if fewer than 5 items */}
+            {Array.from({ length: Math.max(0, 5 - consoles.slice(0, 5).length) }).map((_, i) => (
+                 <div key={`empty-${i}`} className="flex-1 min-w-0 bg-transparent"></div>
+            ))}
+        </div>
       </div>
     </div>
   );
