@@ -22,13 +22,17 @@ export default async function LandingPage() {
       <header className="px-6 md:px-12 pt-24 pb-32 border-b border-border-subtle relative overflow-hidden min-h-[80vh] flex items-start">
         {/* Background Image with Progressive Blur */}
         <div className="absolute inset-0 z-0">
+            {/* Base Image (Sharp) */}
             <Image
                 src="/gameboy_color.png"
                 alt="Background"
                 fill
-                className="object-cover opacity-40 [mask-image:linear-gradient(to_right,rgba(0,0,0,1)_0%,rgba(0,0,0,0.3)_100%)] blur-[4px]"
+                className="object-cover opacity-40 [mask-image:linear-gradient(to_right,rgba(0,0,0,1)_0%,rgba(0,0,0,0.5)_100%)]"
                 priority
             />
+            {/* Progressive Blur Layer: Blurs left (text area), sharpens right */}
+            <div className="absolute inset-0 backdrop-blur-[4px] [mask-image:linear-gradient(to_right,black_0%,transparent_80%)]"></div>
+
             {/* Gradient Overlay for Text Readability */}
             <div className="absolute inset-0 bg-gradient-to-r from-bg-primary via-bg-primary/80 to-transparent" />
         </div>
@@ -42,7 +46,7 @@ export default async function LandingPage() {
                 </div>
 
                 <h1 className="text-[4vw] md:text-[5vw] lg:text-[3vw] leading-[1.1] font-pixel font-bold tracking-tighter uppercase mb-8 text-white drop-shadow-2xl">
-                  <span className="whitespace-nowrap">WELCOME TO</span> <br /><span>THE CIRCUIT<span className="text-emerald-400 animate-pulse">_</span></span>
+                  <span className="whitespace-nowrap">WELCOME TO</span> <br /><span>THE CIRCUIT<span className="text-violet-500 animate-pulse">_</span></span>
                 </h1>
 
                 <p className="text-xl md:text-2xl text-text-secondary font-light max-w-xl leading-relaxed mb-8">
