@@ -43,13 +43,18 @@ export default async function LandingPage() {
                    System Online // {siteConfig.version}
                 </div>
 
-                <h1 className="text-[4vw] md:text-[5vw] leading-[1.1] font-pixel font-bold tracking-tighter uppercase mb-8 text-white drop-shadow-2xl">
-                  WELCOME TO THE <span className="text-color-primary">CIRCUIT_</span>
+                <h1 className="text-[4vw] md:text-[5vw] lg:text-[3vw] leading-[1.1] font-pixel font-bold tracking-tighter uppercase mb-8 text-white drop-shadow-2xl">
+                  <span className="whitespace-nowrap">WELCOME TO THE</span> <br /><span className="text-color-primary">CIRCUIT_</span>
                 </h1>
 
                 <p className="text-xl md:text-2xl text-text-secondary font-light max-w-xl leading-relaxed mb-8">
                     Explore detailed specifications, compare hardware, and find your perfect handheld.
                 </p>
+
+                <div className="flex items-center gap-2 mb-8 text-emerald-400 font-mono text-sm tracking-widest uppercase">
+                  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                  {allConsoles.length} Consoles Archived
+                </div>
             </div>
 
             {/* Right: CTA Buttons */}
