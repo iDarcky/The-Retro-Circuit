@@ -9,7 +9,7 @@ interface VariantSelectorProps {
     variants: ConsoleVariant[];
     selectedSlug: string;
     onSelect: (slug: string) => void;
-    themeColor: 'cyan' | 'pink';
+    themeColor: 'primary' | 'secondary' | 'cyan' | 'pink';
 }
 
 export const VariantSelector: FC<VariantSelectorProps> = ({ variants, selectedSlug, onSelect, themeColor }) => {
@@ -20,11 +20,14 @@ export const VariantSelector: FC<VariantSelectorProps> = ({ variants, selectedSl
     const selectedVariant = variants.find(v => v.slug === selectedSlug) || variants[0];
 
     // Theme styles
-    const textColor = themeColor === 'cyan' ? 'text-primary' : 'text-accent';
-    const borderColor = themeColor === 'cyan' ? 'border-primary' : 'border-accent';
-    const scrollbarColor = themeColor === 'cyan'
-        ? '[&::-webkit-scrollbar-thumb]:bg-primary [&::-webkit-scrollbar-track]:border-primary/30'
-        : '[&::-webkit-scrollbar-thumb]:bg-accent [&::-webkit-scrollbar-track]:border-accent/30';
+    const isPrimary = themeColor === 'primary' || themeColor === 'cyan';
+    const textColor = isPrimary ? 'text-color-primary' : 'text-color-secondary';
+    const borderColor = isPrimary ? 'border-color-primary' : 'border-color-secondary';
+
+    // Simplification: Standard scrollbar classes from global.css should suffice, but keeping custom ones for specificity
+    const scrollbarColor = isPrimary
+        ? '[&::-webkit-scrollbar-thumb]:bg-color-primary [&::-webkit-scrollbar-track]:border-color-primary/30'
+        : '[&::-webkit-scrollbar-thumb]:bg-color-secondary [&::-webkit-scrollbar-track]:border-color-secondary/30';
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -48,10 +51,10 @@ export const VariantSelector: FC<VariantSelectorProps> = ({ variants, selectedSl
         <div className="relative inline-block w-full md:w-auto" ref={wrapperRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`group flex items-center gap-2 font-mono text-[10px] md:text-xs text-white outline-none w-full md:w-auto`}
+                className={`group flex items-center gap-2 font-mono text-[10px] md:text-xs text-text-primary outline-none w-full md:w-auto hover:bg-bg-card p-1 rounded-sm transition-colors`}
                 onMouseEnter={playHover}
             >
-                <span className="opacity-70">Variant:</span>
+                <span className="opacity-70 text-text-muted">VARIANT:</span>
                 <span className={`underline decoration-1 underline-offset-4 ${textColor} font-bold truncate`}>
                     {selectedVariant?.variant_name}
                 </span>
@@ -59,13 +62,13 @@ export const VariantSelector: FC<VariantSelectorProps> = ({ variants, selectedSl
             </button>
 
             {isOpen && (
-                <div className={`absolute left-0 top-full mt-2 w-full md:w-48 max-h-48 overflow-y-auto bg-black border ${borderColor} z-50 ${scrollbarColor} shadow-xl`}>
+                <div className={`absolute left-0 top-full mt-2 w-full md:w-48 max-h-48 overflow-y-auto bg-bg-secondary border ${borderColor} z-50 ${scrollbarColor} shadow-xl glass-panel`}>
                     {variants.map(v => (
                         <div
                             key={v.id}
                             onClick={() => handleSelect(v.slug || '')}
                             onMouseEnter={playHover}
-                            className={`p-2 text-[10px] md:text-xs font-mono cursor-pointer ${textColor} border-b border-white/5 last:border-0 hover:bg-white/10 ${v.slug === selectedSlug ? 'bg-white/5' : ''}`}
+                            className={`p-3 text-[10px] md:text-xs font-mono cursor-pointer ${textColor} border-b border-border-subtle last:border-0 hover:bg-white/10 ${v.slug === selectedSlug ? 'bg-white/5' : ''} transition-colors`}
                         >
                             {v.variant_name}
                         </div>

@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import type { Metadata } from "next";
-import { Press_Start_2P, JetBrains_Mono, Share_Tech_Mono } from "next/font/google";
+import { Press_Start_2P, JetBrains_Mono, Share_Tech_Mono, Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "../styles/globals.css";
 import ClientShell from "../components/layout/ClientShell";
@@ -26,6 +26,12 @@ const shareTechMono = Share_Tech_Mono({
   weight: "400",
   subsets: ["latin"],
   variable: '--font-share-tech'
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: '--font-sans',
+  display: 'swap',
 });
 
 export const viewport = {
@@ -99,7 +105,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${pressStart.variable} ${jetBrainsMono.variable} ${shareTechMono.variable} font-mono min-h-screen flex flex-col`}>
+      <body className={`${pressStart.variable} ${jetBrainsMono.variable} ${shareTechMono.variable} ${inter.variable} font-sans min-h-screen flex flex-col bg-bg-primary text-text-primary antialiased selection:bg-color-primary selection:text-white`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -109,9 +115,9 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgLd) }}
         />
 
-        {/* CRT Overlay Effects */}
-        <div className="scanlines"></div>
-        <div className="crt-flicker"></div>
+        {/* CRT Overlay Effects - Reduced/Removed for cleaner aesthetic */}
+        {/* <div className="scanlines"></div> */}
+        {/* <div className="crt-flicker"></div> */}
         
         {/* Auth Synchronization */}
         <AuthSync />

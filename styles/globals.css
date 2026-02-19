@@ -3,27 +3,40 @@
 @tailwind utilities;
 
 :root {
-  /* Backgrounds */
-  --bg-primary: #0a0e1a;
-  --bg-secondary: #161b22;
-  --bg-card: rgba(255, 255, 255, 0.04);
+  /*
+    THEME: SWISS ARCHIVE
+    A minimal, international style aesthetic.
+    Pure black, stark white, and a single "International Orange" accent.
+    No blur, no glow, no noise. Just grid and data.
+  */
 
-  /* Text */
-  --text-primary: #e0e0e0;
-  --text-secondary: #8b949e;
-  --text-muted: #6e7681;
+  /* Backgrounds - Flat & Matte */
+  --bg-primary: #09090b;   /* Zinc 950 - Deepest black */
+  --bg-secondary: #18181b; /* Zinc 900 - Panel background */
+  --bg-tertiary: #27272a;  /* Zinc 800 - Input/Hover background */
+  --bg-card: #09090b;      /* Same as primary for seamless look */
+  --bg-glass: #09090b;     /* No glass effect in Swiss style, just solid */
 
-  /* Accent Colors (BY ROLE) */
-  --color-primary: #00D9FF;  /* Cyan - main UI */
-  --color-secondary: #00FF88; /* Green - positive */
-  --color-accent: #FF6B9D;    /* Pink - special */
-  --color-warning: #FFC857;   /* Yellow - caution */
+  /* Text - High Contrast */
+  --text-primary: #ffffff; /* Pure White */
+  --text-secondary: #a1a1aa; /* Zinc 400 - Subtitles */
+  --text-muted: #52525b;   /* Zinc 600 - Metadata */
+  --text-inverse: #09090b; /* Black text on white/accent */
 
-  /* Borders */
-  --border-subtle: rgba(255, 255, 255, 0.1);
-  --border-normal: rgba(255, 255, 255, 0.15);
-  --border-strong: rgba(255, 255, 255, 0.3);
+  /* Accent Colors - The Single Signal */
+  --color-primary: #ff4f00;   /* International Orange - Action */
+  --color-secondary: #ffffff; /* Secondary is just White in this theme */
+  --color-accent: #ff4f00;    /* Alias for primary */
+  --color-success: #10b981;   /* Emerald 500 - Status only */
+  --color-warning: #f59e0b;   /* Amber 500 - Status only */
 
+  /* Borders - Hairlines */
+  --border-subtle: #27272a;   /* Zinc 800 */
+  --border-normal: #3f3f46;   /* Zinc 700 */
+  --border-strong: #ffffff;   /* White for active states */
+  --border-primary: var(--color-primary);
+
+  /* Semantic Mappings */
   --background: var(--bg-primary);
   --foreground: var(--text-primary);
 }
@@ -31,13 +44,17 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
+  /* Swiss style typography settings */
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.02em; /* Tight tracking for headers */
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--bg-primary); border-left: 1px solid var(--bg-secondary); }
-::-webkit-scrollbar-thumb { background: var(--bg-secondary); border: 1px solid var(--color-secondary); }
-::-webkit-scrollbar-thumb:hover { background: var(--color-secondary); }
+/* Custom Scrollbar - Hidden or Minimal */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--border-normal); }
+::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
 
 /* Utility to hide scrollbar but keep functionality */
 .no-scrollbar::-webkit-scrollbar {
@@ -48,64 +65,27 @@ body {
     scrollbar-width: none;  /* Firefox */
 }
 
-/* Gradient Mask for scrolling containers */
-.mask-gradient {
-    mask-image: linear-gradient(to right, transparent, black 10px, black 90%, transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 10px, black 90%, transparent);
+/* Swiss Grid Utilities */
+.grid-line {
+  border-right: 1px solid var(--border-subtle);
+}
+.grid-row {
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-/* CRT Effects */
-.scanlines {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;
-  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
-  background-size: 100% 4px;
-  opacity: 0.15;
+/* Animations - fast, linear, no bounce */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.crt-flicker {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9998;
-  background: rgba(18, 16, 16, 0.1);
-  opacity: 0;
-  animation: flicker 0.15s infinite;
+.animate-fade-in {
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Glitch Animation for 404 */
-@keyframes glitch-shake {
-  0% { transform: translate(0); }
-  25% { transform: translate(-2px, 2px); }
-  50% { transform: translate(2px, -2px); }
-  75% { transform: translate(-2px, -2px); }
-  100% { transform: translate(0); }
-}
-
-.glitch-hover:hover {
-  animation: glitch-shake 0.2s cubic-bezier(.36,.07,.19,.97) both infinite;
-  text-shadow: 2px 2px 0px var(--color-secondary), -2px -2px 0px var(--color-primary);
-}
-
-/* Neon Pulse Animation */
-@keyframes neon-pulse {
-  0%, 100% {
-    text-shadow: 0 0 10px var(--color-accent), 0 0 20px var(--color-accent), 0 0 40px var(--color-accent);
-    opacity: 1;
-  }
-  50% {
-    text-shadow: 0 0 5px var(--color-accent), 0 0 10px var(--color-accent);
-    opacity: 0.8;
-  }
-}
-
-@keyframes flicker {
-  0% { opacity: 0.02; }
-  50% { opacity: 0.05; }
-  100% { opacity: 0.02; }
-}
-
-@keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
 
-/* Accessibility: Reduce motion */
+/* Accessibility */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -113,37 +93,4 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  
-  .scanlines,
-  .crt-flicker {
-    display: none;
-  }
-}
-
-/* Device cards - glass effect */
-.device-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-.device-card:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: #00D9FF;
-  box-shadow: 0 8px 16px rgba(0, 217, 255, 0.2);
-}
-
-/* Section backgrounds - subtle layering */
-.vault-section {
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
-  padding: 2rem;
-}
-
-/* Banner */
-.banner {
-  background: rgba(255, 107, 157, 0.15); /* Soft pink, semi-transparent */
-  backdrop-filter: blur(10px);
-  border: none;
 }

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ArrowLeftRight } from 'lucide-react';
 import { ConsoleSearch } from '../arena/ConsoleSearch';
 
 interface QuickCompareProps {
@@ -23,38 +23,38 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
   };
 
   return (
-    <div className="flex flex-col gap-8 h-full">
-      <div className="space-y-6 flex-grow">
-        {/* Player 1 */}
-        <div className="space-y-2">
-            <label className="text-[10px] font-mono text-primary uppercase tracking-widest pl-1">
-                PLAYER 1
-            </label>
+    <div className="flex flex-col gap-6 w-full max-w-2xl mx-auto">
+      <div className="flex flex-col lg:flex-row items-center gap-6">
+
+        {/* Device A */}
+        <div className="flex-1 w-full relative">
+            <span className="absolute -top-3 left-2 px-1 bg-bg-primary text-[10px] font-mono text-text-muted uppercase tracking-widest z-10">
+                SYSTEM A
+            </span>
             <ConsoleSearch
                 consoles={consoles}
                 onSelect={(slug, name) => setP1({ slug, name })}
                 placeholder="SELECT DEVICE..."
-                themeColor="cyan"
+                themeColor="primary"
                 currentSelection={p1?.name}
             />
         </div>
 
-        <div className="flex items-center justify-center">
-             <div className="h-px w-full bg-gray-800"></div>
-             <span className="mx-4 text-[10px] font-mono text-gray-500 uppercase tracking-widest">VS</span>
-             <div className="h-px w-full bg-gray-800"></div>
+        {/* Divider / VS */}
+        <div className="flex items-center justify-center shrink-0 w-8 h-8 rounded-full border border-border-normal text-text-muted bg-bg-secondary">
+             <ArrowLeftRight size={14} strokeWidth={1.5} />
         </div>
 
-        {/* Player 2 */}
-        <div className="space-y-2">
-            <label className="text-[10px] font-mono text-accent uppercase tracking-widest pl-1">
-                PLAYER 2
-            </label>
+        {/* Device B */}
+        <div className="flex-1 w-full relative">
+            <span className="absolute -top-3 left-2 px-1 bg-bg-primary text-[10px] font-mono text-text-muted uppercase tracking-widest z-10">
+                SYSTEM B
+            </span>
             <ConsoleSearch
                 consoles={consoles}
                 onSelect={(slug, name) => setP2({ slug, name })}
                 placeholder="SELECT DEVICE..."
-                themeColor="pink"
+                themeColor="secondary" // In this theme, secondary is just white/neutral
                 currentSelection={p2?.name}
             />
         </div>
@@ -63,9 +63,9 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
       <button
         onClick={handleCompare}
         disabled={!p1 && !p2}
-        className="w-full bg-primary hover:bg-white text-black font-bold font-tech text-sm py-4 uppercase tracking-widest transition-all hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2 shadow-[4px_4px_0_rgba(0,0,0,0.5)]"
+        className="w-full bg-text-primary hover:bg-color-primary text-bg-primary font-bold font-mono text-sm py-4 uppercase tracking-widest transition-colors disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:bg-text-primary flex items-center justify-center gap-2 border border-transparent rounded-none"
       >
-        Compare Systems
+        INITIATE ANALYSIS
         <ArrowRight size={16} />
       </button>
     </div>

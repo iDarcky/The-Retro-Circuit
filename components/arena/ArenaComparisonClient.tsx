@@ -21,10 +21,6 @@ interface SelectionState {
 
 // Helper to construct URL
 const constructArenaUrl = (p1?: string | null, v1?: string | null, p2?: string | null, v2?: string | null) => {
-    // If we have a nice clean versus match, we could use the new route, but for now stick to query params
-    // to maintain compatibility with the existing client logic.
-    // However, if we want to leverage the [versus] SSR route, we should push to that.
-    // But [versus] is mainly for sharing. Interactive mode works best with query params.
     const params = new URLSearchParams();
     if (p1) params.set('p1', p1);
     if (v1) params.set('v1', v1);
@@ -35,7 +31,7 @@ const constructArenaUrl = (p1?: string | null, v1?: string | null, p2?: string |
 
 type ArenaComparisonClientProps = {
     initialConsoleList?: {name: string, slug: string}[];
-    initialSelectionA?: SelectionState; // Pre-fetched data
+    initialSelectionA?: SelectionState;
     initialSelectionB?: SelectionState;
 };
 
@@ -50,7 +46,7 @@ export default function ArenaComparisonClient({
 
     const [allConsoles, setAllConsoles] = useState<{name: string, slug: string}[]>(initialConsoleList);
 
-    // Initialize state with props if available, otherwise defaults
+    // Initialize state
     const [selectionA, setSelectionA] = useState<SelectionState>(initialSelectionA || { slug: null, details: null, selectedVariant: null, loading: false });
     const [selectionB, setSelectionB] = useState<SelectionState>(initialSelectionB || { slug: null, details: null, selectedVariant: null, loading: false });
 
@@ -60,14 +56,12 @@ export default function ArenaComparisonClient({
         (!!searchParams?.get('p1') && !!searchParams?.get('p2'))
     );
 
-    // Fetch list if not provided
     useEffect(() => {
         if (allConsoles.length === 0) {
             fetchConsoleList().then((list) => setAllConsoles(list));
         }
     }, []);
 
-    // Sync with URL params (CSR fallback)
     useEffect(() => {
         const p1 = searchParams?.get('p1');
         const v1 = searchParams?.get('v1');
@@ -89,7 +83,6 @@ export default function ArenaComparisonClient({
             }
         };
 
-        // Only load if not already matching state (prevents double fetch if SSR hydrated)
         if (p1 && p1 !== selectionA.slug) {
             loadSelection(p1, v1 || null, setSelectionA);
         } else if (selectionA.details && v1 && v1 !== selectionA.selectedVariant?.slug) {
@@ -169,7 +162,7 @@ export default function ArenaComparisonClient({
     };
 
     return (
-        <div className="w-full">
+        <div className="w-full bg-bg-primary min-h-screen">
             <div className="hidden md:block">
                 <RetroStatusBar
                     rcPath="RC://RETRO_CIRCUIT/ARENA/VS"
@@ -178,47 +171,47 @@ export default function ArenaComparisonClient({
             </div>
 
         <div className="w-full max-w-7xl mx-auto p-4 flex flex-col min-h-screen">
-            <h1 className="text-3xl md:text-5xl font-pixel text-center text-white mb-8 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-                VS MODE <span className="text-secondary">ARENA</span>
+            <h1 className="text-3xl md:text-5xl font-sans font-bold text-center text-text-primary mb-8 tracking-tighter">
+                VS MODE <span className="text-color-primary">ARENA</span>
             </h1>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-4 md:mb-8 relative z-30">
                 {/* VS Badge */}
                 <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none flex justify-center">
-                    <div className="hidden md:flex w-16 h-16 bg-black rounded-full items-center justify-center border-4 border-white shadow-[0_0_20px_rgba(255,255,255,0.5)]">
-                        <span className="font-pixel text-xl italic text-white">VS</span>
+                    <div className="hidden md:flex w-16 h-16 bg-bg-tertiary rounded-full items-center justify-center border-4 border-bg-primary shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                        <span className="font-mono text-xl italic text-text-primary">VS</span>
                     </div>
                 </div>
 
-                {/* Player 1 Card - Cyan */}
-                <div className="border border-primary bg-primary/5 relative shadow-lg hover:shadow-primary/20 transition-shadow md:-skew-x-10 z-10">
-                     <div className="md:skew-x-10 p-2 md:p-6 flex flex-col h-full relative">
-                        <h2 className="font-pixel text-[10px] md:text-base text-primary mb-2 text-left">[ PLAYER 1 ]</h2>
+                {/* Player 1 Card - Primary (Amber) */}
+                <div className="border border-color-primary/30 bg-color-primary/5 relative shadow-lg hover:shadow-color-primary/10 transition-shadow rounded-sm z-10">
+                     <div className="p-4 md:p-8 flex flex-col h-full relative">
+                        <h2 className="font-mono text-xs md:text-sm text-color-primary mb-4 text-left uppercase tracking-widest">[ PLAYER 1 ]</h2>
                         {!selectionA.details && (
                             <ConsoleSearch
                                 consoles={allConsoles}
                                 onSelect={(slug) => handleSelect(setSelectionA, true)(slug)}
-                                themeColor="cyan"
+                                themeColor="primary"
                             />
                         )}
                         {selectionA.loading ? (
-                             <div className="flex-1 flex items-center justify-center text-primary font-mono animate-pulse text-[10px] md:text-base mt-4">LOADING...</div>
+                             <div className="flex-1 flex items-center justify-center text-color-primary font-mono animate-pulse text-[10px] md:text-base mt-4">LOADING DATA...</div>
                         ) : selectionA.details ? (
-                             <div className="mt-2 md:mt-6 flex-1 flex flex-col md:items-center animate-fadeIn">
+                             <div className="mt-2 md:mt-6 flex-1 flex flex-col md:items-center animate-fade-in">
                                  <Link
                                     href={`/consoles/${selectionA.details.slug}`}
                                     className="flex flex-row md:flex-col items-center gap-2 md:gap-4 mb-2 md:mb-4 group w-full"
                                  >
-                                     <div className="relative w-10 h-10 md:w-full md:h-32 flex-shrink-0">
+                                     <div className="relative w-16 h-16 md:w-full md:h-48 flex-shrink-0 bg-bg-card rounded-md flex items-center justify-center">
                                          {(selectionA.selectedVariant?.image_url || selectionA.details.image_url) ? (
-                                             <img src={selectionA.selectedVariant?.image_url || selectionA.details.image_url} alt={selectionA.details.name} className="w-full h-full object-contain drop-shadow-lg" />
+                                             <img src={selectionA.selectedVariant?.image_url || selectionA.details.image_url} alt={selectionA.details.name} className="w-full h-full object-contain p-2" />
                                          ) : (
-                                             <div className="w-full h-full flex items-center justify-center text-primary opacity-50 font-pixel text-[8px] md:text-xs">NO IMG</div>
+                                             <div className="text-color-primary opacity-50 font-mono text-[8px] md:text-xs">NO IMG</div>
                                          )}
                                      </div>
                                      <div className="flex flex-col text-left md:text-center min-w-0 overflow-hidden w-full">
-                                         <h3 className="font-pixel text-[10px] md:text-xl text-white truncate group-hover:text-primary transition-colors">{selectionA.details.name}</h3>
-                                         <div className="font-mono text-[8px] md:text-xs text-primary truncate">{selectionA.details.manufacturer?.name}</div>
+                                         <h3 className="font-bold text-lg md:text-2xl text-text-primary truncate group-hover:text-color-primary transition-colors">{selectionA.details.name}</h3>
+                                         <div className="font-mono text-xs text-text-muted truncate">{selectionA.details.manufacturer?.name}</div>
                                      </div>
                                  </Link>
 
@@ -226,53 +219,53 @@ export default function ArenaComparisonClient({
                                     variants={selectionA.details.variants || []}
                                     selectedSlug={selectionA.selectedVariant?.slug || ''}
                                     onSelect={handleVariantChange(setSelectionA, true)}
-                                    themeColor="cyan"
+                                    themeColor="primary"
                                  />
 
                                  {!isArenaMode && (
                                      <button
                                          onClick={() => handleChangeFighter(true)}
-                                         className="mt-4 text-[10px] text-secondary/70 hover:text-secondary underline font-mono"
+                                         className="mt-4 text-xs text-text-muted hover:text-color-primary underline font-mono"
                                      >
-                                         [CHANGE]
+                                         [CHANGE DEVICE]
                                      </button>
                                  )}
                              </div>
                         ) : (
-                             <div className="flex-1 flex items-center justify-center text-gray-600 font-pixel text-[8px] md:text-xs opacity-50 mt-4">SELECT FIGHTER</div>
+                             <div className="flex-1 flex items-center justify-center text-text-muted font-mono text-xs opacity-50 mt-4">SELECT DEVICE</div>
                         )}
                      </div>
                 </div>
 
-                {/* Player 2 Card - Pink */}
-                <div className="border border-accent bg-accent/5 relative shadow-lg hover:shadow-accent/20 transition-shadow md:skew-x-10 z-0">
-                     <div className="md:-skew-x-10 p-2 md:p-6 flex flex-col h-full relative">
-                        <h2 className="font-pixel text-[10px] md:text-base text-accent mb-2 text-left md:text-right">[ PLAYER 2 ]</h2>
+                {/* Player 2 Card - Secondary (Cyan) */}
+                <div className="border border-color-secondary/30 bg-color-secondary/5 relative shadow-lg hover:shadow-color-secondary/10 transition-shadow rounded-sm z-0">
+                     <div className="p-4 md:p-8 flex flex-col h-full relative">
+                        <h2 className="font-mono text-xs md:text-sm text-color-secondary mb-4 text-left md:text-right uppercase tracking-widest">[ PLAYER 2 ]</h2>
                         {!selectionB.details && (
                             <ConsoleSearch
                                 consoles={allConsoles}
                                 onSelect={(slug) => handleSelect(setSelectionB, false)(slug)}
-                                themeColor="pink"
+                                themeColor="secondary"
                             />
                         )}
                         {selectionB.loading ? (
-                             <div className="flex-1 flex items-center justify-center text-accent font-mono animate-pulse text-[10px] md:text-base mt-4">LOADING...</div>
+                             <div className="flex-1 flex items-center justify-center text-color-secondary font-mono animate-pulse text-[10px] md:text-base mt-4">LOADING DATA...</div>
                         ) : selectionB.details ? (
-                             <div className="mt-2 md:mt-6 flex-1 flex flex-col md:items-center animate-fadeIn">
+                             <div className="mt-2 md:mt-6 flex-1 flex flex-col md:items-center animate-fade-in">
                                  <Link
                                     href={`/consoles/${selectionB.details.slug}`}
                                     className="flex flex-row md:flex-col items-center gap-2 md:gap-4 mb-2 md:mb-4 group w-full"
                                  >
-                                     <div className="relative w-10 h-10 md:w-full md:h-32 flex-shrink-0">
+                                     <div className="relative w-16 h-16 md:w-full md:h-48 flex-shrink-0 bg-bg-card rounded-md flex items-center justify-center">
                                          {(selectionB.selectedVariant?.image_url || selectionB.details.image_url) ? (
-                                             <img src={selectionB.selectedVariant?.image_url || selectionB.details.image_url} alt={selectionB.details.name} className="w-full h-full object-contain drop-shadow-lg" />
+                                             <img src={selectionB.selectedVariant?.image_url || selectionB.details.image_url} alt={selectionB.details.name} className="w-full h-full object-contain p-2" />
                                          ) : (
-                                             <div className="w-full h-full flex items-center justify-center text-accent opacity-50 font-pixel text-[8px] md:text-xs">NO IMG</div>
+                                             <div className="text-color-secondary opacity-50 font-mono text-[8px] md:text-xs">NO IMG</div>
                                          )}
                                      </div>
                                      <div className="flex flex-col text-left md:text-center min-w-0 overflow-hidden w-full">
-                                         <h3 className="font-pixel text-[10px] md:text-xl text-white truncate group-hover:text-accent transition-colors">{selectionB.details.name}</h3>
-                                         <div className="font-mono text-[8px] md:text-xs text-accent truncate">{selectionB.details.manufacturer?.name}</div>
+                                         <h3 className="font-bold text-lg md:text-2xl text-text-primary truncate group-hover:text-color-secondary transition-colors">{selectionB.details.name}</h3>
+                                         <div className="font-mono text-xs text-text-muted truncate">{selectionB.details.manufacturer?.name}</div>
                                      </div>
                                  </Link>
 
@@ -280,20 +273,20 @@ export default function ArenaComparisonClient({
                                     variants={selectionB.details.variants || []}
                                     selectedSlug={selectionB.selectedVariant?.slug || ''}
                                     onSelect={handleVariantChange(setSelectionB, false)}
-                                    themeColor="pink"
+                                    themeColor="secondary"
                                  />
 
                                  {!isArenaMode && (
                                      <button
                                          onClick={() => handleChangeFighter(false)}
-                                         className="mt-4 text-[10px] text-secondary/70 hover:text-secondary underline font-mono"
+                                         className="mt-4 text-xs text-text-muted hover:text-color-secondary underline font-mono"
                                      >
-                                         [CHANGE]
+                                         [CHANGE DEVICE]
                                      </button>
                                  )}
                              </div>
                         ) : (
-                             <div className="flex-1 flex items-center justify-center text-gray-600 font-pixel text-[8px] md:text-xs opacity-50 mt-4">SELECT FIGHTER</div>
+                             <div className="flex-1 flex items-center justify-center text-text-muted font-mono text-xs opacity-50 mt-4">SELECT DEVICE</div>
                         )}
                      </div>
                 </div>
@@ -307,22 +300,19 @@ export default function ArenaComparisonClient({
                             onClick={handleFight}
                             disabled={!selectionA.details || !selectionB.details}
                             className={`
-                                font-pixel text-xl md:text-2xl px-8 py-4 border-4 transition-all duration-300
+                                font-bold font-mono text-sm md:text-base px-12 py-4 border transition-all duration-300 rounded-sm uppercase tracking-widest
                                 ${selectionA.details && selectionB.details
-                                    ? 'bg-secondary/20 border-secondary text-secondary hover:bg-secondary hover:text-black cursor-pointer shadow-[0_0_20px_rgba(0,255,136,0.3)] hover:shadow-[0_0_40px_rgba(0,255,136,0.6)]'
-                                    : 'bg-gray-900/50 border-gray-700 text-gray-700 cursor-not-allowed opacity-50'}
+                                    ? 'bg-color-primary text-black border-color-primary hover:bg-white hover:text-black cursor-pointer shadow-[0_0_20px_rgba(255,153,0,0.3)] hover:shadow-[0_0_40px_rgba(255,153,0,0.5)]'
+                                    : 'bg-bg-tertiary border-border-normal text-text-muted cursor-not-allowed opacity-50'}
                             `}
                         >
-                            [ F I G H T ]
+                            INITIATE ANALYSIS
                         </button>
-                        {selectionA.details && selectionB.details && (
-                            <div className="font-mono text-xs text-secondary animate-pulse">READY TO FIGHT</div>
-                        )}
                     </div>
                 ) : (
                     <button
                         onClick={handleNewMatch}
-                        className="font-pixel text-sm md:text-base px-6 py-3 border border-gray-600 text-gray-400 hover:text-white hover:border-white transition-all bg-black/50"
+                        className="font-mono text-sm md:text-base px-6 py-3 border border-border-normal text-text-secondary hover:text-text-primary hover:border-text-primary transition-all bg-bg-card uppercase tracking-widest"
                     >
                         [ NEW MATCH ]
                     </button>
@@ -330,17 +320,17 @@ export default function ArenaComparisonClient({
             </div>
 
             {selectionA.selectedVariant && selectionB.selectedVariant && isArenaMode && (
-                <div className="bg-black/80 border border-gray-800 p-4 mb-12 animate-slideDown shadow-2xl">
-                    <div className="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
-                        <h3 className="font-pixel text-lg text-white">TALE OF THE TAPE</h3>
-                        <label className="flex items-center gap-2 cursor-pointer">
+                <div className="bg-bg-tertiary border border-border-normal p-6 mb-12 animate-fade-in shadow-2xl rounded-sm">
+                    <div className="flex justify-between items-center mb-6 border-b border-border-subtle pb-4">
+                        <h3 className="font-bold text-lg text-text-primary uppercase tracking-wider">TECHNICAL SPECIFICATIONS</h3>
+                        <label className="flex items-center gap-2 cursor-pointer group">
                             <input
                                 type="checkbox"
                                 checked={showDiffOnly}
                                 onChange={() => setShowDiffOnly(!showDiffOnly)}
-                                className="accent-secondary"
+                                className="accent-color-primary w-4 h-4 bg-bg-card border-border-normal"
                             />
-                            <span className="font-mono text-xs text-gray-400 uppercase">Show Differences Only</span>
+                            <span className="font-mono text-xs text-text-muted group-hover:text-text-primary transition-colors uppercase">Show Differences Only</span>
                         </label>
                     </div>
                     <div className="space-y-1">
