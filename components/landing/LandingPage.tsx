@@ -19,7 +19,7 @@ export default async function LandingPage() {
     <div className="bg-bg-primary min-h-screen text-text-primary selection:bg-color-primary selection:text-white pb-32 font-sans">
 
       {/* 1. HERO - TYPOGRAPHIC STATEMENT */}
-      <header className="px-6 md:px-12 pt-32 pb-32 border-b border-border-subtle relative overflow-hidden min-h-[80vh] flex items-center">
+      <header className="px-6 md:px-12 pt-24 pb-32 border-b border-border-subtle relative overflow-hidden min-h-[80vh] flex items-start">
         {/* Background Image with Blur */}
         <div className="absolute inset-0 z-0">
             <Image
@@ -44,23 +44,26 @@ export default async function LandingPage() {
                 </div>
 
                 <h1 className="text-[4vw] md:text-[5vw] leading-[1.1] font-pixel font-bold tracking-tighter uppercase mb-8 text-white drop-shadow-2xl">
-                  Welcome to<br/>
-                  The <span className="text-color-primary">Circuit_</span>
+                  WELCOME TO THE <span className="text-color-primary">CIRCUIT_</span>
                 </h1>
 
                 <p className="text-xl md:text-2xl text-text-secondary font-light max-w-xl leading-relaxed mb-8">
-                    The definitive archive of handheld gaming history. Explore detailed specifications, compare hardware, and track the evolution of portable play.
+                    Explore detailed specifications, compare hardware, and find your perfect handheld.
                 </p>
             </div>
 
             {/* Right: CTA Buttons */}
             <div className="flex flex-col items-end justify-center h-full gap-6 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                <Link
-                  href="/consoles"
-                  className="inline-flex items-center gap-3 bg-color-primary text-white font-mono text-sm md:text-base px-8 py-4 hover:brightness-110 transition-all uppercase tracking-widest border border-color-primary shadow-lg shadow-color-primary/20 w-full md:w-auto justify-center"
-                >
-                  Browse The Library <ArrowRight className="w-4 h-4" />
-                </Link>
+                <div className="relative group w-full md:w-auto">
+                    <div className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-white transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-white/50"></div>
+                    <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-white transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-white/50"></div>
+                    <Link
+                      href="/consoles"
+                      className="relative z-10 inline-flex items-center gap-3 bg-color-primary text-white font-mono text-sm md:text-base px-8 py-4 hover:brightness-110 transition-all uppercase tracking-widest border border-color-primary shadow-lg shadow-color-primary/20 w-full justify-center"
+                    >
+                      Browse The Library <ArrowRight className="w-4 h-4" />
+                    </Link>
+                </div>
                 <Link
                   href="/about"
                   className="inline-flex items-center gap-3 bg-transparent text-text-secondary font-mono text-sm md:text-base px-8 py-4 hover:text-white hover:bg-white/5 transition-all uppercase tracking-widest border border-border-normal hover:border-white w-full md:w-auto justify-center"
