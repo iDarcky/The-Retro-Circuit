@@ -17,50 +17,48 @@ export default function DesktopHeader() {
   ];
 
   return (
-    // Changed: Removed shadow, added 1px border with specific rgba color
-    <div className="sticky top-0 z-50 flex flex-col border-b border-[rgba(255,255,255,0.06)]">
-      {/* Changed: Removed border-b-4 border-black */}
-      <nav className="hidden md:flex bg-bg-primary px-6 py-3 justify-between items-center">
+    <div className="sticky top-0 z-50 flex flex-col bg-bg-primary border-b-2 border-violet-500">
+      <nav className="hidden md:flex h-16 items-stretch divide-x divide-border-subtle">
 
-          {/* LEFT: Logo */}
-          <div className="flex items-center">
+          {/* LEFT: Logo - Grid Cell 1 */}
+          <div className="flex items-center px-6 shrink-0 bg-bg-primary hover:bg-bg-secondary transition-colors duration-300">
               <Link href="/" className="flex items-center group">
                   <span className="font-pixel text-[14px] leading-tight text-white/40 group-hover:text-secondary transition-colors">RETRO CIRCUIT_</span>
               </Link>
           </div>
 
-          {/* CENTER: Search Bar */}
-          <div className="flex-1 flex justify-center px-8">
+          {/* CENTER: Search Bar - Grid Cell 2 (Flexible) */}
+          <div className="flex-1 flex items-center justify-center bg-bg-primary">
               <button
                   onClick={openSearch}
-                  className="w-96 flex items-center justify-between border-2 border-border-normal bg-black/50 px-4 py-2 font-bold text-gray-400 hover:text-white hover:border-secondary transition-colors group"
+                  className="w-96 flex items-center justify-between border border-border-normal bg-bg-secondary/50 px-4 py-2 font-bold text-gray-400 hover:text-white hover:border-violet-500/50 hover:bg-bg-secondary transition-all group"
               >
-                  <div className="flex items-center gap-2">
-                      <Search size={16} className="group-hover:text-secondary" />
-                      <span className="text-sm font-tech tracking-wider">SEARCH DATABASE...</span>
+                  <div className="flex items-center gap-3">
+                      <Search size={14} className="text-gray-500 group-hover:text-violet-400 transition-colors" />
+                      <span className="text-xs font-mono tracking-widest">SEARCH DATABASE...</span>
                   </div>
                   <div className="flex gap-1">
-                      <span className="text-[10px] bg-bg-secondary/30 border border-border-normal px-1.5 rounded text-gray-500 font-tech group-hover:border-secondary group-hover:text-secondary">CMD</span>
-                      <span className="text-[10px] bg-bg-secondary/30 border border-border-normal px-1.5 rounded text-gray-500 font-tech group-hover:border-secondary group-hover:text-secondary">K</span>
+                      <span className="text-[10px] bg-black border border-border-subtle px-1.5 py-0.5 text-gray-500 font-mono group-hover:border-violet-500/30 group-hover:text-violet-400 transition-colors">CMD</span>
+                      <span className="text-[10px] bg-black border border-border-subtle px-1.5 py-0.5 text-gray-500 font-mono group-hover:border-violet-500/30 group-hover:text-violet-400 transition-colors">K</span>
                   </div>
               </button>
           </div>
 
-          {/* RIGHT: Navigation */}
-          <div className="flex gap-6">
+          {/* RIGHT: Navigation - Grid Cell 3 */}
+          <div className="flex items-center gap-8 px-8 shrink-0 bg-bg-primary">
               {navItems.map((item) => {
                   const isActive = pathname.startsWith(item.path);
                   return (
                       <Link
                           key={item.path}
                           href={item.path}
-                          className={`group relative uppercase font-pixel text-[10px] md:text-xs px-2 py-1 transition-colors ${
-                              isActive ? 'text-white' : 'text-[#9CA3AF] hover:text-white'
+                          className={`group relative uppercase font-pixel text-[10px] py-1 transition-colors ${
+                              isActive ? 'text-white' : 'text-gray-500 hover:text-white'
                           }`}
                       >
                           {item.name}
                           <span
-                              className={`absolute bottom-0 left-0 h-[2px] bg-secondary transition-all duration-300 ease-out ${
+                              className={`absolute -bottom-1 left-0 h-[2px] bg-violet-500 transition-all duration-300 ease-out ${
                                   isActive ? 'w-full' : 'w-0 group-hover:w-full'
                               }`}
                           />
