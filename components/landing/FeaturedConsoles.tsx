@@ -38,9 +38,9 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
                     {/* Inner Content Wrapper - Reduced Padding */}
                     <div className="h-full flex flex-col p-4">
 
-                        {/* Image Container - Slightly Smaller */}
+                        {/* Image Container - Significantly Smaller */}
                         <div className="relative flex-1 w-full flex items-center justify-center mb-3">
-                           <div className="relative w-full h-full flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
+                           <div className="relative w-[60%] h-[60%] flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
                               {console.image_url ? (
                                 <Image
                                   src={console.image_url}
