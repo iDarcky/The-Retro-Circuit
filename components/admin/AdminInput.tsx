@@ -34,7 +34,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
     if (type === 'color') {
         return (
             <div>
-                <label className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
+                <label htmlFor={field.key} className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
                 <div className="flex gap-2 h-[46px]">
                     <div className="relative w-12 h-full">
                         <input
@@ -42,6 +42,8 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                             className="absolute inset-0 w-full h-full p-0 border-0 outline-none cursor-pointer opacity-0"
                             value={val || '#000000'}
                             onChange={(e) => onChange(field.key, e.target.value)}
+                            tabIndex={-1}
+                            aria-hidden="true"
                         />
                         <div
                             className="w-full h-full border border-gray-700"
@@ -49,6 +51,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                         ></div>
                     </div>
                     <input
+                        id={field.key}
                         type="text"
                         className={`flex-1 bg-black border p-3 outline-none font-mono text-sm ${borderColor} text-white uppercase`}
                         value={val}
@@ -66,8 +69,9 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
     if (type === 'textarea') {
         return (
             <div className="col-span-1 md:col-span-2">
-                <label className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
+                <label htmlFor={field.key} className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
                 <textarea 
+                    id={field.key}
                     className={`w-full bg-black border p-3 h-24 outline-none font-mono text-sm ${borderColor} transition-colors`}
                     value={val}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => onChange(field.key, e.target.value)}
@@ -87,7 +91,16 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
         return (
             <div>
                 <div 
-                    className={`flex items-center justify-between bg-black border p-3 cursor-pointer group transition-all h-[46px] mt-[19px] ${borderColor}`}
+                    role="checkbox"
+                    aria-checked={isChecked}
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                        if (e.key === ' ' || e.key === 'Enter') {
+                            e.preventDefault();
+                            onChange(field.key, !isChecked);
+                        }
+                    }}
+                    className={`flex items-center justify-between bg-black border p-3 cursor-pointer group transition-all h-[46px] mt-[19px] ${borderColor} focus:outline-none focus:ring-2 focus:ring-secondary`}
                     onClick={() => onChange(field.key, !isChecked)}
                 >
                     <span className={`text-[10px] uppercase font-bold tracking-wider group-hover:text-white ${labelColor}`}>
@@ -106,8 +119,9 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
     if (type === 'select') {
         return (
             <div>
-                <label className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
+                <label htmlFor={field.key} className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
                 <select
+                    id={field.key}
                     className={`w-full bg-black border p-3 outline-none font-mono text-sm ${borderColor} transition-colors text-white`}
                     value={val}
                     onChange={(e: ChangeEvent<HTMLSelectElement>) => onChange(field.key, e.target.value)}
@@ -125,8 +139,9 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
 
     return (
         <div>
-            <label className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
+            <label htmlFor={field.key} className={`text-[10px] mb-1 block uppercase ${labelColor}`}>{field.label}</label>
             <input 
+                id={field.key}
                 type={type}
                 className={`w-full border p-3 outline-none font-mono text-sm ${borderColor} ${computedBg} transition-colors`}
                 value={val}
