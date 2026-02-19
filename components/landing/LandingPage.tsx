@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { ArrowRight, Swords, History, Calendar } from 'lucide-react';
 import { fetchLatestConsoles, fetchRealWorldLatest } from '../../lib/api/latest';
 import { fetchConsoleList } from '../../lib/api/consoles';
+import { siteConfig } from '../../config/site';
 import QuickCompare from './QuickCompare';
 import FinderSection from './FinderSection';
 
@@ -22,10 +23,10 @@ export default async function LandingPage() {
         {/* Background Image with Blur */}
         <div className="absolute inset-0 z-0">
             <Image
-                src="/gba_backgroud.png"
+                src="/game_boy_backgroud.webp"
                 alt="Background"
                 fill
-                className="object-cover opacity-40 blur-sm"
+                className="object-cover opacity-40 blur-2xl"
                 priority
             />
             {/* Gradient Overlay for Text Readability */}
@@ -39,12 +40,13 @@ export default async function LandingPage() {
             <div className="flex flex-col items-start text-left">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-900/30 bg-emerald-950/10 text-xs font-mono uppercase tracking-widest text-emerald-400 mb-8 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(16,185,129,0.1)]">
                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-                   System Online // V.2.0
+                   System Online // {siteConfig.version}
                 </div>
 
                 <h1 className="text-[5vw] md:text-[6vw] leading-[1.1] font-pixel font-bold tracking-tighter uppercase mb-8 text-white drop-shadow-2xl">
-                  Welcome to<br/>
-                  the <span className="text-color-primary">Circuit_</span>
+                  Welcome<br/>
+                  To the<br/>
+                  <span className="text-color-primary">Circuit<span className="animate-pulse">_</span></span>
                 </h1>
 
                 <p className="text-xl md:text-2xl text-text-secondary font-light max-w-xl leading-relaxed mb-8">
