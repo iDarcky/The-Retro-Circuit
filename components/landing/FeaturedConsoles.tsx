@@ -29,10 +29,10 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
               <Link
                 key={console.id}
                 href={`/consoles/${console.slug}`}
-                className="group flex flex-col bg-white/5 backdrop-blur-md border border-white/5 hover:border-white/20 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-white/5"
+                className="group flex flex-col bg-white/5 backdrop-blur-md border border-white/5 hover:border-white/20 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-white/5 rounded-xl overflow-hidden"
               >
                 {/* Image Container - Square Aspect Ratio for Uniformity */}
-                <div className="relative w-full aspect-square bg-white/5 border-b border-white/5 flex items-center justify-center p-4">
+                <div className="relative w-full aspect-square flex items-center justify-center p-4">
                   <div className="relative w-[80%] h-[80%] flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
                     {console.image_url ? (
                       <Image
@@ -51,7 +51,7 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
                 </div>
 
                 {/* Info Section */}
-                <div className="p-3 flex flex-col gap-1.5 bg-black/20">
+                <div className="p-4 flex flex-col gap-1.5">
                    <h3 className="text-xs font-bold text-white tracking-wider uppercase leading-snug group-hover:text-white transition-colors truncate">
                       {console.name}
                    </h3>

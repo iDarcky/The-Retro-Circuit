@@ -16,3 +16,4 @@ https://nextjs.org/telemetry
 ✓ Ready in 1296ms
 ○ Compiling /test-featured ...
  GET /test-featured 200 in 6.3s (compile: 5.6s, proxy.ts: 131ms, render: 599ms)
+[?25h
