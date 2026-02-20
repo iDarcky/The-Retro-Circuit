@@ -15,6 +15,83 @@ interface ConsoleIdentitySectionProps {
     onVariantChange: (slug: string) => void;
 }
 
+interface VariantDropdownProps {
+    compact?: boolean;
+    variants: ConsoleVariant[];
+    selectedVariantId: string;
+    onVariantChange: (slug: string) => void;
+}
+
+const VariantDropdown = ({ compact = false, variants, selectedVariantId, onVariantChange }: VariantDropdownProps) => {
+    if (variants.length <= 1) return null;
+
+    return (
+        <div className="relative group shrink-0">
+            <select
+                value={selectedVariantId}
+                onChange={(e) => {
+                    const slug = variants.find(v => v.id === e.target.value)?.slug;
+                    if (slug) onVariantChange(slug);
+                }}
+                className={`
+                    appearance-none bg-black border border-white/20 text-white font-mono outline-none cursor-pointer hover:border-secondary uppercase transition-colors
+                    ${compact ? 'text-[10px] px-2 py-1 pr-6 w-32 truncate' : 'text-sm px-4 py-2 pr-8 min-w-[240px]'}
+                `}
+            >
+                {variants.map(v => (
+                    <option key={v.id} value={v.id}>
+                        {v.variant_name}
+                    </option>
+                ))}
+            </select>
+            <div className={`absolute top-1/2 -translate-y-1/2 pointer-events-none text-white/50 ${compact ? 'right-1 text-[8px]' : 'right-3 text-[10px]'}`}>▼</div>
+        </div>
+    );
+};
+
+interface JumpLinksProps {
+    compact?: boolean;
+    scrollToSection: (id: string) => void;
+}
+
+const JumpLinks = ({ compact = false, scrollToSection }: JumpLinksProps) => (
+    <div className={`flex items-center shrink-0 ${compact ? 'gap-3' : 'gap-2'}`}>
+        {!compact && <span className="font-mono text-[12px] text-gray-500 uppercase tracking-widest">[ JUMP TO ] :</span>}
+        {['Analysis', 'Emulation', 'Tech', 'Buy'].map((link) => (
+            <button
+                key={link}
+                onClick={() => scrollToSection(link === 'Emulation' ? 'playability' : link.toLowerCase())}
+                className={`
+                    font-mono text-gray-400 hover:text-secondary uppercase transition-colors whitespace-nowrap
+                    ${compact ? 'text-[10px]' : 'text-[12px] border-b border-transparent hover:border-secondary'}
+                `}
+            >
+                {compact ? `[ ${link} ]` : `[ ${link} ]`}
+            </button>
+        ))}
+    </div>
+);
+
+interface CompareButtonProps {
+    compact?: boolean;
+    compareUrl: string;
+}
+
+const CompareButton = ({ compact = false, compareUrl }: CompareButtonProps) => (
+    <Link href={compareUrl}>
+        <Button
+            variant="secondary"
+            className={`
+                flex items-center justify-center gap-2 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black font-bold tracking-widest transition-colors
+                ${compact ? 'text-[10px] px-3 py-1 h-[26px] min-w-[80px]' : 'text-xs px-6 py-2'}
+            `}
+        >
+            <IconVS className={compact ? "w-3 h-3" : "w-4 h-4"} />
+            {compact ? 'COMPARE' : 'COMPARE'}
+        </Button>
+    </Link>
+);
+
 export default function ConsoleIdentitySection({
     console: consoleData,
     manufacturer,
@@ -89,67 +166,6 @@ export default function ConsoleIdentitySection({
         }
     };
 
-    // Shared Components
-    const VariantDropdown = ({ compact = false }: { compact?: boolean }) => {
-        if (variants.length <= 1) return null;
-
-        return (
-            <div className="relative group shrink-0">
-                <select
-                    value={selectedVariantId}
-                    onChange={(e) => {
-                        const slug = variants.find(v => v.id === e.target.value)?.slug;
-                        if (slug) onVariantChange(slug);
-                    }}
-                    className={`
-                        appearance-none bg-black border border-white/20 text-white font-mono outline-none cursor-pointer hover:border-secondary uppercase transition-colors
-                        ${compact ? 'text-[10px] px-2 py-1 pr-6 w-32 truncate' : 'text-sm px-4 py-2 pr-8 min-w-[240px]'}
-                    `}
-                >
-                    {variants.map(v => (
-                        <option key={v.id} value={v.id}>
-                            {v.variant_name}
-                        </option>
-                    ))}
-                </select>
-                <div className={`absolute top-1/2 -translate-y-1/2 pointer-events-none text-white/50 ${compact ? 'right-1 text-[8px]' : 'right-3 text-[10px]'}`}>▼</div>
-            </div>
-        );
-    };
-
-    const JumpLinks = ({ compact = false }: { compact?: boolean }) => (
-        <div className={`flex items-center shrink-0 ${compact ? 'gap-3' : 'gap-2'}`}>
-            {!compact && <span className="font-mono text-[12px] text-gray-500 uppercase tracking-widest">[ JUMP TO ] :</span>}
-            {['Analysis', 'Emulation', 'Tech', 'Buy'].map((link) => (
-                <button
-                    key={link}
-                    onClick={() => scrollToSection(link === 'Emulation' ? 'playability' : link.toLowerCase())}
-                    className={`
-                        font-mono text-gray-400 hover:text-secondary uppercase transition-colors whitespace-nowrap
-                        ${compact ? 'text-[10px]' : 'text-[12px] border-b border-transparent hover:border-secondary'}
-                    `}
-                >
-                    {compact ? `[ ${link} ]` : `[ ${link} ]`}
-                </button>
-            ))}
-        </div>
-    );
-
-    const CompareButton = ({ compact = false }: { compact?: boolean }) => (
-        <Link href={compareUrl}>
-            <Button
-                variant="secondary"
-                className={`
-                    flex items-center justify-center gap-2 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black font-bold tracking-widest transition-colors
-                    ${compact ? 'text-[10px] px-3 py-1 h-[26px] min-w-[80px]' : 'text-xs px-6 py-2'}
-                `}
-            >
-                <IconVS className={compact ? "w-3 h-3" : "w-4 h-4"} />
-                {compact ? 'COMPARE' : 'COMPARE'}
-            </Button>
-        </Link>
-    );
-
     return (
         <>
             {/* --- STATE A: NORMAL FLOW --- */}
@@ -207,18 +223,22 @@ export default function ConsoleIdentitySection({
 
                     {/* ROW 3: Controls & Jump Links */}
                     <div className="flex flex-wrap items-center gap-2 mt-2">
-                        <VariantDropdown />
+                        <VariantDropdown
+                            variants={variants}
+                            selectedVariantId={selectedVariantId}
+                            onVariantChange={onVariantChange}
+                        />
 
                         {/* Divider if Variants exist */}
                         {variants.length > 1 && <div className="h-6 w-px bg-white/10 mx-2 hidden md:block"></div>}
 
                         <div className="flex-1 flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
                             <div className="text-[10px]">
-                                <JumpLinks />
+                                <JumpLinks scrollToSection={scrollToSection} />
                             </div>
 
                             <div className="flex items-center gap-4">
-                                <CompareButton />
+                                <CompareButton compareUrl={compareUrl} />
                                 <Button variant="secondary" onClick={handleShare} className="text-xs px-6 py-2 border-gray-600 text-gray-400 hover:text-white hover:border-white relative">
                                     {showShareTooltip ? 'COPIED!' : 'SHARE'}
                                 </Button>
@@ -267,17 +287,22 @@ export default function ConsoleIdentitySection({
                     <div className="flex-1 flex items-center justify-center min-w-0 px-4">
                         <div className="flex items-center gap-4 md:gap-6 overflow-x-auto no-scrollbar mask-gradient px-2 max-w-full">
 
-                            <VariantDropdown compact />
+                            <VariantDropdown
+                                compact
+                                variants={variants}
+                                selectedVariantId={selectedVariantId}
+                                onVariantChange={onVariantChange}
+                            />
 
                             <div className="h-4 w-px bg-white/10 shrink-0"></div>
 
-                            <JumpLinks compact />
+                            <JumpLinks compact scrollToSection={scrollToSection} />
                         </div>
                     </div>
 
                     {/* SECTION 3: ACTIONS {Compare} (Compare + Share) */}
                     <div className="flex items-center gap-2 shrink-0">
-                        <CompareButton compact />
+                        <CompareButton compact compareUrl={compareUrl} />
 
                         <button
                             onClick={handleShare}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { getVariantById, getManufacturerById, getConsoleById, fetchConsoleList } from '../../lib/api';
 import { Manufacturer, ConsoleVariant, ConsoleDetails } from '../../lib/types';
@@ -147,11 +148,11 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
 
                 {/* NEW INDEX LINK */}
                 <div className="flex items-center gap-4">
-                     <a href="/admin/consoles">
+                     <Link href="/admin/consoles">
                         <Button variant="secondary" className="font-pixel text-xs px-4 py-2 border-2 border-secondary hover:bg-secondary hover:text-black transition-colors shadow-[0_0_15px_rgba(0,255,136,0.3)]">
                             &gt; CONSOLE INDEX
                         </Button>
-                     </a>
+                     </Link>
                     <div className="bg-black border border-cyan-400 px-3 py-1 shadow-[0_0_10px_rgba(34,211,238,0.2)]">
                         <span className="font-pixel text-[10px] text-cyan-400 tracking-widest animate-pulse">
                             ADMIN_MODE_ACTIVE
