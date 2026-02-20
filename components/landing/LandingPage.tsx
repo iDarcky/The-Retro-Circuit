@@ -94,7 +94,7 @@ export default async function LandingPage() {
       </header>
 
       {/* 2. THE FINDER */}
-      <FinderSection consoles={searchableConsoles} />
+      <FinderSection />
 
       {/* 3. ANALYSIS & COMPARE */}
       <section className="px-6 md:px-12 py-24 border-b border-border-subtle bg-bg-secondary/20 relative overflow-hidden">

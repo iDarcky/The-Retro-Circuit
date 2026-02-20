@@ -1,56 +1,32 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { ConsoleSearch } from '../arena/ConsoleSearch';
-import { Search, List } from 'lucide-react';
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 
-interface FinderSectionProps {
-    consoles: any[];
-}
-
-export default function FinderSection({ consoles }: FinderSectionProps) {
-    const router = useRouter();
-
-    const handleSelect = (slug: string) => {
-        router.push(`/consoles/${slug}`);
-    };
-
-    const searchableConsoles = consoles.map(c => ({ name: c.name, slug: c.slug }));
-
+export default function FinderSection() {
     return (
         <section className="py-24 border-b border-border-subtle bg-bg-secondary/10 relative overflow-hidden">
             {/* Subtle Cyan Gradient */}
             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-cyan-900/5 via-transparent to-transparent pointer-events-none" />
 
             <div className="max-w-[1800px] mx-auto px-6 md:px-12 relative z-10">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
-                    <div className="md:col-span-5 lg:col-span-4">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-900/30 bg-cyan-950/10 text-xs font-mono uppercase tracking-widest text-cyan-400 mb-6">
-                            <Search className="w-3 h-3" /> Database Access
-                        </div>
-                        <h2 className="text-4xl font-bold tracking-tighter mb-4">THE FINDER.</h2>
-                        <p className="text-text-secondary font-light max-w-md">
-                            Instant access to the complete archive. Search by system name or manufacturer code.
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    <div>
+                        <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4">THE FINDER_</h2>
+                        <p className="text-text-secondary font-light max-w-xl text-lg leading-relaxed">
+                            Not sure which handheld to buy? Answer a few questions and we'll narrow it down!
                         </p>
                     </div>
 
-                    <div className="md:col-span-7 lg:col-span-8 flex flex-col md:flex-row gap-4 w-full">
-                        <div className="flex-1 bg-bg-primary border border-border-normal p-1 shadow-lg">
-                             <ConsoleSearch
-                                consoles={searchableConsoles}
-                                onSelect={handleSelect}
-                                placeholder="TYPE SYSTEM NAME..."
-                                themeColor="primary"
-                            />
+                    <div className="flex justify-start md:justify-end w-full">
+                        <div className="relative group w-full md:w-auto">
+                            <div className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-cyan-500 transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-cyan-400/50"></div>
+                            <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-cyan-500 transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-cyan-400/50"></div>
+                            <Link
+                                href="/finder"
+                                className="relative z-10 inline-flex items-center gap-3 bg-cyan-600 text-white font-mono text-sm md:text-base px-8 py-4 hover:brightness-110 transition-all uppercase tracking-widest border border-cyan-500 shadow-lg shadow-cyan-500/20 w-full md:w-auto justify-center"
+                            >
+                                Start Quiz <ArrowRight className="w-4 h-4" />
+                            </Link>
                         </div>
-
-                        <Link
-                            href="/consoles"
-                            className="bg-bg-tertiary hover:bg-white hover:text-black border border-border-normal text-text-primary px-8 py-4 font-mono text-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
-                        >
-                            <List className="w-4 h-4" /> Full Index
-                        </Link>
                     </div>
                 </div>
             </div>
