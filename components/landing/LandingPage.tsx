@@ -97,7 +97,7 @@ export default async function LandingPage() {
       <FinderSection />
 
       {/* 3. ANALYSIS & COMPARE */}
-      <section className="px-6 md:px-12 py-24 border-b border-border-subtle bg-bg-secondary/20 relative overflow-hidden">
+      <section className="px-6 md:px-12 py-24 border-b border-border-subtle bg-bg-secondary/20 relative z-20">
         {/* Subtle Purple Gradient */}
         <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-tr from-violet-900/5 via-transparent to-transparent pointer-events-none" />
 
