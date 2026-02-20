@@ -49,11 +49,7 @@ const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) 
 
              {/* Header */}
             <div className="bg-black/40 border-b border-border-normal px-4 py-3 flex justify-between items-center">
-                <h3 className="font-pixel text-sm text-secondary uppercase tracking-widest">PLAYABILITY MATRIX</h3>
-                <div className="flex gap-1">
-                    <div className="w-1 h-1 bg-gray-700 rounded-full"></div>
-                    <div className="w-1 h-1 bg-gray-700 rounded-full"></div>
-                </div>
+                <h3 className="font-sans text-xs font-bold text-secondary uppercase tracking-widest">PLAYABILITY MATRIX</h3>
             </div>
 
             <div className="p-4 space-y-2">

@@ -156,17 +156,18 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
              />
 
              {/* MAIN CONTENT GRID */}
-             <div className="w-full mx-auto px-4 md:px-8 py-12">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12 relative">
+             {/* Swiss Grid: Full width, no outer padding here, handled by grid items. Vertical divider added. */}
+             <div className="w-full border-t border-border-normal">
+                <div className="grid grid-cols-1 lg:grid-cols-12 lg:divide-x divide-border-normal relative">
 
                     {/* --- LEFT COLUMN: STICKY SIDEBAR (lg:col-span-4) --- */}
-                    <div className="lg:col-span-4">
+                    <div className="lg:col-span-4 p-4 md:p-8">
                         {/* Sticky Container */}
                         {/* top-[120px] accounts for global header (64px) + typical compact bar height (~50px) */}
                         <div className="sticky top-[120px] space-y-6">
 
                             {/* 1. PHOTO */}
-                            <div className="bg-black border-2 border-border-normal p-8 flex items-center justify-center min-h-[200px] relative shadow-[0_0_20px_rgba(0,0,0,0.5)] group overflow-hidden">
+                            <div className="bg-black border border-border-normal p-8 flex items-center justify-center min-h-[200px] relative shadow-[0_0_20px_rgba(0,0,0,0.5)] group overflow-hidden">
                                 {currentImage ? (
                                     <img src={currentImage} alt={consoleData.name} className="w-full h-auto object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-500 relative z-10" key={currentImage} />
                                 ) : (
@@ -174,11 +175,11 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                                 )}
                                 <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,157,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,157,0.05)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none"></div>
                                 <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 items-start">
-                                    <div className="bg-secondary text-black font-mono text-[10px] font-bold px-2 py-1 transform -rotate-2 shadow-lg">
+                                    <div className="bg-secondary text-black font-mono text-[10px] font-bold px-2 py-1 shadow-lg">
                                         {consoleData.form_factor?.toUpperCase() || 'SYSTEM'}
                                     </div>
                                     {consoleData.chassis_features && (
-                                        <div className="bg-black/90 text-secondary border border-secondary font-mono text-[10px] font-bold px-2 py-1 transform -rotate-2 shadow-lg">
+                                        <div className="bg-black/90 text-secondary border border-secondary font-mono text-[10px] font-bold px-2 py-1 shadow-lg">
                                             {consoleData.chassis_features.toUpperCase()}
                                         </div>
                                     )}
@@ -196,11 +197,11 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                     </div>
 
                     {/* --- RIGHT COLUMN: SCROLLABLE CONTENT (lg:col-span-8) --- */}
-                    <div className="lg:col-span-8 space-y-8">
+                    <div className="lg:col-span-8 p-4 md:p-8 space-y-8">
 
                         {/* 1. SYSTEM ANALYSIS */}
                         <div id="analysis" className="bg-bg-primary border border-border-normal p-6 relative">
-                            <h3 className="font-pixel text-[10px] text-primary mb-4 uppercase">System Analysis</h3>
+                            <h3 className="font-sans text-xs font-bold text-primary mb-4 uppercase tracking-widest">System Analysis</h3>
                             <p className="font-mono text-gray-300 leading-relaxed text-sm whitespace-pre-line">
                                 {consoleData.description}
                             </p>
@@ -216,7 +217,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                         {/* 4. TECHNICAL REFERENCE (Collapsible Grid) */}
                         <div id="tech" className="space-y-4">
-                            <h3 className="font-pixel text-lg text-white uppercase mb-4 border-b border-white/10 pb-2">Technical Reference</h3>
+                            <h3 className="font-sans text-lg font-bold text-white uppercase mb-4 border-b border-border-normal pb-2">Technical Reference</h3>
 
                              {/* SILICON CORE */}
                              {hasData(SECTIONS.SILICON, mergedSpecs) ? (
