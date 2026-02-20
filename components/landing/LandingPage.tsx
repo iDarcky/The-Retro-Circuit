@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Swords } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { fetchLatestConsoles } from '../../lib/api/latest';
 import { fetchConsoleList } from '../../lib/api/consoles';
 import QuickCompare from './QuickCompare';
@@ -21,7 +21,7 @@ export default async function LandingPage() {
   const searchableConsoles = allConsoles.map(c => ({ name: c.name, slug: c.slug }));
 
   return (
-    <div className="bg-bg-primary min-h-screen text-text-primary selection:bg-color-primary selection:text-white pb-32 font-sans">
+    <div className="bg-bg-primary min-h-screen text-text-primary selection:bg-color-primary selection:text-white font-sans">
 
       {/* 1. HERO - TYPOGRAPHIC STATEMENT */}
       <header className="px-6 md:px-12 pt-24 pb-32 border-b border-border-subtle relative overflow-hidden min-h-[80vh] flex items-start">
@@ -97,17 +97,14 @@ export default async function LandingPage() {
       <FinderSection />
 
       {/* 3. ANALYSIS & COMPARE */}
-      <section className="px-6 md:px-12 py-24 border-b border-border-subtle bg-bg-secondary/20 relative overflow-hidden">
+      <section className="px-6 md:px-12 py-24 border-b border-border-subtle bg-bg-secondary/20 relative z-20">
         {/* Subtle Purple Gradient */}
         <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-tr from-violet-900/5 via-transparent to-transparent pointer-events-none" />
 
         <div className="max-w-[1800px] mx-auto relative z-10">
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-violet-900/30 bg-violet-950/10 text-xs font-mono uppercase tracking-widest text-violet-400 mb-6">
-                    <Swords className="w-3 h-3" /> Analysis Tools
-                  </div>
-                  <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6">HEAD-TO-HEAD<br/>COMPARISON.</h2>
+                  <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6">HEAD-TO-HEAD<br/>COMPARISON</h2>
                   <p className="text-text-secondary text-lg font-light mb-8 max-w-md leading-relaxed">
                      Our arena mode allows for direct specification battles. Analyze CPU clock speeds, display density, and physical form factors in real-time.
                   </p>

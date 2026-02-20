@@ -10,9 +10,10 @@ interface ConsoleSearchProps {
     placeholder?: string;
     themeColor: 'primary' | 'secondary' | 'cyan' | 'pink'; // Backwards compatibility if needed
     currentSelection?: string;
+    textColor?: 'default' | 'white';
 }
 
-export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, placeholder = "SELECT SYSTEM...", themeColor, currentSelection }) => {
+export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, placeholder = "SELECT SYSTEM...", themeColor, currentSelection, textColor = 'default' }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
@@ -35,6 +36,11 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
     const activeBorder = isPrimary ? 'focus:border-color-primary' : 'focus:border-white';
     const activeRing = isPrimary ? 'focus:ring-1 focus:ring-color-primary' : 'focus:ring-1 focus:ring-white';
 
+    // Determine input text color
+    const inputTextColor = textColor === 'white' ? 'text-white' : 'text-text-primary';
+    // Determine icon color
+    const iconColor = textColor === 'white' ? 'text-white/50 group-focus-within:text-white' : 'text-text-muted group-focus-within:text-text-primary';
+
     return (
         <div className="relative w-full group" ref={wrapperRef}>
             <div className="relative">
@@ -44,15 +50,15 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                     onFocus={() => setIsOpen(true)}
                     placeholder={currentSelection || placeholder}
-                    className={`w-full bg-transparent border border-border-normal p-4 pl-10 font-mono text-sm text-text-primary uppercase tracking-wider outline-none rounded-none transition-all placeholder:text-text-muted ${activeBorder} ${activeRing}`}
+                    className={`w-full bg-transparent border border-border-normal p-4 pl-10 font-mono text-sm ${inputTextColor} uppercase tracking-wider outline-none rounded-none transition-all placeholder:text-text-muted ${activeBorder} ${activeRing}`}
                 />
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none group-focus-within:text-text-primary transition-colors">
+                <div className={`absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${iconColor}`}>
                     <Search size={14} strokeWidth={1.5} />
                 </div>
             </div>
 
             {isOpen && (
-                <div className="absolute left-0 right-0 top-[calc(100%-1px)] max-h-[300px] overflow-y-auto bg-bg-primary border border-border-normal border-t-transparent z-[100] shadow-xl">
+                <div className="absolute left-0 right-0 top-[calc(100%-1px)] max-h-[300px] overflow-y-auto bg-bg-primary border border-border-normal border-t-transparent z-[9999] shadow-xl">
                     {filtered.map(c => (
                         <div 
                             key={c.slug}
