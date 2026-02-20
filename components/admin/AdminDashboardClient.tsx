@@ -196,8 +196,6 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
             {/* Content Area */}
             <div className="bg-bg-primary border border-border-normal p-6 min-h-[500px] shadow-lg relative">
 
-                {/* Background Grid */}
-                <div className="absolute inset-0 pointer-events-none opacity-10 bg-[linear-gradient(rgba(0,255,157,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,157,0.1)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
                 <div className="relative z-10">
 
                     {activeTab === 'CONSOLE' && (

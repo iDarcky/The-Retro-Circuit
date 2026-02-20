@@ -89,8 +89,6 @@ export default async function LandingPage() {
             </div>
         </div>
 
-        {/* Background Subtle Grid - Lower Opacity */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:100px_100px] opacity-[0.02] pointer-events-none z-10"></div>
       </header>
 
       {/* 2. THE FINDER */}
@@ -98,8 +96,6 @@ export default async function LandingPage() {
 
       {/* 3. ANALYSIS & COMPARE */}
       <section className="px-6 md:px-12 py-24 border-b border-border-subtle bg-bg-secondary/20 relative z-20">
-        {/* Subtle Purple Gradient */}
-        <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-tr from-violet-900/5 via-transparent to-transparent pointer-events-none" />
 
         <div className="max-w-[1800px] mx-auto relative z-10">
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">

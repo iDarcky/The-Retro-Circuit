@@ -43,8 +43,6 @@ export default function NotFound() {
       
       {/* Terminal Log Output */}
       <div className="p-6 border-2 border-border-normal bg-black/80 mb-10 w-full max-w-md shadow-[0_0_20px_rgba(0,0,0,0.5)] relative overflow-hidden">
-        {/* Scanline decoration inside terminal */}
-        <div className="absolute inset-0 pointer-events-none opacity-10 bg-[linear-gradient(rgba(0,255,157,0.1)_1px,transparent_1px)] bg-[size:100%_4px]"></div>
         
         <div className="font-mono text-sm text-secondary space-y-2 text-left relative z-10 min-h-[140px]">
             {logs.map((log, i) => (

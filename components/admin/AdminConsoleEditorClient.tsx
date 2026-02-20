@@ -52,7 +52,6 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
 
             {/* Editor Area */}
             <div className="bg-bg-primary border border-border-normal p-6 shadow-lg relative mb-12">
-                 <div className="absolute inset-0 pointer-events-none opacity-5 bg-[linear-gradient(rgba(0,255,157,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,157,0.1)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
                  <div className="relative z-10">
                     <ConsoleForm
                         initialData={consoleData}
