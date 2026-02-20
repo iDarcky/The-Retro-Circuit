@@ -23,13 +23,13 @@ export const SpecCard = ({
     };
 
     return (
-        <div className={`py-4 ${className} ${collapsible ? 'border-t border-border-normal first:border-t-0' : ''}`}>
+        <div className={`${className} ${collapsible ? 'py-4 border-t border-border-normal first:border-t-0' : 'pb-0'}`}>
             {/* Header: Simple Text + Interaction */}
             <div
                 className={`flex justify-between items-center mb-4 ${collapsible ? 'cursor-pointer group' : ''}`}
                 onClick={toggle}
             >
-                <h3 className="font-sans text-sm font-bold text-white uppercase tracking-wider group-hover:text-secondary transition-colors">
+                <h3 className="font-sans text-sm font-black text-white uppercase tracking-wider group-hover:text-secondary transition-colors">
                     {title}
                 </h3>
                 {collapsible && (
