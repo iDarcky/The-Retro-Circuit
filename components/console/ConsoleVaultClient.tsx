@@ -8,7 +8,7 @@ import { ConsoleDetails, ConsoleFilterState, Manufacturer } from '../../lib/type
 import RetroLoader from '../ui/RetroLoader';
 import Button from '../ui/Button';
 import { formatReleaseDate } from '../../lib/utils/date-formatter';
-import { LayoutGrid, List, Search, SlidersHorizontal, X } from 'lucide-react';
+import { LayoutGrid, List, Search, SlidersHorizontal } from 'lucide-react';
 
 interface ConsoleVaultClientProps {
     initialManufacturers: Manufacturer[];
@@ -20,7 +20,6 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
   const [filteredConsoles, setFilteredConsoles] = useState<ConsoleDetails[]>(initialConsoles);
   const [manufacturers] = useState<Manufacturer[]>(initialManufacturers);
   const [loading] = useState(false);
-  const [errorMsg] = useState<string | null>(null);
   
   // View Mode State
   const [viewMode, setViewMode] = useState<'swiss' | 'classic'>('swiss');
