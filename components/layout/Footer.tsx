@@ -5,46 +5,44 @@ import Link from 'next/link';
 import { siteConfig } from '../../config/site';
 
 const Footer: FC = () => {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="w-full bg-black shrink-0 z-10 relative border-t-4 border-border-normal before:absolute before:bottom-0 before:left-0 before:w-full before:h-[4px] before:bg-gradient-to-r before:from-pink-500 before:via-green-500 before:to-cyan-500 before:content-['']">
-      <div className="max-w-7xl mx-auto px-4 md:h-16 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0 text-[10px] font-mono">
+    <footer className="w-full bg-bg-primary shrink-0 z-10 relative">
+      {/* Swiss Gradient Line - Full Spectrum */}
+      <div className="w-full h-[2px] bg-gradient-to-r from-[#ff4f00] via-pink-500 via-violet-500 via-cyan-500 to-[#10b981]" />
+
+      <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0">
         
-        {/* Left: Branding */}
-        <div className="flex items-center min-w-[120px]">
-           <Link href="/" className="hover:opacity-80 transition-opacity">
-               <span className="font-pixel text-[10px] md:text-xs text-secondary tracking-wider">
-                  [ THE RETRO CIRCUIT ]
-               </span>
+        {/* Left: Branding & Legal */}
+        <div className="flex flex-col items-center md:items-start gap-1 text-xs font-sans text-text-muted">
+           <Link href="/" className="font-bold text-text-primary tracking-tight uppercase hover:text-primary transition-colors">
+             The Retro Circuit
            </Link>
+           <span className="text-[10px]">© {currentYear} All Rights Reserved.</span>
         </div>
 
         {/* Center: Navigation */}
-        <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-gray-500 font-tech uppercase tracking-wider">
-           {siteConfig.routes.map((route, index) => (
-             <div key={route.label} className="flex items-center gap-4">
-                <Link 
-                  href={route.href} 
-                  className="hover:text-white transition-colors"
-                >
-                  {route.label}
-                </Link>
-                {index < siteConfig.routes.length - 1 && (
-                  <span className="opacity-30 hidden md:inline">|</span>
-                )}
-             </div>
+        <nav className="flex flex-wrap justify-center items-center gap-6 text-xs font-sans font-medium tracking-wide text-text-secondary">
+           {siteConfig.routes.map((route) => (
+              <Link
+                key={route.href}
+                href={route.href}
+                className="hover:text-primary transition-colors duration-200"
+              >
+                {route.label}
+              </Link>
            ))}
-        </div>
+        </nav>
 
         {/* Right: System Status */}
-        <div className="flex items-center gap-3 text-gray-600 font-tech uppercase tracking-wide">
+        <div className="flex items-center gap-4 text-[10px] font-mono text-text-secondary tracking-wider uppercase">
            <span>VER: {siteConfig.version}</span>
-           <span className="opacity-30">•</span>
-           <span className="flex items-center gap-1.5 text-secondary">
+           <span className="flex items-center gap-2 text-emerald-500">
              ONLINE
-             <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse shadow-[0_0_5px_currentColor]"></span>
+             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_5px_currentColor]"></span>
            </span>
-           <span className="opacity-30">•</span>
-           <span>LOC: MARS</span>
+           <span className="hidden sm:inline opacity-50">LOC: MARS</span>
         </div>
 
       </div>

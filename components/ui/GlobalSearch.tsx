@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { useSearch } from './SearchContext';
 import { searchDatabase } from '../../lib/api';
 import { SearchResult } from '../../lib/types';
-import { useSound } from './SoundContext';
 import { IconSearch } from './Icons';
 
 const GlobalSearch: FC = () => {
@@ -17,7 +16,6 @@ const GlobalSearch: FC = () => {
     
     const inputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
-    const { playHover, playClick } = useSound();
     
     // Debounce Timer
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -63,7 +61,6 @@ const GlobalSearch: FC = () => {
     }, [query]);
 
     const handleSelect = (result: SearchResult) => {
-        playClick();
         let path = '/';
         
         switch (result.type) {
@@ -127,7 +124,6 @@ const GlobalSearch: FC = () => {
                             <button
                                 key={`${res.type}-${res.id}`}
                                 onClick={() => handleSelect(res)}
-                                onMouseEnter={playHover}
                                 className="w-full text-left p-4 hover:bg-green-500/20 flex items-center gap-4 transition-all group border-l-4 border-transparent hover:border-green-500"
                             >
                                 {/* Image Placeholder */}

@@ -4,7 +4,6 @@ import { useState, useEffect, type FC, type ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { useSound } from '../ui/SoundContext';
 import { useSearch } from '../ui/SearchContext';
 import { retroAuth } from '../../lib/auth';
 import { checkDatabaseConnection } from '../../lib/api';
@@ -12,7 +11,6 @@ import { supabase, isSupabaseConfigured } from '../../lib/supabase/singleton';
 import MobileBottomNav from './MobileBottomNav';
 import MobileTopBar from './MobileTopBar';
 import DesktopHeader from './DesktopHeader';
-import SystemBanner from './SystemBanner';
 import { 
   IconDatabase, IconVS,
   IconHome, IconChip, IconSearch
@@ -23,7 +21,6 @@ import {
 const SidebarItem = ({ to, icon: Icon, label, exact = false }: { to: string, icon: any, label: string, exact?: boolean }) => {
   const pathname = usePathname();
   const isActive = exact ? pathname === to : pathname.startsWith(to);
-  const { playHover, playClick } = useSound();
 
   return (
     <Link 
@@ -33,8 +30,6 @@ const SidebarItem = ({ to, icon: Icon, label, exact = false }: { to: string, ico
           ? 'border-secondary bg-bg-secondary/50 text-white shadow-[inset_0_0_10px_rgba(0,255,157,0.2)]'
           : 'border-transparent text-gray-400 hover:text-primary hover:bg-bg-secondary/20 hover:border-primary'
       }`}
-      onMouseEnter={playHover}
-      onClick={playClick}
     >
       <div className={`transition-transform duration-200 ${isActive ? 'scale-110 text-secondary' : 'group-hover:scale-110'}`}>
         <Icon className="w-5 h-5 mr-2" />
@@ -98,16 +93,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <div className="h-screen flex flex-col relative overflow-hidden bg-bg-primary">
       
-      <SystemBanner />
-
       {/* BACKGROUND GRID */}
-      <div className="absolute inset-0 z-0 pointer-events-none" 
-           style={{ 
-             backgroundImage: 'linear-gradient(rgba(42, 42, 64, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(42, 42, 64, 0.5) 1px, transparent 1px)', 
-             backgroundSize: '40px 40px',
-             opacity: 0.2
-           }}>
-      </div>
 
       {/* MOBILE HEADER (z-40) */}
       <MobileTopBar 

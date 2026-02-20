@@ -29,7 +29,7 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
         {/* Device A */}
         <div className="flex-1 w-full relative">
             <span className="absolute -top-3 left-2 px-1 bg-bg-primary text-[10px] font-mono text-text-muted uppercase tracking-widest z-10">
-                SYSTEM A
+                PLAYER 1
             </span>
             <ConsoleSearch
                 consoles={consoles}
@@ -37,6 +37,7 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
                 placeholder="SELECT DEVICE..."
                 themeColor="primary"
                 currentSelection={p1?.name}
+                textColor="white"
             />
         </div>
 
@@ -48,7 +49,7 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
         {/* Device B */}
         <div className="flex-1 w-full relative">
             <span className="absolute -top-3 left-2 px-1 bg-bg-primary text-[10px] font-mono text-text-muted uppercase tracking-widest z-10">
-                SYSTEM B
+                PLAYER 2
             </span>
             <ConsoleSearch
                 consoles={consoles}
@@ -56,6 +57,7 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
                 placeholder="SELECT DEVICE..."
                 themeColor="secondary" // In this theme, secondary is just white/neutral
                 currentSelection={p2?.name}
+                textColor="white"
             />
         </div>
       </div>

@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { fetchConsoleList, fetchConsoleBySlug } from '../../lib/api';
 import { ConsoleDetails, ConsoleVariant } from '../../lib/types';
-import { useSound } from '../../components/ui/SoundContext';
 import { METRICS } from '../../lib/config/arena-metrics';
 import { ComparisonRow } from '../../components/arena/ComparisonRow';
 import { ConsoleSearch } from '../../components/arena/ConsoleSearch';
@@ -23,7 +22,6 @@ function VSModeContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const matchSummaryRef = useRef<HTMLDivElement>(null);
-    const { playClick } = useSound();
 
     const [allConsoles, setAllConsoles] = useState<{name: string, slug: string}[]>([]);
     
@@ -104,7 +102,6 @@ function VSModeContent() {
         } else {
             updateUrl(undefined, undefined, slug, null);
         }
-        playClick();
     };
 
     const handleVariantChange = (setter: Dispatch<SetStateAction<SelectionState>>, isPlayer1: boolean) => (slug: string) => {
@@ -119,7 +116,6 @@ function VSModeContent() {
     };
 
     const handleChangeFighter = (isPlayer1: boolean) => {
-        playClick();
         setIsArenaMode(false);
         if (isPlayer1) {
             setSelectionA({ slug: null, details: null, selectedVariant: null, loading: false });
@@ -132,7 +128,6 @@ function VSModeContent() {
 
     const handleFight = () => {
         if (selectionA.selectedVariant && selectionB.selectedVariant) {
-            playClick();
             setIsArenaMode(true);
             // Smooth scroll to match readout on fight
             setTimeout(() => {
@@ -142,7 +137,6 @@ function VSModeContent() {
     };
 
     const handleNewMatch = () => {
-        playClick();
         setIsArenaMode(false);
         setSelectionA({ slug: null, details: null, selectedVariant: null, loading: false });
         setSelectionB({ slug: null, details: null, selectedVariant: null, loading: false });
