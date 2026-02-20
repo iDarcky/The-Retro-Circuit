@@ -24,7 +24,7 @@ export default async function LandingPage() {
     <div className="bg-bg-primary min-h-screen text-text-primary selection:bg-color-primary selection:text-white font-sans">
 
       {/* 1. HERO - TYPOGRAPHIC STATEMENT */}
-      <header className="px-6 md:px-12 pt-24 pb-32 border-b border-border-subtle relative overflow-hidden min-h-[80vh] flex items-start">
+      <header className="px-6 md:px-12 pt-12 md:pt-24 pb-12 md:pb-32 border-b border-border-subtle relative overflow-hidden min-h-[80vh] flex items-start">
         {/* Background Image with Progressive Blur */}
         <div className="absolute inset-0 z-0">
             {/* Base Image (Sharp) */}
@@ -45,12 +45,12 @@ export default async function LandingPage() {
         <div className="max-w-[1800px] mx-auto w-full relative z-10">
             {/* Title & Subtitle */}
             <div className="flex flex-col items-start text-left">
-                <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded-full border border-emerald-900/30 bg-emerald-950/10 text-[10px] md:px-3 md:py-1 md:text-xs font-mono uppercase tracking-widest text-emerald-400 mb-8 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(16,185,129,0.1)]">
+                <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded-full border border-emerald-900/30 bg-emerald-950/10 text-[10px] md:px-3 md:py-1 md:text-xs font-mono uppercase tracking-widest text-emerald-400 mb-4 md:mb-8 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(16,185,129,0.1)]">
                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
                    System Online // {siteConfig.version}
                 </div>
 
-                <h1 className="text-[12vw] md:text-[5vw] lg:text-[3vw] leading-[1.1] font-pixel font-bold tracking-tighter uppercase mb-8 text-white drop-shadow-2xl">
+                <h1 className="text-[12vw] md:text-[5vw] lg:text-[3vw] leading-[1.1] font-pixel font-bold tracking-tighter uppercase mb-4 md:mb-8 text-white drop-shadow-2xl">
                   <span className="whitespace-nowrap">WELCOME TO</span> <br /><span>THE CIRCUIT<span className="text-violet-500 animate-pulse">_</span></span>
                 </h1>
 
@@ -95,10 +95,10 @@ export default async function LandingPage() {
       <FinderSection />
 
       {/* 3. ANALYSIS & COMPARE */}
-      <section className="px-6 md:px-12 py-24 border-b border-border-subtle bg-bg-secondary/20 relative z-20">
+      <section className="px-6 md:px-12 py-12 md:py-24 border-b border-border-subtle bg-bg-secondary/20 relative z-20">
 
         <div className="max-w-[1800px] mx-auto relative z-10">
-           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center">
               <div>
                   <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6">HEAD-TO-HEAD<br/>COMPARISON</h2>
                   <p className="text-text-secondary text-lg font-light mb-8 max-w-md leading-relaxed">
