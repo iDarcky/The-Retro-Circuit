@@ -3,29 +3,23 @@ import { supabase } from "../supabase/singleton";
 import { ConsoleDetails } from "../types";
 
 export const fetchLatestConsoles = async (limit: number = 3): Promise<ConsoleDetails[]> => {
-    try {
-        const { data, error } = await supabase
-            .from('consoles')
-            .select(`
-                *,
-                manufacturer:manufacturer(*),
-                variants:console_variants(*)
-            `)
-            .eq('status', 'published') // Enforce published status
-            .order('created_at', { ascending: false })
-            .limit(limit);
+    const { data, error } = await supabase
+        .from('consoles')
+        .select(`
+            *,
+            manufacturer(*),
+            variants:console_variants(*)
+        `)
+        .eq('status', 'published')
+        .order('created_at', { ascending: false })
+        .limit(limit);
 
-        if (error) {
-            console.error('[API] fetchLatestConsoles DB Error:', error.message);
-            return [];
-        }
-
-        return normalizeConsoles(data);
-
-    } catch (e) {
-        console.error('[API] Fetch Latest Consoles Exception:', e);
+    if (error) {
+        console.error('Error fetching latest consoles:', error);
         return [];
     }
+
+    return normalizeConsoles(data);
 };
 
 export const fetchRealWorldLatest = async (limit: number = 3): Promise<ConsoleDetails[]> => {
