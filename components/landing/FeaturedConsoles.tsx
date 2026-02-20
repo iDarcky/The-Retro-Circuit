@@ -29,7 +29,7 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
               <Link
                 key={console.id}
                 href={`/consoles/${console.slug}`}
-                className="group flex flex-col bg-white/5 backdrop-blur-md border border-white/10 hover:border-violet-500 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-violet-900/10"
+                className="group flex flex-col bg-white/5 backdrop-blur-md border border-white/5 hover:border-white/20 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-white/5"
               >
                 {/* Image Container - Square Aspect Ratio for Uniformity */}
                 <div className="relative w-full aspect-square bg-white/5 border-b border-white/5 flex items-center justify-center p-4">
@@ -52,7 +52,7 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
 
                 {/* Info Section */}
                 <div className="p-3 flex flex-col gap-1.5 bg-black/20">
-                   <h3 className="text-xs font-bold text-white tracking-wider uppercase leading-snug group-hover:text-violet-400 transition-colors truncate">
+                   <h3 className="text-xs font-bold text-white tracking-wider uppercase leading-snug group-hover:text-white transition-colors truncate">
                       {console.name}
                    </h3>
                    <div className="flex justify-between items-end">

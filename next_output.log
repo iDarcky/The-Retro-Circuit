@@ -1,0 +1,18 @@
+
+> retro-circuit@1.0.0 dev
+> next dev -p 3003
+
+▲ Next.js 16.1.1 (Turbopack)
+- Local:         http://localhost:3003
+- Network:       http://192.168.0.2:3003
+
+✓ Starting...
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+✓ Ready in 1296ms
+○ Compiling /test-featured ...
+ GET /test-featured 200 in 6.3s (compile: 5.6s, proxy.ts: 131ms, render: 599ms)
