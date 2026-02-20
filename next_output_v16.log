@@ -1,0 +1,13 @@
+
+> retro-circuit@1.0.0 dev
+> next dev -p 3003
+
+▲ Next.js 16.1.1 (Turbopack)
+- Local:         http://localhost:3003
+- Network:       http://192.168.0.2:3003
+
+✓ Starting...
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+✓ Ready in 3.6s
+○ Compiling /test-featured-v6 ...
+ GET /test-featured-v6 200 in 7.2s (compile: 6.0s, proxy.ts: 506ms, render: 670ms)
