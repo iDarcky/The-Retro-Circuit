@@ -3,11 +3,11 @@ import { ArrowRight } from 'lucide-react';
 
 export default function FinderSection() {
     return (
-        <section className="py-24 border-b border-border-subtle bg-bg-secondary/10 relative overflow-hidden">
+        <section className="px-6 md:px-12 py-24 border-b border-border-subtle bg-bg-secondary/10 relative overflow-hidden">
             {/* Subtle Cyan Gradient */}
             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-cyan-900/5 via-transparent to-transparent pointer-events-none" />
 
-            <div className="max-w-[1800px] mx-auto px-6 md:px-12 relative z-10">
+            <div className="max-w-[1800px] mx-auto relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <div>
                         <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4">THE FINDER_</h2>

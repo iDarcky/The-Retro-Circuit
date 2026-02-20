@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Swords } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { fetchLatestConsoles } from '../../lib/api/latest';
 import { fetchConsoleList } from '../../lib/api/consoles';
 import QuickCompare from './QuickCompare';
@@ -104,9 +104,6 @@ export default async function LandingPage() {
         <div className="max-w-[1800px] mx-auto relative z-10">
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-violet-900/30 bg-violet-950/10 text-xs font-mono uppercase tracking-widest text-violet-400 mb-6">
-                    <Swords className="w-3 h-3" /> Analysis Tools
-                  </div>
                   <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6">HEAD-TO-HEAD<br/>COMPARISON.</h2>
                   <p className="text-text-secondary text-lg font-light mb-8 max-w-md leading-relaxed">
                      Our arena mode allows for direct specification battles. Analyze CPU clock speeds, display density, and physical form factors in real-time.
