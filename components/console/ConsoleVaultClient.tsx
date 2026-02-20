@@ -15,6 +15,17 @@ interface ConsoleVaultClientProps {
     initialConsoles: ConsoleDetails[];
 }
 
+const CheckboxFilter = ({ label, checked, onChange }: { label: string, checked: boolean, onChange: () => void }) => (
+    <div onClick={onChange} className="flex items-center gap-3 cursor-pointer group mb-2 last:mb-0">
+        <div className={`w-4 h-4 border flex items-center justify-center transition-colors ${checked ? 'bg-secondary border-secondary' : 'border-gray-600 bg-black group-hover:border-primary'}`}>
+            {checked && <svg className="w-3 h-3 text-black font-bold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+        </div>
+        <span className={`text-[10px] font-mono uppercase ${checked ? 'text-white' : 'text-gray-500 group-hover:text-primary'}`}>
+            {label}
+        </span>
+    </div>
+);
+
 const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers, initialConsoles }) => {
   const [allConsoles] = useState<ConsoleDetails[]>(initialConsoles);
   const [filteredConsoles, setFilteredConsoles] = useState<ConsoleDetails[]>(initialConsoles);
