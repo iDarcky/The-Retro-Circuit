@@ -19,56 +19,64 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
         <h2 className="text-sm font-mono tracking-widest text-text-secondary uppercase">Featured Consoles</h2>
       </div>
 
-      {/* Grid Layout - Compact Cards with Large Gaps */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+      {/* Swiss Grid Layout - Strict Grid, Visible Borders */}
+      <div className="border border-white/10 bg-zinc-900">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-px bg-white/10">
           {consoles.slice(0, 5).map((console) => {
             return (
               <Link
                 key={console.id}
                 href={`/consoles/${console.slug}`}
-                className="group relative block w-[75%] mx-auto aspect-[4/5] hover:z-10"
+                className="group relative block w-full aspect-[4/5] bg-zinc-950 hover:bg-zinc-900 transition-colors"
               >
-                 {/* Card Content - Flat Design, Smaller Padding */}
-                 <div className="absolute inset-0 bg-zinc-900/80 backdrop-blur-md rounded-lg border border-white/10 overflow-hidden
-                                transition-all duration-300
-                                group-hover:bg-zinc-800/90
-                                group-hover:border-violet-500/50
-                                group-hover:shadow-[0_0_20px_rgba(139,92,246,0.25)]">
+                {/* Content Container - No rounding, sharp edges */}
+                <div className="h-full flex flex-col p-6">
 
-                    {/* Inner Content Wrapper - Reduced Padding */}
-                    <div className="h-full flex flex-col p-4">
-
-                        {/* Image Container - Significantly Smaller */}
-                        <div className="relative flex-1 w-full flex items-center justify-center mb-3">
-                           <div className="relative w-[60%] h-[60%] flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
-                              {console.image_url ? (
-                                <Image
-                                  src={console.image_url}
-                                  alt={console.name}
-                                  fill
-                                  className="object-contain drop-shadow-xl"
-                                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-[10px] font-mono text-white/20">NO SIGNAL</div>
-                              )}
-                           </div>
+                  {/* Image Container */}
+                  <div className="relative flex-1 w-full flex items-center justify-center mb-6">
+                    <div className="relative w-[75%] h-[75%] flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
+                      {console.image_url ? (
+                        <Image
+                          src={console.image_url}
+                          alt={console.name}
+                          fill
+                          className="object-contain drop-shadow-xl"
+                          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[10px] font-mono text-zinc-700 uppercase tracking-widest">
+                          NO SIGNAL
                         </div>
-
-                        {/* Info Section - Compact Typography */}
-                        <div className="mt-auto pt-3 border-t border-white/5 group-hover:border-white/10 transition-colors">
-                           <h3 className="text-[10px] sm:text-xs font-bold text-white tracking-tight uppercase truncate group-hover:text-violet-400 transition-colors">
-                              {console.name}
-                           </h3>
-                           <span className="text-[9px] font-mono text-zinc-500 mt-0.5 block group-hover:text-zinc-400">
-                              {console.manufacturer?.name}
-                           </span>
-                        </div>
+                      )}
                     </div>
-                 </div>
+                  </div>
+
+                  {/* Info Section - Sharp Borders, High Contrast */}
+                  <div className="mt-auto border-t border-zinc-800 pt-4 group-hover:border-violet-500/50 transition-colors">
+                    <h3 className="text-xs font-bold text-white tracking-widest uppercase truncate group-hover:text-violet-400 transition-colors">
+                      {console.name}
+                    </h3>
+                    <div className="flex justify-between items-end mt-2">
+                       <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider group-hover:text-zinc-400 transition-colors">
+                          {console.manufacturer?.name}
+                       </span>
+                       <span className="text-[10px] font-mono text-violet-500 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 duration-300">
+                          VIEW
+                       </span>
+                    </div>
+                  </div>
+                </div>
               </Link>
             );
           })}
+
+          {/* Empty Slot Filler for Mobile/Tablet Breakpoints to maintain grid structure */}
+          {/* Since we slice(0,5), on md (3 cols) we have 1 empty slot. On sm (2 cols) we have 1 empty slot. */}
+          {/* We can render an empty div to fill the gap if needed, but the gap-px background will handle the lines. */}
+          {/* However, an empty cell would just be the background color of the grid (white/10) or transparent? */}
+          {/* Actually, if the grid has bg-white/10, the empty cell is just a hole showing the container background (zinc-900). */}
+          {/* That's fine. It looks like an empty slot in a rack. */}
+        </div>
       </div>
     </div>
   );
