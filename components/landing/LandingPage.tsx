@@ -13,7 +13,7 @@ export default async function LandingPage() {
   // This reduces the total server-side latency for the page generation by running independent
   // database queries in parallel.
   const [latestAdded, latestReleases, allConsoles] = await Promise.all([
-    fetchLatestConsoles(5),
+    fetchLatestConsoles(10),
     fetchRealWorldLatest(5),
     fetchConsoleList(),
   ]);

@@ -13,36 +13,35 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
   return (
     <div className="w-full mt-16 animate-fade-in" style={{ animationDelay: '0.2s' }}>
 
-      {/* Title - Reduced margin */}
-      <div className="flex items-center gap-3 mb-4 justify-center md:justify-start">
+      {/* Title - Left Aligned */}
+      <div className="flex items-center gap-3 mb-4 justify-start">
         <div className="w-2 h-2 bg-color-primary"></div>
         <h2 className="text-xs font-mono tracking-widest text-text-secondary uppercase">Featured Consoles</h2>
       </div>
 
-      {/* Swiss Grid Layout - Stripped Down "Floating" */}
-      {/* Explicitly center-aligned (mx-auto) and constrained width */}
-      <div className="w-full md:w-[60%] mx-auto">
+      {/* Swiss Grid Layout - Full Width, Left Aligned */}
+      <div className="w-full">
 
-        {/* The Grid of Cards - Reduced gap to fit "shrink" request */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {consoles.slice(0, 5).map((console) => {
+        {/* The Grid of Cards - Responsive, filling the row */}
+        {/* grid-cols-2 (mobile) -> grid-cols-3 (md) -> grid-cols-5 (lg) -> grid-cols-8 (2xl) */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 2xl:grid-cols-8 gap-4">
+          {consoles.map((console) => {
             return (
               <Link
                 key={console.id}
                 href={`/consoles/${console.slug}`}
                 className="group flex flex-col bg-white/5 backdrop-blur-md border border-white/10 hover:border-violet-500 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-violet-900/10"
               >
-                {/* Image Container - Aspect Ratio [3/2] to reduce height */}
-                {/* Subtle glass background for the image area as well */}
-                <div className="relative w-full aspect-[3/2] bg-white/5 border-b border-white/5 flex items-center justify-center p-3">
-                  <div className="relative w-[70%] h-[70%] flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
+                {/* Image Container - Square Aspect Ratio for Uniformity */}
+                <div className="relative w-full aspect-square bg-white/5 border-b border-white/5 flex items-center justify-center p-4">
+                  <div className="relative w-[80%] h-[80%] flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
                     {console.image_url ? (
                       <Image
                         src={console.image_url}
                         alt={console.name}
                         fill
                         className="object-contain drop-shadow-md"
-                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
+                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 12vw"
                       />
                     ) : (
                       <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">
@@ -52,9 +51,9 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
                   </div>
                 </div>
 
-                {/* Info Section - Smaller Text, Tighter Layout */}
-                <div className="p-3 flex flex-col gap-1.5">
-                   <h3 className="text-xs font-bold text-white tracking-wider uppercase leading-snug group-hover:text-violet-400 transition-colors">
+                {/* Info Section */}
+                <div className="p-3 flex flex-col gap-1.5 bg-black/20">
+                   <h3 className="text-xs font-bold text-white tracking-wider uppercase leading-snug group-hover:text-violet-400 transition-colors truncate">
                       {console.name}
                    </h3>
                    <div className="flex justify-between items-end">
