@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef, type FC, type ChangeEvent } from 'react';
-import { useSound } from '../ui/SoundContext';
 import { Search } from 'lucide-react';
 
 interface ConsoleSearchProps {
@@ -17,7 +16,6 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
     const [searchTerm, setSearchTerm] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
-    const { playHover } = useSound();
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -67,7 +65,6 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                                 setSearchTerm('');
                                 setIsOpen(false);
                             }}
-                            onMouseEnter={playHover}
                             className={`p-3 px-4 text-xs font-mono cursor-pointer hover:bg-bg-tertiary hover:text-white text-text-secondary border-b border-border-subtle last:border-0 flex justify-between items-center group transition-colors uppercase tracking-wide`}
                         >
                             <span>{c.name}</span>

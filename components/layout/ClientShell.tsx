@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, type FC, type ReactNode } from 'react';
-import { SoundProvider } from '../ui/SoundContext';
 import { SearchProvider } from '../ui/SearchContext';
 import GlobalSearch from '../ui/GlobalSearch';
 import MainLayout from './MainLayout';
@@ -21,14 +20,12 @@ const ClientShell: FC<ClientShellProps> = ({ children }) => {
   if (!mounted) return <div className="bg-bg-primary h-screen w-screen" />;
 
   return (
-    <SoundProvider>
-      <SearchProvider>
-        <MainLayout>
-           {children}
-        </MainLayout>
-        <GlobalSearch />
-      </SearchProvider>
-    </SoundProvider>
+    <SearchProvider>
+      <MainLayout>
+          {children}
+      </MainLayout>
+      <GlobalSearch />
+    </SearchProvider>
   );
 };
 
