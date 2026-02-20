@@ -104,7 +104,7 @@ export default async function LandingPage() {
         <div className="max-w-[1800px] mx-auto relative z-10">
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div>
-                  <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6">HEAD-TO-HEAD<br/>COMPARISON.</h2>
+                  <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6">HEAD-TO-HEAD<br/>COMPARISON</h2>
                   <p className="text-text-secondary text-lg font-light mb-8 max-w-md leading-relaxed">
                      Our arena mode allows for direct specification battles. Analyze CPU clock speeds, display density, and physical form factors in real-time.
                   </p>

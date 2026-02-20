@@ -10,7 +10,7 @@ export default function FinderSection() {
             <div className="max-w-[1800px] mx-auto relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <div>
-                        <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4">THE FINDER_</h2>
+                        <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4">THE FINDER</h2>
                         <p className="text-text-secondary font-light max-w-xl text-lg leading-relaxed">
                             Not sure which handheld to buy? Answer a few questions and we'll narrow it down!
                         </p>
