@@ -19,7 +19,7 @@ const MobileTopBar: FC<MobileTopBarProps> = ({ onMenuClick, isSidebarOpen }) => 
         {/* Left: Logo */}
         <div className="flex items-center">
             <Link href="/" className="flex items-center group">
-                <span className="font-pixel text-[14px] leading-tight text-white/40 group-hover:text-secondary transition-colors">RETRO CIRCUIT_</span>
+                <span className="font-pixel text-[10px] leading-tight text-white/40 group-hover:text-secondary transition-colors">RETRO CIRCUIT_</span>
             </Link>
         </div>
 
