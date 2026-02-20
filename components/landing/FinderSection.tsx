@@ -3,20 +3,20 @@ import { ArrowRight } from 'lucide-react';
 
 export default function FinderSection() {
     return (
-        <section className="py-16 border-b border-border-subtle bg-bg-secondary/10 relative overflow-hidden">
+        <section className="py-24 border-b border-border-subtle bg-bg-secondary/10 relative overflow-hidden">
             {/* Subtle Cyan Gradient */}
             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-cyan-900/5 via-transparent to-transparent pointer-events-none" />
 
             <div className="max-w-[1800px] mx-auto px-6 md:px-12 relative z-10">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
-                    <div className="md:col-span-8 lg:col-span-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    <div>
                         <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4">THE FINDER_</h2>
                         <p className="text-text-secondary font-light max-w-xl text-lg leading-relaxed">
                             Not sure which handheld to buy? Answer a few questions and we'll narrow it down!
                         </p>
                     </div>
 
-                    <div className="md:col-span-4 lg:col-span-4 flex justify-start md:justify-end w-full">
+                    <div className="flex justify-start md:justify-end w-full">
                         <div className="relative group w-full md:w-auto">
                             <div className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-cyan-500 transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-cyan-400/50"></div>
                             <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-cyan-500 transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-cyan-400/50"></div>

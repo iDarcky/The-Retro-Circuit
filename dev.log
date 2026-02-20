@@ -14,3 +14,4 @@
 [API] fetchLatestConsoles DB Error: TypeError: fetch failed
  GET / 200 in 8.4s (compile: 7.3s, proxy.ts: 182ms, render: 869ms)
 ✓ Compiled in 1041ms
+✓ Compiled in 1265ms
