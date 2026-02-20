@@ -36,7 +36,7 @@ const Footer: FC = () => {
         </nav>
 
         {/* Right: System Status */}
-        <div className="flex items-center gap-4 text-[10px] font-mono text-text-muted tracking-wider uppercase">
+        <div className="flex items-center gap-4 text-[10px] font-mono text-text-secondary tracking-wider uppercase">
            <span>VER: {siteConfig.version}</span>
            <span className="flex items-center gap-2 text-emerald-500">
              ONLINE
