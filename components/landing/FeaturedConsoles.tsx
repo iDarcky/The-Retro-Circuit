@@ -14,9 +14,8 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
     <div className="w-full mt-16 animate-fade-in" style={{ animationDelay: '0.2s' }}>
 
       {/* Title - Left Aligned */}
-      <div className="flex items-center gap-3 mb-4 justify-start">
-        <div className="w-2 h-2 bg-color-primary"></div>
-        <h2 className="text-xs font-mono tracking-widest text-text-secondary uppercase">Featured Consoles</h2>
+      <div className="flex items-center gap-3 mb-6 justify-start">
+        <h2 className="text-3xl font-bold tracking-tighter text-white uppercase">Featured Consoles</h2>
       </div>
 
       {/* Swiss Grid Layout - Full Width, Left Aligned */}
