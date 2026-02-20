@@ -1,3 +1,4 @@
+
 'use client';
 
 import { type ReactNode, useState } from 'react';
@@ -23,28 +24,35 @@ export const SpecCard = ({
     };
 
     return (
-        <div className={`${className} ${collapsible ? 'py-4 border-t border-border-normal first:border-t-0' : 'pb-0'}`}>
-            {/* Header: Simple Text + Interaction */}
+        <div className={`
+            bg-white/[0.02] border border-white/5 p-6 md:p-8 h-full relative overflow-hidden group
+            transition-all duration-300 hover:border-white/10 hover:bg-white/[0.04] hover:shadow-[0_0_20px_rgba(0,0,0,0.3)]
+            ${className}
+        `}>
+            {/* Header: Subtle, Clean */}
             <div
-                className={`flex justify-between items-center mb-4 ${collapsible ? 'cursor-pointer group' : ''}`}
+                className={`flex justify-between items-center mb-6 ${collapsible ? 'cursor-pointer' : ''}`}
                 onClick={toggle}
             >
-                <h3 className="font-sans text-sm font-black text-white uppercase tracking-wider group-hover:text-secondary transition-colors">
+                <h3 className="font-sans text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">
                     {title}
                 </h3>
                 {collapsible && (
-                    <div className="text-gray-500 group-hover:text-white transition-colors">
-                        {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    <div className="text-gray-600 group-hover:text-white transition-colors">
+                        {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                     </div>
                 )}
             </div>
 
-            {/* Content: Direct Flow */}
+            {/* Content: Structured Grid Feel */}
             {(!collapsible || isOpen) && (
-                <div className="space-y-4 animate-fadeIn">
+                <div className="space-y-3 animate-fadeIn">
                     {children}
                 </div>
             )}
+
+            {/* Subtle decorative corner */}
+            <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
         </div>
     );
 };

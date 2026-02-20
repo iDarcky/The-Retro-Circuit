@@ -8,6 +8,7 @@ import PlayabilityMatrix from './PlayabilityMatrix';
 import MissionProfile from './MissionProfile';
 import AtAGlance from './AtAGlance';
 import BuySection from './BuySection';
+import { KeySpecsRow } from './KeySpecsRow';
 import { SpecCard } from '../ui/specs/SpecCard';
 import { SpecField } from '../ui/specs/SpecField';
 import { TechBadge } from '../ui/specs/TechBadge';
@@ -200,29 +201,32 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                     <div className="lg:col-span-8 p-4 md:p-8">
 
                         {/* 1. SYSTEM ANALYSIS */}
-                        <div id="analysis" className="mb-12">
+                        <div id="analysis" className="mb-8">
                             <h3 className="font-sans text-xs font-bold text-primary mb-4 uppercase tracking-widest border-b border-border-normal pb-2">System Analysis</h3>
                             <p className="font-mono text-gray-300 leading-relaxed text-sm whitespace-pre-line pt-4">
                                 {consoleData.description}
                             </p>
                         </div>
 
-                        {/* 2. AT A GLANCE */}
+                        {/* 2. KEY SPECS (New) */}
+                        <KeySpecsRow console={consoleData} variant={currentVariant} />
+
+                        {/* 3. AT A GLANCE */}
                         <AtAGlance />
 
-                        {/* 3. EMULATION MATRIX */}
-                        <div id="playability">
+                        {/* 4. EMULATION MATRIX */}
+                        <div id="playability" className="mb-12 bg-black/40 border border-white/5 p-6 shadow-inner">
                             <PlayabilityMatrix profile={mergedSpecs.emulation_profile || (mergedSpecs as any).emulation_profiles} />
                         </div>
 
-                        {/* 4. TECHNICAL REFERENCE (2-Column Grid) */}
+                        {/* 5. TECHNICAL REFERENCE (Bento Grid) */}
                         <div id="tech">
-                            <h3 className="font-sans text-xs font-bold text-white uppercase mb-8 border-b border-border-normal pb-2">Technical Reference</h3>
+                            <h3 className="font-sans text-xs font-bold text-white uppercase mb-6 border-b border-border-normal pb-2">Technical Reference</h3>
 
-                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-x-12 gap-y-12">
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
                                 {/* SILICON CORE */}
                                 {hasData(SECTIONS.SILICON, mergedSpecs) ? (
-                                    <SpecCard title="SILICON CORE" collapsible={false} className="border-0 p-0">
+                                    <SpecCard title="SILICON CORE" collapsible={false} className="h-full">
                                         <div className="space-y-1">
                                             <SpecField label="OS / Firmware" value={mergedSpecs.os} />
                                             <SpecField label="UI Skin" value={mergedSpecs.ui_skin} small />
@@ -242,7 +246,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                                 {/* MEMORY & STORAGE */}
                                 {hasData(SECTIONS.MEMORY, mergedSpecs) ? (
-                                    <SpecCard title="MEMORY & STORAGE" collapsible={false} className="border-0 p-0">
+                                    <SpecCard title="MEMORY & STORAGE" collapsible={false} className="h-full">
                                         <div className="space-y-1">
                                             <SpecField label="RAM" value={ramData?.val} unit={ramData?.unit} highlight />
                                             <SpecField label="Type" value={mergedSpecs.ram_type} small />
@@ -259,7 +263,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                                 {/* DISPLAY */}
                                 {hasData(SECTIONS.DISPLAY, mergedSpecs) ? (
-                                    <SpecCard title="DISPLAY" collapsible={false} className="border-0 p-0">
+                                    <SpecCard title="DISPLAY" collapsible={false} className="h-full">
                                         <div className="space-y-1">
                                             <div className="flex justify-between items-end mb-2 border-b border-dotted border-white/10 pb-1">
                                                 <span className="font-mono text-[10px] text-gray-500 uppercase tracking-wide">Primary Panel</span>
@@ -294,7 +298,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                                 {/* INPUT & CONTROLS */}
                                 {hasData(SECTIONS.INPUT, mergedSpecs) ? (
-                                    <SpecCard title="INPUT & CONTROLS" collapsible={false} className="border-0 p-0">
+                                    <SpecCard title="INPUT & CONTROLS" collapsible={false} className="h-full">
                                         {mergedSpecs.variant_input_profile ? (
                                             <div className="space-y-1">
                                                 <SpecField label="D-pad shape" value={formatInputEnum('rc_dpad_shape', mergedSpecs.variant_input_profile.dpad_shape)} small />
@@ -343,7 +347,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                                 {/* CONNECTIVITY */}
                                 {hasData(SECTIONS.CONNECTIVITY, mergedSpecs) ? (
-                                    <SpecCard title="CONNECTIVITY" collapsible={false} className="border-0 p-0">
+                                    <SpecCard title="CONNECTIVITY" collapsible={false} className="h-full">
                                         <div className="space-y-1">
                                             <SpecField label="Wi-Fi" value={mergedSpecs.wifi_specs} small />
                                             <SpecField label="Bluetooth" value={mergedSpecs.bluetooth_specs} small />
@@ -360,7 +364,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                                 {/* POWER & CHASSIS */}
                                 {hasData(SECTIONS.POWER, mergedSpecs) ? (
-                                    <SpecCard title="POWER & CHASSIS" collapsible={false} className="border-0 p-0">
+                                    <SpecCard title="POWER & CHASSIS" collapsible={false} className="h-full">
                                         <div className="space-y-1">
                                             <SpecField label="Capacity" value={mergedSpecs.battery_capacity_mah} unit="mAh" highlight />
                                             <SpecField label="Energy" value={mergedSpecs.battery_capacity_wh} unit="Wh" />

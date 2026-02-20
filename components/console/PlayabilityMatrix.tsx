@@ -35,10 +35,9 @@ const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) 
     };
 
     return (
-        <div className="w-full animate-fadeIn py-6 border-b border-border-normal">
-
+        <div className="w-full animate-fadeIn">
              {/* Header */}
-            <h3 className="font-sans text-sm font-bold text-secondary uppercase tracking-widest mb-6 border-b border-border-normal pb-2">
+            <h3 className="font-sans text-xs font-bold text-secondary uppercase tracking-widest mb-6 border-b border-border-normal pb-2">
                 PLAYABILITY MATRIX
             </h3>
 
