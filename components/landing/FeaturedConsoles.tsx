@@ -20,8 +20,8 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
       </div>
 
       {/* Swiss Grid Layout - Stripped Down "Floating" */}
-      {/* Removed container background and border effects per feedback */}
-      <div className="w-full md:w-[60%]">
+      {/* Explicitly left-aligned (mr-auto) and constrained width */}
+      <div className="w-full md:w-[60%] mr-auto">
 
         {/* The Grid of Cards - Reduced gap to fit "shrink" request */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -30,12 +30,12 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
               <Link
                 key={console.id}
                 href={`/consoles/${console.slug}`}
-                className="group flex flex-col bg-zinc-950 border border-white/10 hover:border-violet-500 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-violet-900/10"
+                className="group flex flex-col bg-white/5 backdrop-blur-md border border-white/10 hover:border-violet-500 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-violet-900/10"
               >
-                {/* Image Container - Square Aspect Ratio (1:1) */}
-                {/* Reduced internal image sizing significantly */}
-                <div className="relative w-full aspect-square bg-zinc-900/30 border-b border-white/5 flex items-center justify-center p-4">
-                  <div className="relative w-[60%] h-[60%] flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
+                {/* Image Container - Aspect Ratio [3/2] to reduce height */}
+                {/* Subtle glass background for the image area as well */}
+                <div className="relative w-full aspect-[3/2] bg-white/5 border-b border-white/5 flex items-center justify-center p-3">
+                  <div className="relative w-[70%] h-[70%] flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
                     {console.image_url ? (
                       <Image
                         src={console.image_url}
@@ -45,7 +45,7 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
                         sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
                       />
                     ) : (
-                      <div className="text-[9px] font-mono text-zinc-700 uppercase tracking-widest">
+                      <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">
                         NO SIGNAL
                       </div>
                     )}
