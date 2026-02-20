@@ -50,7 +50,7 @@ export default async function LandingPage() {
                    System Online // {siteConfig.version}
                 </div>
 
-                <h1 className="text-5xl md:text-[5vw] lg:text-[3vw] leading-[1.1] font-pixel font-bold tracking-tighter uppercase mb-8 text-white drop-shadow-2xl">
+                <h1 className="text-[12vw] md:text-[5vw] lg:text-[3vw] leading-[1.1] font-pixel font-bold tracking-tighter uppercase mb-8 text-white drop-shadow-2xl">
                   <span className="whitespace-nowrap">WELCOME TO</span> <br /><span>THE CIRCUIT<span className="text-violet-500 animate-pulse">_</span></span>
                 </h1>
 
