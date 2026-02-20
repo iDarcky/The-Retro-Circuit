@@ -118,14 +118,14 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
   return (
     <div className="w-full min-h-screen bg-bg-primary text-text-primary pb-32">
         {/* HEADER */}
-        <div className="relative pt-32 pb-12 px-6 md:px-12 border-b border-white/5 overflow-hidden">
+        <div className="relative pt-24 pb-12 px-6 md:px-12 border-b border-white/5 overflow-hidden">
              {/* Background Effects */}
              <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.05] pointer-events-none"></div>
 
              <div className="max-w-[1800px] mx-auto relative z-10">
                 <div className="flex flex-col items-start gap-4">
                      <h1 className="text-4xl md:text-6xl font-pixel font-bold tracking-tighter text-white uppercase drop-shadow-lg leading-tight">
-                        Console <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">Vault</span>
+                        Console <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">Vault</span><span className="text-violet-500 animate-pulse">_</span>
                      </h1>
                      <p className="text-lg md:text-xl text-zinc-400 max-w-2xl font-light font-mono">
                         The complete archive of handheld gaming history. Filter by era, form factor, and technical specifications.
