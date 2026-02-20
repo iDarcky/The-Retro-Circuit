@@ -197,12 +197,12 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                     </div>
 
                     {/* --- RIGHT COLUMN: SCROLLABLE CONTENT (lg:col-span-8) --- */}
-                    <div className="lg:col-span-8 p-4 md:p-8 space-y-8">
+                    <div className="lg:col-span-8 p-4 md:p-8">
 
                         {/* 1. SYSTEM ANALYSIS */}
-                        <div id="analysis" className="bg-bg-primary border border-border-normal p-6 relative">
-                            <h3 className="font-sans text-xs font-bold text-primary mb-4 uppercase tracking-widest">System Analysis</h3>
-                            <p className="font-mono text-gray-300 leading-relaxed text-sm whitespace-pre-line">
+                        <div id="analysis" className="mb-12">
+                            <h3 className="font-sans text-xs font-bold text-primary mb-4 uppercase tracking-widest border-b border-border-normal pb-2">System Analysis</h3>
+                            <p className="font-mono text-gray-300 leading-relaxed text-sm whitespace-pre-line pt-4">
                                 {consoleData.description}
                             </p>
                         </div>
@@ -216,8 +216,8 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                         </div>
 
                         {/* 4. TECHNICAL REFERENCE (Collapsible Grid) */}
-                        <div id="tech" className="space-y-4">
-                            <h3 className="font-sans text-lg font-bold text-white uppercase mb-4 border-b border-border-normal pb-2">Technical Reference</h3>
+                        <div id="tech" className="space-y-0">
+                            <h3 className="font-sans text-xs font-bold text-white uppercase mb-4 border-b border-border-normal pb-2">Technical Reference</h3>
 
                              {/* SILICON CORE */}
                              {hasData(SECTIONS.SILICON, mergedSpecs) ? (

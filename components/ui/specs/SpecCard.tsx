@@ -23,24 +23,25 @@ export const SpecCard = ({
     };
 
     return (
-        <div className={`bg-bg-primary border border-border-normal relative overflow-hidden group hover:border-primary/50 transition-colors ${className}`}>
-            {/* Header Strip */}
+        <div className={`py-4 ${className} ${collapsible ? 'border-t border-border-normal first:border-t-0' : ''}`}>
+            {/* Header: Simple Text + Interaction */}
             <div
-                className={`bg-black/40 border-b border-border-normal px-4 py-3 flex justify-between items-center ${collapsible ? 'cursor-pointer hover:bg-white/5' : ''}`}
+                className={`flex justify-between items-center mb-4 ${collapsible ? 'cursor-pointer group' : ''}`}
                 onClick={toggle}
             >
-                <h3 className="font-sans text-xs font-bold text-primary uppercase tracking-widest">{title}</h3>
-                <div className="flex items-center gap-2">
-                    {collapsible && (
-                        <div className="text-gray-500 hover:text-white transition-colors ml-2">
-                            {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                        </div>
-                    )}
-                </div>
+                <h3 className="font-sans text-sm font-bold text-white uppercase tracking-wider group-hover:text-secondary transition-colors">
+                    {title}
+                </h3>
+                {collapsible && (
+                    <div className="text-gray-500 group-hover:text-white transition-colors">
+                        {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </div>
+                )}
             </div>
-            {/* Content Body */}
+
+            {/* Content: Direct Flow */}
             {(!collapsible || isOpen) && (
-                <div className="p-4 space-y-3 animate-fadeIn">
+                <div className="space-y-4 animate-fadeIn">
                     {children}
                 </div>
             )}
