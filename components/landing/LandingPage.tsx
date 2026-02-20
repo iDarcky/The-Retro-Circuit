@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Swords, History, Calendar } from 'lucide-react';
-import { fetchLatestConsoles, fetchRealWorldLatest } from '../../lib/api/latest';
+import { ArrowRight, Swords } from 'lucide-react';
+import { fetchLatestConsoles } from '../../lib/api/latest';
 import { fetchConsoleList } from '../../lib/api/consoles';
 import QuickCompare from './QuickCompare';
 import FinderSection from './FinderSection';
@@ -12,9 +12,8 @@ export default async function LandingPage() {
   // OPTIMIZATION: Use Promise.all to fetch data concurrently instead of sequentially.
   // This reduces the total server-side latency for the page generation by running independent
   // database queries in parallel.
-  const [latestAdded, latestReleases, allConsoles] = await Promise.all([
-    fetchLatestConsoles(5),
-    fetchRealWorldLatest(5),
+  const [latestAdded, allConsoles] = await Promise.all([
+    fetchLatestConsoles(8),
     fetchConsoleList(),
   ]);
 
@@ -127,94 +126,6 @@ export default async function LandingPage() {
               </div>
            </div>
         </div>
-      </section>
-
-      {/* 4. DUAL TICKER: LATEST ADDED & LATEST RELEASES */}
-      <section className="px-6 md:px-12 py-24">
-         <div className="max-w-[1800px] mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-24">
-
-                {/* LATEST ADDITIONS */}
-                <div>
-                    <div className="flex items-center gap-3 mb-12 pb-4 border-b border-border-subtle">
-                        <History className="w-5 h-5 text-color-primary" />
-                        <h3 className="text-2xl font-bold tracking-tight">LATEST ACQUISITIONS</h3>
-                    </div>
-
-                    <div className="flex flex-col gap-0">
-                    {latestAdded.map((console, index) => (
-                        <Link
-                            key={console.id}
-                            href={`/consoles/${console.slug}`}
-                            className="group flex items-center justify-between py-6 border-b border-border-subtle hover:bg-bg-secondary/50 transition-colors px-2 -mx-2 rounded-sm"
-                        >
-                            <div className="flex items-center gap-6">
-                                <span className="font-mono text-xs text-text-muted">{(index + 1).toString().padStart(2, '0')}</span>
-                                {console.image_url ? (
-                                <Image
-                                    src={console.image_url}
-                                    alt={console.name}
-                                    width={60}
-                                    height={40}
-                                    className="w-16 h-auto object-contain mix-blend-screen opacity-60 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0"
-                                />
-                                ) : (
-                                <div className="w-16 h-10 bg-border-subtle/50"></div>
-                                )}
-                                <div>
-                                    <span className="block font-mono text-[10px] uppercase text-text-muted mb-1 group-hover:text-color-primary transition-colors">
-                                        {console.manufacturer?.name}
-                                    </span>
-                                    <h4 className="text-lg font-bold tracking-tight group-hover:text-white transition-colors">
-                                        {console.name}
-                                    </h4>
-                                </div>
-                            </div>
-                            <ArrowRight className="w-4 h-4 text-border-normal group-hover:text-color-primary -translate-x-2 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all" />
-                        </Link>
-                    ))}
-                    </div>
-                </div>
-
-                {/* NEW RELEASES */}
-                <div>
-                    <div className="flex items-center gap-3 mb-12 pb-4 border-b border-border-subtle">
-                        <Calendar className="w-5 h-5 text-cyan-500" />
-                        <h3 className="text-2xl font-bold tracking-tight text-cyan-100/80">NEW RELEASES</h3>
-                    </div>
-
-                    <div className="flex flex-col gap-0">
-                    {latestReleases.map((console) => (
-                        <Link
-                            key={`release-${console.id}`}
-                            href={`/consoles/${console.slug}`}
-                            className="group flex items-center justify-between py-6 border-b border-border-subtle hover:bg-cyan-950/10 transition-colors px-2 -mx-2 rounded-sm"
-                        >
-                            <div className="flex items-center gap-6">
-                                <span className="font-mono text-xs text-cyan-700 group-hover:text-cyan-400 transition-colors">
-                                    {console.specs?.release_date ? new Date(console.specs.release_date).getFullYear() : 'TBA'}
-                                </span>
-
-                                <div>
-                                    <span className="block font-mono text-[10px] uppercase text-text-muted mb-1 group-hover:text-cyan-300 transition-colors">
-                                        {console.manufacturer?.name}
-                                    </span>
-                                    <h4 className="text-lg font-bold tracking-tight text-text-secondary group-hover:text-cyan-50 transition-colors">
-                                        {console.name}
-                                    </h4>
-                                </div>
-                            </div>
-
-                            <div className="font-mono text-xs text-text-muted group-hover:text-cyan-400">
-                                VIEW SPECS
-                            </div>
-                        </Link>
-                    ))}
-                    </div>
-                </div>
-
-            </div>
-         </div>
       </section>
 
     </div>
