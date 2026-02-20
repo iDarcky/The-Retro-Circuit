@@ -3,10 +3,12 @@
 
 import { useEffect, useState, type ChangeEvent, type FC } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ConsoleDetails, ConsoleFilterState, Manufacturer } from '../../lib/types';
 import RetroLoader from '../ui/RetroLoader';
 import Button from '../ui/Button';
 import { formatReleaseDate } from '../../lib/utils/date-formatter';
+import { LayoutGrid, List, Search, SlidersHorizontal } from 'lucide-react';
 
 interface ConsoleVaultClientProps {
     initialManufacturers: Manufacturer[];
@@ -28,15 +30,15 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
   const [allConsoles] = useState<ConsoleDetails[]>(initialConsoles);
   const [filteredConsoles, setFilteredConsoles] = useState<ConsoleDetails[]>(initialConsoles);
   const [manufacturers] = useState<Manufacturer[]>(initialManufacturers);
-  const [loading] = useState(false); // No initial load needed
-  const [errorMsg] = useState<string | null>(null);
+  const [loading] = useState(false);
   
-  // Mobile Sidebar State
-  const [showMobileFilters, setShowMobileFilters] = useState(false);
+  // View Mode State
+  const [viewMode, setViewMode] = useState<'swiss' | 'classic'>('swiss');
+  const [showFilters, setShowFilters] = useState(false);
 
   // Pagination State
   const [page, setPage] = useState(1);
-  const ITEMS_PER_PAGE = 12;
+  const ITEMS_PER_PAGE = viewMode === 'swiss' ? 24 : 12; // Show more items in grid view
 
   // Filter State
   const [filters, setFilters] = useState<ConsoleFilterState>({
@@ -53,44 +55,35 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [page]);
 
-  // 2. Client-Side Filter Logic
+  // Client-Side Filter Logic
   useEffect(() => {
-    // Start with all data
     let result = [...allConsoles];
 
-    // Filter: Manufacturer
     if (filters.manufacturer_id) {
         result = result.filter(c => c.manufacturer_id === filters.manufacturer_id);
     }
 
-    // Filter: Year
     result = result.filter(c => {
         let year = 9999;
         const specs: any = c.specs || {};
-
         if (specs.release_date) {
             const dateYear = parseInt(specs.release_date.substring(0, 4));
             if (!isNaN(dateYear)) year = dateYear;
         }
-
-        if (year === 9999) return true; // Keep items with unknown year
+        if (year === 9999) return true;
         return year >= filters.minYear && year <= filters.maxYear;
     });
 
-    // Filter: Form Factor
     if (filters.form_factors.length > 0) {
         result = result.filter(c => {
             if (!c.form_factor) return false;
-            // Case-insensitive check
             return filters.form_factors.some(ff => c.form_factor?.toLowerCase() === ff.toLowerCase());
         });
     }
 
-    // Filter: Screen Tech (Check Variants)
     if (filters.panel_types.length > 0) {
         result = result.filter(c => {
             const variants = c.variants || [];
-            // Check if ANY variant matches ANY selected panel type
             return variants.some(v => {
                 const displayType = (v.display_type || '').toLowerCase();
                 return filters.panel_types.some(pt => displayType.includes(pt.toLowerCase()));
@@ -98,41 +91,28 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
         });
     }
 
-    // Sort: Newest First
     result.sort((a, b) => {
-        // Prioritize release_date for sorting
         const getSortValue = (item: any) => {
             const specs: any = item.specs || {};
             if (specs.release_date) return new Date(specs.release_date).getTime();
-            return 0; // Unknown
+            return 0;
         };
-
         return getSortValue(b) - getSortValue(a);
     });
 
     setFilteredConsoles(result);
-    setPage(1); // Reset pagination on filter change
-
+    setPage(1);
   }, [filters, allConsoles]);
 
-  // Helper: Toggle Arrays in Filter State
   const toggleFilter = (category: 'form_factors' | 'panel_types', value: string) => {
       setFilters(prev => {
           const current = prev[category];
           const exists = current.includes(value);
-          
-          let updated;
-          if (exists) {
-              updated = current.filter(item => item !== value);
-          } else {
-              updated = [...current, value];
-          }
-          
+          let updated = exists ? current.filter(item => item !== value) : [...current, value];
           return { ...prev, [category]: updated };
       });
   };
 
-  // Helper: Form Factor Badge Style
   const getFormFactorColor = (factor: string) => {
       const f = factor.toLowerCase();
       if (f === 'vertical') return 'text-yellow-400 border-yellow-400';
@@ -141,214 +121,295 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
       return 'text-gray-400 border-gray-400';
   };
 
-  // Pagination Logic
   const totalPages = Math.ceil(filteredConsoles.length / ITEMS_PER_PAGE);
   const paginatedConsoles = filteredConsoles.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   // --- SUB-COMPONENTS ---
 
   return (
-    <div className="w-full">
+    <div className="w-full min-h-screen bg-bg-primary text-text-primary pb-32">
+        {/* HEADER */}
+        <div className="relative pt-24 pb-12 px-6 md:px-12 border-b border-white/5 overflow-hidden">
+             {/* Background Effects */}
+             <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.05] pointer-events-none"></div>
 
-        {/* MAIN CONTENT CONTAINER */}
-        <div className="max-w-7xl mx-auto p-4">
-            {/* Title Section */}
-            <div className="mb-12">
-                <h2 className="text-4xl md:text-5xl font-black text-white leading-tight tracking-tighter mix-blend-difference mb-4">
-                    CONSOLE VAULT_
-                </h2>
-                <p className="font-mono text-gray-400 text-sm md:text-base tracking-wide border-l-2 border-accent pl-4">
-                    Browse and filter indexed handheld systems
-                </p>
-            </div>
-
-            {/* Mobile Filter Toggle */}
-            <div className="lg:hidden mb-4">
-                <Button onClick={() => setShowMobileFilters(!showMobileFilters)} variant="secondary" className="w-full">
-                    {showMobileFilters ? 'HIDE FILTERS' : 'ADVANCED FILTERS +'}
-                </Button>
-            </div>
-
-            {errorMsg && (
-                <div className="mb-8 p-4 border-2 border-red-500 bg-red-900/20 text-red-400 font-mono text-sm flex justify-between items-center animate-pulse">
-                    <span>CONNECTION ERROR: {errorMsg}</span>
-                    <Button variant="danger" onClick={() => window.location.reload()} className="text-xs py-1 px-3">
-                        RETRY SIGNAL
-                    </Button>
+             <div className="max-w-[1800px] mx-auto relative z-10">
+                <div className="flex flex-col items-start gap-4">
+                     <h1 className="text-4xl md:text-6xl font-pixel font-bold tracking-tighter text-white uppercase drop-shadow-lg leading-tight">
+                        Console <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">Vault</span><span className="text-violet-500 animate-pulse">_</span>
+                     </h1>
+                     <p className="text-lg md:text-xl text-zinc-400 max-w-2xl font-light font-mono">
+                        The complete archive of handheld gaming history. Filter by era, form factor, and technical specifications.
+                     </p>
                 </div>
-            )}
+             </div>
+        </div>
 
-            {loading ? <RetroLoader /> : (
-                <div className="flex flex-col lg:flex-row gap-8 animate-fadeIn">
+        {/* CONTROLS BAR */}
+        <div className="sticky top-0 z-50 bg-bg-primary/80 backdrop-blur-xl border-b border-white/10 px-6 md:px-12 py-4">
+             <div className="max-w-[1800px] mx-auto flex justify-between items-center">
+                 <div className="flex items-center gap-4">
+                     <button
+                        onClick={() => setShowFilters(!showFilters)}
+                        className={`md:hidden flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-wider border transition-all ${showFilters ? 'bg-white text-black border-white' : 'text-white border-white/20 hover:border-white/50'}`}
+                     >
+                        <SlidersHorizontal size={14} />
+                        {showFilters ? 'Hide Filters' : 'Filter Data'}
+                     </button>
 
-                    {/* SIDEBAR FILTERS */}
-                    <aside className={`
-                        lg:w-64 flex-shrink-0 bg-bg-primary border border-border-normal p-4 h-fit
-                        ${showMobileFilters ? 'block' : 'hidden lg:block'}
-                    `}>
-                        <div className="mb-6 pb-6 border-b border-border-normal">
-                            <h3 className="font-pixel text-sm text-primary mb-4">FABRICATOR</h3>
-                            <select
-                                className="w-full bg-black border border-gray-700 text-white font-mono text-xs p-2 focus:border-secondary outline-none"
-                                value={filters.manufacturer_id || ''}
-                                onChange={(e: ChangeEvent<HTMLSelectElement>) => setFilters({...filters, manufacturer_id: e.target.value || null})}
+                     <div className="hidden md:flex items-center gap-2 text-xs font-mono text-zinc-500">
+                        <span className="text-emerald-500">{filteredConsoles.length}</span> UNITS FOUND
+                     </div>
+                 </div>
+
+                 <div className="flex items-center gap-2 bg-black/40 p-1 rounded-lg border border-white/10">
+                     <button
+                        onClick={() => { setViewMode('swiss'); setPage(1); }}
+                        className={`p-2 rounded transition-colors ${viewMode === 'swiss' ? 'bg-white/10 text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
+                        title="Grid View"
+                     >
+                        <LayoutGrid size={16} />
+                     </button>
+                     <button
+                        onClick={() => { setViewMode('classic'); setPage(1); }}
+                        className={`p-2 rounded transition-colors ${viewMode === 'classic' ? 'bg-white/10 text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
+                        title="List View"
+                     >
+                        <List size={16} />
+                     </button>
+                 </div>
+             </div>
+        </div>
+
+        {/* EXPANDABLE FILTERS */}
+        <div className={`w-full bg-black/40 backdrop-blur-md border-y border-white/10 p-4 mb-8 transition-all duration-300 ${showFilters ? 'block' : 'hidden md:block'}`}>
+            <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between flex-wrap">
+
+                {/* Manufacturer */}
+              <div className="flex flex-col gap-2">
+                  <label className="text-xs font-mono font-bold uppercase text-white tracking-wider">Manufacturer</label>
+                    <select
+                        className="bg-transparent border-b border-white/20 text-white font-mono text-xs py-1 focus:border-violet-500 outline-none min-w-[150px]"
+                        value={filters.manufacturer_id || ''}
+                        onChange={(e: ChangeEvent<HTMLSelectElement>) => setFilters({...filters, manufacturer_id: e.target.value || null})}
+                    >
+                        <option value="">ALL ENTITIES</option>
+                        {manufacturers.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                    </select>
+                </div>
+
+                {/* Timeline */}
+              <div className="flex flex-col gap-2">
+                    <label className="text-xs font-mono font-bold uppercase text-white tracking-wider">Timeline</label>
+                    <div className="flex gap-2 items-center">
+                            <input
+                            type="number"
+                            className="bg-transparent border-b border-white/20 text-white font-mono text-xs py-1 w-16 text-center focus:border-violet-500 outline-none"
+                            value={filters.minYear}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setFilters({...filters, minYear: Number(e.target.value)})}
+                            />
+                            <span className="text-zinc-600">-</span>
+                            <input
+                            type="number"
+                            className="bg-transparent border-b border-white/20 text-white font-mono text-xs py-1 w-16 text-center focus:border-violet-500 outline-none"
+                            value={filters.maxYear}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setFilters({...filters, maxYear: Number(e.target.value)})}
+                            />
+                    </div>
+                </div>
+
+                {/* Form Factor Toggles */}
+              <div className="flex flex-col gap-2">
+                    <label className="text-xs font-mono font-bold uppercase text-white tracking-wider">Form Factor</label>
+                    <div className="flex gap-2">
+                        {['Horizontal', 'Vertical', 'Clamshell'].map(ff => (
+                            <button
+                                key={ff}
+                                onClick={() => toggleFilter('form_factors', ff)}
+                                className={`text-[10px] px-2 py-1 border transition-colors ${
+                                    filters.form_factors.includes(ff)
+                                    ? 'border-violet-500 text-violet-400 bg-violet-900/20'
+                                    : 'border-white/10 text-zinc-500 hover:border-white/30'
+                                }`}
                             >
-                                <option value="">ALL ENTITIES</option>
-                                {manufacturers.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-                            </select>
-                        </div>
+                                {ff.toUpperCase()}
+                            </button>
+                        ))}
+                    </div>
+                </div>
 
-                        <div className="mb-6 pb-6 border-b border-border-normal">
-                            <h3 className="font-pixel text-sm text-primary mb-4">TIMELINE</h3>
-                            <div className="flex gap-2 items-center">
-                                 <input
-                                    type="number"
-                                    className="bg-black border border-gray-700 text-white font-mono text-xs p-2 w-full text-center"
-                                    value={filters.minYear}
-                                    onChange={(e: ChangeEvent<HTMLInputElement>) => setFilters({...filters, minYear: Number(e.target.value)})}
-                                 />
-                                 <span className="text-gray-600">-</span>
-                                 <input
-                                    type="number"
-                                    className="bg-black border border-gray-700 text-white font-mono text-xs p-2 w-full text-center"
-                                    value={filters.maxYear}
-                                    onChange={(e: ChangeEvent<HTMLInputElement>) => setFilters({...filters, maxYear: Number(e.target.value)})}
-                                 />
-                            </div>
-                        </div>
+                {/* Screen Tech Toggles */}
+              <div className="flex flex-col gap-2">
+                    <label className="text-xs font-mono font-bold uppercase text-white tracking-wider">Screen Tech</label>
+                    <div className="flex gap-2">
+                        {['OLED', 'IPS'].map(pt => (
+                            <button
+                                key={pt}
+                                onClick={() => toggleFilter('panel_types', pt)}
+                                className={`text-[10px] px-2 py-1 border transition-colors ${
+                                    filters.panel_types.includes(pt)
+                                    ? 'border-emerald-500 text-emerald-400 bg-emerald-900/20'
+                                    : 'border-white/10 text-zinc-500 hover:border-white/30'
+                                }`}
+                            >
+                                {pt}
+                            </button>
+                        ))}
+                    </div>
+                </div>
 
-                        <div className="mb-6 pb-6 border-b border-border-normal">
-                            <h3 className="font-pixel text-sm text-primary mb-4">FORM FACTOR</h3>
-                            <CheckboxFilter
-                                label="HORIZONTAL"
-                                checked={filters.form_factors.includes('Horizontal')}
-                                onChange={() => toggleFilter('form_factors', 'Horizontal')}
-                            />
-                            <CheckboxFilter
-                                label="VERTICAL"
-                                checked={filters.form_factors.includes('Vertical')}
-                                onChange={() => toggleFilter('form_factors', 'Vertical')}
-                            />
-                             <CheckboxFilter
-                                label="CLAMSHELL"
-                                checked={filters.form_factors.includes('Clamshell')}
-                                onChange={() => toggleFilter('form_factors', 'Clamshell')}
-                            />
-                        </div>
+                {/* Reset */}
+                <button
+                    onClick={() => setFilters({
+                        minYear: 1980,
+                        maxYear: new Date().getFullYear(),
+                        generations: [],
+                        form_factors: [],
+                        panel_types: [],
+                        manufacturer_id: null
+                    })}
+                    className="text-[10px] font-mono text-zinc-500 hover:text-white underline decoration-zinc-700 hover:decoration-white underline-offset-4"
+                >
+                    RESET SIGNAL
+                </button>
+            </div>
+        </div>
 
-                        <div className="mb-6">
-                            <h3 className="font-pixel text-sm text-accent mb-4">SCREEN TECH</h3>
-                            <CheckboxFilter
-                                label="OLED"
-                                checked={filters.panel_types.includes('OLED')}
-                                onChange={() => toggleFilter('panel_types', 'OLED')}
-                            />
-                            <CheckboxFilter
-                                label="LCD / IPS"
-                                checked={filters.panel_types.includes('IPS')}
-                                onChange={() => toggleFilter('panel_types', 'IPS')}
-                            />
-                        </div>
-
-                        <button
-                            onClick={() => setFilters({
+        {/* MAIN GRID */}
+        <div className="px-6 md:px-12 py-8 max-w-[1800px] mx-auto min-h-[50vh]">
+            {loading ? <RetroLoader /> : (
+                <>
+                    {paginatedConsoles.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-32 border border-dashed border-white/10 rounded-xl bg-white/[0.02]">
+                            <Search className="w-12 h-12 text-zinc-700 mb-4" />
+                            <p className="font-mono text-zinc-500">NO SIGNAL DETECTED.</p>
+                            <button onClick={() => setFilters({
                                 minYear: 1980,
                                 maxYear: new Date().getFullYear(),
                                 generations: [],
                                 form_factors: [],
                                 panel_types: [],
                                 manufacturer_id: null
-                            })}
-                            className="w-full text-[10px] font-mono text-gray-500 hover:text-white border border-dashed border-gray-700 hover:border-white py-2"
-                        >
-                            RESET FILTERS
-                        </button>
-                    </aside>
-
-                    {/* MAIN GRID */}
-                    <div className="flex-1">
-                        {/* Status Bar */}
-                        <div className="bg-black/40 border-b border-border-normal p-2 mb-4 flex justify-between items-center text-[10px] font-mono text-gray-400">
-                            <span>FOUND: {filteredConsoles.length} UNITS</span>
-                            <span>PAGE {page} / {totalPages || 1}</span>
+                            })} className="mt-4 text-violet-400 hover:text-violet-300 text-xs font-mono uppercase underline">
+                                Reset Parameters
+                            </button>
                         </div>
+                    ) : (
+                        <div className={`grid gap-6 ${
+                            viewMode === 'swiss'
+                            ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
+                            : 'grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'
+                        }`}>
+                            {paginatedConsoles.map((console) => {
+                                const specs: any = console.specs || {};
+                                const releaseDisplay = formatReleaseDate(specs.release_date, specs.release_date_precision) || 'TBA';
 
-                        {paginatedConsoles.length === 0 ? (
-                            <div className="p-12 border-2 border-dashed border-gray-800 text-center font-mono text-gray-500">
-                                NO HARDWARE FOUND MATCHING PARAMETERS.
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
-                                {paginatedConsoles.map((console) => {
-                                    const specs: any = console.specs || {};
-                                    const releaseDisplay = formatReleaseDate(specs.release_date, specs.release_date_precision) || 'TBA';
-
+                                if (viewMode === 'swiss') {
+                                    // SWISS STYLE CARD
                                     return (
                                         <Link
                                             href={`/consoles/${console.slug}`}
                                             key={console.id}
-                                            className="group block bg-black border border-border-normal hover:border-secondary transition-all relative overflow-hidden"
+                                            className="group relative flex flex-col bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-violet-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-violet-500/10 rounded-xl overflow-hidden"
                                         >
-                                            <div className="aspect-video bg-gray-900/50 relative flex items-center justify-center p-4">
+                                            <div className="aspect-square p-6 flex items-center justify-center relative bg-gradient-to-b from-transparent to-black/20">
                                                  {console.image_url ? (
-                                                     <img src={console.image_url} alt={console.name} className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform" />
+                                                     <div className="relative w-full h-full transition-transform duration-500 group-hover:scale-110">
+                                                        <Image
+                                                            src={console.image_url}
+                                                            alt={console.name}
+                                                            fill
+                                                            className="object-contain drop-shadow-2xl"
+                                                            sizes="(max-width: 768px) 50vw, 20vw"
+                                                        />
+                                                     </div>
                                                  ) : (
-                                                     <span className="font-pixel text-gray-700 text-2xl">?</span>
+                                                     <div className="text-zinc-700 font-mono text-xs">NO VISUAL</div>
                                                  )}
 
-                                                 {/* Form Factor & Feature Badges */}
-                                                 <div className="absolute top-2 right-2 z-10 flex flex-col gap-1 items-end">
-                                                     {console.form_factor && (
-                                                         <div className={`bg-black/90 border px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase shadow-lg ${getFormFactorColor(console.form_factor)}`}>
-                                                             {console.form_factor}
-                                                         </div>
-                                                     )}
-                                                     {console.chassis_features && (
-                                                         <div className="bg-black/90 border border-secondary text-secondary px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase shadow-lg">
-                                                             {console.chassis_features}
-                                                         </div>
-                                                     )}
-                                                 </div>
+                                                 {/* Status Indicator */}
+                                                 <div className="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-emerald-500/50 group-hover:bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.2)] transition-colors"></div>
                                             </div>
-                                            <div className="p-4 border-t border-border-normal">
-                                                <h3 className="font-pixel text-xs text-white group-hover:text-secondary mb-1">{console.name}</h3>
-                                                <div className="flex justify-between items-center text-[10px] font-mono text-gray-500">
-                                                    <span>{console.manufacturer?.name}</span>
-                                                    <span>{releaseDisplay}</span>
+
+                                            <div className="p-4 border-t border-white/5 bg-white/[0.01]">
+                                                <div className="flex justify-between items-start mb-1">
+                                                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">{console.manufacturer?.name}</span>
+                                                    <span className="text-[10px] font-mono text-zinc-600">{releaseDisplay.split(' ')[0]}</span>
+                                                </div>
+                                                <h3 className="text-sm font-bold text-white leading-tight group-hover:text-violet-300 transition-colors truncate">
+                                                    {console.name}
+                                                </h3>
+                                            </div>
+                                        </Link>
+                                    );
+                                } else {
+                                    // CLASSIC STYLE CARD (Updated for full width grid)
+                                    return (
+                                        <Link
+                                            href={`/consoles/${console.slug}`}
+                                            key={console.id}
+                                            className="group block bg-black border border-zinc-800 hover:border-violet-500 transition-all relative overflow-hidden"
+                                        >
+                                            <div className="flex flex-row h-32">
+                                                <div className="w-1/3 bg-zinc-900/50 relative flex items-center justify-center p-2 border-r border-zinc-800">
+                                                     {console.image_url ? (
+                                                         <img src={console.image_url} alt={console.name} className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform" />
+                                                     ) : (
+                                                         <span className="font-pixel text-zinc-700 text-xl">?</span>
+                                                     )}
+                                                </div>
+                                                <div className="w-2/3 p-4 flex flex-col justify-between">
+                                                    <div>
+                                                        <div className="flex justify-between items-start">
+                                                            <span className="text-[10px] font-mono text-zinc-500 uppercase">{console.manufacturer?.name}</span>
+                                                            {console.form_factor && (
+                                                                <span className={`text-[9px] px-1 border ${getFormFactorColor(console.form_factor)} opacity-70`}>
+                                                                    {console.form_factor}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <h3 className="font-bold text-lg text-white group-hover:text-violet-400 mt-1">{console.name}</h3>
+                                                    </div>
+                                                    <div className="flex justify-between items-end border-t border-zinc-800 pt-2 mt-2">
+                                                        <span className="text-[10px] font-mono text-zinc-500">{releaseDisplay}</span>
+                                                        <span className="text-[10px] text-violet-500 group-hover:underline">VIEW DATA &gt;</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </Link>
                                     );
-                                })}
+                                }
+                            })}
+                        </div>
+                    )}
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className="flex justify-center items-center gap-4 py-16 border-t border-white/5 mt-16">
+                            <Button
+                                variant="secondary"
+                                onClick={() => setPage(p => Math.max(1, p - 1))}
+                                disabled={page === 1}
+                                className="scale-75 origin-right"
+                            >
+                                &lt; PREV
+                            </Button>
+
+                            <div className="font-mono text-xs text-zinc-400 px-4 py-2">
+                                PAGE {page} / {totalPages}
                             </div>
-                        )}
 
-                        {/* Pagination */}
-                        {totalPages > 1 && (
-                            <div className="flex justify-center items-center gap-4 py-8 border-t border-border-normal/30">
-                                <Button
-                                    variant="secondary"
-                                    onClick={() => setPage(p => Math.max(1, p - 1))}
-                                    disabled={page === 1}
-                                >
-                                    &lt; PREV
-                                </Button>
-
-                                <div className="font-pixel text-xs text-secondary bg-bg-secondary/20 px-4 py-2 rounded">
-                                    PAGE {page} OF {totalPages}
-                                </div>
-
-                                <Button
-                                    variant="secondary"
-                                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                                    disabled={page >= totalPages}
-                                >
-                                    NEXT &gt;
-                                </Button>
-                            </div>
-                        )}
-                    </div>
-                </div>
+                            <Button
+                                variant="secondary"
+                                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                disabled={page >= totalPages}
+                                className="scale-75 origin-left"
+                            >
+                                NEXT &gt;
+                            </Button>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     </div>
