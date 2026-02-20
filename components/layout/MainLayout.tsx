@@ -94,13 +94,6 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
     <div className="h-screen flex flex-col relative overflow-hidden bg-bg-primary">
       
       {/* BACKGROUND GRID */}
-      <div className="absolute inset-0 z-0 pointer-events-none" 
-           style={{ 
-             backgroundImage: 'linear-gradient(rgba(42, 42, 64, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(42, 42, 64, 0.5) 1px, transparent 1px)', 
-             backgroundSize: '40px 40px',
-             opacity: 0.2
-           }}>
-      </div>
 
       {/* MOBILE HEADER (z-40) */}
       <MobileTopBar 
