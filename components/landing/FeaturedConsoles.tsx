@@ -14,14 +14,14 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
     <div className="w-full mt-16 animate-fade-in" style={{ animationDelay: '0.2s' }}>
 
       {/* Title - Reduced margin */}
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-3 mb-4 justify-center md:justify-start">
         <div className="w-2 h-2 bg-color-primary"></div>
         <h2 className="text-xs font-mono tracking-widest text-text-secondary uppercase">Featured Consoles</h2>
       </div>
 
       {/* Swiss Grid Layout - Stripped Down "Floating" */}
-      {/* Explicitly left-aligned (mr-auto) and constrained width */}
-      <div className="w-full md:w-[60%] mr-auto">
+      {/* Explicitly center-aligned (mx-auto) and constrained width */}
+      <div className="w-full md:w-[60%] mx-auto">
 
         {/* The Grid of Cards - Reduced gap to fit "shrink" request */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
