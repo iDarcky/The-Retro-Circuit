@@ -118,20 +118,16 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
   return (
     <div className="w-full min-h-screen bg-bg-primary text-text-primary pb-32">
         {/* HEADER */}
-        <div className="relative pt-32 pb-16 px-6 md:px-12 border-b border-white/5 overflow-hidden">
+        <div className="relative pt-32 pb-12 px-6 md:px-12 border-b border-white/5 overflow-hidden">
              {/* Background Effects */}
              <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.05] pointer-events-none"></div>
 
              <div className="max-w-[1800px] mx-auto relative z-10">
                 <div className="flex flex-col items-start gap-4">
-                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs font-mono uppercase tracking-widest text-zinc-400">
-                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
-                        Database Online
-                     </div>
-                     <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-white uppercase drop-shadow-lg">
+                     <h1 className="text-4xl md:text-6xl font-pixel font-bold tracking-tighter text-white uppercase drop-shadow-lg leading-tight">
                         Console <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">Vault</span>
                      </h1>
-                     <p className="text-xl text-zinc-400 max-w-2xl font-light">
+                     <p className="text-lg md:text-xl text-zinc-400 max-w-2xl font-light font-mono">
                         The complete archive of handheld gaming history. Filter by era, form factor, and technical specifications.
                      </p>
                 </div>
@@ -179,8 +175,8 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
             <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between flex-wrap">
 
                 {/* Manufacturer */}
-                <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-mono uppercase text-zinc-500">Fabricator</label>
+              <div className="flex flex-col gap-2">
+                  <label className="text-xs font-mono font-bold uppercase text-white tracking-wider">Manufacturer</label>
                     <select
                         className="bg-transparent border-b border-white/20 text-white font-mono text-xs py-1 focus:border-violet-500 outline-none min-w-[150px]"
                         value={filters.manufacturer_id || ''}
@@ -192,8 +188,8 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                 </div>
 
                 {/* Timeline */}
-                <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-mono uppercase text-zinc-500">Timeline</label>
+              <div className="flex flex-col gap-2">
+                    <label className="text-xs font-mono font-bold uppercase text-white tracking-wider">Timeline</label>
                     <div className="flex gap-2 items-center">
                             <input
                             type="number"
@@ -212,8 +208,8 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                 </div>
 
                 {/* Form Factor Toggles */}
-                <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-mono uppercase text-zinc-500">Form Factor</label>
+              <div className="flex flex-col gap-2">
+                    <label className="text-xs font-mono font-bold uppercase text-white tracking-wider">Form Factor</label>
                     <div className="flex gap-2">
                         {['Horizontal', 'Vertical', 'Clamshell'].map(ff => (
                             <button
@@ -232,8 +228,8 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                 </div>
 
                 {/* Screen Tech Toggles */}
-                <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-mono uppercase text-zinc-500">Screen Tech</label>
+              <div className="flex flex-col gap-2">
+                    <label className="text-xs font-mono font-bold uppercase text-white tracking-wider">Screen Tech</label>
                     <div className="flex gap-2">
                         {['OLED', 'IPS'].map(pt => (
                             <button
