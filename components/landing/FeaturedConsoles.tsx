@@ -21,7 +21,7 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
 
       {/* Swiss Grid Layout - Stripped Down "Floating" */}
       {/* Removed container background and border effects per feedback */}
-      <div className="w-full">
+      <div className="w-full md:w-[60%]">
 
         {/* The Grid of Cards - Reduced gap to fit "shrink" request */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
