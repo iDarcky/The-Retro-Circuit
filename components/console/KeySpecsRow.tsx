@@ -2,7 +2,6 @@
 'use client';
 
 import { ConsoleDetails, ConsoleVariant } from '../../lib/types';
-import { getConsoleImage } from '../../lib/utils';
 
 export const KeySpecsRow = ({
     console: consoleData,
