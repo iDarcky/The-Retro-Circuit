@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { getVariantById, getManufacturerById, getConsoleById, fetchConsoleList, fetchRoadmapItems, deleteRoadmapItem } from '../../lib/api';
+import { getVariantById, getManufacturerById, getConsoleById, fetchConsoleList, fetchRoadmapItems, deleteRoadmapItem, updateRoadmapItem } from '../../lib/api';
 import { Manufacturer, ConsoleVariant, ConsoleDetails, RoadmapFeature } from '../../lib/types';
 import { ManufacturerForm } from '../../components/admin/ManufacturerForm';
 import { ConsoleForm } from '../../components/admin/ConsoleForm';
@@ -143,6 +143,21 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
         clearEditMode();
     };
 
+    const handleFinishItem = async (item: RoadmapFeature) => {
+        if (!confirm(`Mark "${item.title}" as completed?`)) return;
+
+        try {
+            await updateRoadmapItem(item.id, {
+                status: 'completed',
+                target_date: new Date().toISOString()
+            });
+            setMessage(`MISSION COMPLETED: ${item.title}`);
+            loadRoadmap();
+        } catch (e: any) {
+            setErrorMsg(e.message || "Failed to complete item");
+        }
+    };
+
     if (!isAdmin) return <div className="p-8 text-center font-mono text-accent border-2 border-accent m-8">ACCESS DENIED. ADMIN CLEARANCE REQUIRED.</div>;
 
     const tabs: AdminTab[] = ['CONSOLE', 'VARIANTS', 'FABRICATOR', 'ROADMAP'];
@@ -206,7 +221,7 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
                         {tab === 'VARIANTS' && editingVariant ? 'EDIT VARIANT' :
                          tab === 'FABRICATOR' && editingManufacturer ? 'EDIT FABRICATOR' :
                          tab === 'CONSOLE' && editingConsoleFolder ? 'EDIT CONSOLE' :
-                         tab === 'ROADMAP' && editingRoadmapItem ? 'EDIT ROADMAP ITEM' :
+                         tab === 'ROADMAP' ? 'SYSTEM ROADMAP' :
                          tab}
                     </button>
                 ))}
@@ -289,16 +304,46 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
                     )}
 
                     {activeTab === 'ROADMAP' && (
-                        <div>
-                            <h2 className="font-pixel text-xl text-white mb-6">
-                                {editingRoadmapItem ? `EDITING: ${editingRoadmapItem.title}` : 'SYSTEM ROADMAP'}
-                            </h2>
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                            {/* List of existing items */}
-                            {!editingRoadmapItem && (
-                                <div className="mb-8 grid gap-2">
+                            {/* Left Column: Form (Create or Edit) */}
+                            <div className="lg:col-span-1 border-r border-white/10 pr-8">
+                                <h2 className="font-pixel text-lg text-white mb-6">
+                                    {editingRoadmapItem ? `EDITING: ${editingRoadmapItem.title}` : 'ADD NEW MISSION'}
+                                </h2>
+
+                                <RoadmapForm
+                                    initialData={editingRoadmapItem}
+                                    onSuccess={(msg) => {
+                                        setMessage(msg);
+                                        loadRoadmap();
+                                        setEditingRoadmapItem(null);
+                                    }}
+                                    onError={setErrorMsg}
+                                />
+
+                                {editingRoadmapItem && (
+                                    <div className="mt-4">
+                                        <Button variant="secondary" onClick={() => setEditingRoadmapItem(null)} className="w-full text-xs">
+                                            CANCEL EDITING
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Right Column: List */}
+                            <div className="lg:col-span-2">
+                                <h2 className="font-pixel text-lg text-white mb-6">
+                                    MISSION LOG // <span className="text-secondary">{roadmapItems.length}</span>
+                                </h2>
+
+                                <div className="grid gap-2 max-h-[600px] overflow-y-auto pr-2">
                                     {roadmapItems.map(item => (
-                                        <div key={item.id} className="flex items-center justify-between bg-white/5 p-3 border border-white/10 hover:border-secondary transition-colors group">
+                                        <div key={item.id} className={`flex items-center justify-between p-3 border transition-colors group ${
+                                            editingRoadmapItem?.id === item.id
+                                            ? 'bg-secondary/10 border-secondary'
+                                            : 'bg-white/5 border-white/10 hover:border-secondary'
+                                        }`}>
                                             <div className="flex items-center gap-3">
                                                 <span className={`text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider min-w-[80px] text-center ${
                                                     item.status === 'completed' ? 'bg-emerald-900/50 text-emerald-400 border border-emerald-900' :
@@ -307,12 +352,20 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
                                                 }`}>
                                                     {item.status}
                                                 </span>
-                                                <span className="font-mono text-sm text-white font-bold">{item.title}</span>
-                                                <span className="text-[10px] text-gray-500 uppercase border border-gray-800 px-1.5 py-0.5 rounded">
-                                                    {item.category}
-                                                </span>
+                                                <div>
+                                                    <div className="font-mono text-sm text-white font-bold">{item.title}</div>
+                                                    <div className="text-[10px] text-gray-500 uppercase flex gap-2">
+                                                        <span>{item.category}</span>
+                                                        {item.target_date && <span>// DUE: {new Date(item.target_date).toLocaleDateString()}</span>}
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                {item.status !== 'completed' && (
+                                                    <button onClick={() => handleFinishItem(item)} className="text-[10px] font-mono border border-emerald-900 bg-emerald-900/20 text-emerald-400 hover:bg-emerald-900/40 px-2 py-1 uppercase tracking-wider">
+                                                        Finish
+                                                    </button>
+                                                )}
                                                 <button onClick={() => setEditingRoadmapItem(item)} className="text-[10px] font-mono border border-blue-900 bg-blue-900/20 text-blue-400 hover:bg-blue-900/40 px-2 py-1 uppercase tracking-wider">
                                                     Edit
                                                 </button>
@@ -333,27 +386,7 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
                                         </div>
                                     )}
                                 </div>
-                            )}
-
-                            <RoadmapForm
-                                initialData={editingRoadmapItem}
-                                onSuccess={(msg) => {
-                                    setMessage(msg);
-                                    loadRoadmap();
-                                    if (editingRoadmapItem) {
-                                        setEditingRoadmapItem(null);
-                                    }
-                                }}
-                                onError={setErrorMsg}
-                            />
-
-                            {editingRoadmapItem && (
-                                <div className="mt-4 pt-4 border-t border-dashed border-gray-700">
-                                    <Button variant="secondary" onClick={() => setEditingRoadmapItem(null)} className="text-xs">
-                                        CANCEL EDITING
-                                    </Button>
-                                </div>
-                            )}
+                            </div>
                         </div>
                     )}
 
