@@ -26,7 +26,7 @@ export default function AboutPage() {
            </div>
 
            {/* Title */}
-           <h1 className="text-5xl md:text-6xl lg:text-7xl font-pixel text-white leading-none tracking-tighter mb-8">
+           <h1 className="text-4xl md:text-6xl font-pixel text-white leading-none tracking-tighter mb-8">
               THE RETRO <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-400">CIRCUIT</span><span className="text-orange-500 animate-pulse">_</span>
            </h1>

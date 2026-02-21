@@ -23,9 +23,8 @@ export default function CreditsPage() {
            </div>
 
            {/* Title */}
-           <h1 className="text-5xl md:text-6xl lg:text-7xl font-pixel text-white leading-none tracking-tighter mb-8">
-              CREDITS & <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-purple-400">INSPIRATION</span><span className="text-violet-500 animate-pulse">_</span>
+           <h1 className="text-4xl md:text-6xl font-pixel text-white leading-none tracking-tighter mb-8">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-purple-400">CREDITS</span><span className="text-violet-500 animate-pulse">_</span>
            </h1>
 
         </div>

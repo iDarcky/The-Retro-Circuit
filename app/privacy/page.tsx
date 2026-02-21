@@ -23,7 +23,7 @@ export default function PrivacyPage() {
            </div>
 
            {/* Title */}
-           <h1 className="text-5xl md:text-6xl lg:text-7xl font-pixel text-white leading-none tracking-tighter mb-8">
+           <h1 className="text-4xl md:text-6xl font-pixel text-white leading-none tracking-tighter mb-8">
               PRIVACY <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-cyan-400">PROTOCOL</span><span className="text-sky-500 animate-pulse">_</span>
            </h1>
