@@ -28,7 +28,7 @@ const RoadmapTimeline: FC<RoadmapTimelineProps> = ({ phases }) => {
 
                    {/* Phase Header */}
                    <div className={`flex flex-col ${isEven ? 'items-start' : 'items-start md:items-end'}`}>
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-violet-400 mb-1">{phase.timeline}</span>
+                      {/* Timeline label removed per request */}
                       <h2 className="text-2xl md:text-3xl font-bold uppercase tracking-tight text-white mb-2">{phase.title}</h2>
                       <p className="text-sm text-text-secondary font-light max-w-sm leading-relaxed">{phase.subtitle}</p>
                    </div>
