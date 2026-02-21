@@ -369,8 +369,11 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                                 return (
                                     <Fragment key={console.id}>
                                         {renderAd && (
-                                            <div className="col-span-1">
-                                                <AdWrapper type="grid" className={viewMode === 'classic' ? "h-32 min-h-0" : ""} />
+                                            <div className={`col-span-1 ${viewMode === 'classic' ? 'row-span-2' : ''}`}>
+                                                <AdWrapper
+                                                    type="grid"
+                                                    className={viewMode === 'classic' ? "h-[280px] min-h-0" : ""} // 280px = (128px card * 2) + 24px gap
+                                                />
                                             </div>
                                         )}
                                         {content}
