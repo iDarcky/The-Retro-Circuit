@@ -1,5 +1,4 @@
 import { siteConfig } from '../../config/site';
-import Link from 'next/link';
 
 export const metadata = {
   title: 'Privacy Protocol | The Retro Circuit',
