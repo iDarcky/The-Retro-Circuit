@@ -2,10 +2,13 @@
 
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useConsent } from "./ConsentContext";
 
 export const CookieBanner: React.FC = () => {
+  const pathname = usePathname();
   const { isOpen, accept, decline } = useConsent();
+  const isPrivacyPage = pathname === "/privacy";
 
   if (!isOpen) {
     return null;
@@ -13,8 +16,10 @@ export const CookieBanner: React.FC = () => {
 
   return (
     <>
-      {/* Backdrop Blur Overlay */}
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300" />
+      {/* Backdrop Blur Overlay - Hidden on Privacy Page for readability */}
+      {!isPrivacyPage && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300" />
+      )}
 
       {/* Banner */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-bg-primary border-t border-white/10 p-4 md:p-6 shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
