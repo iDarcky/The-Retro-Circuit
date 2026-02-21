@@ -13,6 +13,7 @@ import { SpecField } from '../ui/specs/SpecField';
 import { TechBadge } from '../ui/specs/TechBadge';
 import { formatInputEnum } from '../../lib/utils/formatters';
 import { getConsoleImage } from '../../lib/utils';
+import AdWrapper from '../ads/AdWrapper';
 
 interface ConsoleDetailViewProps {
   consoleData: ConsoleDetails;
@@ -191,6 +192,9 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                             <div id="buy">
                                 <BuySection />
                             </div>
+
+                            {/* ADVERTISEMENT (Sidebar Skyscraper) - Hidden on Mobile */}
+                            <AdWrapper type="sidebar" className="hidden lg:flex" />
                         </div>
                     </div>
 
@@ -211,6 +215,11 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                         {/* 3. EMULATION MATRIX */}
                         <div id="playability">
                             <PlayabilityMatrix profile={mergedSpecs.emulation_profile || (mergedSpecs as any).emulation_profiles} />
+                        </div>
+
+                        {/* ADVERTISEMENT (Mobile Content) - Hidden on Desktop */}
+                        <div className="my-8 lg:hidden">
+                            <AdWrapper type="mobile-content" />
                         </div>
 
                         {/* 4. TECHNICAL REFERENCE (Collapsible Grid) */}

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState, type ChangeEvent, type FC } from 'react';
+import { useEffect, useState, Fragment, type ChangeEvent, type FC } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ConsoleDetails, ConsoleFilterState, Manufacturer } from '../../lib/types';
@@ -9,6 +9,7 @@ import RetroLoader from '../ui/RetroLoader';
 import Button from '../ui/Button';
 import { formatReleaseDate } from '../../lib/utils/date-formatter';
 import { LayoutGrid, List, Search, SlidersHorizontal } from 'lucide-react';
+import AdWrapper from '../ads/AdWrapper';
 
 interface ConsoleVaultClientProps {
     initialManufacturers: Manufacturer[];
@@ -289,19 +290,19 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                             ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
                             : 'grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'
                         }`}>
-                            {paginatedConsoles.map((console) => {
+                            {paginatedConsoles.map((console, index) => {
                                 const specs: any = console.specs || {};
                                 const releaseDisplay = formatReleaseDate(specs.release_date, specs.release_date_precision) || 'TBA';
 
-                                if (viewMode === 'swiss') {
+                                const renderAd = index === 7; // Insert ad at position 8
+
+                                const content = viewMode === 'swiss' ? (
                                     // SWISS STYLE CARD
-                                    return (
-                                        <Link
-                                            href={`/consoles/${console.slug}`}
-                                            key={console.id}
-                                            className="group relative flex flex-col bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-violet-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-violet-500/10 rounded-xl overflow-hidden"
-                                        >
-                                            <div className="aspect-square p-6 flex items-center justify-center relative bg-gradient-to-b from-transparent to-black/20">
+                                    <Link
+                                        href={`/consoles/${console.slug}`}
+                                        className="group relative flex flex-col bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-violet-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-violet-500/10 rounded-xl overflow-hidden h-full"
+                                    >
+                                        <div className="aspect-square p-6 flex items-center justify-center relative bg-gradient-to-b from-transparent to-black/20">
                                                  {console.image_url ? (
                                                      <div className="relative w-full h-full transition-transform duration-500 group-hover:scale-110">
                                                         <Image
@@ -318,56 +319,63 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
 
                                                  {/* Status Indicator */}
                                                  <div className="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-emerald-500/50 group-hover:bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.2)] transition-colors"></div>
-                                            </div>
+                                        </div>
 
-                                            <div className="p-4 border-t border-white/5 bg-white/[0.01]">
-                                                <div className="flex justify-between items-start mb-1">
-                                                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">{console.manufacturer?.name}</span>
-                                                    <span className="text-[10px] font-mono text-zinc-600">{releaseDisplay.split(' ')[0]}</span>
-                                                </div>
-                                                <h3 className="text-sm font-bold text-white leading-tight group-hover:text-violet-300 transition-colors truncate">
-                                                    {console.name}
-                                                </h3>
+                                        <div className="p-4 border-t border-white/5 bg-white/[0.01]">
+                                            <div className="flex justify-between items-start mb-1">
+                                                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">{console.manufacturer?.name}</span>
+                                                <span className="text-[10px] font-mono text-zinc-600">{releaseDisplay.split(' ')[0]}</span>
                                             </div>
-                                        </Link>
-                                    );
-                                } else {
-                                    // CLASSIC STYLE CARD (Updated for full width grid)
-                                    return (
-                                        <Link
-                                            href={`/consoles/${console.slug}`}
-                                            key={console.id}
-                                            className="group block bg-black border border-zinc-800 hover:border-violet-500 transition-all relative overflow-hidden"
-                                        >
-                                            <div className="flex flex-row h-32">
-                                                <div className="w-1/3 bg-zinc-900/50 relative flex items-center justify-center p-2 border-r border-zinc-800">
+                                            <h3 className="text-sm font-bold text-white leading-tight group-hover:text-violet-300 transition-colors truncate">
+                                                {console.name}
+                                            </h3>
+                                        </div>
+                                    </Link>
+                                ) : (
+                                    // CLASSIC STYLE CARD
+                                    <Link
+                                        href={`/consoles/${console.slug}`}
+                                        className="group block bg-black border border-zinc-800 hover:border-violet-500 transition-all relative overflow-hidden h-full"
+                                    >
+                                        <div className="flex flex-row h-32">
+                                            <div className="w-1/3 bg-zinc-900/50 relative flex items-center justify-center p-2 border-r border-zinc-800">
                                                      {console.image_url ? (
                                                          <img src={console.image_url} alt={console.name} className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform" />
-                                                     ) : (
-                                                         <span className="font-pixel text-zinc-700 text-xl">?</span>
-                                                     )}
+                                                 ) : (
+                                                     <span className="font-pixel text-zinc-700 text-xl">?</span>
+                                                 )}
+                                            </div>
+                                            <div className="w-2/3 p-4 flex flex-col justify-between">
+                                                <div>
+                                                    <div className="flex justify-between items-start">
+                                                        <span className="text-[10px] font-mono text-zinc-500 uppercase">{console.manufacturer?.name}</span>
+                                                        {console.form_factor && (
+                                                            <span className={`text-[9px] px-1 border ${getFormFactorColor(console.form_factor)} opacity-70`}>
+                                                                {console.form_factor}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <h3 className="font-bold text-lg text-white group-hover:text-violet-400 mt-1">{console.name}</h3>
                                                 </div>
-                                                <div className="w-2/3 p-4 flex flex-col justify-between">
-                                                    <div>
-                                                        <div className="flex justify-between items-start">
-                                                            <span className="text-[10px] font-mono text-zinc-500 uppercase">{console.manufacturer?.name}</span>
-                                                            {console.form_factor && (
-                                                                <span className={`text-[9px] px-1 border ${getFormFactorColor(console.form_factor)} opacity-70`}>
-                                                                    {console.form_factor}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                        <h3 className="font-bold text-lg text-white group-hover:text-violet-400 mt-1">{console.name}</h3>
-                                                    </div>
-                                                    <div className="flex justify-between items-end border-t border-zinc-800 pt-2 mt-2">
-                                                        <span className="text-[10px] font-mono text-zinc-500">{releaseDisplay}</span>
-                                                        <span className="text-[10px] text-violet-500 group-hover:underline">VIEW DATA &gt;</span>
-                                                    </div>
+                                                <div className="flex justify-between items-end border-t border-zinc-800 pt-2 mt-2">
+                                                    <span className="text-[10px] font-mono text-zinc-500">{releaseDisplay}</span>
+                                                    <span className="text-[10px] text-violet-500 group-hover:underline">VIEW DATA &gt;</span>
                                                 </div>
                                             </div>
-                                        </Link>
-                                    );
-                                }
+                                        </div>
+                                    </Link>
+                                );
+
+                                return (
+                                    <Fragment key={console.id}>
+                                        {renderAd && (
+                                            <div className="col-span-1">
+                                                <AdWrapper type="grid" className={viewMode === 'classic' ? "h-32 min-h-0" : ""} />
+                                            </div>
+                                        )}
+                                        {content}
+                                    </Fragment>
+                                );
                             })}
                         </div>
                     )}
