@@ -7,105 +7,90 @@ export const metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="w-full min-h-screen bg-bg-primary text-text-primary font-sans pt-24 pb-20">
-      <div className="max-w-4xl mx-auto px-6">
+    <div className="w-full">
 
-        {/* Header */}
-        <header className="mb-20 border-b border-white/10 pb-8">
-          <div className="flex flex-col gap-4">
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-white uppercase">
-              Privacy<br/>Protocol
-            </h1>
-            <div className="flex items-center gap-4 text-xs font-mono text-gray-500 uppercase tracking-widest mt-2">
-              <span>Last Updated: {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
-              <span>//</span>
-              <span>v{siteConfig.version}</span>
-            </div>
+      <div className="max-w-3xl mx-auto p-4 py-12 md:py-20 animate-fadeIn">
+
+        {/* HEADER LOG */}
+        <div className="mb-16 border-b-2 border-dashed border-gray-700 pb-8 relative">
+          <h1 className="text-4xl md:text-6xl font-pixel text-white mb-4 drop-shadow-[4px_4px_0_rgba(255,0,255,0.5)]">
+            PRIVACY <br />
+            <span className="text-secondary">PROTOCOL //</span>
+          </h1>
+          <div className="font-mono text-xs md:text-sm text-primary flex gap-4">
+              <span>FIRMWARE: {siteConfig.version}</span>
+              <span>{'//'}</span>
+              <span>EST: {siteConfig.est}</span>
+              <span>{'//'}</span>
+              <span className="animate-pulse">STATUS: ACTIVE</span>
           </div>
-        </header>
-
-        {/* Content Grid */}
-        <div className="space-y-16">
-
-          {/* Section 1: Overview */}
-          <section className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8">
-            <h2 className="text-sm font-mono text-gray-500 uppercase tracking-widest pt-1">
-              01 // Overview
-            </h2>
-            <div className="space-y-6 text-gray-300 leading-relaxed">
-              <p>
-                At The Retro Circuit, we believe in transparency and data minimalism. We only collect data that is strictly necessary for the operation of our service or to improve the user experience, and only with your explicit consent.
-              </p>
-              <p>
-                This policy outlines our practices regarding data collection, storage, and your rights as a user. By using our services, you agree to the collection and use of information in accordance with this policy.
-              </p>
-            </div>
-          </section>
-
-          {/* Section 2: Cookies & Analytics */}
-          <section className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8">
-            <h2 className="text-sm font-mono text-gray-500 uppercase tracking-widest pt-1">
-              02 // Cookies & Analytics
-            </h2>
-            <div className="space-y-6 text-gray-300 leading-relaxed">
-              <p>
-                We use <strong className="text-white">Vercel Analytics</strong> to understand how users interact with our website. This helps us identify performance bottlenecks and improve content relevance.
-              </p>
-              <div className="bg-white/5 border border-white/10 p-6 rounded-sm">
-                <h3 className="text-white font-bold mb-2 uppercase text-sm tracking-wide">Strict Consent Policy</h3>
-                <p className="text-sm text-gray-400 mb-4">
-                  By default, all non-essential cookies and analytics scripts are <strong className="text-white">blocked</strong>. We do not track your activity until you explicitly click &quot;Accept&quot; on our cookie banner.
-                </p>
-                <p className="text-sm text-gray-400">
-                  You have the right to withdraw your consent at any time.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          {/* Section 3: Data Storage */}
-          <section className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8">
-            <h2 className="text-sm font-mono text-gray-500 uppercase tracking-widest pt-1">
-              03 // Data Storage
-            </h2>
-            <div className="space-y-6 text-gray-300 leading-relaxed">
-              <p>
-                We utilize <strong className="text-white">Supabase</strong> as our primary database provider. All data is encrypted at rest and in transit. We do not sell, trade, or otherwise transfer your personally identifiable information to outside parties.
-              </p>
-            </div>
-          </section>
-
-          {/* Section 4: Your Rights */}
-          <section className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8">
-            <h2 className="text-sm font-mono text-gray-500 uppercase tracking-widest pt-1">
-              04 // Your Rights
-            </h2>
-            <div className="space-y-6 text-gray-300 leading-relaxed">
-              <p>
-                Under GDPR and other privacy regulations, you have the right to access, rectify, or erase your personal data. You also have the right to withdraw consent for data processing.
-              </p>
-
-              <div className="space-y-4">
-                <h3 className="text-white font-bold uppercase text-sm tracking-wide">Managing Consent</h3>
-                <p>
-                  You can reset your cookie preferences at any time by clicking the <strong className="text-white">Cookie Settings</strong> link located in the footer of every page. This will re-open the consent banner, allowing you to opt-out of analytics.
-                </p>
-              </div>
-
-              <div className="space-y-4 pt-4">
-                <h3 className="text-white font-bold uppercase text-sm tracking-wide">Contact Us</h3>
-                <p>
-                  If you have any questions about this Privacy Policy, please contact us at:
-                  <br />
-                  <a href="mailto:contact@theretrocircuit.com" className="text-white hover:text-violet-400 transition-colors border-b border-white/20 pb-0.5 hover:border-violet-400">
-                    contact@theretrocircuit.com
-                  </a>
-                </p>
-              </div>
-            </div>
-          </section>
-
         </div>
+
+        {/* SECTION 1: DATA COLLECTION & STORAGE */}
+      <section className="mb-16 relative">
+        <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-accent via-purple-500 to-transparent"></div>
+        <h2 className="font-pixel text-xl text-white mb-6 flex items-center gap-3">
+            <span className="text-accent">[ 01 ]</span>
+            DATA COLLECTION & STORAGE
+        </h2>
+        <div className="pl-6">
+            <p className="font-mono text-lg text-gray-300 leading-relaxed mb-6">
+                We utilize <span className="text-secondary">Supabase</span> as our primary data storage solution. All data is handled with strict security protocols.
+            </p>
+            <p className="font-mono text-lg text-white leading-relaxed">
+                Your data resides in secure, encrypted environments. We prioritize data integrity and security above all else.
+            </p>
+        </div>
+      </section>
+
+      {/* SECTION 2: ANALYTICS */}
+      <section className="mb-16">
+        <h2 className="font-pixel text-xl text-white mb-6 flex items-center gap-3">
+            <span className="text-primary">[ 02 ]</span>
+            ANALYTICS
+        </h2>
+
+        <div className="bg-black border border-border-normal p-6 md:p-8 relative overflow-hidden">
+             {/* Decoration */}
+            <div className="absolute top-0 right-0 p-2 opacity-20">
+                <svg className="w-16 h-16 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+            </div>
+
+            <div className="pl-6 relative z-10">
+                <p className="font-mono text-lg text-gray-300 leading-relaxed mb-6">
+                    We employ <span className="text-secondary">Vercel Analytics</span> for anonymous usage tracking. This helps us understand system performance and user interaction patterns.
+                </p>
+                <p className="font-mono text-lg text-white leading-relaxed">
+                   No personally identifiable information (PII) is collected through these analytics. We track signals, not individuals.
+                </p>
+            </div>
+        </div>
+      </section>
+
+      {/* SECTION 3: DATA USAGE */}
+      <section className="mb-16">
+        <h2 className="font-pixel text-xl text-white mb-6 flex items-center gap-3">
+            <span className="text-gray-500">[ 03 ]</span>
+            DATA USAGE
+        </h2>
+
+        <div className="flex flex-col md:flex-row gap-8 items-center md:items-start bg-bg-primary/50 border border-dashed border-gray-700 p-8">
+            <div className="w-24 h-24 bg-bg-secondary flex items-center justify-center border-2 border-white/20 shrink-0 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                <span className="font-pixel text-3xl text-gray-500">SEC</span>
+            </div>
+            <div>
+                <div className="mb-2">
+                    <span className="font-pixel text-lg text-white">USER PRIVACY</span>
+                    <span className="mx-2 text-gray-600">{'//'}</span>
+                    <span className="font-mono text-xs text-accent border border-accent px-2 py-0.5">PRIORITY_HIGH</span>
+                </div>
+                <p className="font-mono text-gray-400 leading-relaxed text-sm mb-4">
+                    We respect your privacy. We do not sell, trade, or otherwise transfer your personal data to outside parties. Your trust is the core of our operation.
+                </p>
+            </div>
+        </div>
+      </section>
+
       </div>
     </div>
   );
