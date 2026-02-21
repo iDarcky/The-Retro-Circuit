@@ -1,13 +1,11 @@
 import { ReactNode } from "react";
 import type { Metadata } from "next";
 import { Press_Start_2P, JetBrains_Mono, Share_Tech_Mono, Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import "../styles/globals.css";
 import ClientShell from "../components/layout/ClientShell";
 import AuthSync from "../components/AuthSync";
 import Footer from "../components/layout/Footer";
-import { ConsentProvider } from "../components/privacy/ConsentContext";
-import { CookieBanner } from "../components/privacy/CookieBanner";
-import { AnalyticsWrapper } from "../components/privacy/AnalyticsWrapper";
 import { siteConfig } from "../config/site";
 
 // Load fonts via Next.js to prevent Layout Shift
@@ -118,21 +116,17 @@ export default function RootLayout({
         />
 
         {/* Auth Synchronization */}
-        <ConsentProvider>
-          <AuthSync />
+        <AuthSync />
 
-          {/* Main Application Shell */}
-          <ClientShell>
-              {/* Flex wrapper to ensure footer sticks to bottom */}
-              <div className="flex-1 w-full flex flex-col">
-                {children}
-              </div>
-              <Footer />
-          </ClientShell>
-
-          <CookieBanner />
-          <AnalyticsWrapper />
-        </ConsentProvider>
+        {/* Main Application Shell */}
+        <ClientShell>
+            {/* Flex wrapper to ensure footer sticks to bottom */}
+            <div className="flex-1 w-full flex flex-col">
+              {children}
+            </div>
+            <Footer />
+        </ClientShell>
+        <Analytics />
       </body>
     </html>
   );
