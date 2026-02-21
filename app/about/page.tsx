@@ -1,5 +1,5 @@
 import { siteConfig } from '../../config/site';
-import { ArrowRight, Mail, Linkedin, Database, Layout, Shield, Globe, Monitor, Code } from 'lucide-react';
+import { ArrowRight, Mail, Linkedin, Database, Layout, Globe, Monitor, Code } from 'lucide-react';
 import Link from 'next/link';
 
 export const metadata = {
@@ -12,17 +12,24 @@ export default function AboutPage() {
     <div className="bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-orange-500/30 selection:text-white pb-24">
       
       {/* 1. HERO HEADER */}
-      <header className="px-6 md:px-12 pt-24 pb-16 border-b border-white/5 relative overflow-hidden">
-        <div className="max-w-[1800px] mx-auto w-full">
+      <header className="px-6 md:px-12 pt-12 md:pt-24 pb-8 md:pb-16 border-b border-white/5 relative overflow-hidden">
+
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.05] pointer-events-none"></div>
+        {/* Orange Radial Gradient */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-900/20 blur-[100px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/2"></div>
+
+
+        <div className="max-w-[1800px] mx-auto w-full relative z-10">
 
            {/* Metadata Row */}
-           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-900/30 bg-emerald-950/10 text-xs font-mono uppercase tracking-widest text-emerald-400 mb-8 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(16,185,129,0.1)]">
-               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-900/30 bg-emerald-950/10 text-[9px] md:text-xs font-mono uppercase tracking-widest text-emerald-400 mb-8 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(16,185,129,0.1)]">
+               <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
                System Online // {siteConfig.version} // EST: {siteConfig.est}
            </div>
 
            {/* Title */}
-           <h1 className="text-4xl md:text-6xl lg:text-7xl font-pixel text-white leading-none tracking-tighter mb-8">
+           <h1 className="text-5xl md:text-6xl lg:text-7xl font-pixel text-white leading-none tracking-tighter mb-8">
               THE RETRO <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-500">CIRCUIT<span className="text-orange-500 animate-pulse">_</span></span>
            </h1>
@@ -65,7 +72,7 @@ export default function AboutPage() {
                 <ArchitectureRow label="Server Components" value="React 19" icon={<Code size={14} />} />
                 <ArchitectureRow label="Data Layer" value="Supabase (PostgreSQL)" icon={<Database size={14} />} />
                 <ArchitectureRow label="UI Engine" value="Tailwind CSS" icon={<Layout size={14} />} />
-                <ArchitectureRow label="Type Safety" value="TypeScript (Strict)" icon={<Shield size={14} />} />
+                <ArchitectureRow label="Type Safety" value="TypeScript (Strict)" icon={<ShieldIcon size={14} />} />
                 <ArchitectureRow label="Deployment" value="Vercel Edge Network" icon={<Globe size={14} />} />
             </div>
         </section>
@@ -78,11 +85,6 @@ export default function AboutPage() {
             </div>
 
             <div className="border border-white/10 bg-white/[0.02] p-6 md:p-8 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden group">
-                {/* Decorative Corner */}
-                <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-                     <Shield size={64} strokeWidth={1} />
-                </div>
-
                 {/* Avatar Placeholder */}
                 <div className="w-24 h-24 md:w-32 md:h-32 bg-zinc-900 border border-white/10 flex items-center justify-center shrink-0">
                     <span className="font-pixel text-2xl text-zinc-700 group-hover:text-white transition-colors">OP</span>
@@ -138,6 +140,10 @@ export default function AboutPage() {
     </div>
   );
 }
+
+// Renamed locally to avoid conflict if I decide to import Shield from lucide-react again later for other uses,
+// though for now it is only used here as an icon in the list.
+import { Shield as ShieldIcon } from 'lucide-react';
 
 function ArchitectureRow({ label, value, icon }: { label: string, value: string, icon: React.ReactNode }) {
     return (
