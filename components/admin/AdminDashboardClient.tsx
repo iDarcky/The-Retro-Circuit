@@ -158,6 +158,10 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
         }
     };
 
+    // Filter roadmap items
+    const activeRoadmapItems = roadmapItems.filter(item => item.status !== 'completed');
+    const completedRoadmapItems = roadmapItems.filter(item => item.status === 'completed');
+
     if (!isAdmin) return <div className="p-8 text-center font-mono text-accent border-2 border-accent m-8">ACCESS DENIED. ADMIN CLEARANCE REQUIRED.</div>;
 
     const tabs: AdminTab[] = ['CONSOLE', 'VARIANTS', 'FABRICATOR', 'ROADMAP'];
@@ -334,11 +338,11 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
                             {/* Right Column: List */}
                             <div className="lg:col-span-2">
                                 <h2 className="font-pixel text-lg text-white mb-6">
-                                    MISSION LOG // <span className="text-secondary">{roadmapItems.length}</span>
+                                    ACTIVE MISSIONS // <span className="text-secondary">{activeRoadmapItems.length}</span>
                                 </h2>
 
-                                <div className="grid gap-2 max-h-[600px] overflow-y-auto pr-2">
-                                    {roadmapItems.map(item => (
+                                <div className="grid gap-2 max-h-[400px] overflow-y-auto pr-2 mb-8">
+                                    {activeRoadmapItems.map(item => (
                                         <div key={item.id} className={`flex items-center justify-between p-3 border transition-colors group ${
                                             editingRoadmapItem?.id === item.id
                                             ? 'bg-secondary/10 border-secondary'
@@ -346,7 +350,6 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
                                         }`}>
                                             <div className="flex items-center gap-3">
                                                 <span className={`text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider min-w-[80px] text-center ${
-                                                    item.status === 'completed' ? 'bg-emerald-900/50 text-emerald-400 border border-emerald-900' :
                                                     item.status === 'in-progress' ? 'bg-blue-900/50 text-blue-400 border border-blue-900' :
                                                     'bg-gray-800/50 text-gray-400 border border-gray-700'
                                                 }`}>
@@ -361,11 +364,9 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
                                                 </div>
                                             </div>
                                             <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                {item.status !== 'completed' && (
-                                                    <button onClick={() => handleFinishItem(item)} className="text-[10px] font-mono border border-emerald-900 bg-emerald-900/20 text-emerald-400 hover:bg-emerald-900/40 px-2 py-1 uppercase tracking-wider">
-                                                        Finish
-                                                    </button>
-                                                )}
+                                                <button onClick={() => handleFinishItem(item)} className="text-[10px] font-mono border border-emerald-900 bg-emerald-900/20 text-emerald-400 hover:bg-emerald-900/40 px-2 py-1 uppercase tracking-wider">
+                                                    Finish
+                                                </button>
                                                 <button onClick={() => setEditingRoadmapItem(item)} className="text-[10px] font-mono border border-blue-900 bg-blue-900/20 text-blue-400 hover:bg-blue-900/40 px-2 py-1 uppercase tracking-wider">
                                                     Edit
                                                 </button>
@@ -380,9 +381,54 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
                                             </div>
                                         </div>
                                     ))}
-                                    {roadmapItems.length === 0 && (
+                                    {activeRoadmapItems.length === 0 && (
                                         <div className="text-center py-8 text-gray-600 font-mono text-xs uppercase">
-                                            // NO MISSIONS FOUND IN DATABASE
+                                            // NO ACTIVE MISSIONS
+                                        </div>
+                                    )}
+                                </div>
+
+                                <h2 className="font-pixel text-lg text-emerald-500 mb-6 border-t border-white/10 pt-6">
+                                    COMPLETED MISSIONS // <span className="text-white">{completedRoadmapItems.length}</span>
+                                </h2>
+
+                                <div className="grid gap-2 max-h-[300px] overflow-y-auto pr-2 opacity-60 hover:opacity-100 transition-opacity">
+                                    {completedRoadmapItems.map(item => (
+                                        <div key={item.id} className={`flex items-center justify-between p-3 border transition-colors group ${
+                                            editingRoadmapItem?.id === item.id
+                                            ? 'bg-secondary/10 border-secondary'
+                                            : 'bg-white/5 border-emerald-900/30 hover:border-emerald-500/50'
+                                        }`}>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider min-w-[80px] text-center bg-emerald-900/50 text-emerald-400 border border-emerald-900">
+                                                    {item.status}
+                                                </span>
+                                                <div>
+                                                    <div className="font-mono text-sm text-gray-400 font-bold line-through">{item.title}</div>
+                                                    <div className="text-[10px] text-gray-600 uppercase flex gap-2">
+                                                        <span>{item.category}</span>
+                                                        {item.target_date && <span>// COMPLETED: {new Date(item.target_date).toLocaleDateString()}</span>}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button onClick={() => setEditingRoadmapItem(item)} className="text-[10px] font-mono border border-blue-900 bg-blue-900/20 text-blue-400 hover:bg-blue-900/40 px-2 py-1 uppercase tracking-wider">
+                                                    Edit
+                                                </button>
+                                                <button onClick={async () => {
+                                                    if(confirm('Delete this item?')) {
+                                                        await deleteRoadmapItem(item.id);
+                                                        loadRoadmap();
+                                                    }
+                                                }} className="text-[10px] font-mono border border-red-900 bg-red-900/20 text-red-400 hover:bg-red-900/40 px-2 py-1 uppercase tracking-wider">
+                                                    Del
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {completedRoadmapItems.length === 0 && (
+                                        <div className="text-center py-8 text-gray-600 font-mono text-xs uppercase">
+                                            // NO COMPLETED MISSIONS
                                         </div>
                                     )}
                                 </div>
