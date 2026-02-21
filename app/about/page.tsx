@@ -1,5 +1,5 @@
 import { siteConfig } from '../../config/site';
-import { ArrowRight, Mail, Github, Linkedin, Database, Layout, Shield, Globe, Monitor, Code } from 'lucide-react';
+import { ArrowRight, Mail, Linkedin, Database, Layout, Shield, Globe, Monitor, Code } from 'lucide-react';
 import Link from 'next/link';
 
 export const metadata = {
@@ -9,28 +9,22 @@ export const metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-violet-500/30 selection:text-white pb-24">
+    <div className="bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-orange-500/30 selection:text-white pb-24">
       
       {/* 1. HERO HEADER */}
       <header className="px-6 md:px-12 pt-24 pb-16 border-b border-white/5 relative overflow-hidden">
         <div className="max-w-[1800px] mx-auto w-full">
 
            {/* Metadata Row */}
-           <div className="flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs text-emerald-500/80 mb-8 uppercase tracking-widest">
-              <span className="flex items-center gap-2">
-                 <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
-                 System Online
-              </span>
-              <span className="text-zinc-600">//</span>
-              <span>Firmware: {siteConfig.version}</span>
-              <span className="text-zinc-600">//</span>
-              <span>EST: {siteConfig.est}</span>
+           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-900/30 bg-emerald-950/10 text-xs font-mono uppercase tracking-widest text-emerald-400 mb-8 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(16,185,129,0.1)]">
+               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+               System Online // {siteConfig.version} // EST: {siteConfig.est}
            </div>
 
            {/* Title */}
            <h1 className="text-4xl md:text-6xl lg:text-7xl font-pixel text-white leading-none tracking-tighter mb-8">
               THE RETRO <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-500">CIRCUIT //</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-500">CIRCUIT<span className="text-orange-500 animate-pulse">_</span></span>
            </h1>
 
         </div>
@@ -42,7 +36,7 @@ export default function AboutPage() {
         {/* 1. MISSION / SIGNAL NOISE RATIO */}
         <section className="lg:col-span-7">
             <div className="flex items-center gap-4 mb-8">
-               <span className="font-mono text-xs text-violet-500 border border-violet-500/30 px-2 py-0.5 bg-violet-500/5">[ 01 ]</span>
+               <span className="font-mono text-xs text-orange-500 border border-orange-500/30 px-2 py-0.5 bg-orange-500/5">[ 01 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">Signal Noise Ratio</h2>
             </div>
 
@@ -50,7 +44,7 @@ export default function AboutPage() {
                 <p className="text-2xl md:text-3xl lg:text-4xl font-light leading-tight text-white">
                     The retro handheld market is a labyrinth of fragmented data. Variants, revisions, and silent upgrades create static in the signal.
                 </p>
-                <div className="pl-6 border-l-2 border-violet-500">
+                <div className="pl-6 border-l-2 border-orange-500">
                     <p className="text-lg md:text-xl text-zinc-400 font-light leading-relaxed">
                         In a sea of subjective noise, we provide the raw signal. <br />
                         <span className="text-white font-medium">No feelings. Just data.</span>
@@ -99,7 +93,7 @@ export default function AboutPage() {
                     <div>
                         <div className="flex items-center justify-between mb-2">
                             <h3 className="text-xl text-white font-bold tracking-tight uppercase">Product Lead</h3>
-                            <span className="font-mono text-xs text-emerald-500 border border-emerald-500/30 bg-emerald-500/5 px-2 py-0.5">ADMIN_ACCESS</span>
+                            <span className="font-mono text-xs text-orange-500 border border-orange-500/30 bg-orange-500/5 px-2 py-0.5">ADMIN_ACCESS</span>
                         </div>
                         <div className="h-px w-full bg-white/10 mb-4"></div>
                         <p className="font-mono text-sm text-zinc-400 leading-relaxed max-w-lg">
@@ -108,7 +102,7 @@ export default function AboutPage() {
                     </div>
 
                     <div className="font-mono text-xs text-zinc-500 flex items-center gap-2">
-                         <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                         <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
                          CURRENT_OBJECTIVE: DATA_EXPANSION
                     </div>
                 </div>
@@ -124,20 +118,13 @@ export default function AboutPage() {
 
             <div className="grid grid-cols-1 gap-4">
                 <ActionCard
-                    href={siteConfig.links.email}
+                    href="mailto:contact@theretrocircuit.com"
                     label="Open Comms"
-                    sublabel="Contact via Email"
+                    sublabel="contact@theretrocircuit.com"
                     icon={<Mail size={18} />}
                 />
                  <ActionCard
-                    href={siteConfig.links.github}
-                    label="View Source"
-                    sublabel="GitHub Repository"
-                    icon={<Github size={18} />}
-                    external
-                />
-                 <ActionCard
-                    href={siteConfig.links.linkedin}
+                    href="https://www.linkedin.com/in/danielnmaghis/"
                     label="Connect"
                     sublabel="LinkedIn Profile"
                     icon={<Linkedin size={18} />}
@@ -165,15 +152,15 @@ function ArchitectureRow({ label, value, icon }: { label: string, value: string,
 }
 
 function ActionCard({ href, label, sublabel, icon, external }: { href: string, label: string, sublabel: string, icon: React.ReactNode, external?: boolean }) {
-    const className = "group block border border-white/10 bg-white/[0.02] p-4 hover:bg-white/5 transition-all hover:border-violet-500/30 relative overflow-hidden";
+    const className = "group block border border-white/10 bg-white/[0.02] p-4 hover:bg-white/5 transition-all hover:border-orange-500/30 relative overflow-hidden";
     const content = (
         <div className="flex items-center justify-between relative z-10">
             <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-400 group-hover:text-white group-hover:border-violet-500/50 transition-colors">
+                <div className="w-10 h-10 bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-400 group-hover:text-white group-hover:border-orange-500/50 transition-colors">
                     {icon}
                 </div>
                 <div>
-                    <div className="text-white font-medium text-sm group-hover:text-violet-400 transition-colors">{label}</div>
+                    <div className="text-white font-medium text-sm group-hover:text-orange-400 transition-colors">{label}</div>
                     <div className="text-zinc-500 text-xs font-mono">{sublabel}</div>
                 </div>
             </div>
