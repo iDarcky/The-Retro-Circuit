@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { fetchConsoleList, fetchConsoleBySlug } from '../../lib/api';
 import { ConsoleDetails, ConsoleVariant } from '../../lib/types';
-import { useSound } from '../../components/ui/SoundContext';
 import { METRICS } from '../../lib/config/arena-metrics';
 import { ComparisonRow } from '../../components/arena/ComparisonRow';
 import { ConsoleSearch } from '../../components/arena/ConsoleSearch';
@@ -42,7 +41,6 @@ export default function ArenaComparisonClient({
 }: ArenaComparisonClientProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { playClick } = useSound();
 
     const [allConsoles, setAllConsoles] = useState<{name: string, slug: string}[]>(initialConsoleList);
 
@@ -120,7 +118,6 @@ export default function ArenaComparisonClient({
         } else {
             updateUrl(undefined, undefined, slug, null);
         }
-        playClick();
     };
 
     const handleVariantChange = (setter: Dispatch<SetStateAction<SelectionState>>, isPlayer1: boolean) => (slug: string) => {
@@ -135,7 +132,6 @@ export default function ArenaComparisonClient({
     };
 
     const handleChangeFighter = (isPlayer1: boolean) => {
-        playClick();
         setIsArenaMode(false);
         if (isPlayer1) {
             setSelectionA({ slug: null, details: null, selectedVariant: null, loading: false });
@@ -148,13 +144,11 @@ export default function ArenaComparisonClient({
 
     const handleFight = () => {
         if (selectionA.selectedVariant && selectionB.selectedVariant) {
-            playClick();
             setIsArenaMode(true);
         }
     };
 
     const handleNewMatch = () => {
-        playClick();
         setIsArenaMode(false);
         setSelectionA({ slug: null, details: null, selectedVariant: null, loading: false });
         setSelectionB({ slug: null, details: null, selectedVariant: null, loading: false });

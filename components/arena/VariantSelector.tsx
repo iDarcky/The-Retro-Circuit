@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect, type FC } from 'react';
-import { useSound } from '../ui/SoundContext';
 import { ChevronDown } from 'lucide-react';
 import { ConsoleVariant } from '../../lib/types';
 
@@ -15,7 +14,6 @@ interface VariantSelectorProps {
 export const VariantSelector: FC<VariantSelectorProps> = ({ variants, selectedSlug, onSelect, themeColor }) => {
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
-    const { playHover, playClick } = useSound();
 
     const selectedVariant = variants.find(v => v.slug === selectedSlug) || variants[0];
 
@@ -40,7 +38,6 @@ export const VariantSelector: FC<VariantSelectorProps> = ({ variants, selectedSl
     }, []);
 
     const handleSelect = (slug: string) => {
-        playClick();
         onSelect(slug);
         setIsOpen(false);
     };
@@ -52,7 +49,6 @@ export const VariantSelector: FC<VariantSelectorProps> = ({ variants, selectedSl
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={`group flex items-center gap-2 font-mono text-[10px] md:text-xs text-text-primary outline-none w-full md:w-auto hover:bg-bg-card p-1 rounded-sm transition-colors`}
-                onMouseEnter={playHover}
             >
                 <span className="opacity-70 text-text-muted">VARIANT:</span>
                 <span className={`underline decoration-1 underline-offset-4 ${textColor} font-bold truncate`}>
@@ -67,7 +63,6 @@ export const VariantSelector: FC<VariantSelectorProps> = ({ variants, selectedSl
                         <div
                             key={v.id}
                             onClick={() => handleSelect(v.slug || '')}
-                            onMouseEnter={playHover}
                             className={`p-3 text-[10px] md:text-xs font-mono cursor-pointer ${textColor} border-b border-border-subtle last:border-0 hover:bg-white/10 ${v.slug === selectedSlug ? 'bg-white/5' : ''} transition-colors`}
                         >
                             {v.variant_name}

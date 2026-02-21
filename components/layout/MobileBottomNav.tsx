@@ -3,12 +3,10 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { useSound } from '../ui/SoundContext';
 import { IconHome, IconChip, IconDatabase, IconVS } from '../ui/Icons';
 
 const MobileBottomNav = () => {
     const pathname = usePathname();
-    const { playClick } = useSound();
 
     const navItems = [
         { label: 'Home', icon: IconHome, path: '/', exact: true },
@@ -28,7 +26,6 @@ const MobileBottomNav = () => {
                     <Link
                         key={item.path}
                         href={item.path}
-                        onClick={playClick}
                         className={`relative flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${
                             isActive ? 'text-secondary' : 'text-gray-400 hover:text-white'
                         }`}

@@ -174,7 +174,6 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                                 ) : (
                                     <div className="text-muted font-pixel text-4xl opacity-50">NO SIGNAL</div>
                                 )}
-                                <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,157,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,157,0.05)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none"></div>
                                 <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 items-start">
                                     <div className="bg-secondary text-black font-mono text-[10px] font-bold px-2 py-1 shadow-lg">
                                         {consoleData.form_factor?.toUpperCase() || 'SYSTEM'}
