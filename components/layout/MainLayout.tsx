@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, type FC, type ReactNode } from 'react';
+import { useState, useEffect, useRef, type FC, type ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -46,6 +46,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const [dbStatus, setDbStatus] = useState<'CONNECTING' | 'ONLINE' | 'OFFLINE'>('CONNECTING');
   const [isAdmin, setIsAdmin] = useState(false);
   const { openSearch } = useSearch();
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // 1. Setup Auth Listener Immediately
@@ -84,10 +85,13 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Close sidebar on route change (mobile)
+  // Close sidebar on route change (mobile) & Scroll to top
   const pathname = usePathname();
   useEffect(() => {
       setSidebarOpen(false);
+      if (scrollRef.current) {
+          scrollRef.current.scrollTop = 0;
+      }
   }, [pathname]);
 
   return (
@@ -183,7 +187,11 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       {/* MAIN CONTENT AREA */}
       <main className="flex-1 relative z-10 flex flex-col min-h-0">
         {/* Scrollable Content Container */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar bg-bg-primary/80 pb-24 md:pb-0 flex flex-col min-h-0">
+        <div
+            id="main-scroll-container"
+            ref={scrollRef}
+            className="flex-1 overflow-y-auto custom-scrollbar bg-bg-primary/80 pb-24 md:pb-0 flex flex-col min-h-0"
+        >
              {children}
         </div>
 
