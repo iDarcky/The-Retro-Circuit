@@ -3,10 +3,10 @@ import { ArrowRight } from 'lucide-react';
 
 export default function FinderSection() {
     return (
-        <section className="px-6 md:px-12 py-24 border-b border-border-subtle bg-bg-secondary/10 relative overflow-hidden">
+        <section className="px-6 md:px-12 py-12 md:py-24 border-b border-border-subtle bg-bg-secondary/10 relative overflow-hidden">
 
             <div className="max-w-[1800px] mx-auto relative z-10">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center">
                     <div>
                         <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4">THE FINDER</h2>
                         <p className="text-text-secondary font-light max-w-xl text-lg leading-relaxed">
