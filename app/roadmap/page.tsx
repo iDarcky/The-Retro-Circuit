@@ -1,14 +1,20 @@
 import { Metadata } from 'next';
-import { upcomingItems, completedItems } from '../../data/roadmap';
 import RoadmapView from '../../components/roadmap/RoadmapView';
 import { siteConfig } from '../../config/site';
+import { fetchRoadmapItems } from '../../lib/api';
+import { RoadmapFeature } from '../../lib/types/domain';
 
 export const metadata: Metadata = {
   title: 'Project Roadmap | The Retro Circuit',
   description: 'Track our progress as we build the ultimate handheld gaming database. See what features are coming next.',
 };
 
-export default function RoadmapPage() {
+export default async function RoadmapPage() {
+  const roadmapItems = await fetchRoadmapItems();
+
+  const completedItems = roadmapItems.filter(item => item.status === 'completed');
+  const upcomingItems = roadmapItems.filter(item => item.status !== 'completed');
+
   return (
     <div className="min-h-screen bg-bg-primary text-text-primary px-6 py-12 md:py-24">
       <div className="max-w-6xl mx-auto">

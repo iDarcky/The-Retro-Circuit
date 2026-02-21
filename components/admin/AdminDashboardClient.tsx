@@ -3,14 +3,15 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { getVariantById, getManufacturerById, getConsoleById, fetchConsoleList } from '../../lib/api';
-import { Manufacturer, ConsoleVariant, ConsoleDetails } from '../../lib/types';
+import { getVariantById, getManufacturerById, getConsoleById, fetchConsoleList, fetchRoadmapItems, deleteRoadmapItem } from '../../lib/api';
+import { Manufacturer, ConsoleVariant, ConsoleDetails, RoadmapFeature } from '../../lib/types';
 import { ManufacturerForm } from '../../components/admin/ManufacturerForm';
 import { ConsoleForm } from '../../components/admin/ConsoleForm';
 import { VariantForm } from '../../components/admin/VariantForm';
+import { RoadmapForm } from '../../components/admin/RoadmapForm';
 import Button from '../../components/ui/Button';
 
-type AdminTab = 'CONSOLE' | 'VARIANTS' | 'FABRICATOR';
+type AdminTab = 'CONSOLE' | 'VARIANTS' | 'FABRICATOR' | 'ROADMAP';
 
 type AdminDashboardProps = {
     initialManufacturers: Manufacturer[];
@@ -35,6 +36,21 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
     const [editingVariant, setEditingVariant] = useState<ConsoleVariant | null>(null);
     const [editingManufacturer, setEditingManufacturer] = useState<Manufacturer | null>(null);
     const [editingConsoleFolder, setEditingConsoleFolder] = useState<ConsoleDetails | null>(null);
+
+    // Roadmap State
+    const [roadmapItems, setRoadmapItems] = useState<RoadmapFeature[]>([]);
+    const [editingRoadmapItem, setEditingRoadmapItem] = useState<RoadmapFeature | null>(null);
+
+    const loadRoadmap = async () => {
+        const items = await fetchRoadmapItems();
+        setRoadmapItems(items);
+    };
+
+    useEffect(() => {
+        if (activeTab === 'ROADMAP') {
+            loadRoadmap();
+        }
+    }, [activeTab]);
 
     // Check for URL edit modes on mount
     useEffect(() => {
@@ -115,6 +131,7 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
         setEditingVariant(null);
         setEditingManufacturer(null);
         setEditingConsoleFolder(null);
+        setEditingRoadmapItem(null);
         setNewlyCreatedConsoleId(null);
         setMessage(null);
         setErrorMsg(null);
@@ -128,7 +145,7 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
 
     if (!isAdmin) return <div className="p-8 text-center font-mono text-accent border-2 border-accent m-8">ACCESS DENIED. ADMIN CLEARANCE REQUIRED.</div>;
 
-    const tabs: AdminTab[] = ['CONSOLE', 'VARIANTS', 'FABRICATOR'];
+    const tabs: AdminTab[] = ['CONSOLE', 'VARIANTS', 'FABRICATOR', 'ROADMAP'];
 
     return (
         <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn">
@@ -189,6 +206,7 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
                         {tab === 'VARIANTS' && editingVariant ? 'EDIT VARIANT' :
                          tab === 'FABRICATOR' && editingManufacturer ? 'EDIT FABRICATOR' :
                          tab === 'CONSOLE' && editingConsoleFolder ? 'EDIT CONSOLE' :
+                         tab === 'ROADMAP' && editingRoadmapItem ? 'EDIT ROADMAP ITEM' :
                          tab}
                     </button>
                 ))}
@@ -263,6 +281,75 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
                             {editingManufacturer && (
                                 <div className="mt-4 pt-4 border-t border-dashed border-gray-700">
                                     <Button variant="secondary" onClick={clearEditMode} className="text-xs">
+                                        CANCEL EDITING
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {activeTab === 'ROADMAP' && (
+                        <div>
+                            <h2 className="font-pixel text-xl text-white mb-6">
+                                {editingRoadmapItem ? `EDITING: ${editingRoadmapItem.title}` : 'SYSTEM ROADMAP'}
+                            </h2>
+
+                            {/* List of existing items */}
+                            {!editingRoadmapItem && (
+                                <div className="mb-8 grid gap-2">
+                                    {roadmapItems.map(item => (
+                                        <div key={item.id} className="flex items-center justify-between bg-white/5 p-3 border border-white/10 hover:border-secondary transition-colors group">
+                                            <div className="flex items-center gap-3">
+                                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider min-w-[80px] text-center ${
+                                                    item.status === 'completed' ? 'bg-emerald-900/50 text-emerald-400 border border-emerald-900' :
+                                                    item.status === 'in-progress' ? 'bg-blue-900/50 text-blue-400 border border-blue-900' :
+                                                    'bg-gray-800/50 text-gray-400 border border-gray-700'
+                                                }`}>
+                                                    {item.status}
+                                                </span>
+                                                <span className="font-mono text-sm text-white font-bold">{item.title}</span>
+                                                <span className="text-[10px] text-gray-500 uppercase border border-gray-800 px-1.5 py-0.5 rounded">
+                                                    {item.category}
+                                                </span>
+                                            </div>
+                                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button onClick={() => setEditingRoadmapItem(item)} className="text-[10px] font-mono border border-blue-900 bg-blue-900/20 text-blue-400 hover:bg-blue-900/40 px-2 py-1 uppercase tracking-wider">
+                                                    Edit
+                                                </button>
+                                                <button onClick={async () => {
+                                                    if(confirm('Delete this item?')) {
+                                                        await deleteRoadmapItem(item.id);
+                                                        loadRoadmap();
+                                                    }
+                                                }} className="text-[10px] font-mono border border-red-900 bg-red-900/20 text-red-400 hover:bg-red-900/40 px-2 py-1 uppercase tracking-wider">
+                                                    Del
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {roadmapItems.length === 0 && (
+                                        <div className="text-center py-8 text-gray-600 font-mono text-xs uppercase">
+                                            // NO MISSIONS FOUND IN DATABASE
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            <RoadmapForm
+                                initialData={editingRoadmapItem}
+                                onSuccess={(msg) => {
+                                    setMessage(msg);
+                                    loadRoadmap();
+                                    if (editingRoadmapItem) {
+                                        setEditingRoadmapItem(null);
+                                    }
+                                }}
+                                onError={setErrorMsg}
+                            />
+
+                            {editingRoadmapItem && (
+                                <div className="mt-4 pt-4 border-t border-dashed border-gray-700">
+                                    <Button variant="secondary" onClick={() => setEditingRoadmapItem(null)} className="text-xs">
                                         CANCEL EDITING
                                     </Button>
                                 </div>
