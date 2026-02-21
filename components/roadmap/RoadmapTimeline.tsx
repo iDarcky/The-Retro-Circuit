@@ -1,7 +1,7 @@
 'use client';
 
 import { type FC } from 'react';
-import { RoadmapPhase, RoadmapItem, RoadmapStatus } from '../../data/roadmap';
+import { RoadmapPhase, RoadmapItem } from '../../data/roadmap';
 import { CheckCircle2, Clock, Hourglass } from 'lucide-react';
 
 interface RoadmapTimelineProps {
