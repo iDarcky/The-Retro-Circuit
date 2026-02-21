@@ -19,7 +19,7 @@ export const CookieBanner: React.FC = () => {
       {/* Banner */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-bg-primary border-t border-white/10 p-4 md:p-6 shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
         <div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="flex-1 max-w-2xl">
+          <div className="flex-1 max-w-4xl">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-2 h-2 bg-emerald-500 animate-pulse" />
             <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-500">
