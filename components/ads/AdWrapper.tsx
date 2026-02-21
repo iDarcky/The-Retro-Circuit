@@ -22,6 +22,7 @@ const AdWrapper: React.FC<AdWrapperProps> = ({
 
   const isPlaceholder = adConfig.usePlaceholders;
   const currentSlotId = slotId || adConfig.slots[type === 'mobile-content' ? 'mobileContent' : type];
+  void currentSlotId; // Prevent unused variable error
 
   // Specific dimensions based on type if not overridden by className
   // Note: These are defaults; parent can override via className
