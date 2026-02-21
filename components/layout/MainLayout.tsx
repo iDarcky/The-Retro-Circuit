@@ -2,7 +2,6 @@
 
 import { useState, useEffect, type FC, type ReactNode } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useSearch } from '../ui/SearchContext';
 import { retroAuth } from '../../lib/auth';
@@ -13,7 +12,7 @@ import MobileTopBar from './MobileTopBar';
 import DesktopHeader from './DesktopHeader';
 import { 
   IconDatabase, IconVS,
-  IconHome, IconChip, IconSearch
+  IconHome, IconChip, IconSearch, IconClose
 } from '../ui/Icons';
 
 // --- HELPER COMPONENTS ---
@@ -25,16 +24,14 @@ const SidebarItem = ({ to, icon: Icon, label, exact = false }: { to: string, ico
   return (
     <Link 
       href={to} 
-      className={`group flex items-center px-4 py-3 font-mono transition-all duration-200 border-l-4 ${
+      className={`group flex items-center px-6 py-4 border-l-2 transition-colors duration-300 font-sans font-bold tracking-wide text-sm uppercase ${
         isActive 
-          ? 'border-secondary bg-bg-secondary/50 text-white shadow-[inset_0_0_10px_rgba(0,255,157,0.2)]'
-          : 'border-transparent text-gray-400 hover:text-primary hover:bg-bg-secondary/20 hover:border-primary'
+          ? 'border-violet-500 bg-white/5 text-white'
+          : 'border-transparent text-gray-500 hover:text-white hover:bg-white/5 hover:border-white/20'
       }`}
     >
-      <div className={`transition-transform duration-200 ${isActive ? 'scale-110 text-secondary' : 'group-hover:scale-110'}`}>
-        <Icon className="w-5 h-5 mr-2" />
-      </div>
-      <span className="tracking-widest text-sm">{label}</span>
+      <Icon className={`w-5 h-5 mr-4 transition-colors ${isActive ? 'text-violet-500' : 'text-gray-600 group-hover:text-white'}`} />
+      <span>{label}</span>
     </Link>
   );
 };
@@ -115,10 +112,10 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       {/* MOBILE SIDEBAR (Drawer: Right on Mobile) */}
       {/* Hidden on Desktop now as we use Top Nav */}
       <aside className={`
-          flex flex-col h-screen transition-transform duration-300 ease-out shadow-[0_0_50px_rgba(0,0,0,0.5)]
+          flex flex-col h-screen transition-transform duration-300 ease-out
           
-          /* Mobile: Fixed Right, Slide from Right, Neon Left Border, High Z-Index */
-          fixed top-0 right-0 w-72 bg-black border-l border-secondary z-[60]
+          /* Mobile: Fixed Right, Slide from Right, Signal Left Border, High Z-Index */
+          fixed top-0 right-0 w-80 bg-bg-primary border-l-2 border-violet-500 z-[60]
           
           /* Desktop: Hidden */
           md:hidden
@@ -126,55 +123,47 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
           /* Animation State Logic */
           ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}
       `}>
-        <div className="p-6 border-b border-border-normal flex items-center justify-center bg-black/20 min-h-[80px]">
-             <div className="relative group text-center">
-                <Link href="/" className="block hover:opacity-80 transition-opacity">
-                  <Image 
-                    src="/brand-logo.png" 
-                    alt="The Retro Circuit" 
-                    width={180} 
-                    height={50} 
-                    priority
-                    className="object-contain drop-shadow-[0_0_8px_rgba(0,255,157,0.3)]"
-                  />
-                </Link>
-             </div>
+        <div className="p-6 border-b border-white/10 flex items-center justify-between min-h-[80px]">
+             <span className="font-sans font-black text-2xl tracking-tighter text-white uppercase">MENU</span>
+             <button
+                onClick={() => setSidebarOpen(false)}
+                className="text-gray-500 hover:text-white transition-colors"
+                aria-label="Close Menu"
+             >
+                <IconClose className="w-6 h-6" />
+             </button>
         </div>
 
         <nav className="flex-1 py-6 space-y-2 overflow-y-auto custom-scrollbar">
            {/* SEARCH TRIGGER */}
-           <div className="px-4 mb-6">
+           <div className="px-6 mb-8">
                 <button 
                     onClick={openSearch}
-                    className="w-full bg-black/40 border border-white/10 text-gray-500 font-mono text-sm px-3 py-2 flex justify-between items-center hover:border-secondary hover:text-white transition-all group cursor-pointer"
+                    className="w-full bg-white/5 border border-white/10 hover:border-violet-500 hover:bg-white/10 transition-colors text-gray-400 font-sans font-bold text-sm px-4 py-3 flex justify-between items-center group"
                 >
-                    <span className="flex items-center gap-2">
-                        <IconSearch className="w-4 h-4" />
-                        <span className="tracking-wider">QUICK FIND</span>
-                    </span>
-                    <span className="text-[10px] border border-gray-700 px-1.5 py-0.5 rounded text-gray-600 group-hover:text-secondary group-hover:border-secondary">
-                        CMD+K
-                    </span>
+                    <span className="tracking-wider">SEARCH DATABASE</span>
+                    <IconSearch className="w-4 h-4 text-gray-500 group-hover:text-violet-500 transition-colors" />
                 </button>
            </div>
 
-           <div className="px-6 mb-2 text-xs font-mono text-secondary uppercase tracking-widest opacity-80">MAINFRAME</div>
+           <div className="px-6 mb-2 text-[10px] font-sans font-bold text-gray-600 uppercase tracking-widest">MAINFRAME</div>
            <SidebarItem to="/" icon={IconHome} label="CONTROL ROOM" exact />
            
-           <div className="px-6 mt-6 mb-2 text-xs font-mono text-primary uppercase tracking-widest opacity-80">DATABASE</div>
+           <div className="px-6 mt-8 mb-2 text-[10px] font-sans font-bold text-gray-600 uppercase tracking-widest">DATABASE</div>
            <SidebarItem to="/consoles" icon={IconDatabase} label="CONSOLES" />
            <SidebarItem to="/fabricators" icon={IconChip} label="FABRICATORS" />
            
-           <div className="px-6 mt-6 mb-2 text-xs font-mono text-accent uppercase tracking-widest opacity-80">TOOLS</div>
+           <div className="px-6 mt-8 mb-2 text-[10px] font-sans font-bold text-gray-600 uppercase tracking-widest">TOOLS</div>
            <SidebarItem to="/arena" icon={IconVS} label="VS MODE" />
         </nav>
 
         {/* Status Footer */}
-        <div className="p-2 bg-black text-[10px] font-mono text-center flex justify-end items-center px-4 text-gray-600">
+        <div className="p-4 border-t border-white/10 bg-transparent text-[10px] font-mono text-center flex justify-between items-center px-6 text-gray-600">
+            <span>SYSTEM STATUS</span>
             {isAdmin && (
-                <span className={`flex items-center gap-1 ${dbStatus === 'ONLINE' ? 'text-secondary' : 'text-red-500'}`}>
-                    <span className={`w-2 h-2 rounded-full ${dbStatus === 'ONLINE' ? 'bg-secondary' : 'bg-red-500'} animate-pulse`}></span>
-                    {dbStatus === 'ONLINE' ? 'DB ONLINE' : 'OFFLINE'}
+                <span className={`flex items-center gap-2 ${dbStatus === 'ONLINE' ? 'text-violet-500' : 'text-red-500'}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${dbStatus === 'ONLINE' ? 'bg-violet-500' : 'bg-red-500'}`}></span>
+                    {dbStatus === 'ONLINE' ? 'ONLINE' : 'OFFLINE'}
                 </span>
             )}
         </div>
