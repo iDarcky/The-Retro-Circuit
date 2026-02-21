@@ -16,6 +16,10 @@ const AdWrapper: React.FC<AdWrapperProps> = ({
 }) => {
   if (!adConfig.enabled) return null;
 
+  // Prevent unused variable error during build
+  // format will be used when real ads are enabled
+  void format;
+
   const isPlaceholder = adConfig.usePlaceholders;
   const currentSlotId = slotId || adConfig.slots[type === 'mobile-content' ? 'mobileContent' : type];
 
