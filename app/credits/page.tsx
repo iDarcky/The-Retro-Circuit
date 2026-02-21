@@ -35,8 +35,8 @@ export default function CreditsPage() {
       <div className="max-w-4xl mx-auto px-6 md:px-12 py-16 space-y-16 relative z-10">
 
           {/* Section 1: Tribute */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-             <div className="flex items-center gap-3 self-start pt-1">
+          <section className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-8">
+             <div className="flex items-center gap-3 self-start pt-1 whitespace-nowrap">
                <span className="font-mono text-xs text-violet-500 border border-violet-500/30 px-2 py-0.5 bg-violet-500/5">[ 01 ]</span>
                <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Mission</h2>
             </div>
@@ -53,8 +53,8 @@ export default function CreditsPage() {
           </section>
 
           {/* Section 2: Pending Data */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-            <div className="flex items-center gap-3 self-start pt-1">
+          <section className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-8">
+            <div className="flex items-center gap-3 self-start pt-1 whitespace-nowrap">
                <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 02 ]</span>
                <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Data Fragments</h2>
             </div>
