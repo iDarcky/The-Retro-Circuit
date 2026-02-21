@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { upcomingItems, completedItems } from '../../data/roadmap';
 import RoadmapView from '../../components/roadmap/RoadmapView';
+import { siteConfig } from '../../config/site';
 
 export const metadata: Metadata = {
   title: 'Project Roadmap | The Retro Circuit',
@@ -13,10 +14,10 @@ export default function RoadmapPage() {
       <div className="max-w-6xl mx-auto">
         {/* Hero Section */}
         <div className="mb-16">
-          {/* System Online Pill */}
+          {/* System Online Pill - Dynamic Version */}
           <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded-full border border-emerald-900/30 bg-emerald-950/10 text-[10px] md:px-3 md:py-1 md:text-xs font-mono uppercase tracking-widest text-emerald-400 mb-6 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(16,185,129,0.1)]">
              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-             System Online // v1.0
+             System Online // {siteConfig.version}
           </div>
 
           <h1 className="text-4xl md:text-6xl font-bold font-pixel tracking-tighter mb-6">
@@ -27,7 +28,7 @@ export default function RoadmapPage() {
           </h1>
           <p className="text-lg md:text-xl text-text-secondary font-light max-w-2xl leading-relaxed">
              We are building the definitive database for handheld gaming. Transparency is key.
-             Here is our mission plan to launch Version 1.0.
+             Here is our mission plan to launch Version 1.0.0.
           </p>
         </div>
 
