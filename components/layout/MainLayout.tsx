@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, type FC, type ReactNode } from 'react';
+import { useState, useEffect, type FC, type ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
