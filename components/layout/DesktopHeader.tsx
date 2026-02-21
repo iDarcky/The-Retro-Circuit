@@ -17,8 +17,8 @@ export default function DesktopHeader() {
   ];
 
   return (
-    <div className="sticky top-0 z-50 hidden md:flex flex-col bg-bg-primary border-b-2 border-violet-500">
-      <nav className="flex h-16 items-stretch divide-x divide-border-subtle">
+    <div className="sticky top-0 z-50 flex flex-col bg-bg-primary border-b-2 border-violet-500">
+      <nav className="hidden md:flex h-16 items-stretch divide-x divide-border-subtle">
 
           {/* LEFT: Logo - Grid Cell 1 */}
           <div className="flex items-center px-6 shrink-0 bg-bg-primary hover:bg-bg-secondary transition-colors duration-300">
