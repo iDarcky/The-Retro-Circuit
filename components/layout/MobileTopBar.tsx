@@ -15,7 +15,7 @@ const MobileTopBar: FC<MobileTopBarProps> = ({ onMenuClick, isSidebarOpen }) => 
 
   return (
     <>
-      <header className="z-50 h-12 md:hidden bg-bg-primary border-b-2 border-violet-500 flex items-center justify-between px-3 transition-all duration-300 shrink-0">
+      <header className="fixed top-0 left-0 w-full z-50 h-12 md:hidden bg-bg-primary border-b-2 border-violet-500 flex items-center justify-between px-3 transition-all duration-300 shrink-0">
         {/* Left: Logo */}
         <div className="flex items-center">
             <Link href="/" className="flex items-center group">
