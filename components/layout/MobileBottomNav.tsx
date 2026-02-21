@@ -1,4 +1,3 @@
-
 'use client';
 
 import { usePathname } from 'next/navigation';
@@ -11,12 +10,12 @@ const MobileBottomNav = () => {
     const navItems = [
         { label: 'Home', icon: IconHome, path: '/', exact: true },
         { label: 'Fabricators', icon: IconChip, path: '/fabricators' },
-      { label: 'Consoles', icon: IconDatabase, path: '/consoles' },
+        { label: 'Consoles', icon: IconDatabase, path: '/consoles' },
         { label: 'VS Mode', icon: IconVS, path: '/arena' },
     ];
 
     return (
-        <div className="md:hidden fixed bottom-4 left-4 right-4 h-16 backdrop-blur-xl bg-black/30 border border-white/10 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.1)] z-50 flex items-center justify-around px-2 pb-safe-0">
+        <div className="md:hidden fixed bottom-6 left-6 right-6 h-14 bg-bg-primary/95 backdrop-blur-md border border-violet-500/30 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.4)] z-50 flex items-center justify-around px-4">
             {navItems.map((item) => {
                 const isActive = item.exact 
                     ? pathname === item.path 
@@ -26,15 +25,22 @@ const MobileBottomNav = () => {
                     <Link
                         key={item.path}
                         href={item.path}
-                        className={`relative flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${
-                            isActive ? 'text-secondary' : 'text-gray-400 hover:text-white'
+                        className={`relative flex flex-col items-center justify-center w-10 h-10 rounded-full transition-all duration-300 group ${
+                            isActive ? 'text-white' : 'text-gray-400 hover:text-gray-200'
                         }`}
                     >
-                        <div className={`transition-transform duration-300 ${isActive ? 'scale-110 drop-shadow-[0_0_8px_rgba(0,255,157,0.8)]' : ''}`}>
-                            <item.icon className="w-6 h-6" />
+                        {/* Icon Container with subtle glow on active */}
+                        <div className={`transition-transform duration-300 ${
+                            isActive
+                                ? 'scale-110 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]'
+                                : 'group-hover:scale-105'
+                        }`}>
+                            <item.icon className="w-5 h-5" />
                         </div>
+
+                        {/* Purple Active Dot */}
                         {isActive && (
-                            <div className="absolute -bottom-1 w-1 h-1 bg-secondary rounded-full shadow-[0_0_5px_rgba(0,255,157,1)]"></div>
+                            <span className="absolute -bottom-1 w-1 h-1 bg-violet-500 rounded-full shadow-[0_0_4px_rgba(139,92,246,0.8)]" />
                         )}
                     </Link>
                 );
