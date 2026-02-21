@@ -2,7 +2,6 @@ import { Metadata } from 'next';
 import RoadmapView from '../../components/roadmap/RoadmapView';
 import { siteConfig } from '../../config/site';
 import { fetchRoadmapItems } from '../../lib/api';
-import { RoadmapFeature } from '../../lib/types/domain';
 
 export const metadata: Metadata = {
   title: 'Project Roadmap | The Retro Circuit',
