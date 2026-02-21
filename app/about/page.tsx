@@ -16,9 +16,6 @@ export default function AboutPage() {
 
         {/* Background Effects */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.05] pointer-events-none"></div>
-        {/* Orange Radial Gradient */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-900/20 blur-[100px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/2"></div>
-
 
         <div className="max-w-[1800px] mx-auto w-full relative z-10">
 
@@ -31,7 +28,7 @@ export default function AboutPage() {
            {/* Title */}
            <h1 className="text-5xl md:text-6xl lg:text-7xl font-pixel text-white leading-none tracking-tighter mb-8">
               THE RETRO <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-500">CIRCUIT<span className="text-orange-500 animate-pulse">_</span></span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-400">CIRCUIT</span><span className="text-orange-500 animate-pulse">_</span>
            </h1>
 
         </div>
