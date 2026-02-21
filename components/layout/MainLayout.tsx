@@ -11,20 +11,25 @@ import { IconSearch, IconClose } from '../ui/Icons';
 
 // --- HELPER COMPONENTS ---
 
-const SidebarItem = ({ to, label, exact = false }: { to: string, label: string, exact?: boolean }) => {
+const SidebarItem = ({ to, label, exact = false, index }: { to: string, label: string, exact?: boolean, index: number }) => {
   const pathname = usePathname();
   const isActive = exact ? pathname === to : pathname.startsWith(to);
 
+  // Swiss Design: Huge typography, strict grid lines, solid active state
   return (
     <Link 
       href={to} 
-      className={`group flex items-center px-6 py-4 border-l-2 transition-colors duration-300 font-sans font-bold tracking-wide text-sm uppercase ${
+      className={`group flex items-center px-6 py-6 border-b border-white/10 transition-all duration-300 ${
         isActive 
-          ? 'border-violet-500 bg-white/5 text-white'
-          : 'border-transparent text-gray-500 hover:text-white hover:bg-white/5 hover:border-white/20'
+          ? 'bg-violet-600 text-white'
+          : 'bg-transparent text-white/60 hover:text-white hover:bg-white/5'
       }`}
     >
-      <span>{label}</span>
+      <span className="font-sans font-black text-3xl tracking-tighter uppercase w-full">
+        {/* Optional: Add index number for strict Swiss numbering (01, 02...) */}
+        <span className="text-xs font-mono tracking-widest opacity-50 block mb-1">0{index} //</span>
+        {label}
+      </span>
     </Link>
   );
 };
@@ -58,18 +63,17 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       {/* MOBILE DRAWER BACKDROP (z-50) */}
       {isSidebarOpen && (
           <div 
-            className="md:hidden fixed inset-0 z-[50] bg-black/80 backdrop-blur-sm animate-fadeIn"
+            className="md:hidden fixed inset-0 z-[50] bg-black/90 backdrop-blur-sm animate-fadeIn"
             onClick={() => setSidebarOpen(false)}
           />
       )}
 
-      {/* MOBILE SIDEBAR (Drawer: Right on Mobile) */}
-      {/* Hidden on Desktop now as we use Top Nav */}
+      {/* MOBILE SIDEBAR (Drawer: Right on Mobile, Full Height) */}
       <aside className={`
           flex flex-col h-screen transition-transform duration-300 ease-out
           
           /* Mobile: Fixed Right, Slide from Right, Signal Left Border, High Z-Index */
-          fixed top-0 right-0 w-80 bg-bg-primary border-l-2 border-violet-500 z-[60]
+          fixed top-0 right-0 w-full sm:w-96 bg-bg-primary border-l-2 border-violet-500 z-[60]
           
           /* Desktop: Hidden */
           md:hidden
@@ -77,35 +81,37 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
           /* Animation State Logic */
           ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}
       `}>
-        <div className="p-6 border-b border-white/10 flex items-center justify-between min-h-[80px]">
-             <span className="font-sans font-black text-2xl tracking-tighter text-white uppercase">MENU</span>
+        {/* HEADER: Strict Grid, High Contrast */}
+        <div className="p-6 border-b-2 border-white flex items-center justify-between bg-white text-black min-h-[80px]">
+             <span className="font-sans font-black text-4xl tracking-tighter uppercase">MENU</span>
              <button
                 onClick={() => setSidebarOpen(false)}
-                className="text-gray-500 hover:text-white transition-colors"
+                className="text-black hover:opacity-70 transition-opacity"
                 aria-label="Close Menu"
              >
-                <IconClose className="w-6 h-6" />
+                <IconClose className="w-8 h-8" />
              </button>
         </div>
 
-        <nav className="flex-1 py-6 space-y-2 overflow-y-auto custom-scrollbar">
-           {/* SEARCH TRIGGER */}
-           <div className="px-6 mb-8">
+        <nav className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
+           {/* SEARCH TRIGGER: Brutalist Block */}
+           <div className="border-b border-white/10">
                 <button 
                     onClick={openSearch}
-                    className="w-full bg-white/5 border border-white/10 hover:border-violet-500 hover:bg-white/10 transition-colors text-gray-400 font-sans font-bold text-sm px-4 py-3 flex justify-between items-center group"
+                    className="w-full bg-white/5 hover:bg-white/10 transition-colors text-white/60 font-sans font-bold text-lg px-6 py-6 flex justify-between items-center group uppercase tracking-widest"
                 >
-                    <span className="tracking-wider">SEARCH DATABASE</span>
-                    <IconSearch className="w-4 h-4 text-gray-500 group-hover:text-violet-500 transition-colors" />
+                    <span>SEARCH</span>
+                    <IconSearch className="w-6 h-6 text-white/40 group-hover:text-violet-500 transition-colors" />
                 </button>
            </div>
 
-           <SidebarItem to="/" label="CONTROL ROOM" exact />
-           <SidebarItem to="/consoles" label="CONSOLES" />
-           <SidebarItem to="/fabricators" label="FABRICATORS" />
-           <SidebarItem to="/finder" label="FINDER" />
-           <SidebarItem to="/arena" label="VS MODE" />
-           <SidebarItem to="/news" label="NEWS" />
+           {/* NAVIGATION ITEMS: Huge Typography Grid */}
+           <SidebarItem to="/" label="CONTROL ROOM" exact index={1} />
+           <SidebarItem to="/consoles" label="CONSOLES" index={2} />
+           <SidebarItem to="/fabricators" label="FABRICATORS" index={3} />
+           <SidebarItem to="/finder" label="FINDER" index={4} />
+           <SidebarItem to="/arena" label="VS MODE" index={5} />
+           <SidebarItem to="/news" label="NEWS" index={6} />
         </nav>
       </aside>
 
