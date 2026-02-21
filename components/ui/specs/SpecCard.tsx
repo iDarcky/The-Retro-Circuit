@@ -1,3 +1,4 @@
+
 'use client';
 
 import { type ReactNode, useState } from 'react';
@@ -23,31 +24,35 @@ export const SpecCard = ({
     };
 
     return (
-        <div className={`bg-bg-primary border border-border-normal relative overflow-hidden group hover:border-primary/50 transition-colors ${className}`}>
-            {/* Header Strip */}
+        <div className={`
+            bg-white/[0.02] border border-white/5 p-6 md:p-8 h-full relative overflow-hidden group
+            transition-all duration-300 hover:border-white/10 hover:bg-white/[0.04] hover:shadow-[0_0_20px_rgba(0,0,0,0.3)]
+            ${className}
+        `}>
+            {/* Header: Subtle, Clean */}
             <div
-                className={`bg-black/40 border-b border-border-normal px-4 py-2 flex justify-between items-center ${collapsible ? 'cursor-pointer hover:bg-white/5' : ''}`}
+                className={`flex justify-between items-center mb-6 ${collapsible ? 'cursor-pointer' : ''}`}
                 onClick={toggle}
             >
-                <h3 className="font-pixel text-[10px] text-primary uppercase tracking-widest">{title}</h3>
-                <div className="flex items-center gap-2">
-                    <div className="flex gap-1">
-                        <div className="w-1 h-1 bg-gray-700 rounded-full group-hover:bg-secondary transition-colors"></div>
-                        <div className="w-1 h-1 bg-gray-700 rounded-full group-hover:bg-secondary transition-colors delay-75"></div>
+                <h3 className="font-sans text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">
+                    {title}
+                </h3>
+                {collapsible && (
+                    <div className="text-gray-600 group-hover:text-white transition-colors">
+                        {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                     </div>
-                    {collapsible && (
-                        <div className="text-gray-500 hover:text-white transition-colors ml-2">
-                            {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                        </div>
-                    )}
-                </div>
+                )}
             </div>
-            {/* Content Body */}
+
+            {/* Content: Structured Grid Feel */}
             {(!collapsible || isOpen) && (
-                <div className="p-4 space-y-3 animate-fadeIn">
+                <div className="space-y-3 animate-fadeIn">
                     {children}
                 </div>
             )}
+
+            {/* Subtle decorative corner */}
+            <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
         </div>
     );
 };

@@ -374,7 +374,10 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                         // Actually CLONE usually just clears ID-related fields but keeps specs.
                         // So we should NOT clear pendingEmulationData here.
                     }
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    const mainScrollContainer = document.getElementById('main-scroll-container');
+                    if (mainScrollContainer) {
+                        mainScrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
                 }
             } else {
                 onError(`OPERATION FAILED: ${response.message}`);
