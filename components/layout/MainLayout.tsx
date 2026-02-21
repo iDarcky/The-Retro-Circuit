@@ -92,6 +92,8 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       if (scrollRef.current) {
           scrollRef.current.scrollTop = 0;
       }
+      // Reset window scroll to handle mobile address bar quirks
+      window.scrollTo(0, 0);
   }, [pathname]);
 
   return (
@@ -185,7 +187,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 relative z-10 flex flex-col min-h-0 pt-12 md:pt-0">
+      <main className="flex-1 relative z-10 flex flex-col min-h-0 pt-[47px] md:pt-0">
         {/* Scrollable Content Container */}
         <div
             id="main-scroll-container"
