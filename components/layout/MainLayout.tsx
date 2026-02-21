@@ -185,7 +185,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 relative z-10 flex flex-col min-h-0">
+      <main className="flex-1 relative z-10 flex flex-col min-h-0 pt-12 md:pt-0">
         {/* Scrollable Content Container */}
         <div
             id="main-scroll-container"
