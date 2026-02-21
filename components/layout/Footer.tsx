@@ -3,11 +3,9 @@
 import { type FC } from 'react';
 import Link from 'next/link';
 import { siteConfig } from '../../config/site';
-import { useConsent } from '../privacy/ConsentContext';
 
 const Footer: FC = () => {
   const currentYear = new Date().getFullYear();
-  const { reset } = useConsent();
 
   return (
     <footer className="w-full bg-bg-primary shrink-0 z-10 relative">
@@ -22,12 +20,6 @@ const Footer: FC = () => {
              The Retro Circuit
            </Link>
            <span className="text-[10px]">© {currentYear} All Rights Reserved.</span>
-           <button
-             onClick={reset}
-             className="text-[10px] uppercase text-zinc-600 hover:text-zinc-400 transition-colors cursor-pointer text-left"
-           >
-             Cookie Settings
-           </button>
         </div>
 
         {/* Center: Navigation */}
