@@ -94,7 +94,7 @@ export default function AboutPage() {
             <span className="text-gray-500">[ 03 ]</span>
             OPERATOR LOG
         </h2>
-        
+
         <div className="flex flex-col md:flex-row gap-8 items-center md:items-start bg-bg-primary/50 border border-dashed border-gray-700 p-8">
             <div className="w-24 h-24 bg-bg-secondary flex items-center justify-center border-2 border-white/20 shrink-0 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
                 <span className="font-pixel text-3xl text-gray-500">OP</span>
