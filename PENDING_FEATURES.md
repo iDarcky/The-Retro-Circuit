@@ -133,3 +133,21 @@ This document organizes all pending features, improvements, and ideas into funct
 - [ ] **CI/CD Pipeline**: Set up GitHub Actions for automated linting and build verification.
 - [ ] **Server Actions Migration**: Move `addConsole`/`updateConsole` logic to Server Actions for better security and type safety.
 - [ ] **Dead Code Removal**: Cleanup unused files like `lib/utils.ts` if confirmed empty.
+
+---
+
+## 8. Agent Recommendations
+*Focus: Security, modern web standards (PWA), and developer experience.*
+
+### 🔴 Critical
+- [ ] **Rate Limiting (API Protection)**: Implement `upstash/ratelimit` or similar on search and form endpoints to prevent abuse and DoS.
+- [ ] **Liability Disclaimer Page**: Create a clear Terms/Disclaimer page stating "The Retro Circuit is not responsible for hardware damage from overclocking/modding".
+
+### 🟡 Must Have
+- [ ] **PWA & Install Prompt**: Add `manifest.json` and `ios-pwa-splash` to allow users to "Install" the site as an app. This aligns with the "Launcher" vision.
+- [ ] **Environment Variable Validation**: Use `t3-env` or `zod` to fail the build immediately if `NEXT_PUBLIC_SUPABASE_URL` or other keys are missing.
+- [ ] **Command Palette (`Cmd+K`)**: Implement a global command menu for power users to navigate Consoles, VS Mode, and Settings instantly.
+
+### 🟢 Nice to Have
+- [ ] **Internationalization (i18n) Readiness**: Scaffold the project with `next-intl` to support future Brazilian/SEA markets without a full rewrite.
+- [ ] **Living Design System**: Create a hidden `/design` route that displays all buttons, badges, and typestyles to ensure "Swiss" consistency.
