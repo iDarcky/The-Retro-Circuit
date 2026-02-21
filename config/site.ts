@@ -11,6 +11,7 @@ export const siteConfig = {
   },
   routes: [
     { label: "About Us", href: "/about" },
+    { label: "Roadmap", href: "/roadmap" },
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Service", href: "/terms" },
     { label: "Credits", href: "/credits" }
