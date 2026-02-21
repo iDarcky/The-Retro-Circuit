@@ -37,124 +37,114 @@ export default function AboutPage() {
       </header>
 
       {/* MAIN CONTENT GRID */}
-      <div className="max-w-[1800px] mx-auto px-6 md:px-12 py-16 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
+      <div className="max-w-[1800px] mx-auto px-6 md:px-12 py-16 grid grid-cols-1 lg:grid-cols-12 gap-x-24 gap-y-16 lg:gap-y-24 items-start">
         
-        {/* LEFT COLUMN (Mission & Operator) */}
-        <div className="lg:col-span-7 flex flex-col gap-24">
+        {/* 1. MISSION / SIGNAL NOISE RATIO */}
+        <section className="lg:col-span-7">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-violet-500 border border-violet-500/30 px-2 py-0.5 bg-violet-500/5">[ 01 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">Signal Noise Ratio</h2>
+            </div>
 
-            {/* 2. MISSION / SIGNAL NOISE RATIO */}
-            <section>
-                <div className="flex items-center gap-4 mb-8">
-                   <span className="font-mono text-xs text-violet-500 border border-violet-500/30 px-2 py-0.5 bg-violet-500/5">[ 01 ]</span>
-                   <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">Signal Noise Ratio</h2>
+            <div className="space-y-8">
+                <p className="text-2xl md:text-3xl lg:text-4xl font-light leading-tight text-white">
+                    The retro handheld market is a labyrinth of fragmented data. Variants, revisions, and silent upgrades create static in the signal.
+                </p>
+                <div className="pl-6 border-l-2 border-violet-500">
+                    <p className="text-lg md:text-xl text-zinc-400 font-light leading-relaxed">
+                        In a sea of subjective noise, we provide the raw signal. <br />
+                        <span className="text-white font-medium">No feelings. Just data.</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        {/* 2. SYSTEM ARCHITECTURE (Clean Data Table) */}
+        <section className="lg:col-span-5">
+             <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 02 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">System Architecture</h2>
+            </div>
+
+            <div className="border-t border-white/10">
+                <ArchitectureRow label="Core Framework" value="Next.js 16 (App Router)" icon={<Monitor size={14} />} />
+                <ArchitectureRow label="Server Components" value="React 19" icon={<Code size={14} />} />
+                <ArchitectureRow label="Data Layer" value="Supabase (PostgreSQL)" icon={<Database size={14} />} />
+                <ArchitectureRow label="UI Engine" value="Tailwind CSS" icon={<Layout size={14} />} />
+                <ArchitectureRow label="Type Safety" value="TypeScript (Strict)" icon={<Shield size={14} />} />
+                <ArchitectureRow label="Deployment" value="Vercel Edge Network" icon={<Globe size={14} />} />
+            </div>
+        </section>
+
+        {/* 3. OPERATOR LOG (Swiss Identity Card) */}
+        <section className="lg:col-span-7">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 03 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">Operator Log</h2>
+            </div>
+
+            <div className="border border-white/10 bg-white/[0.02] p-6 md:p-8 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden group">
+                {/* Decorative Corner */}
+                <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
+                     <Shield size={64} strokeWidth={1} />
                 </div>
 
-                <div className="space-y-8">
-                    <p className="text-2xl md:text-3xl lg:text-4xl font-light leading-tight text-white">
-                        The retro handheld market is a labyrinth of fragmented data. Variants, revisions, and silent upgrades create static in the signal.
-                    </p>
-                    <div className="pl-6 border-l-2 border-violet-500">
-                        <p className="text-lg md:text-xl text-zinc-400 font-light leading-relaxed">
-                            In a sea of subjective noise, we provide the raw signal. <br />
-                            <span className="text-white font-medium">No feelings. Just data.</span>
+                {/* Avatar Placeholder */}
+                <div className="w-24 h-24 md:w-32 md:h-32 bg-zinc-900 border border-white/10 flex items-center justify-center shrink-0">
+                    <span className="font-pixel text-2xl text-zinc-700 group-hover:text-white transition-colors">OP</span>
+                </div>
+
+                {/* Details */}
+                <div className="flex-1 space-y-6 relative z-10">
+                    <div>
+                        <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-xl text-white font-bold tracking-tight uppercase">Product Lead</h3>
+                            <span className="font-mono text-xs text-emerald-500 border border-emerald-500/30 bg-emerald-500/5 px-2 py-0.5">ADMIN_ACCESS</span>
+                        </div>
+                        <div className="h-px w-full bg-white/10 mb-4"></div>
+                        <p className="font-mono text-sm text-zinc-400 leading-relaxed max-w-lg">
+                            Built to solve the chaos of handheld specifications. This project serves as both a public utility for the retro gaming community and a demonstration of modern full-stack architecture.
                         </p>
                     </div>
-                </div>
-            </section>
 
-            {/* 3. OPERATOR LOG (Swiss Identity Card) */}
-            <section>
-                <div className="flex items-center gap-4 mb-8">
-                   <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 03 ]</span>
-                   <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">Operator Log</h2>
-                </div>
-
-                <div className="border border-white/10 bg-white/[0.02] p-6 md:p-8 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden group">
-                    {/* Decorative Corner */}
-                    <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-                         <Shield size={64} strokeWidth={1} />
-                    </div>
-
-                    {/* Avatar Placeholder */}
-                    <div className="w-24 h-24 md:w-32 md:h-32 bg-zinc-900 border border-white/10 flex items-center justify-center shrink-0">
-                        <span className="font-pixel text-2xl text-zinc-700 group-hover:text-white transition-colors">OP</span>
-                    </div>
-
-                    {/* Details */}
-                    <div className="flex-1 space-y-6 relative z-10">
-                        <div>
-                            <div className="flex items-center justify-between mb-2">
-                                <h3 className="text-xl text-white font-bold tracking-tight uppercase">Product Lead</h3>
-                                <span className="font-mono text-xs text-emerald-500 border border-emerald-500/30 bg-emerald-500/5 px-2 py-0.5">ADMIN_ACCESS</span>
-                            </div>
-                            <div className="h-px w-full bg-white/10 mb-4"></div>
-                            <p className="font-mono text-sm text-zinc-400 leading-relaxed max-w-lg">
-                                Built to solve the chaos of handheld specifications. This project serves as both a public utility for the retro gaming community and a demonstration of modern full-stack architecture.
-                            </p>
-                        </div>
-
-                        <div className="font-mono text-xs text-zinc-500 flex items-center gap-2">
-                             <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                             CURRENT_OBJECTIVE: DATA_EXPANSION
-                        </div>
+                    <div className="font-mono text-xs text-zinc-500 flex items-center gap-2">
+                         <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                         CURRENT_OBJECTIVE: DATA_EXPANSION
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-        </div>
+         {/* 4. ACTIONS (Relevant Links) */}
+         <section className="lg:col-span-5">
+             <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 04 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">Relevant Links</h2>
+            </div>
 
-        {/* RIGHT COLUMN (Architecture & Actions) */}
-        <div className="lg:col-span-5 flex flex-col gap-24">
-
-            {/* 4. SYSTEM ARCHITECTURE (Clean Data Table) */}
-            <section>
-                 <div className="flex items-center gap-4 mb-8">
-                   <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 02 ]</span>
-                   <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">System Architecture</h2>
-                </div>
-
-                <div className="border-t border-white/10">
-                    <ArchitectureRow label="Core Framework" value="Next.js 16 (App Router)" icon={<Monitor size={14} />} />
-                    <ArchitectureRow label="Server Components" value="React 19" icon={<Code size={14} />} />
-                    <ArchitectureRow label="Data Layer" value="Supabase (PostgreSQL)" icon={<Database size={14} />} />
-                    <ArchitectureRow label="UI Engine" value="Tailwind CSS" icon={<Layout size={14} />} />
-                    <ArchitectureRow label="Type Safety" value="TypeScript (Strict)" icon={<Shield size={14} />} />
-                    <ArchitectureRow label="Deployment" value="Vercel Edge Network" icon={<Globe size={14} />} />
-                </div>
-            </section>
-
-             {/* 5. ACTIONS (Relevant Links) */}
-             <section>
-                 <div className="flex items-center gap-4 mb-8">
-                   <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 04 ]</span>
-                   <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">Relevant Links</h2>
-                </div>
-
-                <div className="grid grid-cols-1 gap-4">
-                    <ActionCard
-                        href={siteConfig.links.email}
-                        label="Open Comms"
-                        sublabel="Contact via Email"
-                        icon={<Mail size={18} />}
-                    />
-                     <ActionCard
-                        href={siteConfig.links.github}
-                        label="View Source"
-                        sublabel="GitHub Repository"
-                        icon={<Github size={18} />}
-                        external
-                    />
-                     <ActionCard
-                        href={siteConfig.links.linkedin}
-                        label="Connect"
-                        sublabel="LinkedIn Profile"
-                        icon={<Linkedin size={18} />}
-                        external
-                    />
-                </div>
-            </section>
-
-        </div>
+            <div className="grid grid-cols-1 gap-4">
+                <ActionCard
+                    href={siteConfig.links.email}
+                    label="Open Comms"
+                    sublabel="Contact via Email"
+                    icon={<Mail size={18} />}
+                />
+                 <ActionCard
+                    href={siteConfig.links.github}
+                    label="View Source"
+                    sublabel="GitHub Repository"
+                    icon={<Github size={18} />}
+                    external
+                />
+                 <ActionCard
+                    href={siteConfig.links.linkedin}
+                    label="Connect"
+                    sublabel="LinkedIn Profile"
+                    icon={<Linkedin size={18} />}
+                    external
+                />
+            </div>
+        </section>
 
       </div>
 
