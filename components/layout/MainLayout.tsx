@@ -46,7 +46,6 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const [dbStatus, setDbStatus] = useState<'CONNECTING' | 'ONLINE' | 'OFFLINE'>('CONNECTING');
   const [isAdmin, setIsAdmin] = useState(false);
   const { openSearch } = useSearch();
-  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // 1. Setup Auth Listener Immediately
@@ -89,15 +88,10 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const pathname = usePathname();
   useEffect(() => {
       setSidebarOpen(false);
-      if (scrollRef.current) {
-          scrollRef.current.scrollTop = 0;
-      }
-      // Reset window scroll to handle mobile address bar quirks
-      window.scrollTo(0, 0);
   }, [pathname]);
 
   return (
-    <div className="h-[100dvh] flex flex-col relative overflow-hidden bg-bg-primary">
+    <div className="h-screen flex flex-col relative overflow-hidden bg-bg-primary">
       
       {/* BACKGROUND GRID */}
 
@@ -187,13 +181,9 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 relative z-10 flex flex-col min-h-0 pt-[47px] md:pt-0">
+      <main className="flex-1 relative z-10 flex flex-col min-h-0">
         {/* Scrollable Content Container */}
-        <div
-            id="main-scroll-container"
-            ref={scrollRef}
-            className="flex-1 overflow-y-auto custom-scrollbar bg-bg-primary/80 pb-24 md:pb-0 flex flex-col min-h-0"
-        >
+        <div className="flex-1 overflow-y-auto custom-scrollbar bg-bg-primary/80 pb-24 md:pb-0 flex flex-col min-h-0">
              {children}
         </div>
 
