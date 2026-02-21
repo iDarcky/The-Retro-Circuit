@@ -11,7 +11,7 @@ import { supabase, isSupabaseConfigured } from '../../lib/supabase/singleton';
 import MobileBottomNav from './MobileBottomNav';
 import MobileTopBar from './MobileTopBar';
 import DesktopHeader from './DesktopHeader';
-import { 
+import {
   IconDatabase, IconVS,
   IconHome, IconChip, IconSearch
 } from '../ui/Icons';
@@ -23,10 +23,10 @@ const SidebarItem = ({ to, icon: Icon, label, exact = false }: { to: string, ico
   const isActive = exact ? pathname === to : pathname.startsWith(to);
 
   return (
-    <Link 
-      href={to} 
+    <Link
+      href={to}
       className={`group flex items-center px-4 py-3 font-mono transition-all duration-200 border-l-4 ${
-        isActive 
+        isActive
           ? 'border-secondary bg-bg-secondary/50 text-white shadow-[inset_0_0_10px_rgba(0,255,157,0.2)]'
           : 'border-transparent text-gray-400 hover:text-primary hover:bg-bg-secondary/20 hover:border-primary'
       }`}
@@ -112,7 +112,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
 
       {/* MOBILE DRAWER BACKDROP (z-50) */}
       {isSidebarOpen && (
-          <div 
+          <div
             className="md:hidden fixed inset-0 z-[50] bg-black/80 backdrop-blur-sm animate-fadeIn"
             onClick={() => setSidebarOpen(false)}
           />
@@ -122,10 +122,10 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       {/* Hidden on Desktop now as we use Top Nav */}
       <aside className={`
           flex flex-col h-screen transition-transform duration-300 ease-out shadow-[0_0_50px_rgba(0,0,0,0.5)]
-          
+
           /* Mobile: Fixed Right, Slide from Right, Neon Left Border, High Z-Index */
           fixed top-0 right-0 w-72 bg-black border-l border-secondary z-[60]
-          
+
           /* Desktop: Hidden */
           md:hidden
 
@@ -135,11 +135,11 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         <div className="p-6 border-b border-border-normal flex items-center justify-center bg-black/20 min-h-[80px]">
              <div className="relative group text-center">
                 <Link href="/" className="block hover:opacity-80 transition-opacity">
-                  <Image 
-                    src="/brand-logo.png" 
-                    alt="The Retro Circuit" 
-                    width={180} 
-                    height={50} 
+                  <Image
+                    src="/brand-logo.png"
+                    alt="The Retro Circuit"
+                    width={180}
+                    height={50}
                     priority
                     className="object-contain drop-shadow-[0_0_8px_rgba(0,255,157,0.3)]"
                   />
@@ -150,7 +150,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
         <nav className="flex-1 py-6 space-y-2 overflow-y-auto custom-scrollbar">
            {/* SEARCH TRIGGER */}
            <div className="px-4 mb-6">
-                <button 
+                <button
                     onClick={openSearch}
                     className="w-full bg-black/40 border border-white/10 text-gray-500 font-mono text-sm px-3 py-2 flex justify-between items-center hover:border-secondary hover:text-white transition-all group cursor-pointer"
                 >
@@ -166,11 +166,11 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
 
            <div className="px-6 mb-2 text-xs font-mono text-secondary uppercase tracking-widest opacity-80">MAINFRAME</div>
            <SidebarItem to="/" icon={IconHome} label="CONTROL ROOM" exact />
-           
+
            <div className="px-6 mt-6 mb-2 text-xs font-mono text-primary uppercase tracking-widest opacity-80">DATABASE</div>
            <SidebarItem to="/consoles" icon={IconDatabase} label="CONSOLES" />
            <SidebarItem to="/fabricators" icon={IconChip} label="FABRICATORS" />
-           
+
            <div className="px-6 mt-6 mb-2 text-xs font-mono text-accent uppercase tracking-widest opacity-80">TOOLS</div>
            <SidebarItem to="/arena" icon={IconVS} label="VS MODE" />
         </nav>
