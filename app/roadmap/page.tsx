@@ -3,6 +3,8 @@ import RoadmapView from '../../components/roadmap/RoadmapView';
 import { siteConfig } from '../../config/site';
 import { fetchRoadmapItems } from '../../lib/api';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Project Roadmap | The Retro Circuit',
   description: 'Track our progress as we build the ultimate handheld gaming database. See what features are coming next.',
