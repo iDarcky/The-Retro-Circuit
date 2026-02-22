@@ -1,14 +1,21 @@
 import { Metadata } from 'next';
-import { upcomingItems, completedItems } from '../../data/roadmap';
 import RoadmapView from '../../components/roadmap/RoadmapView';
 import { siteConfig } from '../../config/site';
+import { fetchRoadmapItems } from '../../lib/api';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Project Roadmap | The Retro Circuit',
   description: 'Track our progress as we build the ultimate handheld gaming database. See what features are coming next.',
 };
 
-export default function RoadmapPage() {
+export default async function RoadmapPage() {
+  const roadmapItems = await fetchRoadmapItems();
+
+  const completedItems = roadmapItems.filter(item => item.status === 'completed');
+  const upcomingItems = roadmapItems.filter(item => item.status !== 'completed');
+
   return (
     <div className="min-h-screen bg-bg-primary text-text-primary px-6 py-12 md:py-24">
       <div className="max-w-6xl mx-auto">
@@ -41,16 +48,12 @@ export default function RoadmapPage() {
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
                 <div className="text-center md:text-left">
                     <h3 className="text-xl font-bold font-mono uppercase tracking-widest mb-2 text-text-primary">Have a Suggestion?</h3>
-                    <p className="text-sm text-text-secondary">Join the conversation on our Discord or contribute on GitHub.</p>
+                    <p className="text-sm text-text-secondary">Send us an email with your ideas to help shape the future.</p>
                 </div>
                 <div className="flex gap-4">
-                     <a href="https://github.com/danielmaghis/retro-circuit" target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-bg-primary border border-border-normal text-xs font-mono uppercase tracking-widest hover:bg-white hover:text-black transition-colors">
-                        GitHub Repo
+                     <a href="mailto:contact@theretrocircuit.com" className="px-6 py-3 bg-bg-primary border border-border-normal text-xs font-mono uppercase tracking-widest hover:bg-white hover:text-black transition-colors">
+                        contact@theretrocircuit.com
                      </a>
-                     {/* Placeholder for Discord Link */}
-                     <button disabled className="px-6 py-3 bg-violet-900/20 border border-violet-500/30 text-violet-400 text-xs font-mono uppercase tracking-widest cursor-not-allowed opacity-50">
-                        Discord (Soon)
-                     </button>
                 </div>
             </div>
         </div>

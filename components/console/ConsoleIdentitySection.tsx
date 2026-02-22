@@ -147,7 +147,7 @@ export default function ConsoleIdentitySection({
         if (el) {
             // Adjust scroll position to account for sticky header + global header (~130px total)
             const y = el.getBoundingClientRect().top + window.scrollY - 140;
-            const scrollContainer = document.getElementById('main-scroll-container');
+            const scrollContainer = document.querySelector('main > div.overflow-y-auto');
             if (scrollContainer) {
                 scrollContainer.scrollTo({ top: scrollContainer.scrollTop + el.getBoundingClientRect().top - 140, behavior: 'smooth' });
             } else {

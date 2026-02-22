@@ -282,3 +282,15 @@ export interface ConsoleDetails {
 
     status?: ContentStatus;
 }
+
+export interface RoadmapFeature {
+  id: string;
+  title: string;
+  description: string;
+  status: 'planned' | 'in-progress' | 'completed';
+  category: string;
+  priority: 'critical' | 'must-have' | 'nice-to-have';
+  target_date?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}

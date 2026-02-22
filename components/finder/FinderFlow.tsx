@@ -124,10 +124,7 @@ const FinderFlowContent = () => {
   const stepParam = searchParams.get('step');
 
   useEffect(() => {
-    const mainScrollContainer = document.getElementById('main-scroll-container');
-    if (mainScrollContainer) {
-        mainScrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [stepParam]);
 
   let stepIndex = -1;
