@@ -13,10 +13,10 @@ const GlobalSearch: FC = () => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    
+
     const inputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
-    
+
     // Debounce Timer
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -62,7 +62,7 @@ const GlobalSearch: FC = () => {
 
     const handleSelect = (result: SearchResult) => {
         let path = '/';
-        
+
         switch (result.type) {
             case 'CONSOLE':
                 path = `/consoles/${result.slug}`;
@@ -79,8 +79,8 @@ const GlobalSearch: FC = () => {
     if (!isOpen) return null;
 
     return (
-        <div 
-            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-start justify-center pt-20 animate-fadeIn" 
+        <div
+            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-start justify-center pt-20 animate-fadeIn"
             onClick={closeSearch}
         >
             {/* PANEL: Centered box, max-w-xl, Neon Green Border, Deep Black BG */}
@@ -106,17 +106,17 @@ const GlobalSearch: FC = () => {
 
                 {/* Results List */}
                 <div className="overflow-y-auto custom-scrollbar flex-1 bg-gradient-to-b from-[#0a0a0a] to-[#050505] min-h-[100px]">
-                    
+
                     {query.length > 0 && query.length < 2 && (
-                         <div className="p-8 text-center font-mono text-xs text-gray-600">
-                             ENTER AT LEAST 2 CHARACTERS...
-                         </div>
+                        <div className="p-8 text-center font-mono text-xs text-gray-600">
+                            ENTER AT LEAST 2 CHARACTERS...
+                        </div>
                     )}
 
                     {results.length === 0 && query.length >= 2 && !isLoading && (
-                         <div className="p-8 text-center font-mono text-xs text-gray-600">
-                             NO RECORDS FOUND.
-                         </div>
+                        <div className="p-8 text-center font-mono text-xs text-gray-600">
+                            NO RECORDS FOUND.
+                        </div>
                     )}
 
                     <div className="divide-y divide-green-500/10">
@@ -128,6 +128,11 @@ const GlobalSearch: FC = () => {
                             >
                                 {/* Image Placeholder */}
                                 <div className="w-12 h-12 bg-black border border-gray-800 flex-shrink-0 flex items-center justify-center overflow-hidden shadow-lg group-hover:border-green-500/50 transition-colors">
+                                    <img
+                                        src="/retro-grid.png"
+                                        alt=""
+                                        className="absolute inset-0 w-full h-full object-cover opacity-[0.03] mix-blend-overlay pointer-events-none"
+                                    />
                                     {res.image ? (
                                         <img src={res.image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100" />
                                     ) : (
@@ -141,10 +146,9 @@ const GlobalSearch: FC = () => {
                                         {res.title}
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className={`text-[9px] font-mono px-1.5 py-0.5 border rounded-sm ${
-                                            res.type === 'CONSOLE' ? 'text-primary border-primary bg-primary/10' :
-                                            res.type === 'FABRICATOR' ? 'text-accent border-accent bg-accent/10' : 'text-gray-400 border-gray-400'
-                                        }`}>
+                                        <span className={`text-[9px] font-mono px-1.5 py-0.5 border rounded-sm ${res.type === 'CONSOLE' ? 'text-primary border-primary bg-primary/10' :
+                                                res.type === 'FABRICATOR' ? 'text-accent border-accent bg-accent/10' : 'text-gray-400 border-gray-400'
+                                            }`}>
                                             {res.type}
                                         </span>
                                         <span className="text-[10px] font-mono text-gray-500 truncate uppercase tracking-tight">
