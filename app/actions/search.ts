@@ -1,12 +1,13 @@
 "use server";
 
-import { supabase } from "../../lib/supabase/singleton";
+import { supabaseAnon } from "../../lib/supabase/anon";
 import { SearchResult } from "../../lib/types";
 
 export const searchDatabase = async (query: string): Promise<SearchResult[]> => {
     if (!query || query.length < 2) return [];
 
     try {
+        const supabase = supabaseAnon;
         const term = `%${query.trim()}%`;
 
         // Parallel query execution

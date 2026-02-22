@@ -1,10 +1,12 @@
 "use server";
 
-import { supabase } from "../../lib/supabase/singleton";
+import { createClient } from "../../lib/supabase/server";
+import { supabaseAnon } from "../../lib/supabase/anon";
 import { Manufacturer } from "../../lib/types";
 
 export const fetchManufacturers = async (): Promise<Manufacturer[]> => {
     try {
+        const supabase = supabaseAnon;
         const { data, error } = await supabase.from('manufacturer').select('*').order('name');
         if (error) throw error;
         return data as Manufacturer[];
@@ -16,6 +18,7 @@ export const fetchManufacturers = async (): Promise<Manufacturer[]> => {
 
 export const getManufacturerBySlug = async (slug: string): Promise<Manufacturer | null> => {
     try {
+        const supabase = supabaseAnon;
         const { data, error } = await supabase.from('manufacturer').select('*').eq('slug', slug).single();
         if (error) throw error;
         return data as Manufacturer;
@@ -26,6 +29,7 @@ export const getManufacturerBySlug = async (slug: string): Promise<Manufacturer 
 
 export const getManufacturerById = async (id: string): Promise<Manufacturer | null> => {
     try {
+        const supabase = await createClient();
         const { data, error } = await supabase.from('manufacturer').select('*').eq('id', id).single();
         if (error) throw error;
         return data as Manufacturer;
@@ -36,6 +40,7 @@ export const getManufacturerById = async (id: string): Promise<Manufacturer | nu
 
 export const addManufacturer = async (manu: Omit<Manufacturer, 'id'>): Promise<{ success: boolean, message?: string }> => {
     try {
+        const supabase = await createClient();
         // We use select() to get the inserted data back, useful for debugging even if not used
         const { error } = await supabase.from('manufacturer').insert([manu]).select();
 
@@ -52,6 +57,7 @@ export const addManufacturer = async (manu: Omit<Manufacturer, 'id'>): Promise<{
 
 export const updateManufacturer = async (id: string, manu: Partial<Manufacturer>): Promise<{ success: boolean, message?: string }> => {
     try {
+        const supabase = await createClient();
         const { error } = await supabase.from('manufacturer').update(manu).eq('id', id);
         if (error) {
             console.error('[API] Update Error:', error);

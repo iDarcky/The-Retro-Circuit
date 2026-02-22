@@ -1,10 +1,11 @@
 "use server";
 
-import { createClient } from "../../lib/supabase/client";
+import { createClient } from "../../lib/supabase/server";
+import { supabaseAnon } from "../../lib/supabase/anon";
 import { RoadmapFeature } from "../../lib/types/domain";
 
 export async function fetchRoadmapItems() {
-  const supabase = createClient();
+  const supabase = supabaseAnon;
   const { data, error } = await supabase
     .from('roadmap_features')
     .select('*')
@@ -20,7 +21,7 @@ export async function fetchRoadmapItems() {
 }
 
 export async function createRoadmapItem(item: Omit<RoadmapFeature, 'id' | 'created_at' | 'updated_at'>) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from('roadmap_features')
     .insert([item])
@@ -36,7 +37,7 @@ export async function createRoadmapItem(item: Omit<RoadmapFeature, 'id' | 'creat
 }
 
 export async function updateRoadmapItem(id: string, updates: Partial<RoadmapFeature>) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from('roadmap_features')
     .update(updates)
@@ -53,7 +54,7 @@ export async function updateRoadmapItem(id: string, updates: Partial<RoadmapFeat
 }
 
 export async function deleteRoadmapItem(id: string) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase
     .from('roadmap_features')
     .delete()
