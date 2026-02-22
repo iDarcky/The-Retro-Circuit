@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Press_Start_2P, JetBrains_Mono, Share_Tech_Mono, Inter } from "next/font/google";
 import "../styles/globals.css";
 import ClientShell from "../components/layout/ClientShell";
-import AuthSync from "../components/AuthSync";
+import AuthSync from "../components/auth/AuthSync";
 import Footer from "../components/layout/Footer";
 import { ConsentProvider } from "../components/privacy/ConsentContext";
 import { CookieBanner } from "../components/privacy/CookieBanner";
@@ -11,8 +11,8 @@ import { AnalyticsWrapper } from "../components/privacy/AnalyticsWrapper";
 import { siteConfig } from "../config/site";
 
 // Load fonts via Next.js to prevent Layout Shift
-const pressStart = Press_Start_2P({ 
-  weight: "400", 
+const pressStart = Press_Start_2P({
+  weight: "400",
   subsets: ["latin"],
   variable: '--font-press-start'
 });
@@ -123,11 +123,11 @@ export default function RootLayout({
 
           {/* Main Application Shell */}
           <ClientShell>
-              {/* Flex wrapper to ensure footer sticks to bottom */}
-              <div className="flex-1 w-full flex flex-col">
-                {children}
-              </div>
-              <Footer />
+            {/* Flex wrapper to ensure footer sticks to bottom */}
+            <div className="flex-1 w-full flex flex-col">
+              {children}
+            </div>
+            <Footer />
           </ClientShell>
 
           <CookieBanner />
