@@ -1,6 +1,7 @@
+"use server";
 
-import { supabase } from "../supabase/singleton";
-import { ConsoleDetails } from "../types";
+import { supabase } from "../../lib/supabase/singleton";
+import { ConsoleDetails } from "../../lib/types";
 
 export const fetchLatestConsoles = async (limit: number = 3): Promise<ConsoleDetails[]> => {
     try {

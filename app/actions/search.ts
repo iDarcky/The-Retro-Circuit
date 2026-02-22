@@ -1,6 +1,7 @@
+"use server";
 
-import { supabase } from "../supabase/singleton";
-import { SearchResult } from "../types";
+import { supabase } from "../../lib/supabase/singleton";
+import { SearchResult } from "../../lib/types";
 
 export const searchDatabase = async (query: string): Promise<SearchResult[]> => {
     if (!query || query.length < 2) return [];

@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef, type FC, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSearch } from './SearchContext';
-import { searchDatabase } from '../../lib/api';
+import { searchDatabase } from '../../app/actions';
 import { SearchResult } from '../../lib/types';
 import { IconSearch } from './Icons';
 
@@ -147,7 +147,7 @@ const GlobalSearch: FC = () => {
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <span className={`text-[9px] font-mono px-1.5 py-0.5 border rounded-sm ${res.type === 'CONSOLE' ? 'text-primary border-primary bg-primary/10' :
-                                                res.type === 'FABRICATOR' ? 'text-accent border-accent bg-accent/10' : 'text-gray-400 border-gray-400'
+                                            res.type === 'FABRICATOR' ? 'text-accent border-accent bg-accent/10' : 'text-gray-400 border-gray-400'
                                             }`}>
                                             {res.type}
                                         </span>

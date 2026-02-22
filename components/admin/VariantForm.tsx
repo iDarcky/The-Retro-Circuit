@@ -3,7 +3,7 @@
 
 import { useState, type FormEvent, type FC, useEffect, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { addConsoleVariant, updateConsoleVariant, getVariantsByConsole } from '../../lib/api';
+import { addConsoleVariant, updateConsoleVariant, getVariantsByConsole } from '../../app/actions';
 import { purgeCache } from '../../app/actions/revalidate';
 import { ConsoleVariantSchema, VARIANT_FORM_GROUPS, ConsoleVariant } from '../../lib/types';
 import Button from '../ui/Button';
@@ -12,7 +12,7 @@ import ImageUpload from '../ui/ImageUpload';
 import { EmulationForm } from './EmulationForm';
 
 interface VariantFormProps {
-    consoleList: {name: string, id: string}[];
+    consoleList: { name: string, id: string }[];
     preSelectedConsoleId?: string | null;
     initialData?: ConsoleVariant | null; // For Edit Mode
     onSuccess: (msg: string) => void;
@@ -26,11 +26,11 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
-    
+
     const isEditMode = !!initialData;
     const [showEmulationForm, setShowEmulationForm] = useState(false);
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
-    
+
     const [existingVariants, setExistingVariants] = useState<ConsoleVariant[]>([]);
     const [selectedTemplate, setSelectedTemplate] = useState<string>('');
     const [pendingEmulationData, setPendingEmulationData] = useState<any>(null);
@@ -59,11 +59,11 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             setFormData(flattenedData);
             const mb = Number(initialData.ram_mb);
             if (!isNaN(mb) && mb > 0) {
-                 if (mb >= 1024 && mb % 1024 === 0) {
-                     setRamInput({ value: mb / 1024, unit: 'GB' });
-                 } else {
-                     setRamInput({ value: mb, unit: 'MB' });
-                 }
+                if (mb >= 1024 && mb % 1024 === 0) {
+                    setRamInput({ value: mb / 1024, unit: 'GB' });
+                } else {
+                    setRamInput({ value: mb, unit: 'MB' });
+                }
             }
 
             // CPU Clock Init
@@ -158,7 +158,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             if (consoleId) {
                 const variants = await getVariantsByConsole(consoleId);
                 setExistingVariants(variants);
-                setSelectedTemplate(''); 
+                setSelectedTemplate('');
             } else {
                 setExistingVariants([]);
             }
@@ -205,7 +205,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     };
 
     const handleTemplateSelect = (variantId: string) => {
-        if (isEditMode) return; 
+        if (isEditMode) return;
         setSelectedTemplate(variantId);
         setFieldErrors({});
         setPendingEmulationData(null);
@@ -232,7 +232,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
             // Handle Emulation Profile Staging
             if (template.emulation_profile) {
-                 setPendingEmulationData(template.emulation_profile);
+                setPendingEmulationData(template.emulation_profile);
             }
 
             setFormData(prev => ({
@@ -242,8 +242,8 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
             const mb = Number(template.ram_mb);
             if (!isNaN(mb) && mb > 0) {
-                 if (mb >= 1024 && mb % 1024 === 0) setRamInput({ value: mb / 1024, unit: 'GB' });
-                 else setRamInput({ value: mb, unit: 'MB' });
+                if (mb >= 1024 && mb % 1024 === 0) setRamInput({ value: mb / 1024, unit: 'GB' });
+                else setRamInput({ value: mb, unit: 'MB' });
             } else {
                 setRamInput({ value: '', unit: 'GB' });
             }
@@ -272,15 +272,15 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     const fieldKey = issue.path[0].toString();
                     newErrors[fieldKey] = issue.message;
                     if (!errorGroup) {
-                         const group = VARIANT_FORM_GROUPS.find(g => g.fields.some(f => f.key && f.key === fieldKey));
-                         if (group) errorGroup = group.title;
+                        const group = VARIANT_FORM_GROUPS.find(g => g.fields.some(f => f.key && f.key === fieldKey));
+                        if (group) errorGroup = group.title;
                     }
                 }
             });
             setFieldErrors(newErrors);
             if (errorGroup) setOpenSections(prev => ({ ...prev, [errorGroup]: true }));
-            onError("VALIDATION FAILED. PLEASE CHECK HIGHLIGHTED FIELDS."); 
-            return; 
+            onError("VALIDATION FAILED. PLEASE CHECK HIGHLIGHTED FIELDS.");
+            return;
         }
 
         // Structure data for API: Separate Variant vs Input Profile
@@ -395,7 +395,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
             <form className="space-y-6">
                 <div className="mb-8 space-y-6 bg-black/20 p-6 border border-border-normal">
-                     <div>
+                    <div>
                         <label className={`text-[10px] mb-2 block uppercase font-bold ${fieldErrors.console_id ? 'text-accent' : 'text-gray-500'}`}>Target Console Folder</label>
                         <select className={`w-full bg-black border p-3 outline-none text-white font-mono text-sm ${fieldErrors.console_id ? 'border-accent' : 'border-gray-700 focus:border-secondary'} ${isEditMode ? 'opacity-50 cursor-not-allowed' : ''}`} value={formData.console_id || ''} onChange={(e: ChangeEvent<HTMLSelectElement>) => handleInputChange('console_id', e.target.value)} required disabled={isEditMode}>
                             <option value="">-- Select Console Folder --</option>
@@ -550,7 +550,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                         )}
                     </div>
                 )}
-                
+
                 <div className="flex justify-end gap-4 pt-6 border-t border-border-normal">
                     {!isEditMode && <Button type="button" variant="secondary" onClick={(e) => handleSubmit(e, 'CLONE')} isLoading={loading}>[ SAVE & CLONE ]</Button>}
                     <Button type="submit" onClick={(e) => handleSubmit(e, 'SAVE')} isLoading={loading}>{isEditMode ? 'UPDATE UNIT' : 'REGISTER UNIT'}</Button>

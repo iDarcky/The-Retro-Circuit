@@ -1,5 +1,7 @@
-import { createClient } from "../supabase/client";
-import { RoadmapFeature } from "../types/domain";
+"use server";
+
+import { createClient } from "../../lib/supabase/client";
+import { RoadmapFeature } from "../../lib/types/domain";
 
 export async function fetchRoadmapItems() {
   const supabase = createClient();

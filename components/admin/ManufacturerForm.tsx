@@ -3,7 +3,7 @@
 
 import { useState, type FormEvent, type FC, type KeyboardEvent, useEffect, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { addManufacturer, updateManufacturer } from '../../lib/api';
+import { addManufacturer, updateManufacturer } from '../../app/actions';
 import { purgeCache } from '../../app/actions/revalidate';
 import { supabase } from '../../lib/supabase/singleton';
 import { ManufacturerSchema, MANUFACTURER_FORM_FIELDS, Manufacturer } from '../../lib/types';
@@ -28,7 +28,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
     // Franchise Tag State
     const [franchises, setFranchises] = useState<string[]>([]);
     const [franchiseInput, setFranchiseInput] = useState('');
-    
+
     // Edit Mode Flag
     const isEditMode = !!initialData;
 
@@ -52,7 +52,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
     const handleInputChange = (key: string, value: any) => {
         setFormData(prev => {
             const newData = { ...prev, [key]: value };
-            
+
             // Auto-update slug if locked and editing name
             // Only if NOT in edit mode.
             if (key === 'name' && isSlugLocked && !isEditMode) {
@@ -87,7 +87,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        
+
         // --- STANDARD AUTH CHECK ---
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         if (sessionError || !session) {
@@ -97,7 +97,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
 
         // Auto-generate slug if missing
         if (!formData.slug && formData.name) {
-             formData.slug = generateSlug(formData.name);
+            formData.slug = generateSlug(formData.name);
         }
 
         const rawData = {
@@ -107,14 +107,14 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
         };
 
         const result = ManufacturerSchema.safeParse(rawData);
-        if (!result.success) { 
-             const newErrors: Record<string, string> = {};
-             result.error.issues.forEach(issue => {
-                 if (issue.path.length > 0) newErrors[issue.path[0].toString()] = issue.message;
-             });
-             setFieldErrors(newErrors);
-             onError("VALIDATION FAILED."); 
-             return; 
+        if (!result.success) {
+            const newErrors: Record<string, string> = {};
+            result.error.issues.forEach(issue => {
+                if (issue.path.length > 0) newErrors[issue.path[0].toString()] = issue.message;
+            });
+            setFieldErrors(newErrors);
+            onError("VALIDATION FAILED.");
+            return;
         }
 
         setLoading(true);
@@ -125,7 +125,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
             } else {
                 response = await addManufacturer(result.data as any);
             }
-            
+
             if (response.success) {
                 // FORCE REVALIDATION
                 await purgeCache();
@@ -139,7 +139,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                 setFieldErrors({});
                 setIsSuccess(true);
                 router.refresh();
-                onSuccess(isEditMode ? "FABRICATOR UPDATED." : ""); 
+                onSuccess(isEditMode ? "FABRICATOR UPDATED." : "");
                 setTimeout(() => {
                     setIsSuccess(false);
                 }, 3000);
@@ -147,9 +147,9 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                 onError(`OPERATION FAILED: ${response.message}`);
             }
         } catch (err: any) {
-             onError(`SYSTEM ERROR: ${err.message}`);
+            onError(`SYSTEM ERROR: ${err.message}`);
         } finally {
-             setLoading(false);
+            setLoading(false);
         }
     };
 
@@ -168,22 +168,21 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                             <div key={field.key}>
                                 <label className={`text-[10px] mb-1 block uppercase flex justify-between items-center ${fieldErrors.slug ? 'text-accent' : 'text-gray-500'}`}>
                                     {field.label}
-                                    <button 
-                                        type="button" 
-                                        onClick={() => setIsSlugLocked(!isSlugLocked)} 
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsSlugLocked(!isSlugLocked)}
                                         className="text-[10px] text-primary hover:text-white underline cursor-pointer"
                                         title={isSlugLocked ? "Unlock to edit manually" : "Lock to auto-generate from name"}
                                     >
                                         [{isSlugLocked ? 'UNLOCK' : 'LOCK'}]
                                     </button>
                                 </label>
-                                <input 
+                                <input
                                     type="text"
-                                    className={`w-full border p-3 font-mono outline-none transition-colors ${
-                                        isSlugLocked 
-                                        ? 'bg-gray-900/50 border-gray-800 text-gray-500 cursor-not-allowed' 
-                                        : `bg-black text-white ${fieldErrors.slug ? 'border-accent' : 'border-secondary focus:border-primary'}`
-                                    }`}
+                                    className={`w-full border p-3 font-mono outline-none transition-colors ${isSlugLocked
+                                            ? 'bg-gray-900/50 border-gray-800 text-gray-500 cursor-not-allowed'
+                                            : `bg-black text-white ${fieldErrors.slug ? 'border-accent' : 'border-secondary focus:border-primary'}`
+                                        }`}
                                     value={formData[field.key] || ''}
                                     onChange={(e: ChangeEvent<HTMLInputElement>) => handleInputChange(field.key, e.target.value)}
                                     readOnly={isSlugLocked}
@@ -192,7 +191,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                             </div>
                         );
                     }
-                    
+
                     if (field.key === 'key_franchises') {
                         return (
                             <div key={field.key} className="col-span-1 md:col-span-2">
@@ -204,7 +203,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                                             <button type="button" onClick={() => removeFranchise(tag)} className="hover:text-white font-bold">×</button>
                                         </span>
                                     ))}
-                                    <input 
+                                    <input
                                         type="text"
                                         className="bg-transparent outline-none text-white flex-1 min-w-[120px]"
                                         placeholder="Type & Enter..."

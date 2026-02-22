@@ -1,4 +1,4 @@
-import { fetchManufacturers, fetchVaultConsoles } from '../../lib/api';
+import { fetchManufacturers, fetchVaultConsoles } from '../../app/actions';
 import ConsoleVaultClient from '../../components/console/ConsoleVaultClient';
 
 export const revalidate = 60;
@@ -13,13 +13,13 @@ export default async function ConsoleVaultPage() {
   let allConsoles: any[] = [];
 
   try {
-      [manufacturers, allConsoles] = await Promise.all([
-          fetchManufacturers(),
-          fetchVaultConsoles()
-      ]);
+    [manufacturers, allConsoles] = await Promise.all([
+      fetchManufacturers(),
+      fetchVaultConsoles()
+    ]);
   } catch (error) {
-      console.warn('Build Warning: Failed to fetch console vault data. Returning empty state.', error);
-      // Fallback is empty arrays, allowing build to complete
+    console.warn('Build Warning: Failed to fetch console vault data. Returning empty state.', error);
+    // Fallback is empty arrays, allowing build to complete
   }
 
   return <ConsoleVaultClient initialManufacturers={manufacturers} initialConsoles={allConsoles} />;

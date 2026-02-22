@@ -1,6 +1,7 @@
+"use server";
 
-import { supabase } from "../supabase/singleton";
-import { Manufacturer } from "../types";
+import { supabase } from "../../lib/supabase/singleton";
+import { Manufacturer } from "../../lib/types";
 
 export const fetchManufacturers = async (): Promise<Manufacturer[]> => {
     try {
@@ -37,7 +38,7 @@ export const addManufacturer = async (manu: Omit<Manufacturer, 'id'>): Promise<{
     try {
         // We use select() to get the inserted data back, useful for debugging even if not used
         const { error } = await supabase.from('manufacturer').insert([manu]).select();
-        
+
         if (error) {
             console.error('CRITICAL SUPABASE ERROR:', error.code, error.message, error.details, error.hint);
             return { success: false, message: error.message };

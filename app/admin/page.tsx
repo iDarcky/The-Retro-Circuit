@@ -2,7 +2,7 @@
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '../../lib/supabase/server';
-import { fetchManufacturers, fetchConsoleList } from '../../lib/api';
+import { fetchManufacturers, fetchConsoleList } from '../../app/actions';
 import AdminDashboardClient from '../../components/admin/AdminDashboardClient';
 
 export default async function AdminPage() {
@@ -21,11 +21,11 @@ export default async function AdminPage() {
         .select('role')
         .eq('id', user.id)
         .single();
-    
+
     const isAdmin = profile?.role === 'admin';
 
     if (!isAdmin) {
-         redirect('/'); // Or render an Access Denied component
+        redirect('/'); // Or render an Access Denied component
     }
 
     // 3. Fetch Initial Data Server-Side (Parallel)

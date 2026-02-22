@@ -1,4 +1,6 @@
-import { supabase } from "../supabase/singleton";
+"use server";
+
+import { supabase } from "../../lib/supabase/singleton";
 
 export const checkDatabaseConnection = async (): Promise<boolean> => {
     try {
