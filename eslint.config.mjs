@@ -1,11 +1,11 @@
-import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
+import { FlatCompat } from "@eslint/eslintrc";
+
+const compat = new FlatCompat();
 
 const config = [
-  ...nextCoreWebVitals,
+  ...compat.extends("next/core-web-vitals"),
   {
     rules: {
-      "react-hooks/set-state-in-effect": "warn",
-      "react-hooks/static-components": "warn",
       "react/no-unescaped-entities": "warn",
       "react/jsx-no-comment-textnodes": "warn",
       "@next/next/no-img-element": "warn"

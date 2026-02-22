@@ -12,8 +12,8 @@ export async function middleware(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
 
-  // SKIP Supabase checks if env vars are missing/placeholder to prevent crashes
-  const isPlaceholder = supabaseUrl.includes('placeholder.supabase.co') || supabaseKey === 'placeholder';
+  // SKIP Supabase checks if env vars are missing/placeholder to prevent crashes (DEVELOPMENT ONLY)
+  const isPlaceholder = (supabaseUrl.includes('placeholder.supabase.co') || supabaseKey === 'placeholder') && process.env.NODE_ENV === 'development';
 
   // NOTE: In this environment, likely running with placeholders.
   // If placeholders are present, middleware cannot verify auth via Supabase.
@@ -56,16 +56,16 @@ export async function middleware(request: NextRequest) {
       if (user) {
         // Redirect from /login to /profile
         if (url.pathname.startsWith('/login')) {
-            url.pathname = '/profile';
-            return NextResponse.redirect(url);
+          url.pathname = '/profile';
+          return NextResponse.redirect(url);
         }
       }
       // IF USER IS NOT LOGGED IN
       else {
         // Protect /profile
         if (url.pathname.startsWith('/profile')) {
-            url.pathname = '/login';
-            return NextResponse.redirect(url);
+          url.pathname = '/login';
+          return NextResponse.redirect(url);
         }
       }
 
@@ -82,7 +82,7 @@ export async function middleware(request: NextRequest) {
           .single();
 
         if (profileError) {
-            console.error('[Middleware] Profile Fetch Error:', profileError.message);
+          console.error('[Middleware] Profile Fetch Error:', profileError.message);
         }
 
         if (!profile || profile.role !== 'admin') {

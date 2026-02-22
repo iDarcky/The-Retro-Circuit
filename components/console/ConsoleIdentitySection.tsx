@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Share2 } from 'lucide-react';
 import { ConsoleDetails, ConsoleVariant, Manufacturer } from '../../lib/types';
 import { IconVS } from '../ui/Icons';
@@ -148,10 +149,10 @@ export default function ConsoleIdentitySection({
             const y = el.getBoundingClientRect().top + window.scrollY - 140;
             const scrollContainer = document.querySelector('main > div.overflow-y-auto');
             if (scrollContainer) {
-                 scrollContainer.scrollTo({ top: scrollContainer.scrollTop + el.getBoundingClientRect().top - 140, behavior: 'smooth' });
+                scrollContainer.scrollTo({ top: scrollContainer.scrollTop + el.getBoundingClientRect().top - 140, behavior: 'smooth' });
             } else {
-                 // Fallback
-                 window.scrollTo({ top: y, behavior: 'smooth' });
+                // Fallback
+                window.scrollTo({ top: y, behavior: 'smooth' });
             }
         }
     };
@@ -182,10 +183,12 @@ export default function ConsoleIdentitySection({
                         {/* Icon - Left of the stack */}
                         <div className="shrink-0 pt-1">
                             {consoleIcon && (
-                                <img
+                                <Image
                                     src={consoleIcon}
                                     alt="Icon"
-                                    className="w-[64px] h-[64px] object-contain drop-shadow-lg"
+                                    width={64}
+                                    height={64}
+                                    className="object-contain drop-shadow-lg"
                                 />
                             )}
                         </div>
@@ -254,6 +257,8 @@ export default function ConsoleIdentitySection({
 
                 </div>
 
+                <Image src="/box-grid.png" alt="" fill className="object-cover opacity-20 pointer-events-none mix-blend-overlay" />
+
                 {/* SENTINEL: Placed at the very bottom of the content flow */}
                 <div ref={sentinelRef} className="absolute bottom-0 left-0 w-full h-px pointer-events-none opacity-0" />
             </div>
@@ -272,7 +277,7 @@ export default function ConsoleIdentitySection({
                     {/* SECTION 1: IDENTITY {Title} (Icon + Fabricator + Console) */}
                     <div className="flex items-center gap-3 shrink-0">
                         <div className="shrink-0 hidden sm:block">
-                            {consoleIcon && <img src={consoleIcon} alt="Icon" className="w-8 h-8 object-contain" />}
+                            {consoleIcon && <Image src={consoleIcon} alt="Icon" width={32} height={32} className="object-contain" />}
                         </div>
                         <h2
                             className="font-pixel text-[14px] md:text-[18px] text-white uppercase leading-tight"
