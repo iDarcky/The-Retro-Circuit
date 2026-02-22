@@ -39,3 +39,13 @@ dev_output.log
 
 # verification scripts
 verification/
+
+# debug
+pnpm-debug.log*
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# OS-generated files
+Thumbs.db

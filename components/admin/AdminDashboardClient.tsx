@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { getVariantById, getManufacturerById, getConsoleById, fetchConsoleList, fetchRoadmapItems, deleteRoadmapItem, updateRoadmapItem } from '../../lib/api';
+import { getVariantById, getManufacturerById, getConsoleById, fetchConsoleList, fetchRoadmapItems, deleteRoadmapItem, updateRoadmapItem } from '../../app/actions';
 import { Manufacturer, ConsoleVariant, ConsoleDetails, RoadmapFeature } from '../../lib/types';
 import { ManufacturerForm } from '../../components/admin/ManufacturerForm';
 import { ConsoleForm } from '../../components/admin/ConsoleForm';
@@ -27,7 +27,7 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
 
     // Shared Data
     const [manufacturers] = useState<Manufacturer[]>(initialManufacturers);
-    const [consoleList, setConsoleList] = useState<{name: string, id: string}[]>(initialConsoles);
+    const [consoleList, setConsoleList] = useState<{ name: string, id: string }[]>(initialConsoles);
 
     // State for Workflow & Edit Mode
     const [newlyCreatedConsoleId, setNewlyCreatedConsoleId] = useState<string | null>(null);
@@ -82,25 +82,25 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
             }
             // 2. Edit Fabricator
             else if (mode === 'edit' && type === 'fabricator' && id) {
-                 const manu = await getManufacturerById(id);
-                 if (manu) {
-                     setEditingManufacturer(manu);
-                     setActiveTab('FABRICATOR');
-                     setMessage(`EDITING FABRICATOR: ${manu.name}`);
-                 } else {
-                     setErrorMsg("FAILED TO FETCH FABRICATOR.");
-                 }
+                const manu = await getManufacturerById(id);
+                if (manu) {
+                    setEditingManufacturer(manu);
+                    setActiveTab('FABRICATOR');
+                    setMessage(`EDITING FABRICATOR: ${manu.name}`);
+                } else {
+                    setErrorMsg("FAILED TO FETCH FABRICATOR.");
+                }
             }
             // 3. Edit Console Folder
             else if (mode === 'edit' && type === 'console' && id) {
-                 const cons = await getConsoleById(id);
-                 if (cons) {
-                     setEditingConsoleFolder(cons);
-                     setActiveTab('CONSOLE');
-                     setMessage(`EDITING CONSOLE IDENTITY: ${cons.name}`);
-                 } else {
-                     setErrorMsg("FAILED TO FETCH CONSOLE FOLDER.");
-                 }
+                const cons = await getConsoleById(id);
+                if (cons) {
+                    setEditingConsoleFolder(cons);
+                    setActiveTab('CONSOLE');
+                    setMessage(`EDITING CONSOLE IDENTITY: ${cons.name}`);
+                } else {
+                    setErrorMsg("FAILED TO FETCH CONSOLE FOLDER.");
+                }
             }
             // 4. Tab Navigation
             else {
@@ -184,11 +184,11 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
 
                 {/* NEW INDEX LINK */}
                 <div className="flex items-center gap-4">
-                     <Link href="/admin/consoles">
+                    <Link href="/admin/consoles">
                         <Button variant="secondary" className="font-pixel text-xs px-4 py-2 border-2 border-secondary hover:bg-secondary hover:text-black transition-colors shadow-[0_0_15px_rgba(0,255,136,0.3)]">
                             &gt; CONSOLE INDEX
                         </Button>
-                     </Link>
+                    </Link>
                     <div className="bg-black border border-cyan-400 px-3 py-1 shadow-[0_0_10px_rgba(34,211,238,0.2)]">
                         <span className="font-pixel text-[10px] text-cyan-400 tracking-widest animate-pulse">
                             ADMIN_MODE_ACTIVE
@@ -215,18 +215,17 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
                     <button
                         key={tab}
                         onClick={() => handleTabChange(tab)}
-                        className={`font-mono text-sm px-4 py-2 border-t border-l border-r transition-all ${
-                            activeTab === tab
-                            ? 'bg-bg-primary text-secondary border-secondary -mb-[1px] font-bold'
-                            : 'bg-black text-gray-500 border-gray-800 hover:text-white hover:bg-white/5'
-                        }`}
+                        className={`font-mono text-sm px-4 py-2 border-t border-l border-r transition-all ${activeTab === tab
+                                ? 'bg-bg-primary text-secondary border-secondary -mb-[1px] font-bold'
+                                : 'bg-black text-gray-500 border-gray-800 hover:text-white hover:bg-white/5'
+                            }`}
                     >
                         {/* Dynamic Label based on Edit Mode */}
                         {tab === 'VARIANTS' && editingVariant ? 'EDIT VARIANT' :
-                         tab === 'FABRICATOR' && editingManufacturer ? 'EDIT FABRICATOR' :
-                         tab === 'CONSOLE' && editingConsoleFolder ? 'EDIT CONSOLE' :
-                         tab === 'ROADMAP' ? 'SYSTEM ROADMAP' :
-                         tab}
+                            tab === 'FABRICATOR' && editingManufacturer ? 'EDIT FABRICATOR' :
+                                tab === 'CONSOLE' && editingConsoleFolder ? 'EDIT CONSOLE' :
+                                    tab === 'ROADMAP' ? 'SYSTEM ROADMAP' :
+                                        tab}
                     </button>
                 ))}
             </div>
@@ -343,16 +342,14 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
 
                                 <div className="grid gap-2 max-h-[400px] overflow-y-auto pr-2 mb-8">
                                     {activeRoadmapItems.map(item => (
-                                        <div key={item.id} className={`flex items-center justify-between p-3 border transition-colors group ${
-                                            editingRoadmapItem?.id === item.id
-                                            ? 'bg-secondary/10 border-secondary'
-                                            : 'bg-white/5 border-white/10 hover:border-secondary'
-                                        }`}>
+                                        <div key={item.id} className={`flex items-center justify-between p-3 border transition-colors group ${editingRoadmapItem?.id === item.id
+                                                ? 'bg-secondary/10 border-secondary'
+                                                : 'bg-white/5 border-white/10 hover:border-secondary'
+                                            }`}>
                                             <div className="flex items-center gap-3">
-                                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider min-w-[80px] text-center ${
-                                                    item.status === 'in-progress' ? 'bg-blue-900/50 text-blue-400 border border-blue-900' :
-                                                    'bg-gray-800/50 text-gray-400 border border-gray-700'
-                                                }`}>
+                                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider min-w-[80px] text-center ${item.status === 'in-progress' ? 'bg-blue-900/50 text-blue-400 border border-blue-900' :
+                                                        'bg-gray-800/50 text-gray-400 border border-gray-700'
+                                                    }`}>
                                                     {item.status}
                                                 </span>
                                                 <div>
@@ -371,7 +368,7 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
                                                     Edit
                                                 </button>
                                                 <button onClick={async () => {
-                                                    if(confirm('Delete this item?')) {
+                                                    if (confirm('Delete this item?')) {
                                                         await deleteRoadmapItem(item.id);
                                                         loadRoadmap();
                                                     }
@@ -394,11 +391,10 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
 
                                 <div className="grid gap-2 max-h-[300px] overflow-y-auto pr-2 opacity-60 hover:opacity-100 transition-opacity">
                                     {completedRoadmapItems.map(item => (
-                                        <div key={item.id} className={`flex items-center justify-between p-3 border transition-colors group ${
-                                            editingRoadmapItem?.id === item.id
-                                            ? 'bg-secondary/10 border-secondary'
-                                            : 'bg-white/5 border-emerald-900/30 hover:border-emerald-500/50'
-                                        }`}>
+                                        <div key={item.id} className={`flex items-center justify-between p-3 border transition-colors group ${editingRoadmapItem?.id === item.id
+                                                ? 'bg-secondary/10 border-secondary'
+                                                : 'bg-white/5 border-emerald-900/30 hover:border-emerald-500/50'
+                                            }`}>
                                             <div className="flex items-center gap-3">
                                                 <span className="text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider min-w-[80px] text-center bg-emerald-900/50 text-emerald-400 border border-emerald-900">
                                                     {item.status}
@@ -416,7 +412,7 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
                                                     Edit
                                                 </button>
                                                 <button onClick={async () => {
-                                                    if(confirm('Delete this item?')) {
+                                                    if (confirm('Delete this item?')) {
                                                         await deleteRoadmapItem(item.id);
                                                         loadRoadmap();
                                                     }

@@ -1,4 +1,4 @@
-import { fetchManufacturers } from '../../lib/api';
+import { fetchManufacturers } from '../../app/actions';
 import FabricatorListClient from '../../components/fabricator/FabricatorListClient';
 
 export const revalidate = 600; // 10 minutes
@@ -12,9 +12,9 @@ export default async function FabricatorsPage() {
   let manufacturers: any[] = [];
 
   try {
-      manufacturers = await fetchManufacturers();
+    manufacturers = await fetchManufacturers();
   } catch (error) {
-      console.warn('Build Warning: Failed to fetch manufacturers. Returning empty state.', error);
+    console.warn('Build Warning: Failed to fetch manufacturers. Returning empty state.', error);
   }
 
   return <FabricatorListClient manufacturers={manufacturers} />;

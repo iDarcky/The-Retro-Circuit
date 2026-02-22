@@ -12,11 +12,20 @@ export async function middleware(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
 
-  // SKIP Supabase checks if env vars are missing/placeholder to prevent crashes (DEVELOPMENT ONLY)
   const isPlaceholder = (supabaseUrl.includes('placeholder.supabase.co') || supabaseKey === 'placeholder') && process.env.NODE_ENV === 'development';
+
+  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
+  const isProfileRoute = request.nextUrl.pathname.startsWith('/profile');
+  const isLoginRoute = request.nextUrl.pathname.startsWith('/login');
 
   // NOTE: In this environment, likely running with placeholders.
   // If placeholders are present, middleware cannot verify auth via Supabase.
+  if (isPlaceholder) {
+    if (isAdminRoute || isProfileRoute) {
+      // PREVENT AUTH BYPASS: Deny access to protected routes if auth cannot be verified
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+  }
 
   // If we are in a verifiable environment:
   if (!isPlaceholder) {
@@ -55,7 +64,7 @@ export async function middleware(request: NextRequest) {
       // IF USER IS LOGGED IN
       if (user) {
         // Redirect from /login to /profile
-        if (url.pathname.startsWith('/login')) {
+        if (isLoginRoute) {
           url.pathname = '/profile';
           return NextResponse.redirect(url);
         }
@@ -63,14 +72,14 @@ export async function middleware(request: NextRequest) {
       // IF USER IS NOT LOGGED IN
       else {
         // Protect /profile
-        if (url.pathname.startsWith('/profile')) {
+        if (isProfileRoute) {
           url.pathname = '/login';
           return NextResponse.redirect(url);
         }
       }
 
       // 4. Protect Admin Routes (Original Logic)
-      if (request.nextUrl.pathname.startsWith('/admin')) {
+      if (isAdminRoute) {
         if (!user) {
           return NextResponse.redirect(new URL('/login', request.url));
         }
@@ -91,6 +100,10 @@ export async function middleware(request: NextRequest) {
       }
     } catch (e) {
       console.error('[Middleware] Supabase Client Error:', e);
+      // PREVENT AUTH BYPASS: Deny access if Supabase client crashes
+      if (isAdminRoute || isProfileRoute) {
+        return NextResponse.redirect(new URL('/login', request.url));
+      }
     }
   }
 

@@ -2,7 +2,7 @@
 import { Suspense } from 'react';
 import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { fetchConsoleBySlug, fetchManufacturers } from '@/lib/api';
+import { fetchConsoleBySlug, fetchManufacturers } from '@/app/actions';
 import AdminConsoleEditorClient from '@/components/admin/AdminConsoleEditorClient';
 
 type Props = {

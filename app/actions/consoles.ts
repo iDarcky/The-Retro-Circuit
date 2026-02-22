@@ -1,5 +1,8 @@
-import { createClient } from "../supabase/client";
-import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant, VariantInputProfile } from "../types";
+"use server";
+
+import { createClient } from "../../lib/supabase/client";
+import { supabaseAnon } from "../../lib/supabase/anon";
+import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant, VariantInputProfile } from "../../lib/types";
 
 // Helper: Normalize Variant (Unwrap 1:1 relations that Supabase returns as arrays)
 function normalizeVariant(v: any): any {
@@ -38,7 +41,7 @@ function normalizeConsoleList(data: any[] | null): ConsoleDetails[] {
 
 export const fetchAllConsoles = async (includeHidden: boolean = false): Promise<ConsoleDetails[]> => {
     try {
-        const supabase = createClient();
+        const supabase = supabaseAnon;
         let query = supabase
             .from('consoles')
             .select(`
@@ -70,7 +73,7 @@ export const fetchAllConsoles = async (includeHidden: boolean = false): Promise<
 
 export const fetchVaultConsoles = async (): Promise<ConsoleDetails[]> => {
     try {
-        const supabase = createClient();
+        const supabase = supabaseAnon;
         // Optimized query: Excludes heavy 'emulation_profiles' and 'variant_input_profile'
         // Only fetches core console data, manufacturer, and variant specs needed for list view filtering
         const { data, error } = await supabase
@@ -97,21 +100,21 @@ export const fetchVaultConsoles = async (): Promise<ConsoleDetails[]> => {
 
 export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: number = 1, limit: number = 20): Promise<{ data: ConsoleDetails[], count: number }> => {
     try {
-        const supabase = createClient();
+        const supabase = supabaseAnon;
         // Public search always enforces published status
         let query = supabase.from('consoles')
             .select('*, manufacturer:manufacturer(*), variants:console_variants(*, variant_input_profile(*))', { count: 'exact' })
             .eq('status', 'published');
 
         if (filters.manufacturer_id) query = query.eq('manufacturer_id', filters.manufacturer_id);
-        
+
         if (filters.form_factors.length > 0) query = query.in('form_factor', filters.form_factors);
 
         const from = (page - 1) * limit;
         const to = from + limit - 1;
 
         const { data, count, error } = await query.order('name', { ascending: true }).range(from, to);
-        
+
         if (error) {
             console.error('[API] fetchConsolesFiltered DB Error:', error.message);
             return { data: [], count: 0 };
@@ -129,9 +132,9 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
         }
 
         normalizedData.sort((a: any, b: any) => {
-             const dateA = a.specs?.release_date ? new Date(a.specs.release_date).getTime() : 0;
-             const dateB = b.specs?.release_date ? new Date(b.specs.release_date).getTime() : 0;
-             return dateB - dateA;
+            const dateA = a.specs?.release_date ? new Date(a.specs.release_date).getTime() : 0;
+            const dateB = b.specs?.release_date ? new Date(b.specs.release_date).getTime() : 0;
+            return dateB - dateA;
         });
 
         return { data: normalizedData as ConsoleDetails[], count: count || 0 };
@@ -142,8 +145,8 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
     }
 };
 
-export const fetchConsoleList = async (includeHidden: boolean = false): Promise<{name: string, slug: string, id: string, status?: string, updated_at?: string}[]> => {
-    const supabase = createClient();
+export const fetchConsoleList = async (includeHidden: boolean = false): Promise<{ name: string, slug: string, id: string, status?: string, updated_at?: string }[]> => {
+    const supabase = supabaseAnon;
     let query = supabase.from('consoles').select('id, name, slug, status, updated_at').order('name');
 
     if (!includeHidden) {
@@ -156,7 +159,7 @@ export const fetchConsoleList = async (includeHidden: boolean = false): Promise<
 
 export const fetchConsoleBySlug = async (slug: string, includeHidden: boolean = false): Promise<{ data: ConsoleDetails | null, error: any }> => {
     try {
-        const supabase = createClient();
+        const supabase = supabaseAnon;
         let query = supabase
             .from('consoles')
             .select(`
@@ -175,7 +178,7 @@ export const fetchConsoleBySlug = async (slug: string, includeHidden: boolean = 
         // Standard .single() throws if 0 rows.
 
         const { data, error } = await query.maybeSingle();
-            
+
         if (error) {
             return { data: null, error: { message: error.message } };
         }
@@ -195,7 +198,7 @@ export const fetchConsoleBySlug = async (slug: string, includeHidden: boolean = 
 
 export const getConsoleById = async (id: string): Promise<ConsoleDetails | null> => {
     try {
-        const supabase = createClient();
+        const supabase = supabaseAnon;
         const { data, error } = await supabase.from('consoles').select('*').eq('id', id).single();
         if (error) throw error;
         return data as ConsoleDetails;
@@ -206,14 +209,14 @@ export const getConsoleById = async (id: string): Promise<ConsoleDetails | null>
 
 export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs | null> => {
     try {
-        const supabase = createClient();
+        const supabase = supabaseAnon;
         const { data } = await supabase
             .from('console_variants')
             .select('*, variant_input_profile(*), emulation_profiles(*)')
             .eq('console_id', consoleId)
             .eq('is_default', true)
             .maybeSingle();
-            
+
         if (data) return normalizeVariant(data) as ConsoleSpecs;
 
         const { data: anyVar } = await supabase
@@ -222,7 +225,7 @@ export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs |
             .eq('console_id', consoleId)
             .limit(1)
             .maybeSingle();
-            
+
         return normalizeVariant(anyVar) as ConsoleSpecs;
     } catch {
         return null;
@@ -231,7 +234,7 @@ export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs |
 
 export const getVariantsByConsole = async (consoleId: string): Promise<ConsoleVariant[]> => {
     try {
-        const supabase = createClient();
+        const supabase = supabaseAnon;
         const { data, error } = await supabase
             .from('console_variants')
             .select('*, variant_input_profile(*), emulation_profiles(*)')
@@ -246,7 +249,7 @@ export const getVariantsByConsole = async (consoleId: string): Promise<ConsoleVa
 
 export const getVariantById = async (variantId: string): Promise<ConsoleVariant | null> => {
     try {
-        const supabase = createClient();
+        const supabase = supabaseAnon;
         const { data, error } = await supabase
             .from('console_variants')
             .select('*, variant_input_profile(*), emulation_profiles(*)')
@@ -261,15 +264,15 @@ export const getVariantById = async (variantId: string): Promise<ConsoleVariant 
 
 export const getConsolesByManufacturer = async (manufacturerId: string): Promise<ConsoleDetails[]> => {
     try {
-        const supabase = createClient();
+        const supabase = supabaseAnon;
         const { data, error } = await supabase
             .from('consoles')
             .select('*, variants:console_variants(*, variant_input_profile(*))')
             .eq('manufacturer_id', manufacturerId)
             .eq('status', 'published'); // Enforce published
-            
+
         if (error) throw error;
-        
+
         return normalizeConsoleList(data);
     } catch {
         return [];
@@ -280,11 +283,11 @@ export const addConsole = async (
     consoleData: Omit<ConsoleDetails, 'id' | 'manufacturer' | 'specs' | 'variants'>
 ): Promise<{ success: boolean, message?: string, id?: string }> => {
     try {
-        const supabase = createClient();
+        const supabase = await createClient();
         const { data: newConsole, error: consoleError } = await supabase.from('consoles').insert([consoleData]).select('id').single();
         if (consoleError) {
-             console.error('SUPABASE CONSOLE INSERT ERROR:', consoleError.code, consoleError.message, consoleError.details);
-             return { success: false, message: consoleError.message || "Failed to create console record" };
+            console.error('SUPABASE CONSOLE INSERT ERROR:', consoleError.code, consoleError.message, consoleError.details);
+            return { success: false, message: consoleError.message || "Failed to create console record" };
         }
         if (!newConsole) return { success: false, message: "No data returned from insert" };
 
@@ -300,7 +303,7 @@ export const updateConsole = async (
     consoleData: Partial<ConsoleDetails>
 ): Promise<{ success: boolean, message?: string }> => {
     try {
-        const supabase = createClient();
+        const supabase = await createClient();
         const { error } = await supabase.from('consoles').update(consoleData).eq('id', id);
         if (error) return { success: false, message: error.message };
         return { success: true };
@@ -311,7 +314,7 @@ export const updateConsole = async (
 
 export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>): Promise<{ success: boolean, message?: string }> => {
     try {
-        const supabase = createClient();
+        const supabase = await createClient();
         const { variant_input_profile, emulation_profile, ...mainVariantData } = variantData;
 
         const { data: newVariant, error: variantError } = await supabase
@@ -363,7 +366,7 @@ export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>)
 
 export const updateConsoleVariant = async (id: string, variantData: Partial<ConsoleVariant>): Promise<{ success: boolean, message?: string }> => {
     try {
-        const supabase = createClient();
+        const supabase = await createClient();
         const { variant_input_profile, ...mainVariantData } = variantData;
 
         const { error: variantError } = await supabase.from('console_variants').update(mainVariantData).eq('id', id);
@@ -378,7 +381,7 @@ export const updateConsoleVariant = async (id: string, variantData: Partial<Cons
 
             if (profileError) {
                 console.error("Input Profile Update Failed:", profileError);
-                 return { success: true, message: "Variant updated, but Input Profile failed: " + profileError.message };
+                return { success: true, message: "Variant updated, but Input Profile failed: " + profileError.message };
             }
         }
 

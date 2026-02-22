@@ -1,9 +1,11 @@
+"use server";
 
-import { supabase } from "../supabase/singleton";
-import { ConsoleDetails } from "../types";
+import { supabaseAnon } from "../../lib/supabase/anon";
+import { ConsoleDetails } from "../../lib/types";
 
 export const fetchLatestConsoles = async (limit: number = 3): Promise<ConsoleDetails[]> => {
     try {
+        const supabase = supabaseAnon;
         const { data, error } = await supabase
             .from('consoles')
             .select(`
@@ -30,6 +32,7 @@ export const fetchLatestConsoles = async (limit: number = 3): Promise<ConsoleDet
 
 export const fetchRealWorldLatest = async (limit: number = 3): Promise<ConsoleDetails[]> => {
     try {
+        const supabase = supabaseAnon;
         // Strategy: Query `console_variants` sorted by `release_date` desc, distinct on `console_id`.
         // We use inner join on consoles to ensure we only get variants belonging to PUBLISHED consoles.
 

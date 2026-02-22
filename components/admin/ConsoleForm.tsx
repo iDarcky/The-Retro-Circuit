@@ -3,7 +3,7 @@
 
 import { useState, type FormEvent, type FC, useEffect, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { addConsole, updateConsole } from '../../lib/api';
+import { addConsole, updateConsole } from '../../app/actions';
 import { purgeCache } from '../../app/actions/revalidate';
 import { supabase } from '../../lib/supabase/singleton';
 import { ConsoleSchema, Manufacturer, CONSOLE_FORM_FIELDS, ConsoleDetails } from '../../lib/types';
@@ -24,7 +24,7 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
     const [isSlugLocked, setIsSlugLocked] = useState(true);
-    
+
     // Status Confirmation Modal State
     const [showStatusModal, setShowStatusModal] = useState(false);
     const [pendingStatus, setPendingStatus] = useState<string | null>(null);
@@ -86,24 +86,24 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        
+
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         if (sessionError || !session) {
             onError("Session expired. Please refresh the page.");
             return;
         }
-        
+
         if (!formData.slug && formData.name) {
-             formData.slug = generateSlug(formData.name);
+            formData.slug = generateSlug(formData.name);
         }
 
         const consoleData: any = { manufacturer_id: formData.manufacturer_id };
         CONSOLE_FORM_FIELDS.forEach((f: any) => {
-            if(f.key && formData[f.key] !== undefined) {
+            if (f.key && formData[f.key] !== undefined) {
                 consoleData[f.key] = formData[f.key];
             }
         });
-        
+
         // Include new fields
         consoleData.device_category = formData.device_category;
         consoleData.chassis_features = formData.chassis_features;
@@ -112,19 +112,19 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
         consoleData.status = formData.status;
 
         const consoleResult = ConsoleSchema.safeParse(consoleData);
-        if (!consoleResult.success) { 
-             const newErrors: Record<string, string> = {};
-             consoleResult.error.issues.forEach(issue => {
-                 if (issue.path.length > 0) newErrors[issue.path[0].toString()] = issue.message;
-             });
-             setFieldErrors(newErrors);
-             onError("VALIDATION FAILED. CHECK HIGHLIGHTED FIELDS."); 
-             return; 
+        if (!consoleResult.success) {
+            const newErrors: Record<string, string> = {};
+            consoleResult.error.issues.forEach(issue => {
+                if (issue.path.length > 0) newErrors[issue.path[0].toString()] = issue.message;
+            });
+            setFieldErrors(newErrors);
+            onError("VALIDATION FAILED. CHECK HIGHLIGHTED FIELDS.");
+            return;
         }
 
         setLoading(true);
         try {
-            const timeoutPromise = new Promise((_, reject) => 
+            const timeoutPromise = new Promise((_, reject) =>
                 setTimeout(() => reject(new Error("Database operation timed out (10s limit)")), 10000)
             );
 
@@ -134,9 +134,9 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
             } else {
                 operationPromise = addConsole(consoleResult.data as any);
             }
-            
+
             const response: any = await Promise.race([operationPromise, timeoutPromise]);
-            
+
             if (response.success) {
                 await purgeCache();
                 router.refresh();
@@ -149,48 +149,48 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                 onError(`OPERATION FAILED: ${response.message}`);
             }
         } catch (err: any) {
-             onError(`SYSTEM ERROR: ${err.message}`);
+            onError(`SYSTEM ERROR: ${err.message}`);
         } finally {
-             setLoading(false);
+            setLoading(false);
         }
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6 relative">
-             {/* Simple Status Confirmation Modal */}
-             {showStatusModal && (
-                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fadeIn">
-                     <div className="bg-bg-primary border-2 border-secondary p-6 max-w-sm w-full shadow-[0_0_50px_rgba(0,255,157,0.3)]">
-                         <h3 className="font-pixel text-lg text-secondary mb-4">CONFIRM PUBLISH</h3>
-                         <p className="font-mono text-sm text-gray-300 mb-6">
-                             {formData.status === 'review' ? (
-                                 <>This console will become <strong className="text-white">publicly visible</strong>. Are you sure?</>
-                             ) : (
-                                 <>Publishing is normally done from <strong className="text-accent">REVIEW</strong>. Continue anyway?</>
-                             )}
-                         </p>
-                         <div className="flex justify-end gap-4">
-                             <button
-                                 type="button"
-                                 onClick={cancelStatusChange}
-                                 className="text-xs font-mono text-gray-500 hover:text-white uppercase"
-                             >
-                                 Cancel
-                             </button>
-                             <Button
-                                 type="button"
-                                 variant="secondary"
-                                 onClick={confirmStatusChange}
-                                 className="text-xs"
-                             >
-                                 {formData.status === 'review' ? 'PUBLISH' : 'PUBLISH ANYWAY'}
-                             </Button>
-                         </div>
-                     </div>
-                 </div>
-             )}
+            {/* Simple Status Confirmation Modal */}
+            {showStatusModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fadeIn">
+                    <div className="bg-bg-primary border-2 border-secondary p-6 max-w-sm w-full shadow-[0_0_50px_rgba(0,255,157,0.3)]">
+                        <h3 className="font-pixel text-lg text-secondary mb-4">CONFIRM PUBLISH</h3>
+                        <p className="font-mono text-sm text-gray-300 mb-6">
+                            {formData.status === 'review' ? (
+                                <>This console will become <strong className="text-white">publicly visible</strong>. Are you sure?</>
+                            ) : (
+                                <>Publishing is normally done from <strong className="text-accent">REVIEW</strong>. Continue anyway?</>
+                            )}
+                        </p>
+                        <div className="flex justify-end gap-4">
+                            <button
+                                type="button"
+                                onClick={cancelStatusChange}
+                                className="text-xs font-mono text-gray-500 hover:text-white uppercase"
+                            >
+                                Cancel
+                            </button>
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                onClick={confirmStatusChange}
+                                className="text-xs"
+                            >
+                                {formData.status === 'review' ? 'PUBLISH' : 'PUBLISH ANYWAY'}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
-             <div className={`border-l-4 p-4 mb-4 ${isEditMode ? 'bg-secondary/10 border-secondary' : 'bg-primary/10 border-primary'}`}>
+            <div className={`border-l-4 p-4 mb-4 ${isEditMode ? 'bg-secondary/10 border-secondary' : 'bg-primary/10 border-primary'}`}>
                 <div className="flex justify-between items-start">
                     <div>
                         <h3 className={`font-bold text-sm uppercase ${isEditMode ? 'text-secondary' : 'text-primary'}`}>{isEditMode ? 'Edit Mode: Console Identity' : 'Step 1: System Identity'}</h3>
@@ -203,10 +203,9 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                         <select
                             value={formData.status || 'draft'}
                             onChange={(e) => handleInputChange('status', e.target.value)}
-                            className={`text-xs font-mono font-bold bg-transparent outline-none uppercase cursor-pointer ${
-                                formData.status === 'published' ? 'text-secondary' :
-                                formData.status === 'archived' ? 'text-red-500' : 'text-yellow-500'
-                            }`}
+                            className={`text-xs font-mono font-bold bg-transparent outline-none uppercase cursor-pointer ${formData.status === 'published' ? 'text-secondary' :
+                                    formData.status === 'archived' ? 'text-red-500' : 'text-yellow-500'
+                                }`}
                         >
                             <option value="draft">DRAFT</option>
                             <option value="review">REVIEW</option>
@@ -220,7 +219,7 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="col-span-1 md:col-span-2">
                     <label className={`text-[10px] mb-1 block uppercase ${fieldErrors.manufacturer_id ? 'text-accent' : 'text-gray-500'}`}>Manufacturer</label>
-                    <select 
+                    <select
                         className={`w-full bg-black border p-3 outline-none text-white font-mono ${fieldErrors.manufacturer_id ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`}
                         value={formData.manufacturer_id || ''}
                         onChange={(e: ChangeEvent<HTMLSelectElement>) => handleInputChange('manufacturer_id', e.target.value)}
@@ -232,15 +231,15 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                 </div>
 
                 {CONSOLE_FORM_FIELDS.map((field: any, idx) => {
-                     if (!field.key && field.subHeader) {
-                         return (
-                             <div key={`sub-${idx}`} className="col-span-1 md:col-span-2 mt-4 mb-2">
-                                 <h4 className="font-pixel text-secondary text-sm border-b border-gray-800 pb-1">{field.subHeader}</h4>
-                             </div>
-                         );
-                     }
+                    if (!field.key && field.subHeader) {
+                        return (
+                            <div key={`sub-${idx}`} className="col-span-1 md:col-span-2 mt-4 mb-2">
+                                <h4 className="font-pixel text-secondary text-sm border-b border-gray-800 pb-1">{field.subHeader}</h4>
+                            </div>
+                        );
+                    }
 
-                     if (field.key === 'slug') {
+                    if (field.key === 'slug') {
                         return (
                             <div key={field.key}>
                                 <label className={`text-[10px] mb-1 block uppercase flex justify-between items-center ${fieldErrors.slug ? 'text-accent' : 'text-gray-500'}`}>
@@ -264,13 +263,13 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                     return <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} error={fieldErrors[field.key]} />;
                 })}
 
-                 {/* ---- DEVICE TYPE SECTION ---- */}
+                {/* ---- DEVICE TYPE SECTION ---- */}
                 <div className="col-span-1 md:col-span-2 border-t border-border-normal pt-4">
                     <h4 className="font-pixel text-secondary text-sm mb-2">Device Type</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                             <label className="text-[10px] mb-1 block uppercase text-gray-500">Device Category</label>
-                             <select 
+                            <label className="text-[10px] mb-1 block uppercase text-gray-500">Device Category</label>
+                            <select
                                 className="w-full bg-black border p-3 outline-none text-white font-mono border-gray-700 focus:border-secondary"
                                 value={formData.device_category || 'emulation'}
                                 onChange={(e) => handleInputChange('device_category', e.target.value)}
@@ -287,24 +286,24 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
 
                 {/* ---- PHYSICAL MEDIA SECTION ---- */}
                 <div className="col-span-1 md:col-span-2 border-t border-border-normal pt-4">
-                     <h4 className="font-pixel text-secondary text-sm mb-2">Physical Media</h4>
-                     <div className="flex items-center space-x-4 mb-2">
-                        <input 
-                            type="checkbox" 
+                    <h4 className="font-pixel text-secondary text-sm mb-2">Physical Media</h4>
+                    <div className="flex items-center space-x-4 mb-2">
+                        <input
+                            type="checkbox"
                             id="has_cartridge_slot"
                             checked={!!formData.has_cartridge_slot}
                             onChange={(e) => handleInputChange('has_cartridge_slot', e.target.checked)}
                             className="form-checkbox h-5 w-5 bg-black border-secondary text-secondary focus:ring-secondary/50"
                         />
                         <label htmlFor="has_cartridge_slot" className="font-mono text-white">Has Cartridge Slot?</label>
-                     </div>
-                     {formData.has_cartridge_slot && (
-                         <AdminInput 
+                    </div>
+                    {formData.has_cartridge_slot && (
+                        <AdminInput
                             field={{ key: 'supported_cartridge_types', label: 'Supported Cartridge Types', placeholder: 'e.g., Game Boy, DS, 3DS' }}
-                            value={formData.supported_cartridge_types} 
-                            onChange={handleInputChange} 
+                            value={formData.supported_cartridge_types}
+                            onChange={handleInputChange}
                         />
-                     )}
+                    )}
                 </div>
             </div>
 
