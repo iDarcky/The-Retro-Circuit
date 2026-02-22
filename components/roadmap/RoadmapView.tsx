@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { RoadmapItem } from '../../data/roadmap';
+import { RoadmapFeature } from '../../lib/types/domain';
 import RoadmapCard from './RoadmapCard';
 
 interface RoadmapViewProps {
-  completedItems: RoadmapItem[];
-  upcomingItems: RoadmapItem[];
+  completedItems: RoadmapFeature[];
+  upcomingItems: RoadmapFeature[];
 }
 
 type Tab = 'upcoming' | 'completed';

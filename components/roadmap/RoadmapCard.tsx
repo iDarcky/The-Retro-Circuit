@@ -1,10 +1,14 @@
 'use client';
 
 import { type FC } from 'react';
-import { RoadmapItem } from '../../data/roadmap';
+import { RoadmapFeature } from '../../lib/types/domain';
 import { CheckCircle2, Clock, Hourglass, Zap } from 'lucide-react';
 
-const RoadmapCard: FC<{ item: RoadmapItem }> = ({ item }) => {
+interface RoadmapCardProps {
+    item: RoadmapFeature;
+}
+
+const RoadmapCard: FC<RoadmapCardProps> = ({ item }) => {
     let statusColor = 'text-zinc-500 border-zinc-800 bg-zinc-900/20';
     let StatusIcon = Hourglass;
     let opacity = 'opacity-60 grayscale';
@@ -58,7 +62,7 @@ const RoadmapCard: FC<{ item: RoadmapItem }> = ({ item }) => {
              {/* Footer: Date or ID */}
              <div className="pt-4 border-t border-white/5 flex justify-between items-end">
                   <div className={`h-0.5 w-8 ${accentColor} opacity-50`}></div>
-                  {item.date && <div className="text-[9px] font-mono uppercase tracking-widest opacity-50">{item.date}</div>}
+                  {item.target_date && <div className="text-[9px] font-mono uppercase tracking-widest opacity-50">{new Date(item.target_date).toLocaleDateString()}</div>}
              </div>
         </div>
     );

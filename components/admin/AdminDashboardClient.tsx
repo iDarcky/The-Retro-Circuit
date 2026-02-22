@@ -3,14 +3,15 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { getVariantById, getManufacturerById, getConsoleById, fetchConsoleList } from '../../lib/api';
-import { Manufacturer, ConsoleVariant, ConsoleDetails } from '../../lib/types';
+import { getVariantById, getManufacturerById, getConsoleById, fetchConsoleList, fetchRoadmapItems, deleteRoadmapItem, updateRoadmapItem } from '../../lib/api';
+import { Manufacturer, ConsoleVariant, ConsoleDetails, RoadmapFeature } from '../../lib/types';
 import { ManufacturerForm } from '../../components/admin/ManufacturerForm';
 import { ConsoleForm } from '../../components/admin/ConsoleForm';
 import { VariantForm } from '../../components/admin/VariantForm';
+import { RoadmapForm } from '../../components/admin/RoadmapForm';
 import Button from '../../components/ui/Button';
 
-type AdminTab = 'CONSOLE' | 'VARIANTS' | 'FABRICATOR';
+type AdminTab = 'CONSOLE' | 'VARIANTS' | 'FABRICATOR' | 'ROADMAP';
 
 type AdminDashboardProps = {
     initialManufacturers: Manufacturer[];
@@ -35,6 +36,21 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
     const [editingVariant, setEditingVariant] = useState<ConsoleVariant | null>(null);
     const [editingManufacturer, setEditingManufacturer] = useState<Manufacturer | null>(null);
     const [editingConsoleFolder, setEditingConsoleFolder] = useState<ConsoleDetails | null>(null);
+
+    // Roadmap State
+    const [roadmapItems, setRoadmapItems] = useState<RoadmapFeature[]>([]);
+    const [editingRoadmapItem, setEditingRoadmapItem] = useState<RoadmapFeature | null>(null);
+
+    const loadRoadmap = async () => {
+        const items = await fetchRoadmapItems();
+        setRoadmapItems(items);
+    };
+
+    useEffect(() => {
+        if (activeTab === 'ROADMAP') {
+            loadRoadmap();
+        }
+    }, [activeTab]);
 
     // Check for URL edit modes on mount
     useEffect(() => {
@@ -115,6 +131,7 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
         setEditingVariant(null);
         setEditingManufacturer(null);
         setEditingConsoleFolder(null);
+        setEditingRoadmapItem(null);
         setNewlyCreatedConsoleId(null);
         setMessage(null);
         setErrorMsg(null);
@@ -126,9 +143,28 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
         clearEditMode();
     };
 
+    const handleFinishItem = async (item: RoadmapFeature) => {
+        if (!confirm(`Mark "${item.title}" as completed?`)) return;
+
+        try {
+            await updateRoadmapItem(item.id, {
+                status: 'completed',
+                target_date: new Date().toISOString()
+            });
+            setMessage(`MISSION COMPLETED: ${item.title}`);
+            loadRoadmap();
+        } catch (e: any) {
+            setErrorMsg(e.message || "Failed to complete item");
+        }
+    };
+
+    // Filter roadmap items
+    const activeRoadmapItems = roadmapItems.filter(item => item.status !== 'completed');
+    const completedRoadmapItems = roadmapItems.filter(item => item.status === 'completed');
+
     if (!isAdmin) return <div className="p-8 text-center font-mono text-accent border-2 border-accent m-8">ACCESS DENIED. ADMIN CLEARANCE REQUIRED.</div>;
 
-    const tabs: AdminTab[] = ['CONSOLE', 'VARIANTS', 'FABRICATOR'];
+    const tabs: AdminTab[] = ['CONSOLE', 'VARIANTS', 'FABRICATOR', 'ROADMAP'];
 
     return (
         <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn">
@@ -189,6 +225,7 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
                         {tab === 'VARIANTS' && editingVariant ? 'EDIT VARIANT' :
                          tab === 'FABRICATOR' && editingManufacturer ? 'EDIT FABRICATOR' :
                          tab === 'CONSOLE' && editingConsoleFolder ? 'EDIT CONSOLE' :
+                         tab === 'ROADMAP' ? 'SYSTEM ROADMAP' :
                          tab}
                     </button>
                 ))}
@@ -267,6 +304,135 @@ export default function AdminDashboardClient({ initialManufacturers, initialCons
                                     </Button>
                                 </div>
                             )}
+                        </div>
+                    )}
+
+                    {activeTab === 'ROADMAP' && (
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                            {/* Left Column: Form (Create or Edit) */}
+                            <div className="lg:col-span-1 border-r border-white/10 pr-8">
+                                <h2 className="font-pixel text-lg text-white mb-6">
+                                    {editingRoadmapItem ? `EDITING: ${editingRoadmapItem.title}` : 'ADD NEW MISSION'}
+                                </h2>
+
+                                <RoadmapForm
+                                    initialData={editingRoadmapItem}
+                                    onSuccess={(msg) => {
+                                        setMessage(msg);
+                                        loadRoadmap();
+                                        setEditingRoadmapItem(null);
+                                    }}
+                                    onError={setErrorMsg}
+                                />
+
+                                {editingRoadmapItem && (
+                                    <div className="mt-4">
+                                        <Button variant="secondary" onClick={() => setEditingRoadmapItem(null)} className="w-full text-xs">
+                                            CANCEL EDITING
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Right Column: List */}
+                            <div className="lg:col-span-2">
+                                <h2 className="font-pixel text-lg text-white mb-6">
+                                    ACTIVE MISSIONS // <span className="text-secondary">{activeRoadmapItems.length}</span>
+                                </h2>
+
+                                <div className="grid gap-2 max-h-[400px] overflow-y-auto pr-2 mb-8">
+                                    {activeRoadmapItems.map(item => (
+                                        <div key={item.id} className={`flex items-center justify-between p-3 border transition-colors group ${
+                                            editingRoadmapItem?.id === item.id
+                                            ? 'bg-secondary/10 border-secondary'
+                                            : 'bg-white/5 border-white/10 hover:border-secondary'
+                                        }`}>
+                                            <div className="flex items-center gap-3">
+                                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider min-w-[80px] text-center ${
+                                                    item.status === 'in-progress' ? 'bg-blue-900/50 text-blue-400 border border-blue-900' :
+                                                    'bg-gray-800/50 text-gray-400 border border-gray-700'
+                                                }`}>
+                                                    {item.status}
+                                                </span>
+                                                <div>
+                                                    <div className="font-mono text-sm text-white font-bold">{item.title}</div>
+                                                    <div className="text-[10px] text-gray-500 uppercase flex gap-2">
+                                                        <span>{item.category}</span>
+                                                        {item.target_date && <span>// DUE: {new Date(item.target_date).toLocaleDateString()}</span>}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button onClick={() => handleFinishItem(item)} className="text-[10px] font-mono border border-emerald-900 bg-emerald-900/20 text-emerald-400 hover:bg-emerald-900/40 px-2 py-1 uppercase tracking-wider">
+                                                    Finish
+                                                </button>
+                                                <button onClick={() => setEditingRoadmapItem(item)} className="text-[10px] font-mono border border-blue-900 bg-blue-900/20 text-blue-400 hover:bg-blue-900/40 px-2 py-1 uppercase tracking-wider">
+                                                    Edit
+                                                </button>
+                                                <button onClick={async () => {
+                                                    if(confirm('Delete this item?')) {
+                                                        await deleteRoadmapItem(item.id);
+                                                        loadRoadmap();
+                                                    }
+                                                }} className="text-[10px] font-mono border border-red-900 bg-red-900/20 text-red-400 hover:bg-red-900/40 px-2 py-1 uppercase tracking-wider">
+                                                    Del
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {activeRoadmapItems.length === 0 && (
+                                        <div className="text-center py-8 text-gray-600 font-mono text-xs uppercase">
+                                            // NO ACTIVE MISSIONS
+                                        </div>
+                                    )}
+                                </div>
+
+                                <h2 className="font-pixel text-lg text-emerald-500 mb-6 border-t border-white/10 pt-6">
+                                    COMPLETED MISSIONS // <span className="text-white">{completedRoadmapItems.length}</span>
+                                </h2>
+
+                                <div className="grid gap-2 max-h-[300px] overflow-y-auto pr-2 opacity-60 hover:opacity-100 transition-opacity">
+                                    {completedRoadmapItems.map(item => (
+                                        <div key={item.id} className={`flex items-center justify-between p-3 border transition-colors group ${
+                                            editingRoadmapItem?.id === item.id
+                                            ? 'bg-secondary/10 border-secondary'
+                                            : 'bg-white/5 border-emerald-900/30 hover:border-emerald-500/50'
+                                        }`}>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider min-w-[80px] text-center bg-emerald-900/50 text-emerald-400 border border-emerald-900">
+                                                    {item.status}
+                                                </span>
+                                                <div>
+                                                    <div className="font-mono text-sm text-gray-400 font-bold line-through">{item.title}</div>
+                                                    <div className="text-[10px] text-gray-600 uppercase flex gap-2">
+                                                        <span>{item.category}</span>
+                                                        {item.target_date && <span>// COMPLETED: {new Date(item.target_date).toLocaleDateString()}</span>}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button onClick={() => setEditingRoadmapItem(item)} className="text-[10px] font-mono border border-blue-900 bg-blue-900/20 text-blue-400 hover:bg-blue-900/40 px-2 py-1 uppercase tracking-wider">
+                                                    Edit
+                                                </button>
+                                                <button onClick={async () => {
+                                                    if(confirm('Delete this item?')) {
+                                                        await deleteRoadmapItem(item.id);
+                                                        loadRoadmap();
+                                                    }
+                                                }} className="text-[10px] font-mono border border-red-900 bg-red-900/20 text-red-400 hover:bg-red-900/40 px-2 py-1 uppercase tracking-wider">
+                                                    Del
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {completedRoadmapItems.length === 0 && (
+                                        <div className="text-center py-8 text-gray-600 font-mono text-xs uppercase">
+                                            // NO COMPLETED MISSIONS
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     )}
 
