@@ -1,43 +1,117 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import { SectionHeader } from '@/components/news/SectionHeader';
+import { SignalFeed } from '@/components/news/SignalFeed';
+import { ReviewGrid } from '@/components/news/ReviewGrid';
+import { NewsFeed } from '@/components/news/NewsFeed';
+import { MOCK_SIGNALS, MOCK_REVIEWS, MOCK_NEWS } from '@/data/news-framework';
 
 export const revalidate = 300; // 5 minutes
 
 export default function NewsPage() {
   return (
-    <div className="w-full">
+    <div className="w-full bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-violet-500/30 selection:text-white pb-24 relative overflow-hidden">
 
-      <div className="min-h-screen bg-bg-primary font-mono text-white flex flex-col items-center justify-center p-4">
-        <div className="max-w-2xl w-full border border-white/10 p-8 md:p-12 relative overflow-hidden">
-        {/* Decorative corner markers */}
-        <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-secondary"></div>
-        <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-secondary"></div>
-        <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-secondary"></div>
-        <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-secondary"></div>
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.05] pointer-events-none"></div>
 
-        <div className="text-center space-y-8">
-          <h1 className="text-4xl md:text-6xl font-pixel text-secondary tracking-tight">
-            COMING SOON
-          </h1>
+      {/* HERO HEADER */}
+      <header className="px-6 md:px-12 pt-12 md:pt-24 pb-8 md:pb-16 border-b border-white/5 relative z-10">
+        <div className="max-w-7xl mx-auto w-full">
+           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-violet-900/30 bg-violet-950/10 text-[9px] md:text-xs font-mono uppercase tracking-widest text-violet-400 mb-8 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(139,92,246,0.1)]">
+               <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-violet-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(139,92,246,0.5)]"></div>
+               Transmission Feed // v1.0
+           </div>
 
-          <div className="h-px w-full bg-white/10 my-8"></div>
+           <h1 className="text-4xl md:text-6xl font-pixel text-white leading-none tracking-tighter mb-4">
+              NEWS & <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">SIGNALS</span><span className="text-violet-500 animate-pulse">_</span>
+           </h1>
 
-          <p className="text-gray-400 font-tech text-lg tracking-wider">
-            TRANSMISSION INTERRUPTED...<br/>
-            ESTABLISHING UPLINK...
-          </p>
-
-          <div className="pt-8">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-sm font-bold text-white hover:text-secondary transition-colors font-tech tracking-widest uppercase"
-            >
-              <ArrowLeft size={16} />
-              Return to Base
-            </Link>
-          </div>
+           <p className="text-xl text-gray-400 font-light max-w-2xl">
+              Latest reviews, hardware updates, and direct transmissions from the control center.
+           </p>
         </div>
-      </div>
+      </header>
+
+      {/* MAIN CONTENT */}
+      <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 space-y-24 relative z-10">
+
+          {/* SECTION 1: SIGNALS */}
+          <section>
+             <SectionHeader number="01" title="SIGNALS" subtitle="STATUS_FEED" color="emerald" />
+             <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-8">
+                <div className="text-sm text-gray-400 font-light leading-relaxed">
+                   <p className="mb-4">
+                      Direct, unfiltered updates from the editor. Quick thoughts on hardware being tested, site updates, and industry whispers.
+                   </p>
+                   <div className="font-mono text-xs text-emerald-500/70 border-l-2 border-emerald-900/50 pl-4 py-1">
+                      {'// FREQUENCY: HIGH'}<br/>
+                      {'// SOURCE: ADMIN_TERMINAL'}
+                   </div>
+                </div>
+                <SignalFeed signals={MOCK_SIGNALS} />
+             </div>
+          </section>
+
+          {/* SECTION 2: REVIEWS */}
+          <section>
+             <SectionHeader number="02" title="REVIEWS" subtitle="HARDWARE_ANALYSIS" color="cyan" />
+             <ReviewGrid reviews={MOCK_REVIEWS} />
+             <div className="mt-8 text-center">
+                <Link href="/reviews" className="inline-flex items-center gap-2 text-xs font-mono text-cyan-500 uppercase tracking-widest hover:text-cyan-400 hover:underline underline-offset-4 decoration-cyan-500/30 transition-all">
+                   View All Reviews <span>→</span>
+                </Link>
+             </div>
+          </section>
+
+          {/* SECTION 3: NEWS */}
+          <section>
+             <SectionHeader number="03" title="NEWS" subtitle="SECTOR_UPDATES" color="violet" />
+             <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12">
+
+                {/* News Feed */}
+                <div>
+                   <NewsFeed news={MOCK_NEWS} />
+                   <div className="mt-8">
+                      <Link href="/news/archive" className="inline-flex items-center gap-2 text-xs font-mono text-violet-500 uppercase tracking-widest hover:text-violet-400 hover:underline underline-offset-4 decoration-violet-500/30 transition-all">
+                         Access Archive <span>→</span>
+                      </Link>
+                   </div>
+                </div>
+
+                {/* Sidebar / Categories (Static for now) */}
+                <div className="hidden lg:block space-y-8 pl-8 border-l border-white/5">
+                   <div>
+                      <h4 className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-4">Trending Tags</h4>
+                      <div className="flex flex-wrap gap-2">
+                         {['#RetroHandhelds', '#OLED', '#Emulation', '#FPGA', '#Modding'].map(tag => (
+                            <span key={tag} className="text-xs text-gray-400 bg-white/5 px-2 py-1 hover:bg-violet-500/20 hover:text-violet-300 transition-colors cursor-pointer">
+                               {tag}
+                            </span>
+                         ))}
+                      </div>
+                   </div>
+
+                   <div>
+                      <h4 className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-4">Newsletter</h4>
+                      <div className="bg-black/40 border border-white/10 p-4">
+                         <p className="text-xs text-gray-400 mb-4">
+                            Weekly digests. No spam. Only signal.
+                         </p>
+                         <div className="flex gap-2">
+                            <input type="email" placeholder="ENTER_EMAIL" className="bg-black border border-white/20 px-3 py-2 text-xs w-full focus:outline-none focus:border-violet-500 text-white font-mono placeholder:text-gray-700" disabled />
+                            <button className="bg-white/10 text-white px-3 py-2 text-xs font-bold hover:bg-violet-600 transition-colors disabled:opacity-50" disabled>
+                               SUB
+                            </button>
+                         </div>
+                      </div>
+                   </div>
+                </div>
+
+             </div>
+          </section>
+
       </div>
     </div>
   );
