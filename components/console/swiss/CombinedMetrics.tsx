@@ -46,65 +46,61 @@ export default function CombinedMetrics({ console, specs, releaseDate }: Combine
         ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(specs.price_launch_usd)
         : '---';
 
+    // New Fields
+    const os = specs.os || '---';
+    const cpu = specs.cpu_model || '---';
+
+    let ram = '---';
+    if (specs.ram_mb) {
+        ram = specs.ram_mb >= 1024
+            ? `${(specs.ram_mb / 1024).toFixed(specs.ram_mb % 1024 === 0 ? 0 : 1)} GB`
+            : `${specs.ram_mb} MB`;
+    }
+
     return (
         <div className="space-y-8">
              {/* KEY METRICS GRID */}
-             <div>
-                <h3 className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-4 border-b border-white/10 pb-2">CORE SPECIFICATIONS</h3>
-                <div className="grid grid-cols-2 gap-2">
-                    <MetricCell label="RELEASE" value={releaseYear} />
-                    <MetricCell label="PRICE" value={price} />
+             <div className="grid grid-cols-2 gap-2">
+                <MetricCell label="RELEASE" value={releaseYear} />
+                <MetricCell label="PRICE" value={price} />
 
-                    <MetricCell label="CATEGORY" value={category.toUpperCase()} />
-                    <MetricCell label="FORM FACTOR" value={formFactor.toUpperCase()} />
-
-                    <MetricCell label="DISPLAY" value={specs.screen_size_inch} unit={'"'} />
-                    <MetricCell label="RESOLUTION" value={resolution} />
-
-                    <MetricCell label="BATTERY" value={specs.battery_capacity_mah} unit={'mAh'} />
-                    <MetricCell label="WEIGHT" value={specs.weight_g} unit={'g'} />
-                </div>
+                <MetricCell label="DISPLAY" value={specs.screen_size_inch} unit={'"'} />
+                <MetricCell label="RESOLUTION" value={resolution} />
             </div>
 
-            {/* MISSION PROFILE (Text Data) */}
-            <div>
-                 <h3 className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-4 border-b border-white/10 pb-2">MISSION PROFILE</h3>
-                 <div className="grid grid-cols-1 gap-4 font-mono text-xs">
+            {/* SPECS LIST (Text Data) */}
+            <div className="grid grid-cols-1 gap-4 font-mono text-xs">
 
-                    {/* Status */}
-                    <div className="flex items-start justify-between border-b border-white/5 pb-2">
-                        <span className="text-gray-500">STATUS</span>
-                        <span className={`uppercase ${console.status === 'published' ? 'text-emerald-500' : 'text-orange-500'}`}>
-                            {console.status || 'UNKNOWN'}
-                        </span>
-                    </div>
+                {/* Category */}
+                <div className="flex items-start justify-between border-b border-white/5 pb-2">
+                    <span className="text-gray-500">CATEGORY</span>
+                    <span className="text-white uppercase text-right">{category}</span>
+                </div>
 
-                    {/* Dimensions */}
-                    <div className="flex items-start justify-between border-b border-white/5 pb-2">
-                         <span className="text-gray-500">DIMENSIONS</span>
-                         <span className="text-white text-right">
-                             {specs.width_mm && specs.height_mm && specs.depth_mm
-                                ? `${specs.width_mm} x ${specs.height_mm} x ${specs.depth_mm} mm`
-                                : '---'}
-                         </span>
-                    </div>
+                {/* Form Factor */}
+                <div className="flex items-start justify-between border-b border-white/5 pb-2">
+                    <span className="text-gray-500">FORM FACTOR</span>
+                    <span className="text-white uppercase text-right">{formFactor}</span>
+                </div>
 
-                    {/* Connectivity */}
-                    <div className="flex flex-col gap-1 border-b border-white/5 pb-2">
-                        <span className="text-gray-500 mb-1">CONNECTIVITY</span>
-                        <div className="text-white text-right opacity-80 leading-relaxed">
-                            {[specs.wifi_specs, specs.bluetooth_specs, specs.other_connectivity].filter(Boolean).join(', ') || 'Standard I/O'}
-                        </div>
-                    </div>
+                 {/* OS */}
+                <div className="flex items-start justify-between border-b border-white/5 pb-2">
+                    <span className="text-gray-500">OS</span>
+                    <span className="text-white uppercase text-right">{os}</span>
+                </div>
 
-                     {/* I/O Ports */}
-                     <div className="flex flex-col gap-1 border-b border-white/5 pb-2">
-                        <span className="text-gray-500 mb-1">INTERFACES</span>
-                        <div className="text-white text-right opacity-80 leading-relaxed">
-                             {specs.ports || 'Standard Ports'}
-                        </div>
-                    </div>
-                 </div>
+                 {/* CPU */}
+                <div className="flex items-start justify-between border-b border-white/5 pb-2">
+                    <span className="text-gray-500">CPU</span>
+                    <span className="text-white uppercase text-right">{cpu}</span>
+                </div>
+
+                 {/* RAM */}
+                <div className="flex items-start justify-between border-b border-white/5 pb-2">
+                    <span className="text-gray-500">RAM</span>
+                    <span className="text-white uppercase text-right">{ram}</span>
+                </div>
+
             </div>
         </div>
     );

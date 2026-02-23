@@ -130,7 +130,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                         {/* COMBINED METRICS & PROFILE */}
                         <div className="mt-auto">
-                            <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">KEY METRICS & PROFILE</h2>
+                            <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">KEY METRICS</h2>
                             <CombinedMetrics
                                 console={consoleData}
                                 specs={mergedSpecs}
