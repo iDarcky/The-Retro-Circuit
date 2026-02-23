@@ -58,7 +58,7 @@ export default function ArenaComparisonClient({
         if (allConsoles.length === 0) {
             fetchConsoleList().then((list) => setAllConsoles(list));
         }
-    }, []);
+    }, [allConsoles.length]);
 
     useEffect(() => {
         const p1 = searchParams?.get('p1');
@@ -98,7 +98,7 @@ export default function ArenaComparisonClient({
         if (p1 && p2) {
             setIsArenaMode(true);
         }
-    }, [searchParams]);
+    }, [searchParams, selectionA.slug, selectionA.details, selectionA.selectedVariant?.slug, selectionB.slug, selectionB.details, selectionB.selectedVariant?.slug]);
 
     const updateUrl = (p1?: string | null, v1?: string | null, p2?: string | null, v2?: string | null) => {
         const finalP1 = p1 !== undefined ? p1 : selectionA.slug;

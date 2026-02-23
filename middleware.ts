@@ -1,7 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-// Restored to 'middleware' to enable security headers and auth checks
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
     request: {
@@ -9,105 +8,93 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-  const isPlaceholder = (supabaseUrl.includes('placeholder.supabase.co') || supabaseKey === 'placeholder') && process.env.NODE_ENV === 'development';
+  try {
+    const supabase = createServerClient(
+      supabaseUrl,
+      supabaseKey,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll();
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value }) => {
+              request.cookies.set(name, value);
+            });
+            response = NextResponse.next({
+              request: {
+                headers: request.headers,
+              },
+            });
+            cookiesToSet.forEach(({ name, value, options }) => {
+              response.cookies.set(name, value, options);
+            });
+          },
+        },
+      }
+    );
 
-  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
-  const isProfileRoute = request.nextUrl.pathname.startsWith('/profile');
-  const isLoginRoute = request.nextUrl.pathname.startsWith('/login');
+    // 1. Refresh the session
+    const { data: { user } } = await supabase.auth.getUser();
 
-  // NOTE: In this environment, likely running with placeholders.
-  // If placeholders are present, middleware cannot verify auth via Supabase.
-  if (isPlaceholder) {
+    const isLoginRoute = request.nextUrl.pathname.startsWith('/login');
+    const isProfileRoute = request.nextUrl.pathname.startsWith('/profile');
+    const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
+
+    // 2. Auth Redirection Logic
+    const url = request.nextUrl.clone();
+
+    // IF USER IS LOGGED IN
+    if (user) {
+      // Redirect from /login to /profile
+      if (isLoginRoute) {
+        url.pathname = '/profile';
+        return NextResponse.redirect(url);
+      }
+    }
+    // IF USER IS NOT LOGGED IN
+    else {
+      // Protect /profile
+      if (isProfileRoute) {
+        url.pathname = '/login';
+        return NextResponse.redirect(url);
+      }
+    }
+
+    // 3. Protect Admin Routes
+    if (isAdminRoute) {
+      if (!user) {
+        return NextResponse.redirect(new URL('/login', request.url));
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError) {
+        console.error('[Middleware] Profile Fetch Error:', profileError.message);
+      }
+
+      if (!profile || profile.role !== 'admin') {
+        return NextResponse.redirect(new URL('/', request.url));
+      }
+    }
+  } catch (e) {
+    console.error('[Middleware] Supabase Client Error:', e);
+    // Fail closed if Supabase fails
+    const isProfileRoute = request.nextUrl.pathname.startsWith('/profile');
+    const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
     if (isAdminRoute || isProfileRoute) {
-      // PREVENT AUTH BYPASS: Deny access to protected routes if auth cannot be verified
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }
 
-  // If we are in a verifiable environment:
-  if (!isPlaceholder) {
-    try {
-      const supabase = createServerClient(
-        supabaseUrl,
-        supabaseKey,
-        {
-          cookies: {
-            getAll() {
-              return request.cookies.getAll();
-            },
-            setAll(cookiesToSet) {
-              cookiesToSet.forEach(({ name, value }) => {
-                request.cookies.set(name, value);
-              });
-              response = NextResponse.next({
-                request: {
-                  headers: request.headers,
-                },
-              });
-              cookiesToSet.forEach(({ name, value, options }) => {
-                response.cookies.set(name, value, options);
-              });
-            },
-          },
-        }
-      );
-
-      // 2. Refresh the session
-      const { data: { user } } = await supabase.auth.getUser();
-
-      // 3. Auth Redirection Logic
-      const url = request.nextUrl.clone();
-
-      // IF USER IS LOGGED IN
-      if (user) {
-        // Redirect from /login to /profile
-        if (isLoginRoute) {
-          url.pathname = '/profile';
-          return NextResponse.redirect(url);
-        }
-      }
-      // IF USER IS NOT LOGGED IN
-      else {
-        // Protect /profile
-        if (isProfileRoute) {
-          url.pathname = '/login';
-          return NextResponse.redirect(url);
-        }
-      }
-
-      // 4. Protect Admin Routes (Original Logic)
-      if (isAdminRoute) {
-        if (!user) {
-          return NextResponse.redirect(new URL('/login', request.url));
-        }
-
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', user.id)
-          .single();
-
-        if (profileError) {
-          console.error('[Middleware] Profile Fetch Error:', profileError.message);
-        }
-
-        if (!profile || profile.role !== 'admin') {
-          return NextResponse.redirect(new URL('/', request.url));
-        }
-      }
-    } catch (e) {
-      console.error('[Middleware] Supabase Client Error:', e);
-      // PREVENT AUTH BYPASS: Deny access if Supabase client crashes
-      if (isAdminRoute || isProfileRoute) {
-        return NextResponse.redirect(new URL('/login', request.url));
-      }
-    }
-  }
-
-  // 5. Security Headers
+  // 4. Security Headers
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, type FormEvent, type FC, useEffect, type ChangeEvent } from 'react';
+import { useState, type FormEvent, type FC, useEffect, type ChangeEvent, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { addConsoleVariant, updateConsoleVariant, getVariantsByConsole } from '../../app/actions';
 import { purgeCache } from '../../app/actions/revalidate';
@@ -149,7 +149,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             handleInputChange('release_date_precision', datePrecision);
             handleInputChange('release_year', yearVal);
         }
-    }, [datePrecision, dateValue]);
+    }, [datePrecision, dateValue, handleInputChange]);
 
 
     useEffect(() => {
@@ -250,12 +250,15 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         }
     };
 
-    const handleInputChange = (key: string, value: any) => {
+    const handleInputChange = useCallback((key: string, value: any) => {
         setFormData(prev => ({ ...prev, [key]: value }));
-        if (fieldErrors[key]) {
-            setFieldErrors(prev => { const next = { ...prev }; delete next[key]; return next; });
-        }
-    };
+        setFieldErrors(prev => {
+            if (!prev[key]) return prev;
+            const next = { ...prev };
+            delete next[key];
+            return next;
+        });
+    }, []);
 
     const handleSubmit = async (e: FormEvent, mode: 'SAVE' | 'CLONE' = 'SAVE') => {
         e.preventDefault();
