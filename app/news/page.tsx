@@ -3,11 +3,14 @@ import { SectionHeader } from '@/components/news/SectionHeader';
 import { SignalFeed } from '@/components/news/SignalFeed';
 import { ReviewGrid } from '@/components/news/ReviewGrid';
 import { NewsFeed } from '@/components/news/NewsFeed';
-import { MOCK_SIGNALS, MOCK_REVIEWS, MOCK_NEWS } from '@/data/news-framework';
+import { MOCK_REVIEWS, MOCK_NEWS } from '@/data/news-framework';
+import { fetchActiveSignals } from '../actions/signals';
 
 export const revalidate = 300; // 5 minutes
 
-export default function NewsPage() {
+export default async function NewsPage() {
+  const activeSignals = await fetchActiveSignals();
+
   return (
     <div className="w-full bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-violet-500/30 selection:text-white pb-24 relative overflow-hidden">
 
@@ -49,7 +52,7 @@ export default function NewsPage() {
                       {'// SOURCE: ADMIN_TERMINAL'}
                    </div>
                 </div>
-                <SignalFeed signals={MOCK_SIGNALS} />
+                <SignalFeed signals={activeSignals} />
              </div>
           </section>
 
