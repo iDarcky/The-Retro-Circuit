@@ -138,10 +138,15 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
 
                 <div className="flex flex-col sm:flex-row gap-4">
                     <Link href={`/consoles/${winner.slug}`} className="flex-1">
-                        <Button variant="primary" className="w-full py-4 text-sm font-pixel">
+                        <Button variant="secondary" className="w-full py-4 text-sm font-pixel">
                             VIEW FULL SPECS
                         </Button>
                     </Link>
+                    <a href="#" target="_blank" rel="noopener noreferrer" className="flex-1">
+                         <Button variant="primary" className="w-full py-4 text-sm font-pixel">
+                            BUY NOW
+                         </Button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -210,6 +215,13 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                                     COMPARE VS WINNER
                                 </button>
                              </Link>
+
+                             {/* BUY BUTTON */}
+                             <a href="#" target="_blank" rel="noopener noreferrer" className="w-full">
+                                <button className="w-full py-3 bg-white text-black text-xs font-mono font-bold uppercase hover:bg-zinc-200 transition-all">
+                                    BUY NOW
+                                </button>
+                             </a>
                         </div>
                     </div>
                 </div>

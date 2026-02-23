@@ -173,13 +173,13 @@ export async function getFinderResults(
         const bestMatch = scoredConsoles[0];
 
         if (bestMatch) {
-            bestMatch.match_label = "WINNER";
+            bestMatch.match_label = "Best Match";
             bestMatch.match_reason = "Matches your preferences best across all categories.";
             finalSelection.push(bestMatch);
             pickedIds.add(bestMatch.id);
         }
 
-        // PASS 2: Best Performance for Budget -> HONORABLE MENTION
+        // PASS 2: Best Performance for Budget
         const perfCandidates = [...scoredConsoles]; // Copy
 
         perfCandidates.sort((a, b) => {
@@ -194,13 +194,13 @@ export async function getFinderResults(
         const perfPick = perfCandidates.find(c => !pickedIds.has(c.id));
 
         if (perfPick) {
-            perfPick.match_label = "HONORABLE MENTION";
+            perfPick.match_label = "Best Performance for Budget";
             perfPick.match_reason = "Maximizes power and compatibility within your price range, prioritizing performance over features.";
             finalSelection.push(perfPick);
             pickedIds.add(perfPick.id);
         }
 
-        // PASS 3: Upgrade Pick -> PREMIUM PICK
+        // PASS 3: Upgrade Pick (+$50) OR Runner Up
         const remaining = scoredConsoles.filter(c => !pickedIds.has(c.id));
 
         if (remaining.length > 0) {
@@ -240,7 +240,7 @@ export async function getFinderResults(
                     // Sort by Raw Power (Ceiling) to pick the strongest upgrade
                     candidates.sort((a, b) => (b._breakdown?.powerCeiling || 0) - (a._breakdown?.powerCeiling || 0));
                     upgradePick = candidates[0];
-                    upgradePick.match_label = "PREMIUM PICK";
+                    upgradePick.match_label = "Upgrade Pick (+$50)";
                     upgradePick.match_reason = "Slightly over budget, but offers significantly more power or compatibility.";
                 }
             }
@@ -249,10 +249,10 @@ export async function getFinderResults(
                 finalSelection.push(upgradePick);
                 pickedIds.add(upgradePick.id);
             } else {
-                // Fallback: HONORABLE MENTION (Next highest Total Score)
+                // Fallback: Runner Up (Next highest Total Score)
                 remaining.sort((a, b) => b._score - a._score);
                 const runnerUp = remaining[0];
-                runnerUp.match_label = "HONORABLE MENTION";
+                runnerUp.match_label = "Runner Up";
                 runnerUp.match_reason = "A strong alternative that nearly matched your top pick.";
                 finalSelection.push(runnerUp);
                 pickedIds.add(runnerUp.id);
