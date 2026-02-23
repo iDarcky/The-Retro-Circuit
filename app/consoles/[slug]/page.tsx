@@ -62,7 +62,7 @@ export default async function ConsoleSpecsPage(props: Props) {
 
     // Log error but we don't display it directly anymore since we redirect to notFound()
     if (error) {
-        console.error("[ConsoleSpecsPage] Fetch Error:", error);
+      console.error("[ConsoleSpecsPage] Fetch Error:", error);
     }
 
   } catch (err: any) {
@@ -74,5 +74,34 @@ export default async function ConsoleSpecsPage(props: Props) {
     notFound();
   }
 
-  return <ConsoleDetailView consoleData={consoleData} />;
+  // Logic to determine best image for Schema
+  let finalImage = consoleData.image_url;
+  if (!finalImage && consoleData.variants && Array.isArray(consoleData.variants) && consoleData.variants.length > 0) {
+    const variants = consoleData.variants;
+    const defaultVar = variants.find((v: any) => v.is_default);
+    finalImage = defaultVar?.image_url || variants[0].image_url;
+  }
+  finalImage = finalImage || '/logo.png';
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: consoleData.name,
+    description: `View full technical specifications, release date, and variant comparisons for the ${consoleData.name}.`,
+    image: `https://theretrocircuit.com${finalImage.startsWith('/') ? finalImage : '/' + finalImage}`,
+    brand: {
+      '@type': 'Brand',
+      name: consoleData.manufacturer?.name || 'Unknown Manufacturer'
+    }
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ConsoleDetailView consoleData={consoleData} />
+    </>
+  );
 }
