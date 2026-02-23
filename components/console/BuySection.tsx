@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import SwissButton from './swiss/SwissButton';
 
 export default function BuySection() {
