@@ -40,6 +40,7 @@ function VSModeContent() {
         if (p1 && p2) {
             setIsArenaMode(true);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const loadSelection = async (slug: string, variantSlug: string | null, setSelection: Dispatch<SetStateAction<SelectionState>>) => {
@@ -76,6 +77,7 @@ function VSModeContent() {
             const variant = selectionB.details.variants?.find(v => v.slug === v2) || null;
             setSelectionB(prev => ({ ...prev, selectedVariant: variant }));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchParams]);
 
     const updateUrl = (p1?: string | null, v1?: string | null, p2?: string | null, v2?: string | null) => {

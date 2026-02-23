@@ -46,6 +46,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         });
       });
     }
+
+    // 4. Dynamic News
+    const { data: news } = await supabase.from('news').select('id, published_at').eq('status', 'published');
+    if (news) {
+      news.forEach((item: any) => {
+        routes.push({
+          url: `${baseUrl}/news/${item.id}`,
+          lastModified: new Date(item.published_at || new Date()),
+          changeFrequency: 'monthly',
+          priority: 0.6,
+        });
+      });
+    }
+
+    // 5. Dynamic Reviews
+    const { data: reviews } = await supabase.from('reviews').select('id, published_at').eq('status', 'published');
+    if (reviews) {
+      reviews.forEach((item: any) => {
+        routes.push({
+          url: `${baseUrl}/news/reviews/${item.id}`,
+          lastModified: new Date(item.published_at || new Date()),
+          changeFrequency: 'monthly',
+          priority: 0.6,
+        });
+      });
+    }
   } catch (error) {
     console.error('Sitemap generation error:', error);
   }
