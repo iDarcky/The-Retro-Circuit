@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Metadata } from 'next';
 import { SectionHeader } from '@/components/news/SectionHeader';
 import { SignalFeed } from '@/components/news/SignalFeed';
 import { ReviewGrid } from '@/components/news/ReviewGrid';
@@ -8,6 +9,16 @@ import { fetchAllReviews } from '../actions/reviews';
 import { fetchAllNews } from '../actions/news';
 
 export const revalidate = 300; // 5 minutes
+
+export const metadata: Metadata = {
+  title: 'Transmission Feed | The Retro Circuit',
+  description: 'Latest hardware signals, reviews, and news from the retro handheld sector. Direct updates from the control center.',
+  openGraph: {
+    title: 'Transmission Feed | The Retro Circuit',
+    description: 'Latest hardware signals, reviews, and news from the retro handheld sector.',
+    type: 'website',
+  }
+};
 
 export default async function NewsPage() {
   const [activeSignals, reviews, newsItems] = await Promise.all([
