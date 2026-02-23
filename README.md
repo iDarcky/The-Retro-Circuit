@@ -10,7 +10,7 @@
  |_|  \_\___|\__|_|  \___/ \_____|_|_|  \___|\__,_|_|\__|
                                                          
   >> STATUS: ONLINE
-  >> SYSTEM: NEXT.JS 14 // SUPABASE // TAILWIND
+  >> SYSTEM: NEXT.JS 16 // SUPABASE // TAILWIND
 ```
 
 ## 01. THE MISSION
@@ -28,13 +28,13 @@ The Retro Circuit is a specialized comparison engine designed to bring order to 
 This platform is built on a modern, high-performance stack designed for scalability and speed. The architecture enforces strict type safety and relational data integrity.
 
 ### CORE
-*   **Framework:** Next.js 14 (App Router)
+*   **Framework:** Next.js 16 (App Router)
 *   **Language:** TypeScript (Strict Mode)
 *   **State:** React Server Components (RSC) for optimized data fetching
 
 ### VISUAL INTERFACE
 *   **Design System:** Tailwind CSS
-*   **Aesthetic:** "Cyberpunk Terminal" — A custom-built UI language featuring CRT scanlines, neon-grid layouts, and diegetic sound effects.
+*   **Aesthetic:** "Swiss Industrial" — A precision-engineered UI language featuring minimal grids, high-contrast typography, and functional layouts.
 *   **Motion:** CSS Keyframes & Native Transitions
 
 ### DATA LAYER
@@ -57,8 +57,8 @@ A comprehensive database of hardware manufacturers. This module links corporate 
 ### [B] THE VARIANT ENGINE
 The heart of the application's data integrity. This custom logic layer handles the complexity of SKU differentiation. It allows a single "Parent Console" entry to spawn multiple "Child Variants," dynamically inheriting base specs (like OS or Input Layout) while overriding specific performance metrics (RAM, CPU Clock, Screen Resolution, Price) without data duplication.
 
-### [C] ROOT TERMINAL
-A diegetic, command-line inspired Admin Interface for managing the dataset. Protected by role-based authentication, this portal allows operators to inject new hardware data, manage news signals, and update the global "Game of the Week" algorithms without accessing the source code.
+### [C] THE COMMAND CENTER
+An Admin Interface for managing the dataset. Protected by role-based authentication, this portal allows operators to inject new hardware data, manage news signals, and update the global "Game of the Week" algorithms without accessing the source code.
 
 ---
 
