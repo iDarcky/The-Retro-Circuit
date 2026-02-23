@@ -15,7 +15,8 @@ const config = [
     rules: {
       "react/no-unescaped-entities": "warn",
       "react/jsx-no-comment-textnodes": "warn",
-      "@next/next/no-img-element": "warn"
+      "@next/next/no-img-element": "warn",
+      "react-hooks/exhaustive-deps": "error"
     }
   }
 ];

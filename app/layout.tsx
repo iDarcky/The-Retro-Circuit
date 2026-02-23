@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Press_Start_2P, JetBrains_Mono, Share_Tech_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import ClientShell from "../components/layout/ClientShell";
@@ -37,12 +37,13 @@ const inter = Inter({
   display: 'swap',
 });
 
-export const viewport = {
+export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
   themeColor: "#0f0f1b",
+  interactiveWidget: "resizes-content",
 };
 
 export const metadata: Metadata = {
