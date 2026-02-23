@@ -83,46 +83,11 @@ A restricted-access dashboard for platform operators (`/admin`).
 
 ---
 
-## 04. DEVELOPMENT
-
-### PREREQUISITES
-*   Node.js 20+
-*   pnpm
-
-### SETUP
-
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/your-org/retro-circuit.git
-    cd retro-circuit
-    ```
-
-2.  **Install dependencies:**
-    ```bash
-    pnpm install
-    ```
-
-3.  **Environment Variables:**
-    Create a `.env.local` file in the root directory:
-    ```bash
-    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-    ```
-
-4.  **Run the development server:**
-    ```bash
-    pnpm dev
-    ```
-
----
-
-## 05. ROADMAP
+## 04. ROADMAP
 
 We maintain a transparent development process.
 
-*   **Public Roadmap:** [docs/ROADMAP.md](docs/ROADMAP.md) - Our 40-day launch plan.
-*   **Feature Backlog:** [docs/PENDING_FEATURES.md](docs/PENDING_FEATURES.md) - Prioritized list of upcoming capabilities.
-*   **Design System:** [docs/DESIGN.md](docs/DESIGN.md) - The visual language of the project.
+Visit our **[Roadmap Page](/roadmap)** to see our current status, upcoming features, and the future vision for The Retro Circuit.
 
 ---
 
