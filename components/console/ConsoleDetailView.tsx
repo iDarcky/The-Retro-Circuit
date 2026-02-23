@@ -5,13 +5,12 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ConsoleDetails, ConsoleSpecs, ConsoleVariant } from '../../lib/types';
 import ConsoleIdentitySection from './ConsoleIdentitySection';
 import PlayabilityMatrix from './PlayabilityMatrix';
-import MissionProfile from './MissionProfile';
 import BuySection from './BuySection';
 import { getConsoleImage } from '../../lib/utils';
 
 // Swiss Design Components
 import SystemAnalysis from './swiss/SystemAnalysis';
-import KeyMetrics from './swiss/KeyMetrics';
+import CombinedMetrics from './swiss/CombinedMetrics';
 import TechnicalReference from './swiss/TechnicalReference';
 
 interface ConsoleDetailViewProps {
@@ -129,30 +128,32 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                     {/* BRIEFING (Right - Span 4) */}
                     <div className="lg:col-span-4 flex flex-col h-full border-t border-white/10 lg:border-t-0 lg:border-l lg:pl-8 pt-8 lg:pt-0">
 
-                        {/* SYSTEM ANALYSIS */}
-                        <div className="mb-8">
-                            <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">SYSTEM ANALYSIS</h2>
-                            <SystemAnalysis description={consoleData.description || ''} />
-                        </div>
-
-                        {/* KEY METRICS */}
+                        {/* COMBINED METRICS & PROFILE */}
                         <div className="mt-auto">
-                            <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">KEY METRICS</h2>
-                            <KeyMetrics specs={mergedSpecs} releaseDate={currentVariant?.release_date || null} />
+                            <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">KEY METRICS & PROFILE</h2>
+                            <CombinedMetrics
+                                console={consoleData}
+                                specs={mergedSpecs}
+                                releaseDate={currentVariant?.release_date || null}
+                            />
                         </div>
                     </div>
                 </div>
 
-                {/* ROW 2: EMULATION & LOGISTICS (Moved Up) */}
+                {/* ROW 2: EMULATION & ANALYSIS (Moved Up) */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 border-t border-white/10 pt-8">
                     {/* Playability */}
                     <section id="playability">
                         <PlayabilityMatrix profile={mergedSpecs.emulation_profile || (mergedSpecs as any).emulation_profiles} />
                     </section>
 
-                    {/* Logistics */}
+                    {/* System Analysis + Buy */}
                     <section className="space-y-8">
-                        <MissionProfile />
+                        <div>
+                            <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">SYSTEM ANALYSIS</h2>
+                            <SystemAnalysis description={consoleData.description || ''} />
+                        </div>
+
                         <div id="buy">
                             <BuySection />
                         </div>

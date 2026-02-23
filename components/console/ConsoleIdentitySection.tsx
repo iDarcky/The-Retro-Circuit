@@ -98,14 +98,11 @@ const CompareButton = ({ compact = false, compareUrl }: CompareButtonProps) => {
 
     return (
         <div className="relative group inline-block">
-            <div className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-violet-500 transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-violet-400/50"></div>
-            <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-violet-500 transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-violet-400/50"></div>
-            <Link
-                href={compareUrl}
-                className="relative z-10 inline-flex items-center gap-2 bg-violet-600 text-white font-mono text-xs md:text-sm px-6 py-3 hover:brightness-110 transition-all uppercase tracking-widest border border-violet-500 shadow-lg shadow-violet-500/20"
-            >
-                <IconVS className="w-4 h-4" />
-                COMPARE
+            <Link href={compareUrl}>
+                 <SwissButton variant="secondary" className="relative !border-violet-500 !text-violet-400 hover:!bg-violet-500/10 hover:!text-violet-300">
+                    <IconVS className="w-4 h-4" />
+                    COMPARE
+                </SwissButton>
             </Link>
         </div>
     );
