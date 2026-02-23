@@ -81,17 +81,35 @@ interface CompareButtonProps {
     compareUrl: string;
 }
 
-const CompareButton = ({ compact = false, compareUrl }: CompareButtonProps) => (
-    <Link href={compareUrl}>
-        <SwissButton
-            variant="secondary"
-            className={compact ? 'px-2 py-1 text-[10px] h-[26px]' : ''}
-        >
-            <IconVS className={compact ? "w-3 h-3" : "w-4 h-4"} />
-            {compact ? 'VS' : 'COMPARE'}
-        </SwissButton>
-    </Link>
-);
+const CompareButton = ({ compact = false, compareUrl }: CompareButtonProps) => {
+    if (compact) {
+        return (
+            <Link href={compareUrl}>
+                <SwissButton
+                    variant="secondary"
+                    className="px-2 py-1 text-[10px] h-[26px] bg-violet-600 border-violet-500 text-white hover:bg-violet-500 hover:border-violet-400"
+                >
+                    <IconVS className="w-3 h-3" />
+                    VS
+                </SwissButton>
+            </Link>
+        );
+    }
+
+    return (
+        <div className="relative group inline-block">
+            <div className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-violet-500 transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-violet-400/50"></div>
+            <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-violet-500 transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-violet-400/50"></div>
+            <Link
+                href={compareUrl}
+                className="relative z-10 inline-flex items-center gap-2 bg-violet-600 text-white font-mono text-xs md:text-sm px-6 py-3 hover:brightness-110 transition-all uppercase tracking-widest border border-violet-500 shadow-lg shadow-violet-500/20"
+            >
+                <IconVS className="w-4 h-4" />
+                COMPARE
+            </Link>
+        </div>
+    );
+};
 
 export default function ConsoleIdentitySection({
     console: consoleData,
@@ -168,22 +186,13 @@ export default function ConsoleIdentitySection({
                                 {fabName}
                             </Link>
                         )}
-                        <h1 className="font-pixel text-4xl md:text-7xl lg:text-8xl text-white uppercase leading-none tracking-tighter break-words">
+                        <h1 className="font-pixel text-4xl md:text-6xl lg:text-6xl text-white uppercase leading-none tracking-tighter break-words">
                             {consoleData.name}
                         </h1>
                     </div>
 
-                    {/* METADATA BAR */}
-                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-xs md:text-sm text-gray-500 border-t border-b border-white/10 py-3 uppercase tracking-wider">
-                        <span>// {formFactor}</span>
-                        <span>// {deviceCategory}</span>
-                        <span>// REL: {currentYear}</span>
-                        <div className="flex-1" />
-                        <span className="text-orange-500">ID: {consoleData.slug.toUpperCase()}</span>
-                    </div>
-
                     {/* CONTROLS */}
-                    <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
+                    <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-white/10">
 
                         <div className="flex items-center gap-4">
                             <VariantDropdown

@@ -128,16 +128,16 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                     {/* BRIEFING (Right - Span 4) */}
                     <div className="lg:col-span-4 flex flex-col h-full border-t border-white/10 lg:border-t-0 lg:border-l lg:pl-8 pt-8 lg:pt-0">
-                        {/* Renamed Header as requested */}
-                        <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">QUICK GLANCE</h2>
 
-                        {/* Description */}
+                        {/* SYSTEM ANALYSIS */}
                         <div className="mb-8">
+                            <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">SYSTEM ANALYSIS</h2>
                             <SystemAnalysis description={consoleData.description || ''} />
                         </div>
 
-                        {/* Metrics Grid */}
+                        {/* KEY METRICS */}
                         <div className="mt-auto">
+                            <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">KEY METRICS</h2>
                             <KeyMetrics specs={mergedSpecs} releaseDate={currentVariant?.release_date || null} />
                         </div>
                     </div>
