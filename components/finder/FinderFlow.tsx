@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { FinderLanding } from './FinderLanding';
 import { QuizQuestion } from './QuizQuestion';
 import { FinderResults } from './FinderResults';
-import Button from '../ui/Button';
 
 // Configuration
 const QUESTIONS = [

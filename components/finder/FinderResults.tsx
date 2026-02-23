@@ -218,9 +218,9 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
       )}
 
       <div className="flex justify-center border-t border-white/10 pt-12">
-        <Button variant="ghost" onClick={onRestart} className="text-zinc-500 hover:text-white">
-          <span className="mr-2">↺</span> RESTART QUIZ
-        </Button>
+        <button onClick={onRestart} className="flex items-center text-zinc-500 hover:text-white font-mono text-sm tracking-widest transition-colors py-4 px-6 uppercase">
+          <span className="mr-2 text-lg">↺</span> RESTART QUIZ
+        </button>
       </div>
     </div>
   );
