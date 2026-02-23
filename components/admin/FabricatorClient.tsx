@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Manufacturer } from '@/lib/types';
 import Button from '@/components/ui/Button';
@@ -14,7 +14,6 @@ interface FabricatorClientProps {
 
 export default function FabricatorClient({ initialManufacturers }: FabricatorClientProps) {
     const router = useRouter();
-    const searchParams = useSearchParams();
     const [manufacturers, setManufacturers] = useState(initialManufacturers);
     const [search, setSearch] = useState('');
 
@@ -26,20 +25,6 @@ export default function FabricatorClient({ initialManufacturers }: FabricatorCli
     useEffect(() => {
         setManufacturers(initialManufacturers);
     }, [initialManufacturers]);
-
-    // Check for Deep Link Edit
-    useEffect(() => {
-        const editId = searchParams?.get('edit_id');
-        if (editId && manufacturers.length > 0) {
-            const target = manufacturers.find(m => m.id === editId);
-            if (target) {
-                setEditingManufacturer(target);
-                setIsModalOpen(true);
-                // Clean URL without refresh
-                window.history.replaceState(null, '', '/admin/fabricators');
-            }
-        }
-    }, [searchParams, manufacturers]);
 
     const filteredManufacturers = manufacturers.filter(m =>
         m.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -60,22 +45,23 @@ export default function FabricatorClient({ initialManufacturers }: FabricatorCli
 
     const handleSuccess = (_msg: string) => {
         setIsModalOpen(false);
-        router.refresh(); // Refresh data
+        router.refresh();
     };
 
     return (
         <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn">
-            {/* Header */}
+            {/* Header - Consistent Swiss/Hub Style */}
             <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b-2 border-border-normal pb-6 gap-4">
                 <div>
                     <h1 className="text-4xl md:text-6xl font-pixel text-secondary mb-2 drop-shadow-[0_0_10px_rgba(0,255,157,0.5)]">
                         FABRICATORS
                     </h1>
-                    <div className="flex gap-4">
-                        <Link href="/admin" className="font-mono text-xs text-gray-500 hover:text-white hover:underline">
+                    <div className="flex gap-4 font-mono text-xs text-gray-500 uppercase tracking-widest">
+                        <Link href="/admin" className="hover:text-white hover:underline">
                             &lt; ROOT TERMINAL
                         </Link>
-                        <p className="font-mono text-xs text-gray-500 tracking-widest">
+                        <span>|</span>
+                        <p>
                             // TOTAL ENTITIES: {manufacturers.length}
                         </p>
                     </div>
@@ -90,54 +76,57 @@ export default function FabricatorClient({ initialManufacturers }: FabricatorCli
 
             {/* Controls */}
             <div className="flex justify-end mb-6">
-                <div className="relative">
+                <div className="relative w-full md:w-auto">
                      <input
                         type="text"
                         placeholder="SEARCH_ENTITIES..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="bg-black border border-gray-700 text-white font-mono text-sm px-4 py-2 w-full md:w-64 focus:border-secondary outline-none uppercase"
+                        className="bg-black border border-border-normal text-white font-mono text-sm px-4 py-2 w-full md:w-64 focus:border-white outline-none uppercase placeholder:text-gray-700 transition-colors"
                     />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 text-[10px]">▼</div>
                 </div>
             </div>
 
             {/* Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
                 {filteredManufacturers.map((manu) => (
                     <div
                         key={manu.id}
-                        className="bg-bg-secondary border border-border-normal p-4 hover:border-white transition-colors group relative overflow-hidden"
+                        className="bg-bg-secondary border border-border-normal p-6 hover:border-white transition-colors group relative overflow-hidden flex flex-col h-full min-h-[160px]"
                     >
                         <div className="flex justify-between items-start mb-4 relative z-10">
                             <div>
-                                <h3 className="font-bold text-white text-lg group-hover:text-secondary transition-colors">
+                                <h3 className="font-pixel text-lg text-white group-hover:text-secondary transition-colors mb-1">
                                     {manu.name}
                                 </h3>
-                                <p className="text-[10px] font-mono text-gray-500 uppercase">
-                                    {manu.country || 'UNKNOWN ORIGIN'} // EST. {manu.founded_year || '????'}
-                                </p>
+                                <div className="text-[10px] font-mono text-gray-500 uppercase tracking-wider flex flex-col">
+                                    <span>ORIGIN: {manu.country || 'UNKNOWN'}</span>
+                                    <span>EST: {manu.founded_year || '????'}</span>
+                                </div>
                             </div>
                             {manu.image_url && (
-                                <img src={manu.image_url} alt={manu.name} className="w-8 h-8 object-contain opacity-50 group-hover:opacity-100 transition-opacity" />
+                                <img src={manu.image_url} alt={manu.name} className="w-8 h-8 object-contain opacity-50 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0" />
                             )}
                         </div>
 
-                        <div className="relative z-10 pt-4 border-t border-gray-800 flex justify-end">
+                        <div className="mt-auto relative z-10 flex justify-between items-center border-t border-border-normal pt-4">
+                            <span className="text-[9px] font-mono text-gray-600 group-hover:text-gray-400">ID: {manu.id.substring(0,6)}</span>
                             <button
                                 onClick={() => handleOpenEdit(manu)}
-                                className="text-[10px] font-mono border border-gray-700 text-gray-400 px-3 py-1 hover:border-secondary hover:text-secondary transition-colors uppercase"
+                                className="text-[10px] font-mono border border-border-normal text-gray-400 px-3 py-1 hover:bg-white hover:text-black hover:border-white transition-colors uppercase tracking-widest"
                             >
-                                Edit Entity
+                                [ EDIT ]
                             </button>
                         </div>
 
-                         {/* Hover Effect */}
-                         <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                         {/* Hover Effect: Subtle Scanline */}
+                         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent -translate-y-full group-hover:translate-y-full transition-transform duration-700 ease-in-out pointer-events-none"></div>
                     </div>
                 ))}
                 {filteredManufacturers.length === 0 && (
-                    <div className="col-span-full p-8 text-center text-gray-500 font-mono text-xs border border-dashed border-gray-800">
-                        NO RECORDS FOUND matching query.
+                    <div className="col-span-full p-12 text-center text-gray-500 font-mono text-xs border border-dashed border-gray-800 uppercase tracking-widest">
+                        // NO RECORDS FOUND MATCHING QUERY.
                     </div>
                 )}
             </div>
@@ -154,7 +143,7 @@ export default function FabricatorClient({ initialManufacturers }: FabricatorCli
                     onError={setErrorMsg}
                 />
                  {errorMsg && (
-                    <div className="mt-4 p-3 bg-accent/10 border border-accent text-accent font-mono text-xs">
+                    <div className="mt-4 p-3 bg-accent/10 border border-accent text-accent font-mono text-xs uppercase font-bold">
                         ERROR: {errorMsg}
                     </div>
                 )}
