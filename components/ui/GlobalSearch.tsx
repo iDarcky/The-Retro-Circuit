@@ -105,7 +105,7 @@ const GlobalSearch: FC = () => {
         >
             {/* PANEL: Swiss Industrial - Solid Black, White/10 Borders, Violet Accents */}
             <div
-                className="w-full max-w-xl bg-bg-primary border border-border-normal shadow-2xl relative overflow-hidden flex flex-col max-h-[80vh] m-4 rounded-none"
+                className="w-full max-w-3xl bg-bg-primary border border-border-normal shadow-2xl relative overflow-hidden flex flex-col max-h-[80vh] m-4 rounded-none"
                 onClick={e => e.stopPropagation()}
                 onKeyDown={handleKeyDown}
             >
