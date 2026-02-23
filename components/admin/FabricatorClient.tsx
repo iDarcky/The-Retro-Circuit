@@ -90,7 +90,7 @@ export default function FabricatorClient({ initialManufacturers }: FabricatorCli
                         </Link>
                         <span>|</span>
                         <p>
-                            // TOTAL ENTITIES: {manufacturers.length}
+                            {'//'} TOTAL ENTITIES: {manufacturers.length}
                         </p>
                     </div>
                 </div>
@@ -134,7 +134,9 @@ export default function FabricatorClient({ initialManufacturers }: FabricatorCli
                                 </div>
                             </div>
                             {manu.image_url && (
-                                <img src={manu.image_url} alt={manu.name} className="w-8 h-8 object-contain opacity-50 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0" />
+                                <div className="relative w-8 h-8 opacity-50 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0">
+                                    <img src={manu.image_url} alt={manu.name} className="object-contain w-full h-full" />
+                                </div>
                             )}
                         </div>
 
@@ -161,7 +163,7 @@ export default function FabricatorClient({ initialManufacturers }: FabricatorCli
                 ))}
                 {filteredManufacturers.length === 0 && (
                     <div className="col-span-full p-12 text-center text-zinc-500 font-mono text-xs border border-dashed border-zinc-800 uppercase tracking-widest">
-                        // NO RECORDS FOUND MATCHING QUERY.
+                        {'//'} NO RECORDS FOUND MATCHING QUERY.
                     </div>
                 )}
             </div>

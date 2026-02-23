@@ -63,7 +63,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                         maxLength={7}
                     />
                 </div>
-                {field.note && <div className="text-[9px] text-zinc-600 mt-1 font-mono tracking-tight">// {field.note}</div>}
+                {field.note && <div className="text-[9px] text-zinc-600 mt-1 font-mono tracking-tight">{'//'} {field.note}</div>}
                 {error && <div className="text-[9px] text-red-500 mt-1 font-mono uppercase font-bold">! {error}</div>}
             </div>
         );
@@ -81,7 +81,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                     required={false}
                     placeholder={field.placeholder || "NO DATA"}
                 />
-                {field.note && <div className="text-[9px] text-zinc-600 mt-1 font-mono tracking-tight">// {field.note}</div>}
+                {field.note && <div className="text-[9px] text-zinc-600 mt-1 font-mono tracking-tight">{'//'} {field.note}</div>}
                 {error && <div className="text-[9px] text-red-500 mt-1 font-mono uppercase font-bold">! {error}</div>}
             </div>
         );
@@ -112,7 +112,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                         {isChecked && <div className="w-1.5 h-1.5 bg-black"></div>}
                     </div>
                 </div>
-                {field.note && <div className="text-[9px] text-zinc-600 mt-1 font-mono tracking-tight">// {field.note}</div>}
+                {field.note && <div className="text-[9px] text-zinc-600 mt-1 font-mono tracking-tight">{'//'} {field.note}</div>}
                 {error && <div className="text-[9px] text-red-500 mt-1 font-mono uppercase font-bold">! {error}</div>}
             </div>
         );
@@ -137,7 +137,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                     {/* Custom Arrow */}
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500 text-[8px]">▼</div>
                 </div>
-                {field.note && <div className="text-[9px] text-zinc-600 mt-1 font-mono tracking-tight">// {field.note}</div>}
+                {field.note && <div className="text-[9px] text-zinc-600 mt-1 font-mono tracking-tight">{'//'} {field.note}</div>}
                 {error && <div className="text-[9px] text-red-500 mt-1 font-mono uppercase font-bold">! {error}</div>}
             </div>
         );
@@ -157,7 +157,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                 readOnly={isComputed}
                 placeholder={field.placeholder || "NO DATA"}
             />
-            {field.note && <div className="text-[9px] text-zinc-600 mt-1 font-mono tracking-tight">// {field.note}</div>}
+            {field.note && <div className="text-[9px] text-zinc-600 mt-1 font-mono tracking-tight">{'//'} {field.note}</div>}
             {error && <div className="text-[9px] text-red-500 mt-1 font-mono uppercase font-bold">! {error}</div>}
         </div>
     );

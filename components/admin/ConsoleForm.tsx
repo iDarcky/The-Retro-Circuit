@@ -215,7 +215,7 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h3 className="font-mono font-bold text-sm uppercase text-white mb-1">{isEditMode ? 'EDIT MODE: CONSOLE IDENTITY' : 'STEP 1: SYSTEM IDENTITY'}</h3>
-                        <p className="font-mono text-[10px] text-zinc-500 tracking-wide uppercase">// {isEditMode ? 'UPDATE CORE PARAMETERS.' : 'ESTABLISH NEW DATABASE RECORD.'}</p>
+                        <p className="font-mono text-[10px] text-zinc-500 tracking-wide uppercase">{'//'} {isEditMode ? 'UPDATE CORE PARAMETERS.' : 'ESTABLISH NEW DATABASE RECORD.'}</p>
                     </div>
 
                     {/* STATUS SELECTOR */}

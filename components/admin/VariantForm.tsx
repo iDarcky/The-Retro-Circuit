@@ -386,7 +386,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         <div className="space-y-6">
             <div className={`border p-5 mb-6 bg-bg-primary border-white/10`}>
                 <h3 className={`font-bold text-sm uppercase font-mono tracking-widest text-white`}>{isEditMode ? 'Edit Mode: Variant Specs' : 'Step 2: Technical Specs'}</h3>
-                <p className="text-[10px] text-zinc-500 mt-1 font-mono uppercase">// {isEditMode ? `Modifying Variant ID: ${initialData?.id}` : 'Define hardware capabilities. Create multiple variants (Pro, Slim, etc.) for a console.'}</p>
+                <p className="text-[10px] text-zinc-500 mt-1 font-mono uppercase">{'//'} {isEditMode ? `Modifying Variant ID: ${initialData?.id}` : 'Define hardware capabilities. Create multiple variants (Pro, Slim, etc.) for a console.'}</p>
             </div>
 
             <form className="space-y-6">
