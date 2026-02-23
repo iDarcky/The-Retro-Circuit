@@ -21,7 +21,7 @@ export default async function LandingPage() {
   const searchableConsoles = allConsoles.map(c => ({ name: c.name, slug: c.slug }));
 
   return (
-    <div className="bg-bg-primary min-h-screen text-text-primary selection:bg-color-primary selection:text-white font-sans">
+    <div className="bg-bg-primary min-h-screen text-text-primary font-sans">
 
       {/* 1. HERO - TYPOGRAPHIC STATEMENT */}
       <header className="px-6 md:px-12 pt-12 md:pt-24 pb-12 md:pb-32 border-b border-border-subtle relative overflow-hidden min-h-[80vh] flex items-start">
