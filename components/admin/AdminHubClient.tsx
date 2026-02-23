@@ -91,21 +91,23 @@ export default function AdminHubClient() {
                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent -translate-y-full group-hover:translate-y-full transition-transform duration-700 ease-in-out pointer-events-none"></div>
                 </Link>
 
-                {/* 4. NEWS [LOCKED] */}
-                <div className="relative block h-64 bg-black border border-border-subtle opacity-50 cursor-not-allowed grayscale">
+                {/* 4. BROADCAST HUB (Consolidated Signals/Reviews/News) */}
+                <Link href="/admin/broadcast" className="group relative block h-64 bg-bg-secondary border border-border-normal overflow-hidden hover:border-white transition-colors">
                     <div className="absolute top-4 left-4 z-10">
-                        <span className="font-mono text-xs text-gray-700">04 // NEWS</span>
+                        <span className="font-mono text-xs text-gray-500 group-hover:text-white transition-colors">04 // BROADCAST</span>
                     </div>
-                    <div className="absolute inset-0 flex items-center justify-center flex-col gap-2">
-                        <h2 className="font-pixel text-3xl text-gray-800">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <h2 className="font-pixel text-3xl text-gray-700 group-hover:text-white transition-colors duration-300">
                             BROADCAST
                         </h2>
-                        <span className="font-mono text-[9px] bg-red-900/20 text-red-700 border border-red-900/30 px-2 py-0.5">
-                            OFFLINE
+                    </div>
+                    <div className="absolute bottom-4 right-4">
+                        <span className="font-mono text-[10px] text-gray-600 group-hover:text-primary transition-colors">
+                            [MANAGE FEED]
                         </span>
                     </div>
-                    <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay"></div>
-                </div>
+                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent -translate-y-full group-hover:translate-y-full transition-transform duration-700 ease-in-out pointer-events-none"></div>
+                </Link>
 
                 {/* 5. FEATURED [LOCKED] */}
                 <div className="relative block h-64 bg-black border border-border-subtle opacity-50 cursor-not-allowed grayscale">
