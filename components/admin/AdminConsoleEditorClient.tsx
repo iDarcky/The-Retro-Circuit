@@ -1,10 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ConsoleDetails, Manufacturer } from '@/lib/types';
+import { useRouter } from 'next/navigation';
+import { ConsoleDetails, Manufacturer, ConsoleVariant } from '@/lib/types';
 import { ConsoleForm } from '@/components/admin/ConsoleForm';
+import { VariantForm } from '@/components/admin/VariantForm';
 import Button from '@/components/ui/Button';
+import Modal from '@/components/ui/Modal';
 
 type EditorClientProps = {
     initialConsole: ConsoleDetails;
@@ -12,8 +15,36 @@ type EditorClientProps = {
 };
 
 export default function AdminConsoleEditorClient({ initialConsole, initialManufacturers }: EditorClientProps) {
-    const [consoleData] = useState<ConsoleDetails>(initialConsole);
+    const router = useRouter();
+    const [consoleData, setConsoleData] = useState<ConsoleDetails>(initialConsole);
     const [error, setError] = useState<string | null>(null);
+
+    // Variant Modal State
+    const [isVariantModalOpen, setIsVariantModalOpen] = useState(false);
+    const [editingVariant, setEditingVariant] = useState<ConsoleVariant | null>(null);
+    const [variantError, setVariantError] = useState<string | null>(null);
+
+    useEffect(() => {
+        setConsoleData(initialConsole);
+    }, [initialConsole]);
+
+    const handleOpenCreateVariant = () => {
+        setEditingVariant(null);
+        setVariantError(null);
+        setIsVariantModalOpen(true);
+    };
+
+    const handleOpenEditVariant = (variant: ConsoleVariant) => {
+        setEditingVariant(variant);
+        setVariantError(null);
+        setIsVariantModalOpen(true);
+    };
+
+    const handleVariantSuccess = (_msg: string) => {
+        setIsVariantModalOpen(false);
+        router.refresh();
+        // Optional: Show toast or success message
+    };
 
     return (
         <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn">
@@ -57,7 +88,8 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                         initialData={consoleData}
                         manufacturers={initialManufacturers}
                         onConsoleCreated={() => {
-                             // On update success logic (refresh or toast)
+                             // On update success logic
+                             router.refresh();
                         }}
                         onError={(msg) => setError(msg)}
                     />
@@ -68,11 +100,9 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
             <div className="mt-8 border-t border-dashed border-gray-800 pt-8">
                  <div className="flex justify-between items-center mb-6">
                      <h3 className="font-pixel text-lg text-white">HARDWARE VARIANTS</h3>
-                     <Link href={`/admin?tab=VARIANTS&new_console_id=${consoleData.id}`}>
-                        <Button variant="secondary" className="text-xs">
-                            + ADD NEW VARIANT
-                        </Button>
-                     </Link>
+                     <Button variant="secondary" className="text-xs" onClick={handleOpenCreateVariant}>
+                        + ADD NEW VARIANT
+                     </Button>
                  </div>
 
                  <div className="grid grid-cols-1 gap-4">
@@ -88,11 +118,13 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                                          Released: {variant.release_date || 'TBA'}
                                      </div>
                                  </div>
-                                 <Link href={`/admin?mode=edit&type=variant&variant_id=${variant.id}`}>
-                                     <Button variant="secondary" className="text-xs border-gray-600 text-gray-400 hover:border-white hover:text-white">
-                                         EDIT SPECS
-                                     </Button>
-                                 </Link>
+                                 <Button
+                                    variant="secondary"
+                                    className="text-xs border-gray-600 text-gray-400 hover:border-white hover:text-white"
+                                    onClick={() => handleOpenEditVariant(variant)}
+                                 >
+                                     EDIT SPECS
+                                 </Button>
                              </div>
                          ))
                      ) : (
@@ -103,6 +135,25 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                  </div>
             </div>
 
+            {/* Variant Modal */}
+            <Modal
+                isOpen={isVariantModalOpen}
+                onClose={() => setIsVariantModalOpen(false)}
+                title={editingVariant ? `EDIT SPECS: ${editingVariant.variant_name}` : "DEFINE NEW HARDWARE SPECS"}
+            >
+                <VariantForm
+                    consoleList={[{ name: consoleData.name, id: consoleData.id }]}
+                    preSelectedConsoleId={consoleData.id}
+                    initialData={editingVariant}
+                    onSuccess={handleVariantSuccess}
+                    onError={setVariantError}
+                />
+                 {variantError && (
+                    <div className="mt-4 p-3 bg-accent/10 border border-accent text-accent font-mono text-xs">
+                        ERROR: {variantError}
+                    </div>
+                )}
+            </Modal>
         </div>
     );
 }

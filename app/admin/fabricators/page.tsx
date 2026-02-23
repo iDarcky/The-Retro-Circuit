@@ -1,10 +1,11 @@
 
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
-import { createClient } from '../../lib/supabase/server';
-import AdminHubClient from '../../components/admin/AdminHubClient';
+import { createClient } from '../../../lib/supabase/server';
+import { fetchManufacturers } from '../../../app/actions';
+import FabricatorClient from '../../../components/admin/FabricatorClient';
 
-export default async function AdminPage() {
+export default async function AdminFabricatorsPage() {
     const supabase = await createClient();
 
     // 1. Server-Side Auth Check
@@ -14,27 +15,26 @@ export default async function AdminPage() {
         redirect('/login');
     }
 
-    // 2. Server-Side Admin Role Check
     const { data: profile } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', user.id)
         .single();
 
-    const isAdmin = profile?.role === 'admin';
-
-    if (!isAdmin) {
-        redirect('/'); // Or render an Access Denied component
+    if (profile?.role !== 'admin') {
+        redirect('/');
     }
 
-    // 3. Render Hub
+    // 2. Fetch Data
+    const manufacturers = await fetchManufacturers();
+
     return (
         <Suspense fallback={
             <div className="w-full h-screen flex items-center justify-center font-mono text-secondary">
-                <div className="animate-pulse">ACCESSING SECURE MAINFRAME...</div>
+                <div className="animate-pulse">LOADING FABRICATOR DATABASE...</div>
             </div>
         }>
-            <AdminHubClient />
+            <FabricatorClient initialManufacturers={manufacturers} />
         </Suspense>
     );
 }
