@@ -9,6 +9,7 @@ import { ConsentProvider } from "../components/privacy/ConsentContext";
 import { CookieBanner } from "../components/privacy/CookieBanner";
 import { AnalyticsWrapper } from "../components/privacy/AnalyticsWrapper";
 import { siteConfig } from "../config/site";
+import { getSystemVersion } from "./actions/roadmap";
 
 // Load fonts via Next.js to prevent Layout Shift
 const pressStart = Press_Start_2P({
@@ -74,11 +75,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: ReactNode;
 }>) {
+  const version = await getSystemVersion();
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -127,7 +129,7 @@ export default function RootLayout({
             <div className="flex-1 w-full flex flex-col">
               {children}
             </div>
-            <Footer />
+            <Footer version={version} />
           </ClientShell>
 
           <CookieBanner />

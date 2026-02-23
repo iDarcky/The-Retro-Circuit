@@ -6,9 +6,12 @@ import { fetchConsoleList } from '../../app/actions/consoles';
 import QuickCompare from './QuickCompare';
 import FinderSection from './FinderSection';
 import FeaturedConsoles from './FeaturedConsoles';
-import { siteConfig } from '../../config/site';
 
-export default async function LandingPage() {
+interface LandingPageProps {
+  version: string;
+}
+
+export default async function LandingPage({ version }: LandingPageProps) {
   // OPTIMIZATION: Use Promise.all to fetch data concurrently instead of sequentially.
   // This reduces the total server-side latency for the page generation by running independent
   // database queries in parallel.
@@ -47,7 +50,7 @@ export default async function LandingPage() {
           <div className="flex flex-col items-start text-left">
             <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded-full border border-emerald-900/30 bg-emerald-950/10 text-[10px] md:px-3 md:py-1 md:text-xs font-mono uppercase tracking-widest text-emerald-400 mb-4 md:mb-8 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(16,185,129,0.1)]">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-              System Online // {siteConfig.version}
+              System Online // {version}
             </div>
 
             <h1 className="flex flex-col text-[7vw] md:text-[5vw] lg:text-[3vw] leading-[1.1] font-pixel font-bold tracking-tighter uppercase mb-4 md:mb-8 text-white drop-shadow-2xl max-w-full break-words">

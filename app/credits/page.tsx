@@ -1,11 +1,12 @@
-import { siteConfig } from '../../config/site';
+import { getSystemVersion } from '../../app/actions/roadmap';
 
 export const metadata = {
   title: 'Credits & Inspiration | The Retro Circuit',
   description: 'Source attribution and project inspiration.',
 };
 
-export default function CreditsPage() {
+export default async function CreditsPage() {
+  const version = await getSystemVersion();
   return (
     <div className="bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-violet-500/30 selection:text-white pb-24 relative overflow-hidden">
 
@@ -19,7 +20,7 @@ export default function CreditsPage() {
            {/* Metadata Pill - Violet Variant */}
            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-violet-900/30 bg-violet-950/10 text-[9px] md:text-xs font-mono uppercase tracking-widest text-violet-400 mb-8 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(139,92,246,0.1)]">
                <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-violet-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(139,92,246,0.5)]"></div>
-               System Online // Attribution Protocol // v{siteConfig.version}
+               System Online // Attribution Protocol // v{version}
            </div>
 
            {/* Title */}

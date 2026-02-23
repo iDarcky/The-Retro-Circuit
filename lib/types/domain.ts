@@ -283,6 +283,17 @@ export interface ConsoleDetails {
     status?: ContentStatus;
 }
 
+export interface Release {
+  id: string;
+  version: string;
+  title?: string;
+  description?: string;
+  release_date: string;
+  is_published: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface RoadmapFeature {
   id: string;
   title: string;
@@ -291,6 +302,7 @@ export interface RoadmapFeature {
   category: string;
   priority: 'critical' | 'must-have' | 'nice-to-have';
   target_date?: string | null;
+  release_id?: string | null;
   created_at?: string;
   updated_at?: string;
 }

@@ -32,12 +32,14 @@ type ArenaComparisonClientProps = {
     initialConsoleList?: { name: string, slug: string }[];
     initialSelectionA?: SelectionState;
     initialSelectionB?: SelectionState;
+    version: string;
 };
 
 export default function ArenaComparisonClient({
     initialConsoleList = [],
     initialSelectionA,
-    initialSelectionB
+    initialSelectionB,
+    version
 }: ArenaComparisonClientProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -161,6 +163,7 @@ export default function ArenaComparisonClient({
                 <RetroStatusBar
                     rcPath="RC://RETRO_CIRCUIT/ARENA/VS"
                     docId="VS_PROTOCOL_V1"
+                    archiveVersion={version}
                 />
             </div>
 
