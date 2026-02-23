@@ -3,6 +3,13 @@ import { FlatCompat } from "@eslint/eslintrc";
 const compat = new FlatCompat();
 
 const config = [
+  {
+    ignores: [
+      "**/dist/**",
+      "**/.next/**",
+      "**/node_modules/**"
+    ]
+  },
   ...compat.extends("next/core-web-vitals"),
   {
     rules: {
