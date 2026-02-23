@@ -8,7 +8,7 @@ interface VariantSelectorProps {
     variants: ConsoleVariant[];
     selectedSlug: string;
     onSelect: (slug: string) => void;
-    themeColor: 'primary' | 'secondary' | 'cyan' | 'pink' | 'orange';
+    themeColor: 'primary' | 'secondary' | 'cyan' | 'pink' | 'orange' | 'blue' | 'red';
 }
 
 export const VariantSelector: FC<VariantSelectorProps> = ({ variants, selectedSlug, onSelect, themeColor }) => {
@@ -20,12 +20,14 @@ export const VariantSelector: FC<VariantSelectorProps> = ({ variants, selectedSl
     // Theme Logic
     const getThemeClasses = () => {
         switch (themeColor) {
+            case 'blue':
             case 'cyan':
             case 'primary':
-                return { text: 'text-cyan-500', border: 'border-cyan-500', hover: 'hover:text-cyan-400' };
+                return { text: 'text-blue-500', border: 'border-blue-500', hover: 'hover:text-blue-400' };
+            case 'red':
             case 'orange':
             case 'secondary':
-                return { text: 'text-orange-500', border: 'border-orange-500', hover: 'hover:text-orange-400' };
+                return { text: 'text-red-500', border: 'border-red-500', hover: 'hover:text-red-400' };
             case 'pink':
                 return { text: 'text-pink-500', border: 'border-pink-500', hover: 'hover:text-pink-400' };
             default:

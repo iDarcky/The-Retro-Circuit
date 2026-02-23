@@ -7,10 +7,10 @@ interface GlanceComparisonProps {
     variantB: ConsoleVariant;
 }
 
-const StatBar = ({ value, max, color }: { value: number; max: number; color: 'cyan' | 'orange' }) => {
+const StatBar = ({ value, max, color }: { value: number; max: number; color: 'blue' | 'red' }) => {
     if (!value || !max) return null;
     const percentage = Math.min(100, Math.max(0, (value / max) * 100));
-    const bgClass = color === 'cyan' ? 'bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.8)]';
+    const bgClass = color === 'blue' ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]';
 
     return (
         <div className="w-full h-1.5 bg-white/10 mt-2 rounded-sm overflow-hidden flex justify-start">
@@ -53,11 +53,11 @@ const TaleRow = ({
         }
     }
 
-    // Styles
-    const baseColorA = "text-cyan-400";
-    const baseColorB = "text-orange-400";
-    const winColorA = "text-cyan-300 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)] font-black scale-105";
-    const winColorB = "text-orange-300 drop-shadow-[0_0_10px_rgba(251,146,60,0.8)] font-black scale-105";
+    // Styles - Updated to Blue/Red
+    const baseColorA = "text-blue-400";
+    const baseColorB = "text-red-400";
+    const winColorA = "text-blue-300 drop-shadow-[0_0_10px_rgba(96,165,250,0.8)] font-black scale-105";
+    const winColorB = "text-red-300 drop-shadow-[0_0_10px_rgba(248,113,113,0.8)] font-black scale-105";
     const dimColor = "opacity-60 grayscale-[0.5]";
 
     const classA = winner === 'A' ? winColorA : (winner === 'B' ? `${baseColorA} ${dimColor}` : baseColorA);
@@ -74,11 +74,11 @@ const TaleRow = ({
                     {valueA || '---'}
                     {winner === 'A' && <span className="ml-2 text-xs md:text-sm align-top">◀</span>}
                 </div>
-                {subA && <div className="font-mono text-[10px] md:text-xs text-cyan-300/60 mt-1 uppercase tracking-wider">{subA}</div>}
+                {subA && <div className="font-mono text-[10px] md:text-xs text-blue-300/60 mt-1 uppercase tracking-wider">{subA}</div>}
 
                 {showBar && numA !== undefined && (
                     <div className="w-24 md:w-48 flex justify-end">
-                        <StatBar value={numA} max={maxVal} color="cyan" />
+                        <StatBar value={numA} max={maxVal} color="blue" />
                     </div>
                 )}
             </div>
@@ -97,11 +97,11 @@ const TaleRow = ({
                     {winner === 'B' && <span className="mr-2 text-xs md:text-sm align-top">▶</span>}
                     {valueB || '---'}
                 </div>
-                {subB && <div className="font-mono text-[10px] md:text-xs text-orange-300/60 mt-1 uppercase tracking-wider">{subB}</div>}
+                {subB && <div className="font-mono text-[10px] md:text-xs text-red-300/60 mt-1 uppercase tracking-wider">{subB}</div>}
 
                 {showBar && numB !== undefined && (
                     <div className="w-24 md:w-48 flex justify-start">
-                        <StatBar value={numB} max={maxVal} color="orange" />
+                        <StatBar value={numB} max={maxVal} color="red" />
                     </div>
                 )}
             </div>
@@ -131,12 +131,6 @@ export const GlanceComparison = ({ variantA, variantB }: GlanceComparisonProps) 
     // Parse Battery
     const battA = variantA.battery_capacity_mah;
     const battB = variantB.battery_capacity_mah;
-
-    // Emulation Tier Check (Mock logic based on types, assuming simple Tier mapping if needed or just display Profile summary)
-    // Actually, let's just use a prominent "Emulation Profile" row if distinct? Or maybe just keep it focused on HW.
-    // User asked for "Tier Badge" content density.
-    // Let's infer a simple tier score for display if possible, or just skip if complex logic needed.
-    // We'll stick to the HW specs for Tale of the Tape as requested.
 
     return (
         <div className="w-full mb-12 animate-fadeIn">

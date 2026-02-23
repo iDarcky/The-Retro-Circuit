@@ -7,7 +7,7 @@ interface ConsoleSearchProps {
     consoles: {name: string, slug: string}[];
     onSelect: (slug: string, name: string) => void;
     placeholder?: string;
-    themeColor: 'primary' | 'secondary' | 'cyan' | 'pink' | 'orange';
+    themeColor: 'primary' | 'secondary' | 'cyan' | 'pink' | 'orange' | 'blue' | 'red';
     currentSelection?: string;
     textColor?: 'default' | 'white';
 }
@@ -39,23 +39,25 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
     // Theme Color Logic
     const getThemeClasses = () => {
         switch (themeColor) {
+            case 'blue':
             case 'cyan':
             case 'primary':
                 return {
-                    border: 'focus:border-cyan-500',
-                    activeItem: 'border-cyan-500',
-                    text: 'text-cyan-500',
-                    bgHover: 'hover:bg-cyan-500/10',
-                    ring: 'focus-visible:ring-cyan-500'
+                    border: 'focus:border-blue-500',
+                    activeItem: 'border-blue-500',
+                    text: 'text-blue-500',
+                    bgHover: 'hover:bg-blue-500/10',
+                    ring: 'focus-visible:ring-blue-500'
                 };
+            case 'red':
             case 'orange':
             case 'secondary':
                 return {
-                    border: 'focus:border-orange-500',
-                    activeItem: 'border-orange-500',
-                    text: 'text-orange-500',
-                    bgHover: 'hover:bg-orange-500/10',
-                    ring: 'focus-visible:ring-orange-500'
+                    border: 'focus:border-red-500',
+                    activeItem: 'border-red-500',
+                    text: 'text-red-500',
+                    bgHover: 'hover:bg-red-500/10',
+                    ring: 'focus-visible:ring-red-500'
                 };
             case 'pink':
                 return {
