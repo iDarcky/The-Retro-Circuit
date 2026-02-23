@@ -113,7 +113,7 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                     onFocus={() => setIsOpen(true)}
                     onKeyDown={handleKeyDown}
                     placeholder={currentSelection || placeholder}
-                    className={`w-full bg-transparent border border-border-normal p-4 pl-10 font-mono text-sm ${inputTextColor} uppercase tracking-wider rounded-none transition-all placeholder:text-text-muted ${activeBorder} ${activeRing}`}
+                    className={`w-full bg-bg-primary border border-border-normal p-4 pl-10 font-mono text-sm ${inputTextColor} uppercase tracking-wider rounded-none transition-all placeholder:text-text-muted ${activeBorder} ${activeRing}`}
                 />
                 <div className={`absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${iconColor}`}>
                     <Search size={14} strokeWidth={1.5} />
@@ -123,7 +123,7 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
             {isOpen && (
                 <div
                     ref={listRef}
-                    className="absolute left-0 right-0 top-[calc(100%-1px)] max-h-[300px] overflow-y-auto bg-bg-primary border border-border-normal border-t-transparent z-[9999] shadow-xl"
+                    className="absolute left-0 right-0 top-[calc(100%-1px)] max-h-[300px] overflow-y-auto bg-bg-primary border border-border-normal border-t-transparent z-[9999]"
                 >
                     {filtered.map((c, idx) => (
                         <div 
@@ -134,8 +134,8 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                                 setIsOpen(false);
                             }}
                             className={`
-                                p-3 px-4 text-xs font-mono cursor-pointer border-b border-border-subtle last:border-0 flex justify-between items-center group transition-colors uppercase tracking-wide
-                                ${idx === activeIndex ? 'bg-bg-tertiary text-white' : 'text-text-secondary hover:bg-bg-tertiary hover:text-white'}
+                                p-3 px-4 text-xs font-mono cursor-pointer border-b border-border-subtle last:border-0 flex justify-between items-center group transition-colors uppercase tracking-wide border-l-4
+                                ${idx === activeIndex ? 'bg-bg-tertiary text-white border-violet-500' : 'text-text-secondary border-transparent hover:bg-bg-tertiary hover:text-white hover:border-violet-500/50'}
                             `}
                         >
                             <span>{c.name}</span>
@@ -147,7 +147,7 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                             <span className="text-xs font-mono text-text-muted text-center uppercase tracking-wider">NO MATCHES FOUND</span>
                             <span className="text-[10px] font-mono text-text-muted/50 text-center uppercase tracking-widest">TRY &apos;GAMEBOY&apos;</span>
                         </div>
-                    )}
+                    ))}
                 </div>
             )}
         </div>
