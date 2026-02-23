@@ -107,7 +107,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${pressStart.variable} ${jetBrainsMono.variable} ${shareTechMono.variable} ${inter.variable} font-sans min-h-screen flex flex-col bg-bg-primary text-text-primary antialiased selection:bg-color-primary selection:text-white`}>
+      <body className={`${pressStart.variable} ${jetBrainsMono.variable} ${shareTechMono.variable} ${inter.variable} font-sans min-h-screen flex flex-col bg-bg-primary text-text-primary antialiased selection:bg-violet-500/30 selection:text-white`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
