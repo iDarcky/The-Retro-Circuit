@@ -3,13 +3,18 @@ import { SectionHeader } from '@/components/news/SectionHeader';
 import { SignalFeed } from '@/components/news/SignalFeed';
 import { ReviewGrid } from '@/components/news/ReviewGrid';
 import { NewsFeed } from '@/components/news/NewsFeed';
-import { MOCK_REVIEWS, MOCK_NEWS } from '@/data/news-framework';
 import { fetchActiveSignals } from '../actions/signals';
+import { fetchAllReviews } from '../actions/reviews';
+import { fetchAllNews } from '../actions/news';
 
 export const revalidate = 300; // 5 minutes
 
 export default async function NewsPage() {
-  const activeSignals = await fetchActiveSignals();
+  const [activeSignals, reviews, newsItems] = await Promise.all([
+    fetchActiveSignals(),
+    fetchAllReviews(),
+    fetchAllNews()
+  ]);
 
   return (
     <div className="w-full bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-violet-500/30 selection:text-white pb-24 relative overflow-hidden">
@@ -59,7 +64,14 @@ export default async function NewsPage() {
           {/* SECTION 2: REVIEWS */}
           <section>
              <SectionHeader number="02" title="REVIEWS" subtitle="HARDWARE_ANALYSIS" color="cyan" />
-             <ReviewGrid reviews={MOCK_REVIEWS} />
+             {reviews.length > 0 ? (
+                <ReviewGrid reviews={reviews} />
+             ) : (
+                <div className="text-center py-12 border border-white/10 bg-white/5 rounded-lg">
+                   <p className="font-mono text-sm text-gray-500">NO_DATA_AVAILABLE</p>
+                </div>
+             )}
+
              <div className="mt-8 text-center">
                 <Link href="/reviews" className="inline-flex items-center gap-2 text-xs font-mono text-cyan-500 uppercase tracking-widest hover:text-cyan-400 hover:underline underline-offset-4 decoration-cyan-500/30 transition-all">
                    View All Reviews <span>→</span>
@@ -74,7 +86,13 @@ export default async function NewsPage() {
 
                 {/* News Feed */}
                 <div>
-                   <NewsFeed news={MOCK_NEWS} />
+                   {newsItems.length > 0 ? (
+                      <NewsFeed news={newsItems} />
+                   ) : (
+                      <div className="text-center py-12 border border-white/10 bg-white/5 rounded-lg">
+                         <p className="font-mono text-sm text-gray-500">NO_DATA_AVAILABLE</p>
+                      </div>
+                   )}
                    <div className="mt-8">
                       <Link href="/news/archive" className="inline-flex items-center gap-2 text-xs font-mono text-violet-500 uppercase tracking-widest hover:text-violet-400 hover:underline underline-offset-4 decoration-violet-500/30 transition-all">
                          Access Archive <span>→</span>
