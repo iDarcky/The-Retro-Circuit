@@ -1,11 +1,12 @@
-import { siteConfig } from '../../config/site';
+import { getSystemVersion } from '../../app/actions/roadmap';
 
 export const metadata = {
   title: 'Privacy Protocol | The Retro Circuit',
   description: 'Privacy policy and data handling protocols.',
 };
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const version = await getSystemVersion();
   return (
     <div className="bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-sky-500/30 selection:text-white pb-24 relative overflow-hidden">
 
@@ -19,7 +20,7 @@ export default function PrivacyPage() {
            {/* Metadata Pill - Sky Blue Variant */}
            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-sky-900/30 bg-sky-950/10 text-[9px] md:text-xs font-mono uppercase tracking-widest text-sky-400 mb-8 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(56,189,248,0.1)]">
                <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-sky-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(56,189,248,0.5)]"></div>
-               Secure Protocol // v{siteConfig.version} // Updated: {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+               Secure Protocol // v{version} // Updated: {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
            </div>
 
            {/* Title */}

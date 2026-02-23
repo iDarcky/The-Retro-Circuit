@@ -1,17 +1,15 @@
-import { siteConfig } from '../../config/site';
-
 interface RetroStatusBarProps {
   rcPath: string;
   docId: string;
   status?: string;
-  archiveVersion?: string;
+  archiveVersion: string;
 }
 
 export default function RetroStatusBar({
   rcPath,
   docId,
   status = 'ONLINE',
-  archiveVersion = siteConfig.version
+  archiveVersion
 }: RetroStatusBarProps) {
   return (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center px-6 md:px-8 mt-4 md:mt-8 mb-4">

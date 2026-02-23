@@ -2,7 +2,7 @@
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '../../../lib/supabase/server';
-import { fetchRoadmapItems } from '../../../app/actions';
+import { fetchRoadmapItems, fetchAdminReleases } from '../../../app/actions/roadmap';
 import RoadmapClient from '../../../components/admin/RoadmapClient';
 
 export default async function AdminRoadmapPage() {
@@ -26,7 +26,10 @@ export default async function AdminRoadmapPage() {
     }
 
     // 2. Fetch Data
-    const roadmapItems = await fetchRoadmapItems();
+    const [roadmapItems, releases] = await Promise.all([
+        fetchRoadmapItems(),
+        fetchAdminReleases()
+    ]);
 
     return (
         <Suspense fallback={
@@ -34,7 +37,7 @@ export default async function AdminRoadmapPage() {
                 <div className="animate-pulse">LOADING MISSION DATA...</div>
             </div>
         }>
-            <RoadmapClient initialRoadmap={roadmapItems} />
+            <RoadmapClient initialRoadmap={roadmapItems} initialReleases={releases} />
         </Suspense>
     );
 }

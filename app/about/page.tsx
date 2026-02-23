@@ -1,13 +1,15 @@
 import { siteConfig } from '../../config/site';
 import { ArrowRight, Mail, Linkedin, Database, Layout, Globe, Monitor, Code } from 'lucide-react';
 import Link from 'next/link';
+import { getSystemVersion } from '../../app/actions/roadmap';
 
 export const metadata = {
   title: 'System Manifesto | The Retro Circuit',
   description: 'Operational manual, system specifications, and operator data.',
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const version = await getSystemVersion();
   return (
     <div className="bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-orange-500/30 selection:text-white pb-24">
       
@@ -22,7 +24,7 @@ export default function AboutPage() {
            {/* Metadata Row */}
            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-900/30 bg-emerald-950/10 text-[9px] md:text-xs font-mono uppercase tracking-widest text-emerald-400 mb-8 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(16,185,129,0.1)]">
                <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-               System Online // {siteConfig.version} // EST: {siteConfig.est}
+               System Online // {version} // EST: {siteConfig.est}
            </div>
 
            {/* Title */}

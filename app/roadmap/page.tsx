@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import RoadmapView from '../../components/roadmap/RoadmapView';
-import { siteConfig } from '../../config/site';
-import { fetchRoadmapItems } from '../../app/actions';
+import { fetchRoadmapItems, getSystemVersion, fetchReleases } from '../../app/actions/roadmap';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,9 +10,12 @@ export const metadata: Metadata = {
 };
 
 export default async function RoadmapPage() {
-  const roadmapItems = await fetchRoadmapItems();
+  const [roadmapItems, releases, version] = await Promise.all([
+      fetchRoadmapItems(),
+      fetchReleases(),
+      getSystemVersion()
+  ]);
 
-  const completedItems = roadmapItems.filter(item => item.status === 'completed');
   const upcomingItems = roadmapItems.filter(item => item.status !== 'completed');
 
   return (
@@ -24,7 +26,7 @@ export default async function RoadmapPage() {
           {/* System Online Pill - Dynamic Version */}
           <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded-full border border-emerald-900/30 bg-emerald-950/10 text-[10px] md:px-3 md:py-1 md:text-xs font-mono uppercase tracking-widest text-emerald-400 mb-6 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(16,185,129,0.1)]">
             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-            System Online // {siteConfig.version}
+            System Online // {version}
           </div>
 
           <h1 className="text-4xl md:text-6xl font-bold font-pixel tracking-tighter mb-6">
@@ -40,7 +42,7 @@ export default async function RoadmapPage() {
         </div>
 
         {/* Tabbed View Component */}
-        <RoadmapView completedItems={completedItems} upcomingItems={upcomingItems} />
+        <RoadmapView releases={releases} upcomingItems={upcomingItems} />
 
         {/* Community CTA */}
         <div className="mt-24 p-8 border border-border-normal bg-bg-secondary/10 rounded-none relative overflow-hidden group">
