@@ -3,20 +3,22 @@
 import { useState, useEffect, type FC } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ConsoleDetails, ConsoleSpecs, ConsoleVariant } from '../../lib/types';
+import ConsoleIdentitySection from './ConsoleIdentitySection';
+import PlayabilityMatrix from './PlayabilityMatrix';
+import MissionProfile from './MissionProfile';
+import BuySection from './BuySection';
 import { getConsoleImage } from '../../lib/utils';
 
 // Swiss Design Components
-import ConsoleHeader from './swiss/ConsoleHeader';
-import PhotoGallery from './swiss/PhotoGallery';
 import SystemAnalysis from './swiss/SystemAnalysis';
 import KeyMetrics from './swiss/KeyMetrics';
-import SwissAcquisition from './swiss/SwissAcquisition';
 import TechnicalReference from './swiss/TechnicalReference';
-import PlayabilityMatrix from './PlayabilityMatrix';
 
 interface ConsoleDetailViewProps {
   consoleData: ConsoleDetails;
 }
+
+// --- MAIN COMPONENT ---
 
 const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
     const router = useRouter();
@@ -81,47 +83,81 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
     return (
         <div className="w-full animate-fadeIn relative">
-             <div className="max-w-4xl mx-auto px-4 md:px-8 py-12">
+             {/* SECTION I: IDENTITY (Sticky) */}
+             <ConsoleIdentitySection
+                console={consoleData}
+                manufacturer={consoleData.manufacturer || null}
+                variants={variants}
+                selectedVariantId={selectedVariantId}
+                onVariantChange={(slug) => {
+                     const v = variants.find(v => v.slug === slug);
+                     if (v) handleVariantChange(v.id);
+                }}
+             />
 
-                {/* 1. HEADER (Swiss Simplified) */}
-                <ConsoleHeader
-                    console={consoleData}
-                    manufacturer={consoleData.manufacturer || null}
-                    variants={variants}
-                    selectedVariantId={selectedVariantId}
-                    onVariantChange={(slug) => {
-                        const v = variants.find(v => v.slug === slug);
-                        if (v) handleVariantChange(v.id);
-                    }}
-                />
+             {/* MAIN CONTENT GRID */}
+             <div className="w-full mx-auto px-4 md:px-8 py-12">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12 relative">
 
-                {/* 2. PHOTO GALLERY */}
-                <div className="mb-12">
-                    <PhotoGallery imageUrl={currentImage} altText={consoleData.name} />
+                    {/* --- LEFT COLUMN: STICKY SIDEBAR (lg:col-span-4) --- */}
+                    <div className="lg:col-span-4">
+                        {/* Sticky Container */}
+                        {/* top-[120px] accounts for global header (64px) + typical compact bar height (~50px) */}
+                        <div className="sticky top-[120px] space-y-6">
+
+                            {/* 1. PHOTO */}
+                            <div className="bg-black border-2 border-border-normal p-8 flex items-center justify-center min-h-[200px] relative shadow-[0_0_20px_rgba(0,0,0,0.5)] group overflow-hidden">
+                                {currentImage ? (
+                                    <img src={currentImage} alt={consoleData.name} className="w-full h-auto object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-500 relative z-10" key={currentImage} />
+                                ) : (
+                                    <div className="text-muted font-pixel text-4xl opacity-50">NO SIGNAL</div>
+                                )}
+                                <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 items-start">
+                                    <div className="bg-secondary text-black font-mono text-[10px] font-bold px-2 py-1 transform -rotate-2 shadow-lg">
+                                        {consoleData.form_factor?.toUpperCase() || 'SYSTEM'}
+                                    </div>
+                                    {consoleData.chassis_features && (
+                                        <div className="bg-black/90 text-secondary border border-secondary font-mono text-[10px] font-bold px-2 py-1 transform -rotate-2 shadow-lg">
+                                            {consoleData.chassis_features.toUpperCase()}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* 2. MISSION PROFILE */}
+                            <MissionProfile />
+
+                            {/* 3. BUY */}
+                            <div id="buy">
+                                <BuySection />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* --- RIGHT COLUMN: SCROLLABLE CONTENT (lg:col-span-8) --- */}
+                    <div className="lg:col-span-8 space-y-8">
+
+                        {/* 1. SYSTEM ANALYSIS */}
+                        <div id="analysis" className="bg-bg-primary border border-border-normal p-6 relative">
+                            <SystemAnalysis description={consoleData.description || ''} />
+                        </div>
+
+                        {/* 2. KEY METRICS (Replaces "At A Glance") */}
+                        <KeyMetrics specs={mergedSpecs} releaseDate={currentVariant?.release_date || null} />
+
+                        {/* 3. EMULATION MATRIX */}
+                        <div id="playability">
+                            <PlayabilityMatrix profile={mergedSpecs.emulation_profile || (mergedSpecs as any).emulation_profiles} />
+                        </div>
+
+                        {/* 4. TECHNICAL REFERENCE (Collapsible Grid) */}
+                        <div id="tech">
+                            <TechnicalReference mergedSpecs={mergedSpecs} />
+                        </div>
+
+                    </div>
                 </div>
-
-                {/* 3. SYSTEM ANALYSIS + KEY METRICS */}
-                <div className="mb-12">
-                    <SystemAnalysis description={consoleData.description || ''} />
-                    <KeyMetrics specs={mergedSpecs} releaseDate={currentVariant?.release_date || null} />
-                </div>
-
-                {/* 4. EMULATION MATRIX */}
-                <div className="mb-12">
-                    <PlayabilityMatrix profile={mergedSpecs.emulation_profile || (mergedSpecs as any).emulation_profiles} />
-                </div>
-
-                {/* 5. ACQUISITION */}
-                <div className="mb-12">
-                    <SwissAcquisition />
-                </div>
-
-                {/* 6. TECHNICAL REFERENCE */}
-                <div className="mb-12">
-                    <TechnicalReference mergedSpecs={mergedSpecs} />
-                </div>
-
-            </div>
+             </div>
         </div>
     );
 };
