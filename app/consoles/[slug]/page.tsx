@@ -47,9 +47,6 @@ export async function generateMetadata(props: Props) {
   }
 }
 
-// Remove generateStaticParams entirely as requested
-// export async function generateStaticParams() { return []; }
-
 export default async function ConsoleSpecsPage(props: Props) {
   const params = await props.params;
   const slug = decodeURIComponent(params.slug);
