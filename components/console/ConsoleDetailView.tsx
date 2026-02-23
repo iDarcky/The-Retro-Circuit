@@ -129,7 +129,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                     <div className="lg:col-span-4 flex flex-col h-full border-t border-white/10 lg:border-t-0 lg:border-l lg:pl-8 pt-8 lg:pt-0">
 
                         {/* COMBINED METRICS & PROFILE */}
-                        <div className="mt-auto">
+                        <div>
                             <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">KEY METRICS</h2>
                             <CombinedMetrics
                                 console={consoleData}
