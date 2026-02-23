@@ -72,6 +72,13 @@ export default function TechnicalReference({ mergedSpecs }: TechnicalReferencePr
     };
     const cpuClockData = formatCpuClock(mergedSpecs.cpu_clock_min_mhz, mergedSpecs.cpu_clock_max_mhz);
 
+    // Color formatter
+    const formatColors = (colors: string | string[] | undefined) => {
+        if (!colors) return null;
+        if (Array.isArray(colors)) return colors.join(', ');
+        return colors;
+    };
+
     const SECTIONS = {
         SILICON: ['os', 'ui_skin', 'cpu_model', 'cpu_architecture', 'cpu_process_node', 'cpu_cores', 'cpu_clock_max_mhz', 'gpu_model', 'gpu_architecture', 'gpu_compute_units', 'gpu_clock_mhz', 'gpu_teraflops'],
         MEMORY: ['ram_mb', 'ram_type', 'ram_speed_mhz', 'storage_gb', 'storage_type', 'storage_expandable'],
@@ -184,7 +191,7 @@ export default function TechnicalReference({ mergedSpecs }: TechnicalReferencePr
                     <SpecRow label="Dimensions" value={getDimString()} unit="mm" />
                     <SpecRow label="Weight" value={mergedSpecs.weight_g} unit="g" />
                     <SpecRow label="Material" value={mergedSpecs.body_material} />
-                    <SpecRow label="Colors" value={mergedSpecs.available_colors ? mergedSpecs.available_colors.join(', ') : null} />
+                    <SpecRow label="Colors" value={formatColors(mergedSpecs.available_colors)} />
                 </SpecSection>
             )}
 
