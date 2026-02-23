@@ -147,7 +147,7 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                             <span className="text-xs font-mono text-text-muted text-center uppercase tracking-wider">NO MATCHES FOUND</span>
                             <span className="text-[10px] font-mono text-text-muted/50 text-center uppercase tracking-widest">TRY &apos;GAMEBOY&apos;</span>
                         </div>
-                    ))}
+                    )}
                 </div>
             )}
         </div>

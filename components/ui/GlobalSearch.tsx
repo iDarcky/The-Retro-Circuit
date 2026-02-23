@@ -13,6 +13,7 @@ const GlobalSearch: FC = () => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState(0);
 
     const inputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
@@ -24,6 +25,7 @@ const GlobalSearch: FC = () => {
     useEffect(() => {
         if (isOpen) {
             setTimeout(() => inputRef.current?.focus(), 50);
+            setSelectedIndex(0);
         } else {
             // Clear query on close? Optional, but feels cleaner
             setQuery('');
@@ -47,6 +49,7 @@ const GlobalSearch: FC = () => {
             try {
                 const data = await searchDatabase(query);
                 setResults(data);
+                setSelectedIndex(0);
             } catch (err) {
                 console.error("Search failed", err);
                 setResults([]);
@@ -76,95 +79,123 @@ const GlobalSearch: FC = () => {
         closeSearch();
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Escape') {
+            closeSearch();
+        } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            setSelectedIndex(prev => (prev < results.length - 1 ? prev + 1 : prev));
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            setSelectedIndex(prev => (prev > 0 ? prev - 1 : 0));
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (results.length > 0 && selectedIndex >= 0 && selectedIndex < results.length) {
+                handleSelect(results[selectedIndex]);
+            }
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
         <div
-            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-start justify-center pt-20 animate-fadeIn"
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-start justify-center pt-20 animate-fadeIn"
             onClick={closeSearch}
         >
-            {/* PANEL: Centered box, max-w-xl, Neon Green Border, Deep Black BG */}
+            {/* PANEL: Swiss Industrial - Solid Black, White/10 Borders, Violet Accents */}
             <div
-                className="w-full max-w-xl bg-[#0a0a0a] border-2 border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)] relative overflow-hidden flex flex-col max-h-[80vh] m-4 rounded-sm"
+                className="w-full max-w-xl bg-bg-primary border border-border-normal shadow-2xl relative overflow-hidden flex flex-col max-h-[80vh] m-4 rounded-none"
                 onClick={e => e.stopPropagation()}
+                onKeyDown={handleKeyDown}
             >
                 {/* Header / Input */}
-                <div className="p-6 border-b border-green-500/30 flex items-center gap-4 bg-black/40">
-                    <IconSearch className={`w-6 h-6 text-green-500 ${isLoading ? 'animate-spin' : ''}`} />
+                <div className="p-6 border-b border-border-normal flex items-center gap-4 bg-bg-primary">
+                    <IconSearch className={`w-5 h-5 text-violet-500 ${isLoading ? 'animate-spin' : ''}`} />
                     <input
                         ref={inputRef}
                         type="text"
-                        className="flex-1 bg-transparent border-none outline-none text-white font-mono text-xl placeholder-gray-600 uppercase tracking-wider"
+                        className="flex-1 bg-transparent border-none outline-none text-white font-mono text-sm placeholder-text-muted uppercase tracking-wider"
                         placeholder="SEARCH DATABASE..."
                         value={query}
                         onChange={(e: ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
+                        onKeyDown={handleKeyDown}
                     />
-                    <button onClick={closeSearch} className="text-gray-500 hover:text-white transition-colors">
-                        <span className="text-[10px] font-mono border border-gray-700 px-2 py-1 rounded text-gray-500">ESC</span>
+                    <button onClick={closeSearch} className="text-text-muted hover:text-white transition-colors">
+                        <span className="text-[10px] font-mono border border-border-normal px-2 py-1 text-text-muted hover:border-white transition-colors">ESC</span>
                     </button>
                 </div>
 
                 {/* Results List */}
-                <div className="overflow-y-auto custom-scrollbar flex-1 bg-gradient-to-b from-[#0a0a0a] to-[#050505] min-h-[100px]">
+                <div className="overflow-y-auto custom-scrollbar flex-1 bg-bg-primary min-h-[100px]">
 
                     {query.length > 0 && query.length < 2 && (
-                        <div className="p-8 text-center font-mono text-xs text-gray-600">
+                        <div className="p-8 text-center font-mono text-xs text-text-muted">
                             ENTER AT LEAST 2 CHARACTERS...
                         </div>
                     )}
 
                     {results.length === 0 && query.length >= 2 && !isLoading && (
-                        <div className="p-8 text-center font-mono text-xs text-gray-600">
+                        <div className="p-8 text-center font-mono text-xs text-text-muted">
                             NO RECORDS FOUND.
                         </div>
                     )}
 
-                    <div className="divide-y divide-green-500/10">
-                        {results.map((res) => (
-                            <button
-                                key={`${res.type}-${res.id}`}
-                                onClick={() => handleSelect(res)}
-                                className="w-full text-left p-4 hover:bg-green-500/20 flex items-center gap-4 transition-all group border-l-4 border-transparent hover:border-green-500"
-                            >
-                                {/* Image Placeholder */}
-                                <div className="w-12 h-12 bg-black border border-gray-800 flex-shrink-0 flex items-center justify-center overflow-hidden shadow-lg group-hover:border-green-500/50 transition-colors">
-                                    <img
-                                        src="/retro-grid.png"
-                                        alt=""
-                                        className="absolute inset-0 w-full h-full object-cover opacity-[0.03] mix-blend-overlay pointer-events-none"
-                                    />
-                                    {res.image ? (
-                                        <img src={res.image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100" />
-                                    ) : (
-                                        <div className="text-[9px] text-gray-600 font-pixel">IMG</div>
-                                    )}
-                                </div>
-
-                                {/* Text Info */}
-                                <div className="flex-1 min-w-0">
-                                    <div className="font-pixel text-sm text-white group-hover:text-green-400 truncate mb-1">
-                                        {res.title}
+                    <div className="divide-y divide-white/5">
+                        {results.map((res, idx) => {
+                            const isSelected = idx === selectedIndex;
+                            return (
+                                <button
+                                    key={`${res.type}-${res.id}`}
+                                    onClick={() => handleSelect(res)}
+                                    onMouseEnter={() => setSelectedIndex(idx)}
+                                    className={`w-full text-left p-4 flex items-center gap-4 transition-all group border-l-4
+                                        ${isSelected ? 'bg-bg-tertiary border-violet-500' : 'bg-transparent border-transparent hover:bg-bg-tertiary hover:border-violet-500'}
+                                    `}
+                                >
+                                    {/* Image Placeholder */}
+                                    <div className={`w-10 h-10 bg-black border flex-shrink-0 flex items-center justify-center overflow-hidden transition-colors relative
+                                        ${isSelected ? 'border-violet-500/50' : 'border-border-normal group-hover:border-violet-500/50'}
+                                    `}>
+                                        <div className="absolute inset-0 w-full h-full bg-[url('/retro-grid.png')] opacity-[0.05] pointer-events-none mix-blend-overlay"></div>
+                                        {res.image ? (
+                                            <img src={res.image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100" />
+                                        ) : (
+                                            <div className="text-[8px] text-text-muted font-pixel">IMG</div>
+                                        )}
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className={`text-[9px] font-mono px-1.5 py-0.5 border rounded-sm ${res.type === 'CONSOLE' ? 'text-primary border-primary bg-primary/10' :
-                                            res.type === 'FABRICATOR' ? 'text-accent border-accent bg-accent/10' : 'text-gray-400 border-gray-400'
-                                            }`}>
-                                            {res.type}
-                                        </span>
-                                        <span className="text-[10px] font-mono text-gray-500 truncate uppercase tracking-tight">
-                                            // {res.subtitle || 'DATABASE_RECORD'}
-                                        </span>
-                                    </div>
-                                </div>
 
-                                {/* Enter Key Hint */}
-                                <div className="opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 duration-300">
-                                    <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                    </svg>
-                                </div>
-                            </button>
-                        ))}
+                                    {/* Text Info */}
+                                    <div className="flex-1 min-w-0">
+                                        <div className={`font-mono text-xs uppercase tracking-wide truncate mb-1 transition-colors
+                                            ${isSelected ? 'text-white' : 'text-text-secondary group-hover:text-white'}
+                                        `}>
+                                            {res.title}
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className={`text-[9px] font-mono px-1 py-0 border
+                                                ${res.type === 'CONSOLE' ? 'text-orange-500 border-orange-500/30' :
+                                                res.type === 'FABRICATOR' ? 'text-cyan-500 border-cyan-500/30' : 'text-text-muted border-border-normal'
+                                                }`}>
+                                                {res.type}
+                                            </span>
+                                            <span className="text-[9px] font-mono text-text-muted/50 truncate uppercase tracking-tight">
+                                                // {res.subtitle || 'DATABASE_RECORD'}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Enter Key Hint */}
+                                    <div className={`transition-all duration-200 transform
+                                        ${isSelected ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 group-hover:translate-x-0 group-hover:opacity-100'}
+                                    `}>
+                                        <svg className="w-4 h-4 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </div>
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
