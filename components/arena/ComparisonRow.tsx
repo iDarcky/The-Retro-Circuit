@@ -55,13 +55,13 @@ export const ComparisonRow: FC<ComparisonRowProps> = ({
                     winner = numA > numB ? 'A' : 'B';
                 }
             } else if (numA > 0) {
-                winner = 'TIE'; // Might not need to highlight ties, but logic exists
+                winner = 'TIE';
             }
         }
     }
 
     const getDisplayValue = (val: any, variant: ConsoleVariant) => {
-        if (!exists(val)) return <span className="text-text-muted">---</span>;
+        if (!exists(val)) return <span className="text-white/20">---</span>;
 
         if (metric.key === 'ram_mb') {
              const mb = Number(val);
@@ -72,7 +72,7 @@ export const ComparisonRow: FC<ComparisonRowProps> = ({
             return (
                 <span>
                     {val}W
-                    {variant.charging_tech && <span className="text-[10px] text-text-muted ml-1 hidden md:inline">({variant.charging_tech})</span>}
+                    {variant.charging_tech && <span className="text-[10px] text-white/40 ml-1 hidden md:inline">({variant.charging_tech})</span>}
                 </span>
             );
         }
@@ -91,11 +91,13 @@ export const ComparisonRow: FC<ComparisonRowProps> = ({
     const displayA = getDisplayValue(rawA, varA);
     const displayB = getDisplayValue(rawB, varB);
 
-    // Styling Logic
-    const winClassA = "text-color-primary font-bold";
-    const winClassB = "text-color-secondary font-bold";
-    const loseClass = "text-text-secondary opacity-80";
-    const tieClass = "text-text-primary";
+    // Styling Logic - Swiss Industrial Colors
+    // Player A: Cyan
+    // Player B: Orange
+    const winClassA = "text-cyan-500 font-bold drop-shadow-[0_0_8px_rgba(6,182,212,0.3)]";
+    const winClassB = "text-orange-500 font-bold drop-shadow-[0_0_8px_rgba(249,115,22,0.3)]";
+    const loseClass = "text-white/60";
+    const tieClass = "text-white";
 
     let classA = loseClass;
     let classB = loseClass;
@@ -112,25 +114,34 @@ export const ComparisonRow: FC<ComparisonRowProps> = ({
     }
 
     return (
-        <div className="grid grid-cols-12 gap-4 py-3 border-b border-border-subtle items-center hover:bg-white/5 transition-colors group px-2">
+        <div className="relative border-b border-white/5 py-3 px-2 hover:bg-white/5 transition-colors group">
 
-            {/* Player A (Left) */}
-            <div className={`col-span-4 text-right font-mono text-xs md:text-sm flex justify-end items-center gap-2 ${classA}`}>
-                {winner === 'A' && <span className="text-[10px] animate-pulse">▲</span>}
-                {displayA}
+            {/* Mobile Label (Top) */}
+            <div className="md:hidden text-center mb-2 border-b border-white/5 pb-1">
+                <span className="font-mono text-[10px] text-white/40 uppercase tracking-widest">{metric.label}</span>
             </div>
 
-            {/* Label (Center) */}
-            <div className="col-span-4 text-center border-l border-r border-border-subtle/30 h-full flex items-center justify-center">
-                <span className="font-mono text-[10px] text-text-muted uppercase tracking-widest group-hover:text-text-primary transition-colors">
-                    {metric.label}
-                </span>
-            </div>
+            <div className="grid grid-cols-2 md:grid-cols-12 gap-4 items-center">
 
-            {/* Player B (Right) */}
-            <div className={`col-span-4 text-left font-mono text-xs md:text-sm flex justify-start items-center gap-2 ${classB}`}>
-                {displayB}
-                {winner === 'B' && <span className="text-[10px] animate-pulse">▲</span>}
+                {/* Player A (Left on Mobile, Right on Desktop) */}
+                <div className={`col-span-1 md:col-span-4 text-left md:text-right font-mono text-xs md:text-sm flex flex-col md:flex-row md:justify-end items-start md:items-center gap-2 order-2 md:order-1 ${classA}`}>
+                    {winner === 'A' && <span className="text-[10px] animate-pulse hidden md:inline">▲</span>}
+                    <span className="break-words">{displayA}</span>
+                </div>
+
+                {/* Desktop Label (Center) */}
+                <div className="hidden md:flex col-span-4 items-center justify-center border-l border-r border-white/10 h-full order-2">
+                    <span className="font-mono text-[10px] text-white/40 uppercase tracking-widest group-hover:text-white transition-colors">
+                        {metric.label}
+                    </span>
+                </div>
+
+                {/* Player B (Right on Mobile, Left on Desktop) */}
+                <div className={`col-span-1 md:col-span-4 text-right md:text-left font-mono text-xs md:text-sm flex flex-col md:flex-row md:justify-start items-end md:items-center gap-2 order-3 ${classB}`}>
+                    <span className="break-words">{displayB}</span>
+                    {winner === 'B' && <span className="text-[10px] animate-pulse hidden md:inline">▲</span>}
+                </div>
+
             </div>
         </div>
     );
