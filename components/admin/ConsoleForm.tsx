@@ -3,7 +3,7 @@
 
 import { useState, type FormEvent, type FC, useEffect, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { addConsole, updateConsole } from '../../app/actions';
+import { addConsole, updateConsole, deleteConsole } from '../../app/actions';
 import { purgeCache } from '../../app/actions/revalidate';
 import { supabase } from '../../lib/supabase/singleton';
 import { ConsoleSchema, Manufacturer, CONSOLE_FORM_FIELDS, ConsoleDetails } from '../../lib/types';
@@ -84,6 +84,28 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
         setShowStatusModal(false);
     };
 
+    const handleDelete = async () => {
+        if (!initialData?.id) return;
+
+        if (!confirm(`PERMANENTLY DELETE "${formData.name}"?\n\nTHIS ACTION CANNOT BE UNDONE.`)) return;
+
+        setLoading(true);
+        try {
+            const result = await deleteConsole(initialData.id);
+            if (result.success) {
+                await purgeCache();
+                router.push('/admin/consoles');
+                router.refresh();
+            } else {
+                onError(`DELETE FAILED: ${result.message}`);
+            }
+        } catch (e: any) {
+            onError(`DELETE ERROR: ${e.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
@@ -161,21 +183,21 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
             {showStatusModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fadeIn">
                     <div className="bg-bg-primary border-2 border-secondary p-6 max-w-sm w-full shadow-[0_0_50px_rgba(0,255,157,0.3)]">
-                        <h3 className="font-pixel text-lg text-secondary mb-4">CONFIRM PUBLISH</h3>
-                        <p className="font-mono text-sm text-gray-300 mb-6">
+                        <h3 className="font-pixel text-lg text-secondary mb-4 drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]">CONFIRM PUBLISH</h3>
+                        <p className="font-mono text-sm text-gray-300 mb-6 leading-relaxed">
                             {formData.status === 'review' ? (
-                                <>This console will become <strong className="text-white">publicly visible</strong>. Are you sure?</>
+                                <>This console will become <strong className="text-white bg-white/10 px-1">PUBLICLY VISIBLE</strong>. Are you sure?</>
                             ) : (
                                 <>Publishing is normally done from <strong className="text-accent">REVIEW</strong>. Continue anyway?</>
                             )}
                         </p>
-                        <div className="flex justify-end gap-4">
+                        <div className="flex justify-end gap-4 border-t border-border-normal pt-4">
                             <button
                                 type="button"
                                 onClick={cancelStatusChange}
-                                className="text-xs font-mono text-gray-500 hover:text-white uppercase"
+                                className="text-xs font-mono text-gray-500 hover:text-white uppercase tracking-wider"
                             >
-                                Cancel
+                                [ CANCEL ]
                             </button>
                             <Button
                                 type="button"
@@ -183,28 +205,29 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                                 onClick={confirmStatusChange}
                                 className="text-xs"
                             >
-                                {formData.status === 'review' ? 'PUBLISH' : 'PUBLISH ANYWAY'}
+                                {formData.status === 'review' ? 'CONFIRM PUBLISH' : 'FORCE PUBLISH'}
                             </Button>
                         </div>
                     </div>
                 </div>
             )}
 
-            <div className={`border-l-4 p-4 mb-4 ${isEditMode ? 'bg-secondary/10 border-secondary' : 'bg-primary/10 border-primary'}`}>
-                <div className="flex justify-between items-start">
+            <div className={`border-l-4 p-5 mb-4 bg-bg-secondary/50 border-secondary`}>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <h3 className={`font-bold text-sm uppercase ${isEditMode ? 'text-secondary' : 'text-primary'}`}>{isEditMode ? 'Edit Mode: Console Identity' : 'Step 1: System Identity'}</h3>
-                        <p className="text-xs text-gray-400">{isEditMode ? 'Update core details of the console folder.' : 'Create the main folder for this console family.'}</p>
+                        <h3 className={`font-pixel text-sm uppercase text-secondary mb-1`}>{isEditMode ? 'EDIT MODE: CONSOLE IDENTITY' : 'STEP 1: SYSTEM IDENTITY'}</h3>
+                        <p className="font-mono text-[10px] text-gray-500 tracking-wide uppercase">// {isEditMode ? 'UPDATE CORE PARAMETERS.' : 'ESTABLISH NEW DATABASE RECORD.'}</p>
                     </div>
 
                     {/* STATUS SELECTOR */}
-                    <div className="bg-black border border-gray-700 p-2 ml-4">
-                        <label className="text-[10px] block uppercase text-gray-500 mb-1">Status</label>
+                    <div className="flex items-center gap-2 border border-border-normal p-1 pl-3 bg-black">
+                        <label className="text-[10px] uppercase text-gray-500 font-bold">STATUS:</label>
                         <select
                             value={formData.status || 'draft'}
                             onChange={(e) => handleInputChange('status', e.target.value)}
-                            className={`text-xs font-mono font-bold bg-transparent outline-none uppercase cursor-pointer ${formData.status === 'published' ? 'text-secondary' :
-                                    formData.status === 'archived' ? 'text-red-500' : 'text-yellow-500'
+                            className={`text-xs font-mono font-bold bg-transparent outline-none uppercase cursor-pointer py-1 pr-2 ${formData.status === 'published' ? 'text-secondary' :
+                                    formData.status === 'archived' ? 'text-red-500' :
+                                    formData.status === 'review' ? 'text-amber-500' : 'text-gray-400'
                                 }`}
                         >
                             <option value="draft">DRAFT</option>
@@ -216,25 +239,31 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-black/20 p-6 border border-border-normal">
                 <div className="col-span-1 md:col-span-2">
-                    <label className={`text-[10px] mb-1 block uppercase ${fieldErrors.manufacturer_id ? 'text-accent' : 'text-gray-500'}`}>Manufacturer</label>
-                    <select
-                        className={`w-full bg-black border p-3 outline-none text-white font-mono ${fieldErrors.manufacturer_id ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`}
-                        value={formData.manufacturer_id || ''}
-                        onChange={(e: ChangeEvent<HTMLSelectElement>) => handleInputChange('manufacturer_id', e.target.value)}
-                    >
-                        <option value="">-- Select Fabricator --</option>
-                        {manufacturers.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-                    </select>
-                    {fieldErrors.manufacturer_id && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {fieldErrors.manufacturer_id}</div>}
+                    <label className={`text-[10px] mb-1 block uppercase tracking-wider ${fieldErrors.manufacturer_id ? 'text-accent' : 'text-gray-500'}`}>Manufacturer</label>
+                    <div className="relative">
+                        <select
+                            className={`w-full bg-bg-primary border p-3 outline-none text-white font-mono text-sm appearance-none cursor-pointer hover:border-white transition-colors ${fieldErrors.manufacturer_id ? 'border-accent' : 'border-border-normal focus:border-white'}`}
+                            value={formData.manufacturer_id || ''}
+                            onChange={(e: ChangeEvent<HTMLSelectElement>) => handleInputChange('manufacturer_id', e.target.value)}
+                        >
+                            <option value="">-- SELECT FABRICATOR --</option>
+                            {manufacturers.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                        </select>
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 text-[10px]">▼</div>
+                    </div>
+                    {fieldErrors.manufacturer_id && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold">! {fieldErrors.manufacturer_id}</div>}
                 </div>
 
                 {CONSOLE_FORM_FIELDS.map((field: any, idx) => {
                     if (!field.key && field.subHeader) {
                         return (
-                            <div key={`sub-${idx}`} className="col-span-1 md:col-span-2 mt-4 mb-2">
-                                <h4 className="font-pixel text-secondary text-sm border-b border-gray-800 pb-1">{field.subHeader}</h4>
+                            <div key={`sub-${idx}`} className="col-span-1 md:col-span-2 mt-6 mb-2">
+                                <h4 className="font-pixel text-white text-xs border-b border-border-normal pb-2 uppercase tracking-widest flex items-center gap-2">
+                                    <span className="w-1 h-1 bg-secondary inline-block"></span>
+                                    {field.subHeader}
+                                </h4>
                             </div>
                         );
                     }
@@ -242,21 +271,23 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                     if (field.key === 'slug') {
                         return (
                             <div key={field.key}>
-                                <label className={`text-[10px] mb-1 block uppercase flex justify-between items-center ${fieldErrors.slug ? 'text-accent' : 'text-gray-500'}`}>
+                                <label className={`text-[10px] mb-1 block uppercase tracking-wider flex justify-between items-center ${fieldErrors.slug ? 'text-accent' : 'text-gray-500'}`}>
                                     {field.label}
-                                    <button type="button" onClick={() => setIsSlugLocked(!isSlugLocked)} className="text-[10px] text-primary hover:text-white underline">[{isSlugLocked ? 'UNLOCK' : 'LOCK'}]</button>
+                                    <button type="button" onClick={() => setIsSlugLocked(!isSlugLocked)} className="text-[10px] text-gray-500 hover:text-white transition-colors">[{isSlugLocked ? 'UNLOCK' : 'LOCK'}]</button>
                                 </label>
-                                <input type="text" className={`w-full border p-3 font-mono outline-none transition-colors ${isSlugLocked ? 'bg-gray-900/50 border-gray-800 text-gray-500 cursor-not-allowed' : `bg-black text-white ${fieldErrors.slug ? 'border-accent' : 'border-secondary focus:border-primary'}`}`} value={formData[field.key] || ''} onChange={(e: ChangeEvent<HTMLInputElement>) => handleInputChange(field.key, e.target.value)} readOnly={isSlugLocked} />
-                                {fieldErrors.slug && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {fieldErrors.slug}</div>}
+                                <input type="text" className={`w-full border p-3 font-mono text-sm outline-none transition-colors ${isSlugLocked ? 'bg-bg-secondary border-border-normal text-gray-500 cursor-not-allowed opacity-75' : `bg-bg-primary text-white ${fieldErrors.slug ? 'border-accent' : 'border-border-normal focus:border-white'}`}`} value={formData[field.key] || ''} onChange={(e: ChangeEvent<HTMLInputElement>) => handleInputChange(field.key, e.target.value)} readOnly={isSlugLocked} />
+                                {fieldErrors.slug && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold">! {fieldErrors.slug}</div>}
                             </div>
                         );
                     }
                     if (field.key === 'image_url') {
                         return (
                             <div key={field.key} className="col-span-1 md:col-span-2">
-                                <label className={`text-[10px] mb-1 block uppercase ${fieldErrors.image_url ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
-                                <ImageUpload value={formData[field.key]} onChange={(url) => handleInputChange(field.key, url)} />
-                                {fieldErrors.image_url && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {fieldErrors.image_url}</div>}
+                                <label className={`text-[10px] mb-1 block uppercase tracking-wider ${fieldErrors.image_url ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
+                                <div className="border border-border-normal bg-black p-4">
+                                    <ImageUpload value={formData[field.key]} onChange={(url) => handleInputChange(field.key, url)} />
+                                </div>
+                                {fieldErrors.image_url && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold">! {fieldErrors.image_url}</div>}
                             </div>
                         );
                     }
@@ -264,50 +295,70 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                 })}
 
                 {/* ---- DEVICE TYPE SECTION ---- */}
-                <div className="col-span-1 md:col-span-2 border-t border-border-normal pt-4">
-                    <h4 className="font-pixel text-secondary text-sm mb-2">Device Type</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="col-span-1 md:col-span-2 mt-8 pt-6 border-t border-border-normal">
+                    <h4 className="font-pixel text-white text-xs mb-4 uppercase tracking-widest flex items-center gap-2">
+                        <span className="w-1 h-1 bg-secondary inline-block"></span>
+                        Device Classification
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label className="text-[10px] mb-1 block uppercase text-gray-500">Device Category</label>
-                            <select
-                                className="w-full bg-black border p-3 outline-none text-white font-mono border-gray-700 focus:border-secondary"
-                                value={formData.device_category || 'emulation'}
-                                onChange={(e) => handleInputChange('device_category', e.target.value)}
-                            >
-                                <option value="emulation">Emulation Handheld</option>
-                                <option value="pc_gaming">PC Gaming Handheld</option>
-                                <option value="fpga">FPGA Handheld</option>
-                                <option value="legacy">Original Hardware</option>
-                            </select>
+                            <label className="text-[10px] mb-1 block uppercase text-gray-500 tracking-wider">Device Category</label>
+                            <div className="relative">
+                                <select
+                                    className="w-full bg-bg-primary border border-border-normal p-3 outline-none text-white font-mono text-sm appearance-none cursor-pointer hover:border-white transition-colors focus:border-white"
+                                    value={formData.device_category || 'emulation'}
+                                    onChange={(e) => handleInputChange('device_category', e.target.value)}
+                                >
+                                    <option value="emulation">EMULATION HANDHELD</option>
+                                    <option value="pc_gaming">PC GAMING HANDHELD</option>
+                                    <option value="fpga">FPGA HANDHELD</option>
+                                    <option value="legacy">ORIGINAL HARDWARE</option>
+                                </select>
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 text-[10px]">▼</div>
+                            </div>
                         </div>
-                        <AdminInput field={{ key: 'chassis_features', label: 'Special Chassis Features', placeholder: 'e.g., Dual Screen, Swivel' }} value={formData.chassis_features} onChange={handleInputChange} />
+                        <AdminInput field={{ key: 'chassis_features', label: 'Special Chassis Features', placeholder: 'E.G. DUAL SCREEN, SWIVEL' }} value={formData.chassis_features} onChange={handleInputChange} />
                     </div>
                 </div>
 
                 {/* ---- PHYSICAL MEDIA SECTION ---- */}
-                <div className="col-span-1 md:col-span-2 border-t border-border-normal pt-4">
-                    <h4 className="font-pixel text-secondary text-sm mb-2">Physical Media</h4>
-                    <div className="flex items-center space-x-4 mb-2">
-                        <input
-                            type="checkbox"
-                            id="has_cartridge_slot"
-                            checked={!!formData.has_cartridge_slot}
-                            onChange={(e) => handleInputChange('has_cartridge_slot', e.target.checked)}
-                            className="form-checkbox h-5 w-5 bg-black border-secondary text-secondary focus:ring-secondary/50"
-                        />
-                        <label htmlFor="has_cartridge_slot" className="font-mono text-white">Has Cartridge Slot?</label>
+                <div className="col-span-1 md:col-span-2 mt-8 pt-6 border-t border-border-normal">
+                    <h4 className="font-pixel text-white text-xs mb-4 uppercase tracking-widest flex items-center gap-2">
+                        <span className="w-1 h-1 bg-secondary inline-block"></span>
+                        Physical Media Support
+                    </h4>
+                    <div className="flex items-center justify-between bg-bg-primary border border-border-normal p-3 hover:border-white transition-colors cursor-pointer group" onClick={() => handleInputChange('has_cartridge_slot', !formData.has_cartridge_slot)}>
+                        <label className="font-mono text-xs text-gray-400 group-hover:text-white uppercase tracking-wider cursor-pointer">Has Cartridge Slot?</label>
+                        <div className={`w-4 h-4 border flex items-center justify-center transition-all ${formData.has_cartridge_slot ? 'bg-secondary border-secondary' : 'border-gray-600 bg-transparent'}`}>
+                             {formData.has_cartridge_slot && <div className="w-2 h-2 bg-black"></div>}
+                        </div>
                     </div>
                     {formData.has_cartridge_slot && (
-                        <AdminInput
-                            field={{ key: 'supported_cartridge_types', label: 'Supported Cartridge Types', placeholder: 'e.g., Game Boy, DS, 3DS' }}
-                            value={formData.supported_cartridge_types}
-                            onChange={handleInputChange}
-                        />
+                        <div className="mt-4 animate-fadeIn">
+                             <AdminInput
+                                field={{ key: 'supported_cartridge_types', label: 'Supported Cartridge Types', placeholder: 'E.G. GAME BOY, DS, 3DS' }}
+                                value={formData.supported_cartridge_types}
+                                onChange={handleInputChange}
+                            />
+                        </div>
                     )}
                 </div>
             </div>
 
-            <div className="flex justify-end pt-4">
+            <div className="flex justify-between items-center pt-6 border-t border-border-normal">
+                {isEditMode && formData.status === 'draft' ? (
+                     <button
+                        type="button"
+                        onClick={handleDelete}
+                        disabled={loading}
+                        className="font-mono text-xs text-red-500 border border-red-900 bg-red-900/10 px-4 py-2 hover:bg-red-500 hover:text-white transition-colors uppercase tracking-widest"
+                    >
+                        [ DELETE DRAFT ]
+                    </button>
+                ) : (
+                    <div></div> // Spacer
+                )}
+
                 <Button type="submit" isLoading={loading}>{isEditMode ? 'UPDATE CONSOLE IDENTITY' : 'CREATE FOLDER & START SPECS >'}</Button>
             </div>
         </form>

@@ -1,11 +1,15 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { timeAgo } from '@/lib/utils/date-formatter';
 import Button from '@/components/ui/Button';
+import { ConsoleForm } from '@/components/admin/ConsoleForm';
+import Modal from '@/components/ui/Modal';
+import { Manufacturer } from '@/lib/types';
+import { deleteConsole } from '@/app/actions';
 
 interface ConsoleIndexClientProps {
     initialConsoles: {
@@ -16,15 +20,23 @@ interface ConsoleIndexClientProps {
         updated_at?: string,
         manufacturer?: { name: string } | null
     }[];
+    initialManufacturers: Manufacturer[];
 }
 
-export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClientProps) {
+export default function ConsoleIndexClient({ initialConsoles, initialManufacturers }: ConsoleIndexClientProps) {
     const router = useRouter();
-    const [consoles] = useState(initialConsoles);
-    // Since we're moving filtering client-side for now based on the initial fetch,
-    // we can keep using state for the *displayed* list.
+    const [consoles, setConsoles] = useState(initialConsoles);
     const [filter, setFilter] = useState<'ALL' | 'DRAFT' | 'REVIEW' | 'PUBLISHED' | 'ARCHIVED'>('ALL');
     const [search, setSearch] = useState('');
+
+    // Modal State
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [createError, setCreateError] = useState<string | null>(null);
+
+    // Sync state with props if they change (e.g. after router.refresh)
+    useEffect(() => {
+        setConsoles(initialConsoles);
+    }, [initialConsoles]);
 
     const counts = {
         ALL: consoles.length,
@@ -45,6 +57,23 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
         return matchesSearch && matchesFilter;
     });
 
+    const handleConsoleCreated = (_id: string, _name: string) => {
+        setIsCreateModalOpen(false);
+        router.refresh(); // Fetch new data
+        // Optional: Show toast
+    };
+
+    const handleDelete = async (id: string, name: string) => {
+        if (confirm(`PERMANENTLY DELETE "${name}"?\n\nThis console is in DRAFT and can be safely removed.`)) {
+            const result = await deleteConsole(id);
+            if (result.success) {
+                router.refresh();
+            } else {
+                alert(`Delete Failed: ${result.message}`);
+            }
+        }
+    };
+
     return (
         <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn">
             {/* Header */}
@@ -64,11 +93,9 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                 </div>
 
                 <div className="flex gap-2">
-                    <Link href="/admin?tab=CONSOLE">
-                        <Button variant="secondary" className="text-xs">
-                             + NEW CONSOLE FOLDER
-                        </Button>
-                    </Link>
+                    <Button variant="secondary" className="text-xs" onClick={() => setIsCreateModalOpen(true)}>
+                         + NEW CONSOLE FOLDER
+                    </Button>
                 </div>
             </div>
 
@@ -79,7 +106,7 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                         <button
                             key={f}
                             onClick={() => setFilter(f as any)}
-                            className={`font-mono text-xs px-3 py-1 border transition-colors ${
+                            className={`font-mono text-xs px-3 py-1 border transition-colors uppercase tracking-wider ${
                                 filter === f
                                 ? 'bg-secondary text-black border-secondary font-bold'
                                 : 'bg-black text-gray-500 border-gray-800 hover:text-white hover:border-gray-600'
@@ -95,7 +122,7 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                         placeholder="SEARCH_DB..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="bg-black border border-gray-700 text-white font-mono text-sm px-4 py-2 w-full md:w-64 focus:border-secondary outline-none uppercase"
+                        className="bg-black border border-gray-700 text-white font-mono text-sm px-4 py-2 w-full md:w-64 focus:border-secondary outline-none uppercase placeholder:text-gray-700"
                     />
                 </div>
             </div>
@@ -105,7 +132,7 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                  <div className="overflow-x-auto relative z-10">
                     <table className="w-full text-left font-mono text-sm">
                         <thead>
-                            <tr className="border-b border-gray-800 bg-black/50 text-gray-500 text-xs uppercase">
+                            <tr className="border-b border-gray-800 bg-black/50 text-gray-500 text-xs uppercase tracking-widest">
                                 <th className="p-4 w-16">ID</th>
                                 <th className="p-4">Console Name</th>
                                 <th className="p-4">Manufacturer</th>
@@ -130,7 +157,7 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                                         {console.manufacturer?.name || '-'}
                                     </td>
                                     <td className="p-4">
-                                        <span className={`text-[10px] px-2 py-1 border ${
+                                        <span className={`text-[10px] px-2 py-1 border uppercase tracking-wider ${
                                             console.status === 'published' ? 'border-secondary text-secondary bg-secondary/10' :
                                             console.status === 'review' ? 'border-accent text-accent bg-accent/10' :
                                             console.status === 'archived' ? 'border-red-500 text-red-500 bg-red-900/10' :
@@ -148,10 +175,23 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                                                 e.stopPropagation();
                                                 router.push(`/admin/consoles/${console.slug}`);
                                             }}
-                                            className="text-xs border border-gray-600 text-gray-400 px-3 py-1 hover:border-white hover:text-white transition-colors"
+                                            className="text-[10px] border border-gray-600 text-gray-400 px-3 py-1 hover:border-white hover:text-white transition-colors uppercase tracking-widest"
                                         >
                                             EDIT
                                         </button>
+
+                                        {console.status === 'draft' && (
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDelete(console.id, console.name);
+                                                }}
+                                                className="text-[10px] border border-red-900 text-red-700 px-3 py-1 hover:bg-red-900 hover:text-white transition-colors uppercase tracking-widest"
+                                                title="Delete Draft"
+                                            >
+                                                DEL
+                                            </button>
+                                        )}
 
                                         <Link
                                             href={console.status === 'published' ? `/consoles/${console.slug}` : `/admin/preview/consoles/${console.slug}`}
@@ -159,7 +199,7 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                                             onClick={(e) => e.stopPropagation()}
                                         >
                                             <button
-                                                className={`text-xs border px-3 py-1 transition-colors ${
+                                                className={`text-[10px] border px-3 py-1 transition-colors uppercase tracking-widest ${
                                                     console.status === 'draft' || console.status === 'review'
                                                     ? 'border-dashed border-gray-700 text-gray-500 hover:border-yellow-500 hover:text-yellow-500'
                                                     : 'border-gray-800 text-gray-600 hover:border-cyan-400 hover:text-cyan-400'
@@ -174,8 +214,8 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                             ))}
                             {filteredConsoles.length === 0 && (
                                 <tr>
-                                    <td colSpan={6} className="p-8 text-center text-gray-500">
-                                        NO RECORDS FOUND.
+                                    <td colSpan={6} className="p-8 text-center text-gray-500 border-dashed border-gray-800 uppercase tracking-widest">
+                                        // NO RECORDS FOUND.
                                     </td>
                                 </tr>
                             )}
@@ -183,6 +223,24 @@ export default function ConsoleIndexClient({ initialConsoles }: ConsoleIndexClie
                     </table>
                  </div>
             </div>
+
+            {/* Create Modal */}
+            <Modal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                title="INITIALIZE NEW CONSOLE FOLDER"
+            >
+                <ConsoleForm
+                    manufacturers={initialManufacturers}
+                    onConsoleCreated={handleConsoleCreated}
+                    onError={setCreateError}
+                />
+                {createError && (
+                    <div className="mt-4 p-3 bg-accent/10 border border-accent text-accent font-mono text-xs uppercase font-bold">
+                        ERROR: {createError}
+                    </div>
+                )}
+            </Modal>
         </div>
     );
 }

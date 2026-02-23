@@ -3,6 +3,7 @@
 
 import { redirect } from 'next/navigation';
 import { createClient } from '../../../lib/supabase/server';
+import { fetchManufacturers } from '../../../app/actions';
 import ConsoleIndexClient from '../../../components/admin/ConsoleIndexClient';
 
 export default async function AdminConsolesPage() {
@@ -21,21 +22,26 @@ export default async function AdminConsolesPage() {
 
     // 2. Server-Side Data Fetch
     let consoles: any[] = [];
-    try {
-        const { data, error } = await supabase
-            .from('consoles')
-            .select('id, name, slug, status, updated_at, manufacturer:manufacturer(name)')
-            .order('name');
+    let manufacturers: any[] = [];
 
-        if (error) {
-            console.error("Admin Index Fetch Error:", error);
-            // In admin, seeing the error is better than silently failing
-            return <div className="p-8 text-center font-mono text-accent">SYSTEM ERROR: {error.message}</div>;
+    try {
+        const [consolesData, manufacturersData] = await Promise.all([
+            supabase
+                .from('consoles')
+                .select('id, name, slug, status, updated_at, manufacturer:manufacturer(name)')
+                .order('name'),
+            fetchManufacturers()
+        ]);
+
+        if (consolesData.error) {
+            console.error("Admin Index Fetch Error:", consolesData.error);
+            return <div className="p-8 text-center font-mono text-accent">SYSTEM ERROR: {consolesData.error.message}</div>;
         }
-        consoles = data || [];
+        consoles = consolesData.data || [];
+        manufacturers = manufacturersData || [];
     } catch (e: any) {
         return <div className="p-8 text-center font-mono text-accent">SYSTEM ERROR: {e.message}</div>;
     }
 
-    return <ConsoleIndexClient initialConsoles={consoles} />;
+    return <ConsoleIndexClient initialConsoles={consoles} initialManufacturers={manufacturers} />;
 }

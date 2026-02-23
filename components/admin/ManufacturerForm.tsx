@@ -3,7 +3,7 @@
 
 import { useState, type FormEvent, type FC, type KeyboardEvent, useEffect, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { addManufacturer, updateManufacturer } from '../../app/actions';
+import { addManufacturer, updateManufacturer, deleteManufacturer } from '../../app/actions';
 import { purgeCache } from '../../app/actions/revalidate';
 import { supabase } from '../../lib/supabase/singleton';
 import { ManufacturerSchema, MANUFACTURER_FORM_FIELDS, Manufacturer } from '../../lib/types';
@@ -85,6 +85,27 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
         setFranchises(franchises.filter(f => f !== tag));
     };
 
+    const handleDelete = async () => {
+        if (!initialData?.id) return;
+
+        if (!confirm(`PERMANENTLY DELETE FABRICATOR "${formData.name}"?\n\nThis action cannot be undone and will fail if consoles are attached.`)) return;
+
+        setLoading(true);
+        try {
+            const result = await deleteManufacturer(initialData.id);
+            if (result.success) {
+                await purgeCache();
+                onSuccess("FABRICATOR DELETED.");
+            } else {
+                onError(`DELETE FAILED: ${result.message}`);
+            }
+        } catch (e: any) {
+            onError(`DELETE ERROR: ${e.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
@@ -156,22 +177,22 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             {isSuccess && (
-                <div className="bg-secondary/10 border border-secondary text-secondary p-4 text-center font-bold animate-pulse shadow-[0_0_10px_rgba(0,255,157,0.2)]">
+                <div className="bg-secondary/10 border border-secondary text-secondary p-4 text-center font-bold animate-pulse shadow-[0_0_10px_rgba(0,255,157,0.2)] uppercase tracking-wider">
                     {isEditMode ? 'FABRICATOR DATA UPDATED.' : 'FABRICATOR REGISTERED. READY FOR NEXT ENTRY.'}
                 </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-black/20 p-6 border border-border-normal">
                 {MANUFACTURER_FORM_FIELDS.map(field => {
                     if (field.key === 'slug') {
                         return (
                             <div key={field.key}>
-                                <label className={`text-[10px] mb-1 block uppercase flex justify-between items-center ${fieldErrors.slug ? 'text-accent' : 'text-gray-500'}`}>
+                                <label className={`text-[10px] mb-1 block uppercase tracking-wider flex justify-between items-center ${fieldErrors.slug ? 'text-accent' : 'text-gray-500'}`}>
                                     {field.label}
                                     <button
                                         type="button"
                                         onClick={() => setIsSlugLocked(!isSlugLocked)}
-                                        className="text-[10px] text-primary hover:text-white underline cursor-pointer"
+                                        className="text-[10px] text-gray-500 hover:text-white transition-colors cursor-pointer"
                                         title={isSlugLocked ? "Unlock to edit manually" : "Lock to auto-generate from name"}
                                     >
                                         [{isSlugLocked ? 'UNLOCK' : 'LOCK'}]
@@ -179,15 +200,15 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                                 </label>
                                 <input
                                     type="text"
-                                    className={`w-full border p-3 font-mono outline-none transition-colors ${isSlugLocked
-                                            ? 'bg-gray-900/50 border-gray-800 text-gray-500 cursor-not-allowed'
-                                            : `bg-black text-white ${fieldErrors.slug ? 'border-accent' : 'border-secondary focus:border-primary'}`
+                                    className={`w-full border p-3 font-mono text-sm outline-none transition-colors ${isSlugLocked
+                                            ? 'bg-bg-secondary border-border-normal text-gray-500 cursor-not-allowed opacity-75'
+                                            : `bg-bg-primary text-white ${fieldErrors.slug ? 'border-accent' : 'border-border-normal focus:border-white'}`
                                         }`}
                                     value={formData[field.key] || ''}
                                     onChange={(e: ChangeEvent<HTMLInputElement>) => handleInputChange(field.key, e.target.value)}
                                     readOnly={isSlugLocked}
                                 />
-                                {fieldErrors.slug && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {fieldErrors.slug}</div>}
+                                {fieldErrors.slug && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold">! {fieldErrors.slug}</div>}
                             </div>
                         );
                     }
@@ -195,18 +216,18 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                     if (field.key === 'key_franchises') {
                         return (
                             <div key={field.key} className="col-span-1 md:col-span-2">
-                                <label className="text-[10px] text-gray-500 mb-1 block uppercase">{field.label}</label>
-                                <div className="w-full bg-black border border-gray-700 p-2 font-mono flex flex-wrap gap-2 min-h-[50px]">
+                                <label className="text-[10px] text-gray-500 mb-1 block uppercase tracking-wider">{field.label}</label>
+                                <div className="w-full bg-bg-primary border border-border-normal p-2 font-mono flex flex-wrap gap-2 min-h-[50px] transition-colors hover:border-white">
                                     {franchises.map(tag => (
-                                        <span key={tag} className="bg-primary/20 text-primary px-2 py-1 text-xs border border-primary flex items-center gap-1">
+                                        <span key={tag} className="bg-bg-secondary text-primary px-2 py-1 text-xs border border-border-normal flex items-center gap-1 uppercase">
                                             {tag}
-                                            <button type="button" onClick={() => removeFranchise(tag)} className="hover:text-white font-bold">×</button>
+                                            <button type="button" onClick={() => removeFranchise(tag)} className="hover:text-white font-bold text-gray-500">×</button>
                                         </span>
                                     ))}
                                     <input
                                         type="text"
-                                        className="bg-transparent outline-none text-white flex-1 min-w-[120px]"
-                                        placeholder="Type & Enter..."
+                                        className="bg-transparent outline-none text-white flex-1 min-w-[120px] text-xs uppercase placeholder:text-gray-700"
+                                        placeholder="TYPE & ENTER..."
                                         value={franchiseInput}
                                         onChange={(e: ChangeEvent<HTMLInputElement>) => setFranchiseInput(e.target.value)}
                                         onKeyDown={handleFranchiseKeyDown}
@@ -219,11 +240,13 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                     if (field.key === 'image_url') {
                         return (
                             <div key={field.key} className="col-span-1 md:col-span-2">
-                                <label className={`text-[10px] mb-1 block uppercase ${fieldErrors.image_url ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
-                                <ImageUpload
-                                    value={formData[field.key]}
-                                    onChange={(url) => handleInputChange(field.key, url)}
-                                />
+                                <label className={`text-[10px] mb-1 block uppercase tracking-wider ${fieldErrors.image_url ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
+                                <div className="border border-border-normal bg-black p-4">
+                                    <ImageUpload
+                                        value={formData[field.key]}
+                                        onChange={(url) => handleInputChange(field.key, url)}
+                                    />
+                                </div>
                             </div>
                         );
                     }
@@ -231,7 +254,21 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                     return <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} error={fieldErrors[field.key]} />;
                 })}
             </div>
-            <div className="flex justify-end pt-4">
+
+            <div className="flex justify-between items-center pt-6 border-t border-border-normal">
+                {isEditMode ? (
+                     <button
+                        type="button"
+                        onClick={handleDelete}
+                        disabled={loading}
+                        className="font-mono text-xs text-red-500 border border-red-900 bg-red-900/10 px-4 py-2 hover:bg-red-500 hover:text-white transition-colors uppercase tracking-widest"
+                    >
+                        [ DELETE RECORD ]
+                    </button>
+                ) : (
+                    <div></div> // Spacer
+                )}
+
                 <Button type="submit" isLoading={loading}>
                     {isEditMode ? 'UPDATE FABRICATOR' : 'REGISTER FABRICATOR'}
                 </Button>

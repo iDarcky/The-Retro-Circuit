@@ -8,6 +8,7 @@ interface AdminEditTriggerProps {
     id: string;
     type: 'variant' | 'console' | 'fabricator';
     label?: string;
+    slug?: string; // Optional slug for prettier URLs
     displayMode?: 'fixed' | 'inline';
     color?: 'cyan' | 'amber' | 'pink';
     className?: string;
@@ -17,6 +18,7 @@ const AdminEditTrigger: FC<AdminEditTriggerProps> = ({
     id, 
     type, 
     label, 
+    slug,
     displayMode = 'fixed', 
     color = 'cyan',
     className = ''
@@ -50,7 +52,17 @@ const AdminEditTrigger: FC<AdminEditTriggerProps> = ({
     const selectedDot = dotColors[color];
 
     const defaultLabel = label || `EDIT ${type.toUpperCase()}`;
-    const url = `/admin?mode=edit&type=${type}&id=${id}`;
+
+    // Determine URL based on new Admin Structure
+    let url = '#';
+    if (type === 'console') {
+        url = slug ? `/admin/consoles/${slug}` : '/admin/consoles';
+    } else if (type === 'fabricator') {
+        url = `/admin/fabricators?edit_id=${id}`;
+    } else {
+        // Fallback for variants or unknown types
+        url = '/admin/consoles';
+    }
 
     // Position Styles
     const positionClasses = displayMode === 'fixed' 
