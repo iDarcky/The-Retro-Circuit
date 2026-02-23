@@ -23,10 +23,10 @@ export const SpecCard = ({
     };
 
     return (
-        <div className={`bg-bg-primary border border-border-normal relative overflow-hidden group hover:border-primary/50 transition-colors ${className}`}>
+        <div className={`bg-bg-primary border border-white/10 relative overflow-hidden group hover:border-primary/50 transition-colors ${className}`}>
             {/* Header Strip */}
             <div
-                className={`bg-black/40 border-b border-border-normal px-4 py-2 flex justify-between items-center ${collapsible ? 'cursor-pointer hover:bg-white/5' : ''}`}
+                className={`bg-black/40 border-b border-white/10 px-4 py-2 flex justify-between items-center ${collapsible ? 'cursor-pointer hover:bg-white/5' : ''}`}
                 onClick={toggle}
             >
                 <h3 className="font-pixel text-[10px] text-primary uppercase tracking-widest">{title}</h3>

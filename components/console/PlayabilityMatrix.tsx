@@ -45,10 +45,10 @@ const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) 
     // I interpret this as: hide individual Tiers if they have NO data.
 
     return (
-        <div className="bg-bg-primary border border-border-normal mb-6 relative overflow-hidden animate-fadeIn">
+        <div className="bg-bg-primary border border-white/10 mb-6 relative overflow-hidden animate-fadeIn">
 
              {/* Header */}
-            <div className="bg-black/40 border-b border-border-normal px-4 py-3 flex justify-between items-center">
+            <div className="bg-black/40 border-b border-white/10 px-4 py-3 flex justify-between items-center">
                 <h3 className="font-pixel text-sm text-secondary uppercase tracking-widest">PLAYABILITY MATRIX</h3>
                 <div className="flex gap-1">
                     <div className="w-1 h-1 bg-gray-700 rounded-full"></div>
