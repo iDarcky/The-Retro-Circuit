@@ -20,20 +20,20 @@ This roadmap consolidates the audit findings into an actionable 40-day sprint pl
 *Focus: Fixing critical bugs, security holes, and mobile usability.*
 
 ### Day 1-2: Security & Architecture
-- [ ] **CRITICAL:** Fix `middleware.ts` auth bypass. Remove the "placeholder" logic check.
-- [ ] **Security:** Verify Row Level Security (RLS) policies for `consoles` table (prevent unauthorized edits).
-- [ ] **Cleanup:** Remove unused `lib/utils.ts` and dead code.
-- [ ] **Linting:** Set `exhaustive-deps` to "error" and fix the resulting build warnings.
+- [x] **CRITICAL:** Fix `middleware.ts` auth bypass. Remove the "placeholder" logic check.
+- [x] **Security:** Verify Row Level Security (RLS) policies for `consoles` table (prevent unauthorized edits).
+- [x] **Cleanup:** Remove unused `lib/utils.ts` and dead code.
+- [x] **Linting:** Set `exhaustive-deps` to "error" and fix the resulting build warnings.
 
 ### Day 3-4: Mobile Usability (The "Thumb" Test)
-- [ ] **Text Size:** Bump all `text-[10px]` to `text-xs` (12px) in `MobileTopBar` and `LandingPage` pills.
-- [ ] **Touch Targets:** Increase "Menu" and "Search" icon hit areas to 44x44px.
-- [ ] **Viewport:** Add `interactive-widget=resizes-content` to `layout.tsx` to fix iOS keyboard layout shifts.
+- [x] **Text Size:** Bump all `text-[10px]` to `text-xs` (12px) in `MobileTopBar` and `LandingPage` pills.
+- [x] **Touch Targets:** Increase "Menu" and "Search" icon hit areas to 44x44px.
+- [x] **Viewport:** Add `interactive-widget=resizes-content` to `layout.tsx` to fix iOS keyboard layout shifts.
 
 ### Day 5-7: Core Search Fixes
-- [ ] **Empty State:** Design a "No Results Found" component for `ConsoleSearch` (don't just show nothing).
-- [ ] **Keyboard Nav:** Implement ArrowDown/Enter support in the search dropdown.
-- [ ] **Focus States:** Add visible focus rings (`focus-visible:ring-violet-500`) for accessibility.
+- [x] **Empty State:** Design a "No Results Found" component for `ConsoleSearch` (don't just show nothing).
+- [x] **Keyboard Nav:** Implement ArrowDown/Enter support in the search dropdown.
+- [x] **Focus States:** Add visible focus rings (`focus-visible:ring-violet-500`) for accessibility.
 
 ---
 

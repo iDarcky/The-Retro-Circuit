@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, type FormEvent, type FC, useEffect, type ChangeEvent } from 'react';
+import { useState, type FormEvent, type FC, useEffect, type ChangeEvent, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { addConsoleVariant, updateConsoleVariant, getVariantsByConsole } from '../../app/actions';
 import { purgeCache } from '../../app/actions/revalidate';
@@ -42,6 +41,16 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     // Date Logic
     const [datePrecision, setDatePrecision] = useState<'year' | 'month' | 'day' | ''>('');
     const [dateValue, setDateValue] = useState<string>(''); // YYYY, YYYY-MM, or YYYY-MM-DD
+
+    const handleInputChange = useCallback((key: string, value: any) => {
+        setFormData(prev => ({ ...prev, [key]: value }));
+        setFieldErrors(prev => {
+            if (!prev[key]) return prev;
+            const next = { ...prev };
+            delete next[key];
+            return next;
+        });
+    }, []);
 
     useEffect(() => {
         if (initialData) {
@@ -149,7 +158,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             handleInputChange('release_date_precision', datePrecision);
             handleInputChange('release_year', yearVal);
         }
-    }, [datePrecision, dateValue]);
+    }, [datePrecision, dateValue, handleInputChange]);
 
 
     useEffect(() => {
@@ -247,13 +256,6 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             } else {
                 setRamInput({ value: '', unit: 'GB' });
             }
-        }
-    };
-
-    const handleInputChange = (key: string, value: any) => {
-        setFormData(prev => ({ ...prev, [key]: value }));
-        if (fieldErrors[key]) {
-            setFieldErrors(prev => { const next = { ...prev }; delete next[key]; return next; });
         }
     };
 

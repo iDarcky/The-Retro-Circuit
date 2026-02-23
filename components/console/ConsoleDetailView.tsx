@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, type FC } from 'react';
+import { useState, useEffect, type FC, useMemo, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ConsoleDetails, ConsoleSpecs, ConsoleVariant } from '../../lib/types';
 import ConsoleIdentitySection from './ConsoleIdentitySection';
@@ -24,7 +24,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
     
-    const variants = consoleData.variants || [];
+    const variants = useMemo(() => consoleData.variants || [], [consoleData.variants]);
     const hasVariants = variants.length > 0;
 
     // --- VARIANT LOGIC ---
@@ -44,13 +44,13 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
     const [selectedVariantId, setSelectedVariantId] = useState<string>(getInitialVariantId);
     
     type MergedSpecs = Partial<ConsoleSpecs> & Partial<ConsoleVariant>;
-    const getMergedSpecs = (varId: string): MergedSpecs => {
+    const getMergedSpecs = useCallback((varId: string): MergedSpecs => {
         const baseSpecs = consoleData.specs || {};
         if (varId === 'base') return baseSpecs;
         const variant = variants.find(x => x.id === varId);
         if (!variant) return baseSpecs;
         return { ...baseSpecs, ...variant };
-    };
+    }, [consoleData.specs, variants]);
 
     const [mergedSpecs, setMergedSpecs] = useState<MergedSpecs>(() => getMergedSpecs(getInitialVariantId()));
 
@@ -64,7 +64,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
     useEffect(() => {
         setMergedSpecs(getMergedSpecs(selectedVariantId));
-    }, [selectedVariantId, consoleData.specs, variants]);
+    }, [selectedVariantId, getMergedSpecs]);
 
     const handleVariantChange = (id: string) => {
         setSelectedVariantId(id);

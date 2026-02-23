@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Press_Start_2P, JetBrains_Mono, Share_Tech_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import ClientShell from "../components/layout/ClientShell";
@@ -9,6 +9,7 @@ import { ConsentProvider } from "../components/privacy/ConsentContext";
 import { CookieBanner } from "../components/privacy/CookieBanner";
 import { AnalyticsWrapper } from "../components/privacy/AnalyticsWrapper";
 import { siteConfig } from "../config/site";
+import { getSystemVersion } from "./actions/roadmap";
 
 // Load fonts via Next.js to prevent Layout Shift
 const pressStart = Press_Start_2P({
@@ -36,12 +37,13 @@ const inter = Inter({
   display: 'swap',
 });
 
-export const viewport = {
+export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
   themeColor: "#0f0f1b",
+  interactiveWidget: "resizes-content",
 };
 
 export const metadata: Metadata = {
@@ -74,11 +76,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: ReactNode;
 }>) {
+  const version = await getSystemVersion();
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -127,7 +130,7 @@ export default function RootLayout({
             <div className="flex-1 w-full flex flex-col">
               {children}
             </div>
-            <Footer />
+            <Footer version={version} />
           </ClientShell>
 
           <CookieBanner />
