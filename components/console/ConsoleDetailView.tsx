@@ -128,7 +128,8 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                     {/* BRIEFING (Right - Span 4) */}
                     <div className="lg:col-span-4 flex flex-col h-full border-t border-white/10 lg:border-t-0 lg:border-l lg:pl-8 pt-8 lg:pt-0">
-                        <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">Mission Briefing</h2>
+                        {/* Renamed Header as requested */}
+                        <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">QUICK GLANCE</h2>
 
                         {/* Description */}
                         <div className="mb-8">
@@ -142,12 +143,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                     </div>
                 </div>
 
-                {/* ROW 2: TECHNICAL REFERENCE (Full Width) */}
-                <section id="tech" className="border-t border-white/10 pt-8">
-                     <TechnicalReference mergedSpecs={mergedSpecs} />
-                </section>
-
-                {/* ROW 3: EMULATION & LOGISTICS */}
+                {/* ROW 2: EMULATION & LOGISTICS (Moved Up) */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 border-t border-white/10 pt-8">
                     {/* Playability */}
                     <section id="playability">
@@ -162,6 +158,11 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                         </div>
                     </section>
                 </div>
+
+                {/* ROW 3: TECHNICAL REFERENCE (Moved Down) */}
+                <section id="tech" className="border-t border-white/10 pt-8">
+                     <TechnicalReference mergedSpecs={mergedSpecs} />
+                </section>
 
              </main>
         </div>
