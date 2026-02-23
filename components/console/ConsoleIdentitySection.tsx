@@ -123,12 +123,9 @@ export default function ConsoleIdentitySection({
     const sentinelRef = useRef<HTMLDivElement>(null);
 
     const currentVariant = variants.find(v => v.id === selectedVariantId) || null;
-    const currentYear = currentVariant?.release_date ? new Date(currentVariant.release_date).getFullYear() : 'XXXX';
     const compareUrl = `/arena/${consoleData.slug}${currentVariant?.slug ? `-${currentVariant.slug}` : ''}-vs-select`;
 
     const fabName = manufacturer?.name || 'UNKNOWN';
-    const formFactor = consoleData.form_factor || 'N/A';
-    const deviceCategory = consoleData.device_category || 'SYSTEM';
 
     useEffect(() => {
         const observer = new IntersectionObserver(
