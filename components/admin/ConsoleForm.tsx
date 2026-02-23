@@ -3,7 +3,7 @@
 
 import { useState, type FormEvent, type FC, useEffect, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { addConsole, updateConsole } from '../../app/actions';
+import { addConsole, updateConsole, deleteConsole } from '../../app/actions';
 import { purgeCache } from '../../app/actions/revalidate';
 import { supabase } from '../../lib/supabase/singleton';
 import { ConsoleSchema, Manufacturer, CONSOLE_FORM_FIELDS, ConsoleDetails } from '../../lib/types';
@@ -82,6 +82,28 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
     const cancelStatusChange = () => {
         setPendingStatus(null);
         setShowStatusModal(false);
+    };
+
+    const handleDelete = async () => {
+        if (!initialData?.id) return;
+
+        if (!confirm(`PERMANENTLY DELETE "${formData.name}"?\n\nTHIS ACTION CANNOT BE UNDONE.`)) return;
+
+        setLoading(true);
+        try {
+            const result = await deleteConsole(initialData.id);
+            if (result.success) {
+                await purgeCache();
+                router.push('/admin/consoles');
+                router.refresh();
+            } else {
+                onError(`DELETE FAILED: ${result.message}`);
+            }
+        } catch (e: any) {
+            onError(`DELETE ERROR: ${e.message}`);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleSubmit = async (e: FormEvent) => {
@@ -323,7 +345,20 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                 </div>
             </div>
 
-            <div className="flex justify-end pt-6 border-t border-border-normal">
+            <div className="flex justify-between items-center pt-6 border-t border-border-normal">
+                {isEditMode && formData.status === 'draft' ? (
+                     <button
+                        type="button"
+                        onClick={handleDelete}
+                        disabled={loading}
+                        className="font-mono text-xs text-red-500 border border-red-900 bg-red-900/10 px-4 py-2 hover:bg-red-500 hover:text-white transition-colors uppercase tracking-widest"
+                    >
+                        [ DELETE DRAFT ]
+                    </button>
+                ) : (
+                    <div></div> // Spacer
+                )}
+
                 <Button type="submit" isLoading={loading}>{isEditMode ? 'UPDATE CONSOLE IDENTITY' : 'CREATE FOLDER & START SPECS >'}</Button>
             </div>
         </form>

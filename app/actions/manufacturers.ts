@@ -68,3 +68,29 @@ export const updateManufacturer = async (id: string, manu: Partial<Manufacturer>
         return { success: false, message: e.message };
     }
 };
+
+export const deleteManufacturer = async (id: string): Promise<{ success: boolean, message?: string }> => {
+    try {
+        const supabase = await createClient();
+
+        // 1. Check for associated consoles
+        const { count, error: countError } = await supabase
+            .from('consoles')
+            .select('*', { count: 'exact', head: true })
+            .eq('manufacturer_id', id);
+
+        if (countError) return { success: false, message: countError.message };
+
+        if (count && count > 0) {
+            return { success: false, message: `Cannot delete: This fabricator has ${count} associated consoles.` };
+        }
+
+        // 2. Delete
+        const { error: deleteError } = await supabase.from('manufacturer').delete().eq('id', id);
+        if (deleteError) return { success: false, message: deleteError.message };
+
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, message: e.message };
+    }
+};

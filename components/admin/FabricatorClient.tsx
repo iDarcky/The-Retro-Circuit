@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Manufacturer } from '@/lib/types';
 import Button from '@/components/ui/Button';
 import { ManufacturerForm } from '@/components/admin/ManufacturerForm';
 import Modal from '@/components/ui/Modal';
+import { deleteManufacturer } from '@/app/actions';
 
 interface FabricatorClientProps {
     initialManufacturers: Manufacturer[];
@@ -14,6 +15,7 @@ interface FabricatorClientProps {
 
 export default function FabricatorClient({ initialManufacturers }: FabricatorClientProps) {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [manufacturers, setManufacturers] = useState(initialManufacturers);
     const [search, setSearch] = useState('');
 
@@ -25,6 +27,20 @@ export default function FabricatorClient({ initialManufacturers }: FabricatorCli
     useEffect(() => {
         setManufacturers(initialManufacturers);
     }, [initialManufacturers]);
+
+    // Check for Deep Link Edit
+    useEffect(() => {
+        const editId = searchParams?.get('edit_id');
+        if (editId && manufacturers.length > 0) {
+            const target = manufacturers.find(m => m.id === editId);
+            if (target) {
+                setEditingManufacturer(target);
+                setIsModalOpen(true);
+                // Clean URL without refresh
+                window.history.replaceState(null, '', '/admin/fabricators');
+            }
+        }
+    }, [searchParams, manufacturers]);
 
     const filteredManufacturers = manufacturers.filter(m =>
         m.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -46,6 +62,18 @@ export default function FabricatorClient({ initialManufacturers }: FabricatorCli
     const handleSuccess = (_msg: string) => {
         setIsModalOpen(false);
         router.refresh();
+    };
+
+    const handleDelete = async (e: React.MouseEvent, manu: Manufacturer) => {
+        e.stopPropagation();
+        if (confirm(`PERMANENTLY DELETE FABRICATOR "${manu.name}"?\n\nThis action cannot be undone.`)) {
+            const result = await deleteManufacturer(manu.id);
+            if (result.success) {
+                router.refresh();
+            } else {
+                alert(`Delete Failed: ${result.message}`);
+            }
+        }
     };
 
     return (
@@ -112,12 +140,22 @@ export default function FabricatorClient({ initialManufacturers }: FabricatorCli
 
                         <div className="mt-auto relative z-10 flex justify-between items-center border-t border-border-normal pt-4">
                             <span className="text-[9px] font-mono text-gray-600 group-hover:text-gray-400">ID: {manu.id.substring(0,6)}</span>
-                            <button
-                                onClick={() => handleOpenEdit(manu)}
-                                className="text-[10px] font-mono border border-border-normal text-gray-400 px-3 py-1 hover:bg-white hover:text-black hover:border-white transition-colors uppercase tracking-widest"
-                            >
-                                [ EDIT ]
-                            </button>
+
+                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button
+                                    onClick={(e) => handleDelete(e, manu)}
+                                    className="text-[10px] font-mono border border-red-900 text-red-700 px-3 py-1 hover:bg-red-900 hover:text-white transition-colors uppercase tracking-widest"
+                                    title="Delete Fabricator"
+                                >
+                                    [ DEL ]
+                                </button>
+                                <button
+                                    onClick={() => handleOpenEdit(manu)}
+                                    className="text-[10px] font-mono border border-border-normal text-gray-400 px-3 py-1 hover:bg-white hover:text-black hover:border-white transition-colors uppercase tracking-widest"
+                                >
+                                    [ EDIT ]
+                                </button>
+                            </div>
                         </div>
 
                          {/* Hover Effect: Subtle Scanline */}

@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "../../lib/supabase/client";
+import { createClient } from "../../lib/supabase/server";
 import { supabaseAnon } from "../../lib/supabase/anon";
 import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant, VariantInputProfile } from "../../lib/types";
 
@@ -390,3 +390,25 @@ export const updateConsoleVariant = async (id: string, variantData: Partial<Cons
         return { success: false, message: e.message };
     }
 };
+
+export const deleteConsole = async (id: string): Promise<{ success: boolean, message?: string }> => {
+    try {
+        const supabase = await createClient();
+
+        // 1. Check status
+        const { data: consoleData, error: fetchError } = await supabase.from('consoles').select('status').eq('id', id).single();
+        if (fetchError) return { success: false, message: fetchError.message };
+
+        if (consoleData.status !== 'draft') {
+            return { success: false, message: "Only DRAFT consoles can be deleted." };
+        }
+
+        // 2. Delete
+        const { error: deleteError } = await supabase.from('consoles').delete().eq('id', id);
+        if (deleteError) return { success: false, message: deleteError.message };
+
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, message: e.message };
+    }
+}
