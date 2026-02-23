@@ -61,7 +61,7 @@ export const ComparisonRow: FC<ComparisonRowProps> = ({
     }
 
     const getDisplayValue = (val: any, variant: ConsoleVariant) => {
-        if (!exists(val)) return <span className="text-white/10 text-xs">---</span>;
+        if (!exists(val)) return <span className="text-white/10 text-xs font-light">---</span>;
 
         if (metric.key === 'ram_mb') {
              const mb = Number(val);
@@ -91,10 +91,11 @@ export const ComparisonRow: FC<ComparisonRowProps> = ({
     const displayA = getDisplayValue(rawA, varA);
     const displayB = getDisplayValue(rawB, varB);
 
-    // Styling Logic - Brighter Pop Colors
-    const winClassA = "text-cyan-400 font-bold drop-shadow-[0_0_5px_rgba(34,211,238,0.4)]";
-    const winClassB = "text-orange-400 font-bold drop-shadow-[0_0_5px_rgba(251,146,60,0.4)]";
-    const loseClass = "text-white/40";
+    // Styling Logic - Brighter Pop Colors with "Gamified" Winner Glow
+    const winClassA = "text-cyan-300 font-bold drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]";
+    const winClassB = "text-orange-300 font-bold drop-shadow-[0_0_8px_rgba(251,146,60,0.8)]";
+
+    const loseClass = "text-white/40 grayscale-[0.3]";
     const tieClass = "text-white/80";
 
     let classA = loseClass;
@@ -123,7 +124,7 @@ export const ComparisonRow: FC<ComparisonRowProps> = ({
 
                 {/* Player A (Left on Mobile, Right on Desktop) */}
                 <div className={`col-span-1 md:col-span-4 text-left md:text-right font-mono text-sm md:text-sm flex flex-col md:flex-row md:justify-end items-start md:items-center gap-2 order-2 md:order-1 ${classA}`}>
-                    {winner === 'A' && <span className="text-[10px] animate-pulse hidden md:inline">▲</span>}
+                    {winner === 'A' && <span className="text-[10px] animate-pulse hidden md:inline text-cyan-300">◀</span>}
                     <span className="break-words leading-tight">{displayA}</span>
                 </div>
 
@@ -137,7 +138,7 @@ export const ComparisonRow: FC<ComparisonRowProps> = ({
                 {/* Player B (Right on Mobile, Left on Desktop) */}
                 <div className={`col-span-1 md:col-span-4 text-right md:text-left font-mono text-sm md:text-sm flex flex-col md:flex-row md:justify-start items-end md:items-center gap-2 order-3 ${classB}`}>
                     <span className="break-words leading-tight">{displayB}</span>
-                    {winner === 'B' && <span className="text-[10px] animate-pulse hidden md:inline">▲</span>}
+                    {winner === 'B' && <span className="text-[10px] animate-pulse hidden md:inline text-orange-300">▶</span>}
                 </div>
 
             </div>

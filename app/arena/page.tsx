@@ -169,21 +169,24 @@ function VSModeContent() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-8 mb-12 relative z-30">
                     {/* VS Badge - Centered */}
                     <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none flex justify-center">
-                        <div className="hidden md:flex w-20 h-20 bg-black items-center justify-center border border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.1)] backdrop-blur-sm">
+                        <div className="hidden md:flex w-20 h-20 bg-black items-center justify-center border-2 border-white/20 shadow-[0_0_50px_rgba(255,255,255,0.2)] backdrop-blur-sm rounded-full animate-pulse-slow">
                             <span className="font-pixel text-2xl italic text-white drop-shadow-md">VS</span>
                         </div>
                     </div>
 
                     {/* Player 1 Card - Cyan */}
                     <div className={`
-                        border border-cyan-500/20 bg-gradient-to-br from-cyan-500/5 to-transparent relative transition-all z-10
-                        ${isArenaMode ? 'border-cyan-500/40 shadow-[0_0_40px_rgba(6,182,212,0.15)]' : 'hover:border-cyan-500/30'}
+                        border-2 border-cyan-500/30 bg-cyan-900/10 relative transition-all z-10 overflow-hidden
+                        ${isArenaMode ? 'border-cyan-400 shadow-[0_0_60px_rgba(6,182,212,0.2)]' : 'hover:border-cyan-400/50 hover:bg-cyan-900/20'}
                     `}>
+                        {/* Status Bar */}
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50"></div>
+
                         <div className="p-6 md:p-10 flex flex-col h-full relative">
-                            <div className="flex justify-between items-start mb-6">
-                                <h2 className="font-pixel text-[10px] md:text-sm text-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">[ PLAYER 1 ]</h2>
+                            <div className="flex justify-between items-start mb-6 border-b border-cyan-500/20 pb-4">
+                                <h2 className="font-pixel text-[10px] md:text-sm text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]">[ PLAYER 1 ]</h2>
                                 {isArenaMode && selectionA.details && (
-                                     <span className="font-mono text-xs text-cyan-400/50 animate-pulse">READY</span>
+                                     <span className="font-mono text-xs text-cyan-300 animate-pulse font-bold tracking-widest drop-shadow-[0_0_5px_rgba(34,211,238,1)]">READY</span>
                                 )}
                             </div>
 
@@ -196,23 +199,23 @@ function VSModeContent() {
                             )}
 
                             {selectionA.loading ? (
-                                <div className="flex-1 flex items-center justify-center text-cyan-400 font-mono animate-pulse text-[10px] md:text-base mt-4">LOADING...</div>
+                                <div className="flex-1 flex items-center justify-center text-cyan-400 font-mono animate-pulse text-[10px] md:text-base mt-4 drop-shadow-lg">LOADING DATA...</div>
                             ) : selectionA.details ? (
                                 <div className="mt-4 flex-1 flex flex-col md:items-center animate-fadeIn">
                                     <Link
                                         href={`/consoles/${selectionA.details.slug}`}
                                         className="flex flex-row md:flex-col items-center gap-6 mb-6 group w-full"
                                     >
-                                        <div className="relative w-20 h-20 md:w-full md:h-56 flex-shrink-0 bg-black/40 md:bg-transparent border border-white/5 md:border-0 p-4 transition-transform group-hover:scale-105 duration-500">
+                                        <div className="relative w-24 h-24 md:w-full md:h-64 flex-shrink-0 bg-black/40 md:bg-transparent border border-cyan-500/10 md:border-0 p-4 transition-transform group-hover:scale-105 duration-500 shadow-inner md:shadow-none">
                                             {(selectionA.selectedVariant?.image_url || selectionA.details.image_url) ? (
-                                                <img src={selectionA.selectedVariant?.image_url || selectionA.details.image_url} alt={selectionA.details.name} className="w-full h-full object-contain drop-shadow-2xl" />
+                                                <img src={selectionA.selectedVariant?.image_url || selectionA.details.image_url} alt={selectionA.details.name} className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(6,182,212,0.3)]" />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-cyan-500 opacity-50 font-pixel text-[8px] md:text-xs">NO IMG</div>
                                             )}
                                         </div>
                                         <div className="flex flex-col text-left md:text-center min-w-0 overflow-hidden w-full">
-                                            <h3 className="font-pixel text-lg md:text-3xl text-white truncate group-hover:text-cyan-400 transition-colors drop-shadow-lg">{selectionA.details.name}</h3>
-                                            <div className="font-mono text-xs md:text-sm text-cyan-400 truncate mt-1">{selectionA.details.manufacturer?.name}</div>
+                                            <h3 className="font-pixel text-lg md:text-4xl text-white truncate group-hover:text-cyan-300 transition-colors drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]">{selectionA.details.name}</h3>
+                                            <div className="font-mono text-xs md:text-sm text-cyan-400 truncate mt-2 font-bold tracking-wider">{selectionA.details.manufacturer?.name}</div>
                                         </div>
                                     </Link>
 
@@ -233,21 +236,24 @@ function VSModeContent() {
                                     )}
                                 </div>
                             ) : (
-                                <div className="flex-1 flex items-center justify-center text-white/10 font-pixel text-[8px] md:text-xs mt-4">SELECT FIGHTER</div>
+                                <div className="flex-1 flex items-center justify-center text-cyan-500/20 font-pixel text-[8px] md:text-xs mt-4 animate-pulse">AWAITING CHALLENGER</div>
                             )}
                         </div>
                     </div>
 
                     {/* Player 2 Card - Orange */}
                     <div className={`
-                        border border-orange-500/20 bg-gradient-to-bl from-orange-500/5 to-transparent relative transition-all z-0
-                        ${isArenaMode ? 'border-orange-500/40 shadow-[0_0_40px_rgba(249,115,22,0.15)]' : 'hover:border-orange-500/30'}
+                        border-2 border-orange-500/30 bg-orange-900/10 relative transition-all z-0 overflow-hidden
+                        ${isArenaMode ? 'border-orange-400 shadow-[0_0_60px_rgba(249,115,22,0.2)]' : 'hover:border-orange-400/50 hover:bg-orange-900/20'}
                     `}>
+                        {/* Status Bar */}
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-50"></div>
+
                         <div className="p-6 md:p-10 flex flex-col h-full relative">
-                            <div className="flex justify-between items-start mb-6">
-                                <h2 className="font-pixel text-[10px] md:text-sm text-orange-400 drop-shadow-[0_0_5px_rgba(251,146,60,0.5)] text-left md:text-right w-full">[ PLAYER 2 ]</h2>
+                            <div className="flex justify-between items-start mb-6 border-b border-orange-500/20 pb-4">
+                                <h2 className="font-pixel text-[10px] md:text-sm text-orange-400 drop-shadow-[0_0_8px_rgba(251,146,60,0.8)] text-left md:text-right w-full">[ PLAYER 2 ]</h2>
                                 {isArenaMode && selectionB.details && (
-                                     <span className="font-mono text-xs text-orange-400/50 order-first md:order-last animate-pulse">READY</span>
+                                     <span className="font-mono text-xs text-orange-300 animate-pulse font-bold tracking-widest drop-shadow-[0_0_5px_rgba(251,146,60,1)] order-first md:order-last">READY</span>
                                 )}
                             </div>
 
@@ -259,23 +265,23 @@ function VSModeContent() {
                                 />
                             )}
                             {selectionB.loading ? (
-                                <div className="flex-1 flex items-center justify-center text-orange-400 font-mono animate-pulse text-[10px] md:text-base mt-4">LOADING...</div>
+                                <div className="flex-1 flex items-center justify-center text-orange-400 font-mono animate-pulse text-[10px] md:text-base mt-4 drop-shadow-lg">LOADING DATA...</div>
                             ) : selectionB.details ? (
                                 <div className="mt-4 flex-1 flex flex-col md:items-center animate-fadeIn">
                                     <Link
                                         href={`/consoles/${selectionB.details.slug}`}
                                         className="flex flex-row md:flex-col items-center gap-6 mb-6 group w-full"
                                     >
-                                        <div className="relative w-20 h-20 md:w-full md:h-56 flex-shrink-0 bg-black/40 md:bg-transparent border border-white/5 md:border-0 p-4 transition-transform group-hover:scale-105 duration-500">
+                                        <div className="relative w-24 h-24 md:w-full md:h-64 flex-shrink-0 bg-black/40 md:bg-transparent border border-orange-500/10 md:border-0 p-4 transition-transform group-hover:scale-105 duration-500 shadow-inner md:shadow-none">
                                             {(selectionB.selectedVariant?.image_url || selectionB.details.image_url) ? (
-                                                <img src={selectionB.selectedVariant?.image_url || selectionB.details.image_url} alt={selectionB.details.name} className="w-full h-full object-contain drop-shadow-2xl" />
+                                                <img src={selectionB.selectedVariant?.image_url || selectionB.details.image_url} alt={selectionB.details.name} className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(249,115,22,0.3)]" />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-orange-500 opacity-50 font-pixel text-[8px] md:text-xs">NO IMG</div>
                                             )}
                                         </div>
                                         <div className="flex flex-col text-left md:text-center min-w-0 overflow-hidden w-full">
-                                            <h3 className="font-pixel text-lg md:text-3xl text-white truncate group-hover:text-orange-400 transition-colors drop-shadow-lg">{selectionB.details.name}</h3>
-                                            <div className="font-mono text-xs md:text-sm text-orange-400 truncate mt-1">{selectionB.details.manufacturer?.name}</div>
+                                            <h3 className="font-pixel text-lg md:text-4xl text-white truncate group-hover:text-orange-300 transition-colors drop-shadow-[0_0_10px_rgba(249,115,22,0.5)]">{selectionB.details.name}</h3>
+                                            <div className="font-mono text-xs md:text-sm text-orange-400 truncate mt-2 font-bold tracking-wider">{selectionB.details.manufacturer?.name}</div>
                                         </div>
                                     </Link>
 
@@ -296,7 +302,7 @@ function VSModeContent() {
                                     )}
                                 </div>
                             ) : (
-                                <div className="flex-1 flex items-center justify-center text-white/10 font-pixel text-[8px] md:text-xs mt-4">SELECT FIGHTER</div>
+                                <div className="flex-1 flex items-center justify-center text-orange-500/20 font-pixel text-[8px] md:text-xs mt-4 animate-pulse">AWAITING CHALLENGER</div>
                             )}
                         </div>
                     </div>
@@ -310,13 +316,16 @@ function VSModeContent() {
                                 onClick={handleFight}
                                 disabled={!selectionA.details || !selectionB.details}
                                 className={`
-                                font-pixel text-xl md:text-3xl px-16 py-6 border-2 transition-all duration-300 uppercase tracking-widest
+                                font-pixel text-xl md:text-3xl px-16 py-6 border-2 transition-all duration-300 uppercase tracking-widest relative overflow-hidden group
                                 ${selectionA.details && selectionB.details
-                                        ? 'bg-white text-black border-white hover:bg-black hover:text-white cursor-pointer shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:scale-105'
+                                        ? 'bg-white text-black border-white hover:bg-black hover:text-white cursor-pointer shadow-[0_0_40px_rgba(255,255,255,0.4)] hover:scale-105 active:scale-95'
                                         : 'bg-black border-white/10 text-white/10 cursor-not-allowed'}
                             `}
                             >
-                                [ F I G H T ]
+                                <span className="relative z-10">[ F I G H T ]</span>
+                                {selectionA.details && selectionB.details && (
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
+                                )}
                             </button>
                         </div>
                     ) : (
