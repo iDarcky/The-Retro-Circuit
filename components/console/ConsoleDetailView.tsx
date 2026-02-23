@@ -82,8 +82,9 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
     const currentImage = getConsoleImage({ console: consoleData, variant: currentVariant });
 
     return (
-        <div className="w-full animate-fadeIn relative">
-             {/* SECTION I: IDENTITY (Sticky) */}
+        <div className="w-full min-h-screen bg-[#09090b] text-white selection:bg-orange-500/30 selection:text-white pb-20">
+
+             {/* SECTION I: IDENTITY & HEADER */}
              <ConsoleIdentitySection
                 console={consoleData}
                 manufacturer={consoleData.manufacturer || null}
@@ -96,68 +97,74 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
              />
 
              {/* MAIN CONTENT GRID */}
-             <div className="w-full mx-auto px-4 md:px-8 py-12">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12 relative">
+             <main className="max-w-[1600px] mx-auto px-4 md:px-8 mt-8 space-y-8 animate-fadeIn">
 
-                    {/* --- LEFT COLUMN: STICKY SIDEBAR (lg:col-span-4) --- */}
-                    <div className="lg:col-span-4">
-                        {/* Sticky Container */}
-                        {/* top-[120px] accounts for global header (64px) + typical compact bar height (~50px) */}
-                        <div className="sticky top-[120px] space-y-6">
+                {/* ROW 1: VISUALS + BRIEFING */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-                            {/* 1. PHOTO */}
-                            <div className="bg-black border-2 border-border-normal p-8 flex items-center justify-center min-h-[200px] relative shadow-[0_0_20px_rgba(0,0,0,0.5)] group overflow-hidden">
-                                {currentImage ? (
-                                    <img src={currentImage} alt={consoleData.name} className="w-full h-auto object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-500 relative z-10" key={currentImage} />
-                                ) : (
-                                    <div className="text-muted font-pixel text-4xl opacity-50">NO SIGNAL</div>
-                                )}
-                                <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 items-start">
-                                    <div className="bg-secondary text-black font-mono text-[10px] font-bold px-2 py-1 transform -rotate-2 shadow-lg">
-                                        {consoleData.form_factor?.toUpperCase() || 'SYSTEM'}
-                                    </div>
-                                    {consoleData.chassis_features && (
-                                        <div className="bg-black/90 text-secondary border border-secondary font-mono text-[10px] font-bold px-2 py-1 transform -rotate-2 shadow-lg">
-                                            {consoleData.chassis_features.toUpperCase()}
-                                        </div>
-                                    )}
-                                </div>
+                    {/* VISUALS (Left - Span 8) */}
+                    <div className="lg:col-span-8 flex flex-col gap-4">
+                        <div className="relative w-full aspect-video bg-black/50 border border-white/10 flex items-center justify-center overflow-hidden group">
+                            {/* Technical Markings */}
+                            <div className="absolute top-4 left-4 text-[10px] font-mono text-white/30 tracking-widest">FIG. 01 // {consoleData.name.toUpperCase()}</div>
+                            <div className="absolute bottom-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">SCALE 1:1</div>
+                            <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">
+                                {consoleData.form_factor?.toUpperCase() || 'SYSTEM'}
                             </div>
 
-                            {/* 2. MISSION PROFILE */}
-                            <MissionProfile />
-
-                            {/* 3. BUY */}
-                            <div id="buy">
-                                <BuySection />
-                            </div>
+                            {/* Image */}
+                            {currentImage ? (
+                                <img
+                                    src={currentImage}
+                                    alt={consoleData.name}
+                                    className="max-w-[80%] max-h-[80%] object-contain drop-shadow-2xl transition-transform duration-700 ease-out group-hover:scale-105"
+                                    key={currentImage}
+                                />
+                            ) : (
+                                <div className="text-zinc-700 font-pixel text-2xl">NO SIGNAL</div>
+                            )}
                         </div>
                     </div>
 
-                    {/* --- RIGHT COLUMN: SCROLLABLE CONTENT (lg:col-span-8) --- */}
-                    <div className="lg:col-span-8 space-y-8">
+                    {/* BRIEFING (Right - Span 4) */}
+                    <div className="lg:col-span-4 flex flex-col h-full border-t border-white/10 lg:border-t-0 lg:border-l lg:pl-8 pt-8 lg:pt-0">
+                        {/* Renamed Header as requested */}
+                        <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">QUICK GLANCE</h2>
 
-                        {/* 1. SYSTEM ANALYSIS */}
-                        <div id="analysis" className="bg-bg-primary border border-border-normal p-6 relative">
+                        {/* Description */}
+                        <div className="mb-8">
                             <SystemAnalysis description={consoleData.description || ''} />
                         </div>
 
-                        {/* 2. KEY METRICS (Replaces "At A Glance") */}
-                        <KeyMetrics specs={mergedSpecs} releaseDate={currentVariant?.release_date || null} />
-
-                        {/* 3. EMULATION MATRIX */}
-                        <div id="playability">
-                            <PlayabilityMatrix profile={mergedSpecs.emulation_profile || (mergedSpecs as any).emulation_profiles} />
+                        {/* Metrics Grid */}
+                        <div className="mt-auto">
+                            <KeyMetrics specs={mergedSpecs} releaseDate={currentVariant?.release_date || null} />
                         </div>
-
-                        {/* 4. TECHNICAL REFERENCE (Collapsible Grid) */}
-                        <div id="tech">
-                            <TechnicalReference mergedSpecs={mergedSpecs} />
-                        </div>
-
                     </div>
                 </div>
-             </div>
+
+                {/* ROW 2: EMULATION & LOGISTICS (Moved Up) */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 border-t border-white/10 pt-8">
+                    {/* Playability */}
+                    <section id="playability">
+                        <PlayabilityMatrix profile={mergedSpecs.emulation_profile || (mergedSpecs as any).emulation_profiles} />
+                    </section>
+
+                    {/* Logistics */}
+                    <section className="space-y-8">
+                        <MissionProfile />
+                        <div id="buy">
+                            <BuySection />
+                        </div>
+                    </section>
+                </div>
+
+                {/* ROW 3: TECHNICAL REFERENCE (Moved Down) */}
+                <section id="tech" className="border-t border-white/10 pt-8">
+                     <TechnicalReference mergedSpecs={mergedSpecs} />
+                </section>
+
+             </main>
         </div>
     );
 };

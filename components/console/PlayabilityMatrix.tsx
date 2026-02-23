@@ -1,20 +1,17 @@
-
 'use client';
 
 import { useState, type FC } from 'react';
 import { EmulationProfile } from '../../lib/types';
-import { SCORE_MAP, getAverageBadge, SYSTEM_TIERS } from '../../lib/config/emulation';
+import { SYSTEM_TIERS } from '../../lib/config/emulation';
 
 interface PlayabilityMatrixProps {
     profile?: EmulationProfile | EmulationProfile[] | null | any;
 }
 
 const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) => {
-    // Logic to handle array vs object
     const profile = Array.isArray(rawProfile) ? rawProfile[0] : rawProfile;
     const [openTiers, setOpenTiers] = useState<Record<string, boolean>>({});
 
-    // Safety Check: Don't render if no profile exists
     if (!profile) return null;
 
     const toggleTier = (title: string) => {
@@ -22,93 +19,59 @@ const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) 
     };
 
     const getStatusStyle = (status?: string) => {
-        if (!status) return 'bg-gray-800 text-gray-500 border-gray-700';
-
+        if (!status) return 'border-gray-800 text-gray-500';
         const s = status.toLowerCase();
-        if (s.includes('perfect')) return 'bg-green-500/20 text-green-400 border-green-500 shadow-[0_0_10px_rgba(34,197,94,0.2)]';
-        if (s.includes('great')) return 'bg-blue-500/20 text-blue-400 border-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.2)]';
-        if (s.includes('playable')) return 'bg-yellow-500/20 text-yellow-400 border-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.2)]';
-        if (s.includes('struggles')) return 'bg-orange-500/20 text-orange-400 border-orange-500';
-        if (s.includes('unplayable')) return 'bg-red-500/20 text-red-400 border-red-500';
-        return 'bg-gray-800 text-gray-500 border-gray-700';
+        // Swiss Style: No shadows, just flat colors/borders
+        if (s.includes('perfect')) return 'bg-emerald-950/30 text-emerald-400 border-emerald-500/50';
+        if (s.includes('great')) return 'bg-blue-950/30 text-blue-400 border-blue-500/50';
+        if (s.includes('playable')) return 'bg-yellow-950/30 text-yellow-400 border-yellow-500/50';
+        if (s.includes('struggles')) return 'bg-orange-950/30 text-orange-400 border-orange-500/50';
+        if (s.includes('unplayable')) return 'bg-red-950/30 text-red-400 border-red-500/50';
+        return 'border-gray-800 text-gray-500';
     };
 
-    // Filter out completely empty matrices (if no data at all)
-    // (Checked but logic is handled by hiding individual tiers, leaving this for future use if needed)
-    // const hasAnyProfileData = SYSTEM_TIERS.some(tier =>
-    //    tier.systems.some(sys => {
-    //        const status = (profile as any)[sys.key];
-    //        return status && status !== 'N/A';
-    //    })
-    // );
-    // But user requirement #2 says "If a list is empty, don't show it".
-    // I interpret this as: hide individual Tiers if they have NO data.
-
     return (
-        <div className="bg-bg-primary border border-white/10 mb-6 relative overflow-hidden animate-fadeIn">
+        <div className="border border-white/10 mb-6 bg-black">
 
              {/* Header */}
-            <div className="bg-black/40 border-b border-white/10 px-4 py-3 flex justify-between items-center">
-                <h3 className="font-pixel text-sm text-secondary uppercase tracking-widest">PLAYABILITY MATRIX</h3>
-                <div className="flex gap-1">
-                    <div className="w-1 h-1 bg-gray-700 rounded-full"></div>
-                    <div className="w-1 h-1 bg-gray-700 rounded-full"></div>
-                </div>
+            <div className="border-b border-white/10 px-6 py-4">
+                <h3 className="font-pixel text-xs text-orange-500 uppercase tracking-widest">Emulation Matrix</h3>
             </div>
 
-            <div className="p-4 space-y-2">
+            <div className="p-6 space-y-4">
                 {SYSTEM_TIERS.map((tier) => {
-                    // Calculate Average for this Tier
-                    let totalScore = 0;
-                    let count = 0;
                     let activeSystems: { key: string, label: string, status: string }[] = [];
-
                     tier.systems.forEach(sys => {
                         const status = (profile as any)[sys.key];
-
-                        // REQUIREMENT: "If a list is empty, don't show it... not even a key from inside"
-                        // STRICT Interpret: If status is 'N/A', it counts as empty/untested, so hide it.
-                        // Only show systems with a valid rating (Unplayable to Perfect).
-
                         if (status && status !== 'N/A') {
                             activeSystems.push({ ...sys, status });
-                            const score = SCORE_MAP[status] || 0;
-                            if (score > 0) { // Ignore N/A (0) for average (redundant check now but safe)
-                                totalScore += score;
-                                count++;
-                            }
                         }
                     });
 
-                    // If no active systems, hide the entire Tier
                     if (activeSystems.length === 0) return null;
-
-                    const average = count > 0 ? totalScore / count : 0;
-                    const badge = getAverageBadge(average);
                     const isOpen = openTiers[tier.title];
 
                     return (
-                        <div key={tier.title} className="border border-white/10 bg-black/20">
+                        <div key={tier.title} className="border border-white/10 bg-white/[0.02]">
                             <button
                                 onClick={() => toggleTier(tier.title)}
-                                className="w-full flex justify-between items-center px-4 py-3 hover:bg-white/5 transition-colors"
+                                className="w-full flex justify-between items-center px-4 py-3 hover:bg-white/5 transition-colors group"
                             >
-                                <span className="font-mono text-xs text-gray-300 uppercase tracking-wider">{tier.title}</span>
-                                <div className={`px-2 py-0.5 border text-[10px] font-pixel ${badge.color}`}>
-                                    {badge.label}
-                                </div>
+                                <span className="font-mono text-xs text-gray-400 uppercase tracking-widest group-hover:text-white transition-colors">{tier.title}</span>
+                                <span className="font-mono text-[10px] text-gray-600">{isOpen ? '[-]' : '[+]'}</span>
                             </button>
 
                             {isOpen && (
-                                <div className="p-4 border-t border-white/10 bg-black/40 animate-fadeIn">
-                                    <div className="grid grid-cols-2 gap-3">
-                                        {activeSystems.map((sys) => (
-                                            <div key={sys.key} className={`border px-2 py-2 flex flex-col items-center justify-center text-center transition-all hover:brightness-110 ${getStatusStyle(sys.status)}`}>
+                                <div className="p-4 border-t border-white/10 grid grid-cols-2 md:grid-cols-3 gap-3">
+                                    {activeSystems.map((sys) => {
+                                        const style = getStatusStyle(sys.status);
+                                        return (
+                                            <div key={sys.key} className={`border px-3 py-2 flex flex-col justify-center text-center transition-colors ${style}`}>
                                                 <div className="text-[9px] font-mono uppercase opacity-70 mb-1 truncate w-full">{sys.label}</div>
-                                                <div className="font-pixel text-[8px] uppercase tracking-wide break-all">{sys.status}</div>
+                                                <div className="font-pixel text-[8px] uppercase tracking-wide">{sys.status}</div>
                                             </div>
-                                        ))}
-                                    </div>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>
@@ -117,19 +80,11 @@ const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) 
 
                 {profile.summary_text && (
                     <div className="mt-6 pt-4 border-t border-white/10">
-                        <p className="font-mono text-xs text-gray-400 leading-relaxed">
-                            <span className="text-secondary mr-2">» ANALYST NOTE:</span>
+                        <p className="font-mono text-xs text-gray-400 leading-relaxed whitespace-pre-line">
+                            <span className="text-orange-500 mr-2">» ANALYST NOTE:</span>
                             {profile.summary_text}
                         </p>
                     </div>
-                )}
-
-                {/* Source Verification Footer */}
-                {(profile.source || profile.last_verified) && (
-                     <div className="mt-4 pt-3 border-t border-white/5 flex flex-wrap justify-between items-center text-[10px] font-mono text-gray-600">
-                        {profile.source && <div>SOURCE: <span className="text-gray-400">{profile.source}</span></div>}
-                        {profile.last_verified && <div>VERIFIED: <span className="text-gray-400">{new Date(profile.last_verified).toLocaleDateString()}</span></div>}
-                     </div>
                 )}
             </div>
         </div>

@@ -1,29 +1,40 @@
 'use client';
 
 import { ConsoleSpecs, ConsoleVariant } from '../../../lib/types';
-import { SpecCard } from '../../ui/specs/SpecCard';
-import { SpecField } from '../../ui/specs/SpecField';
-import { TechBadge } from '../../ui/specs/TechBadge';
 import { formatInputEnum } from '../../../lib/utils/formatters';
 
 interface TechnicalReferenceProps {
     mergedSpecs: Partial<ConsoleSpecs> & Partial<ConsoleVariant>;
 }
 
-// Helper to check if a section has any data
+const SpecRow = ({ label, value, unit }: { label: string, value: string | number | undefined | null, unit?: string }) => {
+    if (value === undefined || value === null || value === '') return null;
+    return (
+        <div className="grid grid-cols-[120px_1fr] sm:grid-cols-[160px_1fr] border-b border-white/10 py-2 last:border-0 hover:bg-white/[0.02] transition-colors">
+            <span className="text-[10px] text-gray-500 uppercase tracking-widest pt-0.5">{label}</span>
+            <span className="font-mono text-xs sm:text-sm text-gray-300 break-words">
+                {value} {unit && <span className="text-[10px] text-gray-500 ml-0.5">{unit}</span>}
+            </span>
+        </div>
+    );
+};
+
+const SpecSection = ({ title, children }: { title: string, children: React.ReactNode }) => (
+    <div className="mb-8 break-inside-avoid">
+        <h3 className="font-pixel text-xs text-orange-500 uppercase tracking-widest mb-4 border-b border-orange-500/20 pb-2">
+            {title}
+        </h3>
+        <div className="flex flex-col">
+            {children}
+        </div>
+    </div>
+);
+
+// Helper to check if a section has any data (simplified)
 const hasData = (keys: string[], specs: any): boolean => {
     if (!specs) return false;
     return keys.some(key => {
-        if (key === 'variant_input_profile') {
-             const profile = specs.variant_input_profile;
-             if (!profile) return false;
-             return Object.entries(profile).some(([k, v]) => {
-                 if (k === 'variant_id' || k === 'created_at' || k === 'updated_at') return false;
-                 if (k === 'input_confidence' && v === 'unknown') return false;
-                 if (k === 'system_button_set') return false;
-                 return v !== null && v !== undefined && v !== '';
-             });
-        }
+        if (key === 'variant_input_profile') return !!specs.variant_input_profile;
         const val = specs[key];
         return val !== null && val !== undefined && val !== '';
     });
@@ -34,9 +45,9 @@ export default function TechnicalReference({ mergedSpecs }: TechnicalReferencePr
     // --- FORMATTERS ---
     const getDimString = () => {
         if (mergedSpecs.width_mm && mergedSpecs.height_mm && mergedSpecs.depth_mm) {
-            return `${mergedSpecs.width_mm} x ${mergedSpecs.height_mm} x ${mergedSpecs.depth_mm} mm`;
+            return `${mergedSpecs.width_mm} x ${mergedSpecs.height_mm} x ${mergedSpecs.depth_mm}`;
         }
-        return '---';
+        return null;
     };
 
     const formatRam = (mb?: number) => {
@@ -61,6 +72,13 @@ export default function TechnicalReference({ mergedSpecs }: TechnicalReferencePr
     };
     const cpuClockData = formatCpuClock(mergedSpecs.cpu_clock_min_mhz, mergedSpecs.cpu_clock_max_mhz);
 
+    // Color formatter
+    const formatColors = (colors: string | string[] | undefined) => {
+        if (!colors) return null;
+        if (Array.isArray(colors)) return colors.join(', ');
+        return colors;
+    };
+
     const SECTIONS = {
         SILICON: ['os', 'ui_skin', 'cpu_model', 'cpu_architecture', 'cpu_process_node', 'cpu_cores', 'cpu_clock_max_mhz', 'gpu_model', 'gpu_architecture', 'gpu_compute_units', 'gpu_clock_mhz', 'gpu_teraflops'],
         MEMORY: ['ram_mb', 'ram_type', 'ram_speed_mhz', 'storage_gb', 'storage_type', 'storage_expandable'],
@@ -72,237 +90,122 @@ export default function TechnicalReference({ mergedSpecs }: TechnicalReferencePr
     };
 
     return (
-        <section className="space-y-4">
-            <h3 className="font-pixel text-lg text-white uppercase mb-4 border-b border-white/10 pb-2">Technical Reference</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-8">
 
              {/* SILICON CORE */}
-             {hasData(SECTIONS.SILICON, mergedSpecs) ? (
-                <SpecCard title="SILICON CORE">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-3">
-                            <SpecField label="OS / Firmware" value={mergedSpecs.os} />
-                            <SpecField label="UI Skin" value={mergedSpecs.ui_skin} small />
-                            <SpecField label="CPU Model" value={mergedSpecs.cpu_model} />
-                            <SpecField label="Architecture" value={mergedSpecs.cpu_architecture} />
-                            <SpecField label="Process Node" value={mergedSpecs.cpu_process_node} />
-                        </div>
-                        <div className="space-y-3">
-                            <div className="grid grid-cols-2 gap-4">
-                                <SpecField label="Cores" value={mergedSpecs.cpu_cores} small />
-                                <SpecField label="Clock" value={cpuClockData.value} unit={cpuClockData.unit} small highlight />
-                            </div>
-                            <div className="pt-3 border-t border-white/5">
-                                <SpecField label="GPU Model" value={mergedSpecs.gpu_model} />
-                                <SpecField label="Architecture" value={mergedSpecs.gpu_architecture} />
-                                <div className="grid grid-cols-2 gap-4 mt-2">
-                                    <SpecField label="Compute Units" value={mergedSpecs.gpu_compute_units} small />
-                                    <SpecField label="Clock" value={mergedSpecs.gpu_clock_mhz} unit="MHz" small />
-                                </div>
-                                <SpecField label="Performance" value={mergedSpecs.gpu_teraflops} unit="TFLOPS" highlight />
-                            </div>
-                        </div>
-                    </div>
-                </SpecCard>
-            ) : null}
+             {hasData(SECTIONS.SILICON, mergedSpecs) && (
+                <SpecSection title="Silicon Architecture">
+                    <SpecRow label="OS / Firmware" value={mergedSpecs.os} />
+                    <SpecRow label="UI Skin" value={mergedSpecs.ui_skin} />
+                    <SpecRow label="CPU Model" value={mergedSpecs.cpu_model} />
+                    <SpecRow label="Architecture" value={mergedSpecs.cpu_architecture} />
+                    <SpecRow label="Process Node" value={mergedSpecs.cpu_process_node} />
+                    <SpecRow label="CPU Cores" value={mergedSpecs.cpu_cores} />
+                    <SpecRow label="CPU Clock" value={cpuClockData.value} unit={cpuClockData.unit} />
+                    <SpecRow label="GPU Model" value={mergedSpecs.gpu_model} />
+                    <SpecRow label="GPU Arch" value={mergedSpecs.gpu_architecture} />
+                    <SpecRow label="Compute Units" value={mergedSpecs.gpu_compute_units} />
+                    <SpecRow label="GPU Clock" value={mergedSpecs.gpu_clock_mhz} unit="MHz" />
+                    <SpecRow label="GPU Perf" value={mergedSpecs.gpu_teraflops} unit="TFLOPS" />
+                </SpecSection>
+            )}
 
             {/* MEMORY & STORAGE */}
-            {hasData(SECTIONS.MEMORY, mergedSpecs) ? (
-                <SpecCard title="MEMORY & STORAGE">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-3">
-                            <div className="grid grid-cols-2 gap-4">
-                                <SpecField label="RAM" value={ramData?.val} unit={ramData?.unit} highlight />
-                                <SpecField label="Type" value={mergedSpecs.ram_type} small />
-                            </div>
-                            <SpecField label="Speed" value={mergedSpecs.ram_speed_mhz} unit="MHz" />
-                        </div>
-                        <div className="space-y-3">
-                            <SpecField label="Storage" value={mergedSpecs.storage_gb} unit="GB" highlight />
-                            <SpecField label="Type" value={mergedSpecs.storage_type} />
-                            <div className="flex justify-between items-center py-1">
-                                <span className="font-mono text-[10px] text-gray-500 uppercase">MicroSD Slot</span>
-                                <TechBadge label="EXPANDABLE" active={mergedSpecs.storage_expandable} />
-                            </div>
-                        </div>
-                    </div>
-                </SpecCard>
-            ) : null}
+            {hasData(SECTIONS.MEMORY, mergedSpecs) && (
+                <SpecSection title="Memory & Storage">
+                    <SpecRow label="RAM" value={ramData?.val} unit={ramData?.unit} />
+                    <SpecRow label="RAM Type" value={mergedSpecs.ram_type} />
+                    <SpecRow label="RAM Speed" value={mergedSpecs.ram_speed_mhz} unit="MHz" />
+                    <SpecRow label="Storage" value={mergedSpecs.storage_gb} unit="GB" />
+                    <SpecRow label="Storage Type" value={mergedSpecs.storage_type} />
+                    <SpecRow label="Expandable" value={mergedSpecs.storage_expandable ? 'YES' : 'NO'} />
+                </SpecSection>
+            )}
 
             {/* DISPLAY */}
-            {hasData(SECTIONS.DISPLAY, mergedSpecs) ? (
-                <SpecCard title="DISPLAY">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-3">
-                            <div className="flex justify-between items-end mb-2">
-                                <span className="font-mono text-2xl text-white">{mergedSpecs.screen_size_inch}&quot;</span>
-                                <span className="font-mono text-xs text-primary border border-primary px-1.5">{mergedSpecs.display_type}</span>
-                            </div>
-                            <SpecField label="Resolution" value={`${mergedSpecs.screen_resolution_x} x ${mergedSpecs.screen_resolution_y}`} />
-                            <div className="grid grid-cols-2 gap-4">
-                                <SpecField label="Refresh Rate" value={mergedSpecs.refresh_rate_hz} unit="Hz" highlight />
-                                <SpecField label="Brightness" value={mergedSpecs.brightness_nits} unit="nits" />
-                            </div>
-                            <div className="mt-2 flex flex-wrap gap-2">
-                                <TechBadge label="TOUCHSCREEN" active={mergedSpecs.touchscreen} />
-                                {mergedSpecs.display_tech && <span className="text-[9px] font-mono text-gray-500 border border-gray-800 px-1">{mergedSpecs.display_tech}</span>}
-                            </div>
-                        </div>
-
-                        {mergedSpecs.second_screen_size && (
-                            <div className="space-y-3 border-l border-white/5 pl-4">
-                                <div className="text-[9px] text-gray-500 uppercase mb-1">Secondary Display</div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <SpecField label="Size" value={mergedSpecs.second_screen_size} unit="&quot;" small />
-                                    <SpecField label="Resolution" value={`${mergedSpecs.second_screen_resolution_x} x ${mergedSpecs.second_screen_resolution_y}`} small />
-                                    <SpecField label="Refresh Rate" value={mergedSpecs.second_screen_refresh_rate} unit="Hz" small />
-                                    <SpecField label="Brightness" value={mergedSpecs.second_screen_nits} unit="nits" small />
-                                    <div className="col-span-2 flex items-center gap-2 mt-1">
-                                        <span className="font-mono text-[10px] text-gray-500 uppercase">Touch Support</span>
-                                        <TechBadge label="TOUCHSCREEN" active={mergedSpecs.second_screen_touch} />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </SpecCard>
-            ) : null}
-
-            {/* INPUT & CONTROLS */}
-            {hasData(SECTIONS.INPUT, mergedSpecs) ? (
-                <SpecCard title="INPUT & CONTROLS">
-                    {mergedSpecs.variant_input_profile ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {/* Left Column: Dpad & Face */}
-                            <div className="space-y-4">
-                                <div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <SpecField label="D-pad shape" value={formatInputEnum('rc_dpad_shape', mergedSpecs.variant_input_profile.dpad_shape)} small />
-                                        <SpecField label="D-pad tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.dpad_tech)} small />
-                                    </div>
-                                    {mergedSpecs.variant_input_profile.dpad_placement && (
-                                        <SpecField label="D-pad placement" value={formatInputEnum('rc_placement', mergedSpecs.variant_input_profile.dpad_placement)} small />
-                                    )}
-                                </div>
-
-                                <div className="pt-2 border-t border-white/5">
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <SpecField label="Face buttons" value={mergedSpecs.variant_input_profile.face_button_count} small />
-                                        <SpecField label="Face button tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.face_button_tech)} small />
-                                    </div>
-                                    <div className="mt-1">
-                                        <SpecField label="Button labels" value={formatInputEnum('rc_label_scheme', mergedSpecs.variant_input_profile.face_label_scheme)} small />
-                                    </div>
-                                </div>
-
-                                {(mergedSpecs.variant_input_profile.stick_count !== undefined && mergedSpecs.variant_input_profile.stick_count !== null) && (
-                                    <div className="pt-2 border-t border-white/5">
-                                        <div className="text-[9px] text-gray-500 uppercase mb-1">Analog sticks ({mergedSpecs.variant_input_profile.stick_count})</div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <SpecField label="Stick layout" value={formatInputEnum('rc_stick_layout', mergedSpecs.variant_input_profile.stick_layout)} small />
-                                            <SpecField label="Stick tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.stick_tech)} small />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4 mt-1">
-                                            <SpecField label="Stick cap" value={formatInputEnum('rc_stick_cap', mergedSpecs.variant_input_profile.stick_cap)} small />
-                                            <div className="flex items-center">
-                                                <span className="font-mono text-[10px] text-gray-500 uppercase mr-2">Stick clicks</span>
-                                                <TechBadge label="YES" active={mergedSpecs.variant_input_profile.stick_clicks} />
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Right Column: Triggers & Extras */}
-                            <div className="space-y-4">
-                                <div>
-                                    <SpecField label="Bumper tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.bumper_tech)} small />
-                                    <div className="grid grid-cols-2 gap-4 mt-1">
-                                        <SpecField label="Trigger type" value={formatInputEnum('rc_trigger_type', mergedSpecs.variant_input_profile.trigger_type)} small />
-                                        <SpecField label="Trigger tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.trigger_tech)} small />
-                                    </div>
-                                </div>
-
-                                <div className="pt-2 border-t border-white/5">
-                                    {mergedSpecs.variant_input_profile.back_button_count && mergedSpecs.variant_input_profile.back_button_count > 0 ? (
-                                        <SpecField label="Back buttons" value={mergedSpecs.variant_input_profile.back_button_count} small />
-                                    ) : null}
-
-                                    {mergedSpecs.variant_input_profile.has_gyro === true && (
-                                        <div className="flex items-center justify-between py-1 border-b border-white/5 mb-2">
-                                            <span className="font-mono text-[10px] text-gray-500 uppercase">Gyro</span>
-                                            <TechBadge label="ENABLED" active={true} />
-                                        </div>
-                                    )}
-
-                                    {mergedSpecs.variant_input_profile.has_keyboard === true && (
-                                        <div className="flex items-center justify-between py-1 border-b border-white/5 mb-2">
-                                            <span className="font-mono text-[10px] text-gray-500 uppercase">Keyboard</span>
-                                            <TechBadge label="YES" active={true} />
-                                        </div>
-                                    )}
-
-                                    {mergedSpecs.variant_input_profile.touchpad_count && mergedSpecs.variant_input_profile.touchpad_count > 0 ? (
-                                        <div className="grid grid-cols-2 gap-4 mt-2">
-                                            <SpecField label="Touchpads" value={mergedSpecs.variant_input_profile.touchpad_count} small />
-                                            {mergedSpecs.variant_input_profile.touchpad_clickable !== null && (
-                                                <div className="flex items-center">
-                                                    <span className="font-mono text-[10px] text-gray-500 uppercase mr-2">Clicks</span>
-                                                    <TechBadge label="YES" active={mergedSpecs.variant_input_profile.touchpad_clickable} />
-                                                </div>
-                                            )}
-                                        </div>
-                                    ) : null}
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="opacity-50 text-xs font-mono text-gray-500 text-center py-4">No Input Profile Data</div>
+            {hasData(SECTIONS.DISPLAY, mergedSpecs) && (
+                <SpecSection title="Display Matrix">
+                    <SpecRow label="Size" value={mergedSpecs.screen_size_inch} unit='"' />
+                    <SpecRow label="Resolution" value={`${mergedSpecs.screen_resolution_x} x ${mergedSpecs.screen_resolution_y}`} />
+                    <SpecRow label="Panel Type" value={mergedSpecs.display_type} />
+                    <SpecRow label="Technology" value={mergedSpecs.display_tech} />
+                    <SpecRow label="Refresh Rate" value={mergedSpecs.refresh_rate_hz} unit="Hz" />
+                    <SpecRow label="Brightness" value={mergedSpecs.brightness_nits} unit="nits" />
+                    <SpecRow label="Touchscreen" value={mergedSpecs.touchscreen ? 'YES' : 'NO'} />
+                    {mergedSpecs.second_screen_size && (
+                        <>
+                             <div className="py-2 border-b border-white/10 text-[10px] font-mono text-gray-500 uppercase mt-2">Secondary Display</div>
+                             <SpecRow label="Size 2" value={mergedSpecs.second_screen_size} unit='"' />
+                             <SpecRow label="Res 2" value={`${mergedSpecs.second_screen_resolution_x} x ${mergedSpecs.second_screen_resolution_y}`} />
+                        </>
                     )}
-                </SpecCard>
-            ) : null}
+                </SpecSection>
+            )}
 
-            {/* CONNECTIVITY & POWER */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {hasData(SECTIONS.CONNECTIVITY, mergedSpecs) ? (
-                    <SpecCard title="CONNECTIVITY">
-                        <SpecField label="Wi-Fi" value={mergedSpecs.wifi_specs} small />
-                        <SpecField label="Bluetooth" value={mergedSpecs.bluetooth_specs} small />
-                        <SpecField label="Other" value={mergedSpecs.other_connectivity} small />
-                        <div className="flex justify-between items-center py-1">
-                            <span className="font-mono text-[10px] text-gray-500 uppercase">Cellular</span>
-                            <TechBadge label="5G / 4G LTE" active={mergedSpecs.cellular_connectivity} />
-                        </div>
+            {/* INPUT */}
+            {hasData(SECTIONS.INPUT, mergedSpecs) && (
+                <SpecSection title="Input Interface">
+                    {mergedSpecs.variant_input_profile ? (
+                        <>
+                            <SpecRow label="D-Pad Shape" value={formatInputEnum('rc_dpad_shape', mergedSpecs.variant_input_profile.dpad_shape)} />
+                            <SpecRow label="D-Pad Tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.dpad_tech)} />
+                            <SpecRow label="Face Buttons" value={mergedSpecs.variant_input_profile.face_button_count} />
+                            <SpecRow label="Face Tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.face_button_tech)} />
+                            <SpecRow label="Sticks" value={mergedSpecs.variant_input_profile.stick_count} />
+                            <SpecRow label="Stick Layout" value={formatInputEnum('rc_stick_layout', mergedSpecs.variant_input_profile.stick_layout)} />
+                            <SpecRow label="Stick Tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.stick_tech)} />
+                            <SpecRow label="Triggers" value={formatInputEnum('rc_trigger_type', mergedSpecs.variant_input_profile.trigger_type)} />
+                            <SpecRow label="Trigger Tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.trigger_tech)} />
+                            <SpecRow label="Back Buttons" value={mergedSpecs.variant_input_profile.back_button_count} />
+                            <SpecRow label="Gyro" value={mergedSpecs.variant_input_profile.has_gyro ? 'YES' : null} />
+                            <SpecRow label="Touchpads" value={mergedSpecs.variant_input_profile.touchpad_count} />
+                        </>
+                    ) : (
+                        <div className="text-xs font-mono text-gray-600 py-2">[ NO INPUT DATA ]</div>
+                    )}
+                     <SpecRow label="Haptics" value={mergedSpecs.haptics ? 'YES' : null} />
+                </SpecSection>
+            )}
 
-                        <div className="mt-2 pt-2 border-t border-white/5">
-                            <SpecField label="Video Out" value={mergedSpecs.video_out} small />
-                            <div className="mt-2">
-                                <span className="text-[9px] text-gray-500 uppercase block mb-1">Ports</span>
-                                <p className="font-mono text-xs text-gray-300 leading-tight">{mergedSpecs.ports || 'N/A'}</p>
-                            </div>
-                        </div>
-                    </SpecCard>
-                ) : null}
+            {/* CONNECTIVITY */}
+            {hasData(SECTIONS.CONNECTIVITY, mergedSpecs) && (
+                <SpecSection title="Connectivity">
+                    <SpecRow label="Wi-Fi" value={mergedSpecs.wifi_specs} />
+                    <SpecRow label="Bluetooth" value={mergedSpecs.bluetooth_specs} />
+                    <SpecRow label="Cellular" value={mergedSpecs.cellular_connectivity ? 'YES' : 'NO'} />
+                    <SpecRow label="Video Out" value={mergedSpecs.video_out} />
+                    <SpecRow label="Ports" value={mergedSpecs.ports} />
+                    <SpecRow label="Other" value={mergedSpecs.other_connectivity} />
+                </SpecSection>
+            )}
 
-                {hasData(SECTIONS.POWER, mergedSpecs) ? (
-                    <SpecCard title="POWER & CHASSIS">
-                        <div className="grid grid-cols-2 gap-4">
-                            <SpecField label="Capacity" value={mergedSpecs.battery_capacity_mah} unit="mAh" highlight />
-                            <SpecField label="Energy" value={mergedSpecs.battery_capacity_wh} unit="Wh" />
-                        </div>
-                        <SpecField label="Battery Type" value={mergedSpecs.battery_type} small />
-                        <div className="grid grid-cols-2 gap-4">
-                            <SpecField label="Charging" value={mergedSpecs.charging_speed_w} unit="W" />
-                            <SpecField label="TDP" value={mergedSpecs.tdp_wattage} unit="W" />
-                        </div>
+            {/* POWER & CHASSIS */}
+            {hasData(SECTIONS.POWER, mergedSpecs) && (
+                <SpecSection title="Power & Chassis">
+                    <SpecRow label="Battery Cap" value={mergedSpecs.battery_capacity_mah} unit="mAh" />
+                    <SpecRow label="Battery Energy" value={mergedSpecs.battery_capacity_wh} unit="Wh" />
+                    <SpecRow label="Type" value={mergedSpecs.battery_type} />
+                    <SpecRow label="Charging" value={mergedSpecs.charging_speed_w} unit="W" />
+                    <SpecRow label="TDP" value={mergedSpecs.tdp_wattage} unit="W" />
+                    <SpecRow label="Cooling" value={mergedSpecs.cooling_solution} />
+                    <SpecRow label="Dimensions" value={getDimString()} unit="mm" />
+                    <SpecRow label="Weight" value={mergedSpecs.weight_g} unit="g" />
+                    <SpecRow label="Material" value={mergedSpecs.body_material} />
+                    <SpecRow label="Colors" value={formatColors(mergedSpecs.available_colors)} />
+                </SpecSection>
+            )}
 
-                        <div className="mt-4 pt-4 border-t border-white/5">
-                            <SpecField label="Dimensions" value={getDimString()} small />
-                            <SpecField label="Weight" value={mergedSpecs.weight_g} unit="g" small />
-                            <SpecField label="Material" value={mergedSpecs.body_material} small />
-                        </div>
-                    </SpecCard>
-                ) : null}
-            </div>
-        </section>
+            {/* AUDIO & EXTRAS */}
+            {hasData(SECTIONS.AUDIO, mergedSpecs) && (
+                <SpecSection title="Audio & Extras">
+                    <SpecRow label="Speakers" value={mergedSpecs.audio_speakers} />
+                    <SpecRow label="Headphone Jack" value={mergedSpecs.has_headphone_jack ? 'YES' : 'NO'} />
+                    <SpecRow label="Microphone" value={mergedSpecs.has_microphone ? 'YES' : 'NO'} />
+                    <SpecRow label="Biometrics" value={mergedSpecs.biometrics} />
+                    <SpecRow label="Camera" value={mergedSpecs.camera_specs} />
+                </SpecSection>
+            )}
+
+        </div>
     );
 }

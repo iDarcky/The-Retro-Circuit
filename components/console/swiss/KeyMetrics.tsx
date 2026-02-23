@@ -7,13 +7,11 @@ interface KeyMetricsProps {
     releaseDate: string | null;
 }
 
-const MetricCard = ({ label, value, unit }: { label: string, value: string | number | undefined, unit?: string }) => {
+const MetricCell = ({ label, value, unit }: { label: string, value: string | number | undefined, unit?: string }) => {
     return (
-        <div className="bg-bg-primary border border-white/10 p-4 relative group hover:border-white/20 transition-colors">
-            <span className="block text-[10px] font-mono text-gray-500 uppercase mb-2 tracking-widest group-hover:text-secondary transition-colors">
-                {label}
-            </span>
-            <div className="font-pixel text-xl md:text-2xl text-white truncate" title={value ? String(value) : ''}>
+        <div className="flex flex-col gap-1 p-4 border border-white/10 hover:border-orange-500/50 transition-colors bg-white/[0.02]">
+            <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">{label}</span>
+            <div className="font-pixel text-lg text-white truncate">
                 {value ? (
                     <>
                         {value}
@@ -23,37 +21,27 @@ const MetricCard = ({ label, value, unit }: { label: string, value: string | num
                     <span className="text-gray-700">---</span>
                 )}
             </div>
-
-            {/* Corner Accent */}
-            <div className="absolute top-2 right-2 w-1 h-1 bg-gray-800 rounded-full group-hover:bg-accent transition-colors"></div>
         </div>
     );
 };
 
 export default function KeyMetrics({ specs, releaseDate }: KeyMetricsProps) {
-    const releaseYear = releaseDate ? new Date(releaseDate).getFullYear() : undefined;
+    const releaseYear = releaseDate ? new Date(releaseDate).getFullYear() : '????';
 
-    // Fallback logic for release year if date is missing but we have a year in specs?
-    // Usually specs don't have year, the variant does.
-
-    const year = releaseYear || '????';
-    const screenSize = specs.screen_size_inch;
-
+    // Resolution logic
     let resolution = '---';
     if (specs.screen_resolution_x && specs.screen_resolution_y) {
-        resolution = `${specs.screen_resolution_x} x ${specs.screen_resolution_y}`;
+        resolution = `${specs.screen_resolution_x}x${specs.screen_resolution_y}`;
     } else if (specs.screen_resolution_x) {
          resolution = `${specs.screen_resolution_x}w`;
     }
 
-    const battery = specs.battery_capacity_mah;
-
     return (
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-            <MetricCard label="RELEASE" value={year} />
-            <MetricCard label="DISPLAY" value={screenSize} unit={'"'} />
-            <MetricCard label="RESOLUTION" value={resolution} />
-            <MetricCard label="BATTERY" value={battery} unit={'mAh'} />
-        </section>
+        <div className="grid grid-cols-2 gap-2">
+            <MetricCell label="RELEASE" value={releaseYear} />
+            <MetricCell label="DISPLAY" value={specs.screen_size_inch} unit={'"'} />
+            <MetricCell label="RESOLUTION" value={resolution} />
+            <MetricCell label="BATTERY" value={specs.battery_capacity_mah} unit={'mAh'} />
+        </div>
     );
 }
