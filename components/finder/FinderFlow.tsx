@@ -114,7 +114,6 @@ const QUESTIONS = [
 const FinderFlowContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [designStyle, setDesignStyle] = useState<'card' | 'button'>('card');
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -216,26 +215,10 @@ const FinderFlowContent = () => {
     router.push('/finder');
   };
 
-  const toggleStyle = () => {
-    setDesignStyle(prev => prev === 'card' ? 'button' : 'card');
-  };
-
   if (!isClient) return null;
 
   return (
     <div className="relative min-h-screen pb-12">
-      {stepIndex >= 0 && stepIndex < QUESTIONS.length && (
-        <div className="fixed bottom-4 right-4 z-50">
-           <Button
-            variant="secondary"
-            onClick={toggleStyle}
-            className="text-xs px-3 py-1 bg-black/80 backdrop-blur"
-          >
-            Style: {designStyle.toUpperCase()}
-          </Button>
-        </div>
-      )}
-
       <div className="container mx-auto pt-8 md:pt-16">
         {stepIndex === -1 && <FinderLanding onStart={handleStart} />}
 
@@ -253,7 +236,6 @@ const FinderFlowContent = () => {
             }
             options={QUESTIONS[stepIndex].options as any}
             onAnswer={handleAnswer}
-            designStyle={designStyle}
             stepNumber={stepIndex + 1}
             totalSteps={QUESTIONS.length}
             isOptional={QUESTIONS[stepIndex].isOptional}

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { FC, useEffect, useState } from 'react';
@@ -22,7 +21,6 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
   useEffect(() => {
     async function fetchResults() {
       try {
-        // Convert ReadonlyURLSearchParams to a plain object
         const params: Record<string, string> = {};
         searchParams.forEach((value, key) => {
             params[key] = value;
@@ -42,8 +40,8 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
   if (loading) {
     return (
         <div className="w-full h-96 flex flex-col items-center justify-center p-4">
-            <div className="w-16 h-16 border-4 border-secondary border-t-transparent rounded-full animate-spin mb-6 shadow-[0_0_15px_rgba(0,255,157,0.3)]"></div>
-            <div className="font-pixel text-secondary text-sm animate-pulse">CALCULATING MATCHES...</div>
+            <div className="w-16 h-16 border-4 border-white/20 border-t-white rounded-none animate-spin mb-6"></div>
+            <div className="font-pixel text-white text-xs animate-pulse tracking-widest">CALCULATING MATCHES...</div>
         </div>
     );
   }
@@ -52,7 +50,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
       return (
         <div className="max-w-4xl mx-auto text-center py-20 px-4">
             <h2 className="text-3xl font-pixel text-red-500 mb-6">NO MATCHES FOUND</h2>
-            <p className="font-mono text-gray-400 mb-8">
+            <p className="font-mono text-zinc-500 mb-8">
                 It seems no handhelds matched your specific criteria in our database yet.
             </p>
             <Button variant="secondary" onClick={onRestart}>
@@ -62,108 +60,166 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
       );
   }
 
+  // Identify the Winner and Alternatives
+  const winner = results.find(r => r.match_label === 'WINNER') || results[0];
+  const alternatives = results.filter(r => r.id !== winner.id);
+
   return (
-    <div className="max-w-6xl mx-auto px-4 w-full animate-in zoom-in-95 duration-500">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-5xl font-pixel text-white mb-4 drop-shadow-[0_0_10px_rgba(0,255,136,0.3)]">
-          {isGift ? 'GIFT-FRIENDLY PICKS_' : 'YOUR MATCHES_'}
+    <div className="max-w-6xl mx-auto px-4 w-full animate-in fade-in slide-in-from-bottom-8 duration-700 pb-24">
+
+      {/* Header */}
+      <div className="text-center mb-16">
+        <h2 className="text-3xl md:text-5xl font-pixel text-white mb-4">
+          {isGift ? 'GIFT PICKS_' : 'YOUR MATCHES_'}
         </h2>
-        <p className="text-gray-400 font-mono text-lg">
+        <p className="text-zinc-500 font-mono text-sm md:text-base max-w-2xl mx-auto">
           {isGift
-             ? <span className="italic">Easy setup, reliable, great guides</span>
-             : "Based on your choices, these devices offer the best balance of performance, budget, and features for you."
+             ? "Easy setup, reliable, and highly rated."
+             : "Based on your choices, we've selected the best device for you, plus a few strong alternatives."
           }
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-        {results.map((console) => (
-            <div key={console.id} className="bg-bg-secondary/80 border border-secondary/30 rounded-xl overflow-hidden relative group hover:border-secondary transition-all flex flex-col">
-              <div className="h-48 bg-black/50 flex items-center justify-center relative p-4">
-                {console.image_url ? (
-                     <Image
-                        src={console.image_url}
-                        alt={console.name}
-                        width={300}
-                        height={200}
-                        className="max-h-full w-auto h-auto object-contain drop-shadow-xl group-hover:scale-105 transition-transform duration-300"
-                     />
+      {/* PRIMARY WINNER CARD */}
+      <div className="mb-16 border border-white/10 bg-white/[0.02] p-6 md:p-12 relative group">
+        <div className="absolute top-0 left-0 bg-white text-black font-pixel text-xs px-4 py-2 uppercase tracking-widest z-10">
+            {winner.match_label || 'WINNER'}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            {/* Image Side */}
+            <div className="relative aspect-video md:aspect-square flex items-center justify-center bg-black/20 border border-white/5 p-8">
+                {winner.image_url ? (
+                    <Image
+                        src={winner.image_url}
+                        alt={winner.name}
+                        width={600}
+                        height={400}
+                        className="w-full h-auto object-contain drop-shadow-2xl"
+                        priority
+                    />
                 ) : (
-                    <span className="font-pixel text-4xl text-gray-700">?</span>
+                    <span className="font-pixel text-6xl text-zinc-800">?</span>
                 )}
-                {/* Match Badge */}
-                {console.match_label && (
-                    <div className={`absolute top-4 right-4 text-bg-primary font-bold px-2 py-1 text-xs rounded shadow-lg uppercase ${
-                        console.match_label.includes('Best') ? 'bg-secondary shadow-[0_0_10px_rgba(0,255,157,0.5)]' :
-                        console.match_label.includes('Upgrade') ? 'bg-retro-pink shadow-[0_0_10px_rgba(255,107,157,0.5)]' :
-                        'bg-retro-cyan shadow-[0_0_10px_rgba(0,217,255,0.5)]'
-                    }`}>
-                      {console.match_label}
-                    </div>
-                )}
-              </div>
+            </div>
 
-              <div className="p-6 flex-1 flex flex-col">
-                <div className="flex justify-between items-start mb-2">
-                    <div>
-                        <div className="text-[10px] font-mono text-gray-500 uppercase tracking-wider mb-1">
-                            {console.manufacturer?.name || 'UNKNOWN'}
-                        </div>
-                        <h3 className="text-xl font-bold text-white leading-tight group-hover:text-secondary transition-colors">
-                            {console.name}
-                        </h3>
-                    </div>
+            {/* Content Side */}
+            <div>
+                <div className="text-xs font-mono text-zinc-500 uppercase tracking-widest mb-2">
+                    {winner.manufacturer?.name || 'UNKNOWN'}
+                </div>
+                <h3 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-none">
+                    {winner.name}
+                </h3>
+
+                <div className="mb-8 p-4 bg-white/[0.03] border-l-2 border-white text-zinc-300 font-mono text-sm italic">
+                    "{winner.match_reason}"
                 </div>
 
-                {/* Match Reason */}
-                {console.match_reason && (
-                    <div className="mb-3 text-xs text-gray-400 italic border-l-2 border-white/10 pl-2">
-                        "{console.match_reason}"
-                    </div>
-                )}
-
-                {/* Badges */}
-                {(console as any)._badges && (console as any)._badges.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-1 mb-2">
-                        {(console as any)._badges.map((badge: string) => (
-                            <span key={badge} className="text-[10px] bg-white/5 text-gray-300 border border-white/10 px-1.5 py-0.5 rounded">
-                                {badge}
-                            </span>
-                        ))}
-                    </div>
-                )}
-
-                <div className="flex gap-2 mb-6 mt-2 flex-wrap">
-                   {console.form_factor && (
-                       <span className="text-[10px] border border-white/10 bg-white/5 px-2 py-1 rounded text-gray-300 uppercase">
-                           {console.form_factor}
-                       </span>
-                   )}
-                   {console.release_date && (
-                       <span className="text-[10px] border border-white/10 bg-white/5 px-2 py-1 rounded text-gray-300">
-                           {console.release_date.substring(0, 4)}
-                       </span>
-                   )}
-                   {console.price && (
-                       <span className="text-[10px] border border-secondary/20 bg-secondary/10 px-2 py-1 rounded text-secondary font-bold">
-                           ${console.price}
-                       </span>
-                   )}
+                {/* Specs Grid */}
+                <div className="grid grid-cols-2 gap-4 mb-8 font-mono text-xs text-zinc-400">
+                     <div className="border border-white/10 p-3">
+                        <span className="block text-zinc-600 mb-1">PRICE</span>
+                        <span className="text-white text-lg">${winner.price || '???'}</span>
+                     </div>
+                     <div className="border border-white/10 p-3">
+                        <span className="block text-zinc-600 mb-1">FORM FACTOR</span>
+                        <span className="text-white uppercase">{winner.form_factor || 'N/A'}</span>
+                     </div>
+                     <div className="border border-white/10 p-3">
+                        <span className="block text-zinc-600 mb-1">RELEASE</span>
+                        <span className="text-white">{winner.release_date ? winner.release_date.substring(0, 4) : 'N/A'}</span>
+                     </div>
+                     <div className="border border-white/10 p-3">
+                        <span className="block text-zinc-600 mb-1">SCORE</span>
+                        <span className="text-white">{Math.round(winner._score)}% MATCH</span>
+                     </div>
                 </div>
 
-                <div className="mt-auto">
-                    <Link href={`/consoles/${console.slug}`} className="block w-full">
-                        <Button className="w-full text-sm">View Details</Button>
+                <div className="flex flex-col sm:flex-row gap-4">
+                    <Link href={`/consoles/${winner.slug}`} className="flex-1">
+                        <Button variant="primary" className="w-full py-4 text-sm font-pixel">
+                            VIEW FULL SPECS
+                        </Button>
                     </Link>
                 </div>
-              </div>
             </div>
-        ))}
+        </div>
       </div>
 
-      <div className="flex justify-center">
-        <Button variant="secondary" onClick={onRestart}>
-          Start Over
+      {/* ALTERNATIVES GRID */}
+      {alternatives.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+            {alternatives.map((consoleItem) => (
+                <div key={consoleItem.id} className="border border-white/10 bg-white/[0.02] p-6 flex flex-col relative group hover:border-white/30 transition-colors">
+                    <div className="absolute top-0 right-0 bg-white/10 text-zinc-300 font-mono text-[10px] px-3 py-1 uppercase tracking-wider">
+                        {consoleItem.match_label || 'ALTERNATIVE'}
+                    </div>
+
+                    <div className="h-48 bg-black/20 flex items-center justify-center mb-6 p-4 border border-white/5">
+                        {consoleItem.image_url ? (
+                            <Image
+                                src={consoleItem.image_url}
+                                alt={consoleItem.name}
+                                width={300}
+                                height={200}
+                                className="max-h-full w-auto object-contain drop-shadow-lg opacity-80 group-hover:opacity-100 transition-opacity"
+                            />
+                        ) : (
+                            <span className="font-pixel text-4xl text-zinc-800">?</span>
+                        )}
+                    </div>
+
+                    <div className="flex-1 flex flex-col">
+                        <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-1">
+                            {consoleItem.manufacturer?.name}
+                        </div>
+                        <h4 className="text-xl md:text-2xl font-bold text-white mb-4 leading-tight">
+                            {consoleItem.name}
+                        </h4>
+
+                        <p className="text-xs text-zinc-400 font-mono italic mb-6 min-h-[3em]">
+                            {consoleItem.match_reason}
+                        </p>
+
+                        <div className="grid grid-cols-3 gap-2 mb-6 font-mono text-[10px] text-zinc-500">
+                             <div className="bg-white/[0.02] p-2 text-center border border-white/5">
+                                <span className="block text-white mb-0.5">${consoleItem.price}</span>
+                                PRICE
+                             </div>
+                             <div className="bg-white/[0.02] p-2 text-center border border-white/5">
+                                <span className="block text-white mb-0.5">{consoleItem.form_factor}</span>
+                                FORM
+                             </div>
+                             <div className="bg-white/[0.02] p-2 text-center border border-white/5">
+                                <span className="block text-white mb-0.5">{Math.round(consoleItem._score)}%</span>
+                                MATCH
+                             </div>
+                        </div>
+
+                        <div className="mt-auto flex flex-col gap-3">
+                             <Link href={`/consoles/${consoleItem.slug}`} className="w-full">
+                                <Button variant="secondary" className="w-full text-xs">
+                                    VIEW DETAILS
+                                </Button>
+                             </Link>
+
+                             {/* COMPARE BUTTON */}
+                             <Link href={`/arena/${winner.slug}-vs-${consoleItem.slug}`} className="w-full">
+                                <button className="w-full py-3 border border-white/20 text-zinc-400 text-xs font-mono uppercase hover:bg-white hover:text-black hover:border-white transition-all">
+                                    COMPARE VS WINNER
+                                </button>
+                             </Link>
+                        </div>
+                    </div>
+                </div>
+            ))}
+          </div>
+      )}
+
+      <div className="flex justify-center border-t border-white/10 pt-12">
+        <Button variant="ghost" onClick={onRestart} className="text-zinc-500 hover:text-white">
+          <span className="mr-2">↺</span> RESTART QUIZ
         </Button>
       </div>
     </div>
