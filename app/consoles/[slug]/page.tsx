@@ -1,8 +1,6 @@
 
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { fetchConsoleBySlug } from '../../../app/actions';
-import Button from '../../../components/ui/Button';
 import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
 
 export const revalidate = 3600; // 1 hour
@@ -57,7 +55,6 @@ export default async function ConsoleSpecsPage(props: Props) {
   const slug = decodeURIComponent(params.slug);
 
   let consoleData = null;
-  let fetchError = null;
 
   try {
     // PURELY PUBLIC FETCH
@@ -65,11 +62,14 @@ export default async function ConsoleSpecsPage(props: Props) {
     // Force includeHidden = false.
     const { data, error } = await fetchConsoleBySlug(slug, false);
     consoleData = data;
-    fetchError = error;
+
+    // Log error but we don't display it directly anymore since we redirect to notFound()
+    if (error) {
+        console.error("[ConsoleSpecsPage] Fetch Error:", error);
+    }
 
   } catch (err: any) {
     console.error("[ConsoleSpecsPage] Critical Error:", err);
-    fetchError = { message: err.message || "Unknown critical error" };
   }
 
   if (!consoleData) {
