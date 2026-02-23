@@ -51,7 +51,7 @@ const SwissDropdown = ({
     const selectedLabel = options.find(o => o.value === value)?.label || 'SELECT';
 
     return (
-        <div className="relative" ref={wrapperRef}>
+        <div className="relative inline-block" ref={wrapperRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={`flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-wider border transition-all ${isOpen ? 'bg-white text-black border-white' : 'text-white border-white/20 hover:border-white/50 bg-black/40'}`}
@@ -63,7 +63,7 @@ const SwissDropdown = ({
             </button>
 
             {isOpen && (
-                <div className="absolute top-[calc(100%+4px)] right-0 w-56 bg-black border border-white/20 shadow-2xl z-[100] flex flex-col">
+                <div className="absolute top-[calc(100%+4px)] right-0 min-w-full w-max bg-black border border-white/20 shadow-2xl z-[100] flex flex-col">
                     {options.map((option) => (
                         <button
                             key={option.value}
@@ -71,14 +71,14 @@ const SwissDropdown = ({
                                 onChange(option.value);
                                 setIsOpen(false);
                             }}
-                            className={`px-4 py-3 text-left text-xs font-mono uppercase tracking-wider border-l-2 transition-colors flex items-center justify-between ${
+                            className={`px-4 py-3 text-left text-xs font-mono uppercase tracking-wider border-l-4 transition-colors flex items-center justify-between whitespace-nowrap gap-4 ${
                                 value === option.value
-                                ? 'bg-white/10 text-white border-violet-500'
-                                : 'text-zinc-400 border-transparent hover:bg-white/5 hover:text-white hover:border-white/50'
+                                ? 'bg-white/5 text-white border-violet-500'
+                                : 'text-zinc-500 border-transparent hover:bg-white/5 hover:text-white hover:border-white/50'
                             }`}
                         >
                             {option.label}
-                            {value === option.value && <span className="text-violet-500 animate-pulse">_</span>}
+                            {value === option.value && <span className="text-violet-500 font-bold">_</span>}
                         </button>
                     ))}
                 </div>
