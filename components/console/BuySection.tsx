@@ -1,18 +1,32 @@
 import Link from 'next/link';
+import SwissButton from './swiss/SwissButton';
 
 export default function BuySection() {
     return (
-        <div className="bg-bg-primary border border-border-normal p-6">
-            <h3 className="font-pixel text-[10px] text-gray-500 uppercase mb-4 tracking-widest">
-                ACQUISITION
+        <div className="border border-white/10 p-6 bg-white/[0.01]">
+            <h3 className="font-pixel text-xs text-white uppercase tracking-widest mb-6 border-b border-white/10 pb-2">
+                Acquisition
             </h3>
-            <div className="font-mono text-xs text-gray-500 italic text-center py-4 border border-white/5 bg-white/5">
-                [ CHANNELS PENDING ]
-            </div>
-            <div className="mt-4 pt-4 border-t border-white/5 text-center">
-                <Link href="#" className="font-mono text-[10px] text-gray-600 hover:text-primary underline opacity-50 cursor-not-allowed pointer-events-none">
-                    VIEW PRICE HISTORY
-                </Link>
+
+            <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 border border-dashed border-white/20 bg-white/[0.02]">
+                    <div className="flex flex-col gap-1">
+                        <span className="font-mono text-xs text-gray-400 uppercase tracking-widest">Market Price</span>
+                        <span className="font-pixel text-lg text-white">---</span>
+                    </div>
+                    <div className="text-[10px] font-mono text-gray-500 uppercase px-2 py-1 bg-white/5 border border-white/10">
+                        UNLISTED
+                    </div>
+                </div>
+
+                <div className="pt-2">
+                     <SwissButton variant="secondary" className="w-full justify-center opacity-50 cursor-not-allowed">
+                        CHECK AVAILABILITY
+                     </SwissButton>
+                     <p className="text-[10px] font-mono text-gray-600 text-center mt-3 uppercase tracking-wider">
+                        [ NO LIVE DATA FEEDS ]
+                     </p>
+                </div>
             </div>
         </div>
     );
