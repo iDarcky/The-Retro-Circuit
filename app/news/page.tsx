@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
 import { SectionHeader } from '@/components/news/SectionHeader';
 import { SignalFeed } from '@/components/news/SignalFeed';
 import { ReviewGrid } from '@/components/news/ReviewGrid';

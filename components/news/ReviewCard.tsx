@@ -1,8 +1,6 @@
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Review } from '@/lib/types/news';
-import { Star } from 'lucide-react';
 
 interface ReviewCardProps {
   review: Review;
