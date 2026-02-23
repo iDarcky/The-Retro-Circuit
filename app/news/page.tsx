@@ -82,9 +82,9 @@ export default async function NewsPage() {
           {/* SECTION 3: NEWS */}
           <section>
              <SectionHeader number="03" title="NEWS" subtitle="SECTOR_UPDATES" color="violet" />
-             <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12">
+             <div className="w-full max-w-4xl">
 
-                {/* News Feed */}
+                {/* News Feed - Full Width */}
                 <div>
                    {newsItems.length > 0 ? (
                       <NewsFeed news={newsItems} />
@@ -97,35 +97,6 @@ export default async function NewsPage() {
                       <Link href="/news/archive" className="inline-flex items-center gap-2 text-xs font-mono text-violet-500 uppercase tracking-widest hover:text-violet-400 hover:underline underline-offset-4 decoration-violet-500/30 transition-all">
                          Access Archive <span>→</span>
                       </Link>
-                   </div>
-                </div>
-
-                {/* Sidebar / Categories (Static for now) */}
-                <div className="hidden lg:block space-y-8 pl-8 border-l border-white/5">
-                   <div>
-                      <h4 className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-4">Trending Tags</h4>
-                      <div className="flex flex-wrap gap-2">
-                         {['#RetroHandhelds', '#OLED', '#Emulation', '#FPGA', '#Modding'].map(tag => (
-                            <span key={tag} className="text-xs text-gray-400 bg-white/5 px-2 py-1 hover:bg-violet-500/20 hover:text-violet-300 transition-colors cursor-pointer">
-                               {tag}
-                            </span>
-                         ))}
-                      </div>
-                   </div>
-
-                   <div>
-                      <h4 className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-4">Newsletter</h4>
-                      <div className="bg-black/40 border border-white/10 p-4">
-                         <p className="text-xs text-gray-400 mb-4">
-                            Weekly digests. No spam. Only signal.
-                         </p>
-                         <div className="flex gap-2">
-                            <input type="email" placeholder="ENTER_EMAIL" className="bg-black border border-white/20 px-3 py-2 text-xs w-full focus:outline-none focus:border-violet-500 text-white font-mono placeholder:text-gray-700" disabled />
-                            <button className="bg-white/10 text-white px-3 py-2 text-xs font-bold hover:bg-violet-600 transition-colors disabled:opacity-50" disabled>
-                               SUB
-                            </button>
-                         </div>
-                      </div>
                    </div>
                 </div>
 
