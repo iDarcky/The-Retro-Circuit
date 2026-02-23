@@ -8,7 +8,7 @@ import Button from '@/components/ui/Button';
 import { RoadmapForm } from '@/components/admin/RoadmapForm';
 import { ReleaseForm } from '@/components/admin/ReleaseForm';
 import Modal from '@/components/ui/Modal';
-import { deleteRoadmapItem, updateRoadmapItem, deleteRelease } from '@/app/actions/roadmap';
+import { deleteRoadmapItem, updateRoadmapItem, deleteRelease, generateRoadmapMarkdown } from '@/app/actions/roadmap';
 
 interface RoadmapClientProps {
     initialRoadmap: RoadmapFeature[];
@@ -102,6 +102,24 @@ export default function RoadmapClient({ initialRoadmap, initialReleases }: Roadm
         router.refresh();
     };
 
+    const handleDownload = async () => {
+        try {
+            const markdown = await generateRoadmapMarkdown();
+            const blob = new Blob([markdown], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ROADMAP_${new Date().toISOString().split('T')[0]}.md`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Download failed:', error);
+            alert('FAILED TO GENERATE MARKDOWN');
+        }
+    };
+
     return (
         <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn">
             {/* Header */}
@@ -126,6 +144,9 @@ export default function RoadmapClient({ initialRoadmap, initialReleases }: Roadm
                 </div>
 
                 <div className="flex gap-2">
+                    <Button variant="secondary" className="text-xs border border-white/20" onClick={handleDownload}>
+                         DOWNLOAD .MD
+                    </Button>
                     {view === 'ROADMAP' ? (
                         <Button variant="secondary" className="text-xs" onClick={handleOpenCreateFeature}>
                              + NEW MISSION
