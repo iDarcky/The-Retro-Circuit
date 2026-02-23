@@ -1,7 +1,7 @@
 'use client';
 
 import { ConsoleVariant } from '../../lib/types';
-import { Cpu, Battery, Monitor, HardDrive, Ruler, DollarSign, Zap } from 'lucide-react';
+import { Cpu, Monitor, HardDrive, Ruler, DollarSign, Zap } from 'lucide-react';
 
 interface GlanceComparisonProps {
     variantA: ConsoleVariant;
@@ -57,7 +57,6 @@ export const GlanceComparison = ({ variantA, variantB }: GlanceComparisonProps) 
 
     // Format Helpers
     const formatPrice = (p?: number) => p ? `$${p}` : '---';
-    const formatRes = (x?: number, y?: number) => (x && y) ? `${x}p` : '---';
     const formatStorage = (gb?: number) => gb ? (gb >= 1000 ? `${gb/1000}TB` : `${gb}GB`) : '---';
     const formatRam = (mb?: number) => mb ? (mb >= 1024 ? `${mb/1024}GB` : `${mb}MB`) : '---';
     const formatBattery = (mah?: number) => mah ? `${mah} mAh` : '---';
