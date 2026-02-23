@@ -12,7 +12,7 @@ import { VariantSelector } from '../../components/arena/VariantSelector';
 import { GlanceComparison } from '../../components/arena/GlanceComparison';
 import { ArenaStickyHeader } from '../../components/arena/ArenaStickyHeader';
 import { ArenaRivals } from '../../components/arena/ArenaRivals';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Swords } from 'lucide-react';
 
 interface SelectionState {
     slug: string | null;
@@ -150,9 +150,9 @@ function VSModeContent() {
     };
 
     return (
-        <div className="w-full relative min-h-screen">
+        <div className="w-full min-h-screen bg-bg-primary text-text-primary pb-32">
 
-            {/* Sticky Header */}
+            {/* Sticky Header (Scroll Logic) */}
             {isArenaMode && (
                 <ArenaStickyHeader
                     selectionA={selectionA}
@@ -161,10 +161,46 @@ function VSModeContent() {
                 />
             )}
 
-            <div className="w-full max-w-7xl mx-auto p-4 flex flex-col min-h-screen">
-                <h1 className="text-3xl md:text-5xl font-pixel text-center text-white mb-12 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-                    VS MODE <span className="text-white/50">ARENA</span>
-                </h1>
+            {/* HEADER - MATCHING /consoles STYLE */}
+            <div className="relative pt-24 pb-12 px-6 md:px-12 border-b border-white/5 overflow-hidden">
+                 {/* Background Effects */}
+                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.05] pointer-events-none"></div>
+
+                 <div className="max-w-[1800px] mx-auto relative z-10">
+                    <div className="flex flex-col items-start gap-4">
+                         <h1 className="text-4xl md:text-6xl font-pixel font-bold tracking-tighter text-white uppercase drop-shadow-lg leading-tight">
+                            Comparison <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-red-400">Arena</span><span className="text-red-500 animate-pulse">_</span>
+                         </h1>
+                         <p className="text-lg md:text-xl text-zinc-400 max-w-2xl font-light font-mono">
+                            Head-to-head hardware analysis. Compare technical specifications, dimensions, and performance metrics.
+                         </p>
+                    </div>
+                 </div>
+            </div>
+
+            {/* CONTROLS BAR (Sticky) */}
+            <div className="sticky top-0 z-50 bg-bg-primary/80 backdrop-blur-xl border-b border-white/10 px-6 md:px-12 py-4">
+                 <div className="max-w-[1800px] mx-auto flex justify-between items-center gap-4">
+                     <div className="flex items-center gap-2 text-xs font-mono text-zinc-500">
+                        <Swords size={14} className="text-blue-400" />
+                        <span className={isArenaMode ? "text-white font-bold" : "text-zinc-500"}>
+                            {isArenaMode ? "ACTIVE MATCH" : "SELECT FIGHTERS"}
+                        </span>
+                     </div>
+
+                     {isArenaMode && (
+                        <button
+                            onClick={handleNewMatch}
+                            className="flex items-center gap-2 text-[10px] font-mono uppercase bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded transition-colors text-zinc-400 hover:text-white"
+                        >
+                            Reset Match
+                        </button>
+                     )}
+                 </div>
+            </div>
+
+            {/* MAIN CONTENT CONTAINER */}
+            <div className="px-6 md:px-12 py-8 max-w-[1800px] mx-auto min-h-[50vh]">
 
                 {/* HERO / SELECTION AREA */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-8 mb-12 relative z-30">
@@ -177,7 +213,7 @@ function VSModeContent() {
 
                     {/* Player 1 Card - Blue */}
                     <div className={`
-                        border-2 border-blue-600/30 bg-blue-900/20 relative transition-all z-10 overflow-hidden
+                        border-2 border-blue-600/30 bg-blue-900/20 relative transition-all z-10 overflow-hidden rounded-xl
                         ${isArenaMode ? 'border-blue-500 shadow-[0_0_60px_rgba(37,99,235,0.25)]' : 'hover:border-blue-500/50 hover:bg-blue-900/30'}
                     `}>
                         {/* Status Bar */}
@@ -207,7 +243,7 @@ function VSModeContent() {
                                         href={`/consoles/${selectionA.details.slug}`}
                                         className="flex flex-row md:flex-col items-center gap-6 mb-6 group w-full"
                                     >
-                                        <div className="relative w-24 h-24 md:w-full md:h-64 flex-shrink-0 bg-black/40 md:bg-transparent border border-blue-500/10 md:border-0 p-4 transition-transform group-hover:scale-105 duration-500 shadow-inner md:shadow-none">
+                                        <div className="relative w-24 h-24 md:w-full md:h-64 flex-shrink-0 bg-black/40 md:bg-transparent border border-blue-500/10 md:border-0 p-4 transition-transform group-hover:scale-105 duration-500 shadow-inner md:shadow-none rounded-lg md:rounded-none">
                                             {(selectionA.selectedVariant?.image_url || selectionA.details.image_url) ? (
                                                 <img src={selectionA.selectedVariant?.image_url || selectionA.details.image_url} alt={selectionA.details.name} className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(37,99,235,0.4)]" />
                                             ) : (
@@ -244,7 +280,7 @@ function VSModeContent() {
 
                     {/* Player 2 Card - Red */}
                     <div className={`
-                        border-2 border-red-600/30 bg-red-900/20 relative transition-all z-0 overflow-hidden
+                        border-2 border-red-600/30 bg-red-900/20 relative transition-all z-0 overflow-hidden rounded-xl
                         ${isArenaMode ? 'border-red-500 shadow-[0_0_60px_rgba(220,38,38,0.25)]' : 'hover:border-red-500/50 hover:bg-red-900/30'}
                     `}>
                         {/* Status Bar */}
@@ -273,7 +309,7 @@ function VSModeContent() {
                                         href={`/consoles/${selectionB.details.slug}`}
                                         className="flex flex-row md:flex-col items-center gap-6 mb-6 group w-full"
                                     >
-                                        <div className="relative w-24 h-24 md:w-full md:h-64 flex-shrink-0 bg-black/40 md:bg-transparent border border-red-500/10 md:border-0 p-4 transition-transform group-hover:scale-105 duration-500 shadow-inner md:shadow-none">
+                                        <div className="relative w-24 h-24 md:w-full md:h-64 flex-shrink-0 bg-black/40 md:bg-transparent border border-red-500/10 md:border-0 p-4 transition-transform group-hover:scale-105 duration-500 shadow-inner md:shadow-none rounded-lg md:rounded-none">
                                             {(selectionB.selectedVariant?.image_url || selectionB.details.image_url) ? (
                                                 <img src={selectionB.selectedVariant?.image_url || selectionB.details.image_url} alt={selectionB.details.name} className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(220,38,38,0.4)]" />
                                             ) : (
@@ -317,7 +353,7 @@ function VSModeContent() {
                                 onClick={handleFight}
                                 disabled={!selectionA.details || !selectionB.details}
                                 className={`
-                                font-pixel text-xl md:text-3xl px-16 py-6 border-2 transition-all duration-300 uppercase tracking-widest relative overflow-hidden group
+                                font-pixel text-xl md:text-3xl px-16 py-6 border-2 transition-all duration-300 uppercase tracking-widest relative overflow-hidden group rounded-sm
                                 ${selectionA.details && selectionB.details
                                         ? 'bg-white text-black border-white hover:bg-black hover:text-white cursor-pointer shadow-[0_0_40px_rgba(255,255,255,0.5)] hover:scale-105 active:scale-95'
                                         : 'bg-black border-white/10 text-white/10 cursor-not-allowed'}
@@ -329,14 +365,7 @@ function VSModeContent() {
                                 )}
                             </button>
                         </div>
-                    ) : (
-                        <button
-                            onClick={handleNewMatch}
-                            className="font-mono text-xs md:text-sm px-8 py-3 border border-white/20 text-white/50 hover:text-white hover:border-white transition-all bg-black/50 uppercase tracking-widest hover:bg-white/5"
-                        >
-                            Start New Match
-                        </button>
-                    )}
+                    ) : null}
                 </div>
 
                 {selectionA.selectedVariant && selectionB.selectedVariant && isArenaMode && (
