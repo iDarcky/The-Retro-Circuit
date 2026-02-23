@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Share2 } from 'lucide-react';
 import { ConsoleDetails, ConsoleVariant, Manufacturer } from '../../lib/types';
 import { IconVS } from '../ui/Icons';
