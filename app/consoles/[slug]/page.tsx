@@ -1,5 +1,6 @@
 
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { fetchConsoleBySlug } from '../../../app/actions';
 import Button from '../../../components/ui/Button';
 import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
@@ -72,27 +73,8 @@ export default async function ConsoleSpecsPage(props: Props) {
   }
 
   if (!consoleData) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] p-4 text-center">
-        <h2 className="font-pixel text-accent text-2xl mb-4">ERROR 404</h2>
-        <p className="font-mono text-gray-400 mb-8">SYSTEM ARCHIVE NOT FOUND.</p>
-        {fetchError && (
-          <div className="bg-red-900/20 border border-red-500 p-4 mb-8 max-w-lg overflow-auto w-full text-left">
-            <p className="font-mono text-red-400 text-xs mb-2 font-bold uppercase border-b border-red-500 pb-1">SYSTEM ERROR</p>
-            <div className="font-mono text-red-300 text-xs whitespace-pre-wrap">
-              <div className="mb-2"><span className="text-red-500">ERROR:</span> {fetchError.message}</div>
-              <div className="mt-4 text-[10px] text-gray-500">
-                TIMESTAMP: {new Date().toISOString()}<br />
-                SLUG: {slug}
-              </div>
-            </div>
-          </div>
-        )}
-        <Link href="/consoles">
-          <Button variant="secondary">RETURN TO VAULT</Button>
-        </Link>
-      </div>
-    );
+    // Trigger global 404 page for correct status code
+    notFound();
   }
 
   return <ConsoleDetailView consoleData={consoleData} />;

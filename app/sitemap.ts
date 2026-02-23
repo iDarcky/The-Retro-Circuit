@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next';
-import { createClient } from '../lib/supabase/client';
+import { supabaseAnon } from '../lib/supabase/anon';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const supabase = createClient();
+  // Use the anonymous server client for sitemap generation
+  const supabase = supabaseAnon;
   const baseUrl = 'https://theretrocircuit.com';
 
   // 1. Static Routes
@@ -23,7 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 2. Dynamic Consoles
     const { data: consoles } = await supabase.from('consoles').select('slug, updated_at');
     if (consoles) {
-      consoles.forEach((item) => {
+      consoles.forEach((item: any) => {
         routes.push({
           url: `${baseUrl}/consoles/${item.slug}`,
           lastModified: new Date(item.updated_at || new Date()),
@@ -36,7 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 3. Dynamic Fabricators
     const { data: fabricators } = await supabase.from('manufacturers').select('slug');
     if (fabricators) {
-      fabricators.forEach((item) => {
+      fabricators.forEach((item: any) => {
         routes.push({
           url: `${baseUrl}/fabricators/${item.slug}`,
           lastModified: new Date(),

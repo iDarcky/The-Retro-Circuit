@@ -1,6 +1,3 @@
-
-/* eslint-disable react-hooks/error-boundaries */
-
 import { redirect } from 'next/navigation';
 import { createClient } from '../../../lib/supabase/server';
 import ConsoleIndexClient from '../../../components/admin/ConsoleIndexClient';

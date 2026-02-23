@@ -1,0 +1,125 @@
+
+> retro-circuit@1.0.0 lint /app
+> eslint .
+
+
+/app/.next/build/chunks/[root-of-the-server]__44695d76._.js
+  427:9  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+
+/app/.next/build/chunks/[turbopack]_runtime.js
+    9:5  error  Definition for rule '@typescript-eslint/no-unused-vars' was not found                                    @typescript-eslint/no-unused-vars
+   31:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+   96:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  140:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  156:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  166:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  228:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  398:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  546:1  error  Definition for rule '@typescript-eslint/no-unused-vars' was not found                                    @typescript-eslint/no-unused-vars
+  567:1  error  Definition for rule '@typescript-eslint/no-unused-vars' was not found                                    @typescript-eslint/no-unused-vars
+  588:1  error  Definition for rule '@typescript-eslint/no-unused-vars' was not found                                    @typescript-eslint/no-unused-vars
+
+/app/.next/server/chunks/[turbopack]_runtime.js
+    9:5  error  Definition for rule '@typescript-eslint/no-unused-vars' was not found                                    @typescript-eslint/no-unused-vars
+   31:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+   96:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  140:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  156:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  166:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  228:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  398:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  546:1  error  Definition for rule '@typescript-eslint/no-unused-vars' was not found                                    @typescript-eslint/no-unused-vars
+  567:1  error  Definition for rule '@typescript-eslint/no-unused-vars' was not found                                    @typescript-eslint/no-unused-vars
+  588:1  error  Definition for rule '@typescript-eslint/no-unused-vars' was not found                                    @typescript-eslint/no-unused-vars
+
+/app/.next/server/chunks/ssr/[turbopack]_runtime.js
+    9:5  error  Definition for rule '@typescript-eslint/no-unused-vars' was not found                                    @typescript-eslint/no-unused-vars
+   31:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+   96:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  140:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  156:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  166:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  228:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  398:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  546:1  error  Definition for rule '@typescript-eslint/no-unused-vars' was not found                                    @typescript-eslint/no-unused-vars
+  567:1  error  Definition for rule '@typescript-eslint/no-unused-vars' was not found                                    @typescript-eslint/no-unused-vars
+  588:1  error  Definition for rule '@typescript-eslint/no-unused-vars' was not found                                    @typescript-eslint/no-unused-vars
+
+/app/app/about/page.tsx
+  25:53  warning  Comments inside children section of tag should be placed inside braces  react/jsx-no-comment-textnodes
+
+/app/app/admin/consoles/page.tsx
+  2:1  error  Definition for rule 'react-hooks/error-boundaries' was not found  react-hooks/error-boundaries
+
+/app/app/arena/page.tsx
+   43:8   warning  React Hook useEffect has a missing dependency: 'searchParams'. Either include it or remove the dependency array                                                                                                                                                  react-hooks/exhaustive-deps
+   79:8   warning  React Hook useEffect has missing dependencies: 'selectionA.details', 'selectionA.selectedVariant?.slug', 'selectionA.slug', 'selectionB.details', 'selectionB.selectedVariant?.slug', and 'selectionB.slug'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  183:49  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element   @next/next/no-img-element
+  237:49  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element   @next/next/no-img-element
+
+/app/app/consoles/brand/[name]/page.tsx
+   84:38  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+   84:38  warning  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                       jsx-a11y/alt-text
+  101:29  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  101:29  warning  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                       jsx-a11y/alt-text
+  154:41  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  154:41  warning  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                       jsx-a11y/alt-text
+
+/app/app/privacy/page.tsx
+  22:56  warning  Comments inside children section of tag should be placed inside braces  react/jsx-no-comment-textnodes
+
+/app/components/admin/AdminDashboardClient.tsx
+  179:88   warning  Comments inside children section of tag should be placed inside braces  react/jsx-no-comment-textnodes
+  359:84   warning  Comments inside children section of tag should be placed inside braces  react/jsx-no-comment-textnodes
+  382:117  warning  Comments inside children section of tag should be placed inside braces  react/jsx-no-comment-textnodes
+  406:84   warning  Comments inside children section of tag should be placed inside braces  react/jsx-no-comment-textnodes
+  426:117  warning  Comments inside children section of tag should be placed inside braces  react/jsx-no-comment-textnodes
+
+/app/components/admin/ConsoleIndexClient.tsx
+  60:88  warning  Comments inside children section of tag should be placed inside braces  react/jsx-no-comment-textnodes
+
+/app/components/admin/SettingsForm.tsx
+  61:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/app/components/admin/VariantForm.tsx
+  152:8  warning  React Hook useEffect has a missing dependency: 'handleInputChange'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/app/components/arena/ArenaComparisonClient.tsx
+   61:8   warning  React Hook useEffect has a missing dependency: 'allConsoles.length'. Either include it or remove the dependency array                                                                                                                                            react-hooks/exhaustive-deps
+  101:8   warning  React Hook useEffect has missing dependencies: 'selectionA.details', 'selectionA.selectedVariant?.slug', 'selectionA.slug', 'selectionB.details', 'selectionB.selectedVariant?.slug', and 'selectionB.slug'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  201:49  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element   @next/next/no-img-element
+  255:49  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element   @next/next/no-img-element
+
+/app/components/console/ConsoleDetailView.tsx
+   47:11  warning  The 'variants' logical expression could make the dependencies of useEffect Hook (at line 83) change on every render. To fix this, wrap the initialization of 'variants' in its own useMemo() Hook                                                               react-hooks/exhaustive-deps
+   87:8   warning  React Hook useEffect has a missing dependency: 'getMergedSpecs'. Either include it or remove the dependency array                                                                                                                                               react-hooks/exhaustive-deps
+  171:37  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/app/components/console/ConsoleIdentitySection.tsx
+  140:69  warning  The ref value 'sentinelRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'sentinelRef.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+
+/app/components/console/ConsoleVaultClient.tsx
+  345:58  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/app/components/finder/FinderResults.tsx
+  121:25  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  121:48  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/app/components/layout/MobileSidebar.tsx
+  36:91  warning  Comments inside children section of tag should be placed inside braces  react/jsx-no-comment-textnodes
+
+/app/components/ui/GlobalSearch.tsx
+  131:37   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  137:41   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  137:41   warning  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                       jsx-a11y/alt-text
+  154:129  warning  Comments inside children section of tag should be placed inside braces                                                                                                                                                                                          react/jsx-no-comment-textnodes
+
+/app/components/ui/ImageUpload.tsx
+  93:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/app/components/ui/Logo.tsx
+  16:5  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+✖ 73 problems (35 errors, 38 warnings)
+
+ ELIFECYCLE  Command failed with exit code 1.
