@@ -56,9 +56,9 @@ This roadmap consolidates the audit findings into an actionable 40-day sprint pl
 - [ ] **Shareability:** Add a "Copy Link" button that generates the exact comparison URL.
 
 ### Day 18-20: SEO Overhaul
-- [ ] **Dynamic Metadata:** Implement `generateMetadata` in `app/consoles/[slug]/page.tsx`.
-- [ ] **Structured Data:** Inject `JSON-LD` Product Schema for Google Rich Snippets.
-- [ ] **Sitemap:** Bump priority of "Published" consoles to `1.0`.
+- [x] **Dynamic Metadata:** Implement `generateMetadata` in `app/consoles/[slug]/page.tsx`.
+- [x] **Structured Data:** Inject `JSON-LD` Product Schema for Google Rich Snippets.
+- [x] **Sitemap:** Bump priority of "Published" consoles to `1.0`.
 
 ---
 
