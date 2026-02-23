@@ -1,14 +1,14 @@
 
 'use client';
 
-import { useEffect, useState, type ChangeEvent, type FC } from 'react';
+import { useEffect, useState, type ChangeEvent, type FC, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ConsoleDetails, ConsoleFilterState, Manufacturer } from '../../lib/types';
 import RetroLoader from '../ui/RetroLoader';
 import Button from '../ui/Button';
 import { formatReleaseDate } from '../../lib/utils/date-formatter';
-import { LayoutGrid, List, Search, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
+import { LayoutGrid, List, Search, SlidersHorizontal, ArrowUpDown, ChevronDown } from 'lucide-react';
 
 interface ConsoleVaultClientProps {
     initialManufacturers: Manufacturer[];
@@ -16,6 +16,76 @@ interface ConsoleVaultClientProps {
 }
 
 type SortOption = 'release_desc' | 'release_asc' | 'name_asc' | 'name_desc' | 'price_asc' | 'price_desc';
+
+const SORT_OPTIONS: { value: SortOption, label: string }[] = [
+    { value: 'release_desc', label: 'NEWEST FIRST' },
+    { value: 'release_asc', label: 'OLDEST FIRST' },
+    { value: 'name_asc', label: 'NAME (A-Z)' },
+    { value: 'name_desc', label: 'NAME (Z-A)' },
+    { value: 'price_asc', label: 'PRICE (LOW-HIGH)' },
+    { value: 'price_desc', label: 'PRICE (HIGH-LOW)' },
+];
+
+const SwissDropdown = ({
+    value,
+    onChange,
+    options
+}: {
+    value: string,
+    onChange: (val: SortOption) => void,
+    options: { value: SortOption, label: string }[]
+}) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const wrapperRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const selectedLabel = options.find(o => o.value === value)?.label || 'SELECT';
+
+    return (
+        <div className="relative" ref={wrapperRef}>
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className={`flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-wider border transition-all ${isOpen ? 'bg-white text-black border-white' : 'text-white border-white/20 hover:border-white/50 bg-black/40'}`}
+            >
+                <ArrowUpDown size={14} />
+                <span className="hidden md:inline">SORT: {selectedLabel}</span>
+                <span className="md:hidden">SORT</span>
+                <ChevronDown size={12} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {isOpen && (
+                <div className="absolute top-[calc(100%+4px)] right-0 w-56 bg-black border border-white/20 shadow-2xl z-[100] flex flex-col">
+                    {options.map((option) => (
+                        <button
+                            key={option.value}
+                            onClick={() => {
+                                onChange(option.value);
+                                setIsOpen(false);
+                            }}
+                            className={`px-4 py-3 text-left text-xs font-mono uppercase tracking-wider border-l-2 transition-colors flex items-center justify-between ${
+                                value === option.value
+                                ? 'bg-white/10 text-white border-violet-500'
+                                : 'text-zinc-400 border-transparent hover:bg-white/5 hover:text-white hover:border-white/50'
+                            }`}
+                        >
+                            {option.label}
+                            {value === option.value && <span className="text-violet-500 animate-pulse">_</span>}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
 
 const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers, initialConsoles }) => {
   const [allConsoles] = useState<ConsoleDetails[]>(initialConsoles);
@@ -109,13 +179,6 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
             case 'price_asc':
                 return getMinPrice(a) - getMinPrice(b);
             case 'price_desc':
-                // For desc, if price is infinite (unknown), it should probably be last? Or first?
-                // Standard logic: High to Low. Unknown (999999) should probably be treated separately or filtered.
-                // Current getMinPrice returns 999999 for unknown.
-                // Let's ensure unknown stays at bottom for both?
-                // Actually, typically Unknown price means "sort by value", if value is high it goes top.
-                // But for buying, unknown is annoying.
-                // Let's handle unknown explicitly.
                 const pA = getMinPrice(a);
                 const pB = getMinPrice(b);
                 if (pA === 999999) return 1;
@@ -178,31 +241,19 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                      <div className="flex items-center gap-2">
                         <button
                             onClick={() => setShowFilters(!showFilters)}
-                            className={`flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-wider border transition-all ${showFilters ? 'bg-white text-black border-white' : 'text-white border-white/20 hover:border-white/50'}`}
+                            className={`flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-wider border transition-all ${showFilters ? 'bg-white text-black border-white' : 'text-white border-white/20 hover:border-white/50 bg-black/40'}`}
                         >
                             <SlidersHorizontal size={14} />
                             <span className="hidden md:inline">{showFilters ? 'Hide Filters' : 'Filter Data'}</span>
                             <span className="md:hidden">FILTERS</span>
                         </button>
 
-                         {/* SORT DROPDOWN */}
-                         <div className="relative group">
-                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none">
-                                <ArrowUpDown size={14} />
-                            </div>
-                            <select
-                                value={sortOrder}
-                                onChange={(e) => setSortOrder(e.target.value as SortOption)}
-                                className="appearance-none bg-black/40 border border-white/20 text-white font-mono text-xs py-2 pl-9 pr-8 uppercase tracking-wider focus:border-violet-500 outline-none hover:border-white/50 cursor-pointer min-w-[160px]"
-                            >
-                                <option value="release_desc">NEWEST FIRST</option>
-                                <option value="release_asc">OLDEST FIRST</option>
-                                <option value="name_asc">NAME (A-Z)</option>
-                                <option value="name_desc">NAME (Z-A)</option>
-                                <option value="price_asc">PRICE (LOW-HIGH)</option>
-                                <option value="price_desc">PRICE (HIGH-LOW)</option>
-                            </select>
-                         </div>
+                         {/* SWISS DROPDOWN */}
+                         <SwissDropdown
+                            value={sortOrder}
+                            onChange={setSortOrder}
+                            options={SORT_OPTIONS}
+                         />
                      </div>
 
                      <div className="hidden md:flex items-center gap-2 text-xs font-mono text-zinc-500">
