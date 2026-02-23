@@ -11,6 +11,7 @@ import { ConsoleSearch } from '../../components/arena/ConsoleSearch';
 import { VariantSelector } from '../../components/arena/VariantSelector';
 import { GlanceComparison } from '../../components/arena/GlanceComparison';
 import { ArenaStickyHeader } from '../../components/arena/ArenaStickyHeader';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface SelectionState {
     slug: string | null;
@@ -31,6 +32,7 @@ function VSModeContent() {
 
     const [showDiffOnly, setShowDiffOnly] = useState(false);
     const [isArenaMode, setIsArenaMode] = useState(false);
+    const [isSpecsOpen, setIsSpecsOpen] = useState(false); // Accordion State
 
     useEffect(() => {
         fetchConsoleList().then((list) => setAllConsoles(list));
@@ -147,7 +149,7 @@ function VSModeContent() {
     };
 
     return (
-        <div className="w-full relative">
+        <div className="w-full relative min-h-screen">
 
             {/* Sticky Header */}
             {isArenaMode && (
@@ -159,29 +161,29 @@ function VSModeContent() {
             )}
 
             <div className="w-full max-w-7xl mx-auto p-4 flex flex-col min-h-screen">
-                <h1 className="text-3xl md:text-5xl font-pixel text-center text-white mb-8 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                <h1 className="text-3xl md:text-5xl font-pixel text-center text-white mb-12 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
                     VS MODE <span className="text-white/50">ARENA</span>
                 </h1>
 
                 {/* HERO / SELECTION AREA */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-4 mb-8 relative z-30">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-8 mb-12 relative z-30">
                     {/* VS Badge - Centered */}
                     <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none flex justify-center">
-                        <div className="hidden md:flex w-16 h-16 bg-black items-center justify-center border border-white/20">
-                            <span className="font-pixel text-xl italic text-white">VS</span>
+                        <div className="hidden md:flex w-20 h-20 bg-black items-center justify-center border border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.1)] backdrop-blur-sm">
+                            <span className="font-pixel text-2xl italic text-white drop-shadow-md">VS</span>
                         </div>
                     </div>
 
                     {/* Player 1 Card - Cyan */}
                     <div className={`
-                        border border-cyan-500/20 bg-cyan-500/5 relative transition-all z-10
-                        ${isArenaMode ? 'border-cyan-500/50 shadow-[0_0_30px_rgba(6,182,212,0.1)]' : ''}
+                        border border-cyan-500/20 bg-gradient-to-br from-cyan-500/5 to-transparent relative transition-all z-10
+                        ${isArenaMode ? 'border-cyan-500/40 shadow-[0_0_40px_rgba(6,182,212,0.15)]' : 'hover:border-cyan-500/30'}
                     `}>
-                        <div className="p-4 md:p-8 flex flex-col h-full relative">
-                            <div className="flex justify-between items-start mb-4">
-                                <h2 className="font-pixel text-[10px] md:text-sm text-cyan-500">[ PLAYER 1 ]</h2>
+                        <div className="p-6 md:p-10 flex flex-col h-full relative">
+                            <div className="flex justify-between items-start mb-6">
+                                <h2 className="font-pixel text-[10px] md:text-sm text-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">[ PLAYER 1 ]</h2>
                                 {isArenaMode && selectionA.details && (
-                                     <span className="font-mono text-xs text-cyan-500/50">READY</span>
+                                     <span className="font-mono text-xs text-cyan-400/50 animate-pulse">READY</span>
                                 )}
                             </div>
 
@@ -194,23 +196,23 @@ function VSModeContent() {
                             )}
 
                             {selectionA.loading ? (
-                                <div className="flex-1 flex items-center justify-center text-cyan-500 font-mono animate-pulse text-[10px] md:text-base mt-4">LOADING...</div>
+                                <div className="flex-1 flex items-center justify-center text-cyan-400 font-mono animate-pulse text-[10px] md:text-base mt-4">LOADING...</div>
                             ) : selectionA.details ? (
-                                <div className="mt-2 md:mt-4 flex-1 flex flex-col md:items-center animate-fadeIn">
+                                <div className="mt-4 flex-1 flex flex-col md:items-center animate-fadeIn">
                                     <Link
                                         href={`/consoles/${selectionA.details.slug}`}
-                                        className="flex flex-row md:flex-col items-center gap-4 mb-4 group w-full"
+                                        className="flex flex-row md:flex-col items-center gap-6 mb-6 group w-full"
                                     >
-                                        <div className="relative w-16 h-16 md:w-full md:h-48 flex-shrink-0 bg-black/20 md:bg-transparent border border-white/5 md:border-0 p-2">
+                                        <div className="relative w-20 h-20 md:w-full md:h-56 flex-shrink-0 bg-black/40 md:bg-transparent border border-white/5 md:border-0 p-4 transition-transform group-hover:scale-105 duration-500">
                                             {(selectionA.selectedVariant?.image_url || selectionA.details.image_url) ? (
-                                                <img src={selectionA.selectedVariant?.image_url || selectionA.details.image_url} alt={selectionA.details.name} className="w-full h-full object-contain drop-shadow-xl" />
+                                                <img src={selectionA.selectedVariant?.image_url || selectionA.details.image_url} alt={selectionA.details.name} className="w-full h-full object-contain drop-shadow-2xl" />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-cyan-500 opacity-50 font-pixel text-[8px] md:text-xs">NO IMG</div>
                                             )}
                                         </div>
                                         <div className="flex flex-col text-left md:text-center min-w-0 overflow-hidden w-full">
-                                            <h3 className="font-pixel text-sm md:text-2xl text-white truncate group-hover:text-cyan-400 transition-colors">{selectionA.details.name}</h3>
-                                            <div className="font-mono text-[10px] md:text-sm text-cyan-500 truncate">{selectionA.details.manufacturer?.name}</div>
+                                            <h3 className="font-pixel text-lg md:text-3xl text-white truncate group-hover:text-cyan-400 transition-colors drop-shadow-lg">{selectionA.details.name}</h3>
+                                            <div className="font-mono text-xs md:text-sm text-cyan-400 truncate mt-1">{selectionA.details.manufacturer?.name}</div>
                                         </div>
                                     </Link>
 
@@ -224,28 +226,28 @@ function VSModeContent() {
                                     {!isArenaMode && (
                                         <button
                                             onClick={() => handleChangeFighter(true)}
-                                            className="mt-4 text-[10px] text-white/40 hover:text-white underline font-mono uppercase tracking-wider"
+                                            className="mt-6 text-[10px] text-white/40 hover:text-cyan-400 hover:underline font-mono uppercase tracking-wider transition-colors"
                                         >
                                             [CHANGE FIGHTER]
                                         </button>
                                     )}
                                 </div>
                             ) : (
-                                <div className="flex-1 flex items-center justify-center text-white/20 font-pixel text-[8px] md:text-xs mt-4">SELECT FIGHTER</div>
+                                <div className="flex-1 flex items-center justify-center text-white/10 font-pixel text-[8px] md:text-xs mt-4">SELECT FIGHTER</div>
                             )}
                         </div>
                     </div>
 
                     {/* Player 2 Card - Orange */}
                     <div className={`
-                        border border-orange-500/20 bg-orange-500/5 relative transition-all z-0
-                        ${isArenaMode ? 'border-orange-500/50 shadow-[0_0_30px_rgba(249,115,22,0.1)]' : ''}
+                        border border-orange-500/20 bg-gradient-to-bl from-orange-500/5 to-transparent relative transition-all z-0
+                        ${isArenaMode ? 'border-orange-500/40 shadow-[0_0_40px_rgba(249,115,22,0.15)]' : 'hover:border-orange-500/30'}
                     `}>
-                        <div className="p-4 md:p-8 flex flex-col h-full relative">
-                            <div className="flex justify-between items-start mb-4">
-                                <h2 className="font-pixel text-[10px] md:text-sm text-orange-500 text-left md:text-right w-full">[ PLAYER 2 ]</h2>
+                        <div className="p-6 md:p-10 flex flex-col h-full relative">
+                            <div className="flex justify-between items-start mb-6">
+                                <h2 className="font-pixel text-[10px] md:text-sm text-orange-400 drop-shadow-[0_0_5px_rgba(251,146,60,0.5)] text-left md:text-right w-full">[ PLAYER 2 ]</h2>
                                 {isArenaMode && selectionB.details && (
-                                     <span className="font-mono text-xs text-orange-500/50 order-first md:order-last">READY</span>
+                                     <span className="font-mono text-xs text-orange-400/50 order-first md:order-last animate-pulse">READY</span>
                                 )}
                             </div>
 
@@ -257,23 +259,23 @@ function VSModeContent() {
                                 />
                             )}
                             {selectionB.loading ? (
-                                <div className="flex-1 flex items-center justify-center text-orange-500 font-mono animate-pulse text-[10px] md:text-base mt-4">LOADING...</div>
+                                <div className="flex-1 flex items-center justify-center text-orange-400 font-mono animate-pulse text-[10px] md:text-base mt-4">LOADING...</div>
                             ) : selectionB.details ? (
-                                <div className="mt-2 md:mt-4 flex-1 flex flex-col md:items-center animate-fadeIn">
+                                <div className="mt-4 flex-1 flex flex-col md:items-center animate-fadeIn">
                                     <Link
                                         href={`/consoles/${selectionB.details.slug}`}
-                                        className="flex flex-row md:flex-col items-center gap-4 mb-4 group w-full"
+                                        className="flex flex-row md:flex-col items-center gap-6 mb-6 group w-full"
                                     >
-                                        <div className="relative w-16 h-16 md:w-full md:h-48 flex-shrink-0 bg-black/20 md:bg-transparent border border-white/5 md:border-0 p-2">
+                                        <div className="relative w-20 h-20 md:w-full md:h-56 flex-shrink-0 bg-black/40 md:bg-transparent border border-white/5 md:border-0 p-4 transition-transform group-hover:scale-105 duration-500">
                                             {(selectionB.selectedVariant?.image_url || selectionB.details.image_url) ? (
-                                                <img src={selectionB.selectedVariant?.image_url || selectionB.details.image_url} alt={selectionB.details.name} className="w-full h-full object-contain drop-shadow-xl" />
+                                                <img src={selectionB.selectedVariant?.image_url || selectionB.details.image_url} alt={selectionB.details.name} className="w-full h-full object-contain drop-shadow-2xl" />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-orange-500 opacity-50 font-pixel text-[8px] md:text-xs">NO IMG</div>
                                             )}
                                         </div>
                                         <div className="flex flex-col text-left md:text-center min-w-0 overflow-hidden w-full">
-                                            <h3 className="font-pixel text-sm md:text-2xl text-white truncate group-hover:text-orange-400 transition-colors">{selectionB.details.name}</h3>
-                                            <div className="font-mono text-[10px] md:text-sm text-orange-500 truncate">{selectionB.details.manufacturer?.name}</div>
+                                            <h3 className="font-pixel text-lg md:text-3xl text-white truncate group-hover:text-orange-400 transition-colors drop-shadow-lg">{selectionB.details.name}</h3>
+                                            <div className="font-mono text-xs md:text-sm text-orange-400 truncate mt-1">{selectionB.details.manufacturer?.name}</div>
                                         </div>
                                     </Link>
 
@@ -287,31 +289,31 @@ function VSModeContent() {
                                     {!isArenaMode && (
                                         <button
                                             onClick={() => handleChangeFighter(false)}
-                                            className="mt-4 text-[10px] text-white/40 hover:text-white underline font-mono uppercase tracking-wider"
+                                            className="mt-6 text-[10px] text-white/40 hover:text-orange-400 hover:underline font-mono uppercase tracking-wider transition-colors"
                                         >
                                             [CHANGE FIGHTER]
                                         </button>
                                     )}
                                 </div>
                             ) : (
-                                <div className="flex-1 flex items-center justify-center text-white/20 font-pixel text-[8px] md:text-xs mt-4">SELECT FIGHTER</div>
+                                <div className="flex-1 flex items-center justify-center text-white/10 font-pixel text-[8px] md:text-xs mt-4">SELECT FIGHTER</div>
                             )}
                         </div>
                     </div>
                 </div>
 
                 {/* FIGHT / NEW MATCH CONTROL BAR */}
-                <div className="w-full flex flex-col items-center justify-center mb-8 relative z-20">
+                <div className="w-full flex flex-col items-center justify-center mb-16 relative z-20">
                     {!isArenaMode ? (
-                        <div className="flex flex-col items-center gap-2">
+                        <div className="flex flex-col items-center gap-4">
                             <button
                                 onClick={handleFight}
                                 disabled={!selectionA.details || !selectionB.details}
                                 className={`
-                                font-pixel text-lg md:text-2xl px-12 py-4 border transition-all duration-300 uppercase tracking-widest
+                                font-pixel text-xl md:text-3xl px-16 py-6 border-2 transition-all duration-300 uppercase tracking-widest
                                 ${selectionA.details && selectionB.details
-                                        ? 'bg-white text-black border-white hover:bg-black hover:text-white cursor-pointer shadow-[0_0_30px_rgba(255,255,255,0.2)]'
-                                        : 'bg-black border-white/10 text-white/20 cursor-not-allowed'}
+                                        ? 'bg-white text-black border-white hover:bg-black hover:text-white cursor-pointer shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:scale-105'
+                                        : 'bg-black border-white/10 text-white/10 cursor-not-allowed'}
                             `}
                             >
                                 [ F I G H T ]
@@ -320,7 +322,7 @@ function VSModeContent() {
                     ) : (
                         <button
                             onClick={handleNewMatch}
-                            className="font-mono text-xs md:text-sm px-6 py-2 border border-white/20 text-white/50 hover:text-white hover:border-white transition-all bg-black/50 uppercase tracking-widest"
+                            className="font-mono text-xs md:text-sm px-8 py-3 border border-white/20 text-white/50 hover:text-white hover:border-white transition-all bg-black/50 uppercase tracking-widest hover:bg-white/5"
                         >
                             Start New Match
                         </button>
@@ -329,37 +331,55 @@ function VSModeContent() {
 
                 {selectionA.selectedVariant && selectionB.selectedVariant && isArenaMode && (
                     <>
-                        <div ref={matchSummaryRef} className="scroll-mt-32">
-                            {/* GLANCE COMPARISON (NEW) */}
+                        <div ref={matchSummaryRef} className="scroll-mt-32 w-full max-w-6xl mx-auto">
+                            {/* GLANCE COMPARISON (TALE OF THE TAPE) */}
                             <GlanceComparison
                                 variantA={selectionA.selectedVariant}
                                 variantB={selectionB.selectedVariant}
                             />
-                        </div>
 
-                        <div className="bg-black/80 border border-white/10 p-0 md:p-8 animate-slideDown shadow-2xl mt-8">
-                            <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4 px-4 pt-4 md:pt-0">
-                                <h3 className="font-pixel text-lg text-white">TECHNICAL SPECIFICATIONS</h3>
-                                <label className="flex items-center gap-2 cursor-pointer group">
-                                    <input
-                                        type="checkbox"
-                                        checked={showDiffOnly}
-                                        onChange={() => setShowDiffOnly(!showDiffOnly)}
-                                        className="accent-white"
-                                    />
-                                    <span className="font-mono text-[10px] text-white/50 uppercase group-hover:text-white transition-colors">Diff Only</span>
-                                </label>
-                            </div>
-                            <div className="space-y-0">
-                                {METRICS.map(metric => (
-                                    <ComparisonRow
-                                        key={metric.key}
-                                        metric={metric}
-                                        varA={selectionA.selectedVariant!}
-                                        varB={selectionB.selectedVariant!}
-                                        showDiffOnly={showDiffOnly}
-                                    />
-                                ))}
+                            {/* TECHNICAL SPECS ACCORDION */}
+                            <div className="border-t border-b border-white/10 mt-12">
+                                <button
+                                    onClick={() => setIsSpecsOpen(!isSpecsOpen)}
+                                    className="w-full py-6 flex items-center justify-center gap-3 group hover:bg-white/5 transition-colors"
+                                >
+                                    <span className="font-pixel text-sm md:text-base text-white/60 group-hover:text-white uppercase tracking-widest transition-colors">
+                                        {isSpecsOpen ? 'HIDE TECHNICAL SPECIFICATIONS' : 'VIEW FULL TECHNICAL SPECIFICATIONS'}
+                                    </span>
+                                    {isSpecsOpen ? (
+                                        <ChevronUp className="w-4 h-4 text-white/60 group-hover:text-white" />
+                                    ) : (
+                                        <ChevronDown className="w-4 h-4 text-white/60 group-hover:text-white" />
+                                    )}
+                                </button>
+
+                                <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isSpecsOpen ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                                    <div className="bg-black/40 p-4 md:p-8 pt-0">
+                                        <div className="flex justify-end items-center mb-6 pt-4 border-b border-white/5 pb-2">
+                                            <label className="flex items-center gap-2 cursor-pointer group">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={showDiffOnly}
+                                                    onChange={() => setShowDiffOnly(!showDiffOnly)}
+                                                    className="accent-white w-4 h-4 bg-transparent border-white/20"
+                                                />
+                                                <span className="font-mono text-[10px] text-white/40 uppercase group-hover:text-white transition-colors">Diff Only</span>
+                                            </label>
+                                        </div>
+                                        <div className="space-y-0">
+                                            {METRICS.map(metric => (
+                                                <ComparisonRow
+                                                    key={metric.key}
+                                                    metric={metric}
+                                                    varA={selectionA.selectedVariant!}
+                                                    varB={selectionB.selectedVariant!}
+                                                    showDiffOnly={showDiffOnly}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </>
@@ -371,7 +391,7 @@ function VSModeContent() {
 
 export default function ArenaPage() {
     return (
-        <Suspense fallback={<div className="p-12 text-center text-white/50 font-mono">LOADING ARENA...</div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white/50 font-mono">LOADING ARENA...</div>}>
             <VSModeContent />
         </Suspense>
     );
