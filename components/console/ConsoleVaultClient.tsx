@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState, type FC } from 'react';
+import { useEffect, useState, type ChangeEvent, type FC } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ConsoleDetails, ConsoleFilterState, Manufacturer } from '../../lib/types';
