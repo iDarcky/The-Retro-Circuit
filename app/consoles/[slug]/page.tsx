@@ -100,7 +100,7 @@ export async function generateMetadata(props: Props) {
       ? `${specsString}. Detailed technical specs, emulation performance, and comparisons for the ${data.name}.`
       : `View full technical specifications, release date, and variant comparisons for the ${data.name}.`;
 
-    const title = `${data.name} Specs, Price, Release Date & Comparisons`;
+    const title = `${data.manufacturer?.name ? data.manufacturer.name + ' ' : ''}${data.name} Specs, Price, Release Date & Comparisons`;
 
     return {
       title: title,

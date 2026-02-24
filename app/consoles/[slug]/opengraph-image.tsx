@@ -181,6 +181,7 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
                 maxWidth: '90%',
               }}
             >
+              {consoleData.manufacturer?.name ? `${consoleData.manufacturer.name.toUpperCase()} ` : ''}
               {consoleData.name.toUpperCase()}
             </div>
 
@@ -224,7 +225,7 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
           : undefined,
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("OpenGraph Image Generation Error:", error);
     // Return a safe fallback UI inside a valid ImageResponse on catastrophic failure
     return new ImageResponse(
@@ -232,17 +233,23 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
         <div
           style={{
             display: 'flex',
-            fontSize: 60,
+            flexDirection: 'column',
+            fontSize: 40,
             color: 'white',
-            background: '#09090b',
+            background: '#991b1b', // Red background to indicate error
             width: '100%',
             height: '100%',
             alignItems: 'center',
             justifyContent: 'center',
             fontFamily: 'monospace',
+            padding: '40px',
+            textAlign: 'center',
           }}
         >
-          THE RETRO CIRCUIT
+          <div>OG GENERATION ERROR:</div>
+          <div style={{ fontSize: 24, marginTop: '20px', color: '#fca5a5', maxWidth: '80%' }}>
+            {error?.message || String(error) || "Unknown Error"}
+          </div>
         </div>
       ),
       { ...size }
