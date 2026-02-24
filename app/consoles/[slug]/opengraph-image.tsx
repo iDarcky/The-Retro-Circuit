@@ -1,8 +1,8 @@
 import { ImageResponse } from 'next/og';
 import { fetchConsoleBySlug } from '../../../app/actions';
 
-// Removed Edge runtime as it causes instability with database/font fetches
-// export const runtime = 'edge';
+// Re-enable Edge runtime for performance and reliability on Vercel
+export const runtime = 'edge';
 
 // Image metadata
 export const alt = 'The Retro Circuit - Console Specs';
@@ -12,9 +12,8 @@ export const size = {
 };
 export const contentType = 'image/png';
 
-// Font URL (Press Start 2P from Google Fonts)
-// We use a direct TTF link if possible or fallback to standard sans
-const fontUrl = 'https://raw.githubusercontent.com/google/fonts/main/ofl/pressstart2p/PressStart2P-Regular.ttf';
+// Font URL commented out for debugging timeouts
+// const fontUrl = 'https://raw.githubusercontent.com/google/fonts/main/ofl/pressstart2p/PressStart2P-Regular.ttf';
 
 export default async function Image(props: { params: Promise<{ slug: string }> }) {
   try {
@@ -33,28 +32,22 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
 
     console.log('[OG] Found console:', consoleData.name);
 
-    // 3. Extract Specs & Image (Similar logic to Metadata)
-    // Prioritize the new dedicated OpenGraph image (PNG/JPG format)
-    // Explicitly check for og_icon_url property which we added to the query
+    // 3. Extract Specs & Image
     let finalImage = (consoleData as any).og_icon_url || consoleData.image_url;
     let defaultVar = null;
 
     if (consoleData.variants && Array.isArray(consoleData.variants) && consoleData.variants.length > 0) {
       const variants = consoleData.variants;
       defaultVar = variants.find((v: any) => v.is_default) || variants[0];
-      // Only fallback to variant image if main console images are missing
       if (!finalImage) finalImage = (defaultVar as any)?.og_icon_url || defaultVar?.image_url;
     }
 
-    // Prepare Base URL dynamically based on environment (Vercel Preview vs Production)
     const getBaseUrl = () => {
-      // Vercel deployment URLs (Preview environments)
       if (process.env.VERCEL_URL) {
         return process.env.VERCEL_URL.startsWith('http')
           ? process.env.VERCEL_URL
           : `https://${process.env.VERCEL_URL}`;
       }
-      // Production fallback or local
       return process.env.NODE_ENV === 'development'
         ? 'http://localhost:3000'
         : 'https://theretrocircuit.com';
@@ -63,33 +56,24 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
     const baseUrl = getBaseUrl();
     const defaultFallback = `${baseUrl}/og-v2.png`;
 
-    // Clean up image URL (ensure absolute if needed)
     const isRelative = finalImage && finalImage.startsWith('/');
     let imageUrl = isRelative
       ? `${baseUrl}${finalImage}`
       : (finalImage || defaultFallback);
 
-    // CRITICAL: Satori (the engine behind ImageResponse) DOES NOT SUPPORT `.webp` images.
-    // It only supports PNG, JPEG, SVG. If we try to feed it a WebP, the generator will hard crash.
-    // FIX: If it's a Supabase Storage URL, we can use the Image Transformation API to request a PNG.
     if (imageUrl.toLowerCase().endsWith('.webp')) {
       if (imageUrl.includes('supabase.co/storage/v1/object/public')) {
-        // Convert object URL to render URL and force PNG format
-        // From: .../storage/v1/object/public/bucket/path/to/image.webp
-        // To:   .../storage/v1/render/image/public/bucket/path/to/image.webp?width=400&height=300&resize=contain&format=png
         imageUrl = imageUrl
           .replace('/storage/v1/object/public', '/storage/v1/render/image/public')
           + '?width=400&height=300&resize=contain&format=png';
       } else {
-        // Non-Supabase WebP, or unable to transform -> Fallback
-        console.warn(`[OpenGraph] Blocked unsupported .webp Satori image: ${imageUrl}. Falling back to default OG.`);
+        console.warn(`[OG] Unsupported WebP: ${imageUrl}. Fallback.`);
         imageUrl = defaultFallback;
       }
     }
 
     console.log('[OG] Final Image URL:', imageUrl);
 
-    // Specs extraction
     const specs = [];
     if (defaultVar) {
       if (defaultVar.screen_size_inch) specs.push(`${defaultVar.screen_size_inch}" ${defaultVar.display_type || ''}`);
@@ -98,25 +82,8 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
       if (defaultVar.os) specs.push(defaultVar.os);
     }
 
-    // 4. Load Font
-    // We use fetch inside the function to get the arrayBuffer
-    let fontData: ArrayBuffer | null = null;
-    try {
-        console.log('[OG] Fetching font:', fontUrl);
-        // Add a timeout to font fetching to prevent hangs
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout
-        const res = await fetch(new URL(fontUrl), { signal: controller.signal });
-        clearTimeout(timeoutId);
-        if (res.ok) {
-            fontData = await res.arrayBuffer();
-        } else {
-            console.error('[OG] Font fetch failed:', res.status, res.statusText);
-        }
-    } catch (e: any) {
-        console.error('[OG] Font fetch error:', e.message);
-        // Proceed without custom font (system sans-serif fallback)
-    }
+    // 4. Skip Font Loading for debugging (System Font Fallback)
+    const fontData = null;
 
     // 5. Render Image
     return new ImageResponse(
@@ -127,8 +94,8 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
             width: '100%',
             height: '100%',
             background: '#09090b', // zinc-950
-            // Fallback font stack if custom font fails
-            fontFamily: '"Press Start 2P", monospace, sans-serif',
+            // Simplified font stack (system sans-serif) to debug font loading issues
+            fontFamily: 'monospace, sans-serif',
           }}
         >
           {/* Left Side: Branding & CTA */}
@@ -265,15 +232,7 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
       ),
       {
         ...size,
-        fonts: fontData
-          ? [
-            {
-              name: 'Press Start 2P',
-              data: fontData,
-              style: 'normal',
-            },
-          ]
-          : undefined,
+        // No custom fonts for debugging
       }
     );
   } catch (error: any) {
