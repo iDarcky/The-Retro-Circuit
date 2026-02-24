@@ -3,7 +3,7 @@
 import { type ButtonHTMLAttributes, type FC } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'swiss';
+  variant?: 'primary' | 'secondary' | 'danger';
   isLoading?: boolean;
 }
 
@@ -24,8 +24,6 @@ const Button: FC<ButtonProps> = ({
     primary: "border-secondary text-secondary hover:bg-secondary hover:text-bg-primary shadow-[0_0_10px_rgba(0,255,157,0.5)]",
     secondary: "border-primary text-primary hover:bg-primary hover:text-bg-primary shadow-[0_0_10px_rgba(0,255,255,0.5)]",
     danger: "border-accent text-accent hover:bg-accent hover:text-bg-primary shadow-[0_0_10px_rgba(255,0,255,0.5)]",
-    // Swiss Variant: No shadow, pure monochrome, strict border
-    swiss: "border-white/20 text-white hover:bg-white hover:text-black hover:border-white active:bg-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed",
   };
 
   return (
