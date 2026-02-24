@@ -1,49 +1,36 @@
-# Simple Text-Based Adventure Game
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-Welcome to the Simple Text-Based Adventure Game! This is a simple command-line game where you explore different rooms, collect items, and try to find the treasure.
+## Getting Started
 
-## Project Structure
-
-- `src/`: Contains the source code for the game.
-    - `game.py`: Defines the Game class and game logic.
-    - `player.py`: Defines the Player class.
-    - `game_engine.py`: Manages the game loop and input handling.
-    - `main.py`: Entry point for the application.
-- `tests/`: Contains unit tests.
-    - `test_game.py`: Tests for the Game and Player classes.
-- `scripts/`: Helper scripts.
-    - `run_tests.py`: Script to run tests.
-    - `run_lint.py`: Script to run linting (requires pylint).
-- `requirements.txt`: List of dependencies.
-
-## Installation
-
-1.  Clone the repository.
-2.  Install dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-## Usage
-
-To play the game, run:
+First, run the development server:
 
 ```bash
-python3 -m src.main
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-## Testing
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-To run the tests:
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-```bash
-python3 scripts/run_tests.py
-```
+This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Linting
+## Learn More
 
-To lint the code (requires `pylint` installed):
+To learn more about Next.js, take a look at the following resources:
 
-```bash
-python3 scripts/run_lint.py
-```
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
