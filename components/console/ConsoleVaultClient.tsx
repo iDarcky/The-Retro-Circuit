@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, type ChangeEvent, type FC } from 'react';
@@ -9,11 +8,7 @@ import RetroLoader from '../ui/RetroLoader';
 import Button from '../ui/Button';
 import { formatReleaseDate } from '../../lib/utils/date-formatter';
 import { LayoutGrid, List, Search, SlidersHorizontal } from 'lucide-react';
-<<<<<<< feature/smart-sorting-13679307262414388700
 import { SwissDropdown } from '../ui/SwissDropdown';
-=======
-import { SwissHeader } from '../ui/SwissHeader';
->>>>>>> main
 
 interface ConsoleVaultClientProps {
     initialManufacturers: Manufacturer[];
@@ -162,14 +157,22 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
 
   return (
     <div className="w-full min-h-screen bg-bg-primary text-text-primary pb-32">
-        <SwissHeader
-            title={
-                <>
-                    Console <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">Vault</span><span className="text-violet-500 animate-pulse">_</span>
-                </>
-            }
-            subtitle="The complete archive of handheld gaming history. Filter by era, form factor, and technical specifications."
-        />
+        {/* HEADER */}
+        <div className="relative pt-24 pb-12 px-6 md:px-12 border-b border-white/5 overflow-hidden">
+             {/* Background Effects */}
+             <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.05] pointer-events-none"></div>
+
+             <div className="max-w-[1800px] mx-auto relative z-10">
+                <div className="flex flex-col items-start gap-4">
+                     <h1 className="text-4xl md:text-6xl font-pixel font-bold tracking-tighter text-white uppercase drop-shadow-lg leading-tight">
+                        Console <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">Vault</span><span className="text-violet-500 animate-pulse">_</span>
+                     </h1>
+                     <p className="text-lg md:text-xl text-zinc-400 max-w-2xl font-light font-mono">
+                        The complete archive of handheld gaming history. Filter by era, form factor, and technical specifications.
+                     </p>
+                </div>
+             </div>
+        </div>
 
         {/* CONTROLS BAR */}
         <div className="sticky top-0 z-50 bg-bg-primary/80 backdrop-blur-xl border-b border-white/10 px-6 md:px-12 py-4">
