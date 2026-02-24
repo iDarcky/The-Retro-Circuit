@@ -50,7 +50,7 @@ export const ArenaStickyHeader = ({ selectionA, selectionB, onReset }: ArenaStic
                                 )}
                             </div>
                             <div className="flex flex-col min-w-0">
-                                <span className="font-pixel text-[10px] sm:text-xs text-cyan-500 truncate uppercase tracking-wide">
+                                <span className="font-pixel text-[10px] sm:text-xs text-blue-400 truncate uppercase tracking-wide">
                                     {selectionA.details.name}
                                 </span>
                                 <span className="font-mono text-[10px] text-white/50 truncate hidden sm:inline">
@@ -73,7 +73,7 @@ export const ArenaStickyHeader = ({ selectionA, selectionB, onReset }: ArenaStic
                         {/* Player B (Right) */}
                         <div className="flex items-center justify-end gap-3 min-w-0">
                             <div className="flex flex-col items-end min-w-0">
-                                <span className="font-pixel text-[10px] sm:text-xs text-orange-500 truncate uppercase tracking-wide text-right">
+                                <span className="font-pixel text-[10px] sm:text-xs text-red-400 truncate uppercase tracking-wide text-right">
                                     {selectionB.details.name}
                                 </span>
                                 <span className="font-mono text-[10px] text-white/50 truncate hidden sm:inline text-right">

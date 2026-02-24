@@ -13,6 +13,7 @@ import { GlanceComparison } from '../../components/arena/GlanceComparison';
 import { ArenaStickyHeader } from '../../components/arena/ArenaStickyHeader';
 import { ArenaRivals } from '../../components/arena/ArenaRivals';
 import { ChevronDown, ChevronUp, Swords } from 'lucide-react';
+import { SwissHeader } from '../../components/ui/SwissHeader';
 
 interface SelectionState {
     slug: string | null;
@@ -33,12 +34,11 @@ function VSModeContent() {
 
     const [showDiffOnly, setShowDiffOnly] = useState(false);
     const [isArenaMode, setIsArenaMode] = useState(false);
-    const [isSpecsOpen, setIsSpecsOpen] = useState(false); // Accordion State
+    const [isSpecsOpen, setIsSpecsOpen] = useState(false);
 
     useEffect(() => {
         fetchConsoleList().then((list) => setAllConsoles(list));
 
-        // Auto-enter arena mode if both players are present in URL on mount
         const p1 = searchParams?.get('p1');
         const p2 = searchParams?.get('p2');
         if (p1 && p2) {
@@ -101,7 +101,6 @@ function VSModeContent() {
 
     const handleSelect = (setter: Dispatch<SetStateAction<SelectionState>>, isPlayer1: boolean) => (slug: string) => {
         setter(prev => ({ ...prev, loading: true }));
-        // Selecting a new fighter resets Arena Mode
         setIsArenaMode(false);
         if (isPlayer1) {
             updateUrl(slug, null, undefined, undefined);
@@ -135,7 +134,6 @@ function VSModeContent() {
     const handleFight = () => {
         if (selectionA.selectedVariant && selectionB.selectedVariant) {
             setIsArenaMode(true);
-            // Smooth scroll to match readout on fight
             setTimeout(() => {
                 matchSummaryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
@@ -152,7 +150,6 @@ function VSModeContent() {
     return (
         <div className="w-full min-h-screen bg-bg-primary text-text-primary pb-32">
 
-            {/* Sticky Header (Scroll Logic) */}
             {isArenaMode && (
                 <ArenaStickyHeader
                     selectionA={selectionA}
@@ -161,24 +158,15 @@ function VSModeContent() {
                 />
             )}
 
-            {/* HEADER - MATCHING /consoles STYLE */}
-            <div className="relative pt-24 pb-12 px-6 md:px-12 border-b border-white/5 overflow-hidden">
-                 {/* Background Effects */}
-                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.05] pointer-events-none"></div>
+            <SwissHeader
+                title={
+                    <>
+                        Comparison <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-red-400">Arena</span><span className="text-red-500 animate-pulse">_</span>
+                    </>
+                }
+                subtitle="Head-to-head hardware analysis. Compare technical specifications, dimensions, and performance metrics."
+            />
 
-                 <div className="max-w-[1800px] mx-auto relative z-10">
-                    <div className="flex flex-col items-start gap-4">
-                         <h1 className="text-4xl md:text-6xl font-pixel font-bold tracking-tighter text-white uppercase drop-shadow-lg leading-tight">
-                            Comparison <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-red-400">Arena</span><span className="text-red-500 animate-pulse">_</span>
-                         </h1>
-                         <p className="text-lg md:text-xl text-zinc-400 max-w-2xl font-light font-mono">
-                            Head-to-head hardware analysis. Compare technical specifications, dimensions, and performance metrics.
-                         </p>
-                    </div>
-                 </div>
-            </div>
-
-            {/* CONTROLS BAR (Sticky) */}
             <div className="sticky top-0 z-50 bg-bg-primary/80 backdrop-blur-xl border-b border-white/10 px-6 md:px-12 py-4">
                  <div className="max-w-[1800px] mx-auto flex justify-between items-center gap-4">
                      <div className="flex items-center gap-2 text-xs font-mono text-zinc-500">
@@ -199,12 +187,9 @@ function VSModeContent() {
                  </div>
             </div>
 
-            {/* MAIN CONTENT CONTAINER */}
             <div className="px-6 md:px-12 py-8 max-w-[1800px] mx-auto min-h-[50vh]">
 
-                {/* HERO / SELECTION AREA */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-8 mb-12 relative z-30">
-                    {/* VS Badge - Centered */}
                     <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none flex justify-center">
                         <div className="hidden md:flex w-20 h-20 bg-black items-center justify-center border-2 border-white/20 shadow-[0_0_50px_rgba(255,255,255,0.2)] backdrop-blur-sm rounded-full animate-pulse-slow">
                             <span className="font-pixel text-2xl italic text-white drop-shadow-md">VS</span>
@@ -216,7 +201,6 @@ function VSModeContent() {
                         border-2 border-blue-600/30 bg-blue-900/20 relative transition-all z-10 overflow-hidden rounded-xl
                         ${isArenaMode ? 'border-blue-500 shadow-[0_0_60px_rgba(37,99,235,0.25)]' : 'hover:border-blue-500/50 hover:bg-blue-900/30'}
                     `}>
-                        {/* Status Bar */}
                         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-60"></div>
 
                         <div className="p-6 md:p-10 flex flex-col h-full relative">
@@ -283,7 +267,6 @@ function VSModeContent() {
                         border-2 border-red-600/30 bg-red-900/20 relative transition-all z-0 overflow-hidden rounded-xl
                         ${isArenaMode ? 'border-red-500 shadow-[0_0_60px_rgba(220,38,38,0.25)]' : 'hover:border-red-500/50 hover:bg-red-900/30'}
                     `}>
-                        {/* Status Bar */}
                         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-60"></div>
 
                         <div className="p-6 md:p-10 flex flex-col h-full relative">
@@ -345,7 +328,6 @@ function VSModeContent() {
                     </div>
                 </div>
 
-                {/* FIGHT / NEW MATCH CONTROL BAR */}
                 <div className="w-full flex flex-col items-center justify-center mb-16 relative z-20">
                     {!isArenaMode ? (
                         <div className="flex flex-col items-center gap-4">
@@ -371,13 +353,11 @@ function VSModeContent() {
                 {selectionA.selectedVariant && selectionB.selectedVariant && isArenaMode && (
                     <>
                         <div ref={matchSummaryRef} className="scroll-mt-32 w-full max-w-6xl mx-auto">
-                            {/* GLANCE COMPARISON (TALE OF THE TAPE) */}
                             <GlanceComparison
                                 variantA={selectionA.selectedVariant}
                                 variantB={selectionB.selectedVariant}
                             />
 
-                            {/* TECHNICAL SPECS ACCORDION */}
                             <div className="border-t border-b border-white/10 mt-12 mb-12">
                                 <button
                                     onClick={() => setIsSpecsOpen(!isSpecsOpen)}
@@ -421,7 +401,6 @@ function VSModeContent() {
                                 </div>
                             </div>
 
-                            {/* RIVALS */}
                             <ArenaRivals
                                 currentA={selectionA.details?.slug}
                                 currentB={selectionB.details?.slug}
