@@ -56,9 +56,17 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
 
     // Clean up image URL (ensure absolute if needed)
     const isRelative = finalImage && finalImage.startsWith('/');
-    const imageUrl = isRelative
+    let imageUrl = isRelative
       ? `${baseUrl}${finalImage}`
       : (finalImage || `${baseUrl}/logo.png`);
+
+    // CRITICAL: Satori (the engine behind ImageResponse) DOES NOT SUPPORT `.webp` images.
+    // It only supports PNG, JPEG, SVG. If we try to feed it a WebP, the generator will hard crash.
+    // If the image is a webp, we must fallback to the logo.
+    if (imageUrl.toLowerCase().endsWith('.webp')) {
+      console.warn(`[OpenGraph] Blocked unsupported .webp Satori image: ${imageUrl}. Falling back to Logo.`);
+      imageUrl = `${baseUrl}/logo.png`;
+    }
 
     // Specs extraction
     const specs = [];
@@ -122,7 +130,7 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
                   background: '#8b5cf6', // Violet-500
                   padding: '12px 24px',
                   marginTop: '24px',
-                  width: 'fit-content',
+                  display: 'flex', // Needed for alignment instead of fit-content
                 }}
               >
                 VIEW DETAILS_
