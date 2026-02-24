@@ -47,7 +47,7 @@ export const fetchAllConsoles = async (includeHidden: boolean = false): Promise<
             .select(`
                 *,
                 manufacturer:manufacturer(*),
-                variants:console_variants(*, emulation_profiles(*), variant_input_profile(*))
+                variants:console_variants(*, emulation_profiles(*), variant_input_profile(*)), og_icon_url
             `)
             .order('name', { ascending: true });
 
@@ -165,7 +165,7 @@ export const fetchConsoleBySlug = async (slug: string, includeHidden: boolean = 
             .select(`
                 *,
                 manufacturer:manufacturer(*),
-                variants:console_variants(*, emulation_profiles(*), variant_input_profile(*))
+                variants:console_variants(*, emulation_profiles(*), variant_input_profile(*)), og_icon_url
             `)
             .eq('slug', slug);
 
