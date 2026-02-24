@@ -161,10 +161,22 @@ function VSModeContent() {
                         </div>
                     </div>
 
-                    {/* Player 1 Card - Cyan */}
-                    <div className="border border-primary bg-primary/5 relative shadow-lg hover:shadow-primary/20 transition-shadow md:-skew-x-10 z-10">
-                        <div className="md:skew-x-10 p-2 md:p-6 flex flex-col h-full relative">
-                            <h2 className="font-pixel text-[10px] md:text-base text-primary mb-2 text-left">[ PLAYER 1 ]</h2>
+                    {/* Player 1 Card - Blue */}
+                    <div className={`
+                        border-2 border-blue-600/30 bg-blue-900/20 relative transition-all z-10 rounded-xl
+                        ${isArenaMode ? 'border-blue-500 shadow-[0_0_60px_rgba(37,99,235,0.25)]' : 'hover:border-blue-500/50 hover:bg-blue-900/30'}
+                    `}>
+                        {/* Status Bar - Added rounded-t-xl to match container since overflow-hidden is gone */}
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-60 rounded-t-xl"></div>
+
+                        <div className="p-6 md:p-10 flex flex-col h-full relative">
+                            <div className="flex justify-between items-start mb-6 border-b border-blue-500/20 pb-4">
+                                <h2 className="font-pixel text-[10px] md:text-sm text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]">[ PLAYER 1 ]</h2>
+                                {isArenaMode && selectionA.details && (
+                                     <span className="font-mono text-xs text-blue-300 animate-pulse font-bold tracking-widest drop-shadow-[0_0_5px_rgba(96,165,250,1)]">READY</span>
+                                )}
+                            </div>
+
                             {!selectionA.details && (
                                 <ConsoleSearch
                                     consoles={allConsoles}
@@ -215,10 +227,22 @@ function VSModeContent() {
                         </div>
                     </div>
 
-                    {/* Player 2 Card - Pink */}
-                    <div className="border border-accent bg-accent/5 relative shadow-lg hover:shadow-accent/20 transition-shadow md:skew-x-10 z-0">
-                        <div className="md:-skew-x-10 p-2 md:p-6 flex flex-col h-full relative">
-                            <h2 className="font-pixel text-[10px] md:text-base text-accent mb-2 text-left md:text-right">[ PLAYER 2 ]</h2>
+                    {/* Player 2 Card - Red */}
+                    <div className={`
+                        border-2 border-red-600/30 bg-red-900/20 relative transition-all z-0 rounded-xl
+                        ${isArenaMode ? 'border-red-500 shadow-[0_0_60px_rgba(220,38,38,0.25)]' : 'hover:border-red-500/50 hover:bg-red-900/30'}
+                    `}>
+                        {/* Status Bar - Added rounded-t-xl */}
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-60 rounded-t-xl"></div>
+
+                        <div className="p-6 md:p-10 flex flex-col h-full relative">
+                            <div className="flex justify-between items-start mb-6 border-b border-red-500/20 pb-4">
+                                <h2 className="font-pixel text-[10px] md:text-sm text-red-400 drop-shadow-[0_0_8px_rgba(248,113,113,0.8)] text-left md:text-right w-full">[ PLAYER 2 ]</h2>
+                                {isArenaMode && selectionB.details && (
+                                     <span className="font-mono text-xs text-red-300 animate-pulse font-bold tracking-widest drop-shadow-[0_0_5px_rgba(248,113,113,1)] order-first md:order-last">READY</span>
+                                )}
+                            </div>
+
                             {!selectionB.details && (
                                 <ConsoleSearch
                                     consoles={allConsoles}
