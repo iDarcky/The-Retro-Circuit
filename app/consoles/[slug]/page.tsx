@@ -35,6 +35,13 @@ export async function generateMetadata(props: Props) {
     // Ensure fallback to site logo if absolutely no image found
     finalImage = finalImage || '/logo.png';
 
+    // Define OG Image URL
+    // By Next.js convention, placing opengraph-image.tsx in the route folder
+    // automatically handles generation, but we explicitly point to it here to be safe.
+    // If we rely on automatic generation, we often don't need to specify images here,
+    // but specifying it ensures we override any parent metadata.
+    const ogImageUrl = `/consoles/${slug}/opengraph-image`;
+
     // --- Dynamic Spec Extraction for SEO ---
     const specsParts: string[] = [];
 
@@ -95,7 +102,13 @@ export async function generateMetadata(props: Props) {
       openGraph: {
         title: title,
         description: description,
-        images: [{ url: finalImage }]
+        images: [{ url: ogImageUrl, width: 1200, height: 630, alt: title }]
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: title,
+        description: description,
+        images: [ogImageUrl],
       },
       alternates: {
         canonical: `/consoles/${slug}`,
