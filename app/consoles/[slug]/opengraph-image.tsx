@@ -1,8 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { fetchConsoleBySlug } from '../../../app/actions';
 
-// Reverting to Node.js runtime as 'edge' is failing with opaque FUNCTION_INVOCATION_FAILED.
-// The original layout error (display: flex) has been fixed, so Node.js should work now.
+// Node.js runtime for stable OpenGraph generation
 // export const runtime = 'edge';
 
 // Image metadata
@@ -12,9 +11,6 @@ export const size = {
   height: 630,
 };
 export const contentType = 'image/png';
-
-// Font URL (Press Start 2P from Google Fonts)
-const fontUrl = 'https://raw.githubusercontent.com/google/fonts/main/ofl/pressstart2p/PressStart2P-Regular.ttf';
 
 export default async function Image(props: { params: Promise<{ slug: string }> }) {
   try {
@@ -83,25 +79,7 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
       if (defaultVar.os) specs.push(defaultVar.os);
     }
 
-    // 4. Load Font with timeout protection
-    let fontData: ArrayBuffer | null = null;
-    try {
-        console.log('[OG] Fetching font:', fontUrl);
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout
-        const res = await fetch(new URL(fontUrl), { signal: controller.signal });
-        clearTimeout(timeoutId);
-        if (res.ok) {
-            fontData = await res.arrayBuffer();
-        } else {
-            console.error('[OG] Font fetch failed:', res.status, res.statusText);
-        }
-    } catch (e: any) {
-        console.error('[OG] Font fetch error:', e.message);
-        // Proceed without custom font
-    }
-
-    // 5. Render Image
+    // 4. Render Image (Using System Fonts)
     return new ImageResponse(
       (
         <div
@@ -110,7 +88,7 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
             width: '100%',
             height: '100%',
             background: '#09090b', // zinc-950
-            fontFamily: '"Press Start 2P", monospace, sans-serif',
+            fontFamily: 'monospace, sans-serif', // Standard font stack
           }}
         >
           {/* Left Side: Branding & CTA */}
@@ -247,15 +225,7 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
       ),
       {
         ...size,
-        fonts: fontData
-          ? [
-            {
-              name: 'Press Start 2P',
-              data: fontData,
-              style: 'normal',
-            },
-          ]
-          : undefined,
+        // No custom fonts
       }
     );
   } catch (error: any) {
