@@ -9,12 +9,27 @@ import RetroLoader from '../ui/RetroLoader';
 import Button from '../ui/Button';
 import { formatReleaseDate } from '../../lib/utils/date-formatter';
 import { LayoutGrid, List, Search, SlidersHorizontal } from 'lucide-react';
+<<<<<<< feature/smart-sorting-13679307262414388700
+import { SwissDropdown } from '../ui/SwissDropdown';
+=======
 import { SwissHeader } from '../ui/SwissHeader';
+>>>>>>> main
 
 interface ConsoleVaultClientProps {
     initialManufacturers: Manufacturer[];
     initialConsoles: ConsoleDetails[];
 }
+
+type SortOption = 'release_desc' | 'release_asc' | 'name_asc' | 'name_desc' | 'price_asc' | 'price_desc';
+
+const SORT_OPTIONS: { value: SortOption, label: string }[] = [
+    { value: 'release_desc', label: 'NEWEST FIRST' },
+    { value: 'release_asc', label: 'OLDEST FIRST' },
+    { value: 'name_asc', label: 'NAME (A-Z)' },
+    { value: 'name_desc', label: 'NAME (Z-A)' },
+    { value: 'price_asc', label: 'PRICE (LOW-HIGH)' },
+    { value: 'price_desc', label: 'PRICE (HIGH-LOW)' },
+];
 
 const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers, initialConsoles }) => {
   const [allConsoles] = useState<ConsoleDetails[]>(initialConsoles);
@@ -25,6 +40,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
   // View Mode State
   const [viewMode, setViewMode] = useState<'swiss' | 'classic'>('swiss');
   const [showFilters, setShowFilters] = useState(false);
+  const [sortOrder, setSortOrder] = useState<SortOption>('release_desc');
 
   // Pagination State
   const [page, setPage] = useState(1);
@@ -81,18 +97,46 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
         });
     }
 
+    // Sorting Logic
+    const getMinPrice = (item: ConsoleDetails) => {
+        if (!item.variants || item.variants.length === 0) return 999999;
+        const prices = item.variants.map(v => v.price_launch_usd).filter(p => p !== undefined && p !== null);
+        return prices.length > 0 ? Math.min(...(prices as number[])) : 999999;
+    };
+
     result.sort((a, b) => {
-        const getSortValue = (item: any) => {
-            const specs: any = item.specs || {};
-            if (specs.release_date) return new Date(specs.release_date).getTime();
-            return 0;
-        };
-        return getSortValue(b) - getSortValue(a);
+        switch (sortOrder) {
+            case 'release_desc':
+            case 'release_asc': {
+                const getDate = (item: ConsoleDetails) => {
+                    const specs: any = item.specs || {};
+                    return specs.release_date ? new Date(specs.release_date).getTime() : 0;
+                };
+                const dateA = getDate(a);
+                const dateB = getDate(b);
+                return sortOrder === 'release_desc' ? dateB - dateA : dateA - dateB;
+            }
+            case 'name_asc':
+                return a.name.localeCompare(b.name);
+            case 'name_desc':
+                return b.name.localeCompare(a.name);
+            case 'price_asc':
+                return getMinPrice(a) - getMinPrice(b);
+            case 'price_desc':
+                const pA = getMinPrice(a);
+                const pB = getMinPrice(b);
+                if (pA === 999999 && pB === 999999) return 0; // Stability fix
+                if (pA === 999999) return 1;
+                if (pB === 999999) return -1;
+                return pB - pA;
+            default:
+                return 0;
+        }
     });
 
     setFilteredConsoles(result);
     setPage(1);
-  }, [filters, allConsoles]);
+  }, [filters, allConsoles, sortOrder]);
 
   const toggleFilter = (category: 'form_factors' | 'panel_types', value: string) => {
       setFilters(prev => {
@@ -129,22 +173,32 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
 
         {/* CONTROLS BAR */}
         <div className="sticky top-0 z-50 bg-bg-primary/80 backdrop-blur-xl border-b border-white/10 px-6 md:px-12 py-4">
-             <div className="max-w-[1800px] mx-auto flex justify-between items-center">
-                 <div className="flex items-center gap-4">
-                     <button
-                        onClick={() => setShowFilters(!showFilters)}
-                        className={`md:hidden flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-wider border transition-all ${showFilters ? 'bg-white text-black border-white' : 'text-white border-white/20 hover:border-white/50'}`}
-                     >
-                        <SlidersHorizontal size={14} />
-                        {showFilters ? 'Hide Filters' : 'Filter Data'}
-                     </button>
+             <div className="max-w-[1800px] mx-auto flex flex-col md:flex-row gap-4 md:justify-between md:items-center">
+                 <div className="flex items-center gap-4 justify-between w-full md:w-auto">
+                     <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setShowFilters(!showFilters)}
+                            className={`flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-wider border transition-all ${showFilters ? 'bg-white text-black border-white' : 'text-white border-white/20 hover:border-white/50 bg-black/40'}`}
+                        >
+                            <SlidersHorizontal size={14} />
+                            <span className="hidden md:inline">{showFilters ? 'Hide Filters' : 'Filter Data'}</span>
+                            <span className="md:hidden">FILTERS</span>
+                        </button>
+
+                         {/* SWISS DROPDOWN */}
+                         <SwissDropdown
+                            value={sortOrder}
+                            onChange={setSortOrder}
+                            options={SORT_OPTIONS}
+                         />
+                     </div>
 
                      <div className="hidden md:flex items-center gap-2 text-xs font-mono text-zinc-500">
                         <span className="text-emerald-500">{filteredConsoles.length}</span> UNITS FOUND
                      </div>
                  </div>
 
-                 <div className="flex items-center gap-2 bg-black/40 p-1 rounded-lg border border-white/10">
+                 <div className="flex items-center gap-2 bg-black/40 p-1 rounded-lg border border-white/10 self-end md:self-auto">
                      <button
                         onClick={() => { setViewMode('swiss'); setPage(1); }}
                         className={`p-2 rounded transition-colors ${viewMode === 'swiss' ? 'bg-white/10 text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
@@ -164,8 +218,8 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
         </div>
 
         {/* EXPANDABLE FILTERS */}
-        <div className={`w-full bg-black/40 backdrop-blur-md border-y border-white/10 p-4 mb-8 transition-all duration-300 ${showFilters ? 'block' : 'hidden md:block'}`}>
-            <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between flex-wrap">
+        <div className={`w-full bg-black/40 backdrop-blur-md border-y border-white/10 p-4 mb-8 transition-all duration-300 ${showFilters ? 'block' : 'hidden'}`}>
+            <div className="max-w-[1800px] mx-auto flex flex-col md:flex-row gap-6 items-start md:items-center justify-between flex-wrap">
 
                 {/* Manufacturer */}
               <div className="flex flex-col gap-2">
