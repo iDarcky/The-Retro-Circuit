@@ -53,6 +53,7 @@ export interface Manufacturer {
   website?: string;
   key_franchises: string;
   image_url?: string;
+    og_icon_url?: string;
   brand_color?: string;
 }
 
@@ -171,6 +172,7 @@ export interface ConsoleVariant {
   model_no?: string;
   price_launch_usd?: number;
   image_url?: string; 
+    og_icon_url?: string;
 
   cpu_model?: string;
   cpu_architecture?: string;
@@ -265,6 +267,7 @@ export interface ConsoleDetails {
     slug: string;
     description?: string;
     image_url?: string;
+    og_icon_url?: string;
     form_factor?: string;
     manufacturer?: Manufacturer;
     variants?: ConsoleVariant[];
