@@ -125,8 +125,8 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
                 gap: '12px',
               }}
             >
-              <div style={{ fontSize: 24, color: '#8b5cf6' }}>THE RETRO CIRCUIT</div>
-              <div style={{ fontSize: 16, color: '#a1a1aa' }}>CLASSIFIED SPECS</div>
+              <div style={{ display: 'flex', fontSize: 24, color: '#8b5cf6' }}>THE RETRO CIRCUIT</div>
+              <div style={{ display: 'flex', fontSize: 16, color: '#a1a1aa' }}>CLASSIFIED SPECS</div>
             </div>
 
             {/* Main Title / CTA */}
@@ -136,12 +136,14 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
               </div>
               <div
                 style={{
+                  display: 'flex', // Explicit Flex
                   fontSize: 18,
                   color: '#09090b',
                   background: '#8b5cf6', // Violet-500
                   padding: '12px 24px',
                   marginTop: '24px',
-                  display: 'flex', // Needed for alignment instead of fit-content
+                  width: '100%', // Ensure it takes width properly in flex column, although 'flex' container handles it
+                  maxWidth: 'fit-content', // Only span content
                 }}
               >
                 VIEW DETAILS_
@@ -163,8 +165,6 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
               position: 'relative',
             }}
           >
-            {/* Background Grid Accent (Simulated with simple overlay if needed, skipping for clean look) */}
-
             {/* Image Container */}
             <div
               style={{
@@ -193,13 +193,13 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
             {/* Console Name */}
             <div
               style={{
-                display: 'flex',
+                display: 'flex', // Explicit Flex
                 fontSize: 32,
                 color: 'white',
                 textAlign: 'center',
                 marginBottom: '24px',
                 maxWidth: '90%',
-                justifyContent: 'center',
+                justifyContent: 'center', // Center text content
               }}
             >
               {`${consoleData.manufacturer?.name ? consoleData.manufacturer.name.toUpperCase() + ' ' : ''}${consoleData.name.toUpperCase()}`}
@@ -218,11 +218,14 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
                 <div
                   key={i}
                   style={{
+                    display: 'flex', // Explicit Flex
                     fontSize: 16,
                     color: '#e4e4e7', // zinc-200
                     background: '#27272a', // zinc-800
                     padding: '8px 16px',
                     border: '1px solid #3f3f46', // zinc-700
+                    justifyContent: 'center',
+                    alignItems: 'center',
                   }}
                 >
                   {spec}
@@ -266,8 +269,8 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
             textAlign: 'center',
           }}
         >
-          <div>OG GENERATION ERROR:</div>
-          <div style={{ fontSize: 24, marginTop: '20px', color: '#fca5a5', maxWidth: '80%' }}>
+          <div style={{ display: 'flex' }}>OG GENERATION ERROR:</div>
+          <div style={{ display: 'flex', fontSize: 24, marginTop: '20px', color: '#fca5a5', maxWidth: '80%', textAlign: 'center', justifyContent: 'center' }}>
             {error?.message || String(error) || "Unknown Error"}
           </div>
         </div>
