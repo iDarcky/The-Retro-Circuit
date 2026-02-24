@@ -193,34 +193,30 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                          />
                     </div>
                 }
-                subtitle={
-                    profile.founded_year
-                    ? `${profile.country ? profile.country : 'UNKNOWN ORIGIN'} // EST. ${profile.founded_year}`
-                    : profile.country || 'UNKNOWN ORIGIN'
-                }
+                subtitle="HARDWARE ARCHIVE & SPECIFICATIONS DATABASE"
                 borderColor={brandColor}
             />
 
             {/* --- MISSION BRIEF (New Layout) --- */}
             <div className="max-w-[1800px] mx-auto p-6 md:p-12">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-12">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-12 items-start">
 
-                    {/* Left: Description (8 cols) */}
-                    <div className="lg:col-span-8 flex flex-col justify-between gap-8">
-                        <div>
-                            <h2 className="font-pixel text-sm text-[var(--brand-color)] uppercase tracking-widest mb-6 border-b border-white/10 pb-2">
-                                Corporate Profile
-                            </h2>
-                            <p className="font-mono text-zinc-400 text-sm md:text-base leading-relaxed whitespace-pre-line">
-                                {profile.description || "No classified data available for this manufacturer."}
+                    {/* Left: Description (Expanded to 9 cols) */}
+                    <div className="lg:col-span-9 flex flex-col justify-start">
+                        <div className="relative pl-6 border-l-2 border-[var(--brand-color)]">
+                            <p className="font-mono text-zinc-300 text-lg md:text-xl leading-relaxed whitespace-pre-line">
+                                <span className="text-[var(--brand-color)] font-bold text-2xl float-left mr-2 leading-none mt-1">
+                                    {profile.name.charAt(0)}
+                                </span>
+                                {profile.description ? profile.description.substring(1) : "No classified data available for this manufacturer."}
                             </p>
                         </div>
                     </div>
 
-                    {/* Right: Data Block (4 cols) */}
-                    <div className="lg:col-span-4 bg-white/[0.02] border border-white/10 p-6 flex flex-col items-center text-center h-fit">
+                    {/* Right: Data Block (Reduced to 3 cols) */}
+                    <div className="lg:col-span-3 bg-white/[0.02] border border-white/10 p-6 flex flex-col items-center text-center h-fit sticky top-24">
                          {/* Logo Area */}
-                         <div className="w-full aspect-video bg-black/20 border border-white/5 flex items-center justify-center p-8 mb-6 relative overflow-hidden group">
+                         <div className="w-full aspect-square bg-black/20 border border-white/5 flex items-center justify-center p-8 mb-6 relative overflow-hidden group">
                              <div className="absolute inset-0 bg-[var(--brand-color)] opacity-0 group-hover:opacity-5 transition-opacity"></div>
                              {profile.image_url ? (
                                 <Image
@@ -234,19 +230,19 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                              )}
                          </div>
 
-                         {/* Stats Grid */}
-                         <div className="w-full grid grid-cols-2 gap-4 font-mono text-xs mb-6">
-                             <div className="flex flex-col gap-1 p-2 border border-white/5 bg-black/20">
-                                 <span className="text-zinc-600 uppercase flex items-center justify-center gap-1"><MapPin size={10}/> HQ</span>
-                                 <span className="text-zinc-300">{profile.country || 'N/A'}</span>
+                         {/* Stats Grid - Vertical Stack for narrow column */}
+                         <div className="w-full flex flex-col gap-2 font-mono text-xs mb-6">
+                             <div className="flex justify-between items-center p-2 border border-white/5 bg-black/20">
+                                 <span className="text-zinc-600 uppercase flex items-center gap-2"><MapPin size={12}/> HQ</span>
+                                 <span className="text-zinc-300 text-right">{profile.country || 'N/A'}</span>
                              </div>
-                             <div className="flex flex-col gap-1 p-2 border border-white/5 bg-black/20">
-                                 <span className="text-zinc-600 uppercase flex items-center justify-center gap-1"><Calendar size={10}/> EST.</span>
-                                 <span className="text-zinc-300">{profile.founded_year || 'N/A'}</span>
+                             <div className="flex justify-between items-center p-2 border border-white/5 bg-black/20">
+                                 <span className="text-zinc-600 uppercase flex items-center gap-2"><Calendar size={12}/> EST.</span>
+                                 <span className="text-zinc-300 text-right">{profile.founded_year || 'N/A'}</span>
                              </div>
-                             <div className="flex flex-col gap-1 p-2 border border-white/5 bg-black/20 col-span-2">
-                                 <span className="text-zinc-600 uppercase flex items-center justify-center gap-1"><HardDrive size={10}/> UNITS</span>
-                                 <span className="text-[var(--brand-color)]">{consoles.length} LOGGED</span>
+                             <div className="flex justify-between items-center p-2 border border-white/5 bg-black/20">
+                                 <span className="text-zinc-600 uppercase flex items-center gap-2"><HardDrive size={12}/> UNITS</span>
+                                 <span className="text-[var(--brand-color)] text-right font-bold">{consoles.length}</span>
                              </div>
                          </div>
 
