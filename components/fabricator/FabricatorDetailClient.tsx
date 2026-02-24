@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, type ChangeEvent, type FC } from 'react';
+import { useState, useEffect, type ChangeEvent } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ConsoleDetails, Manufacturer, ConsoleFilterState } from '../../lib/types';
 import AdminEditTrigger from '../admin/AdminEditTrigger';
-import { hexToRgb, ensureHighContrast } from '../../lib/utils/colors';
+import { hexToRgb } from '../../lib/utils/colors';
 import { formatReleaseDate } from '../../lib/utils/date-formatter';
 import { SwissHeader } from '../ui/SwissHeader';
 import { LayoutGrid, List, Search, SlidersHorizontal, Globe, MapPin, Calendar, HardDrive } from 'lucide-react';
