@@ -16,8 +16,9 @@ export const contentType = 'image/png';
 // We use a direct TTF link if possible or fallback to standard sans
 const fontUrl = 'https://raw.githubusercontent.com/google/fonts/main/ofl/pressstart2p/PressStart2P-Regular.ttf';
 
-export default async function Image({ params }: { params: { slug: string } }) {
+export default async function Image(props: { params: Promise<{ slug: string }> }) {
   try {
+    const params = await props.params;
     // 1. Fetch Data
     const slug = decodeURIComponent(params.slug);
     const { data: consoleData } = await fetchConsoleBySlug(slug, false);
@@ -40,7 +41,11 @@ export default async function Image({ params }: { params: { slug: string } }) {
     // Prepare Base URL dynamically based on environment (Vercel Preview vs Production)
     const getBaseUrl = () => {
       // Vercel deployment URLs (Preview environments)
-      if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+      if (process.env.VERCEL_URL) {
+        return process.env.VERCEL_URL.startsWith('http')
+          ? process.env.VERCEL_URL
+          : `https://${process.env.VERCEL_URL}`;
+      }
       // Production fallback or local
       return process.env.NODE_ENV === 'development'
         ? 'http://localhost:3000'
