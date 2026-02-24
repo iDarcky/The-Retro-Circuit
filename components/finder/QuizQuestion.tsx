@@ -16,7 +16,6 @@ interface QuizQuestionProps {
   subtitle?: string;
   options: QuizOption[];
   onAnswer: (answer: string | string[]) => void;
-  designStyle: 'card' | 'button';
   stepNumber: number;
   totalSteps: number;
   isOptional?: boolean;
@@ -29,7 +28,6 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
   subtitle,
   options,
   onAnswer,
-  designStyle,
   stepNumber,
   totalSteps,
   isOptional,
@@ -45,20 +43,14 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
 
   const handleOptionClick = (id: string) => {
     if (multiSelect) {
-      // Check if it's the "None" option (assuming id='none')
       if (id === 'none') {
-        // If selecting none, clear everything else and select none
-        // If unselecting none, just remove it
         if (selectedIds.includes('none')) {
              setSelectedIds([]);
         } else {
              setSelectedIds(['none']);
         }
       } else {
-        // Normal option
-        // If "none" was selected, remove it
         let newSelection = selectedIds.filter(sid => sid !== 'none');
-
         if (newSelection.includes(id)) {
           newSelection = newSelection.filter(sid => sid !== id);
         } else {
@@ -67,14 +59,12 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
         setSelectedIds(newSelection);
       }
     } else {
-      // Single select: just replace
       setSelectedIds([id]);
     }
   };
 
   const handleNext = () => {
     if (selectedIds.length === 0) return;
-
     if (multiSelect) {
       onAnswer(selectedIds);
     } else {
@@ -82,47 +72,47 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
     }
   };
 
-  // Enforce selection always, even for optional (User explicit request)
   const isNextDisabled = selectedIds.length === 0;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 w-full animate-in slide-in-from-right duration-300 pb-24">
-      <div className="mb-8 text-center">
-        {isBonus ? (
-            <div className="flex items-center justify-center gap-3 mb-4 animate-pulse">
-                <span className="px-3 py-1 bg-accent/20 text-accent text-lg font-pixel tracking-widest border border-accent/40 rounded shadow-[0_0_15px_rgba(255,107,157,0.5)]">
+    <div className="max-w-3xl mx-auto px-4 w-full animate-in fade-in slide-in-from-bottom-4 duration-500 pb-24">
+      {/* Header Section */}
+      <div className="mb-12 text-center">
+        <div className="flex items-center justify-center gap-3 mb-6">
+            {isBonus ? (
+                <span className="px-2 py-1 bg-violet-500/10 text-violet-400 text-xs font-pixel tracking-widest border border-violet-500/20">
                   BONUS ROUND
                 </span>
-            </div>
-        ) : (
-            <div className="flex items-center justify-center gap-3 mb-4">
-            <span className="font-tech text-secondary text-sm tracking-wider">
-                QUESTION {stepNumber} / {totalSteps}
-            </span>
+            ) : (
+                <span className="font-mono text-zinc-500 text-xs tracking-wider border border-white/5 px-2 py-1">
+                    0{stepNumber} / 0{totalSteps}
+                </span>
+            )}
             {isOptional && (
-                <span className="px-2 py-0.5 bg-gray-800 text-gray-400 text-xs font-mono rounded border border-gray-700">
+                <span className="px-2 py-1 bg-zinc-900 text-zinc-500 text-xs font-mono border border-zinc-800">
                 OPTIONAL
                 </span>
             )}
-            </div>
-        )}
+        </div>
 
-        <h2 className="text-2xl md:text-4xl font-pixel text-white mb-2 leading-tight">
+        <h2 className="text-2xl md:text-4xl font-pixel text-white mb-4 leading-relaxed uppercase">
           {question}
         </h2>
 
         {subtitle && (
-          <p className="text-gray-400 italic font-mono text-sm md:text-base">
+          <p className="text-zinc-400 font-mono text-sm md:text-base max-w-xl mx-auto leading-relaxed">
             {subtitle}
           </p>
         )}
       </div>
 
+      {/* Options Grid */}
       <div className={clsx(
-        "grid gap-4 mb-8",
-        designStyle === 'card'
-          ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-          : "grid-cols-1 max-w-xl mx-auto"
+        "grid gap-4 mb-12",
+        // Adapt grid based on option count/length for better Swiss layouts
+        options.length <= 4
+            ? "grid-cols-1 md:grid-cols-2"
+            : "grid-cols-1 md:grid-cols-2 lg:grid-cols-2"
       )}>
         {options.map((option) => {
           const isSelected = selectedIds.includes(option.id);
@@ -131,69 +121,57 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
                 key={option.id}
                 onClick={() => handleOptionClick(option.id)}
                 className={clsx(
-                "group relative text-left transition-all duration-200 focus:outline-none",
-                // Base styles
-                designStyle === 'card'
-                    ? "p-6 rounded-lg backdrop-blur-sm flex flex-col gap-3 h-full border"
-                    : "p-4 rounded flex items-center gap-4 border-2",
-                // Active/Inactive styles
+                "group relative text-left transition-all duration-200 focus:outline-none p-6 border",
+                // Swiss Interactive States
                 isSelected
-                    ? "bg-secondary/20 border-secondary ring-1 ring-secondary shadow-[0_0_15px_rgba(0,255,136,0.3)]"
-                    : designStyle === 'card'
-                        ? "bg-bg-secondary/50 border-white/10 hover:border-secondary hover:bg-bg-secondary/80"
-                        : "bg-transparent border-white/20 hover:border-secondary hover:bg-white/5"
+                    ? "bg-white border-white text-black"
+                    : "bg-transparent border-white/10 text-zinc-400 hover:border-white hover:text-white"
                 )}
             >
-                {designStyle === 'card' ? (
-                // CARD LAYOUT
-                <>
-                    <div>
-                    <h3 className={clsx("text-lg font-bold mb-1", isSelected ? "text-secondary" : "text-white group-hover:text-secondary")}>
-                        {option.label}
-                    </h3>
-                    {option.description && (
-                        <p className={clsx("text-sm font-mono leading-relaxed", isSelected ? "text-gray-200" : "text-gray-400 group-hover:text-gray-300")}>
-                        {option.description}
-                        </p>
-                    )}
-                    </div>
-                </>
-                ) : (
-                // BUTTON LAYOUT
-                <>
+                {/* Selection Indicator (Radio/Checkbox Style) */}
+                <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
-                    <span className={clsx("block text-lg font-bold", isSelected ? "text-secondary" : "text-white group-hover:text-secondary")}>
-                        {option.label}
-                    </span>
-                    {option.description && (
-                        <span className="block text-xs text-gray-400 font-mono mt-0.5">
-                        {option.description}
-                        </span>
-                    )}
+                        <h3 className={clsx(
+                            "text-sm font-bold font-mono uppercase tracking-wide mb-2",
+                            isSelected ? "text-black" : "text-white group-hover:text-white"
+                        )}>
+                            {option.label}
+                        </h3>
+                        {option.description && (
+                            <p className={clsx(
+                                "text-xs font-mono leading-relaxed",
+                                isSelected ? "text-zinc-600" : "text-zinc-500 group-hover:text-zinc-400"
+                            )}>
+                                {option.description}
+                            </p>
+                        )}
                     </div>
-                    {/* Checkmark or indicator */}
-                    <div className={clsx("transition-opacity", isSelected ? "opacity-100 text-secondary" : "opacity-0 group-hover:opacity-50")}>
-                        <span className="font-pixel text-xl">{isSelected ? '✓' : '>'}</span>
+
+                    {/* Checkbox Graphic */}
+                    <div className={clsx(
+                        "w-4 h-4 border flex items-center justify-center transition-colors mt-0.5",
+                        isSelected ? "border-black bg-black text-white" : "border-zinc-700 group-hover:border-white"
+                    )}>
+                        {isSelected && <div className="w-2 h-2 bg-white" />}
                     </div>
-                </>
-                )}
+                </div>
             </button>
           );
         })}
       </div>
 
-      {/* NEXT BUTTON */}
+      {/* Navigation */}
       <div className="flex justify-center">
          <Button
-            variant="primary"
+            variant="primary" // This usually means Violet
             onClick={handleNext}
             disabled={isNextDisabled}
             className={clsx(
-                "px-12 py-4 text-xl min-w-[200px] transition-all duration-200",
-                isNextDisabled && "opacity-50 cursor-not-allowed grayscale"
+                "min-w-[200px] font-pixel text-sm py-4",
+                isNextDisabled && "opacity-50 grayscale cursor-not-allowed"
             )}
          >
-            NEXT
+            {stepNumber === totalSteps ? 'REVEAL RESULTS' : 'NEXT STEP ->'}
          </Button>
       </div>
 

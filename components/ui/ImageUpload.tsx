@@ -93,7 +93,7 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
                 <img 
                     src={value} 
                     alt="Upload" 
-                    className="max-h-48 w-auto object-contain drop-shadow-lg" 
+                    className="max-h-48 w-auto object-contain drop-shadow-lg"
                 />
             </div>
             <button
