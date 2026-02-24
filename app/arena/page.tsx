@@ -198,10 +198,11 @@ function VSModeContent() {
 
                     {/* Player 1 Card - Blue */}
                     <div className={`
-                        border-2 border-blue-600/30 bg-blue-900/20 relative transition-all z-10 overflow-hidden rounded-xl
+                        border-2 border-blue-600/30 bg-blue-900/20 relative transition-all z-10 rounded-xl
                         ${isArenaMode ? 'border-blue-500 shadow-[0_0_60px_rgba(37,99,235,0.25)]' : 'hover:border-blue-500/50 hover:bg-blue-900/30'}
                     `}>
-                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-60"></div>
+                        {/* Status Bar - Added rounded-t-xl to match container since overflow-hidden is gone */}
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-60 rounded-t-xl"></div>
 
                         <div className="p-6 md:p-10 flex flex-col h-full relative">
                             <div className="flex justify-between items-start mb-6 border-b border-blue-500/20 pb-4">
@@ -264,10 +265,11 @@ function VSModeContent() {
 
                     {/* Player 2 Card - Red */}
                     <div className={`
-                        border-2 border-red-600/30 bg-red-900/20 relative transition-all z-0 overflow-hidden rounded-xl
+                        border-2 border-red-600/30 bg-red-900/20 relative transition-all z-0 rounded-xl
                         ${isArenaMode ? 'border-red-500 shadow-[0_0_60px_rgba(220,38,38,0.25)]' : 'hover:border-red-500/50 hover:bg-red-900/30'}
                     `}>
-                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-60"></div>
+                        {/* Status Bar - Added rounded-t-xl */}
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-60 rounded-t-xl"></div>
 
                         <div className="p-6 md:p-10 flex flex-col h-full relative">
                             <div className="flex justify-between items-start mb-6 border-b border-red-500/20 pb-4">
