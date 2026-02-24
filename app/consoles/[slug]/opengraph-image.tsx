@@ -1,8 +1,9 @@
 import { ImageResponse } from 'next/og';
 import { fetchConsoleBySlug } from '../../../app/actions';
 
-// Re-enable Edge runtime for performance and reliability on Vercel
-export const runtime = 'edge';
+// Reverting to Node.js runtime as 'edge' is failing with opaque FUNCTION_INVOCATION_FAILED.
+// The original layout error (display: flex) has been fixed, so Node.js should work now.
+// export const runtime = 'edge';
 
 // Image metadata
 export const alt = 'The Retro Circuit - Console Specs';
@@ -12,8 +13,8 @@ export const size = {
 };
 export const contentType = 'image/png';
 
-// Font URL commented out for debugging timeouts
-// const fontUrl = 'https://raw.githubusercontent.com/google/fonts/main/ofl/pressstart2p/PressStart2P-Regular.ttf';
+// Font URL (Press Start 2P from Google Fonts)
+const fontUrl = 'https://raw.githubusercontent.com/google/fonts/main/ofl/pressstart2p/PressStart2P-Regular.ttf';
 
 export default async function Image(props: { params: Promise<{ slug: string }> }) {
   try {
@@ -82,8 +83,23 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
       if (defaultVar.os) specs.push(defaultVar.os);
     }
 
-    // 4. Skip Font Loading for debugging (System Font Fallback)
-    // Removed unused variable fontData
+    // 4. Load Font with timeout protection
+    let fontData: ArrayBuffer | null = null;
+    try {
+        console.log('[OG] Fetching font:', fontUrl);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout
+        const res = await fetch(new URL(fontUrl), { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (res.ok) {
+            fontData = await res.arrayBuffer();
+        } else {
+            console.error('[OG] Font fetch failed:', res.status, res.statusText);
+        }
+    } catch (e: any) {
+        console.error('[OG] Font fetch error:', e.message);
+        // Proceed without custom font
+    }
 
     // 5. Render Image
     return new ImageResponse(
@@ -94,8 +110,7 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
             width: '100%',
             height: '100%',
             background: '#09090b', // zinc-950
-            // Simplified font stack (system sans-serif) to debug font loading issues
-            fontFamily: 'monospace, sans-serif',
+            fontFamily: '"Press Start 2P", monospace, sans-serif',
           }}
         >
           {/* Left Side: Branding & CTA */}
@@ -232,7 +247,15 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
       ),
       {
         ...size,
-        // No custom fonts for debugging
+        fonts: fontData
+          ? [
+            {
+              name: 'Press Start 2P',
+              data: fontData,
+              style: 'normal',
+            },
+          ]
+          : undefined,
       }
     );
   } catch (error: any) {
