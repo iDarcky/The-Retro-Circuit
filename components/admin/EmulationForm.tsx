@@ -157,7 +157,7 @@ export const EmulationForm: FC<EmulationFormProps> = ({ variantId, onSave }) => 
                     onChange={(e) => handleChange('summary_text', e.target.value)}
                 />
             </div>
-            
+
             {/* ---- VERIFICATION SECTION ---- */}
             <div className="border-t border-border-normal/50 pt-6 mt-6">
                  <h4 className="font-pixel text-secondary text-sm mb-4">Verification</h4>
