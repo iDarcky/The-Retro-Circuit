@@ -3,13 +3,15 @@ import { FC, ReactNode } from 'react';
 interface SwissHeaderProps {
     title: ReactNode;
     subtitle: string;
-    // accentColor is now implied by the title structure or passed as a class if generic text
-    // We'll keep it flexible by accepting specific accent styling if needed in title
+    borderColor?: string;
 }
 
-export const SwissHeader: FC<SwissHeaderProps> = ({ title, subtitle }) => {
+export const SwissHeader: FC<SwissHeaderProps> = ({ title, subtitle, borderColor }) => {
     return (
-        <div className="relative pt-24 pb-12 px-6 md:px-12 border-b border-white/5 overflow-hidden">
+        <div
+            className={`relative pt-24 pb-12 px-6 md:px-12 border-b overflow-hidden ${!borderColor ? 'border-white/5' : ''}`}
+            style={borderColor ? { borderColor } : undefined}
+        >
              {/* Background Effects */}
              <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.05] pointer-events-none"></div>
 
