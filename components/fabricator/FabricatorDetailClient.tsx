@@ -229,12 +229,9 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider flex items-center gap-2"><Calendar size={10}/> Est.</span>
                                  <span className="text-sm font-mono text-zinc-200">{profile.founded_year || 'N/A'}</span>
                              </div>
-                             <div className="bg-[#09090b] p-4 flex flex-col gap-1 col-span-2">
+                             <div className="bg-[#09090b] p-4 flex items-center justify-between col-span-2">
                                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider flex items-center gap-2"><HardDrive size={10}/> Hardware Output</span>
-                                 <div className="flex items-end justify-between">
-                                     <span className="text-xl font-pixel text-[var(--brand-color)]">{consoles.length}</span>
-                                     <span className="text-[10px] font-mono text-zinc-600 mb-1">REGISTERED UNITS</span>
-                                 </div>
+                                 <span className="text-xl font-pixel text-[var(--brand-color)]">{consoles.length}</span>
                              </div>
                          </div>
 
