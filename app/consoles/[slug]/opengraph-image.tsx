@@ -29,13 +29,14 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
     }
 
     // 3. Extract Specs & Image (Similar logic to Metadata)
-    let finalImage = consoleData.image_url;
+    // Prioritize the new dedicated OpenGraph image (PNG/JPG format)
+    let finalImage = (consoleData as any).og_icon_url || consoleData.image_url;
     let defaultVar = null;
 
     if (consoleData.variants && Array.isArray(consoleData.variants) && consoleData.variants.length > 0) {
       const variants = consoleData.variants;
       defaultVar = variants.find((v: any) => v.is_default) || variants[0];
-      if (!finalImage) finalImage = defaultVar?.image_url;
+      if (!finalImage) finalImage = (defaultVar as any)?.og_icon_url || defaultVar?.image_url;
     }
 
     // Prepare Base URL dynamically based on environment (Vercel Preview vs Production)
@@ -120,8 +121,8 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
 
             {/* Main Title / CTA */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ fontSize: 48, color: 'white', lineHeight: 1.1 }}>
-                FULL SPECS<br />& REVIEW
+              <div style={{ display: 'flex', fontSize: 48, color: 'white', lineHeight: 1.1 }}>
+                FULL SPECS & REVIEW
               </div>
               <div
                 style={{
