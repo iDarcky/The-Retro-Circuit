@@ -40,7 +40,13 @@ export async function generateMetadata(props: Props) {
     // automatically handles generation, but we explicitly point to it here to be safe.
     // If we rely on automatic generation, we often don't need to specify images here,
     // but specifying it ensures we override any parent metadata.
-    const ogImageUrl = `/consoles/${slug}/opengraph-image`;
+    // We append a cache buster `?v=` to break social media caches when data updates.
+    // Use an 'any' cast as `updated_at` or `created_at` may not be in the exact ConsoleDetails type definition
+    const consoleRecord = data as any;
+    const cacheBuster = consoleRecord.updated_at
+      ? new Date(consoleRecord.updated_at).getTime()
+      : new Date().getTime();
+    const ogImageUrl = `/consoles/${slug}/opengraph-image?v=${cacheBuster}`;
 
     // --- Dynamic Spec Extraction for SEO ---
     const specsParts: string[] = [];
@@ -61,11 +67,11 @@ export async function generateMetadata(props: Props) {
         // Simple heuristic for "p" vs "x"
         const commonRes = [240, 480, 720, 1080, 1440, 2160];
         if (commonRes.includes(defaultVar.screen_resolution_y)) {
-             specsParts.push(`${defaultVar.screen_resolution_y}p`);
+          specsParts.push(`${defaultVar.screen_resolution_y}p`);
         } else if (defaultVar.screen_resolution_x) {
-             specsParts.push(`${defaultVar.screen_resolution_x}x${defaultVar.screen_resolution_y}`);
+          specsParts.push(`${defaultVar.screen_resolution_x}x${defaultVar.screen_resolution_y}`);
         } else {
-             specsParts.push(`${defaultVar.screen_resolution_y}p`);
+          specsParts.push(`${defaultVar.screen_resolution_y}p`);
         }
       }
 
@@ -91,8 +97,8 @@ export async function generateMetadata(props: Props) {
 
     // Construct Description
     const description = specsString
-        ? `${specsString}. Detailed technical specs, emulation performance, and comparisons for the ${data.name}.`
-        : `View full technical specifications, release date, and variant comparisons for the ${data.name}.`;
+      ? `${specsString}. Detailed technical specs, emulation performance, and comparisons for the ${data.name}.`
+      : `View full technical specifications, release date, and variant comparisons for the ${data.name}.`;
 
     const title = `${data.name} Specs, Price, Release Date & Comparisons`;
 
