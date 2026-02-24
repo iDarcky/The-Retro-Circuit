@@ -204,19 +204,23 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                     {/* Left: Description (9 Cols) */}
                     <div className="lg:col-span-9 flex flex-col justify-start gap-8">
 
-                        {/* Hero Text / Mission Statement */}
-                        <div className="relative pl-8 border-l-4 border-[var(--brand-color)] py-2">
-                            <h2 className="text-2xl md:text-4xl font-pixel text-white leading-snug uppercase max-w-4xl">
-                                {profile.description ? profile.description.split('.')[0] + '.' : `The archives for ${profile.name} are currently classified.`}
-                            </h2>
-                        </div>
+                        {/* Profile Data Terminal */}
+                        <div className="border border-white/10 bg-white/[0.02] p-8 relative overflow-hidden group">
+                            {/* Decorative Corner */}
+                            <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[var(--brand-color)]"></div>
 
-                        {/* Secondary Text (If available) */}
-                        {profile.description && profile.description.split('.').length > 1 && (
-                            <div className="max-w-4xl font-mono text-zinc-400 text-sm md:text-base leading-relaxed pl-8">
-                                <p>{profile.description.split('.').slice(1).join('.').trim()}</p>
+                            {/* Data Header */}
+                            <div className="font-mono text-xs text-[var(--brand-color)] mb-6 flex items-center gap-2 opacity-70">
+                                <span>// DATABASE_ENTRY: PROFILE_SUMMARY</span>
+                                <span className="flex-1 h-px bg-white/10"></span>
                             </div>
-                        )}
+
+                            <div className="relative">
+                                <p className="font-mono text-zinc-300 text-lg md:text-xl leading-relaxed whitespace-pre-line">
+                                    {profile.description || "The archives for this manufacturer are currently classified. No further data available."}
+                                </p>
+                            </div>
+                        </div>
 
                     </div>
 
