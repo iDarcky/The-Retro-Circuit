@@ -197,63 +197,44 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                 borderColor={brandColor}
             />
 
-            {/* --- MISSION BRIEF (New Layout) --- */}
+            {/* --- INTRO SECTION (Swapped Layout) --- */}
             <div className="max-w-[1800px] mx-auto p-6 md:p-12">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-12 items-start">
 
-                    {/* Left: Description (9 Cols) */}
-                    <div className="lg:col-span-9 flex flex-col justify-start gap-8">
+                    {/* Left: Brand Identity & Stats (4 Cols) */}
+                    <div className="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24">
 
-                        {/* Profile Data Terminal */}
-                        <div className="border border-white/10 bg-white/[0.02] p-8 relative overflow-hidden group">
-                            {/* Decorative Corner */}
-                            <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[var(--brand-color)]"></div>
-
-                            {/* Data Header */}
-                            <div className="font-mono text-xs text-[var(--brand-color)] mb-6 flex items-center gap-2 opacity-70">
-                                <span>// DATABASE_ENTRY: PROFILE_SUMMARY</span>
-                                <span className="flex-1 h-px bg-white/10"></span>
-                            </div>
-
-                            <div className="relative">
-                                <p className="font-mono text-zinc-300 text-lg md:text-xl leading-relaxed whitespace-pre-line">
-                                    {profile.description || "The archives for this manufacturer are currently classified. No further data available."}
-                                </p>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    {/* Right: Data Block (3 Cols) */}
-                    <div className="lg:col-span-3 bg-white/[0.02] border border-white/10 p-6 flex flex-col items-center text-center h-fit sticky top-24">
-                         {/* Logo Area */}
-                         <div className="w-full aspect-square bg-black/20 border border-white/5 flex items-center justify-center p-8 mb-6 relative overflow-hidden group">
-                             <div className="absolute inset-0 bg-[var(--brand-color)] opacity-0 group-hover:opacity-5 transition-opacity"></div>
+                         {/* Logo Container */}
+                         <div className="w-full aspect-video bg-black/40 border-t border-b border-[var(--brand-color)] flex items-center justify-center p-8 relative overflow-hidden group shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+                             <div className="absolute inset-0 bg-gradient-to-tr from-[var(--brand-color)]/10 to-transparent opacity-50"></div>
                              {profile.image_url ? (
                                 <Image
                                     src={profile.image_url}
                                     alt={profile.name}
                                     fill
-                                    className="object-contain p-4 drop-shadow-xl"
+                                    className="object-contain p-6 drop-shadow-2xl relative z-10"
                                 />
                              ) : (
-                                <span className="font-pixel text-4xl text-white/10">?</span>
+                                <span className="font-pixel text-4xl text-white/20">?</span>
                              )}
                          </div>
 
-                         {/* Stats Grid - Vertical Stack for narrow column */}
-                         <div className="w-full flex flex-col gap-2 font-mono text-xs mb-6">
-                             <div className="flex justify-between items-center p-2 border border-white/5 bg-black/20">
-                                 <span className="text-zinc-600 uppercase flex items-center gap-2"><MapPin size={12}/> HQ</span>
-                                 <span className="text-zinc-300 text-right">{profile.country || 'N/A'}</span>
+                         {/* Stats Data */}
+                         <div className="grid grid-cols-2 gap-px bg-white/10 border border-white/10">
+                             <div className="bg-[#09090b] p-4 flex flex-col gap-1">
+                                 <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider flex items-center gap-2"><MapPin size={10}/> Origin</span>
+                                 <span className="text-sm font-mono text-zinc-200">{profile.country || 'N/A'}</span>
                              </div>
-                             <div className="flex justify-between items-center p-2 border border-white/5 bg-black/20">
-                                 <span className="text-zinc-600 uppercase flex items-center gap-2"><Calendar size={12}/> EST.</span>
-                                 <span className="text-zinc-300 text-right">{profile.founded_year || 'N/A'}</span>
+                             <div className="bg-[#09090b] p-4 flex flex-col gap-1">
+                                 <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider flex items-center gap-2"><Calendar size={10}/> Est.</span>
+                                 <span className="text-sm font-mono text-zinc-200">{profile.founded_year || 'N/A'}</span>
                              </div>
-                             <div className="flex justify-between items-center p-2 border border-white/5 bg-black/20">
-                                 <span className="text-zinc-600 uppercase flex items-center gap-2"><HardDrive size={12}/> UNITS</span>
-                                 <span className="text-[var(--brand-color)] text-right font-bold">{consoles.length}</span>
+                             <div className="bg-[#09090b] p-4 flex flex-col gap-1 col-span-2">
+                                 <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider flex items-center gap-2"><HardDrive size={10}/> Hardware Output</span>
+                                 <div className="flex items-end justify-between">
+                                     <span className="text-xl font-pixel text-[var(--brand-color)]">{consoles.length}</span>
+                                     <span className="text-[10px] font-mono text-zinc-600 mb-1">REGISTERED UNITS</span>
+                                 </div>
                              </div>
                          </div>
 
@@ -261,13 +242,32 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                             <a
                                 href={profile.website}
                                 target="_blank"
-                                className="w-full py-3 border border-[var(--brand-color)] text-[var(--brand-color)] font-mono text-xs uppercase hover:bg-[var(--brand-color)] hover:text-black transition-all flex items-center justify-center gap-2 group"
+                                className="w-full py-4 bg-white/5 border border-white/10 text-zinc-300 font-mono text-xs uppercase hover:bg-[var(--brand-color)] hover:text-black hover:border-[var(--brand-color)] transition-all flex items-center justify-between px-6 group"
                             >
-                                <Globe size={12} />
-                                Access Comms
+                                <span>Official Frequency</span>
+                                <Globe size={14} className="opacity-50 group-hover:opacity-100" />
                             </a>
                         )}
                     </div>
+
+                    {/* Right: Narrative (8 Cols) */}
+                    <div className="lg:col-span-8 flex flex-col justify-start gap-8 lg:pt-4">
+                        <div className="relative">
+                            {/* Decorative Line */}
+                            <div className="absolute -left-6 top-0 bottom-0 w-px bg-gradient-to-b from-[var(--brand-color)] to-transparent opacity-50 hidden lg:block"></div>
+
+                            <h2 className="text-3xl md:text-5xl font-pixel text-white leading-tight uppercase mb-8 tracking-tight">
+                                {profile.description ? profile.description.split('.')[0] + '.' : `The archives for ${profile.name} are currently classified.`}
+                            </h2>
+
+                            {profile.description && profile.description.split('.').length > 1 && (
+                                <div className="text-lg md:text-xl font-mono text-zinc-400 leading-relaxed space-y-6">
+                                    <p>{profile.description.split('.').slice(1).join('.').trim()}</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
