@@ -30,12 +30,14 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
 
     // 3. Extract Specs & Image (Similar logic to Metadata)
     // Prioritize the new dedicated OpenGraph image (PNG/JPG format)
+    // Explicitly check for og_icon_url property which we added to the query
     let finalImage = (consoleData as any).og_icon_url || consoleData.image_url;
     let defaultVar = null;
 
     if (consoleData.variants && Array.isArray(consoleData.variants) && consoleData.variants.length > 0) {
       const variants = consoleData.variants;
       defaultVar = variants.find((v: any) => v.is_default) || variants[0];
+      // Only fallback to variant image if main console images are missing
       if (!finalImage) finalImage = (defaultVar as any)?.og_icon_url || defaultVar?.image_url;
     }
 
@@ -54,12 +56,13 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
     };
 
     const baseUrl = getBaseUrl();
+    const defaultFallback = `${baseUrl}/og-v2.png`;
 
     // Clean up image URL (ensure absolute if needed)
     const isRelative = finalImage && finalImage.startsWith('/');
     let imageUrl = isRelative
       ? `${baseUrl}${finalImage}`
-      : (finalImage || `${baseUrl}/og-v2.png`);
+      : (finalImage || defaultFallback);
 
     // CRITICAL: Satori (the engine behind ImageResponse) DOES NOT SUPPORT `.webp` images.
     // It only supports PNG, JPEG, SVG. If we try to feed it a WebP, the generator will hard crash.
@@ -74,8 +77,8 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
           + '?width=400&height=300&resize=contain&format=png';
       } else {
         // Non-Supabase WebP, or unable to transform -> Fallback
-        console.warn(`[OpenGraph] Blocked unsupported .webp Satori image: ${imageUrl}. Falling back to Logo.`);
-        imageUrl = `${baseUrl}/og-v2.png`;
+        console.warn(`[OpenGraph] Blocked unsupported .webp Satori image: ${imageUrl}. Falling back to default OG.`);
+        imageUrl = defaultFallback;
       }
     }
 
@@ -202,6 +205,7 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
                 justifyContent: 'center', // Center text content
               }}
             >
+              {/* Force text node to be a string primitive to avoid React child node issues */}
               {`${consoleData.manufacturer?.name ? consoleData.manufacturer.name.toUpperCase() + ' ' : ''}${consoleData.name.toUpperCase()}`}
             </div>
 
