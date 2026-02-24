@@ -83,7 +83,7 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
     }
 
     // 4. Skip Font Loading for debugging (System Font Fallback)
-    const fontData = null;
+    // Removed unused variable fontData
 
     // 5. Render Image
     return new ImageResponse(
