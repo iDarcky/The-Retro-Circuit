@@ -21,12 +21,17 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
     const params = await props.params;
     // 1. Fetch Data
     const slug = decodeURIComponent(params.slug);
+    console.log('[OG] Fetching data for slug:', slug);
+
     const { data: consoleData } = await fetchConsoleBySlug(slug, false);
 
     // 2. Fallback Data
     if (!consoleData) {
+      console.error('[OG] Console not found for slug:', slug);
       throw new Error("Console not found");
     }
+
+    console.log('[OG] Found console:', consoleData.name);
 
     // 3. Extract Specs & Image (Similar logic to Metadata)
     // Prioritize the new dedicated OpenGraph image (PNG/JPG format)
@@ -82,6 +87,8 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
       }
     }
 
+    console.log('[OG] Final Image URL:', imageUrl);
+
     // Specs extraction
     const specs = [];
     if (defaultVar) {
@@ -93,7 +100,23 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
 
     // 4. Load Font
     // We use fetch inside the function to get the arrayBuffer
-    const fontData = await fetch(new URL(fontUrl)).then((res) => res.arrayBuffer()).catch(() => null);
+    let fontData: ArrayBuffer | null = null;
+    try {
+        console.log('[OG] Fetching font:', fontUrl);
+        // Add a timeout to font fetching to prevent hangs
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout
+        const res = await fetch(new URL(fontUrl), { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (res.ok) {
+            fontData = await res.arrayBuffer();
+        } else {
+            console.error('[OG] Font fetch failed:', res.status, res.statusText);
+        }
+    } catch (e: any) {
+        console.error('[OG] Font fetch error:', e.message);
+        // Proceed without custom font (system sans-serif fallback)
+    }
 
     // 5. Render Image
     return new ImageResponse(
@@ -104,7 +127,8 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
             width: '100%',
             height: '100%',
             background: '#09090b', // zinc-950
-            fontFamily: '"Press Start 2P", monospace',
+            // Fallback font stack if custom font fails
+            fontFamily: '"Press Start 2P", monospace, sans-serif',
           }}
         >
           {/* Left Side: Branding & CTA */}
@@ -253,7 +277,7 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
       }
     );
   } catch (error: any) {
-    console.error("OpenGraph Image Generation Error:", error);
+    console.error("OpenGraph Image Generation Error (Fatal):", error);
     // Return a safe fallback UI inside a valid ImageResponse on catastrophic failure
     return new ImageResponse(
       (
