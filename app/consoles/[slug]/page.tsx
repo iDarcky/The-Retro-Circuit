@@ -84,14 +84,16 @@ export async function generateMetadata(props: Props) {
 
     // Construct Description
     const description = specsString
-        ? `${specsString}. ${data.name} deep dive and comparisons.`
+        ? `${specsString}. Detailed technical specs, emulation performance, and comparisons for the ${data.name}.`
         : `View full technical specifications, release date, and variant comparisons for the ${data.name}.`;
 
+    const title = `${data.name} Specs, Price, Release Date & Comparisons`;
+
     return {
-      title: `${data.name} | Specs, Price & Comparisons`,
+      title: title,
       description: description,
       openGraph: {
-        title: `${data.name} - Classified Specs`,
+        title: title,
         description: description,
         images: [{ url: finalImage }]
       },
