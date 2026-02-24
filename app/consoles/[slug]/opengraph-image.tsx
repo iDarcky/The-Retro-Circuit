@@ -59,14 +59,24 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
     const isRelative = finalImage && finalImage.startsWith('/');
     let imageUrl = isRelative
       ? `${baseUrl}${finalImage}`
-      : (finalImage || `${baseUrl}/logo.png`);
+      : (finalImage || `${baseUrl}/og-v2.png`);
 
     // CRITICAL: Satori (the engine behind ImageResponse) DOES NOT SUPPORT `.webp` images.
     // It only supports PNG, JPEG, SVG. If we try to feed it a WebP, the generator will hard crash.
-    // If the image is a webp, we must fallback to the logo.
+    // FIX: If it's a Supabase Storage URL, we can use the Image Transformation API to request a PNG.
     if (imageUrl.toLowerCase().endsWith('.webp')) {
-      console.warn(`[OpenGraph] Blocked unsupported .webp Satori image: ${imageUrl}. Falling back to Logo.`);
-      imageUrl = `${baseUrl}/logo.png`;
+      if (imageUrl.includes('supabase.co/storage/v1/object/public')) {
+        // Convert object URL to render URL and force PNG format
+        // From: .../storage/v1/object/public/bucket/path/to/image.webp
+        // To:   .../storage/v1/render/image/public/bucket/path/to/image.webp?width=400&height=300&resize=contain&format=png
+        imageUrl = imageUrl
+          .replace('/storage/v1/object/public', '/storage/v1/render/image/public')
+          + '?width=400&height=300&resize=contain&format=png';
+      } else {
+        // Non-Supabase WebP, or unable to transform -> Fallback
+        console.warn(`[OpenGraph] Blocked unsupported .webp Satori image: ${imageUrl}. Falling back to Logo.`);
+        imageUrl = `${baseUrl}/og-v2.png`;
+      }
     }
 
     // Specs extraction
@@ -183,15 +193,16 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
             {/* Console Name */}
             <div
               style={{
+                display: 'flex',
                 fontSize: 32,
                 color: 'white',
                 textAlign: 'center',
                 marginBottom: '24px',
                 maxWidth: '90%',
+                justifyContent: 'center',
               }}
             >
-              {consoleData.manufacturer?.name ? `${consoleData.manufacturer.name.toUpperCase()} ` : ''}
-              {consoleData.name.toUpperCase()}
+              {`${consoleData.manufacturer?.name ? consoleData.manufacturer.name.toUpperCase() + ' ' : ''}${consoleData.name.toUpperCase()}`}
             </div>
 
             {/* Specs List */}
