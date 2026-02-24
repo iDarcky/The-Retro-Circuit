@@ -1,8 +1,7 @@
 import { ImageResponse } from 'next/og';
-import { fetchConsoleBySlug } from '../../../app/actions';
 
-// Node.js runtime for stable OpenGraph generation
-// export const runtime = 'edge';
+// Simplified runtime for static image serving
+export const runtime = 'edge';
 
 // Image metadata
 export const alt = 'The Retro Circuit - Console Specs';
@@ -12,33 +11,9 @@ export const size = {
 };
 export const contentType = 'image/png';
 
-export default async function Image(props: { params: Promise<{ slug: string }> }) {
+export default async function Image() {
   try {
-    const params = await props.params;
-    // 1. Fetch Data
-    const slug = decodeURIComponent(params.slug);
-    console.log('[OG] Fetching data for slug:', slug);
-
-    const { data: consoleData } = await fetchConsoleBySlug(slug, false);
-
-    // 2. Fallback Data
-    if (!consoleData) {
-      console.error('[OG] Console not found for slug:', slug);
-      throw new Error("Console not found");
-    }
-
-    console.log('[OG] Found console:', consoleData.name);
-
-    // 3. Extract Specs & Image
-    let finalImage = (consoleData as any).og_icon_url || consoleData.image_url;
-    let defaultVar = null;
-
-    if (consoleData.variants && Array.isArray(consoleData.variants) && consoleData.variants.length > 0) {
-      const variants = consoleData.variants;
-      defaultVar = variants.find((v: any) => v.is_default) || variants[0];
-      if (!finalImage) finalImage = (defaultVar as any)?.og_icon_url || defaultVar?.image_url;
-    }
-
+    // Dynamic Base URL
     const getBaseUrl = () => {
       if (process.env.VERCEL_URL) {
         return process.env.VERCEL_URL.startsWith('http')
@@ -51,35 +26,8 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
     };
 
     const baseUrl = getBaseUrl();
-    const defaultFallback = `${baseUrl}/og-v2.png`;
+    const imageUrl = `${baseUrl}/og-v2.png`;
 
-    const isRelative = finalImage && finalImage.startsWith('/');
-    let imageUrl = isRelative
-      ? `${baseUrl}${finalImage}`
-      : (finalImage || defaultFallback);
-
-    if (imageUrl.toLowerCase().endsWith('.webp')) {
-      if (imageUrl.includes('supabase.co/storage/v1/object/public')) {
-        imageUrl = imageUrl
-          .replace('/storage/v1/object/public', '/storage/v1/render/image/public')
-          + '?width=400&height=300&resize=contain&format=png';
-      } else {
-        console.warn(`[OG] Unsupported WebP: ${imageUrl}. Fallback.`);
-        imageUrl = defaultFallback;
-      }
-    }
-
-    console.log('[OG] Final Image URL:', imageUrl);
-
-    const specs = [];
-    if (defaultVar) {
-      if (defaultVar.screen_size_inch) specs.push(`${defaultVar.screen_size_inch}" ${defaultVar.display_type || ''}`);
-      if (defaultVar.screen_resolution_y) specs.push(`${defaultVar.screen_resolution_y}p`);
-      if (defaultVar.cpu_model || defaultVar.cpu_architecture) specs.push(defaultVar.cpu_model || defaultVar.cpu_architecture);
-      if (defaultVar.os) specs.push(defaultVar.os);
-    }
-
-    // 4. Render Image (Using System Fonts)
     return new ImageResponse(
       (
         <div
@@ -87,172 +35,45 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
             display: 'flex',
             width: '100%',
             height: '100%',
-            background: '#09090b', // zinc-950
-            fontFamily: 'monospace, sans-serif', // Standard font stack
+            backgroundColor: '#09090b',
+            justifyContent: 'center',
+            alignItems: 'center',
           }}
         >
-          {/* Left Side: Branding & CTA */}
-          <div
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imageUrl}
+            alt="The Retro Circuit"
+            width="1200"
+            height="630"
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: '50%',
-              height: '100%',
-              padding: '48px',
-              justifyContent: 'space-between',
-              borderRight: '2px solid #27272a', // zinc-800
-              background: '#09090b',
+              objectFit: 'cover',
             }}
-          >
-            {/* Header */}
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px',
-              }}
-            >
-              <div style={{ display: 'flex', fontSize: 24, color: '#8b5cf6' }}>THE RETRO CIRCUIT</div>
-              <div style={{ display: 'flex', fontSize: 16, color: '#a1a1aa' }}>CLASSIFIED SPECS</div>
-            </div>
-
-            {/* Main Title / CTA */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ display: 'flex', fontSize: 48, color: 'white', lineHeight: 1.1 }}>
-                FULL SPECS & REVIEW
-              </div>
-              <div
-                style={{
-                  display: 'flex', // Explicit Flex
-                  fontSize: 18,
-                  color: '#09090b',
-                  background: '#8b5cf6', // Violet-500
-                  padding: '12px 24px',
-                  marginTop: '24px',
-                  width: '100%', // Ensure it takes width properly in flex column, although 'flex' container handles it
-                  maxWidth: 'fit-content', // Only span content
-                }}
-              >
-                VIEW DETAILS_
-              </div>
-            </div>
-          </div>
-
-          {/* Right Side: Console Info */}
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: '50%',
-              height: '100%',
-              background: '#18181b', // zinc-900
-              padding: '48px',
-              justifyContent: 'center',
-              alignItems: 'center',
-              position: 'relative',
-            }}
-          >
-            {/* Image Container */}
-            <div
-              style={{
-                display: 'flex',
-                width: '400px',
-                height: '300px',
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginBottom: '32px',
-              }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={imageUrl}
-                alt={consoleData.name}
-                width="400"
-                height="300"
-                style={{
-                  objectFit: 'contain',
-                  // Drop shadow for depth
-                  filter: 'drop-shadow(0 20px 30px rgba(0,0,0,0.5))',
-                }}
-              />
-            </div>
-
-            {/* Console Name */}
-            <div
-              style={{
-                display: 'flex', // Explicit Flex
-                fontSize: 32,
-                color: 'white',
-                textAlign: 'center',
-                marginBottom: '24px',
-                maxWidth: '90%',
-                justifyContent: 'center', // Center text content
-              }}
-            >
-              {/* Force text node to be a string primitive to avoid React child node issues */}
-              {`${consoleData.manufacturer?.name ? consoleData.manufacturer.name.toUpperCase() + ' ' : ''}${consoleData.name.toUpperCase()}`}
-            </div>
-
-            {/* Specs List */}
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                justifyContent: 'center',
-                gap: '12px',
-              }}
-            >
-              {specs.slice(0, 4).map((spec, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: 'flex', // Explicit Flex
-                    fontSize: 16,
-                    color: '#e4e4e7', // zinc-200
-                    background: '#27272a', // zinc-800
-                    padding: '8px 16px',
-                    border: '1px solid #3f3f46', // zinc-700
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
-                >
-                  {spec}
-                </div>
-              ))}
-            </div>
-          </div>
+          />
         </div>
       ),
       {
         ...size,
-        // No custom fonts
       }
     );
   } catch (error: any) {
-    console.error("OpenGraph Image Generation Error (Fatal):", error);
-    // Return a safe fallback UI inside a valid ImageResponse on catastrophic failure
+    console.error("OpenGraph Static Image Error:", error);
+    // Absolute fallback (though if this fails, we are really in trouble)
     return new ImageResponse(
       (
         <div
           style={{
             display: 'flex',
-            flexDirection: 'column',
-            fontSize: 40,
-            color: 'white',
-            background: '#991b1b', // Red background to indicate error
             width: '100%',
             height: '100%',
-            alignItems: 'center',
+            backgroundColor: '#09090b',
             justifyContent: 'center',
-            fontFamily: 'monospace',
-            padding: '40px',
-            textAlign: 'center',
+            alignItems: 'center',
+            color: 'white',
+            fontSize: 48,
           }}
         >
-          <div style={{ display: 'flex' }}>OG GENERATION ERROR:</div>
-          <div style={{ display: 'flex', fontSize: 24, marginTop: '20px', color: '#fca5a5', maxWidth: '80%', textAlign: 'center', justifyContent: 'center' }}>
-            {error?.message || String(error) || "Unknown Error"}
-          </div>
+          THE RETRO CIRCUIT
         </div>
       ),
       { ...size }
