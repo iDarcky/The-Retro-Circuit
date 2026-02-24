@@ -193,7 +193,7 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                          />
                     </div>
                 }
-                subtitle="HARDWARE ARCHIVE & SPECIFICATIONS DATABASE"
+                subtitle=""
                 borderColor={brandColor}
             />
 
@@ -201,19 +201,26 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
             <div className="max-w-[1800px] mx-auto p-6 md:p-12">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-12 items-start">
 
-                    {/* Left: Description (Expanded to 9 cols) */}
-                    <div className="lg:col-span-9 flex flex-col justify-start">
-                        <div className="relative pl-6 border-l-2 border-[var(--brand-color)]">
-                            <p className="font-mono text-zinc-300 text-lg md:text-xl leading-relaxed whitespace-pre-line">
-                                <span className="text-[var(--brand-color)] font-bold text-2xl float-left mr-2 leading-none mt-1">
-                                    {profile.name.charAt(0)}
-                                </span>
-                                {profile.description ? profile.description.substring(1) : "No classified data available for this manufacturer."}
-                            </p>
+                    {/* Left: Description (9 Cols) */}
+                    <div className="lg:col-span-9 flex flex-col justify-start gap-8">
+
+                        {/* Hero Text / Mission Statement */}
+                        <div className="relative pl-8 border-l-4 border-[var(--brand-color)] py-2">
+                            <h2 className="text-2xl md:text-4xl font-pixel text-white leading-snug uppercase max-w-4xl">
+                                {profile.description ? profile.description.split('.')[0] + '.' : `The archives for ${profile.name} are currently classified.`}
+                            </h2>
                         </div>
+
+                        {/* Secondary Text (If available) */}
+                        {profile.description && profile.description.split('.').length > 1 && (
+                            <div className="max-w-4xl font-mono text-zinc-400 text-sm md:text-base leading-relaxed pl-8">
+                                <p>{profile.description.split('.').slice(1).join('.').trim()}</p>
+                            </div>
+                        )}
+
                     </div>
 
-                    {/* Right: Data Block (Reduced to 3 cols) */}
+                    {/* Right: Data Block (3 Cols) */}
                     <div className="lg:col-span-3 bg-white/[0.02] border border-white/10 p-6 flex flex-col items-center text-center h-fit sticky top-24">
                          {/* Logo Area */}
                          <div className="w-full aspect-square bg-black/20 border border-white/5 flex items-center justify-center p-8 mb-6 relative overflow-hidden group">
