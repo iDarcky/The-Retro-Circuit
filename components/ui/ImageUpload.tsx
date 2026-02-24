@@ -88,25 +88,25 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
   return (
     <div className={`w-full ${className}`}>
       {value ? (
-        <div className="relative group border border-border-normal bg-black/40 p-2">
-            <div className="aspect-video w-full relative flex items-center justify-center bg-[linear-gradient(45deg,#0f0f1b_25%,transparent_25%,transparent_75%,#0f0f1b_75%,#0f0f1b),linear-gradient(45deg,#0f0f1b_25%,transparent_25%,transparent_75%,#0f0f1b_75%,#0f0f1b)] bg-[length:20px_20px] bg-[position:0_0,10px_10px]">
+        <div className="relative group border border-white/10 bg-bg-primary p-2">
+            <div className="aspect-video w-full relative flex items-center justify-center bg-zinc-950">
                 <img 
                     src={value} 
                     alt="Upload" 
-                    className="max-h-48 w-auto object-contain drop-shadow-lg" 
+                    className="max-h-48 w-auto object-contain"
                 />
             </div>
             <button
                 type="button"
                 onClick={handleRemove}
                 disabled={disabled}
-                className="absolute top-2 right-2 bg-accent text-white w-8 h-8 flex items-center justify-center border border-white hover:bg-red-600 transition-colors shadow-lg z-10"
+                className="absolute top-0 right-0 bg-white text-black w-6 h-6 flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors z-10 font-mono text-xs font-bold"
                 title="Remove Image"
                 aria-label="Remove Image"
             >
                 X
             </button>
-            <div className="absolute bottom-2 left-2 bg-black/80 px-2 py-1 border border-border-normal text-[9px] font-mono text-secondary truncate max-w-[90%]">
+            <div className="absolute bottom-0 left-0 right-0 bg-black/90 px-2 py-1 border-t border-white/10 text-[9px] font-mono text-zinc-400 truncate">
                 {value.split('/').pop()}
             </div>
         </div>
@@ -121,10 +121,10 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
             onDrop={handleDrop}
             onKeyDown={handleKeyDown}
             className={`
-                relative h-32 border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary
+                relative h-24 border flex flex-col items-center justify-center cursor-pointer transition-all focus:outline-none
                 ${isDragging 
-                    ? 'border-secondary bg-secondary/10 scale-[1.02]'
-                    : 'border-gray-700 bg-black/20 hover:border-primary hover:bg-black/40'
+                    ? 'border-white bg-white/5'
+                    : 'border-white/10 bg-bg-primary hover:border-white/30 hover:bg-white/5'
                 }
                 ${disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}
             `}
@@ -140,21 +140,15 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
             />
             
             {isUploading ? (
-                <div className="text-center">
-                     <div className="w-8 h-8 border-2 border-secondary border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                     <span className="font-pixel text-[10px] text-secondary animate-pulse">UPLOADING DATA...</span>
+                <div className="text-center flex flex-col items-center gap-2">
+                     <div className="w-4 h-4 border border-white border-t-transparent rounded-full animate-spin"></div>
+                     <span className="font-mono text-[10px] text-zinc-400">UPLOADING...</span>
                 </div>
             ) : (
-                <div className="text-center p-4">
-                    <svg className={`w-8 h-8 mx-auto mb-2 ${isDragging ? 'text-secondary' : 'text-gray-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                    </svg>
-                    <div className="font-pixel text-[10px] text-gray-400 mb-1">
-                        {isDragging ? 'DROP FILE TO UPLOAD' : 'CLICK OR DRAG IMAGE'}
-                    </div>
-                    <div className="font-mono text-[9px] text-gray-600">
-                        SUPPORTS JPG, PNG, WEBP
-                    </div>
+                <div className="text-center p-2 flex items-center gap-2">
+                    <span className="font-mono text-[10px] uppercase font-bold text-zinc-400 group-hover:text-white transition-colors">
+                        {isDragging ? '[ DROP HERE ]' : '[ + UPLOAD IMAGE ]'}
+                    </span>
                 </div>
             )}
         </div>

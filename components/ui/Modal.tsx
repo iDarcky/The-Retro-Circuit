@@ -39,21 +39,21 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
 
     return createPortal(
         <div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fadeIn p-4"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 animate-fadeIn p-4"
             onClick={onClose}
         >
             <div
-                className="w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-bg-primary border-2 border-secondary shadow-[0_0_30px_rgba(0,255,157,0.1)] flex flex-col relative animate-slideUp"
+                className="w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-bg-primary border border-white shadow-2xl flex flex-col relative animate-slideUp"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="flex justify-between items-center bg-black border-b border-secondary p-4 sticky top-0 z-10 backdrop-blur-md">
-                    <h2 className="font-pixel text-sm md:text-lg text-secondary uppercase tracking-widest drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]">
+                <div className="flex justify-between items-center bg-bg-primary border-b border-white/10 p-4 sticky top-0 z-10">
+                    <h2 className="font-mono font-bold text-sm md:text-base text-white uppercase tracking-widest">
                         {title}
                     </h2>
                     <button
                         onClick={onClose}
-                        className="text-secondary hover:text-white font-mono text-xl leading-none px-4 py-1 border border-transparent hover:border-secondary transition-all"
+                        className="text-zinc-500 hover:text-white font-mono text-xs uppercase px-4 py-1 border border-transparent hover:border-white transition-all"
                         aria-label="Close"
                     >
                         [ESC]
@@ -61,7 +61,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
                 </div>
 
                 {/* Content */}
-                <div className="p-6 overflow-y-auto">
+                <div className="p-6 overflow-y-auto bg-bg-primary">
                     {children}
                 </div>
             </div>
