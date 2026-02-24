@@ -1,14 +1,14 @@
 
 'use client';
 
-import { useEffect, useState, type ChangeEvent, type FC, useRef } from 'react';
+import { useEffect, useState, type FC } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ConsoleDetails, ConsoleFilterState, Manufacturer } from '../../lib/types';
 import RetroLoader from '../ui/RetroLoader';
 import Button from '../ui/Button';
 import { formatReleaseDate } from '../../lib/utils/date-formatter';
-import { LayoutGrid, List, Search, SlidersHorizontal, ArrowUpDown, ChevronDown } from 'lucide-react';
+import { LayoutGrid, List, Search, SlidersHorizontal } from 'lucide-react';
 import { SwissDropdown } from '../ui/SwissDropdown';
 
 interface ConsoleVaultClientProps {
@@ -121,6 +121,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
             case 'price_desc':
                 const pA = getMinPrice(a);
                 const pB = getMinPrice(b);
+                if (pA === 999999 && pB === 999999) return 0; // Stability fix
                 if (pA === 999999) return 1;
                 if (pB === 999999) return -1;
                 return pB - pA;
