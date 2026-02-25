@@ -78,7 +78,11 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
         setLoading(true);
         try {
             if (isEditMode && initialData?.id) {
-                await updateConsole(initialData.id, formData);
+                const result = await updateConsole(initialData.id, formData);
+                if (!result.success) {
+                    alert(result.message || "Failed to update console.");
+                    return;
+                }
             } else {
                 const result = await createConsole(formData as any);
                 if (result?.id) {

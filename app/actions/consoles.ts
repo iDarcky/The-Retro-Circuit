@@ -304,7 +304,11 @@ export const updateConsole = async (
 ): Promise<{ success: boolean, message?: string }> => {
     try {
         const supabase = await createClient();
-        const { error } = await supabase.from('consoles').update(consoleData).eq('id', id);
+
+        // Remove joined fields that are not columns in the consoles table
+        const { manufacturer, variants, specs, ...cleanData } = consoleData as any;
+
+        const { error } = await supabase.from("consoles").update(cleanData).eq("id", id);
         if (error) return { success: false, message: error.message };
         return { success: true };
     } catch (e: any) {
