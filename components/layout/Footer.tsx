@@ -1,9 +1,10 @@
 'use client';
 
-import { type FC } from 'react';
+import { type FC, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { siteConfig } from '../../config/site';
 import { useConsent } from '../privacy/ConsentContext';
+import { retroAuth } from '../../lib/auth';
 
 interface FooterProps {
   version: string;
@@ -12,6 +13,15 @@ interface FooterProps {
 const Footer: FC<FooterProps> = ({ version }) => {
   const currentYear = new Date().getFullYear();
   const { reset } = useConsent();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const admin = await retroAuth.isAdmin();
+      setIsAdmin(admin);
+    };
+    checkAdmin();
+  }, []);
 
   return (
     <footer className="w-full bg-bg-primary shrink-0 z-10 relative">
@@ -45,6 +55,14 @@ const Footer: FC<FooterProps> = ({ version }) => {
                 {route.label}
               </Link>
            ))}
+           {isAdmin && (
+             <Link
+               href="/admin"
+               className="hover:text-primary transition-colors duration-200"
+             >
+               Admin
+             </Link>
+           )}
         </nav>
 
         {/* Right: System Status */}
