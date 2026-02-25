@@ -3,23 +3,31 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowUpDown, ChevronDown } from 'lucide-react';
 
-interface SwissDropdownOption<T extends string> {
+export interface SwissDropdownOption<T extends string | number> {
     value: T;
     label: string;
 }
 
-interface SwissDropdownProps<T extends string> {
+interface SwissDropdownProps<T extends string | number> {
     value: T;
     onChange: (val: T) => void;
     options: SwissDropdownOption<T>[];
     labelPrefix?: string;
+    className?: string;
+    buttonClassName?: string;
+    menuClassName?: string;
+    compact?: boolean;
 }
 
-export function SwissDropdown<T extends string>({
+export function SwissDropdown<T extends string | number>({
     value,
     onChange,
     options,
-    labelPrefix = "SORT"
+    labelPrefix = "SORT",
+    className = "",
+    buttonClassName = "",
+    menuClassName = "",
+    compact = false
 }: SwissDropdownProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
@@ -34,31 +42,48 @@ export function SwissDropdown<T extends string>({
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const selectedLabel = options.find(o => o.value === value)?.label || 'SELECT';
+    const selectedLabel = options.find(o => o.value === value)?.label || value;
+
+    const showPrefix = labelPrefix && labelPrefix.length > 0;
 
     return (
-        <div className="relative inline-block" ref={wrapperRef}>
+        <div className={`relative inline-block ${className}`} ref={wrapperRef}>
             <button
+                type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className={`flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-wider border transition-all ${isOpen ? 'bg-white text-black border-white' : 'text-white border-white/20 hover:border-white/50 bg-black/40'}`}
+                className={`flex items-center justify-between w-full gap-2 font-mono uppercase tracking-wider border transition-all
+                    ${compact ? 'px-2 py-1 text-[10px]' : 'px-4 py-2 text-xs'}
+                    ${isOpen ? 'bg-white text-black border-white' : 'text-white border-white/20 hover:border-white/50 bg-black/40'}
+                    ${buttonClassName}
+                `}
             >
-                <ArrowUpDown size={14} />
-                <span className="hidden md:inline">{labelPrefix}: {selectedLabel}</span>
-                <span className="md:hidden">{labelPrefix}</span>
-                <ChevronDown size={12} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                <div className="flex items-center gap-2 truncate">
+                    {!compact && <ArrowUpDown size={14} className="shrink-0" />}
+                    {showPrefix ? (
+                        <>
+                            <span className="hidden md:inline truncate">{labelPrefix}: {selectedLabel}</span>
+                            <span className="md:hidden truncate">{labelPrefix}</span>
+                        </>
+                    ) : (
+                        <span className="truncate">{selectedLabel}</span>
+                    )}
+                </div>
+                <ChevronDown size={compact ? 10 : 12} className={`shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {isOpen && (
-                <div className="absolute top-[calc(100%+4px)] right-0 min-w-full w-max bg-black border border-white/20 shadow-2xl z-[100] flex flex-col">
+                <div className={`absolute top-[calc(100%+4px)] right-0 min-w-full w-max bg-black border border-white/20 shadow-2xl z-[100] flex flex-col ${menuClassName}`}>
                     {options.map((option) => (
                         <button
-                            key={option.value}
+                            key={String(option.value)}
+                            type="button"
                             onClick={() => {
                                 onChange(option.value);
                                 setIsOpen(false);
                             }}
-                            className={`px-4 py-3 text-left text-xs font-mono uppercase tracking-wider border-l-4 transition-colors flex items-center justify-between whitespace-nowrap gap-4 ${
-                                value === option.value
+                            className={`text-left font-mono uppercase tracking-wider border-l-4 transition-colors flex items-center justify-between whitespace-nowrap gap-4
+                                ${compact ? 'px-3 py-2 text-[10px]' : 'px-4 py-3 text-xs'}
+                                ${value === option.value
                                 ? 'bg-white/5 text-white border-violet-500'
                                 : 'text-zinc-500 border-transparent hover:bg-white/5 hover:text-white hover:border-white/50'
                             }`}

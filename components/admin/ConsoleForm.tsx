@@ -10,6 +10,7 @@ import { ConsoleSchema, Manufacturer, CONSOLE_FORM_FIELDS, ConsoleDetails } from
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
 import ImageUpload from '../ui/ImageUpload';
+import { SwissDropdown } from '../ui/SwissDropdown';
 
 interface ConsoleFormProps {
     initialData?: ConsoleDetails | null;
@@ -243,14 +244,17 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                 <div className="col-span-1 md:col-span-2">
                     <label className={`text-[10px] mb-1 block uppercase tracking-wider ${fieldErrors.manufacturer_id ? 'text-accent' : 'text-gray-500'}`}>Manufacturer</label>
                     <div className="relative">
-                        <select
-                            className={`w-full bg-bg-primary border p-3 outline-none text-white font-mono text-sm appearance-none cursor-pointer hover:border-white transition-colors ${fieldErrors.manufacturer_id ? 'border-accent' : 'border-border-normal focus:border-white'}`}
+                        <SwissDropdown
+                            className="w-full"
+                            buttonClassName={`bg-bg-primary border p-3 outline-none text-white font-mono text-sm cursor-pointer hover:border-white transition-colors h-[46px] flex justify-between items-center ${fieldErrors.manufacturer_id ? 'border-accent' : 'border-border-normal focus:border-white'}`}
                             value={formData.manufacturer_id || ''}
-                            onChange={(e: ChangeEvent<HTMLSelectElement>) => handleInputChange('manufacturer_id', e.target.value)}
-                        >
-                            <option value="">-- SELECT FABRICATOR --</option>
-                            {manufacturers.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-                        </select>
+                            onChange={(val) => handleInputChange('manufacturer_id', val)}
+                            options={[
+                                { label: '-- SELECT FABRICATOR --', value: '' },
+                                ...manufacturers.map(m => ({ label: m.name, value: m.id }))
+                            ]}
+                            labelPrefix=""
+                        />
                         <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 text-[10px]">▼</div>
                     </div>
                     {fieldErrors.manufacturer_id && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold">! {fieldErrors.manufacturer_id}</div>}
@@ -304,16 +308,19 @@ export const ConsoleForm: FC<ConsoleFormProps> = ({ initialData, manufacturers, 
                         <div>
                             <label className="text-[10px] mb-1 block uppercase text-gray-500 tracking-wider">Device Category</label>
                             <div className="relative">
-                                <select
-                                    className="w-full bg-bg-primary border border-border-normal p-3 outline-none text-white font-mono text-sm appearance-none cursor-pointer hover:border-white transition-colors focus:border-white"
+                                <SwissDropdown
+                                    className="w-full"
+                                    buttonClassName="bg-bg-primary border border-border-normal p-3 outline-none text-white font-mono text-sm cursor-pointer hover:border-white transition-colors focus:border-white h-[46px] flex justify-between items-center"
                                     value={formData.device_category || 'emulation'}
-                                    onChange={(e) => handleInputChange('device_category', e.target.value)}
-                                >
-                                    <option value="emulation">EMULATION HANDHELD</option>
-                                    <option value="pc_gaming">PC GAMING HANDHELD</option>
-                                    <option value="fpga">FPGA HANDHELD</option>
-                                    <option value="legacy">ORIGINAL HARDWARE</option>
-                                </select>
+                                    onChange={(val) => handleInputChange('device_category', val)}
+                                    options={[
+                                        { label: 'EMULATION HANDHELD', value: 'emulation' },
+                                        { label: 'PC GAMING HANDHELD', value: 'pc_gaming' },
+                                        { label: 'FPGA HANDHELD', value: 'fpga' },
+                                        { label: 'ORIGINAL HARDWARE', value: 'legacy' }
+                                    ]}
+                                    labelPrefix=""
+                                />
                                 <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 text-[10px]">▼</div>
                             </div>
                         </div>

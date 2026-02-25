@@ -1,5 +1,5 @@
-
 import { type FC, type ChangeEvent } from 'react';
+import { SwissDropdown } from '../ui/SwissDropdown';
 
 interface RenderInputProps {
     field: { 
@@ -119,23 +119,23 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
     }
 
     if (type === 'select') {
+        const dropdownOptions = [
+            { label: '-- SELECT --', value: '' },
+            ...(field.options?.map(opt => ({ label: opt, value: opt })) || [])
+        ];
+
         return (
             <div>
                 <label htmlFor={field.key} className={`text-[10px] mb-1 block uppercase tracking-wider ${labelColor}`}>{field.label}</label>
                 <div className="relative">
-                    <select
-                        id={field.key}
-                        className={`${baseInputClasses} ${borderColor} appearance-none pr-8 cursor-pointer hover:border-white`}
+                    <SwissDropdown
                         value={val}
-                        onChange={(e: ChangeEvent<HTMLSelectElement>) => onChange(field.key, e.target.value)}
-                    >
-                        <option value="">-- SELECT --</option>
-                        {field.options?.map(opt => (
-                            <option key={opt} value={opt} className="bg-black text-white">{opt}</option>
-                        ))}
-                    </select>
-                    {/* Custom Arrow */}
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 text-[10px]">▼</div>
+                        onChange={(newVal) => onChange(field.key, newVal)}
+                        options={dropdownOptions}
+                        labelPrefix=""
+                        className="w-full"
+                        buttonClassName={`${baseInputClasses} ${borderColor} h-[46px] flex justify-between items-center`}
+                    />
                 </div>
                 {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
                 {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold">! {error}</div>}

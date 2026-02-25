@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { NewsItem, NewsCategory } from '@/lib/types/news';
 import { createNews, deleteNews } from '@/app/actions/news';
+import { SwissDropdown } from '../ui/SwissDropdown';
 
 interface NewsManagerProps {
   news: NewsItem[];
@@ -91,18 +92,19 @@ export const NewsManager: React.FC<NewsManagerProps> = ({ news }) => {
 
                <div>
                    <label className="block text-xs font-mono text-gray-500 uppercase mb-2">Category</label>
-                   <select
-                     name="category"
+                   <SwissDropdown
                      value={formData.category}
-                     onChange={handleChange}
-                     className="w-full bg-black border border-white/20 p-3 text-sm font-mono text-white focus:border-violet-500 focus:outline-none"
-                     required
-                   >
-                     <option value="announcement">ANNOUNCEMENT</option>
-                     <option value="rumor">RUMOR</option>
-                     <option value="release">RELEASE</option>
-                     <option value="guide">GUIDE</option>
-                   </select>
+                     onChange={(val) => setFormData(prev => ({ ...prev, category: val }))}
+                     options={[
+                       { label: 'ANNOUNCEMENT', value: 'announcement' },
+                       { label: 'RUMOR', value: 'rumor' },
+                       { label: 'RELEASE', value: 'release' },
+                       { label: 'GUIDE', value: 'guide' }
+                     ]}
+                     labelPrefix=""
+                     className="w-full"
+                     buttonClassName="bg-black border border-white/20 p-3 text-sm font-mono text-white focus:border-violet-500 focus:outline-none h-[46px] flex justify-between items-center"
+                   />
                </div>
            </div>
 
