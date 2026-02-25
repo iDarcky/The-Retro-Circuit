@@ -12,6 +12,8 @@ import { getConsoleImage } from '../../lib/utils';
 import SystemAnalysis from './swiss/SystemAnalysis';
 import CombinedMetrics from './swiss/CombinedMetrics';
 import TechnicalReference from './swiss/TechnicalReference';
+import SwissModal from './swiss/SwissModal';
+import VariantComparisonTable from './swiss/VariantComparisonTable';
 
 interface ConsoleDetailViewProps {
   consoleData: ConsoleDetails;
@@ -53,6 +55,9 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
     const [mergedSpecs, setMergedSpecs] = useState<MergedSpecs>(() => getMergedSpecs(getInitialVariantId()));
 
+    // Modal State
+    const [isVariantModalOpen, setIsVariantModalOpen] = useState(false);
+
     useEffect(() => {
         const variantSlug = searchParams?.get('variant');
         if (variantSlug && hasVariants) {
@@ -93,6 +98,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                      const v = variants.find(v => v.slug === slug);
                      if (v) handleVariantChange(v.id);
                 }}
+                onCompareVariants={() => setIsVariantModalOpen(true)}
              />
 
              {/* MAIN CONTENT GRID */}
@@ -166,6 +172,15 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                 </section>
 
              </main>
+
+            {/* VARIANT COMPARISON MODAL */}
+            <SwissModal
+                isOpen={isVariantModalOpen}
+                onClose={() => setIsVariantModalOpen(false)}
+                title={`VARIANT COMPARISON // ${consoleData.name}`}
+            >
+                <VariantComparisonTable variants={variants} baseSpecs={consoleData.specs || {}} />
+            </SwissModal>
         </div>
     );
 };

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Share2 } from 'lucide-react';
+import { Share2, Layers } from 'lucide-react';
 import { ConsoleDetails, ConsoleVariant, Manufacturer } from '../../lib/types';
 import { IconVS } from '../ui/Icons';
 import SwissButton from './swiss/SwissButton';
@@ -13,6 +13,7 @@ interface ConsoleIdentitySectionProps {
     variants: ConsoleVariant[];
     selectedVariantId: string;
     onVariantChange: (slug: string) => void;
+    onCompareVariants?: () => void;
 }
 
 interface VariantDropdownProps {
@@ -113,7 +114,8 @@ export default function ConsoleIdentitySection({
     manufacturer,
     variants,
     selectedVariantId,
-    onVariantChange
+    onVariantChange,
+    onCompareVariants
 }: ConsoleIdentitySectionProps) {
     const [isSticky, setIsSticky] = useState(false);
     const [showShareTooltip, setShowShareTooltip] = useState(false);
@@ -123,6 +125,8 @@ export default function ConsoleIdentitySection({
     const compareUrl = `/arena/${consoleData.slug}${currentVariant?.slug ? `-${currentVariant.slug}` : ''}-vs-select`;
 
     const fabName = manufacturer?.name || 'UNKNOWN';
+
+    const hasMultipleVariants = variants.length > 1;
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -194,6 +198,17 @@ export default function ConsoleIdentitySection({
                                 selectedVariantId={selectedVariantId}
                                 onVariantChange={onVariantChange}
                             />
+                            {hasMultipleVariants && (
+                                <SwissButton
+                                    variant="secondary"
+                                    onClick={onCompareVariants}
+                                    className="!border-white/20 hover:!border-white !text-gray-300 hover:!text-white hidden sm:flex"
+                                >
+                                    <Layers className="w-3 h-3" />
+                                    VARIANTS
+                                </SwissButton>
+                            )}
+
                             <div className="hidden md:block w-px h-6 bg-white/10"></div>
                             <div className="hidden md:block">
                                 <JumpLinks scrollToSection={scrollToSection} />
@@ -234,6 +249,15 @@ export default function ConsoleIdentitySection({
                     </div>
 
                     <div className="flex items-center gap-4">
+                         {hasMultipleVariants && (
+                                <button
+                                    onClick={onCompareVariants}
+                                    className="hidden sm:flex items-center gap-2 text-[10px] font-mono uppercase text-gray-400 hover:text-white border border-white/10 hover:border-white/50 px-2 py-1 transition-colors"
+                                >
+                                    <Layers className="w-3 h-3" />
+                                    VARIANTS
+                                </button>
+                            )}
                         <VariantDropdown
                             compact
                             variants={variants}
