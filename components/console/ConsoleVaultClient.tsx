@@ -221,23 +221,21 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
         </div>
 
         {/* EXPANDABLE FILTERS */}
-        <div className={`w-full bg-black/40 backdrop-blur-md border-y border-white/10 p-4 mb-8 transition-all duration-300 ${showFilters ? 'block' : 'hidden'}`}>
+        <div className={`w-full bg-black/40 backdrop-blur-md relative z-40 border-y border-white/10 p-4 mb-8 transition-all duration-300 ${showFilters ? 'block' : 'hidden'}`}>
             <div className="max-w-[1800px] mx-auto flex flex-col md:flex-row gap-6 items-start md:items-center justify-between flex-wrap">
 
                 {/* Manufacturer */}
               <div className="flex flex-col gap-2">
                   <label className="text-xs font-mono font-bold uppercase text-white tracking-wider">Manufacturer</label>
-                    <select
-                        className="bg-transparent border-b border-white/20 text-white font-mono text-xs py-1 focus:border-violet-500 outline-none min-w-[150px]"
-                        value={filters.manufacturer_id || ''}
-                        onChange={(e: ChangeEvent<HTMLSelectElement>) => setFilters({...filters, manufacturer_id: e.target.value || null})}
-                    >
-                        <option value="">ALL ENTITIES</option>
-                        {manufacturers.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-                    </select>
-                </div>
-
+                    <SwissDropdown
+                        value={filters.manufacturer_id || ""}
+                        onChange={(val) => setFilters({...filters, manufacturer_id: val || null})}
+                        options={[{ label: "ALL ENTITIES", value: "" }, ...manufacturers.map(m => ({ label: m.name, value: m.id })) ]}
+                        labelPrefix="MANUFACTURER"
+                        className="min-w-[200px]"
+                    />
                 {/* Timeline */}
+                </div>
               <div className="flex flex-col gap-2">
                     <label className="text-xs font-mono font-bold uppercase text-white tracking-wider">Timeline</label>
                     <div className="flex gap-2 items-center">

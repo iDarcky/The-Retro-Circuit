@@ -1,5 +1,6 @@
 'use client';
 
+import { SwissDropdown } from '../ui/SwissDropdown';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Share2, Layers } from 'lucide-react';
@@ -27,30 +28,18 @@ const VariantDropdown = ({ compact = false, variants, selectedVariantId, onVaria
     if (variants.length <= 1) return null;
 
     return (
-        <div className="relative group shrink-0">
-            <select
+        <div className="shrink-0">
+            <SwissDropdown
                 value={selectedVariantId}
-                onChange={(e) => {
-                    const slug = variants.find(v => v.id === e.target.value)?.slug;
+                onChange={(val) => {
+                    const slug = variants.find(v => v.id === val)?.slug;
                     if (slug) onVariantChange(slug);
                 }}
-                className={`
-                    appearance-none bg-transparent border text-white font-mono outline-none cursor-pointer hover:bg-white hover:text-black uppercase transition-colors
-                    ${compact
-                        ? 'text-[10px] px-2 py-1 pr-4 border-white/20'
-                        : 'text-xs px-4 py-2 pr-8 border-white/20 min-w-[200px]'}
-                `}
-            >
-                {variants.map(v => (
-                    <option key={v.id} value={v.id} className="bg-black text-white">
-                        {v.variant_name}
-                    </option>
-                ))}
-            </select>
-            {/* Custom Arrow */}
-            <div className={`absolute top-1/2 -translate-y-1/2 pointer-events-none ${compact ? 'right-1' : 'right-3'}`}>
-                <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[4px] border-t-white" />
-            </div>
+                options={variants.map(v => ({ label: v.variant_name, value: v.id }))}
+                labelPrefix="VARIANT"
+                compact={compact}
+                className={compact ? "min-w-[120px]" : "min-w-[200px]"}
+            />
         </div>
     );
 };

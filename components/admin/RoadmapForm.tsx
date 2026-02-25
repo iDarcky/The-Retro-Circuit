@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { RoadmapFeature } from '../../lib/types/domain';
 import { createRoadmapItem, updateRoadmapItem } from '../../app/actions/roadmap';
 import Button from '../ui/Button';
+import { SwissDropdown } from '../ui/SwissDropdown';
 
 interface RoadmapFormProps {
   initialData?: RoadmapFeature | null;
@@ -101,31 +102,35 @@ export function RoadmapForm({ initialData, onSuccess, onError }: RoadmapFormProp
         {/* Status */}
         <div>
           <label className={labelClass}>Status</label>
-          <select
-            name="status"
+          <SwissDropdown
             value={formData.status || 'planned'}
-            onChange={handleChange}
-            className={inputClass}
-          >
-            <option value="planned">PLANNED</option>
-            <option value="in-progress">IN PROGRESS</option>
-            <option value="completed">COMPLETED</option>
-          </select>
+            onChange={(val) => setFormData(prev => ({ ...prev, status: val as any }))}
+            options={[
+                { label: 'PLANNED', value: 'planned' },
+                { label: 'IN PROGRESS', value: 'in-progress' },
+                { label: 'COMPLETED', value: 'completed' }
+            ]}
+            labelPrefix="" inverted={false}
+            className="w-full"
+            buttonClassName={`${inputClass} h-[46px] flex justify-between items-center`}
+          />
         </div>
 
         {/* Priority */}
         <div>
           <label className={labelClass}>Priority</label>
-          <select
-            name="priority"
+          <SwissDropdown
             value={formData.priority || 'must-have'}
-            onChange={handleChange}
-            className={inputClass}
-          >
-            <option value="critical">CRITICAL</option>
-            <option value="must-have">MUST HAVE</option>
-            <option value="nice-to-have">NICE TO HAVE</option>
-          </select>
+            onChange={(val) => setFormData(prev => ({ ...prev, priority: val as any }))}
+            options={[
+                { label: 'CRITICAL', value: 'critical' },
+                { label: 'MUST HAVE', value: 'must-have' },
+                { label: 'NICE TO HAVE', value: 'nice-to-have' }
+            ]}
+            labelPrefix="" inverted={false}
+            className="w-full"
+            buttonClassName={`${inputClass} h-[46px] flex justify-between items-center`}
+          />
         </div>
 
         {/* Description */}
