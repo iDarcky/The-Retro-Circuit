@@ -46,10 +46,6 @@ export function SwissDropdown<T extends string | number>({
 
     const showPrefix = labelPrefix && labelPrefix.length > 0;
 
-    // Check if any valid value is selected (not empty string, not null)
-    // Note: value might be number 0, which is truthy in this context if we check strictly against "" or null/undefined.
-    const hasSelection = value !== "" && value !== null && value !== undefined;
-
     return (
         <div className={`relative inline-block ${className}`} ref={wrapperRef}>
             <button
@@ -59,9 +55,7 @@ export function SwissDropdown<T extends string | number>({
                     ${compact ? 'px-2 py-1 text-[10px]' : 'px-4 py-2 text-xs'}
                     ${isOpen
                         ? 'bg-white text-black border-white'
-                        : hasSelection
-                            ? 'bg-white text-black border-white' // Selected state: Black text on White
-                            : 'text-white border-white/20 hover:border-white/50 bg-black/40' // Default empty state
+                        : 'text-white border-white/20 hover:border-white/50 bg-black/40' // Reverted to always dark when closed
                     }
                     ${buttonClassName}
                 `}
