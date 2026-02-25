@@ -17,7 +17,7 @@ type EditorClientProps = {
 export default function AdminConsoleEditorClient({ initialConsole, initialManufacturers }: EditorClientProps) {
     const router = useRouter();
     const [consoleData, setConsoleData] = useState<ConsoleDetails>(initialConsole);
-    const [error, setError] = useState<string | null>(null);
+    const [error, _setError] = useState<string | null>(null);
 
     // Variant Modal State
     const [isVariantModalOpen, setIsVariantModalOpen] = useState(false);
@@ -87,11 +87,6 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                     <ConsoleForm
                         initialData={consoleData}
                         manufacturers={initialManufacturers}
-                        onConsoleCreated={() => {
-                             // On update success logic
-                             router.refresh();
-                        }}
-                        onError={(msg) => setError(msg)}
                     />
                  </div>
             </div>

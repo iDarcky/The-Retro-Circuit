@@ -31,7 +31,7 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
 
     // Modal State
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const [createError, setCreateError] = useState<string | null>(null);
+    const [createError, _setCreateError] = useState<string | null>(null);
 
     // Sync state with props if they change (e.g. after router.refresh)
     useEffect(() => {
@@ -57,11 +57,6 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
         return matchesSearch && matchesFilter;
     });
 
-    const handleConsoleCreated = (_id: string, _name: string) => {
-        setIsCreateModalOpen(false);
-        router.refresh(); // Fetch new data
-        // Optional: Show toast
-    };
 
     const handleDelete = async (id: string, name: string) => {
         if (confirm(`PERMANENTLY DELETE "${name}"?\n\nThis console is in DRAFT and can be safely removed.`)) {
@@ -232,8 +227,6 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
             >
                 <ConsoleForm
                     manufacturers={initialManufacturers}
-                    onConsoleCreated={handleConsoleCreated}
-                    onError={setCreateError}
                 />
                 {createError && (
                     <div className="mt-4 p-3 bg-accent/10 border border-accent text-accent font-mono text-xs uppercase font-bold">

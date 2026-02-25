@@ -26,7 +26,7 @@ export function SwissDropdown<T extends string | number>({
     labelPrefix = "SORT",
     className = "",
     buttonClassName = "",
-    menuClassName = "",
+    menuClassName = "z-[100]",
     compact = false
 }: SwissDropdownProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
@@ -46,6 +46,10 @@ export function SwissDropdown<T extends string | number>({
 
     const showPrefix = labelPrefix && labelPrefix.length > 0;
 
+    // Check if any valid value is selected (not empty string, not null)
+    // Note: value might be number 0, which is truthy in this context if we check strictly against "" or null/undefined.
+    const hasSelection = value !== "" && value !== null && value !== undefined;
+
     return (
         <div className={`relative inline-block ${className}`} ref={wrapperRef}>
             <button
@@ -53,7 +57,12 @@ export function SwissDropdown<T extends string | number>({
                 onClick={() => setIsOpen(!isOpen)}
                 className={`flex items-center justify-between w-full gap-2 font-mono uppercase tracking-wider border transition-all
                     ${compact ? 'px-2 py-1 text-[10px]' : 'px-4 py-2 text-xs'}
-                    ${isOpen ? 'bg-white text-black border-white' : 'text-white border-white/20 hover:border-white/50 bg-black/40'}
+                    ${isOpen
+                        ? 'bg-white text-black border-white'
+                        : hasSelection
+                            ? 'bg-white text-black border-white' // Selected state: Black text on White
+                            : 'text-white border-white/20 hover:border-white/50 bg-black/40' // Default empty state
+                    }
                     ${buttonClassName}
                 `}
             >
@@ -72,7 +81,7 @@ export function SwissDropdown<T extends string | number>({
             </button>
 
             {isOpen && (
-                <div className={`absolute top-[calc(100%+4px)] right-0 min-w-full w-max bg-black border border-white/20 shadow-2xl z-[100] flex flex-col ${menuClassName}`}>
+                <div className={`absolute top-[calc(100%+4px)] right-0 min-w-full w-max bg-black border border-white/20 shadow-2xl flex flex-col ${menuClassName}`}>
                     {options.map((option) => (
                         <button
                             key={String(option.value)}
