@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Signal, SignalType } from '@/lib/types/news';
 import { createSignal, toggleSignalStatus } from '@/app/actions/signals';
+import { SwissDropdown } from '../ui/SwissDropdown';
 
 interface SignalManagerProps {
   signals: Signal[];
@@ -66,16 +67,19 @@ export const SignalManager: React.FC<SignalManagerProps> = ({ signals }) => {
            <div className="flex gap-4">
              <div className="flex-1">
                <label className="block text-xs font-mono text-gray-500 uppercase mb-2">Signal Type</label>
-               <select
+               <SwissDropdown
                  value={type}
-                 onChange={(e) => setType(e.target.value as SignalType)}
-                 className="w-full bg-black border border-white/20 p-3 text-sm font-mono text-white focus:border-emerald-500 focus:outline-none"
-               >
-                 <option value="status">STATUS_UPDATE</option>
-                 <option value="alert">ALERT</option>
-                 <option value="thought">THOUGHT</option>
-                 <option value="update">SYS_UPDATE</option>
-               </select>
+                 onChange={(val) => setType(val as SignalType)}
+                 options={[
+                   { label: 'STATUS_UPDATE', value: 'status' },
+                   { label: 'ALERT', value: 'alert' },
+                   { label: 'THOUGHT', value: 'thought' },
+                   { label: 'SYS_UPDATE', value: 'update' }
+                 ]}
+                 labelPrefix="" inverted={false}
+                 className="w-full"
+                 buttonClassName="bg-black border border-white/20 p-3 text-sm font-mono text-white focus:border-emerald-500 focus:outline-none h-[46px] flex justify-between items-center"
+               />
              </div>
 
              <div className="flex items-end">

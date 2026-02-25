@@ -5,6 +5,7 @@ import { useState, useEffect, type FC } from 'react';
 import { supabase } from '../../lib/supabase/singleton';
 import { EmulationProfile } from '../../lib/types';
 import Button from '../ui/Button';
+import { SwissDropdown } from '../ui/SwissDropdown';
 
 interface EmulationFormProps {
     variantId: string;
@@ -134,13 +135,14 @@ export const EmulationForm: FC<EmulationFormProps> = ({ variantId, onSave }) => 
                             return (
                                 <div key={sys.key}>
                                     <label className="block text-[10px] font-mono text-gray-500 uppercase mb-1">{sys.label}</label>
-                                    <select
-                                        className={`w-full bg-black border border-gray-700 p-2 text-xs font-mono outline-none focus:border-secondary ${getColorForRating(currentValue)}`}
-                                        value={currentValue}
-                                        onChange={(e) => handleChange(sys.key, e.target.value)}
-                                    >
-                                        {RATINGS.map(r => <option key={r} value={r} className="text-gray-300">{r}</option>)}
-                                    </select>
+                                    <SwissDropdown
+                                    className="w-full"
+                                    buttonClassName={`bg-black border border-gray-700 p-2 text-xs font-mono outline-none focus:border-secondary h-[34px] flex justify-between items-center ${getColorForRating(currentValue)}`}
+                                    value={currentValue}
+                                    onChange={(val) => handleChange(sys.key, val as string)}
+                                    options={RATINGS.map(r => ({ label: r, value: r }))}
+                                    labelPrefix="" inverted={false}
+                                />
                                 </div>
                             );
                         })}

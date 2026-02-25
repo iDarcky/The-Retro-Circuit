@@ -1,4 +1,5 @@
 'use client';
+import { SwissDropdown } from '../ui/SwissDropdown';
 
 import { useState, type FormEvent, type FC, useEffect, type ChangeEvent, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -442,19 +443,22 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                     <div key="date-input" className={`${colSpan} grid grid-cols-2 gap-4`}>
                                                         <div>
                                                             <label className="text-[10px] mb-1 block uppercase text-gray-500">Date Precision</label>
-                                                            <select
-                                                                className="w-full bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm"
+                                                            <SwissDropdown
+                                                                className="w-full"
+                                                                buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center"
                                                                 value={datePrecision}
-                                                                onChange={(e) => {
-                                                                    setDatePrecision(e.target.value as any);
-                                                                    setDateValue('');
+                                                                onChange={(val) => {
+                                                                    setDatePrecision(val as any);
+                                                                    setDateValue("");
                                                                 }}
-                                                            >
-                                                                <option value="">-- None --</option>
-                                                                <option value="year">Year Only</option>
-                                                                <option value="month">Month + Year</option>
-                                                                <option value="day">Exact Day</option>
-                                                            </select>
+                                                                options={[
+                                                                    { value: "", label: "-- None --" },
+                                                                    { value: "year", label: "Year Only" },
+                                                                    { value: "month", label: "Month + Year" },
+                                                                    { value: "day", label: "Exact Day" }
+                                                                ]}
+                                                                labelPrefix="" inverted={false}
+                                                            />
                                                         </div>
                                                         {datePrecision && (
                                                             <div>
@@ -480,7 +484,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                         <label className={`text-[10px] mb-1 block uppercase ${error ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
                                                         <div className="flex gap-2">
                                                             <input type="number" className={`flex-1 border p-3 outline-none font-mono text-sm bg-black text-white ${error ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`} value={ramInput.value} onChange={(e) => handleRamChange(e.target.value, ramInput.unit)} />
-                                                            <select className="w-24 bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm" value={ramInput.unit} onChange={(e) => handleRamChange(ramInput.value, e.target.value as 'GB' | 'MB')}><option value="GB">GB</option><option value="MB">MB</option></select>
+                                                            <SwissDropdown value={ramInput.unit} onChange={(val) => handleRamChange(ramInput.value, val as 'GB' | 'MB')} options={[{label: 'GB', value: 'GB'}, {label: 'MB', value: 'MB'}]} className="w-24" buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center" labelPrefix="" inverted={false} />
                                                         </div>
                                                         {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
                                                     </div>
@@ -500,14 +504,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                                 value={inputState.value}
                                                                 onChange={(e) => handleCpuClockChange(isMax ? 'max' : 'min', e.target.value, inputState.unit)}
                                                             />
-                                                            <select
-                                                                className="w-24 bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm"
-                                                                value={inputState.unit}
-                                                                onChange={(e) => handleCpuClockChange(isMax ? 'max' : 'min', inputState.value, e.target.value as 'GHz' | 'MHz')}
-                                                            >
-                                                                <option value="GHz">GHz</option>
-                                                                <option value="MHz">MHz</option>
-                                                            </select>
+                                                            <SwissDropdown value={inputState.unit} onChange={(val) => handleCpuClockChange(isMax ? 'max' : 'min', inputState.value, val as 'GHz' | 'MHz')} options={[{label: 'GHz', value: 'GHz'}, {label: 'MHz', value: 'MHz'}]} className="w-24" buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center" labelPrefix="" inverted={false} />
                                                         </div>
                                                         {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
                                                     </div>

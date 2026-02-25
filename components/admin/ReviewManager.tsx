@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Review } from '@/lib/types/news';
 import { createReview, deleteReview } from '@/app/actions/reviews';
+import { SwissDropdown } from '../ui/SwissDropdown';
 
 interface ReviewManagerProps {
   reviews: Review[];
@@ -94,18 +95,17 @@ export const ReviewManager: React.FC<ReviewManagerProps> = ({ reviews, consoles 
            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                <div>
                    <label className="block text-xs font-mono text-gray-500 uppercase mb-2">Target Hardware</label>
-                   <select
-                     name="console_id"
+                   <SwissDropdown
                      value={formData.console_id}
-                     onChange={handleChange}
-                     className="w-full bg-black border border-white/20 p-3 text-sm font-mono text-white focus:border-cyan-500 focus:outline-none"
-                     required
-                   >
-                     <option value="">SELECT_CONSOLE</option>
-                     {consoles.map(c => (
-                         <option key={c.id} value={c.id}>{c.name}</option>
-                     ))}
-                   </select>
+                     onChange={(val) => setFormData(prev => ({ ...prev, console_id: val }))}
+                     options={[
+                         { label: 'SELECT_CONSOLE', value: '' },
+                         ...consoles.map(c => ({ label: c.name, value: c.id }))
+                     ]}
+                     labelPrefix="" inverted={false}
+                     className="w-full"
+                     buttonClassName="bg-black border border-white/20 p-3 text-sm font-mono text-white focus:border-cyan-500 focus:outline-none h-[46px] flex justify-between items-center"
+                   />
                </div>
 
                <div>
