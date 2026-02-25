@@ -37,17 +37,7 @@ const RoadmapCard: FC<RoadmapCardProps> = ({ item }) => {
             StatusIcon = Zap;
     }
 
-    // Override icon for status if needed, but keeping priority icon might be better to distinguish type.
-    // However, status is important. Let's use status for the top right icon?
-    // User said "Color by priority".
-    // I'll keep the pulsing dot for "In Progress" status inside the card body.
-
-    // If status is "In Progress", let's make sure it's visually distinct beyond just color if color is now priority.
-    // The previous code had specific icons for status.
     if (item.status === 'in-progress') {
-        // Maybe override icon to Clock? Or keep priority icon and just rely on the pulsing dot?
-        // Let's use Clock for In Progress to keep it consistent with "Status" being the icon driver in previous version,
-        // but now Color is Priority.
         StatusIcon = Clock;
     }
 
