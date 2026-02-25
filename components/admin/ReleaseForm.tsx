@@ -37,12 +37,16 @@ export const ReleaseForm = ({ initialData, onSuccess, onError }: ReleaseFormProp
 
         // Fetch completed features to assign
         fetchRoadmapItems().then(items => {
-            const completed = items.filter(i => i.status === 'completed');
-            setAvailableFeatures(completed);
+            // Filter: Completed AND (Unassigned OR Assigned to this release)
+            const assignable = items.filter(i =>
+                i.status === 'completed' &&
+                (!i.release_id || (initialData && i.release_id === initialData.id))
+            );
+            setAvailableFeatures(assignable);
 
             if (initialData) {
                 // If editing, find features assigned to this release
-                const assigned = completed.filter(i => i.release_id === initialData.id);
+                const assigned = assignable.filter(i => i.release_id === initialData.id);
                 setSelectedFeatureIds(new Set(assigned.map(i => i.id)));
             }
         });
@@ -150,7 +154,7 @@ export const ReleaseForm = ({ initialData, onSuccess, onError }: ReleaseFormProp
                  <label className="text-[10px] font-mono uppercase tracking-widest text-gray-500">Included Features (Completed Items)</label>
                  <div className="bg-black border border-gray-800 p-4 max-h-48 overflow-y-auto space-y-2">
                     {availableFeatures.length === 0 ? (
-                        <div className="text-gray-600 text-xs font-mono">NO COMPLETED FEATURES FOUND</div>
+                        <div className="text-gray-600 text-xs font-mono">NO ASSIGNABLE FEATURES FOUND</div>
                     ) : (
                         availableFeatures.map(feature => (
                             <label key={feature.id} className="flex items-center gap-3 cursor-pointer group hover:bg-gray-900 p-1">
@@ -164,9 +168,6 @@ export const ReleaseForm = ({ initialData, onSuccess, onError }: ReleaseFormProp
                                     <div className="text-xs font-mono text-gray-300 group-hover:text-white uppercase">{feature.title}</div>
                                     <div className="text-[9px] font-mono text-gray-600 flex gap-2">
                                         <span>{feature.category}</span>
-                                        {feature.release_id && feature.release_id !== initialData?.id && (
-                                            <span className="text-amber-500">(ASSIGNED TO OTHER RELEASE)</span>
-                                        )}
                                     </div>
                                 </div>
                             </label>
