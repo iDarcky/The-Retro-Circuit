@@ -221,7 +221,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
         </div>
 
         {/* EXPANDABLE FILTERS */}
-        <div className={`w-full bg-black/40 backdrop-blur-md border-y border-white/10 p-4 mb-8 transition-all duration-300 ${showFilters ? 'block' : 'hidden'}`}>
+        <div className={`w-full bg-black/40 backdrop-blur-md relative z-40 border-y border-white/10 p-4 mb-8 transition-all duration-300 ${showFilters ? 'block' : 'hidden'}`}>
             <div className="max-w-[1800px] mx-auto flex flex-col md:flex-row gap-6 items-start md:items-center justify-between flex-wrap">
 
                 {/* Manufacturer */}
