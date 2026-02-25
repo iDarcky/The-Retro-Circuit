@@ -62,6 +62,11 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
         if (!formData.slug) errors.slug = 'REQUIRED';
         if (!formData.manufacturer_id) errors.manufacturer_id = 'REQUIRED';
 
+        // Publishing validation
+        if (formData.status === "published") {
+            if (!formData.image_url) { errors.image_url = "REQUIRED FOR PUBLISH"; errors.status = "CHECK IMAGE"; }
+        }
+
         // Basic slug validation
         if (formData.slug && !/^[a-z0-9-]+$/.test(formData.slug)) {
             errors.slug = 'INVALID FORMAT (a-z, 0-9, -)';
@@ -148,6 +153,7 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
                                 }`}
                             compact
                         />
+                         {fieldErrors.status && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold text-right">! {fieldErrors.status}</div>}
                     </div>
                 </div>
             </div>
