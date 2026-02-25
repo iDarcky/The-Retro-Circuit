@@ -59,9 +59,9 @@ export function RoadmapForm({ initialData, onSuccess, onError }: RoadmapFormProp
   };
 
   // Base input styles mimicking the screenshot
-  const inputClass = "w-full bg-black border border-white/20 p-3 pl-4 font-mono text-sm text-white focus:border-emerald-500 outline-none transition-colors placeholder:text-white/30 tracking-wider h-12 rounded-none";
+  const inputClass = "w-full bg-black border border-white/20 p-3 pl-4 font-mono text-sm text-white focus:border-white outline-none transition-colors placeholder:text-white/30 tracking-wider h-12 rounded-none";
   const labelClass = "block text-[10px] uppercase text-zinc-500 mb-1.5 tracking-widest font-mono ml-1";
-  const selectClass = "w-full bg-black border border-white/20 p-3 pl-4 font-mono text-sm text-white focus:border-emerald-500 outline-none transition-colors appearance-none tracking-wider h-12 uppercase rounded-none cursor-pointer";
+  const selectClass = "w-full bg-black border border-white/20 p-3 pl-4 font-mono text-sm text-white focus:border-white outline-none transition-colors appearance-none tracking-wider h-12 uppercase rounded-none cursor-pointer";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 animate-fadeIn">
