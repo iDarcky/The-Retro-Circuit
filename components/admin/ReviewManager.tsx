@@ -102,7 +102,7 @@ export const ReviewManager: React.FC<ReviewManagerProps> = ({ reviews, consoles 
                          { label: 'SELECT_CONSOLE', value: '' },
                          ...consoles.map(c => ({ label: c.name, value: c.id }))
                      ]}
-                     labelPrefix=""
+                     labelPrefix="" inverted={false}
                      className="w-full"
                      buttonClassName="bg-black border border-white/20 p-3 text-sm font-mono text-white focus:border-cyan-500 focus:outline-none h-[46px] flex justify-between items-center"
                    />

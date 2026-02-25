@@ -457,7 +457,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                                     { value: "month", label: "Month + Year" },
                                                                     { value: "day", label: "Exact Day" }
                                                                 ]}
-                                                                labelPrefix=""
+                                                                labelPrefix="" inverted={false}
                                                             />
                                                         </div>
                                                         {datePrecision && (
@@ -484,7 +484,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                         <label className={`text-[10px] mb-1 block uppercase ${error ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
                                                         <div className="flex gap-2">
                                                             <input type="number" className={`flex-1 border p-3 outline-none font-mono text-sm bg-black text-white ${error ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`} value={ramInput.value} onChange={(e) => handleRamChange(e.target.value, ramInput.unit)} />
-                                                            <SwissDropdown value={ramInput.unit} onChange={(val) => handleRamChange(ramInput.value, val as 'GB' | 'MB')} options={[{label: 'GB', value: 'GB'}, {label: 'MB', value: 'MB'}]} className="w-24" buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center" labelPrefix="" />
+                                                            <SwissDropdown value={ramInput.unit} onChange={(val) => handleRamChange(ramInput.value, val as 'GB' | 'MB')} options={[{label: 'GB', value: 'GB'}, {label: 'MB', value: 'MB'}]} className="w-24" buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center" labelPrefix="" inverted={false} />
                                                         </div>
                                                         {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
                                                     </div>
@@ -504,7 +504,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                                 value={inputState.value}
                                                                 onChange={(e) => handleCpuClockChange(isMax ? 'max' : 'min', e.target.value, inputState.unit)}
                                                             />
-                                                            <SwissDropdown value={inputState.unit} onChange={(val) => handleCpuClockChange(isMax ? 'max' : 'min', inputState.value, val as 'GHz' | 'MHz')} options={[{label: 'GHz', value: 'GHz'}, {label: 'MHz', value: 'MHz'}]} className="w-24" buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center" labelPrefix="" />
+                                                            <SwissDropdown value={inputState.unit} onChange={(val) => handleCpuClockChange(isMax ? 'max' : 'min', inputState.value, val as 'GHz' | 'MHz')} options={[{label: 'GHz', value: 'GHz'}, {label: 'MHz', value: 'MHz'}]} className="w-24" buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center" labelPrefix="" inverted={false} />
                                                         </div>
                                                         {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
                                                     </div>

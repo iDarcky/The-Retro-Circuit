@@ -110,7 +110,7 @@ export function RoadmapForm({ initialData, onSuccess, onError }: RoadmapFormProp
                 { label: 'IN PROGRESS', value: 'in-progress' },
                 { label: 'COMPLETED', value: 'completed' }
             ]}
-            labelPrefix=""
+            labelPrefix="" inverted={false}
             className="w-full"
             buttonClassName={`${inputClass} h-[46px] flex justify-between items-center`}
           />
@@ -127,7 +127,7 @@ export function RoadmapForm({ initialData, onSuccess, onError }: RoadmapFormProp
                 { label: 'MUST HAVE', value: 'must-have' },
                 { label: 'NICE TO HAVE', value: 'nice-to-have' }
             ]}
-            labelPrefix=""
+            labelPrefix="" inverted={false}
             className="w-full"
             buttonClassName={`${inputClass} h-[46px] flex justify-between items-center`}
           />

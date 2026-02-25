@@ -132,7 +132,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                         value={val}
                         onChange={(newVal) => onChange(field.key, newVal)}
                         options={dropdownOptions}
-                        labelPrefix=""
+                        labelPrefix="" inverted={false}
                         className="w-full"
                         buttonClassName={`${baseInputClasses} ${borderColor} h-[46px] flex justify-between items-center`}
                     />

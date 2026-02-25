@@ -141,7 +141,7 @@ export const EmulationForm: FC<EmulationFormProps> = ({ variantId, onSave }) => 
                                     value={currentValue}
                                     onChange={(val) => handleChange(sys.key, val as string)}
                                     options={RATINGS.map(r => ({ label: r, value: r }))}
-                                    labelPrefix=""
+                                    labelPrefix="" inverted={false}
                                 />
                                 </div>
                             );

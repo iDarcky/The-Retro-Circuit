@@ -17,6 +17,7 @@ interface SwissDropdownProps<T extends string | number> {
     buttonClassName?: string;
     menuClassName?: string;
     compact?: boolean;
+    inverted?: boolean;
 }
 
 export function SwissDropdown<T extends string | number>({
@@ -27,7 +28,8 @@ export function SwissDropdown<T extends string | number>({
     className = "",
     buttonClassName = "",
     menuClassName = "z-[100]",
-    compact = false
+    compact = false,
+    inverted = true
 }: SwissDropdownProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
@@ -53,9 +55,13 @@ export function SwissDropdown<T extends string | number>({
                 onClick={() => setIsOpen(!isOpen)}
                 className={`flex items-center justify-between w-full gap-2 font-mono uppercase tracking-wider border transition-all
                     ${compact ? 'px-2 py-1 text-[10px]' : 'px-4 py-2 text-xs'}
-                    ${isOpen
-                        ? 'bg-white text-black border-white'
-                        : 'text-white border-white/20 hover:border-white/50 bg-black/40' // Reverted to always dark when closed
+                    ${inverted
+                        ? (isOpen
+                            ? 'bg-white text-black border-white'
+                            : 'text-white border-white/20 hover:border-white/50 bg-black/40')
+                        : (isOpen
+                            ? 'bg-zinc-800 text-white border-white'
+                            : 'text-zinc-300 border-zinc-700 hover:border-zinc-500 bg-zinc-900/50')
                     }
                     ${buttonClassName}
                 `}
@@ -75,7 +81,7 @@ export function SwissDropdown<T extends string | number>({
             </button>
 
             {isOpen && (
-                <div className={`absolute top-[calc(100%+4px)] right-0 min-w-full w-max bg-black border border-white/20 shadow-2xl flex flex-col ${menuClassName}`}>
+                <div className={`absolute top-[calc(100%+4px)] right-0 min-w-full w-max bg-[#09090b] border border-white/20 shadow-2xl flex flex-col ${menuClassName}`}>
                     {options.map((option) => (
                         <button
                             key={String(option.value)}

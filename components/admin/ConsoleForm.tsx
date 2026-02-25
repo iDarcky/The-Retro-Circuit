@@ -135,7 +135,7 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
                                 { label: 'PUBLISHED', value: 'published' },
                                 { label: 'ARCHIVED', value: 'archived' }
                             ]}
-                            labelPrefix=""
+                            labelPrefix="" inverted={false}
                             className="min-w-[120px]"
                             buttonClassName={`bg-transparent border-none outline-none font-mono text-xs uppercase cursor-pointer h-auto p-0 flex gap-2 items-center ${
                                     formData.status === 'published' ? 'text-secondary' :
@@ -161,7 +161,7 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
                                 { label: '-- SELECT FABRICATOR --', value: '' },
                                 ...manufacturers.map(m => ({ label: m.name, value: m.id }))
                             ]}
-                            labelPrefix=""
+                            labelPrefix="" inverted={false}
                         />
                     </div>
                     {fieldErrors.manufacturer_id && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold">! {fieldErrors.manufacturer_id}</div>}
@@ -226,7 +226,7 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
                                         { label: 'FPGA HANDHELD', value: 'fpga' },
                                         { label: 'ORIGINAL HARDWARE', value: 'legacy' }
                                     ]}
-                                    labelPrefix=""
+                                    labelPrefix="" inverted={false}
                                 />
                             </div>
                         </div>

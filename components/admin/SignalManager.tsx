@@ -76,7 +76,7 @@ export const SignalManager: React.FC<SignalManagerProps> = ({ signals }) => {
                    { label: 'THOUGHT', value: 'thought' },
                    { label: 'SYS_UPDATE', value: 'update' }
                  ]}
-                 labelPrefix=""
+                 labelPrefix="" inverted={false}
                  className="w-full"
                  buttonClassName="bg-black border border-white/20 p-3 text-sm font-mono text-white focus:border-emerald-500 focus:outline-none h-[46px] flex justify-between items-center"
                />
