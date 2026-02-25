@@ -120,7 +120,7 @@ export default function VariantComparisonTable({ variants, baseSpecs }: VariantC
                                         </td>
 
                                         {/* Values */}
-                                        {fullVariants.map((v, idx) => {
+                                        {fullVariants.map((v) => {
                                             const rawVal = (v as any)[spec.key];
                                             let displayVal: React.ReactNode = rawVal;
 
