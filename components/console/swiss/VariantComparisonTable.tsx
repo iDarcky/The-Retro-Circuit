@@ -2,7 +2,6 @@
 
 import { useMemo } from 'react';
 import { ConsoleSpecs, ConsoleVariant } from '../../../lib/types';
-import { formatInputEnum } from '../../../lib/utils/formatters';
 
 interface VariantComparisonTableProps {
     variants: ConsoleVariant[];
