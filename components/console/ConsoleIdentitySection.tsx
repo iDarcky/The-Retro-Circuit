@@ -1,6 +1,6 @@
-import { SwissDropdown } from '../ui/SwissDropdown';
 'use client';
 
+import { SwissDropdown } from '../ui/SwissDropdown';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Share2, Layers } from 'lucide-react';
@@ -40,9 +40,6 @@ const VariantDropdown = ({ compact = false, variants, selectedVariantId, onVaria
                 compact={compact}
                 className={compact ? "min-w-[120px]" : "min-w-[200px]"}
             />
-        </div>
-    );
-};
         </div>
     );
 };

@@ -1,5 +1,5 @@
-import { SwissDropdown } from '../ui/SwissDropdown';
 'use client';
+import { SwissDropdown } from '../ui/SwissDropdown';
 
 import { useState, type FormEvent, type FC, useEffect, type ChangeEvent, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -459,6 +459,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                                 ]}
                                                                 labelPrefix=""
                                                             />
+                                                        </div>
                                                         {datePrecision && (
                                                             <div>
                                                                 <label className="text-[10px] mb-1 block uppercase text-gray-500">
