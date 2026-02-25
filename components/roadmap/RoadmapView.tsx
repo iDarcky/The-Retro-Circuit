@@ -45,7 +45,7 @@ export default function RoadmapView({ releases, upcomingItems, isAdmin }: Roadma
   const plannedItems = upcomingItems.filter(item => item.status !== 'in-progress').sort(sortByPriority);
 
   // Handlers
-  const handleSuccess = (msg: string) => {
+  const handleSuccess = (_msg: string) => {
       setIsRoadmapModalOpen(false);
       setIsReleaseModalOpen(false);
       setEditingFeature(null);
