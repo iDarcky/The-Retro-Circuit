@@ -3,16 +3,31 @@
 import { useState } from 'react';
 import { RoadmapFeature, Release } from '../../lib/types/domain';
 import RoadmapCard from './RoadmapCard';
+import { RoadmapForm } from '@/components/admin/RoadmapForm';
+import { ReleaseForm } from '@/components/admin/ReleaseForm';
+import Modal from '@/components/ui/Modal';
+import { deleteRoadmapItem, updateRoadmapItem, deleteRelease } from '@/app/actions/roadmap';
+import { Plus, Edit, Trash2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface RoadmapViewProps {
   releases: (Release & { roadmap_features: RoadmapFeature[] })[];
   upcomingItems: RoadmapFeature[];
+  isAdmin?: boolean;
 }
 
 type Tab = 'upcoming' | 'changelog';
 
-export default function RoadmapView({ releases, upcomingItems }: RoadmapViewProps) {
+export default function RoadmapView({ releases, upcomingItems, isAdmin }: RoadmapViewProps) {
   const [activeTab, setActiveTab] = useState<Tab>('upcoming');
+  const router = useRouter();
+
+  // Admin State
+  const [isRoadmapModalOpen, setIsRoadmapModalOpen] = useState(false);
+  const [isReleaseModalOpen, setIsReleaseModalOpen] = useState(false);
+  const [editingFeature, setEditingFeature] = useState<RoadmapFeature | null>(null);
+  const [editingRelease, setEditingRelease] = useState<Release | null>(null);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const priorityOrder: Record<string, number> = {
       'critical': 0,
@@ -29,8 +44,78 @@ export default function RoadmapView({ releases, upcomingItems }: RoadmapViewProp
   const inProgressItems = upcomingItems.filter(item => item.status === 'in-progress').sort(sortByPriority);
   const plannedItems = upcomingItems.filter(item => item.status !== 'in-progress').sort(sortByPriority);
 
+  // Handlers
+  const handleSuccess = (msg: string) => {
+      setIsRoadmapModalOpen(false);
+      setIsReleaseModalOpen(false);
+      setEditingFeature(null);
+      setEditingRelease(null);
+      setErrorMsg('');
+      router.refresh();
+  };
+
+  const handleDeleteFeature = async (id: string) => {
+      if (confirm('ARE YOU SURE YOU WANT TO DELETE THIS MISSION?')) {
+          await deleteRoadmapItem(id);
+          router.refresh();
+      }
+  };
+
+  const handleCompleteFeature = async (item: RoadmapFeature) => {
+       if (confirm(`MARK "${item.title}" AS COMPLETE?`)) {
+            await updateRoadmapItem(item.id, { status: 'completed' });
+            router.refresh();
+       }
+  };
+
+  const handleOpenEditFeature = (item: RoadmapFeature) => {
+      setEditingFeature(item);
+      setIsRoadmapModalOpen(true);
+  };
+
+  const handleAddFeature = () => {
+      setEditingFeature(null);
+      setIsRoadmapModalOpen(true);
+  };
+
+  const handleDeleteRelease = async (id: string) => {
+      if (confirm('ARE YOU SURE YOU WANT TO DELETE THIS RELEASE?')) {
+          await deleteRelease(id);
+          router.refresh();
+      }
+  };
+
+  const handleOpenEditRelease = (release: Release) => {
+      setEditingRelease(release);
+      setIsReleaseModalOpen(true);
+  };
+
+  const handleAddRelease = () => {
+      setEditingRelease(null);
+      setIsReleaseModalOpen(true);
+  };
+
+
   return (
-    <div className="w-full">
+    <div className="w-full relative">
+
+      {/* Admin Controls */}
+      {isAdmin && (
+          <div className="flex justify-end gap-2 mb-6">
+              <button
+                  onClick={handleAddFeature}
+                  className="bg-blue-500/10 border border-blue-500 text-blue-400 px-4 py-2 text-xs font-mono uppercase tracking-widest hover:bg-blue-500 hover:text-black transition-colors flex items-center gap-2"
+              >
+                  <Plus size={14} /> Add Mission
+              </button>
+              <button
+                  onClick={handleAddRelease}
+                  className="bg-emerald-500/10 border border-emerald-500 text-emerald-400 px-4 py-2 text-xs font-mono uppercase tracking-widest hover:bg-emerald-500 hover:text-black transition-colors flex items-center gap-2"
+              >
+                  <Plus size={14} /> Add Release
+              </button>
+          </div>
+      )}
 
       {/* Tab Switcher */}
       <div className="flex border-b border-white/10 mb-8">
@@ -72,7 +157,14 @@ export default function RoadmapView({ releases, upcomingItems }: RoadmapViewProp
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {inProgressItems.map((item) => (
-                            <RoadmapCard key={item.id} item={item} />
+                            <RoadmapCard
+                                key={item.id}
+                                item={item}
+                                isAdmin={isAdmin}
+                                onEdit={handleOpenEditFeature}
+                                onDelete={handleDeleteFeature}
+                                onComplete={handleCompleteFeature}
+                            />
                         ))}
                     </div>
                 </div>
@@ -88,7 +180,14 @@ export default function RoadmapView({ releases, upcomingItems }: RoadmapViewProp
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {plannedItems.map((item) => (
-                            <RoadmapCard key={item.id} item={item} />
+                            <RoadmapCard
+                                key={item.id}
+                                item={item}
+                                isAdmin={isAdmin}
+                                onEdit={handleOpenEditFeature}
+                                onDelete={handleDeleteFeature}
+                                onComplete={handleCompleteFeature}
+                            />
                         ))}
                     </div>
                 </div>
@@ -123,11 +222,34 @@ export default function RoadmapView({ releases, upcomingItems }: RoadmapViewProp
 
                                {/* Card - Added min-w-0 */}
                                <div className="flex-1 w-full min-w-0 pl-12 md:pl-0">
-                                   <div className="bg-white/[0.02] border border-white/10 p-6 md:p-8 hover:border-emerald-500/30 transition-colors relative overflow-hidden">
+                                   <div className="bg-white/[0.02] border border-white/10 p-6 md:p-8 hover:border-emerald-500/30 transition-colors relative overflow-hidden group/card">
+
+                                        {/* Admin Controls for Release */}
+                                        {isAdmin && (
+                                            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover/card:opacity-100 transition-opacity bg-black/80 p-1 rounded border border-white/10 backdrop-blur-sm z-20">
+                                                <button
+                                                    onClick={() => handleOpenEditRelease(release)}
+                                                    className="p-1 hover:text-blue-400 hover:bg-blue-500/20 rounded transition-colors"
+                                                    title="Edit Release"
+                                                >
+                                                    <Edit size={12} />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteRelease(release.id)}
+                                                    className="p-1 hover:text-red-400 hover:bg-red-500/20 rounded transition-colors"
+                                                    title="Delete Release"
+                                                >
+                                                    <Trash2 size={12} />
+                                                </button>
+                                            </div>
+                                        )}
+
                                         <div className="flex flex-col gap-2 mb-6">
                                             <div className="flex items-center gap-3">
                                                 <span className="text-xl font-bold font-pixel text-white">v{release.version}</span>
-                                                <span className="text-emerald-500 text-[10px] border border-emerald-500/30 bg-emerald-500/5 px-2 py-0.5 rounded-full uppercase tracking-widest">Released</span>
+                                                <span className={`text-[10px] border px-2 py-0.5 rounded-full uppercase tracking-widest ${release.is_published ? 'text-emerald-500 border-emerald-500/30 bg-emerald-500/5' : 'text-amber-500 border-amber-500/30 bg-amber-500/5'}`}>
+                                                    {release.is_published ? 'Released' : 'Draft'}
+                                                </span>
                                             </div>
                                             <div className="font-mono text-xs text-zinc-500 uppercase tracking-wider">
                                                 {new Date(release.release_date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
@@ -172,6 +294,45 @@ export default function RoadmapView({ releases, upcomingItems }: RoadmapViewProp
                 </div>
               )}
           </div>
+      )}
+
+      {/* Admin Modals */}
+      {isAdmin && (
+          <>
+            <Modal
+                isOpen={isRoadmapModalOpen}
+                onClose={() => setIsRoadmapModalOpen(false)}
+                title={editingFeature ? `EDIT MISSION: ${editingFeature.title}` : "INITIATE NEW MISSION"}
+            >
+                <RoadmapForm
+                    initialData={editingFeature}
+                    onSuccess={handleSuccess}
+                    onError={setErrorMsg}
+                />
+                 {errorMsg && (
+                    <div className="mt-4 p-3 bg-accent/10 border border-accent text-accent font-mono text-xs uppercase font-bold">
+                        ERROR: {errorMsg}
+                    </div>
+                )}
+            </Modal>
+
+            <Modal
+                isOpen={isReleaseModalOpen}
+                onClose={() => setIsReleaseModalOpen(false)}
+                title={editingRelease ? `EDIT RELEASE: v${editingRelease.version}` : "INITIATE NEW RELEASE"}
+            >
+                <ReleaseForm
+                    initialData={editingRelease}
+                    onSuccess={handleSuccess}
+                    onError={setErrorMsg}
+                />
+                 {errorMsg && (
+                    <div className="mt-4 p-3 bg-accent/10 border border-accent text-accent font-mono text-xs uppercase font-bold">
+                        ERROR: {errorMsg}
+                    </div>
+                )}
+            </Modal>
+          </>
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import RoadmapView from '../../components/roadmap/RoadmapView';
-import { fetchRoadmapItems, getSystemVersion, fetchReleases } from '../../app/actions/roadmap';
+import { fetchRoadmapItems, getSystemVersion, fetchReleases, fetchAdminReleases } from '../../app/actions/roadmap';
+import { createClient } from '../../lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,9 +11,26 @@ export const metadata: Metadata = {
 };
 
 export default async function RoadmapPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let isAdmin = false;
+  if (user) {
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+    isAdmin = profile?.role === 'admin';
+  }
+
+  // Use appropriate release fetching function based on role
+  // fetchAdminReleases includes drafts
+  const releasesPromise = isAdmin ? fetchAdminReleases() : fetchReleases();
+
   const [roadmapItems, releases, version] = await Promise.all([
       fetchRoadmapItems(),
-      fetchReleases(),
+      releasesPromise,
       getSystemVersion()
   ]);
 
@@ -42,7 +60,8 @@ export default async function RoadmapPage() {
         </div>
 
         {/* Tabbed View Component */}
-        <RoadmapView releases={releases} upcomingItems={upcomingItems} />
+        {/* @ts-ignore - isAdmin prop will be added to RoadmapView in next steps */}
+        <RoadmapView releases={releases} upcomingItems={upcomingItems} isAdmin={isAdmin} />
 
         {/* Community CTA */}
         <div className="mt-24 p-8 border border-border-normal bg-bg-secondary/10 rounded-none relative overflow-hidden group">
