@@ -14,6 +14,9 @@ type Tab = 'upcoming' | 'changelog';
 export default function RoadmapView({ releases, upcomingItems }: RoadmapViewProps) {
   const [activeTab, setActiveTab] = useState<Tab>('upcoming');
 
+  const inProgressItems = upcomingItems.filter(item => item.status === 'in-progress');
+  const plannedItems = upcomingItems.filter(item => item.status !== 'in-progress');
+
   return (
     <div className="w-full">
 
@@ -45,10 +48,40 @@ export default function RoadmapView({ releases, upcomingItems }: RoadmapViewProp
 
       {/* Content */}
       {activeTab === 'upcoming' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-fade-in">
-            {upcomingItems.map((item) => (
-                <RoadmapCard key={item.id} item={item} />
-            ))}
+          <div className="animate-fade-in space-y-16">
+
+            {/* In Progress Section */}
+            {inProgressItems.length > 0 && (
+                <div className="space-y-6">
+                     <div className="flex items-center gap-3 mb-4">
+                        <div className="h-2 w-2 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+                        <h3 className="text-sm font-mono uppercase tracking-widest text-blue-400">In Progress</h3>
+                        <div className="h-px bg-blue-500/20 flex-1"></div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {inProgressItems.map((item) => (
+                            <RoadmapCard key={item.id} item={item} />
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Planned Section */}
+            {plannedItems.length > 0 && (
+                 <div className="space-y-6">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="h-2 w-2 bg-zinc-500 rounded-full opacity-50"></div>
+                        <h3 className="text-sm font-mono uppercase tracking-widest text-zinc-400">Planned</h3>
+                         <div className="h-px bg-white/10 flex-1"></div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {plannedItems.map((item) => (
+                            <RoadmapCard key={item.id} item={item} />
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {upcomingItems.length === 0 && (
                  <div className="col-span-full py-24 text-center text-text-muted font-mono uppercase tracking-widest opacity-50 border border-dashed border-white/10">
                     No Pending Features
@@ -64,16 +97,16 @@ export default function RoadmapView({ releases, upcomingItems }: RoadmapViewProp
                   {releases.map((release, index) => (
                       <div key={release.id} className="relative pl-8 md:pl-0 group">
 
-                          <div className={`flex flex-col md:flex-row items-center justify-between gap-8 ${index % 2 === 0 ? 'md:flex-row-reverse' : ''}`}>
+                          <div className={`flex flex-col md:flex-row items-start justify-between gap-12 ${index % 2 === 0 ? 'md:flex-row-reverse' : ''}`}>
 
-                               {/* Empty Spacer for Timeline centering */}
-                               <div className="hidden md:block flex-1"></div>
+                               {/* Empty Spacer for Timeline centering - Added min-w-0 to ensure flex split is respected */}
+                               <div className="hidden md:block flex-1 min-w-0"></div>
 
                                {/* Timeline Dot */}
                                <div className="absolute left-[-5px] md:left-1/2 md:-ml-[5px] top-8 w-2.5 h-2.5 bg-bg-primary border-2 border-emerald-500 rounded-full z-10 group-hover:scale-125 transition-transform shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
 
-                               {/* Card */}
-                               <div className="flex-1 w-full bg-white/[0.02] border border-white/10 p-6 md:p-8 hover:border-emerald-500/30 transition-colors relative overflow-hidden">
+                               {/* Card - Added min-w-0 */}
+                               <div className="flex-1 w-full min-w-0 bg-white/[0.02] border border-white/10 p-6 md:p-8 hover:border-emerald-500/30 transition-colors relative overflow-hidden">
                                     <div className="flex flex-col gap-2 mb-6">
                                         <div className="flex items-center gap-3">
                                             <span className="text-xl font-bold font-pixel text-white">v{release.version}</span>

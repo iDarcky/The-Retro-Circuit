@@ -2,34 +2,53 @@
 
 import { type FC } from 'react';
 import { RoadmapFeature } from '../../lib/types/domain';
-import { CheckCircle2, Clock, Hourglass, Zap } from 'lucide-react';
+import { Clock, Zap, AlertTriangle, Star, ThumbsUp } from 'lucide-react';
 
 interface RoadmapCardProps {
     item: RoadmapFeature;
 }
 
 const RoadmapCard: FC<RoadmapCardProps> = ({ item }) => {
-    let statusColor = 'text-zinc-500 border-zinc-800 bg-zinc-900/20';
-    let StatusIcon = Hourglass;
-    let opacity = 'opacity-60 grayscale';
-    let accentColor = 'bg-zinc-800';
+    let statusColor = '';
+    let StatusIcon = Zap;
+    let opacity = 'opacity-100';
+    let accentColor = '';
 
-    if (item.status === 'completed') {
-        statusColor = 'text-emerald-400 border-emerald-500/30 bg-emerald-500/5 shadow-[0_0_10px_-2px_rgba(16,185,129,0.1)] hover:bg-emerald-500/10 hover:border-emerald-500/50';
-        StatusIcon = CheckCircle2;
-        opacity = 'opacity-100';
-        accentColor = 'bg-emerald-500';
-    } else if (item.status === 'in-progress') {
-        statusColor = 'text-blue-400 border-blue-500/30 bg-blue-500/5 shadow-[0_0_10px_-2px_rgba(59,130,246,0.1)] hover:bg-blue-500/10 hover:border-blue-500/50';
+    // Priority Coloring
+    switch (item.priority) {
+        case 'critical':
+            statusColor = 'text-orange-400 border-orange-500/30 bg-orange-500/5 shadow-[0_0_10px_-2px_rgba(249,115,22,0.1)] hover:bg-orange-500/10 hover:border-orange-500/50';
+            accentColor = 'bg-orange-500';
+            StatusIcon = AlertTriangle;
+            break;
+        case 'must-have':
+            statusColor = 'text-blue-400 border-blue-500/30 bg-blue-500/5 shadow-[0_0_10px_-2px_rgba(59,130,246,0.1)] hover:bg-blue-500/10 hover:border-blue-500/50';
+            accentColor = 'bg-blue-500';
+            StatusIcon = Star;
+            break;
+        case 'nice-to-have':
+            statusColor = 'text-emerald-400 border-emerald-500/30 bg-emerald-500/5 shadow-[0_0_10px_-2px_rgba(16,185,129,0.1)] hover:bg-emerald-500/10 hover:border-emerald-500/50';
+            accentColor = 'bg-emerald-500';
+            StatusIcon = ThumbsUp;
+            break;
+        default:
+            statusColor = 'text-zinc-400 border-white/10 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20';
+            accentColor = 'bg-zinc-500';
+            StatusIcon = Zap;
+    }
+
+    // Override icon for status if needed, but keeping priority icon might be better to distinguish type.
+    // However, status is important. Let's use status for the top right icon?
+    // User said "Color by priority".
+    // I'll keep the pulsing dot for "In Progress" status inside the card body.
+
+    // If status is "In Progress", let's make sure it's visually distinct beyond just color if color is now priority.
+    // The previous code had specific icons for status.
+    if (item.status === 'in-progress') {
+        // Maybe override icon to Clock? Or keep priority icon and just rely on the pulsing dot?
+        // Let's use Clock for In Progress to keep it consistent with "Status" being the icon driver in previous version,
+        // but now Color is Priority.
         StatusIcon = Clock;
-        opacity = 'opacity-100';
-        accentColor = 'bg-blue-500';
-    } else {
-        // Planned
-        statusColor = 'text-zinc-400 border-white/10 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20';
-        StatusIcon = Zap;
-        opacity = 'opacity-75';
-        accentColor = 'bg-white';
     }
 
     return (
@@ -50,9 +69,9 @@ const RoadmapCard: FC<RoadmapCardProps> = ({ item }) => {
                 <h4 className="text-sm font-bold uppercase tracking-wide mb-2 flex items-center gap-2">
                     {item.title}
                     {item.status === 'in-progress' && (
-                        <span className="flex h-1.5 w-1.5 relative">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-500"></span>
+                        <span className="flex h-1.5 w-1.5 relative" title="In Progress">
+                            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${accentColor.replace('bg-', 'bg-')}`}></span>
+                            <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${accentColor}`}></span>
                         </span>
                     )}
                 </h4>
