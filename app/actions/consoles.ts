@@ -416,3 +416,32 @@ export const deleteConsole = async (id: string): Promise<{ success: boolean, mes
         return { success: false, message: e.message };
     }
 }
+
+export const fetchConsoleAndVariantCounts = async (): Promise<{ consoles: number, variants: number }> => {
+    try {
+        const supabase = supabaseAnon;
+
+        // Count published consoles
+        const { count: consoleCount, error: consoleError } = await supabase
+            .from('consoles')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'published');
+
+        if (consoleError) throw consoleError;
+
+        // Count variants for published consoles
+        // We use !inner to enforce the join filter
+        const { count: variantCount, error: variantError } = await supabase
+            .from('console_variants')
+            .select('id, console:consoles!inner(status)', { count: 'exact', head: true })
+            .eq('console.status', 'published');
+
+        if (variantError) throw variantError;
+
+        return { consoles: consoleCount || 0, variants: variantCount || 0 };
+
+    } catch (e: any) {
+        console.error('[API] Fetch Counts Exception:', e);
+        return { consoles: 0, variants: 0 };
+    }
+};

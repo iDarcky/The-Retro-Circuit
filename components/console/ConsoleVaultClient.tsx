@@ -197,7 +197,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                      </div>
 
                      <div className="hidden md:flex items-center gap-2 text-xs font-mono text-zinc-500">
-                        <span className="text-emerald-500">{filteredConsoles.length}</span> UNITS FOUND
+                        <span className="text-emerald-500">{filteredConsoles.length}</span> UNITS & <span className="text-emerald-500">{filteredConsoles.reduce((acc, c) => acc + (c.variants?.length || 0), 0)}</span> VARIANTS
                      </div>
                  </div>
 
