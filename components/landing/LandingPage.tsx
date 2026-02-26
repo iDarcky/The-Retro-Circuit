@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import { fetchLatestConsoles } from '../../app/actions/latest';
-import { fetchConsoleList } from '../../app/actions/consoles';
+import { fetchConsoleList, fetchConsoleAndVariantCounts } from '../../app/actions/consoles';
 import QuickCompare from './QuickCompare';
 import FinderSection from './FinderSection';
 import FeaturedConsoles from './FeaturedConsoles';
@@ -15,9 +15,10 @@ export default async function LandingPage({ version }: LandingPageProps) {
   // OPTIMIZATION: Use Promise.all to fetch data concurrently instead of sequentially.
   // This reduces the total server-side latency for the page generation by running independent
   // database queries in parallel.
-  const [latestAdded, allConsoles] = await Promise.all([
+  const [latestAdded, allConsoles, counts] = await Promise.all([
     fetchLatestConsoles(8),
     fetchConsoleList(),
+    fetchConsoleAndVariantCounts(),
   ]);
 
   // Prepare simple console list for the finder
@@ -85,7 +86,7 @@ export default async function LandingPage({ version }: LandingPageProps) {
             {/* Console Count - Moved below CTA per final feedback */}
             <div className="flex items-center gap-2 mb-8 text-emerald-400 font-mono text-sm tracking-widest uppercase animate-fade-in" style={{ animationDelay: '0.1s' }}>
               <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-              {allConsoles.length} Consoles Archived
+              {counts.consoles} Consoles & {counts.variants} Variants Archived
             </div>
 
             {/* FEATURED CONSOLES - NEWEST IN DB */}
