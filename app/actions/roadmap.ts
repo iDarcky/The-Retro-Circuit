@@ -28,9 +28,16 @@ export async function fetchRoadmapItems() {
 
 export async function createRoadmapItem(item: Omit<RoadmapFeature, 'id' | 'created_at' | 'updated_at'>) {
   const supabase = await createClient();
+
+  const cleanItem = {
+    ...item,
+    target_date: item.target_date === '' ? null : item.target_date,
+    release_id: item.release_id === '' ? null : item.release_id,
+  };
+
   const { data, error } = await supabase
     .from('roadmap_features')
-    .insert([item])
+    .insert([cleanItem])
     .select()
     .single();
 
@@ -44,9 +51,16 @@ export async function createRoadmapItem(item: Omit<RoadmapFeature, 'id' | 'creat
 
 export async function updateRoadmapItem(id: string, updates: Partial<RoadmapFeature>) {
   const supabase = await createClient();
+
+  const cleanUpdates = {
+    ...updates,
+    target_date: updates.target_date === '' ? null : updates.target_date,
+    release_id: updates.release_id === '' ? null : updates.release_id,
+  };
+
   const { data, error } = await supabase
     .from('roadmap_features')
-    .update(updates)
+    .update(cleanUpdates)
     .eq('id', id)
     .select()
     .single();
@@ -147,9 +161,15 @@ export async function fetchLatestVersion() {
 
 export async function createRelease(release: Omit<Release, 'id' | 'created_at' | 'updated_at'>) {
     const supabase = await createClient();
+
+    const cleanRelease = {
+        ...release,
+        release_date: release.release_date === '' ? new Date().toISOString() : release.release_date
+    };
+
     const { data, error } = await supabase
         .from('releases')
-        .insert([release])
+        .insert([cleanRelease])
         .select()
         .single();
 
@@ -162,9 +182,15 @@ export async function createRelease(release: Omit<Release, 'id' | 'created_at' |
 
 export async function updateRelease(id: string, updates: Partial<Release>) {
     const supabase = await createClient();
+
+    const cleanUpdates = {
+        ...updates,
+        release_date: updates.release_date === '' ? new Date().toISOString() : updates.release_date
+    };
+
     const { data, error } = await supabase
         .from('releases')
-        .update(updates)
+        .update(cleanUpdates)
         .eq('id', id)
         .select()
         .single();

@@ -2,13 +2,17 @@
 
 import { type FC } from 'react';
 import { RoadmapFeature } from '../../lib/types/domain';
-import { Clock, Zap, AlertTriangle, Star, ThumbsUp } from 'lucide-react';
+import { Clock, Zap, AlertTriangle, Star, ThumbsUp, Check, Edit, Trash2 } from 'lucide-react';
 
 interface RoadmapCardProps {
     item: RoadmapFeature;
+    isAdmin?: boolean;
+    onEdit?: (item: RoadmapFeature) => void;
+    onDelete?: (id: string) => void;
+    onComplete?: (item: RoadmapFeature) => void;
 }
 
-const RoadmapCard: FC<RoadmapCardProps> = ({ item }) => {
+const RoadmapCard: FC<RoadmapCardProps> = ({ item, isAdmin, onEdit, onDelete, onComplete }) => {
     let statusColor = '';
     let StatusIcon = Zap;
     let opacity = 'opacity-100';
@@ -49,7 +53,7 @@ const RoadmapCard: FC<RoadmapCardProps> = ({ item }) => {
                  <div className="text-[10px] font-mono uppercase tracking-widest opacity-70 border border-white/10 px-2 py-0.5 rounded-full">
                      {item.category || 'Roadmap'}
                  </div>
-                 <div className="mt-1">
+                 <div className="mt-1 flex items-center gap-2">
                     <StatusIcon size={16} />
                  </div>
             </div>
@@ -73,6 +77,39 @@ const RoadmapCard: FC<RoadmapCardProps> = ({ item }) => {
                   <div className={`h-0.5 w-8 ${accentColor} opacity-50`}></div>
                   {item.target_date && <div className="text-[9px] font-mono uppercase tracking-widest opacity-50">{new Date(item.target_date).toLocaleDateString()}</div>}
              </div>
+
+             {/* Admin Controls */}
+             {isAdmin && (
+                <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 p-1 rounded border border-white/10 backdrop-blur-sm z-20">
+                    {item.status !== 'completed' && onComplete && (
+                        <button
+                            onClick={(e) => { e.preventDefault(); onComplete(item); }}
+                            className="p-1 hover:text-emerald-400 hover:bg-emerald-500/20 rounded transition-colors"
+                            title="Mark Complete"
+                        >
+                            <Check size={12} />
+                        </button>
+                    )}
+                    {onEdit && (
+                        <button
+                            onClick={(e) => { e.preventDefault(); onEdit(item); }}
+                            className="p-1 hover:text-blue-400 hover:bg-blue-500/20 rounded transition-colors"
+                            title="Edit"
+                        >
+                            <Edit size={12} />
+                        </button>
+                    )}
+                    {onDelete && (
+                        <button
+                            onClick={(e) => { e.preventDefault(); onDelete(item.id); }}
+                            className="p-1 hover:text-red-400 hover:bg-red-500/20 rounded transition-colors"
+                            title="Delete"
+                        >
+                            <Trash2 size={12} />
+                        </button>
+                    )}
+                </div>
+             )}
         </div>
     );
 }
