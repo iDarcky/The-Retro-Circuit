@@ -97,7 +97,7 @@ export default async function PrivacyPage() {
           {/* Section 4: Your Rights */}
           <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
             <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 04 ]</span>
+               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 05 ]</span>
                <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Your Rights</h2>
             </div>
             <div className="space-y-8 text-gray-300 leading-relaxed text-lg font-light">
