@@ -37,3 +37,30 @@ This audit evaluates the current state of UI components across the application a
 - [ ] Migrate all standard `Button` instances to `SwissButton` or update the `Button` base styles to remove border radii and shadows.
 - [ ] Audit auxiliary pages for generic typography utility classes that break the dense Swiss scale.
 - [ ] Ensure all input fields and forms (like those in Admin) adopt the strict, flat, bordered styling of the `SwissDropdown`.
+
+### Pending Components for Swiss Methodology
+
+**The old `Button` component is currently still used in the following locations:**
+* **Auth:**
+  * `components/auth/ProfileClient.tsx`
+* **Admin Dashboard:**
+  * `components/admin/ConsoleIndexClient.tsx`
+  * `components/admin/ManufacturerForm.tsx`
+  * `components/admin/EmulationForm.tsx`
+  * `components/admin/VariantForm.tsx`
+  * `components/admin/AdminConsoleEditorClient.tsx`
+  * `components/admin/ConsoleForm.tsx`
+  * `components/admin/FabricatorClient.tsx`
+  * `components/admin/ReleaseForm.tsx`
+  * `components/admin/RoadmapClient.tsx`
+  * `components/admin/SettingsForm.tsx`
+* **Finder & Fabricator:**
+  * `components/finder/QuizQuestion.tsx`
+  * `components/finder/FinderLanding.tsx`
+  * `components/finder/FinderResults.tsx`
+  * `components/fabricator/FabricatorDetailClient.tsx`
+  * `components/fabricator/FabricatorListClient.tsx`
+* **Console Vault:**
+  * `components/console/ConsoleVaultClient.tsx`
+
+*Goal*: Over time, refactor these routes to utilize `SwissButton` or globally update `Button` styles to match the Swiss aesthetic.

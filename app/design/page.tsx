@@ -3,7 +3,6 @@ import Button from '@/components/ui/Button';
 import SwissButton from '@/components/console/swiss/SwissButton';
 import { TechBadge } from '@/components/ui/specs/TechBadge';
 import { SwissDropdown } from '@/components/ui/SwissDropdown';
-import RetroStatusBar from '@/components/ui/RetroStatusBar';
 
 
 export default function DesignSystemPage() {
@@ -48,7 +47,7 @@ export default function DesignSystemPage() {
         {/* Buttons */}
         <section className="space-y-8">
           <h2 className="text-3xl font-pixel text-violet-500 uppercase border-l-4 border-violet-500 pl-4">Buttons</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 gap-8">
 
             <div className="bg-white/5 p-8 border border-white/10 space-y-6">
               <h3 className="text-xl font-pixel text-white mb-4">Standard Button</h3>
@@ -102,12 +101,6 @@ export default function DesignSystemPage() {
               </div>
             </div>
 
-            <div className="bg-white/5 p-8 border border-white/10 space-y-6">
-              <h3 className="text-xl font-pixel text-white mb-4">RetroStatusBar</h3>
-              <div className="w-full relative h-16 bg-black">
-                <RetroStatusBar rcPath="RC-01" docId="DOC-SYS" archiveVersion="1.0.0" />
-              </div>
-            </div>
           </div>
         </section>
       </div>
