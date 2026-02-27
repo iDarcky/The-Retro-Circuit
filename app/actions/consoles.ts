@@ -147,14 +147,25 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
 
 export const fetchConsoleList = async (includeHidden: boolean = false): Promise<{ name: string, slug: string, id: string, status?: string, updated_at?: string }[]> => {
     const supabase = supabaseAnon;
-    let query = supabase.from('consoles').select('id, name, slug, status, updated_at').order('name');
+    // Updated to include manufacturer name for better searchability in Arena
+    let query = supabase.from('consoles').select('id, name, slug, status, updated_at, manufacturer(name)').order('name');
 
     if (!includeHidden) {
         query = query.eq('status', 'published');
     }
 
     const { data } = await query;
-    return data || [];
+
+    if (!data) return [];
+
+    return data.map((item: any) => ({
+        id: item.id,
+        // Prepend Manufacturer name if available (e.g. "Nintendo Game Boy")
+        name: item.manufacturer?.name ? `${item.manufacturer.name} ${item.name}` : item.name,
+        slug: item.slug,
+        status: item.status,
+        updated_at: item.updated_at
+    }));
 };
 
 export const fetchConsoleBySlug = async (slug: string, includeHidden: boolean = false): Promise<{ data: ConsoleDetails | null, error: any }> => {

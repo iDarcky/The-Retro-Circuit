@@ -8,20 +8,18 @@ export const searchDatabase = async (query: string): Promise<SearchResult[]> => 
 
     try {
         const supabase = supabaseAnon;
-        const term = `%${query.trim()}%`;
+        const term = query.trim(); // No wildcards needed for RPC usually if handled inside, but my RPC adds them.
 
         // Parallel query execution
+        // 1. Search Consoles via RPC (handles "Nintendo Gameboy" logic)
+        // 2. Search Manufacturers via standard ILIKE (handles "Nintendo")
         const [consolesResponse, manufacturersResponse] = await Promise.all([
             supabase
-                .from('consoles')
-                .select('id, name, slug, image_url, manufacturer:manufacturer(name)')
-                .eq('status', 'published') // Enforce published status
-                .ilike('name', term)
-                .limit(5),
+                .rpc('search_consoles_global', { term }),
             supabase
                 .from('manufacturer')
                 .select('id, name, slug, image_url')
-                .ilike('name', term)
+                .ilike('name', `%${term}%`)
                 .limit(5)
         ]);
 
@@ -35,7 +33,7 @@ export const searchDatabase = async (query: string): Promise<SearchResult[]> => 
                     id: item.id,
                     slug: item.slug,
                     title: item.name,
-                    subtitle: item.manufacturer?.name,
+                    subtitle: item.manufacturer_name, // RPC returns this
                     image: item.image_url
                 });
             });
