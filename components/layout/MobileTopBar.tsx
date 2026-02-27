@@ -15,10 +15,10 @@ const MobileTopBar: FC<MobileTopBarProps> = ({ onMenuClick, isSidebarOpen }) => 
 
   return (
     <>
-      <header className="z-50 h-12 md:hidden bg-bg-primary border-b-2 border-violet-500 flex items-center justify-between px-3 transition-all duration-300 shrink-0">
+      <header className="z-50 h-12 md:hidden bg-bg-primary border-b-2 border-violet-500 flex items-center justify-between pr-3 transition-all duration-300 shrink-0">
         {/* Left: Logo */}
-        <div className="flex items-center">
-            <Link href="/" className="flex items-center group min-h-[44px] items-center">
+        <div className="flex items-center h-full hover:bg-bg-secondary transition-colors duration-300">
+            <Link href="/" className="flex items-center group min-h-[44px] px-3 h-full">
                 <span className="font-pixel text-xs leading-tight text-white/40 group-hover:text-secondary transition-colors">RETRO CIRCUIT_</span>
             </Link>
         </div>
