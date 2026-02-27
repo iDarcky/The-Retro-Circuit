@@ -54,12 +54,6 @@ This audit evaluates the current state of UI components across the application a
   * `components/admin/ReleaseForm.tsx`
   * `components/admin/RoadmapClient.tsx`
   * `components/admin/SettingsForm.tsx`
-* **Finder & Fabricator:**
-  * `components/finder/QuizQuestion.tsx`
-  * `components/finder/FinderLanding.tsx`
-  * `components/finder/FinderResults.tsx`
-  * `components/fabricator/FabricatorDetailClient.tsx`
-  * `components/fabricator/FabricatorListClient.tsx`
 * **Console Vault:**
   * `components/console/ConsoleVaultClient.tsx`
 

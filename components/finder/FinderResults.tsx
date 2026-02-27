@@ -4,7 +4,7 @@ import { FC, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
-import Button from '../ui/Button';
+import SwissButton from '@/components/console/swiss/SwissButton';
 import { getFinderResults, FinderResultConsole } from '../../app/finder/actions';
 
 interface FinderResultsProps {
@@ -53,9 +53,9 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
             <p className="font-mono text-zinc-500 mb-8">
                 It seems no handhelds matched your specific criteria in our database yet.
             </p>
-            <Button variant="secondary" onClick={onRestart}>
+            <SwissButton variant="secondary" onClick={onRestart}>
               TRY AGAIN
-            </Button>
+            </SwissButton>
         </div>
       );
   }
@@ -138,14 +138,14 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
 
                 <div className="flex flex-col sm:flex-row gap-4">
                     <Link href={`/consoles/${winner.slug}`} className="flex-1">
-                        <Button variant="secondary" className="w-full py-4 text-sm font-pixel">
+                        <SwissButton variant="secondary" className="w-full py-4 text-sm font-pixel">
                             VIEW FULL SPECS
-                        </Button>
+                        </SwissButton>
                     </Link>
                     <a href="#" target="_blank" rel="noopener noreferrer" className="flex-1">
-                         <Button variant="primary" className="w-full py-4 text-sm font-pixel">
+                         <SwissButton variant="primary" className="w-full py-4 text-sm font-pixel">
                             BUY NOW
-                         </Button>
+                         </SwissButton>
                     </a>
                 </div>
             </div>
@@ -204,9 +204,9 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
 
                         <div className="mt-auto flex flex-col gap-3">
                              <Link href={`/consoles/${consoleItem.slug}`} className="w-full">
-                                <Button variant="secondary" className="w-full text-xs">
+                                <SwissButton variant="secondary" className="w-full text-xs">
                                     VIEW DETAILS
-                                </Button>
+                                </SwissButton>
                              </Link>
 
                              {/* COMPARE BUTTON */}

@@ -1,7 +1,7 @@
 'use client';
 
 import { FC } from 'react';
-import Button from '../ui/Button';
+import SwissButton from '@/components/console/swiss/SwissButton';
 
 interface FinderLandingProps {
   onStart: () => void;
@@ -26,13 +26,13 @@ export const FinderLanding: FC<FinderLandingProps> = ({ onStart }) => {
             </p>
 
             <div className="flex flex-col items-center gap-4">
-                <Button
+                <SwissButton
                     variant="primary"
                     onClick={onStart}
                     className="text-lg md:text-xl px-12 py-5 font-pixel tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] transition-all transform hover:-translate-y-1"
                 >
                     INITIATE SCAN
-                </Button>
+                </SwissButton>
                 <span className="text-xs font-mono text-zinc-600 tracking-[0.2em] uppercase">
                     ~2 Minute Analysis Cycle
                 </span>
