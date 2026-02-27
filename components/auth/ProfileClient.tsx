@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { retroAuth } from '../../lib/auth';
-import Button from '../ui/Button';
+import SwissButton from '@/components/console/swiss/SwissButton';
 import AvatarSelector from '../ui/AvatarSelector';
 import { RETRO_AVATARS } from '../../data/avatars';
 import type { User } from '@supabase/supabase-js';
@@ -62,13 +62,13 @@ export default function ProfileClient({ initialUser, initialAdminStatus }: Profi
 
                     {isAdmin && (
                         <Link href="/admin">
-                            <Button variant="secondary" className="w-full text-xs mb-3 border-accent text-accent hover:bg-accent hover:text-white">
+                            <SwissButton variant="secondary" className="w-full text-xs mb-3 border-accent text-accent hover:bg-accent hover:text-white">
                                 ACCESS ADMIN PANEL
-                            </Button>
+                            </SwissButton>
                         </Link>
                     )}
 
-                    <Button onClick={handleLogout} variant="danger" className="w-full text-xs">DISCONNECT</Button>
+                    <SwissButton onClick={handleLogout} variant="danger" className="w-full text-xs">DISCONNECT</SwissButton>
                 </div>
             </div>
         </div>

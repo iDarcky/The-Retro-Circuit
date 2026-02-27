@@ -41,8 +41,6 @@ This audit evaluates the current state of UI components across the application a
 ### Pending Components for Swiss Methodology
 
 **The old `Button` component is currently still used in the following locations:**
-* **Auth:**
-  * `components/auth/ProfileClient.tsx`
 * **Admin Dashboard:**
   * `components/admin/ConsoleIndexClient.tsx`
   * `components/admin/ManufacturerForm.tsx`
@@ -54,7 +52,5 @@ This audit evaluates the current state of UI components across the application a
   * `components/admin/ReleaseForm.tsx`
   * `components/admin/RoadmapClient.tsx`
   * `components/admin/SettingsForm.tsx`
-* **Console Vault:**
-  * `components/console/ConsoleVaultClient.tsx`
 
 *Goal*: Over time, refactor these routes to utilize `SwissButton` or globally update `Button` styles to match the Swiss aesthetic.
