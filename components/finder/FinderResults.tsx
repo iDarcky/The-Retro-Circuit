@@ -138,8 +138,8 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
 
                 <div className="flex flex-col sm:flex-row gap-4">
                     <Link href={`/consoles/${winner.slug}`} className="flex-1">
-                        <SwissButton variant="secondary" className="w-full py-4 text-sm font-pixel">
-                            VIEW FULL SPECS
+                        <SwissButton variant="orange" className="w-full py-4 text-sm font-pixel">
+                            VIEW DETAILS
                         </SwissButton>
                     </Link>
                     <a href="#" target="_blank" rel="noopener noreferrer" className="flex-1">
@@ -204,7 +204,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
 
                         <div className="mt-auto flex flex-col gap-3">
                              <Link href={`/consoles/${consoleItem.slug}`} className="w-full">
-                                <SwissButton variant="secondary" className="w-full text-xs">
+                                <SwissButton variant="orange" className="w-full text-xs">
                                     VIEW DETAILS
                                 </SwissButton>
                              </Link>
