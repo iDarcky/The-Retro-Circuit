@@ -7,6 +7,7 @@ import ConsoleIdentitySection from './ConsoleIdentitySection';
 import PlayabilityMatrix from './PlayabilityMatrix';
 import BuySection from './BuySection';
 import { getConsoleImage } from '../../lib/utils';
+import EmulationSummary from './EmulationSummary';
 
 // Swiss Design Components
 import SystemAnalysis from './swiss/SystemAnalysis';
@@ -57,6 +58,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
     // Modal State
     const [isVariantModalOpen, setIsVariantModalOpen] = useState(false);
+    const [isEmulationModalOpen, setIsEmulationModalOpen] = useState(false);
 
     useEffect(() => {
         const variantSlug = searchParams?.get('variant');
@@ -84,6 +86,8 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
     const currentVariant = variants.find(v => v.id === selectedVariantId);
     const currentImage = getConsoleImage({ console: consoleData, variant: currentVariant });
+
+    const emulationProfile = mergedSpecs.emulation_profile || (mergedSpecs as any).emulation_profiles;
 
     return (
         <div className="w-full min-h-screen bg-[#09090b] text-white selection:bg-orange-500/30 selection:text-white pb-20">
@@ -134,39 +138,41 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                     {/* BRIEFING (Right - Span 4) */}
                     <div className="lg:col-span-4 flex flex-col h-full border-t border-white/10 lg:border-t-0 lg:border-l lg:pl-8 pt-8 lg:pt-0">
                         
-                        {/* COMBINED METRICS & PROFILE */}
-                        <div>
-                            <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">KEY METRICS</h2>
-                            <CombinedMetrics 
-                                console={consoleData}
-                                specs={mergedSpecs}
-                                releaseDate={currentVariant?.release_date || null} 
+                        {/* COMBINED METRICS & EMULATION SUMMARY */}
+                        <div className="space-y-8">
+                            <div>
+                                <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">KEY METRICS</h2>
+                                <CombinedMetrics
+                                    console={consoleData}
+                                    specs={mergedSpecs}
+                                    releaseDate={currentVariant?.release_date || null}
+                                />
+                            </div>
+
+                            {/* EMULATION SCORE CARD (Moved Here) */}
+                            <EmulationSummary
+                                profile={emulationProfile}
+                                onClick={() => setIsEmulationModalOpen(true)}
                             />
                         </div>
                     </div>
                 </div>
 
-                {/* ROW 2: EMULATION & ANALYSIS (Moved Up) */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 border-t border-white/10 pt-8">
-                    {/* Playability */}
-                    <section id="playability">
-                        <PlayabilityMatrix profile={mergedSpecs.emulation_profile || (mergedSpecs as any).emulation_profiles} />
+                {/* ROW 2: ANALYSIS & LOGISTICS (Rearranged) */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 border-t border-white/10 pt-8">
+                    {/* System Analysis (Span 8) */}
+                    <section className="lg:col-span-8">
+                        <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">SYSTEM ANALYSIS</h2>
+                        <SystemAnalysis description={consoleData.description || ''} />
                     </section>
 
-                    {/* System Analysis + Buy */}
-                    <section className="space-y-8">
-                        <div>
-                            <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">SYSTEM ANALYSIS</h2>
-                            <SystemAnalysis description={consoleData.description || ''} />
-                        </div>
-                        
-                        <div id="buy">
-                            <BuySection />
-                        </div>
+                    {/* Acquisition (Span 4) */}
+                    <section id="buy" className="lg:col-span-4">
+                        <BuySection />
                     </section>
                 </div>
 
-                {/* ROW 3: TECHNICAL REFERENCE (Moved Down) */}
+                {/* ROW 3: TECHNICAL REFERENCE */}
                 <section id="tech" className="border-t border-white/10 pt-8">
                      <TechnicalReference mergedSpecs={mergedSpecs} />
                 </section>
@@ -180,6 +186,17 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                 title={`VARIANT COMPARISON // ${consoleData.name}`}
             >
                 <VariantComparisonTable variants={variants} baseSpecs={consoleData.specs || {}} />
+            </SwissModal>
+
+            {/* EMULATION MATRIX MODAL */}
+            <SwissModal
+                isOpen={isEmulationModalOpen}
+                onClose={() => setIsEmulationModalOpen(false)}
+                title={`EMULATION MATRIX // ${consoleData.name}`}
+            >
+                <div className="p-4 md:p-8">
+                     <PlayabilityMatrix profile={emulationProfile} />
+                </div>
             </SwissModal>
         </div>
     );

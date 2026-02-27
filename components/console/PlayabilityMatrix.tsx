@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FC } from 'react';
+import { useState, type FC, useEffect } from 'react';
 import { EmulationProfile } from '../../lib/types';
 import { SYSTEM_TIERS } from '../../lib/config/emulation';
 
@@ -10,7 +10,15 @@ interface PlayabilityMatrixProps {
 
 const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) => {
     const profile = Array.isArray(rawProfile) ? rawProfile[0] : rawProfile;
+    // Default all open for modal view
     const [openTiers, setOpenTiers] = useState<Record<string, boolean>>({});
+
+    // Open all tiers by default when mounting (for modal)
+    useEffect(() => {
+        const allOpen: Record<string, boolean> = {};
+        SYSTEM_TIERS.forEach(t => allOpen[t.title] = true);
+        setOpenTiers(allOpen);
+    }, []);
 
     if (!profile) return null;
 
@@ -31,14 +39,8 @@ const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) 
     };
 
     return (
-        <div className="border border-white/10 mb-6 bg-black">
-
-             {/* Header */}
-            <div className="border-b border-white/10 px-6 py-4">
-                <h3 className="font-pixel text-xs text-orange-500 uppercase tracking-widest">Emulation Matrix</h3>
-            </div>
-
-            <div className="p-6 space-y-4">
+        <div className="bg-black">
+            <div className="space-y-4">
                 {SYSTEM_TIERS.map((tier) => {
                     let activeSystems: { key: string, label: string, status: string }[] = [];
                     tier.systems.forEach(sys => {
@@ -62,7 +64,7 @@ const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) 
                             </button>
 
                             {isOpen && (
-                                <div className="p-4 border-t border-white/10 grid grid-cols-2 md:grid-cols-3 gap-3">
+                                <div className="p-4 border-t border-white/10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                     {activeSystems.map((sys) => {
                                         const style = getStatusStyle(sys.status);
                                         return (

@@ -4,6 +4,7 @@ import { createClient } from "../../lib/supabase/server";
 import { supabaseAnon } from "../../lib/supabase/anon";
 import { RoadmapFeature, Release } from "../../lib/types/domain";
 import { siteConfig } from "../../config/site";
+import { formatRoadmapMarkdown } from "../../lib/roadmap-formatter";
 
 export async function getSystemVersion() {
     const dbVersion = await fetchLatestVersion();
@@ -231,7 +232,6 @@ export async function generateRoadmapMarkdown() {
     if (releasesError) throw releasesError;
 
     // 2. Fetch all roadmap items that are NOT assigned to a release (or drafts/planned)
-    // We can fetch ALL roadmap items and filter in JS to be simpler, or query for null release_id
     const { data: unreleasedFeatures, error: featuresError } = await supabase
       .from('roadmap_features')
       .select('*')
@@ -240,45 +240,10 @@ export async function generateRoadmapMarkdown() {
 
     if (featuresError) throw featuresError;
 
-    // 3. Construct Markdown
-    let md = `# Project Roadmap & Changelog\n\n`;
-    md += `Generated on: ${new Date().toLocaleDateString()}\n\n`;
-
-    // Section 1: Releases (Published & Drafts)
-    if (releases && releases.length > 0) {
-        releases.forEach((release: any) => {
-            const date = new Date(release.release_date).toLocaleDateString();
-            const status = release.is_published ? '' : ' (Draft)';
-
-            md += `## v${release.version}${status} - ${date}\n`;
-            if (release.title) md += `### ${release.title}\n`;
-            if (release.description) md += `> ${release.description}\n\n`;
-
-            if (release.roadmap_features && release.roadmap_features.length > 0) {
-                release.roadmap_features.forEach((feat: RoadmapFeature) => {
-                    md += `- [x] **${feat.title}**\n`;
-                    // Optional: Add description if detailed changelog desired
-                    // if (feat.description) md += `  - ${feat.description}\n`;
-                });
-            } else {
-                md += `- (No features linked)\n`;
-            }
-            md += `\n`;
-        });
-    }
-
-    // Section 2: Unreleased / Planned
-    if (unreleasedFeatures && unreleasedFeatures.length > 0) {
-        md += `## 🚧 Unreleased / In Progress\n\n`;
-        unreleasedFeatures.forEach((feat: RoadmapFeature) => {
-            const checkbox = feat.status === 'completed' ? '[x]' : '[ ]';
-            md += `- ${checkbox} **${feat.title}** (${feat.status})\n`;
-            if (feat.description) md += `  - ${feat.description}\n`;
-        });
-        md += `\n`;
-    }
-
-    return md;
+    return formatRoadmapMarkdown(
+        (releases as (Release & { roadmap_features: RoadmapFeature[] })[]) || [],
+        (unreleasedFeatures as RoadmapFeature[]) || []
+    );
 
   } catch (error) {
     console.error('Error generating roadmap markdown:', error);

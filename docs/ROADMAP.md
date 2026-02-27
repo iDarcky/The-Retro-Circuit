@@ -1,129 +1,178 @@
-# THE CIRCUIT: 40-DAY LAUNCH ROADMAP
+# Project Roadmap & Changelog
 
-This roadmap consolidates the audit findings into an actionable 40-day sprint plan. The goal is to elevate the platform from "Pre-Alpha" to a revenue-generating, community-ready "Version 1.0".
+Generated on: 2/27/2026
 
----
+## Changelog
 
-## 0. EXECUTIVE SUMMARY
+### vPre-Alpha 0.5.4 - 2/27/2026
+**Search Update**
+> Updating the search to include the manufacturer name.
 
-### Biggest Missing Feature: **"Game-Based Search"**
-*   **Problem:** Users search for *"Can it play God of War?"* or *"Pokemon Emerald"*. Currently, the search only understands *"Retroid Pocket 4"*. You are losing 60-80% of casual search intent.
-*   **Fix:** Index the `emulation_profiles` table. When a user types "PS2", show consoles with `ps2_state = 'perfect'`.
+- [x] **Display Variant number**
+- [x] **Roadmap page ui **
+- [x] **Search remake**
 
-### Biggest Easy Win: **SEO Metadata & JSON-LD**
-*   **Problem:** Google sees "The Retro Circuit" for every page.
-*   **Fix:** Dynamic metadata (`title: "Retroid Pocket 4 Specs"`) takes <2 hours to implement but instantly boosts organic traffic and click-through rates (CTR).
+### vPre-Alpha 0.5.3 - 2/25/2026
+**Bug fixes **
+> Fixed the Drop-down menu bug, changed the background image and OG image.
 
----
+- [x] **Drop-down menu update**
+- [x] **Variant comparison**
+- [x] **/fabricators/[slug] redesign**
+- [x] **Dynamic OG image**
+- [x] **Background photo change**
 
-## PHASE 1: STABILITY & TRUST (DAYS 1-7)
-*Focus: Fixing critical bugs, security holes, and mobile usability.*
+### vPre-Alpha 0.5.2 - 2/24/2026
+**Sorting**
+> Sorting update and starting finder, VS and console page redesign.
 
-### Day 1-2: Security & Architecture
-- [x] **CRITICAL:** Fix `middleware.ts` auth bypass. Remove the "placeholder" logic check.
-- [x] **Security:** Verify Row Level Security (RLS) policies for `consoles` table (prevent unauthorized edits).
-- [x] **Cleanup:** Remove unused `lib/utils.ts` and dead code.
-- [x] **Linting:** Set `exhaustive-deps` to "error" and fix the resulting build warnings.
+- [x] **Smart Sorting**
 
-### Day 3-4: Mobile Usability (The "Thumb" Test)
-- [x] **Text Size:** Bump all `text-[10px]` to `text-xs` (12px) in `MobileTopBar` and `LandingPage` pills.
-- [x] **Touch Targets:** Increase "Menu" and "Search" icon hit areas to 44x44px.
-- [x] **Viewport:** Add `interactive-widget=resizes-content` to `layout.tsx` to fix iOS keyboard layout shifts.
+### vPre-Alpha 0.5.1 - 2/23/2026
+**SEO optimization **
+> Added some SEO optimization for the website 
 
-### Day 5-7: Core Search Fixes
-- [x] **Empty State:** Design a "No Results Found" component for `ConsoleSearch` (don't just show nothing).
-- [x] **Keyboard Nav:** Implement ArrowDown/Enter support in the search dropdown.
-- [x] **Focus States:** Add visible focus rings (`focus-visible:ring-violet-500`) for accessibility.
+- [x] **Advanced Entity Schema (JSON-LD)**
+- [x] **OpenGraph & Social Metadata **
+- [x] **Dynamic Sitemap**
+- [x] **Dynamic Metadata**
 
----
+### vPre-ALPHA 0.5.0 - 2/23/2026
+**The UI Update**
+> The UI was updated to the swiss design.
 
-## PHASE 2: REVENUE & CORE FEATURES (DAYS 8-20)
-*Focus: Monetization, "Game-Based Search", and comparing devices.*
+- (No features linked)
 
-### Day 8-10: The "Game Search" Engine
-- [ ] **Backend:** Update `supabase/queries` to join `consoles` with `emulation_profiles`.
-- [ ] **Frontend:** Update `ConsoleSearch` to accept a `type` filter (System vs. Console).
-- [ ] **UI:** Display "Plays PS2 Perfectly" badge in the search result dropdown.
+## Roadmap
 
-### Day 11-14: Affiliate Monetization
-- [ ] **Database:** Add `affiliate_amazon` and `affiliate_aliexpress` columns.
-- [ ] **UI:** Create a high-contrast `BuyButton` component in `ConsoleDetailView`.
-- [ ] **Legal:** Add "Amazon Associate" disclosure to the Footer.
+### In Progress
 
-### Day 15-17: "VS" Mode Expansion
-- [ ] **Routing:** Update `/arena/[...slugs]` to handle 3+ devices.
-- [ ] **UI:** Refactor `QuickCompare` to support a 3rd "Player" slot on desktop.
-- [ ] **Shareability:** Add a "Copy Link" button that generates the exact comparison URL.
+#### Critical
+- [ ] **Console page redesign**
+  - Redesign the Console page.
+- [ ] **Finder rework**
+  - Rework the finder so that the questions are taken into consideration.
 
-### Day 18-20: SEO Overhaul
-- [x] **Dynamic Metadata:** Implement `generateMetadata` in `app/consoles/[slug]/page.tsx`.
-- [x] **Structured Data:** Inject `JSON-LD` Product Schema for Google Rich Snippets.
-- [x] **Sitemap:** Bump priority of "Published" consoles to `1.0`.
+- [ ] **VS page rework**
+  - Rework the VS page to make it fit the swiss design language as well to make the data there readable. 
 
----
+### Planned
 
-## PHASE 3: ENGAGEMENT & CONTENT (DAYS 21-30)
-*Focus: Keeping users on the site longer.*
+#### Critical
+- [ ] **Logo clickable ** (Target: 2/23/2026)
+  - Make the top right logo clickable, not just the text
+- [ ] **Living Design System**
+  - Create a hidden /design route that displays all buttons, badges, and typestyles to ensure "Swiss" consistency.
+- [ ] **Liability Disclaimer Page**
+  - Create a clear Terms/Disclaimer page stating "The Retro Circuit is not responsible for hardware damage from overclocking/modding", and any other things that are needed for the disclaimer, terms poage.
+- [ ] **Rate Limiting (API Protection)**
+  - Implement upstash/ratelimit or similar on search and form endpoints to prevent abuse and DoS.
+- [ ] **Dark Mode Integrity**
+  - Ensure class="dark" is enforced and no white flashes occur on load.
+- [ ] **Similar consoles**
+  - Add a "Similar Consoles" section at the bottom of Detail Views.
+- [ ] **Upcoming**
+  - Add an option to set the time to upcoming for the consoles.
+- [ ] **Legal Disclosures**
+  - Add "Amazon Associate" and other affiliate disclosures to the Footer.
+- [ ] **Affiliate Integration**
+  - Add columns to the DB and implement a BuyButton component.
+- [ ] **2nd Screen more fields**
+  - Add more fields in regards to the 2nd screen. Panel type, etc
+- [ ] **Add GHz to GPU Speed**
+  - Add the possibility to convert to GHz to the GPU Clock Speed 
+- [ ] **Nav Pill Icons**
+  - Change the icons of the nav pill on mobile to the new one, and change the links to home, console vault, vs and news
+- [ ] **Landing Page VS fix**
+  - Fix the starting of VS from the landing page.
 
-### Day 21-23: User Reviews (MVP)
-- [ ] **Database:** Create `reviews` table (`console_id`, `rating`, `comment`).
-- [ ] **UI:** Add a simple "Star Rating" component to `ConsoleDetailView`.
-- [ ] **Submission:** Allow users to submit a rating (requires Auth).
+#### Must Have
+- [ ] **Command Palette**
+  - (Cmd+K): Implement a global command menu for power users to navigate Consoles, VS Mode, and Settings instantly.
+- [ ] **Environment Variable Validation**
+  - Use t3-env or zod to fail the build immediately if NEXT_PUBLIC_SUPABASE_URL or other keys are missing.
+- [ ] **PWA & Install Prompt**
+  - Add manifest.json and ios-pwa-splash to allow users to "Install" the site as an app. This aligns with the "Launcher" vision.
+- [ ] **Server Actions Migration**
+  - Move addConsole/updateConsole logic to Server Actions for better security and type safety.
+- [ ] **CI/CD Pipeline**
+  - Set up GitHub Actions for automated linting and build verification.
+- [ ] **Type Safety**
+  - Strictly define ConsoleFormData with Zod to match the DB schema and avoid any types.
+- [ ] **Database Backups**
+  - Enable Point-in-Time Recovery (PITR) in Supabase.
+- [ ] **Error Monitoring**
+  - Integrate Sentry for client/server error tracking.
+- [ ] **Performance: Image Optimization**
+  - Audit FeaturedConsoles and others to use proper sizes props and AVIF/WebP formats.
+- [ ] **Custom Scrollbars**
+  - Style WebKit scrollbars to match the dark theme.
+- [ ] **"Swiss Design" Polish**
+  - Standardize all grid gaps and strictly enforce the design system (squares, minimal borders).
+- [ ] **Focus States**
+  - Ensure visible focus rings (ring-violet-500) for keyboard navigation accessibility.
+- [ ] **Loading States**
+  - Implement Skeleton screens for all data-fetching components to improve perceived performance.
+- [ ] **Social Sharing Cards (OG)**
+  - Use @vercel/og to generate dynamic images for comparison pages (e.g., showing both consoles in the preview image).
+- [ ] **Email Capture System**
+  - Add "Notify when Released" buttons and "Price Drop Alerts" to capture user emails (Mailchimp/Resend integration).
+- [ ] **Export as Image/PDF**
+  - Allow users to download the comparison card for offline sharing.
+- [ ] **Variant sort**
+  - Sort the variants by price. If the price is the same, sort by default. Also hide default tag
+- [ ] **Variant comparison mobile**
+  - Add the variant comparison to mobile 
+- [ ] **Mobile /console/[slug] header**
+  - Fix the header for the console page. 
 
-### Day 24-26: News & Content
-- [ ] **CMS:** Build a simple "Post Editor" in `/admin/news`.
-- [ ] **Frontend:** Build the `/news` page and a "Latest Intel" widget on the Homepage.
-- [ ] **Strategy:** Write 3 "Pillar" articles: "Best Under $100", "Steam Deck vs Ally", "Starter Guide".
+#### Nice to Have
+- [ ] **Internationalization (i18n) Readiness**
+  - Scaffold the project with next-intl to support future Brazilian/SEA markets without a full rewrite.
+- [ ] **Haptics**
+  - Add navigator.vibrate to key interactions (like the "Fight" button).
+- [ ] **Real-World Battery Gauge**
+  - Display "Est. 3-5 Hours" based on battery_wh / tdp calculation, not just mAh.
+- [ ] **Viewport Management**
+  - Add interactive-widget=resizes-content to layout.tsx to fix iOS keyboard layout shifts.
+- [ ] **"Verified Owner" Badges**
+  - Verification system for users who prove ownership.
+- [ ] **Community Playability Voting**
+  - Allow logged-in users to vote on game performance ("Playable", "Struggles", "No-Go").
+- [ ] **User Reviews & Ratings**
+  - Database table for reviews. UI for Star Ratings and short comments.
+- [ ] **Price History & Tracking**
+  - Create a price history table and display a Sparkline chart (6-month trend) with a "Best Time to Buy" indicator.
+- [ ] **"Glitch" Effects**
+  - Add a CSS glitch effect to the "VS" circle on hover.
+- [ ] **Visual Size Comparison**
+  - Render a static SVG outline of a common object (Credit Card, iPhone) next to the console outline using width_mm.
+- [ ] **3+ Device Comparison**
+  - Expand /arena to support side-by-side comparison of 3-4 devices (currently limited to 2). Update routing to /arena/[...slugs].
+- [ ] **"Finder" to Email Capture**
+  - At the end of a search/finder result, offer to email updates when better options release.
+- [ ] **"Simple Mode" Toggle**
+  - A context toggle to hide technical specs (Clock Speed, TDP) for casual users, showing only "Playable Systems", Screen Size, and Battery.
+- [ ] **Keyboard Navigation:**
+  - Implement ArrowDown / Enter support in the search dropdown for power users.
+- [ ] **"No Results" Empty State**
+  - Design a helpful component for when search yields no results (e.g., "System Not Found", "Request This Device" link) instead of a blank screen.
+- [ ] **Systems-bases search**
+  - Allowed the search by systems systems ("PS2", "GameCube").
+- [ ] **Game-Based Search Engine**
+  - Allow searching by games ("God of War", "Pokemon Emerald").
+- [ ] **Console vault scroll **
+  - Fix the scroll of the console vault so it goes back to top. Also implement the back logic.
+- [ ] **Better Filters**
+  - Better filters for the console vault. Implement filters for Price Range ($0-$800), Manufacturer, CPU Generation, RAM (4GB, 8GB, etc.), OS (Android, Linux, Windows), and Release Year.
+- [ ] **Fabricator page rework**
+  - Rework the fabricator page to fit the new design language 
+- [ ] **VS rivals**
+  - Better Rivals recommendations.
+- [ ] **Add pills to pages**
+  - Add matching pills to each pages (Console Vault, Fabricator, VS Arena for now)
+- [ ] **Error pages**
+  - Error pages update to the Swiss UI
+- [ ] **Newsletter**
+  - Add a monthly or weekly newsletter with news from the website and from the handheld world
 
-### Day 27-30: Social Sharing (OG Images)
-- [ ] **API:** Create `api/og` route using `@vercel/og`.
-- [ ] **Design:** Create a template that dynamically renders two consoles facing off.
-- [ ] **Testing:** Verify the cards look good on Twitter/Discord.
-
----
-
-## PHASE 4: POLISH & LAUNCH (DAYS 31-40)
-*Focus: Performance, Analytics, and "Wow" factor.*
-
-### Day 31-33: Performance Tuning
-- [ ] **Images:** Audit `FeaturedConsoles` images. Implement proper `sizes` prop.
-- [ ] **Fonts:** Ensure `Inter` and `JetBrains Mono` are subsetted correctly.
-- [ ] **Bundle:** Analyze build output. Lazy load heavy components (like the "Arena" charts).
-
-### Day 34-36: The "Wow" Factor (Micro-Interactions)
-- [ ] **Haptics:** Add `navigator.vibrate` to "Fight" buttons.
-- [ ] **Sound:** (Optional) Re-introduce *very subtle* UI sounds (mute by default) for the "Cyberpunk" feel? (User previously removed audio, reconsider if high quality).
-- [ ] **Glitch Effects:** Add a CSS glitch effect to the "VS" circle on hover.
-
-### Day 37-39: Final QA & Analytics
-- [ ] **Tracking:** Set up PostHog or plausible.io (privacy-friendly).
-- [ ] **Error Monitoring:** Install Sentry.
-- [ ] **Cross-Browser:** Test on Safari (iOS), Chrome (Android), and Firefox.
-
-### Day 40: LAUNCH 🚀
-- [ ] **Submission:** Submit sitemap to Google Search Console.
-- [ ] **Social:** Announce on Reddit (r/SBCGaming), Discord, and Twitter.
-- [ ] **Email:** Send "System Online" email to the waiting list.
-
----
-
-## NITPICKS & "BIG PICTURE" IDEAS
-
-### Small Nitpicks (The 1%)
-1.  **Scrollbars:** Custom scrollbars in WebKit browsers (Chrome/Safari) to match the dark theme. The default white bar breaks immersion.
-2.  **Selection Color:** Change `::selection` color to `bg-violet-500 text-white` (already in Tailwind, verify it works globally).
-3.  **404 Page:** Make the 404 page a "Blue Screen of Death" or a "Connection Lost" terminal interface.
-4.  **Favicon:** Ensure the favicon is visible in Dark Mode tabs (avoid black-on-black).
-
-### Big Picture (Strategy)
-1.  **"The Steam of Handhelds":** Become the *launcher*. In the future, could you distribute "Setup Scripts" that configure the device automatically?
-2.  **Partnerships:** Reach out to Retro Game Corps or Taki Udon. Offer them a "Verified Reviewer" badge or a dedicated "Recommended by RGC" section.
-3.  **Marketplace:** Eventually, allow users to sell used handhelds to each other (P2P).
-
----
-
-## FUTURE AUDITS (Post-Launch)
-
-1.  **Load Testing Audit:** Can the site handle the "Reddit Hug of Death"? (Use k6 or Artillery).
-2.  **Legal Compliance Audit:** Detailed review of GDPR, CCPA, and Affiliate disclosures by a professional.
-3.  **Localization Audit:** The handheld market is huge in Brazil and Southeast Asia. Is the UI ready for translation (i18n)?
