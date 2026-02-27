@@ -55,7 +55,7 @@ export default function EmulationSummary({ profile, onClick }: EmulationSummaryP
             className="w-full text-left group border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] hover:border-orange-500/50 transition-colors p-4 flex flex-col gap-1 cursor-pointer"
         >
             <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest group-hover:text-orange-400 transition-colors">
-                HIGHEST TIER PLAYABLE
+                EMULATION SCORE
             </span>
             <div className="font-pixel text-lg text-white group-hover:text-orange-500 transition-colors flex items-center justify-between">
                 <span>{highestTier.shortLabel}</span>

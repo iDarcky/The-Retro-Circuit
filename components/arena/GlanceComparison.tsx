@@ -1,6 +1,7 @@
 'use client';
 
-import { ConsoleVariant } from '../../lib/types';
+import { ConsoleVariant, EmulationProfile } from '../../lib/types';
+import { SYSTEM_TIERS } from '../../lib/config/emulation';
 
 interface GlanceComparisonProps {
     variantA: ConsoleVariant;
@@ -132,6 +133,29 @@ export const GlanceComparison = ({ variantA, variantB }: GlanceComparisonProps) 
     const battA = variantA.battery_capacity_mah;
     const battB = variantB.battery_capacity_mah;
 
+    // Helper to calculate highest tier
+    const getHighestTier = (profile?: EmulationProfile | null) => {
+        if (!profile) return null;
+        for (let i = SYSTEM_TIERS.length - 1; i >= 0; i--) {
+            const tier = SYSTEM_TIERS[i];
+            const isPlayable = tier.systems.some(sys => {
+                const status = (profile as any)[sys.key];
+                return status && (status === 'Playable' || status === 'Great' || status === 'Perfect');
+            });
+            if (isPlayable) {
+                return {
+                    num: i + 1,
+                    label: tier.shortLabel, // e.g., "TIER 5"
+                    sub: tier.title.replace(/TIER \d+: /, '') // e.g., "Modern & HD"
+                };
+            }
+        }
+        return null;
+    };
+
+    const tierA = getHighestTier(variantA.emulation_profile || (variantA as any).emulation_profiles);
+    const tierB = getHighestTier(variantB.emulation_profile || (variantB as any).emulation_profiles);
+
     return (
         <div className="w-full mb-12 animate-fadeIn">
             <div className="flex items-center gap-4 mb-8">
@@ -144,6 +168,18 @@ export const GlanceComparison = ({ variantA, variantB }: GlanceComparisonProps) 
 
             <div className="flex flex-col border-t border-b border-white/10 bg-black/20 backdrop-blur-sm">
                 
+                {/* 0. Max Emulation (New) */}
+                <TaleRow
+                    label="MAX EMULATION"
+                    valueA={tierA ? tierA.label : 'UNTESTED'}
+                    subA={tierA ? tierA.sub : ''}
+                    numA={tierA ? tierA.num : 0}
+                    valueB={tierB ? tierB.label : 'UNTESTED'}
+                    subB={tierB ? tierB.sub : ''}
+                    numB={tierB ? tierB.num : 0}
+                    showBar={false}
+                />
+
                 {/* 1. Launch Price */}
                 <TaleRow 
                     label="LAUNCH PRICE" 

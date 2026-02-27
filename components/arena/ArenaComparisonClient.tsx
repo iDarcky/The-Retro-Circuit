@@ -9,6 +9,7 @@ import { METRICS } from '../../lib/config/arena-metrics';
 import { ComparisonRow } from '../../components/arena/ComparisonRow';
 import { ConsoleSearch } from '../../components/arena/ConsoleSearch';
 import { VariantSelector } from '../../components/arena/VariantSelector';
+import { GlanceComparison } from '../../components/arena/GlanceComparison';
 import RetroStatusBar from '../../components/ui/RetroStatusBar';
 
 interface SelectionState {
@@ -318,6 +319,15 @@ export default function ArenaComparisonClient({
 
                 {selectionA.selectedVariant && selectionB.selectedVariant && isArenaMode && (
                     <div className="bg-bg-tertiary border border-border-normal p-6 mb-12 animate-fade-in shadow-2xl rounded-sm">
+
+                        {/* GLANCE COMPARISON ADDED HERE */}
+                        <div className="mb-8">
+                            <GlanceComparison
+                                variantA={selectionA.selectedVariant}
+                                variantB={selectionB.selectedVariant}
+                            />
+                        </div>
+
                         <div className="flex justify-between items-center mb-6 border-b border-border-subtle pb-4">
                             <h3 className="font-bold text-lg text-text-primary uppercase tracking-wider">TECHNICAL SPECIFICATIONS</h3>
                             <label className="flex items-center gap-2 cursor-pointer group">
