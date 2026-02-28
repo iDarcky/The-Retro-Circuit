@@ -39,13 +39,29 @@ To fully realize the "Vibrant Swiss" aesthetic across the entire application, se
 
 * **Number Stepper / Adjuster:**
   * **Current:** We use standard HTML number inputs.
-  * **Swiss Target:** A flat, high-contrast input group. A central text field for the number flanked by square, borderless `+` and `-` buttons. The container should have a solid `border-white/20` and an active focus state of a thick `border-violet-500`.
+  * **Vibrant Swiss Target:** A flat, high-contrast input group. A central text field for the number flanked by strict 40x40 geometric square buttons. The container should have a solid `border-white/20`.
+  * **Target Locations for Refactor:**
+    * `components/console/ConsoleVaultClient.tsx` (Price filters)
+    * `components/fabricator/FabricatorDetailClient.tsx` (Price/Year filters)
+    * `components/admin/VariantForm.tsx`
+    * `components/admin/ReviewManager.tsx`
 * **Toggle Switches / Checkboxes:**
   * **Current:** We use browser-default checkboxes or generic Tailwind toggles (e.g., in Admin forms).
-  * **Swiss Target:** For checkboxes: A sharp `w-4 h-4` square (`rounded-none`) with a solid border that fills with a vibrant brand color (Cyan/Orange/Violet) when checked, containing a blocky pixelated checkmark. For toggles: A strict rectangular track (`rounded-none`) with a square thumb, avoiding soft pill shapes.
+  * **Vibrant Swiss Target:** For checkboxes: A sharp square (`rounded-none`) with a solid border that fills with a vibrant brand color (Cyan/Orange/Violet) and a sharp SVG checkmark. For toggles: A strict rectangular track (`rounded-none`) with a square thumb.
+  * **Target Locations for Refactor:**
+    * `components/arena/ArenaComparisonClient.tsx` (Variant/Model toggles)
+    * `app/arena/page.tsx` (Variant selection toggles)
+    * `components/admin/ReleaseForm.tsx` (Published toggle)
 * **Text Inputs / Textareas:**
   * **Current:** Inputs in `AdminInput` or Auth forms might have soft borders or generic focus rings.
   * **Vibrant Swiss Target:** Strict `rounded-none` flat containers. Clean typography, zero rounding, and thick solid bottom borders that activate with vibrant brand colors (Cyan, Orange, Violet) on focus.
+  * **Target Locations for Refactor:**
+    * `components/admin/AdminInput.tsx` (Base component handling all admin form fields)
+    * `components/admin/ManufacturerForm.tsx`
+    * `components/admin/VariantForm.tsx`
+    * `components/admin/ConsoleForm.tsx`
+    * `app/login/page.tsx`
+    * `app/finder/page.tsx` (Search/Filter inputs)
 * **Modal / Info Dialogs:**
   * **Current:** Often employ `rounded-md` or `rounded-lg` with deep drop shadows.
   * **Vibrant Swiss Target:** Hard-edged popovers anchored directly to a mathematical grid (`border-2 border-white/20`). No soft drop shadows; instead, strict typographic boundaries and thick colored edge-borders to signify intent.
