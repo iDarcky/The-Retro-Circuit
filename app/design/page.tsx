@@ -104,22 +104,23 @@ export default function DesignSystemPage() {
           </div>
         </section>
 
-        {/* Cyber-Swiss Proposals */}
+
+        {/* Vibrant Swiss Proposals */}
         <section className="space-y-8 mt-24">
-          <header className="border-b-4 border-emerald-500 pb-8">
-            <h2 className="text-4xl md:text-6xl font-pixel uppercase tracking-tighter mb-4 text-emerald-500">
-              Cyber-Swiss Proposals
+          <header className="border-b-4 border-orange-500 pb-8">
+            <h2 className="text-4xl md:text-6xl font-pixel uppercase tracking-tighter mb-4 text-orange-500">
+              Vibrant Swiss Proposals
             </h2>
-            <p className="text-lg text-emerald-400 font-mono">
-              [SYS.LOG] Prototyping next-gen components blending brutalist geometry with terminal/cyberpunk aesthetics.
+            <p className="text-lg text-text-secondary font-mono">
+              Prototyping next-gen components blending strict brutalist geometry with high-contrast brand colors.
             </p>
           </header>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Forms & Inputs */}
-            <div className="bg-white/5 p-8 border border-emerald-500/30 space-y-8 relative overflow-hidden group hover:border-emerald-500 transition-colors">
-              <div className="absolute top-0 right-0 bg-emerald-500 text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 01</div>
-              <h3 className="text-xl font-pixel text-white mb-6">Text Input [Standard vs Cyber]</h3>
+            <div className="bg-white/5 p-8 border border-white/10 space-y-8 relative overflow-hidden group hover:border-white/30 transition-colors">
+              <div className="absolute top-0 right-0 bg-white text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 01</div>
+              <h3 className="text-xl font-pixel text-white mb-6">Text Input</h3>
 
               <div className="space-y-4">
                 <div className="space-y-1">
@@ -128,19 +129,17 @@ export default function DesignSystemPage() {
                 </div>
 
                 <div className="space-y-1 mt-6">
-                  <label className="text-[10px] text-emerald-400 font-mono tracking-widest uppercase block mb-2">Target Cyber-Swiss Input</label>
+                  <label className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase block mb-2">Target Swiss Input</label>
                   <div className="relative group/input">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500 font-mono">&gt;</span>
-                    <input type="text" placeholder="ENTER_COMMAND..." className="w-full bg-black border-2 border-white/10 p-3 pl-8 text-sm font-mono text-emerald-500 placeholder:text-emerald-900 focus:outline-none focus:border-emerald-500 transition-colors rounded-none" />
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-4 bg-emerald-500 animate-pulse"></div>
+                    <input type="text" placeholder="Input specific criteria..." className="w-full bg-white/5 border-b-2 border-white/20 p-3 text-sm font-sans text-white placeholder:text-zinc-600 focus:outline-none focus:border-violet-500 focus:bg-white/10 transition-colors rounded-none" />
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Stepper */}
-            <div className="bg-white/5 p-8 border border-cyan-500/30 space-y-8 relative overflow-hidden hover:border-cyan-500 transition-colors">
-              <div className="absolute top-0 right-0 bg-cyan-500 text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 02</div>
+            <div className="bg-white/5 p-8 border border-white/10 space-y-8 relative overflow-hidden hover:border-white/30 transition-colors">
+              <div className="absolute top-0 right-0 bg-white text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 02</div>
               <h3 className="text-xl font-pixel text-white mb-6">Numeric Adjuster</h3>
 
               <div className="space-y-4">
@@ -150,108 +149,118 @@ export default function DesignSystemPage() {
                 </div>
 
                 <div className="space-y-1 mt-6">
-                  <label className="text-[10px] text-cyan-400 font-mono tracking-widest uppercase block mb-2">Target Cyber-Swiss Stepper</label>
-                  <div className="inline-flex border-2 border-white/20">
-                    <button className="px-4 py-2 text-white/50 hover:bg-white/10 hover:text-white transition-colors font-mono text-xl border-r border-white/20">-</button>
-                    <div className="px-6 py-2 bg-black text-cyan-400 font-mono text-xl text-center min-w-[80px]">05</div>
-                    <button className="px-4 py-2 text-white/50 hover:bg-cyan-500/20 hover:text-cyan-400 transition-colors font-mono text-xl border-l border-white/20">+</button>
+                  <label className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase block mb-2">Target Swiss Stepper</label>
+                  <div className="inline-flex border border-white">
+                    <button className="px-4 py-2 bg-white text-black hover:bg-zinc-200 transition-colors font-mono text-xl">-</button>
+                    <div className="px-6 py-2 bg-black text-white font-mono text-xl text-center min-w-[80px]">05</div>
+                    <button className="px-4 py-2 bg-white text-black hover:bg-zinc-200 transition-colors font-mono text-xl">+</button>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Toggles */}
-            <div className="bg-white/5 p-8 border border-orange-500/30 space-y-8 relative overflow-hidden hover:border-orange-500 transition-colors">
-              <div className="absolute top-0 right-0 bg-orange-500 text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 03</div>
-              <h3 className="text-xl font-pixel text-white mb-6">Checkboxes / Toggles</h3>
+            <div className="bg-white/5 p-8 border border-white/10 space-y-8 relative overflow-hidden hover:border-white/30 transition-colors">
+              <div className="absolute top-0 right-0 bg-white text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 03</div>
+              <h3 className="text-xl font-pixel text-white mb-6">Checkboxes & Toggles</h3>
 
               <div className="space-y-4">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 border-b border-white/10 pb-4">
                   <input type="checkbox" className="w-4 h-4 rounded text-orange-500" defaultChecked />
                   <label className="text-sm text-zinc-400 font-sans">Legacy Default Checkbox</label>
                 </div>
 
                 <div className="space-y-4 mt-6">
-                  <label className="text-[10px] text-orange-400 font-mono tracking-widest uppercase block mb-2">Target Cyber-Swiss States</label>
+                  <label className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase block mb-2">Target Swiss States</label>
 
-                  {/* Cyber Checkbox */}
-                  <div className="flex items-center gap-3 cursor-pointer group/cb">
-                    <div className="w-5 h-5 border-2 border-orange-500 flex items-center justify-center bg-orange-500/10">
-                      <div className="w-2.5 h-2.5 bg-orange-500"></div>
+                  {/* Swiss Checkbox */}
+                  <div className="flex items-center gap-4 cursor-pointer group/cb">
+                    <div className="w-6 h-6 border-2 border-white flex items-center justify-center bg-transparent group-hover/cb:bg-white/10 transition-colors">
+                      <div className="w-3 h-3 bg-cyan-500"></div>
                     </div>
-                    <span className="font-mono text-sm text-white group-hover/cb:text-orange-400 transition-colors">SYSTEM_ACTIVE</span>
+                    <span className="font-mono text-sm text-white">Compare Models</span>
                   </div>
 
-                  <div className="flex items-center gap-3 cursor-pointer group/cb">
-                    <div className="w-5 h-5 border-2 border-white/20 flex items-center justify-center group-hover/cb:border-white/40">
+                  <div className="flex items-center gap-4 cursor-pointer group/cb">
+                    <div className="w-6 h-6 border-2 border-white/30 flex items-center justify-center group-hover/cb:border-white transition-colors">
                     </div>
-                    <span className="font-mono text-sm text-zinc-500 group-hover/cb:text-white transition-colors">GUEST_ACCESS</span>
+                    <span className="font-mono text-sm text-zinc-500">Show Specifications</span>
                   </div>
 
-                  {/* Cyber Toggle */}
-                  <div className="flex items-center gap-3 mt-4">
-                    <div className="w-12 h-6 border-2 border-orange-500 bg-orange-500/10 relative cursor-pointer">
-                      <div className="absolute top-0.5 left-6 w-4 h-4 bg-orange-500"></div>
+                  {/* Swiss Toggle */}
+                  <div className="flex items-center gap-4 mt-6">
+                    <div className="w-14 h-8 border-2 border-white flex items-center bg-black cursor-pointer p-1">
+                      <div className="w-6 h-5 bg-orange-500 transform translate-x-5 transition-transform"></div>
                     </div>
-                    <span className="font-mono text-xs text-orange-400">SYS_OVERRIDE : ON</span>
+                    <span className="font-sans text-sm text-white">High Contrast Mode</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Terminal Breadcrumbs */}
-            <div className="bg-white/5 p-8 border border-violet-500/30 space-y-8 relative overflow-hidden hover:border-violet-500 transition-colors">
-              <div className="absolute top-0 right-0 bg-violet-500 text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 04</div>
-              <h3 className="text-xl font-pixel text-white mb-6">Navigation / Breadcrumbs</h3>
+            {/* Breadcrumbs */}
+            <div className="bg-white/5 p-8 border border-white/10 space-y-8 relative overflow-hidden hover:border-white/30 transition-colors">
+              <div className="absolute top-0 right-0 bg-white text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 04</div>
+              <h3 className="text-xl font-pixel text-white mb-6">Navigation Paths</h3>
 
               <div className="space-y-4 mt-6">
-                <div className="flex items-center text-[10px] md:text-xs font-mono text-zinc-500 tracking-wider">
-                  <span className="hover:text-violet-400 cursor-pointer transition-colors">ROOT_DIR</span>
-                  <span className="mx-2 text-white/20">/</span>
-                  <span className="hover:text-violet-400 cursor-pointer transition-colors">SYS_VAULT</span>
-                  <span className="mx-2 text-white/20">/</span>
-                  <span className="text-white bg-violet-500/20 px-1 border-b border-violet-500">NINTENDO_DS</span>
+                <div className="flex items-center text-xs font-mono tracking-wider">
+                  <span className="text-zinc-500 hover:text-white cursor-pointer transition-colors bg-white/5 px-2 py-1 border border-white/10">Systems</span>
+                  <div className="w-4 h-px bg-white/20 mx-2"></div>
+                  <span className="text-zinc-500 hover:text-white cursor-pointer transition-colors bg-white/5 px-2 py-1 border border-white/10">Handhelds</span>
+                  <div className="w-4 h-px bg-white/20 mx-2"></div>
+                  <span className="text-black bg-white px-2 py-1 border border-white font-bold">Analogue Pocket</span>
                 </div>
               </div>
             </div>
 
             {/* Expandables */}
-            <div className="bg-white/5 p-8 border border-white/20 space-y-8 relative overflow-hidden col-span-1 md:col-span-2 hover:border-white transition-colors">
+            <div className="bg-white/5 p-8 border border-white/10 space-y-8 relative overflow-hidden col-span-1 md:col-span-2 hover:border-white/30 transition-colors">
               <div className="absolute top-0 right-0 bg-white text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 05</div>
-              <h3 className="text-xl font-pixel text-white mb-6">Data Structures & Expandables</h3>
+              <h3 className="text-xl font-pixel text-white mb-6">Data Structures & Feedback</h3>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 {/* Accordion */}
-                <div className="space-y-0 border-y border-white/20">
-                  <div className="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors border-b border-white/10">
-                    <span className="font-mono text-sm text-emerald-400">SYS.CONFIG.1</span>
-                    <span className="font-mono text-lg text-white">+</span>
+                <div className="space-y-0 border-t-4 border-violet-500">
+                  <div className="flex items-center justify-between p-4 cursor-pointer bg-white/5 hover:bg-white/10 transition-colors border-b border-white/10">
+                    <span className="font-sans text-sm text-white font-bold uppercase tracking-wider">Display Technology</span>
+                    <span className="font-pixel text-sm text-violet-500">+</span>
                   </div>
-                  <div className="flex items-start justify-between p-4 cursor-pointer bg-white/5 border-l-4 border-emerald-500 border-b border-white/10">
+                  <div className="flex items-start justify-between p-4 cursor-pointer bg-white/[0.02] border-b border-white/10">
                     <div className="space-y-4 w-full">
                       <div className="flex justify-between items-center">
-                        <span className="font-mono text-sm text-white font-bold">SYS.CONFIG.2_ACTIVE</span>
-                        <span className="font-mono text-lg text-white">-</span>
+                        <span className="font-sans text-sm text-white font-bold uppercase tracking-wider">Processing Power</span>
+                        <span className="font-pixel text-sm text-white">-</span>
                       </div>
-                      <div className="font-mono text-xs text-zinc-400 space-y-2 pb-2">
-                        <p>MEMORY_ALLOCATION: 1024MB</p>
-                        <p>RENDER_TARGET: VULKAN_API</p>
-                        <p>OVERCLOCK_STATE: DISABLED</p>
+                      <div className="font-mono text-xs text-zinc-400 space-y-2 pb-2 pl-4 border-l-2 border-white/10">
+                        <p>CPU: ARM Cortex-A76</p>
+                        <p>GPU: Mali-G57 MC4</p>
+                        <p>RAM: 8GB LPDDR4x</p>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Cyber Skeleton / Loading */}
-                <div className="space-y-4">
-                  <label className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase block mb-2">Terminal Loading Indicator</label>
-                  <div className="font-mono text-xs space-y-1">
-                    <div className="text-emerald-500">COMPILING DATASET...</div>
-                    <div className="text-zinc-500">[||||||||||||........] 60%</div>
+                {/* Progress / Loading */}
+                <div className="space-y-6">
+                  <div>
+                    <label className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase block mb-2">Block Progress Indicator</label>
+                    <div className="flex items-center gap-4">
+                      <div className="font-mono text-xs text-white min-w-[30px]">60%</div>
+                      <div className="flex-1 h-6 border border-white/20 bg-black p-0.5 flex">
+                        <div className="h-full w-full bg-cyan-500 max-w-[60%]"></div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="w-full h-8 border border-white/20 mt-4 relative bg-black overflow-hidden">
-                    <div className="absolute top-0 left-0 h-full w-[60%] bg-white/10 border-r-2 border-white flex items-center overflow-hidden">
-                       <div className="w-full h-full" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px)'}}></div>
+
+                  <div className="pt-4 border-t border-white/10">
+                    <label className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase block mb-2">Alert / Toast Panel</label>
+                    <div className="bg-orange-500 text-black p-4 border-l-8 border-black flex gap-4 items-start">
+                       <span className="font-pixel text-lg">!</span>
+                       <div>
+                         <h4 className="font-sans font-bold text-sm uppercase">Configuration Saved</h4>
+                         <p className="font-mono text-xs opacity-80 mt-1">Changes to the emulation matrix have been applied.</p>
+                       </div>
                     </div>
                   </div>
                 </div>
@@ -261,32 +270,32 @@ export default function DesignSystemPage() {
             {/* Grid Layout Primitive */}
             <div className="bg-transparent p-0 border-none space-y-8 relative overflow-hidden col-span-1 md:col-span-2">
                <h3 className="text-xl font-pixel text-white mb-2">Mathematical Grid Foundation</h3>
-               <p className="font-mono text-sm text-zinc-500 mb-4">Structural layouts should rely on visible gridlines and rigid geometric containment rather than floating cards.</p>
+               <p className="font-mono text-sm text-zinc-500 mb-4">Structural layouts should rely on visible gridlines and rigid geometric containment.</p>
 
-               <div className="grid grid-cols-3 gap-0 border-2 border-white/20 bg-black">
-                 <div className="border-r border-b border-white/20 p-6 flex flex-col items-center justify-center min-h-[160px] hover:bg-white/5 transition-colors">
-                    <div className="w-16 h-16 border-2 border-emerald-500 bg-emerald-500/10 rotate-45 flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-                      <span className="-rotate-45 font-mono text-xs text-emerald-500">AVTR</span>
+               <div className="grid grid-cols-3 gap-0 border border-white/20 bg-black">
+                 <div className="border-r border-b border-white/20 p-8 flex flex-col items-center justify-center min-h-[160px] bg-white/5">
+                    <div className="w-16 h-16 bg-white flex items-center justify-center mb-4">
+                      <span className="font-mono text-xl text-black font-bold">M</span>
                     </div>
-                    <span className="font-mono text-[10px] text-zinc-500 uppercase">Octagonal Profile</span>
+                    <span className="font-sans text-xs text-white uppercase tracking-wider">Manufacturer Profile</span>
                  </div>
-                 <div className="border-r border-b border-white/20 p-6 flex flex-col justify-center">
-                   <div className="space-y-2 font-mono text-xs">
-                     <div className="flex justify-between border-b border-dashed border-white/20 pb-1">
-                       <span className="text-zinc-500">PWR_DRAW</span>
-                       <span className="text-orange-400">15W</span>
+                 <div className="border-r border-b border-white/20 p-8 flex flex-col justify-center">
+                   <div className="space-y-4 font-mono text-sm">
+                     <div className="flex justify-between border-b border-white/10 pb-2">
+                       <span className="text-zinc-500">Retail Price</span>
+                       <span className="text-white">$199</span>
                      </div>
-                     <div className="flex justify-between border-b border-dashed border-white/20 pb-1">
-                       <span className="text-zinc-500">THERMALS</span>
-                       <span className="text-cyan-400">65C</span>
+                     <div className="flex justify-between border-b border-white/10 pb-2">
+                       <span className="text-zinc-500">Release Year</span>
+                       <span className="text-white">2023</span>
                      </div>
                    </div>
                  </div>
-                 <div className="border-b border-white/20 p-6 flex flex-col justify-center bg-white/5">
-                   <div className="border-l-2 border-violet-500 pl-4 space-y-2">
-                     <h4 className="font-pixel text-sm text-white">SYS.WARNING</h4>
-                     <p className="font-mono text-[10px] text-zinc-400 leading-relaxed">
-                       Aesthetic tooltip or popover proposal. Rigid, border-heavy, zero shadow drop.
+                 <div className="border-b border-white/20 p-8 flex flex-col justify-center bg-violet-500/10 border-l-4 border-l-violet-500">
+                   <div className="space-y-2">
+                     <h4 className="font-sans font-bold text-sm text-white uppercase">System Notice</h4>
+                     <p className="font-mono text-xs text-zinc-400 leading-relaxed">
+                       Aesthetic info panel proposal. Rigid, colored border indicators, flat background fills.
                      </p>
                    </div>
                  </div>
