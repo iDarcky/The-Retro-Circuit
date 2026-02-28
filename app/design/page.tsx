@@ -296,12 +296,12 @@ export default function DesignSystemPage() {
               <h3 className="text-xl font-pixel text-white mb-6">Navigation Paths (V2)</h3>
 
               <div className="space-y-4 mt-6">
-                <div className="flex items-center text-xs font-mono font-bold tracking-wider">
-                  <span className="text-violet-500 hover:text-white cursor-pointer transition-colors border-b-2 border-transparent hover:border-white pb-1">SYSTEMS</span>
-                  <span className="text-white/20 mx-3 font-pixel text-[10px]">&gt;</span>
-                  <span className="text-cyan-500 hover:text-white cursor-pointer transition-colors border-b-2 border-transparent hover:border-white pb-1">HANDHELDS</span>
-                  <span className="text-white/20 mx-3 font-pixel text-[10px]">&gt;</span>
-                  <span className="text-white border-b-2 border-orange-500 pb-1">ANALOGUE POCKET</span>
+                <div className="flex items-center text-xs font-mono tracking-wider">
+                  <span className="text-white/50 hover:text-white cursor-pointer transition-colors pb-1">SYSTEMS</span>
+                  <span className="text-white/20 mx-3 font-mono">//</span>
+                  <span className="text-white/50 hover:text-white cursor-pointer transition-colors pb-1">HANDHELDS</span>
+                  <span className="text-white/20 mx-3 font-mono">//</span>
+                  <span className="text-white pb-1 border-b border-white">ANALOGUE POCKET</span>
                 </div>
               </div>
             </div>

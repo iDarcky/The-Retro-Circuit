@@ -92,3 +92,22 @@ To fully realize the "Vibrant Swiss" aesthetic across the entire application, se
   * `components/admin/SettingsForm.tsx`
 
 *Goal*: Over time, refactor these routes to utilize `SwissButton` or globally update `Button` styles to match the Swiss aesthetic.
+
+### Implementation Roadmap
+
+To systematically execute the transition to the Vibrant Swiss aesthetic without causing massive layout breaks, follow this structured implementation sequence:
+
+#### Phase 1: Universal Primitives (Global Impact)
+1. **Buttons**: Continue the rollout of \`SwissButton\` across all \`Admin\` routes, ultimately deprecating the old \`Button\` component.
+2. **Typography**: Ensure global headings use \`.font-pixel\` and standard data labels use \`.font-mono\`.
+3. **Badges**: Transition the \`TechBadge\` component to the new high-contrast, border-heavy design.
+
+#### Phase 2: Form Controls (Data Integrity)
+1. **Text Inputs**: Refactor \`AdminInput\` to use the \`rounded-none\`, bottom-border focus logic. This will instantly upgrade all Admin forms, Login, and Finder inputs.
+2. **Checkboxes & Toggles**: Create reusable \`SwissCheckbox\` and \`SwissToggle\` components based on the V2 proposals. Inject them into the Arena \`ComparisonRow\` and Admin \`ReleaseForm\`.
+3. **Steppers**: Build the \`SwissStepper\` component and replace standard HTML number inputs in the Vault filters and Admin forms.
+
+#### Phase 3: Layouts & Micro-Interactions (Polish)
+1. **Breadcrumbs**: Standardize all path navigation to use the mono \`//\` separator pattern.
+2. **Modals**: Strip rounded corners and box shadows from all `components/ui/Modal` instances, replacing them with thick border lines.
+3. **Data Grids**: Transition floating UI elements (like User Avatars and metrics displays) into rigid, mathematically aligned grid blocks.
