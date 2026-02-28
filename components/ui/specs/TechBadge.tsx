@@ -1,4 +1,4 @@
-export const TechBadge = ({ label, active, color = "bg-secondary" }: { label: string, active?: boolean | string | null, color?: string }) => {
+export const TechBadge = ({ label, active, color = "bg-violet-500" }: { label: string, active?: boolean | string | null, color?: string }) => {
     // If active is undefined/null/empty, don't show the badge at all
     if (active === undefined || active === null || active === '') return null;
 
@@ -7,10 +7,10 @@ export const TechBadge = ({ label, active, color = "bg-secondary" }: { label: st
 
     return (
         <div className={`
-            inline-flex items-center gap-2 px-2 py-1 border text-[9px] font-tech uppercase tracking-wider
-            ${isActive ? 'border-border-normal bg-white/5 text-gray-200' : 'border-transparent text-gray-600 opacity-50'}
+            inline-flex items-center gap-2 px-3 py-1 border text-[10px] font-mono uppercase tracking-tight
+            ${isActive ? 'border-white/10 bg-white/5 text-white' : 'border-white/5 text-gray-500 bg-transparent'}
         `}>
-            <span className={`w-1.5 h-1.5 rounded-full ${isActive ? `${color} animate-pulse shadow-[0_0_5px_currentColor]` : 'bg-gray-700'}`}></span>
+            <span className={`w-2 h-2 rounded-none ${isActive ? color : 'bg-gray-800'}`}></span>
             {label}
         </div>
     );
