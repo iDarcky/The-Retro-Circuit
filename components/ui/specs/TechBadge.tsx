@@ -8,9 +8,9 @@ export const TechBadge = ({ label, active, color = "bg-violet-500" }: { label: s
     return (
         <div className={`
             inline-flex items-center gap-2 px-3 py-1 border text-[10px] font-mono uppercase tracking-tight
-            ${isActive ? 'border-white/10 bg-white/5 text-white' : 'border-white/5 text-gray-500 bg-transparent'}
+            ${isActive ? 'border-border-normal bg-bg-tertiary text-text-primary' : 'border-border-subtle text-text-muted bg-transparent'}
         `}>
-            <span className={`w-2 h-2 rounded-none ${isActive ? color : 'bg-gray-800'}`}></span>
+            <span className={`w-2 h-2 rounded-none ${isActive ? color : 'bg-bg-tertiary'}`}></span>
             {label}
         </div>
     );

@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { siteConfig } from '../../config/site';
 import { useConsent } from '../privacy/ConsentContext';
 import { retroAuth } from '../../lib/auth';
+import { ThemeToggle } from '../theme/ThemeToggle';
+
 
 interface FooterProps {
   version: string;
@@ -73,6 +75,7 @@ const Footer: FC<FooterProps> = ({ version }) => {
              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_5px_currentColor]"></span>
            </span>
            <span className="hidden sm:inline opacity-50">LOC: MARS</span>
+           <ThemeToggle />
         </div>
 
       </div>

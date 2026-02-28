@@ -21,13 +21,13 @@ const SwissButton: FC<SwissButtonProps> = ({
 
   const variants = {
     // Primary: Solid White/Black
-    primary: "bg-white text-black border-white hover:bg-zinc-200 hover:border-zinc-200",
+    primary: "bg-text-primary text-bg-primary border-text-primary hover:bg-text-secondary hover:border-text-secondary",
     // Secondary: Outline
-    secondary: "bg-transparent text-white border-white/20 hover:border-white hover:text-white hover:bg-white/5",
+    secondary: "bg-transparent text-text-primary border-border-normal hover:border-text-primary hover:text-text-primary hover:bg-bg-tertiary",
     // Danger: Red/Rose
     danger: "bg-transparent text-rose-500 border-rose-500/50 hover:bg-rose-500 hover:text-white hover:border-rose-500",
     // Orange: Solid Orange/Black
-    orange: "bg-orange-500 text-black border-orange-500 hover:bg-orange-400 hover:border-orange-400",
+    orange: "bg-orange-500 text-bg-primary border-orange-500 hover:bg-orange-400 hover:border-orange-400",
   };
 
   return (

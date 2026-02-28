@@ -2,12 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
+
 :root {
   /*
-    THEME: SWISS ARCHIVE
+    THEME: SWISS ARCHIVE (LIGHT)
+    A minimal, international style aesthetic.
+    Light gray/zinc background, pure black text, and a single "International Orange" accent.
+  */
+
+  /* Backgrounds - Flat & Matte */
+  --bg-primary: #fafafa;   /* Zinc 50 - Very light gray/almost white */
+  --bg-secondary: #f4f4f5; /* Zinc 100 - Panel background */
+  --bg-tertiary: #e4e4e7;  /* Zinc 200 - Input/Hover background */
+  --bg-card: #fafafa;      /* Same as primary */
+  --bg-glass: #fafafa;     /* No glass */
+
+  /* Text - High Contrast */
+  --text-primary: #09090b; /* Zinc 950 - Deep black */
+  --text-secondary: #52525b; /* Zinc 600 - Subtitles */
+  --text-muted: #71717a;   /* Zinc 500 - Metadata */
+  --text-inverse: #ffffff; /* White text on black/accent */
+
+  /* Accent Colors - The Single Signal */
+  --color-primary: #ff4f00;   /* International Orange - Action */
+  --color-secondary: #000000; /* Secondary is Black in light theme */
+  --color-accent: #ff4f00;    /* Alias for primary */
+  --color-success: #10b981;   /* Emerald 500 */
+  --color-warning: #f59e0b;   /* Amber 500 */
+
+  /* Borders - Hairlines */
+  --border-subtle: #e4e4e7;   /* Zinc 200 */
+  --border-normal: #d4d4d8;   /* Zinc 300 */
+  --border-strong: #09090b;   /* Black for active states */
+  --border-primary: var(--color-primary);
+
+  /* Semantic Mappings */
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
+}
+
+.dark {
+  /*
+    THEME: SWISS ARCHIVE (DARK)
     A minimal, international style aesthetic.
     Pure black, stark white, and a single "International Orange" accent.
-    No blur, no glow, no noise. Just grid and data.
   */
 
   /* Backgrounds - Flat & Matte */
@@ -40,6 +78,7 @@
   --background: var(--bg-primary);
   --foreground: var(--text-primary);
 }
+
 
 body {
   background-color: var(--background);

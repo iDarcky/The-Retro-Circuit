@@ -10,6 +10,7 @@ import { CookieBanner } from "../components/privacy/CookieBanner";
 import { AnalyticsWrapper } from "../components/privacy/AnalyticsWrapper";
 import { siteConfig } from "../config/site";
 import { getSystemVersion } from "./actions/roadmap";
+import { ThemeProvider } from "../components/theme/ThemeProvider";
 
 // Load fonts via Next.js to prevent Layout Shift
 const pressStart = Press_Start_2P({
@@ -118,8 +119,9 @@ export default async function RootLayout({
   };
 
   return (
-    <html lang="en">
-      <body className={`${pressStart.variable} ${jetBrainsMono.variable} ${shareTechMono.variable} ${inter.variable} font-sans min-h-screen flex flex-col bg-bg-primary text-text-primary antialiased selection:bg-violet-500/30 selection:text-white`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${pressStart.variable} ${jetBrainsMono.variable} ${shareTechMono.variable} ${inter.variable} font-sans min-h-screen flex flex-col bg-bg-primary text-text-primary antialiased selection:bg-violet-500/30 selection:text-white`} suppressHydrationWarning>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -145,6 +147,7 @@ export default async function RootLayout({
           <CookieBanner />
           <AnalyticsWrapper />
         </ConsentProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
