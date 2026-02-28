@@ -21,8 +21,8 @@ export default function DesktopHeader() {
       <nav className="hidden md:flex h-16 items-stretch divide-x divide-border-subtle">
 
           {/* LEFT: Logo - Grid Cell 1 */}
-          <div className="flex items-center px-6 shrink-0 bg-bg-primary hover:bg-bg-secondary transition-colors duration-300">
-              <Link href="/" className="flex items-center group">
+          <div className="flex shrink-0 bg-bg-primary hover:bg-bg-secondary transition-colors duration-300">
+              <Link href="/" className="flex items-center px-6 group h-full w-full">
                   <span className="font-pixel text-[14px] leading-tight text-white/40 group-hover:text-secondary transition-colors">RETRO CIRCUIT_</span>
               </Link>
           </div>

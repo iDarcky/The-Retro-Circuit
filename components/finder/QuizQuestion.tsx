@@ -2,7 +2,7 @@
 
 import { FC, ReactNode, useState, useEffect } from 'react';
 import { clsx } from 'clsx';
-import Button from '../ui/Button';
+import SwissButton from '@/components/console/swiss/SwissButton';
 
 export interface QuizOption {
   id: string;
@@ -162,7 +162,7 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
 
       {/* Navigation */}
       <div className="flex justify-center">
-         <Button
+         <SwissButton
             variant="primary" // This usually means Violet
             onClick={handleNext}
             disabled={isNextDisabled}
@@ -172,7 +172,7 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
             )}
          >
             {stepNumber === totalSteps ? 'REVEAL RESULTS' : 'NEXT STEP ->'}
-         </Button>
+         </SwissButton>
       </div>
 
     </div>

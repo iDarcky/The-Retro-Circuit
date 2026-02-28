@@ -42,7 +42,7 @@ export async function middleware(request: NextRequest) {
 
     const isLoginRoute = request.nextUrl.pathname.startsWith('/login');
     const isProfileRoute = request.nextUrl.pathname.startsWith('/profile');
-    const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
+    const isAdminRoute = request.nextUrl.pathname.startsWith('/admin') || request.nextUrl.pathname.startsWith('/design');
 
     // 2. Auth Redirection Logic
     const url = request.nextUrl.clone();
@@ -88,7 +88,7 @@ export async function middleware(request: NextRequest) {
     console.error('[Middleware] Supabase Client Error:', e);
     // Fail closed if Supabase fails
     const isProfileRoute = request.nextUrl.pathname.startsWith('/profile');
-    const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
+    const isAdminRoute = request.nextUrl.pathname.startsWith('/admin') || request.nextUrl.pathname.startsWith('/design');
     if (isAdminRoute || isProfileRoute) {
       return NextResponse.redirect(new URL('/login', request.url));
     }

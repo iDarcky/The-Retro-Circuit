@@ -4,7 +4,7 @@ import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { retroAuth } from '../../lib/auth';
 import { supabase } from '../../lib/supabase/singleton';
-import Button from '../../components/ui/Button';
+import SwissButton from '@/components/console/swiss/SwissButton';
 
 type AuthMode = 'LOGIN' | 'SIGNUP' | 'RECOVERY' | 'UPDATE_PASSWORD';
 
@@ -150,12 +150,12 @@ export default function LoginPage() {
                         </div>
                     )}
 
-                    <Button type="submit" isLoading={loading} className="w-full mt-6">
+                    <SwissButton type="submit" isLoading={loading} className="w-full mt-6">
                         {mode === 'LOGIN' && 'INITIATE CONNECTION'}
                         {mode === 'SIGNUP' && 'CREATE ID'}
                         {mode === 'RECOVERY' && 'TRANSMIT LINK'}
                         {mode === 'UPDATE_PASSWORD' && 'UPDATE CREDENTIALS'}
-                    </Button>
+                    </SwissButton>
                 </form>
 
                 <div className="mt-6 flex flex-col gap-3 text-center text-xs font-mono text-gray-500 border-t border-border-normal pt-4">

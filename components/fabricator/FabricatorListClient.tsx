@@ -4,7 +4,7 @@ import { useState, useEffect, type ChangeEvent } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Manufacturer } from '../../lib/types';
-import Button from '../ui/Button';
+import SwissButton from '@/components/console/swiss/SwissButton';
 import { LayoutGrid, List, Search } from 'lucide-react';
 import { SwissHeader } from '../ui/SwissHeader';
 
@@ -193,27 +193,27 @@ export default function FabricatorListClient({ manufacturers }: Props) {
                 {/* Pagination */}
                 {totalPages > 1 && (
                     <div className="flex justify-center items-center gap-4 py-16 border-t border-white/5 mt-16">
-                        <Button
+                        <SwissButton
                             variant="secondary"
                             onClick={() => setPage(p => Math.max(1, p - 1))}
                             disabled={page === 1}
                             className="scale-75 origin-right"
                         >
                             &lt; PREV
-                        </Button>
+                        </SwissButton>
 
                         <div className="font-mono text-xs text-zinc-400 px-4 py-2">
                             PAGE {page} / {totalPages}
                         </div>
 
-                        <Button
+                        <SwissButton
                             variant="secondary"
                             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                             disabled={page >= totalPages}
                             className="scale-75 origin-left"
                         >
                             NEXT &gt;
-                        </Button>
+                        </SwissButton>
                     </div>
                 )}
             </div>

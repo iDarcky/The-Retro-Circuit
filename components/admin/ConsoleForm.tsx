@@ -34,7 +34,7 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
             setIsEditMode(true);
             setIsSlugLocked(true);
         }
-    }, [initialData?.id]);
+    }, [initialData]);
 
     const generateSlug = (name: string) => {
         return name
