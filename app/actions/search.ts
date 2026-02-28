@@ -2,11 +2,26 @@
 
 import { supabaseAnon } from "../../lib/supabase/anon";
 import { SearchResult } from "../../lib/types";
+import { searchRateLimit, getIp } from "../../lib/rate-limit";
 
 export const searchDatabase = async (query: string): Promise<SearchResult[]> => {
     if (!query || query.length < 2) return [];
 
     try {
+        // Rate limiting check
+        // We only enforce this if environment variables are available (for local dev resilience)
+        if (process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL) {
+            const ip = await getIp();
+            const { success } = await searchRateLimit.limit(ip);
+
+            if (!success) {
+                console.warn(`Rate limit exceeded for search by IP: ${ip}`);
+                // Returning an empty array gracefully handles the limit on the front end
+                // without breaking the UI component.
+                return [];
+            }
+        }
+
         const supabase = supabaseAnon;
         const term = query.trim(); // No wildcards needed for RPC usually if handled inside, but my RPC adds them.
 

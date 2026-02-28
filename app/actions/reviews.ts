@@ -3,8 +3,19 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { Review } from '@/lib/types/news';
+import { formRateLimit, getIp } from '@/lib/rate-limit';
 
 export async function createReview(data: Omit<Review, 'id' | 'author' | 'published_at'>) {
+  // Apply Rate Limit for forms if env variables exist
+  if (process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL) {
+    const ip = await getIp();
+    const { success } = await formRateLimit.limit(ip);
+
+    if (!success) {
+      throw new Error('Too many requests. Please try again later.');
+    }
+  }
+
   const supabase = await createClient();
 
   const { error } = await supabase
