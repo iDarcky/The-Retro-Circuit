@@ -33,6 +33,28 @@ This audit evaluates the current state of UI components across the application a
 * **`RetroStatusBar`:**
   * Strong adherence to the pixel-art/retro aesthetic, though slightly diverges from pure Swiss minimalism, it fits the overall system theme well.
 
+
+### 5. Missing / Future Components
+To fully realize the Swiss Design methodology across the entire application, several standard interactive components still need to be designed and implemented:
+
+* **Number Stepper / Adjuster:**
+  * **Current:** We use standard HTML number inputs.
+  * **Swiss Target:** A flat, high-contrast input group. A central text field for the number flanked by square, borderless `+` and `-` buttons. The container should have a solid `border-white/20` and an active focus state of a thick `border-violet-500`.
+* **Toggle Switches / Checkboxes:**
+  * **Current:** We use browser-default checkboxes or generic Tailwind toggles (e.g., in Admin forms).
+  * **Swiss Target:** For checkboxes: A sharp `w-4 h-4` square (`rounded-none`) with a solid border that fills with a vibrant brand color (Cyan/Orange/Violet) when checked, containing a blocky pixelated checkmark. For toggles: A strict rectangular track (`rounded-none`) with a square thumb, avoiding soft pill shapes.
+* **Text Inputs / Textareas:**
+  * **Current:** Inputs in `AdminInput` or Auth forms might have soft borders or generic focus rings.
+  * **Swiss Target:** Strict `rounded-none` containers. A solid dark background (`bg-white/5`), a sharp bottom border or full thin border (`border-white/10`), and a dense, mono-spaced font for input text. Focus states should rely on solid, thick high-contrast borders (e.g., `focus:border-l-4 focus:border-violet-500`).
+* **Modal Dialogs:**
+  * **Current:** Often employ `rounded-md` or `rounded-lg` with deep drop shadows.
+  * **Swiss Target:** A sharp, borderless rectangle that heavily dims the background (high-contrast overlay). No rounded corners, no box shadows—just a thick colored border (e.g., `border-t-4 border-orange-500`) and a strict typographic grid inside.
+* **Alerts / Toasts:**
+  * **Current:** Generic notification bubbles.
+  * **Swiss Target:** "System Notification" style blocks. Dense, flat rectangles anchored rigidly to the bottom right or top of the screen.
+
+---
+
 ## Action Items
 - [ ] Migrate all standard `Button` instances to `SwissButton` or update the `Button` base styles to remove border radii and shadows.
 - [ ] Audit auxiliary pages for generic typography utility classes that break the dense Swiss scale.
