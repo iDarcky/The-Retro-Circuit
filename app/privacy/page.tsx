@@ -94,10 +94,29 @@ export default async function PrivacyPage() {
             </div>
           </section>
 
-          {/* Section 4: Your Rights */}
+
+          {/* Section 4: Security & API Protection */}
           <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
             <div className="flex items-center gap-3 self-start pt-1">
                <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 04 ]</span>
+               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Security</h2>
+            </div>
+            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+              <p>
+                To protect our infrastructure from abuse, automated attacks, and Denial of Service (DoS) attempts, we utilize <strong className="text-white font-medium">Upstash Redis</strong> for rate limiting on specific API endpoints (such as search and form submissions).
+              </p>
+              <div className="pl-6 border-l-2 border-sky-500/50">
+                  <p className="text-zinc-400 font-light italic">
+                    This process involves temporarily storing your IP address in an ephemeral, memory-based cache. The data is held only for a few seconds or minutes to verify that the request rate is within safe limits. This information is completely anonymous, immediately discarded after its expiration window, and is strictly used for security—never for tracking, profiling, or analytics.
+                  </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Section 5: Your Rights */}
+          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
+            <div className="flex items-center gap-3 self-start pt-1">
+               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 05 ]</span>
                <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Your Rights</h2>
             </div>
             <div className="space-y-8 text-gray-300 leading-relaxed text-lg font-light">
