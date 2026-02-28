@@ -150,7 +150,7 @@ export default function ArenaComparisonClient({
         setIsArenaMode(false);
         setSelectionA({ slug: null, details: null, selectedVariant: null, loading: false });
         setSelectionB({ slug: null, details: null, selectedVariant: null, loading: false });
-        router.replace('/arena', { scroll: false });
+        router.replace('/arena/select-vs-select', { scroll: false });
     };
 
     return (

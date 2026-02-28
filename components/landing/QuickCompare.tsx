@@ -18,7 +18,7 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
     const slug1 = p1?.slug || 'select';
     const slug2 = p2?.slug || 'select';
 
-    // Ensure we do a proper route push
+    // We navigate to /arena/slug1-vs-slug2
     router.push(`/arena/${slug1}-vs-${slug2}`);
   };
 
@@ -37,7 +37,7 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
                 placeholder="SELECT DEVICE..."
                 themeColor="cyan"
                 currentSelection={p1?.name}
-                textColor="white"
+                textColor="theme"
             />
         </div>
 
@@ -57,7 +57,7 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
                 placeholder="SELECT DEVICE..."
                 themeColor="orange"
                 currentSelection={p2?.name}
-                textColor="white"
+                textColor="theme"
             />
         </div>
       </div>

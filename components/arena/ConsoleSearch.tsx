@@ -9,7 +9,7 @@ interface ConsoleSearchProps {
     placeholder?: string;
     themeColor: 'primary' | 'secondary' | 'cyan' | 'pink' | 'orange' | 'blue' | 'red';
     currentSelection?: string;
-    textColor?: 'default' | 'white';
+    textColor?: 'default' | 'white' | 'theme';
 }
 
 export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, placeholder = "SELECT SYSTEM...", themeColor, currentSelection, textColor = 'default' }) => {
@@ -81,7 +81,9 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
     const theme = getThemeClasses();
 
     // Determine input text color
-    const inputTextColor = textColor === 'white' ? 'text-white' : 'text-text-primary';
+    let inputTextColor = 'text-text-primary';
+    if (textColor === 'white') inputTextColor = 'text-white';
+    if (textColor === 'theme' && currentSelection) inputTextColor = theme.text;
     // Determine icon color
     const iconColor = textColor === 'white' ? 'text-white/50 group-focus-within:text-white' : 'text-text-muted group-focus-within:text-text-primary';
 
