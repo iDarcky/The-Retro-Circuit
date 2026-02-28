@@ -251,6 +251,62 @@ export default function DesignSystemPage() {
               </div>
             </div>
 
+            {/* Toggles V2 */}
+            <div className="bg-white/5 p-8 border border-white/10 space-y-8 relative overflow-hidden hover:border-white/30 transition-colors">
+              <div className="absolute top-0 right-0 bg-white text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 03_V2</div>
+              <h3 className="text-xl font-pixel text-white mb-6">Checkboxes & Toggles (V2)</h3>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 border-b border-white/10 pb-4">
+                  <input type="checkbox" className="w-4 h-4 rounded accent-orange-500 bg-black border-white/20" defaultChecked />
+                  <label className="text-sm text-zinc-400 font-sans">Legacy Default Checkbox</label>
+                </div>
+
+                <div className="space-y-4 mt-6">
+                  <label className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase block mb-2">Target Swiss States V2 (Minimal Block)</label>
+
+                  {/* Swiss Checkbox V2 */}
+                  <div className="flex items-center gap-4 cursor-pointer group/cb2">
+                    <div className="w-5 h-5 border border-white/30 flex items-center justify-center bg-transparent group-hover/cb2:border-white transition-colors p-0.5">
+                      <div className="w-full h-full bg-cyan-500"></div>
+                    </div>
+                    <span className="font-mono text-sm text-white">Compare Models</span>
+                  </div>
+
+                  <div className="flex items-center gap-4 cursor-pointer group/cb2">
+                    <div className="w-5 h-5 border border-white/30 flex items-center justify-center group-hover/cb2:border-white transition-colors p-0.5">
+                    </div>
+                    <span className="font-mono text-sm text-zinc-500">Show Specifications</span>
+                  </div>
+
+                  {/* Swiss Toggle V2 */}
+                  <div className="flex items-center gap-4 mt-6 pt-6 border-t border-white/10">
+                    <div className="w-12 h-5 bg-white/10 flex items-center cursor-pointer relative overflow-hidden">
+                      <div className="absolute right-0 top-0 bottom-0 w-6 bg-orange-500 border border-orange-400"></div>
+                    </div>
+                    <span className="font-sans text-xs text-white uppercase tracking-wider">High Contrast Mode</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Breadcrumbs V2 */}
+            <div className="bg-white/5 p-8 border border-white/10 space-y-8 relative overflow-hidden hover:border-white/30 transition-colors">
+              <div className="absolute top-0 right-0 bg-white text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 04_V2</div>
+              <h3 className="text-xl font-pixel text-white mb-6">Navigation Paths (V2)</h3>
+
+              <div className="space-y-4 mt-6">
+                <div className="flex items-center text-xs font-mono font-bold tracking-wider">
+                  <span className="text-violet-500 hover:text-white cursor-pointer transition-colors border-b-2 border-transparent hover:border-white pb-1">SYSTEMS</span>
+                  <span className="text-white/20 mx-3 font-pixel text-[10px]">&gt;</span>
+                  <span className="text-cyan-500 hover:text-white cursor-pointer transition-colors border-b-2 border-transparent hover:border-white pb-1">HANDHELDS</span>
+                  <span className="text-white/20 mx-3 font-pixel text-[10px]">&gt;</span>
+                  <span className="text-white border-b-2 border-orange-500 pb-1">ANALOGUE POCKET</span>
+                </div>
+              </div>
+            </div>
+
+
             {/* Expandables */}
             <div className="bg-white/5 p-8 border border-white/10 space-y-8 relative overflow-hidden col-span-1 md:col-span-2 hover:border-white/30 transition-colors">
               <div className="absolute top-0 right-0 bg-white text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 05</div>
