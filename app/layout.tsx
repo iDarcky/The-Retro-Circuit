@@ -118,7 +118,7 @@ export default async function RootLayout({
   };
 
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body className={`${pressStart.variable} ${jetBrainsMono.variable} ${shareTechMono.variable} ${inter.variable} font-sans min-h-screen flex flex-col bg-bg-primary text-text-primary antialiased selection:bg-violet-500/30 selection:text-white`}>
         <script
           type="application/ld+json"
