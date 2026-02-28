@@ -1,7 +1,6 @@
 
 import { createClient } from '../../../lib/supabase/server';
 import ArenaComparisonClient from '../../../components/arena/ArenaComparisonClient';
-import { getSystemVersion } from '../../../app/actions/roadmap';
 
 export async function generateMetadata({ params }: { params: Promise<{ versus: string }> }) {
     const { versus } = await params;
@@ -28,7 +27,6 @@ export async function generateMetadata({ params }: { params: Promise<{ versus: s
 export default async function ArenaVersusPage({ params }: { params: Promise<{ versus: string }> }) {
   const { versus } = await params;
   const supabase = await createClient();
-  const version = await getSystemVersion();
 
   const parts = versus.split('-vs-');
 
@@ -100,7 +98,6 @@ export default async function ArenaVersusPage({ params }: { params: Promise<{ ve
       <ArenaComparisonClient
           initialSelectionA={initialSelectionA}
           initialSelectionB={initialSelectionB}
-          version={version}
       />
   );
 }
