@@ -131,7 +131,7 @@ export default function DesignSystemPage() {
                 <div className="space-y-1 mt-6">
                   <label className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase block mb-2">Target Swiss Input</label>
                   <div className="relative group/input">
-                    <input type="text" placeholder="Input specific criteria..." className="w-full bg-white/5 border-b-2 border-white/20 p-3 text-sm font-sans text-white placeholder:text-zinc-600 focus:outline-none focus:border-violet-500 focus:bg-white/10 transition-colors rounded-none" />
+                    <input type="text" placeholder="Input specific criteria..." className="w-full bg-transparent border-2 border-white/20 p-3 text-sm font-mono text-white placeholder:text-zinc-600 focus:outline-none focus:border-violet-500 focus:bg-white/5 transition-colors rounded-none" />
                   </div>
                 </div>
               </div>
@@ -150,10 +150,10 @@ export default function DesignSystemPage() {
 
                 <div className="space-y-1 mt-6">
                   <label className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase block mb-2">Target Swiss Stepper</label>
-                  <div className="inline-flex border border-white">
-                    <button className="px-4 py-2 bg-white text-black hover:bg-zinc-200 transition-colors font-mono text-xl">-</button>
-                    <div className="px-6 py-2 bg-black text-white font-mono text-xl text-center min-w-[80px]">05</div>
-                    <button className="px-4 py-2 bg-white text-black hover:bg-zinc-200 transition-colors font-mono text-xl">+</button>
+                  <div className="inline-flex">
+                    <button className="w-10 h-10 bg-white/5 border border-white/20 text-white hover:bg-white hover:text-black transition-colors flex items-center justify-center font-sans font-bold text-lg">-</button>
+                    <div className="h-10 px-6 bg-transparent border-y border-white/20 text-white font-mono text-lg flex items-center justify-center min-w-[60px]">05</div>
+                    <button className="w-10 h-10 bg-white/5 border border-white/20 text-white hover:bg-white hover:text-black transition-colors flex items-center justify-center font-sans font-bold text-lg">+</button>
                   </div>
                 </div>
               </div>
@@ -175,24 +175,27 @@ export default function DesignSystemPage() {
 
                   {/* Swiss Checkbox */}
                   <div className="flex items-center gap-4 cursor-pointer group/cb">
-                    <div className="w-6 h-6 border-2 border-white flex items-center justify-center bg-transparent group-hover/cb:bg-white/10 transition-colors">
-                      <div className="w-3 h-3 bg-cyan-500"></div>
+                    <div className="w-5 h-5 border-2 border-white flex items-center justify-center bg-cyan-500 transition-colors">
+                      {/* Checkmark icon using simple div lines */}
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 6L5 9L10 3" stroke="black" strokeWidth="2" strokeLinecap="square"/>
+                      </svg>
                     </div>
-                    <span className="font-mono text-sm text-white">Compare Models</span>
+                    <span className="font-sans font-bold uppercase tracking-wider text-xs text-white">Compare Models</span>
                   </div>
 
                   <div className="flex items-center gap-4 cursor-pointer group/cb">
-                    <div className="w-6 h-6 border-2 border-white/30 flex items-center justify-center group-hover/cb:border-white transition-colors">
+                    <div className="w-5 h-5 border-2 border-white/30 flex items-center justify-center group-hover/cb:border-white transition-colors">
                     </div>
-                    <span className="font-mono text-sm text-zinc-500">Show Specifications</span>
+                    <span className="font-sans font-bold uppercase tracking-wider text-xs text-zinc-500 group-hover/cb:text-zinc-300">Show Specifications</span>
                   </div>
 
                   {/* Swiss Toggle */}
-                  <div className="flex items-center gap-4 mt-6">
-                    <div className="w-14 h-8 border-2 border-white flex items-center bg-black cursor-pointer p-1">
-                      <div className="w-6 h-5 bg-orange-500 transform translate-x-5 transition-transform"></div>
+                  <div className="flex items-center gap-4 mt-6 pt-6 border-t border-white/10">
+                    <div className="w-12 h-6 border-2 border-orange-500 flex items-center bg-orange-500/10 cursor-pointer relative">
+                      <div className="absolute right-0 top-0 bottom-0 w-6 bg-orange-500"></div>
                     </div>
-                    <span className="font-sans text-sm text-white">High Contrast Mode</span>
+                    <span className="font-sans font-bold uppercase tracking-wider text-xs text-white">High Contrast Mode</span>
                   </div>
                 </div>
               </div>
