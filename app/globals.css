@@ -2,43 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /*
-    THEME: SWISS ARCHIVE
-    A minimal, international style aesthetic.
-    Pure black, stark white, and a single "International Orange" accent.
-    No blur, no glow, no noise. Just grid and data.
-  */
+@layer base {
+  /* LIGHT MODE (Default off-white / gray base) */
+  :root {
+    --bg-primary: #f4f4f5;   /* Zinc 100 */
+    --bg-secondary: #ffffff; /* White */
+    --bg-tertiary: #e4e4e7;  /* Zinc 200 */
+    --bg-card: #ffffff;
+    --bg-glass: #ffffff;
 
-  /* Backgrounds - Flat & Matte */
-  --bg-primary: #09090b;   /* Zinc 950 - Deepest black */
-  --bg-secondary: #18181b; /* Zinc 900 - Panel background */
-  --bg-tertiary: #27272a;  /* Zinc 800 - Input/Hover background */
-  --bg-card: #09090b;      /* Same as primary for seamless look */
-  --bg-glass: #09090b;     /* No glass effect in Swiss style, just solid */
+    --text-primary: #18181b; /* Zinc 900 */
+    --text-secondary: #52525b; /* Zinc 600 */
+    --text-muted: #71717a;   /* Zinc 500 */
+    --text-inverse: #ffffff; /* White on accent */
 
-  /* Text - High Contrast */
-  --text-primary: #ffffff; /* Pure White */
-  --text-secondary: #a1a1aa; /* Zinc 400 - Subtitles */
-  --text-muted: #52525b;   /* Zinc 600 - Metadata */
-  --text-inverse: #09090b; /* Black text on white/accent */
+    --color-primary: #ea580c;   /* Orange 600 (Darker for contrast) */
+    --color-secondary: #18181b; /* Black */
+    --color-accent: #ea580c;
+    --color-success: #059669;   /* Emerald 600 */
+    --color-warning: #d97706;   /* Amber 600 */
 
-  /* Accent Colors - The Single Signal */
-  --color-primary: #ff4f00;   /* International Orange - Action */
-  --color-secondary: #ffffff; /* Secondary is just White in this theme */
-  --color-accent: #ff4f00;    /* Alias for primary */
-  --color-success: #10b981;   /* Emerald 500 - Status only */
-  --color-warning: #f59e0b;   /* Amber 500 - Status only */
+    --border-subtle: #d4d4d8;   /* Zinc 300 */
+    --border-normal: #a1a1aa;   /* Zinc 400 */
+    --border-strong: #18181b;   /* Black */
+    --border-primary: var(--color-primary);
 
-  /* Borders - Hairlines */
-  --border-subtle: #27272a;   /* Zinc 800 */
-  --border-normal: #3f3f46;   /* Zinc 700 */
-  --border-strong: #ffffff;   /* White for active states */
-  --border-primary: var(--color-primary);
+    --background: var(--bg-primary);
+    --foreground: var(--text-primary);
+  }
 
-  /* Semantic Mappings */
-  --background: var(--bg-primary);
-  --foreground: var(--text-primary);
+  /* DARK MODE (Swiss Archive default) */
+  .dark {
+    --bg-primary: #09090b;   /* Zinc 950 */
+    --bg-secondary: #18181b; /* Zinc 900 */
+    --bg-tertiary: #27272a;  /* Zinc 800 */
+    --bg-card: #09090b;
+    --bg-glass: #09090b;
+
+    --text-primary: #ffffff;
+    --text-secondary: #a1a1aa; /* Zinc 400 */
+    --text-muted: #52525b;   /* Zinc 600 */
+    --text-inverse: #09090b;
+
+    --color-primary: #ff4f00;   /* International Orange */
+    --color-secondary: #ffffff;
+    --color-accent: #ff4f00;
+    --color-success: #10b981;   /* Emerald 500 */
+    --color-warning: #f59e0b;   /* Amber 500 */
+
+    --border-subtle: #27272a;   /* Zinc 800 */
+    --border-normal: #3f3f46;   /* Zinc 700 */
+    --border-strong: #ffffff;
+    --border-primary: var(--color-primary);
+
+    --background: var(--bg-primary);
+    --foreground: var(--text-primary);
+  }
 }
 
 body {

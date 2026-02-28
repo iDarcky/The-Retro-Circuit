@@ -11,7 +11,7 @@ export default function DesignSystemPage() {
       <div className="max-w-6xl mx-auto space-y-16">
         {/* Header */}
         <header className="border-b-4 border-violet-500 pb-8">
-          <h1 className="text-5xl md:text-8xl font-pixel uppercase tracking-tighter mb-4 text-white">
+          <h1 className="text-5xl md:text-8xl font-pixel uppercase tracking-tighter mb-4 text-text-primary">
             Design System
           </h1>
           <p className="text-xl text-text-secondary font-mono">
@@ -22,20 +22,20 @@ export default function DesignSystemPage() {
         {/* Typography */}
         <section className="space-y-8">
           <h2 className="text-3xl font-pixel text-violet-500 uppercase border-l-4 border-violet-500 pl-4">Typography</h2>
-          <div className="grid gap-8 bg-white/5 p-8 border border-white/10">
+          <div className="grid gap-8 bg-bg-secondary p-8 border border-border-subtle">
             <div>
               <p className="text-sm text-text-secondary font-mono mb-2">.font-pixel (Headers)</p>
-              <h1 className="text-5xl font-pixel uppercase text-white">Pixel Header 1</h1>
-              <h2 className="text-3xl font-pixel uppercase text-white mt-4">Pixel Header 2</h2>
-              <h3 className="text-xl font-pixel uppercase text-white mt-4">Pixel Header 3</h3>
+              <h1 className="text-5xl font-pixel uppercase text-text-primary">Pixel Header 1</h1>
+              <h2 className="text-3xl font-pixel uppercase text-text-primary mt-4">Pixel Header 2</h2>
+              <h3 className="text-xl font-pixel uppercase text-text-primary mt-4">Pixel Header 3</h3>
             </div>
-            <div className="pt-8 border-t border-white/10">
+            <div className="pt-8 border-t border-border-subtle">
               <p className="text-sm text-text-secondary font-mono mb-2">.font-sans (Body / UI)</p>
               <p className="text-lg font-sans text-text-primary">
                 The quick brown fox jumps over the lazy dog. System Console employs a dense, high-contrast typography scale inspired by Swiss design principles.
               </p>
             </div>
-            <div className="pt-8 border-t border-white/10">
+            <div className="pt-8 border-t border-border-subtle">
               <p className="text-sm text-text-secondary font-mono mb-2">.font-mono (Data / Metadata)</p>
               <p className="text-sm font-mono text-text-secondary">
                 {"{ id: '123e4567-e89b-12d3-a456-426614174000', status: 'ACTIVE', tier: 'MAX_EMULATION' }"}
@@ -49,8 +49,8 @@ export default function DesignSystemPage() {
           <h2 className="text-3xl font-pixel text-violet-500 uppercase border-l-4 border-violet-500 pl-4">Buttons</h2>
           <div className="grid grid-cols-1 gap-8">
 
-            <div className="bg-white/5 p-8 border border-white/10 space-y-6">
-              <h3 className="text-xl font-pixel text-white mb-4">Standard Button</h3>
+            <div className="bg-bg-secondary p-8 border border-border-subtle space-y-6">
+              <h3 className="text-xl font-pixel text-text-primary mb-4">Standard Button</h3>
               <div className="flex flex-wrap gap-4 items-center">
                 <Button variant="primary">Primary</Button>
                 <Button variant="secondary">Secondary</Button>
@@ -58,8 +58,8 @@ export default function DesignSystemPage() {
               </div>
             </div>
 
-            <div className="bg-white/5 p-8 border border-white/10 space-y-6">
-              <h3 className="text-xl font-pixel text-white mb-4">SwissButton (Console View)</h3>
+            <div className="bg-bg-secondary p-8 border border-border-subtle space-y-6">
+              <h3 className="text-xl font-pixel text-text-primary mb-4">SwissButton (Console View)</h3>
               <div className="flex flex-wrap gap-4 items-center">
                 <SwissButton variant="primary">Swiss Primary</SwissButton>
                 <SwissButton variant="orange">Swiss Orange</SwissButton>
@@ -74,9 +74,9 @@ export default function DesignSystemPage() {
         <section className="space-y-8">
           <h2 className="text-3xl font-pixel text-violet-500 uppercase border-l-4 border-violet-500 pl-4">Badges & Tags</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white/5 p-8 border border-white/10 space-y-6">
-              <h3 className="text-xl font-pixel text-white mb-4">Current TechBadge</h3>
-              <p className="text-xs text-zinc-500 font-mono mb-4">Uses strict mono font and flat colored squares.</p>
+            <div className="bg-bg-secondary p-8 border border-border-subtle space-y-6">
+              <h3 className="text-xl font-pixel text-text-primary mb-4">Current TechBadge</h3>
+              <p className="text-xs text-text-muted font-mono mb-4">Uses strict mono font and flat colored squares.</p>
               <div className="flex flex-wrap gap-4">
                 <TechBadge label="ARM Cortex-A76" active={true} />
                 <TechBadge label="OLED Display" active={true} color="bg-cyan-500" />
@@ -85,28 +85,28 @@ export default function DesignSystemPage() {
               </div>
             </div>
 
-            <div className="bg-white/5 p-8 border border-violet-500/50 space-y-6 relative overflow-hidden group hover:border-violet-500 transition-colors">
-              <div className="absolute top-0 right-0 bg-violet-500 text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL</div>
-              <h3 className="text-xl font-pixel text-white mb-4">Vibrant Swiss Badge</h3>
-              <p className="text-xs text-zinc-500 font-mono mb-4">Proposal: Inverted contrast. Solid thick borders, sans-serif typography, blocky structural feel.</p>
+            <div className="bg-bg-secondary p-8 border border-violet-500/50 space-y-6 relative overflow-hidden group hover:border-violet-500 transition-colors">
+              <div className="absolute top-0 right-0 bg-violet-500 text-text-inverse text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL</div>
+              <h3 className="text-xl font-pixel text-text-primary mb-4">Vibrant Swiss Badge</h3>
+              <p className="text-xs text-text-muted font-mono mb-4">Proposal: Inverted contrast. Solid thick borders, sans-serif typography, blocky structural feel.</p>
               <div className="flex flex-wrap gap-4">
 
                 {/* Proposed Swiss Badges */}
-                <div className="inline-flex items-center text-[10px] font-sans font-bold uppercase tracking-widest border border-white text-black bg-white">
+                <div className="inline-flex items-center text-[10px] font-sans font-bold uppercase tracking-widest border border-border-strong text-text-inverse bg-text-primary">
                   <span className="bg-violet-500 w-3 h-full self-stretch border-r border-black"></span>
                   <span className="px-3 py-1">ARM Cortex-A76</span>
                 </div>
 
-                <div className="inline-flex items-center text-[10px] font-sans font-bold uppercase tracking-widest border border-cyan-500 text-cyan-500 bg-black">
+                <div className="inline-flex items-center text-[10px] font-sans font-bold uppercase tracking-widest border border-cyan-500 text-cyan-500 bg-bg-primary">
                   <span className="bg-cyan-500 w-3 h-full self-stretch border-r border-cyan-500"></span>
                   <span className="px-3 py-1">OLED Display</span>
                 </div>
 
-                <div className="inline-flex items-center text-[10px] font-sans font-bold uppercase tracking-widest border border-orange-500 text-black bg-orange-500">
+                <div className="inline-flex items-center text-[10px] font-sans font-bold uppercase tracking-widest border border-orange-500 text-text-inverse bg-orange-500">
                   <span className="px-3 py-1">LPDDR4x</span>
                 </div>
 
-                <div className="inline-flex items-center text-[10px] font-sans font-bold uppercase tracking-widest border border-white/20 text-white/30 bg-transparent">
+                <div className="inline-flex items-center text-[10px] font-sans font-bold uppercase tracking-widest border border-border-normal text-text-primary/30 bg-transparent">
                   <span className="px-3 py-1">Wi-Fi 6</span>
                 </div>
 
@@ -120,8 +120,8 @@ export default function DesignSystemPage() {
           <h2 className="text-3xl font-pixel text-violet-500 uppercase border-l-4 border-violet-500 pl-4">Interactive</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white/5 p-8 border border-white/10 space-y-6">
-              <h3 className="text-xl font-pixel text-white mb-4">SwissDropdown</h3>
+            <div className="bg-bg-secondary p-8 border border-border-subtle space-y-6">
+              <h3 className="text-xl font-pixel text-text-primary mb-4">SwissDropdown</h3>
               <div className="w-64">
                 <SwissDropdown
                   options={[
@@ -152,180 +152,180 @@ export default function DesignSystemPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Forms & Inputs */}
-            <div className="bg-white/5 p-8 border border-white/10 space-y-8 relative overflow-hidden group hover:border-white/30 transition-colors">
-              <div className="absolute top-0 right-0 bg-white text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 01</div>
-              <h3 className="text-xl font-pixel text-white mb-6">Text Input</h3>
+            <div className="bg-bg-secondary p-8 border border-border-subtle space-y-8 relative overflow-hidden group hover:border-border-strong transition-colors">
+              <div className="absolute top-0 right-0 bg-text-primary text-text-inverse text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 01</div>
+              <h3 className="text-xl font-pixel text-text-primary mb-6">Text Input</h3>
 
               <div className="space-y-4">
                 <div className="space-y-1">
-                  <label className="text-xs text-zinc-500 font-sans">Current Legacy Input</label>
-                  <input type="text" placeholder="Type here..." className="w-full bg-zinc-900 border border-zinc-700 rounded-md p-2 text-sm text-white" />
+                  <label className="text-xs text-text-muted font-sans">Current Legacy Input</label>
+                  <input type="text" placeholder="Type here..." className="w-full bg-zinc-900 border border-zinc-700 rounded-md p-2 text-sm text-text-primary" />
                 </div>
 
                 <div className="space-y-1 mt-6">
-                  <label className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase block mb-2">Target Swiss Input</label>
+                  <label className="text-[10px] text-text-secondary font-mono tracking-widest uppercase block mb-2">Target Swiss Input</label>
                   <div className="relative group/input">
-                    <input type="text" placeholder="Input specific criteria..." className="w-full bg-transparent border-2 border-white/20 p-3 text-sm font-mono text-white placeholder:text-zinc-600 focus:outline-none focus:border-violet-500 focus:bg-white/5 transition-colors rounded-none" />
+                    <input type="text" placeholder="Input specific criteria..." className="w-full bg-transparent border-2 border-border-normal p-3 text-sm font-mono text-text-primary placeholder:text-zinc-600 focus:outline-none focus:border-violet-500 focus:bg-bg-secondary transition-colors rounded-none" />
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Stepper */}
-            <div className="bg-white/5 p-8 border border-white/10 space-y-8 relative overflow-hidden hover:border-white/30 transition-colors">
-              <div className="absolute top-0 right-0 bg-white text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 02</div>
-              <h3 className="text-xl font-pixel text-white mb-6">Numeric Adjuster</h3>
+            <div className="bg-bg-secondary p-8 border border-border-subtle space-y-8 relative overflow-hidden hover:border-border-strong transition-colors">
+              <div className="absolute top-0 right-0 bg-text-primary text-text-inverse text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 02</div>
+              <h3 className="text-xl font-pixel text-text-primary mb-6">Numeric Adjuster</h3>
 
               <div className="space-y-4">
                 <div className="space-y-1">
-                  <label className="text-xs text-zinc-500 font-sans">Current Legacy Input</label>
-                  <input type="number" defaultValue={5} className="bg-zinc-900 border border-zinc-700 rounded-md p-2 text-sm text-white w-24" />
+                  <label className="text-xs text-text-muted font-sans">Current Legacy Input</label>
+                  <input type="number" defaultValue={5} className="bg-zinc-900 border border-zinc-700 rounded-md p-2 text-sm text-text-primary w-24" />
                 </div>
 
                 <div className="space-y-1 mt-6">
-                  <label className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase block mb-2">Target Swiss Stepper</label>
+                  <label className="text-[10px] text-text-secondary font-mono tracking-widest uppercase block mb-2">Target Swiss Stepper</label>
                   <div className="inline-flex">
-                    <button className="w-10 h-10 bg-white/5 border border-white/20 text-white hover:bg-white hover:text-black transition-colors flex items-center justify-center font-sans font-bold text-lg">-</button>
-                    <div className="h-10 px-6 bg-transparent border-y border-white/20 text-white font-mono text-lg flex items-center justify-center min-w-[60px]">05</div>
-                    <button className="w-10 h-10 bg-white/5 border border-white/20 text-white hover:bg-white hover:text-black transition-colors flex items-center justify-center font-sans font-bold text-lg">+</button>
+                    <button className="w-10 h-10 bg-bg-secondary border border-border-normal text-text-primary hover:bg-text-primary hover:text-text-inverse transition-colors flex items-center justify-center font-sans font-bold text-lg">-</button>
+                    <div className="h-10 px-6 bg-transparent border-y border-border-normal text-text-primary font-mono text-lg flex items-center justify-center min-w-[60px]">05</div>
+                    <button className="w-10 h-10 bg-bg-secondary border border-border-normal text-text-primary hover:bg-text-primary hover:text-text-inverse transition-colors flex items-center justify-center font-sans font-bold text-lg">+</button>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Toggles */}
-            <div className="bg-white/5 p-8 border border-white/10 space-y-8 relative overflow-hidden hover:border-white/30 transition-colors">
-              <div className="absolute top-0 right-0 bg-white text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 03</div>
-              <h3 className="text-xl font-pixel text-white mb-6">Checkboxes & Toggles</h3>
+            <div className="bg-bg-secondary p-8 border border-border-subtle space-y-8 relative overflow-hidden hover:border-border-strong transition-colors">
+              <div className="absolute top-0 right-0 bg-text-primary text-text-inverse text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 03</div>
+              <h3 className="text-xl font-pixel text-text-primary mb-6">Checkboxes & Toggles</h3>
 
               <div className="space-y-4">
-                <div className="flex items-center gap-2 border-b border-white/10 pb-4">
+                <div className="flex items-center gap-2 border-b border-border-subtle pb-4">
                   <input type="checkbox" className="w-4 h-4 rounded text-orange-500" defaultChecked />
-                  <label className="text-sm text-zinc-400 font-sans">Legacy Default Checkbox</label>
+                  <label className="text-sm text-text-secondary font-sans">Legacy Default Checkbox</label>
                 </div>
 
                 <div className="space-y-4 mt-6">
-                  <label className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase block mb-2">Target Swiss States</label>
+                  <label className="text-[10px] text-text-secondary font-mono tracking-widest uppercase block mb-2">Target Swiss States</label>
 
                   {/* Swiss Checkbox */}
                   <div className="flex items-center gap-4 cursor-pointer group/cb">
-                    <div className="w-5 h-5 border-2 border-white flex items-center justify-center bg-cyan-500 transition-colors">
+                    <div className="w-5 h-5 border-2 border-border-strong flex items-center justify-center bg-cyan-500 transition-colors">
                       {/* Checkmark icon using simple div lines */}
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M2 6L5 9L10 3" stroke="black" strokeWidth="2" strokeLinecap="square"/>
                       </svg>
                     </div>
-                    <span className="font-sans font-bold uppercase tracking-wider text-xs text-white">Compare Models</span>
+                    <span className="font-sans font-bold uppercase tracking-wider text-xs text-text-primary">Compare Models</span>
                   </div>
 
                   <div className="flex items-center gap-4 cursor-pointer group/cb">
-                    <div className="w-5 h-5 border-2 border-white/30 flex items-center justify-center group-hover/cb:border-white transition-colors">
+                    <div className="w-5 h-5 border-2 border-border-strong flex items-center justify-center group-hover/cb:border-border-strong transition-colors">
                     </div>
-                    <span className="font-sans font-bold uppercase tracking-wider text-xs text-zinc-500 group-hover/cb:text-zinc-300">Show Specifications</span>
+                    <span className="font-sans font-bold uppercase tracking-wider text-xs text-text-muted group-hover/cb:text-zinc-300">Show Specifications</span>
                   </div>
 
                   {/* Swiss Toggle */}
-                  <div className="flex items-center gap-4 mt-6 pt-6 border-t border-white/10">
+                  <div className="flex items-center gap-4 mt-6 pt-6 border-t border-border-subtle">
                     <div className="w-12 h-6 border-2 border-orange-500 flex items-center bg-orange-500/10 cursor-pointer relative">
                       <div className="absolute right-0 top-0 bottom-0 w-6 bg-orange-500"></div>
                     </div>
-                    <span className="font-sans font-bold uppercase tracking-wider text-xs text-white">High Contrast Mode</span>
+                    <span className="font-sans font-bold uppercase tracking-wider text-xs text-text-primary">High Contrast Mode</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Breadcrumbs */}
-            <div className="bg-white/5 p-8 border border-white/10 space-y-8 relative overflow-hidden hover:border-white/30 transition-colors">
-              <div className="absolute top-0 right-0 bg-white text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 04</div>
-              <h3 className="text-xl font-pixel text-white mb-6">Navigation Paths</h3>
+            <div className="bg-bg-secondary p-8 border border-border-subtle space-y-8 relative overflow-hidden hover:border-border-strong transition-colors">
+              <div className="absolute top-0 right-0 bg-text-primary text-text-inverse text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 04</div>
+              <h3 className="text-xl font-pixel text-text-primary mb-6">Navigation Paths</h3>
 
               <div className="space-y-4 mt-6">
                 <div className="flex items-center text-xs font-mono tracking-wider">
-                  <span className="text-zinc-500 hover:text-white cursor-pointer transition-colors bg-white/5 px-2 py-1 border border-white/10">Systems</span>
-                  <div className="w-4 h-px bg-white/20 mx-2"></div>
-                  <span className="text-zinc-500 hover:text-white cursor-pointer transition-colors bg-white/5 px-2 py-1 border border-white/10">Handhelds</span>
-                  <div className="w-4 h-px bg-white/20 mx-2"></div>
-                  <span className="text-black bg-white px-2 py-1 border border-white font-bold">Analogue Pocket</span>
+                  <span className="text-text-muted hover:text-text-primary cursor-pointer transition-colors bg-bg-secondary px-2 py-1 border border-border-subtle">Systems</span>
+                  <div className="w-4 h-px bg-text-primary/20 mx-2"></div>
+                  <span className="text-text-muted hover:text-text-primary cursor-pointer transition-colors bg-bg-secondary px-2 py-1 border border-border-subtle">Handhelds</span>
+                  <div className="w-4 h-px bg-text-primary/20 mx-2"></div>
+                  <span className="text-text-inverse bg-text-primary px-2 py-1 border border-border-strong font-bold">Analogue Pocket</span>
                 </div>
               </div>
             </div>
 
             {/* Toggles V2 */}
-            <div className="bg-white/5 p-8 border border-white/10 space-y-8 relative overflow-hidden hover:border-white/30 transition-colors">
-              <div className="absolute top-0 right-0 bg-white text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 03_V2</div>
-              <h3 className="text-xl font-pixel text-white mb-6">Checkboxes & Toggles (V2)</h3>
+            <div className="bg-bg-secondary p-8 border border-border-subtle space-y-8 relative overflow-hidden hover:border-border-strong transition-colors">
+              <div className="absolute top-0 right-0 bg-text-primary text-text-inverse text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 03_V2</div>
+              <h3 className="text-xl font-pixel text-text-primary mb-6">Checkboxes & Toggles (V2)</h3>
 
               <div className="space-y-4">
-                <div className="flex items-center gap-2 border-b border-white/10 pb-4">
-                  <input type="checkbox" className="w-4 h-4 rounded accent-orange-500 bg-black border-white/20" defaultChecked />
-                  <label className="text-sm text-zinc-400 font-sans">Legacy Default Checkbox</label>
+                <div className="flex items-center gap-2 border-b border-border-subtle pb-4">
+                  <input type="checkbox" className="w-4 h-4 rounded accent-orange-500 bg-bg-primary border-border-normal" defaultChecked />
+                  <label className="text-sm text-text-secondary font-sans">Legacy Default Checkbox</label>
                 </div>
 
                 <div className="space-y-4 mt-6">
-                  <label className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase block mb-2">Target Swiss States V2 (Minimal Block)</label>
+                  <label className="text-[10px] text-text-secondary font-mono tracking-widest uppercase block mb-2">Target Swiss States V2 (Minimal Block)</label>
 
                   {/* Swiss Checkbox V2 */}
                   <div className="flex items-center gap-4 cursor-pointer group/cb2">
-                    <div className="w-5 h-5 border border-white/30 flex items-center justify-center bg-transparent group-hover/cb2:border-white transition-colors p-0.5">
+                    <div className="w-5 h-5 border border-border-strong flex items-center justify-center bg-transparent group-hover/cb2:border-border-strong transition-colors p-0.5">
                       <div className="w-full h-full bg-cyan-500"></div>
                     </div>
-                    <span className="font-mono text-sm text-white">Compare Models</span>
+                    <span className="font-mono text-sm text-text-primary">Compare Models</span>
                   </div>
 
                   <div className="flex items-center gap-4 cursor-pointer group/cb2">
-                    <div className="w-5 h-5 border border-white/30 flex items-center justify-center group-hover/cb2:border-white transition-colors p-0.5">
+                    <div className="w-5 h-5 border border-border-strong flex items-center justify-center group-hover/cb2:border-border-strong transition-colors p-0.5">
                     </div>
-                    <span className="font-mono text-sm text-zinc-500">Show Specifications</span>
+                    <span className="font-mono text-sm text-text-muted">Show Specifications</span>
                   </div>
 
                   {/* Swiss Toggle V2 */}
-                  <div className="flex items-center gap-4 mt-6 pt-6 border-t border-white/10">
-                    <div className="w-12 h-5 bg-white/10 flex items-center cursor-pointer relative overflow-hidden">
+                  <div className="flex items-center gap-4 mt-6 pt-6 border-t border-border-subtle">
+                    <div className="w-12 h-5 bg-bg-tertiary flex items-center cursor-pointer relative overflow-hidden">
                       <div className="absolute right-0 top-0 bottom-0 w-6 bg-orange-500 border border-orange-400"></div>
                     </div>
-                    <span className="font-sans text-xs text-white uppercase tracking-wider">High Contrast Mode</span>
+                    <span className="font-sans text-xs text-text-primary uppercase tracking-wider">High Contrast Mode</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Breadcrumbs V2 */}
-            <div className="bg-white/5 p-8 border border-white/10 space-y-8 relative overflow-hidden hover:border-white/30 transition-colors">
-              <div className="absolute top-0 right-0 bg-white text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 04_V2</div>
-              <h3 className="text-xl font-pixel text-white mb-6">Navigation Paths (V2)</h3>
+            <div className="bg-bg-secondary p-8 border border-border-subtle space-y-8 relative overflow-hidden hover:border-border-strong transition-colors">
+              <div className="absolute top-0 right-0 bg-text-primary text-text-inverse text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 04_V2</div>
+              <h3 className="text-xl font-pixel text-text-primary mb-6">Navigation Paths (V2)</h3>
 
               <div className="space-y-4 mt-6">
                 <div className="flex items-center text-xs font-mono tracking-wider">
-                  <span className="text-white/50 hover:text-white cursor-pointer transition-colors pb-1">SYSTEMS</span>
-                  <span className="text-white/20 mx-3 font-mono">//</span>
-                  <span className="text-white/50 hover:text-white cursor-pointer transition-colors pb-1">HANDHELDS</span>
-                  <span className="text-white/20 mx-3 font-mono">//</span>
-                  <span className="text-white pb-1 border-b border-white">ANALOGUE POCKET</span>
+                  <span className="text-text-primary/50 hover:text-text-primary cursor-pointer transition-colors pb-1">SYSTEMS</span>
+                  <span className="text-text-primary/20 mx-3 font-mono">//</span>
+                  <span className="text-text-primary/50 hover:text-text-primary cursor-pointer transition-colors pb-1">HANDHELDS</span>
+                  <span className="text-text-primary/20 mx-3 font-mono">//</span>
+                  <span className="text-text-primary pb-1 border-b border-border-strong">ANALOGUE POCKET</span>
                 </div>
               </div>
             </div>
 
 
             {/* Expandables */}
-            <div className="bg-white/5 p-8 border border-white/10 space-y-8 relative overflow-hidden col-span-1 md:col-span-2 hover:border-white/30 transition-colors">
-              <div className="absolute top-0 right-0 bg-white text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 05</div>
-              <h3 className="text-xl font-pixel text-white mb-6">Data Structures & Feedback</h3>
+            <div className="bg-bg-secondary p-8 border border-border-subtle space-y-8 relative overflow-hidden col-span-1 md:col-span-2 hover:border-border-strong transition-colors">
+              <div className="absolute top-0 right-0 bg-text-primary text-text-inverse text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL 05</div>
+              <h3 className="text-xl font-pixel text-text-primary mb-6">Data Structures & Feedback</h3>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 {/* Accordion */}
                 <div className="space-y-0 border-t-4 border-violet-500">
-                  <div className="flex items-center justify-between p-4 cursor-pointer bg-white/5 hover:bg-white/10 transition-colors border-b border-white/10">
-                    <span className="font-sans text-sm text-white font-bold uppercase tracking-wider">Display Technology</span>
+                  <div className="flex items-center justify-between p-4 cursor-pointer bg-bg-secondary hover:bg-bg-tertiary transition-colors border-b border-border-subtle">
+                    <span className="font-sans text-sm text-text-primary font-bold uppercase tracking-wider">Display Technology</span>
                     <span className="font-pixel text-sm text-violet-500">+</span>
                   </div>
-                  <div className="flex items-start justify-between p-4 cursor-pointer bg-white/[0.02] border-b border-white/10">
+                  <div className="flex items-start justify-between p-4 cursor-pointer bg-text-primary/[0.02] border-b border-border-subtle">
                     <div className="space-y-4 w-full">
                       <div className="flex justify-between items-center">
-                        <span className="font-sans text-sm text-white font-bold uppercase tracking-wider">Processing Power</span>
-                        <span className="font-pixel text-sm text-white">-</span>
+                        <span className="font-sans text-sm text-text-primary font-bold uppercase tracking-wider">Processing Power</span>
+                        <span className="font-pixel text-sm text-text-primary">-</span>
                       </div>
-                      <div className="font-mono text-xs text-zinc-400 space-y-2 pb-2 pl-4 border-l-2 border-white/10">
+                      <div className="font-mono text-xs text-text-secondary space-y-2 pb-2 pl-4 border-l-2 border-border-subtle">
                         <p>CPU: ARM Cortex-A76</p>
                         <p>GPU: Mali-G57 MC4</p>
                         <p>RAM: 8GB LPDDR4x</p>
@@ -337,18 +337,18 @@ export default function DesignSystemPage() {
                 {/* Progress / Loading */}
                 <div className="space-y-6">
                   <div>
-                    <label className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase block mb-2">Block Progress Indicator</label>
+                    <label className="text-[10px] text-text-secondary font-mono tracking-widest uppercase block mb-2">Block Progress Indicator</label>
                     <div className="flex items-center gap-4">
-                      <div className="font-mono text-xs text-white min-w-[30px]">60%</div>
-                      <div className="flex-1 h-6 border border-white/20 bg-black p-0.5 flex">
+                      <div className="font-mono text-xs text-text-primary min-w-[30px]">60%</div>
+                      <div className="flex-1 h-6 border border-border-normal bg-bg-primary p-0.5 flex">
                         <div className="h-full w-full bg-cyan-500 max-w-[60%]"></div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="pt-4 border-t border-white/10">
-                    <label className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase block mb-2">Alert / Toast Panel</label>
-                    <div className="bg-orange-500 text-black p-4 border-l-8 border-black flex gap-4 items-start">
+                  <div className="pt-4 border-t border-border-subtle">
+                    <label className="text-[10px] text-text-secondary font-mono tracking-widest uppercase block mb-2">Alert / Toast Panel</label>
+                    <div className="bg-orange-500 text-text-inverse p-4 border-l-8 border-black flex gap-4 items-start">
                        <span className="font-pixel text-lg">!</span>
                        <div>
                          <h4 className="font-sans font-bold text-sm uppercase">Configuration Saved</h4>
@@ -362,32 +362,32 @@ export default function DesignSystemPage() {
 
             {/* Grid Layout Primitive */}
             <div className="bg-transparent p-0 border-none space-y-8 relative overflow-hidden col-span-1 md:col-span-2">
-               <h3 className="text-xl font-pixel text-white mb-2">Mathematical Grid Foundation</h3>
-               <p className="font-mono text-sm text-zinc-500 mb-4">Structural layouts should rely on visible gridlines and rigid geometric containment.</p>
+               <h3 className="text-xl font-pixel text-text-primary mb-2">Mathematical Grid Foundation</h3>
+               <p className="font-mono text-sm text-text-muted mb-4">Structural layouts should rely on visible gridlines and rigid geometric containment.</p>
 
-               <div className="grid grid-cols-3 gap-0 border border-white/20 bg-black">
-                 <div className="border-r border-b border-white/20 p-8 flex flex-col items-center justify-center min-h-[160px] bg-white/5">
-                    <div className="w-16 h-16 bg-white flex items-center justify-center mb-4">
-                      <span className="font-mono text-xl text-black font-bold">M</span>
+               <div className="grid grid-cols-3 gap-0 border border-border-normal bg-bg-primary">
+                 <div className="border-r border-b border-border-normal p-8 flex flex-col items-center justify-center min-h-[160px] bg-bg-secondary">
+                    <div className="w-16 h-16 bg-text-primary flex items-center justify-center mb-4">
+                      <span className="font-mono text-xl text-text-inverse font-bold">M</span>
                     </div>
-                    <span className="font-sans text-xs text-white uppercase tracking-wider">Manufacturer Profile</span>
+                    <span className="font-sans text-xs text-text-primary uppercase tracking-wider">Manufacturer Profile</span>
                  </div>
-                 <div className="border-r border-b border-white/20 p-8 flex flex-col justify-center">
+                 <div className="border-r border-b border-border-normal p-8 flex flex-col justify-center">
                    <div className="space-y-4 font-mono text-sm">
-                     <div className="flex justify-between border-b border-white/10 pb-2">
-                       <span className="text-zinc-500">Retail Price</span>
-                       <span className="text-white">$199</span>
+                     <div className="flex justify-between border-b border-border-subtle pb-2">
+                       <span className="text-text-muted">Retail Price</span>
+                       <span className="text-text-primary">$199</span>
                      </div>
-                     <div className="flex justify-between border-b border-white/10 pb-2">
-                       <span className="text-zinc-500">Release Year</span>
-                       <span className="text-white">2023</span>
+                     <div className="flex justify-between border-b border-border-subtle pb-2">
+                       <span className="text-text-muted">Release Year</span>
+                       <span className="text-text-primary">2023</span>
                      </div>
                    </div>
                  </div>
-                 <div className="border-b border-white/20 p-8 flex flex-col justify-center bg-violet-500/10 border-l-4 border-l-violet-500">
+                 <div className="border-b border-border-normal p-8 flex flex-col justify-center bg-violet-500/10 border-l-4 border-l-violet-500">
                    <div className="space-y-2">
-                     <h4 className="font-sans font-bold text-sm text-white uppercase">System Notice</h4>
-                     <p className="font-mono text-xs text-zinc-400 leading-relaxed">
+                     <h4 className="font-sans font-bold text-sm text-text-primary uppercase">System Notice</h4>
+                     <p className="font-mono text-xs text-text-secondary leading-relaxed">
                        Aesthetic info panel proposal. Rigid, colored border indicators, flat background fills.
                      </p>
                    </div>

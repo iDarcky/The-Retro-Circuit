@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { siteConfig } from '../../config/site';
 import { useConsent } from '../privacy/ConsentContext';
 import { retroAuth } from '../../lib/auth';
+import { ThemeToggle } from './ThemeToggle';
 
 interface FooterProps {
   version: string;
@@ -63,6 +64,9 @@ const Footer: FC<FooterProps> = ({ version }) => {
                Admin
              </Link>
            )}
+           <div className="ml-4 flex items-center">
+             <ThemeToggle />
+           </div>
         </nav>
 
         {/* Right: System Status */}
