@@ -73,10 +73,10 @@ export default function DesignSystemPage() {
           <div className="bg-white/5 p-8 border border-white/10 space-y-6">
             <h3 className="text-xl font-pixel text-white mb-4">TechBadge</h3>
             <div className="flex flex-wrap gap-4">
-              <TechBadge label="ARM Cortex-A76" />
-              <TechBadge label="OLED Display" />
-              <TechBadge label="LPDDR4x" />
-              <TechBadge label="Wi-Fi 6" />
+              <TechBadge label="ARM Cortex-A76" active={true} />
+              <TechBadge label="OLED Display" active={true} color="bg-cyan-500" />
+              <TechBadge label="LPDDR4x" active={true} color="bg-orange-500" />
+              <TechBadge label="Wi-Fi 6" active={false} />
             </div>
           </div>
         </section>
