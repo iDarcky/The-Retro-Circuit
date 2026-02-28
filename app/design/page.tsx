@@ -62,6 +62,9 @@ export default function DesignSystemPage() {
               <h3 className="text-xl font-pixel text-white mb-4">SwissButton (Console View)</h3>
               <div className="flex flex-wrap gap-4 items-center">
                 <SwissButton variant="primary">Swiss Primary</SwissButton>
+                <SwissButton variant="orange">Swiss Orange</SwissButton>
+                <SwissButton variant="secondary">Swiss Secondary</SwissButton>
+                <SwissButton variant="danger">Swiss Danger</SwissButton>
               </div>
             </div>
           </div>
@@ -70,13 +73,44 @@ export default function DesignSystemPage() {
         {/* Badges */}
         <section className="space-y-8">
           <h2 className="text-3xl font-pixel text-violet-500 uppercase border-l-4 border-violet-500 pl-4">Badges & Tags</h2>
-          <div className="bg-white/5 p-8 border border-white/10 space-y-6">
-            <h3 className="text-xl font-pixel text-white mb-4">TechBadge</h3>
-            <div className="flex flex-wrap gap-4">
-              <TechBadge label="ARM Cortex-A76" active={true} />
-              <TechBadge label="OLED Display" active={true} color="bg-cyan-500" />
-              <TechBadge label="LPDDR4x" active={true} color="bg-orange-500" />
-              <TechBadge label="Wi-Fi 6" active={false} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white/5 p-8 border border-white/10 space-y-6">
+              <h3 className="text-xl font-pixel text-white mb-4">Current TechBadge</h3>
+              <p className="text-xs text-zinc-500 font-mono mb-4">Uses strict mono font and flat colored squares.</p>
+              <div className="flex flex-wrap gap-4">
+                <TechBadge label="ARM Cortex-A76" active={true} />
+                <TechBadge label="OLED Display" active={true} color="bg-cyan-500" />
+                <TechBadge label="LPDDR4x" active={true} color="bg-orange-500" />
+                <TechBadge label="Wi-Fi 6" active={false} />
+              </div>
+            </div>
+
+            <div className="bg-white/5 p-8 border border-violet-500/50 space-y-6 relative overflow-hidden group hover:border-violet-500 transition-colors">
+              <div className="absolute top-0 right-0 bg-violet-500 text-black text-[10px] font-mono px-2 py-1 font-bold">PROPOSAL</div>
+              <h3 className="text-xl font-pixel text-white mb-4">Vibrant Swiss Badge</h3>
+              <p className="text-xs text-zinc-500 font-mono mb-4">Proposal: Inverted contrast. Solid thick borders, sans-serif typography, blocky structural feel.</p>
+              <div className="flex flex-wrap gap-4">
+
+                {/* Proposed Swiss Badges */}
+                <div className="inline-flex items-center text-[10px] font-sans font-bold uppercase tracking-widest border border-white text-black bg-white">
+                  <span className="bg-violet-500 w-3 h-full self-stretch border-r border-black"></span>
+                  <span className="px-3 py-1">ARM Cortex-A76</span>
+                </div>
+
+                <div className="inline-flex items-center text-[10px] font-sans font-bold uppercase tracking-widest border border-cyan-500 text-cyan-500 bg-black">
+                  <span className="bg-cyan-500 w-3 h-full self-stretch border-r border-cyan-500"></span>
+                  <span className="px-3 py-1">OLED Display</span>
+                </div>
+
+                <div className="inline-flex items-center text-[10px] font-sans font-bold uppercase tracking-widest border border-orange-500 text-black bg-orange-500">
+                  <span className="px-3 py-1">LPDDR4x</span>
+                </div>
+
+                <div className="inline-flex items-center text-[10px] font-sans font-bold uppercase tracking-widest border border-white/20 text-white/30 bg-transparent">
+                  <span className="px-3 py-1">Wi-Fi 6</span>
+                </div>
+
+              </div>
             </div>
           </div>
         </section>
