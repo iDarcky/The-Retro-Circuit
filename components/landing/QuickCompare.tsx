@@ -18,7 +18,7 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
     const slug1 = p1?.slug || 'select';
     const slug2 = p2?.slug || 'select';
 
-    // We navigate to /arena/slug1-vs-slug2
+    // Ensure we do a proper route push
     router.push(`/arena/${slug1}-vs-${slug2}`);
   };
 
@@ -28,14 +28,14 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
 
         {/* Device A */}
         <div className="flex-1 w-full relative">
-            <span className="absolute -top-3 left-2 px-1 bg-bg-primary text-[10px] font-mono text-text-muted uppercase tracking-widest z-10">
+            <span className="absolute -top-3 left-2 px-1 bg-bg-primary text-[10px] font-mono text-cyan-500 uppercase tracking-widest z-10">
                 PLAYER 1
             </span>
             <ConsoleSearch
                 consoles={consoles}
                 onSelect={(slug, name) => setP1({ slug, name })}
                 placeholder="SELECT DEVICE..."
-                themeColor="primary"
+                themeColor="cyan"
                 currentSelection={p1?.name}
                 textColor="white"
             />
@@ -48,14 +48,14 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
 
         {/* Device B */}
         <div className="flex-1 w-full relative">
-            <span className="absolute -top-3 left-2 px-1 bg-bg-primary text-[10px] font-mono text-text-muted uppercase tracking-widest z-10">
+            <span className="absolute -top-3 left-2 px-1 bg-bg-primary text-[10px] font-mono text-orange-500 uppercase tracking-widest z-10">
                 PLAYER 2
             </span>
             <ConsoleSearch
                 consoles={consoles}
                 onSelect={(slug, name) => setP2({ slug, name })}
                 placeholder="SELECT DEVICE..."
-                themeColor="secondary" // In this theme, secondary is just white/neutral
+                themeColor="orange"
                 currentSelection={p2?.name}
                 textColor="white"
             />
@@ -63,9 +63,12 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
       </div>
 
       <button
-        onClick={handleCompare}
-        disabled={!p1 && !p2}
-        className="w-full bg-text-primary hover:bg-color-primary text-bg-primary font-bold font-mono text-sm py-4 uppercase tracking-widest transition-colors disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:bg-text-primary flex items-center justify-center gap-2 border border-transparent rounded-none"
+        onClick={(e) => {
+            e.preventDefault();
+            handleCompare();
+        }}
+        disabled={!p1 || !p2}
+        className="w-full bg-text-primary hover:bg-color-primary text-bg-primary font-bold font-mono text-sm py-4 uppercase tracking-widest transition-colors disabled:opacity-20 disabled:cursor-not-allowed flex items-center justify-center gap-2 border border-transparent rounded-none"
       >
         INITIATE ANALYSIS
         <ArrowRight size={16} />

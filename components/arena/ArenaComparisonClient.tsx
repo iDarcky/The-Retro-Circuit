@@ -20,14 +20,7 @@ interface SelectionState {
 }
 
 // Helper to construct URL
-const constructArenaUrl = (p1?: string | null, v1?: string | null, p2?: string | null, v2?: string | null) => {
-    const params = new URLSearchParams();
-    if (p1) params.set('p1', p1);
-    if (v1) params.set('v1', v1);
-    if (p2) params.set('p2', p2);
-    if (v2) params.set('v2', v2);
-    return `/arena?${params.toString()}`;
-};
+
 
 type ArenaComparisonClientProps = {
     initialConsoleList?: { name: string, slug: string }[];
@@ -109,7 +102,9 @@ export default function ArenaComparisonClient({
         const finalP2 = p2 !== undefined ? p2 : selectionB.slug;
         const finalV2 = v2 !== undefined ? v2 : selectionB.selectedVariant?.slug;
 
-        const url = constructArenaUrl(finalP1, finalV1, finalP2, finalV2);
+        const buildPart = (p: string | null | undefined, v: string | null | undefined) => p ? (v && v !== "base" ? `${p}-${v}` : p) : "select";
+        const url = `/arena/${buildPart(finalP1, finalV1)}-vs-${buildPart(finalP2, finalV2)}`;
+
         router.replace(url, { scroll: false });
     };
 
