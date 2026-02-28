@@ -30,15 +30,15 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
       <div className="flex flex-col lg:flex-row items-center gap-6">
 
         {/* Device A */}
-        <div className={`flex-1 w-full relative transition-all border-l-2 pl-2 ${p1Selected ? 'border-cyan-500' : 'border-cyan-500/30'}`}>
-            <span className={`absolute -top-3 left-4 px-1 bg-bg-primary text-[10px] font-mono uppercase tracking-widest z-10 ${p1Selected ? 'text-cyan-400 font-bold' : 'text-cyan-500/50'}`}>
+        <div className={`flex-1 w-full relative transition-all border-l-2 pl-2 ${p1Selected ? 'border-blue-500' : 'border-blue-500/30'}`}>
+            <span className={`absolute -top-3 left-4 px-1 bg-bg-primary text-[10px] font-mono uppercase tracking-widest z-10 ${p1Selected ? 'text-blue-400 font-bold' : 'text-blue-500/50'}`}>
                 PLAYER 1
             </span>
             <ConsoleSearch
                 consoles={consoles}
                 onSelect={(slug, name) => setP1({ slug, name })}
                 placeholder="SELECT DEVICE..."
-                themeColor="cyan"
+                themeColor="blue"
                 currentSelection={p1?.name}
                 textColor="white"
             />
@@ -50,15 +50,15 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
         </div>
 
         {/* Device B */}
-        <div className={`flex-1 w-full relative transition-all border-l-2 pl-2 ${p2Selected ? 'border-orange-500' : 'border-orange-500/30'}`}>
-            <span className={`absolute -top-3 left-4 px-1 bg-bg-primary text-[10px] font-mono uppercase tracking-widest z-10 ${p2Selected ? 'text-orange-400 font-bold' : 'text-orange-500/50'}`}>
+        <div className={`flex-1 w-full relative transition-all border-l-2 pl-2 ${p2Selected ? 'border-red-500' : 'border-red-500/30'}`}>
+            <span className={`absolute -top-3 left-4 px-1 bg-bg-primary text-[10px] font-mono uppercase tracking-widest z-10 ${p2Selected ? 'text-red-400 font-bold' : 'text-red-500/50'}`}>
                 PLAYER 2
             </span>
             <ConsoleSearch
                 consoles={consoles}
                 onSelect={(slug, name) => setP2({ slug, name })}
                 placeholder="SELECT DEVICE..."
-                themeColor="orange"
+                themeColor="red"
                 currentSelection={p2?.name}
                 textColor="white"
             />
@@ -68,7 +68,7 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
       <button
         onClick={handleCompare}
         disabled={!p1 && !p2}
-        className="w-full bg-white text-black hover:bg-blue-500 hover:text-white font-bold font-pixel text-[10px] md:text-sm py-4 uppercase tracking-widest transition-colors disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-black flex items-center justify-center gap-2 border border-transparent rounded-none mt-2"
+        className="relative z-30 w-full bg-white text-black hover:bg-blue-500 hover:text-white font-bold font-pixel text-[10px] md:text-sm py-4 uppercase tracking-widest transition-colors disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-black flex items-center justify-center gap-2 border border-transparent rounded-none mt-2"
       >
         INITIATE ANALYSIS
         <ArrowRight size={16} />
