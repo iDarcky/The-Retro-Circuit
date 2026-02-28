@@ -158,13 +158,13 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
   return (
     <div className="w-full min-h-screen bg-bg-primary text-text-primary pb-32">
         {/* HEADER */}
-        <div className="relative pt-24 pb-12 px-6 md:px-12 border-b border-white/5 overflow-hidden">
+        <div className="relative pt-24 pb-12 px-6 md:px-12 border-b border-border-strong/5 overflow-hidden">
              {/* Background Effects */}
              <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.05] pointer-events-none"></div>
 
              <div className="max-w-[1800px] mx-auto relative z-10">
                 <div className="flex flex-col items-start gap-4">
-                     <h1 className="text-4xl md:text-6xl font-pixel font-bold tracking-tighter text-white uppercase drop-shadow-lg leading-tight">
+                     <h1 className="text-4xl md:text-6xl font-pixel font-bold tracking-tighter text-text-primary uppercase drop-shadow-lg leading-tight">
                         Console <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">Vault</span><span className="text-violet-500 animate-pulse">_</span>
                      </h1>
                      <p className="text-lg md:text-xl text-zinc-400 max-w-2xl font-light font-mono">
@@ -175,13 +175,13 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
         </div>
 
         {/* CONTROLS BAR */}
-        <div className="sticky top-0 z-50 bg-bg-primary/80 backdrop-blur-xl border-b border-white/10 px-6 md:px-12 py-4">
+        <div className="sticky top-0 z-50 bg-bg-primary/80 backdrop-blur-xl border-b border-border-subtle px-6 md:px-12 py-4">
              <div className="max-w-[1800px] mx-auto flex flex-col md:flex-row gap-4 md:justify-between md:items-center">
                  <div className="flex items-center gap-4 justify-between w-full md:w-auto">
                      <div className="flex items-center gap-2">
                         <button
                             onClick={() => setShowFilters(!showFilters)}
-                            className={`flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-wider border transition-all ${showFilters ? 'bg-white text-black border-white' : 'text-white border-white/20 hover:border-white/50 bg-black/40'}`}
+                            className={`flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-wider border transition-all ${showFilters ? 'bg-white text-black border-border-strong' : 'text-text-primary border-border-normal hover:border-border-strong/50 bg-bg-primary/40'}`}
                         >
                             <SlidersHorizontal size={14} />
                             <span className="hidden md:inline">{showFilters ? 'Hide Filters' : 'Filter Data'}</span>
@@ -201,17 +201,17 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                      </div>
                  </div>
 
-                 <div className="flex items-center gap-2 bg-black/40 p-1 rounded-lg border border-white/10 self-end md:self-auto">
+                 <div className="flex items-center gap-2 bg-bg-primary/40 p-1 rounded-lg border border-border-subtle self-end md:self-auto">
                      <button
                         onClick={() => { setViewMode('swiss'); setPage(1); }}
-                        className={`p-2 rounded transition-colors ${viewMode === 'swiss' ? 'bg-white/10 text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
+                        className={`p-2 rounded transition-colors ${viewMode === 'swiss' ? 'bg-border-subtle text-text-primary' : 'text-zinc-600 hover:text-zinc-400'}`}
                         title="Grid View"
                      >
                         <LayoutGrid size={16} />
                      </button>
                      <button
                         onClick={() => { setViewMode('classic'); setPage(1); }}
-                        className={`p-2 rounded transition-colors ${viewMode === 'classic' ? 'bg-white/10 text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
+                        className={`p-2 rounded transition-colors ${viewMode === 'classic' ? 'bg-border-subtle text-text-primary' : 'text-zinc-600 hover:text-zinc-400'}`}
                         title="List View"
                      >
                         <List size={16} />
@@ -221,12 +221,12 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
         </div>
 
         {/* EXPANDABLE FILTERS */}
-        <div className={`w-full bg-black/40 backdrop-blur-md relative z-40 border-y border-white/10 p-4 mb-8 transition-all duration-300 ${showFilters ? 'block' : 'hidden'}`}>
+        <div className={`w-full bg-bg-primary/40 backdrop-blur-md relative z-40 border-y border-border-subtle p-4 mb-8 transition-all duration-300 ${showFilters ? 'block' : 'hidden'}`}>
             <div className="max-w-[1800px] mx-auto flex flex-col md:flex-row gap-6 items-start md:items-center justify-between flex-wrap">
 
                 {/* Manufacturer */}
               <div className="flex flex-col gap-2">
-                  <label className="text-xs font-mono font-bold uppercase text-white tracking-wider">Manufacturer</label>
+                  <label className="text-xs font-mono font-bold uppercase text-text-primary tracking-wider">Manufacturer</label>
                     <SwissDropdown
                         value={filters.manufacturer_id || ""}
                         onChange={(val) => setFilters({...filters, manufacturer_id: val || null})}
@@ -237,18 +237,18 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                 {/* Timeline */}
                 </div>
               <div className="flex flex-col gap-2">
-                    <label className="text-xs font-mono font-bold uppercase text-white tracking-wider">Timeline</label>
+                    <label className="text-xs font-mono font-bold uppercase text-text-primary tracking-wider">Timeline</label>
                     <div className="flex gap-2 items-center">
                             <input
                             type="number"
-                            className="bg-transparent border-b border-white/20 text-white font-mono text-xs py-1 w-16 text-center focus:border-violet-500 outline-none"
+                            className="bg-transparent border-b border-border-normal text-text-primary font-mono text-xs py-1 w-16 text-center focus:border-violet-500 outline-none"
                             value={filters.minYear}
                             onChange={(e: ChangeEvent<HTMLInputElement>) => setFilters({...filters, minYear: Number(e.target.value)})}
                             />
                             <span className="text-zinc-600">-</span>
                             <input
                             type="number"
-                            className="bg-transparent border-b border-white/20 text-white font-mono text-xs py-1 w-16 text-center focus:border-violet-500 outline-none"
+                            className="bg-transparent border-b border-border-normal text-text-primary font-mono text-xs py-1 w-16 text-center focus:border-violet-500 outline-none"
                             value={filters.maxYear}
                             onChange={(e: ChangeEvent<HTMLInputElement>) => setFilters({...filters, maxYear: Number(e.target.value)})}
                             />
@@ -257,7 +257,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
 
                 {/* Form Factor Toggles */}
               <div className="flex flex-col gap-2">
-                    <label className="text-xs font-mono font-bold uppercase text-white tracking-wider">Form Factor</label>
+                    <label className="text-xs font-mono font-bold uppercase text-text-primary tracking-wider">Form Factor</label>
                     <div className="flex gap-2">
                         {['Horizontal', 'Vertical', 'Clamshell'].map(ff => (
                             <button
@@ -266,7 +266,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                                 className={`text-[10px] px-2 py-1 border transition-colors ${
                                     filters.form_factors.includes(ff)
                                     ? 'border-violet-500 text-violet-400 bg-violet-900/20'
-                                    : 'border-white/10 text-zinc-500 hover:border-white/30'
+                                    : 'border-border-subtle text-zinc-500 hover:border-border-strong/30'
                                 }`}
                             >
                                 {ff.toUpperCase()}
@@ -277,7 +277,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
 
                 {/* Screen Tech Toggles */}
               <div className="flex flex-col gap-2">
-                    <label className="text-xs font-mono font-bold uppercase text-white tracking-wider">Screen Tech</label>
+                    <label className="text-xs font-mono font-bold uppercase text-text-primary tracking-wider">Screen Tech</label>
                     <div className="flex gap-2">
                         {['OLED', 'IPS'].map(pt => (
                             <button
@@ -286,7 +286,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                                 className={`text-[10px] px-2 py-1 border transition-colors ${
                                     filters.panel_types.includes(pt)
                                     ? 'border-emerald-500 text-emerald-400 bg-emerald-900/20'
-                                    : 'border-white/10 text-zinc-500 hover:border-white/30'
+                                    : 'border-border-subtle text-zinc-500 hover:border-border-strong/30'
                                 }`}
                             >
                                 {pt}
@@ -305,7 +305,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                         panel_types: [],
                         manufacturer_id: null
                     })}
-                    className="text-[10px] font-mono text-zinc-500 hover:text-white underline decoration-zinc-700 hover:decoration-white underline-offset-4"
+                    className="text-[10px] font-mono text-zinc-500 hover:text-text-primary underline decoration-zinc-700 hover:decoration-white underline-offset-4"
                 >
                     RESET SIGNAL
                 </button>
@@ -317,7 +317,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
             {loading ? <RetroLoader /> : (
                 <>
                     {paginatedConsoles.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-32 border border-dashed border-white/10 rounded-xl bg-white/[0.02]">
+                        <div className="flex flex-col items-center justify-center py-32 border border-dashed border-border-subtle rounded-xl bg-bg-tertiary">
                             <Search className="w-12 h-12 text-zinc-700 mb-4" />
                             <p className="font-mono text-zinc-500">NO SIGNAL DETECTED.</p>
                             <button onClick={() => setFilters({
@@ -347,7 +347,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                                         <Link
                                             href={`/consoles/${console.slug}`}
                                             key={console.id}
-                                            className="group relative flex flex-col bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-violet-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-violet-500/10 rounded-xl overflow-hidden"
+                                            className="group relative flex flex-col bg-bg-tertiary hover:bg-white/[0.04] border border-border-strong/5 hover:border-violet-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-violet-500/10 rounded-xl overflow-hidden"
                                         >
                                             <div className="aspect-square p-6 flex items-center justify-center relative bg-gradient-to-b from-transparent to-black/20">
                                                  {console.image_url ? (
@@ -368,12 +368,12 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                                                  <div className="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-emerald-500/50 group-hover:bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.2)] transition-colors"></div>
                                             </div>
 
-                                            <div className="p-4 border-t border-white/5 bg-white/[0.01]">
+                                            <div className="p-4 border-t border-border-strong/5 bg-bg-secondary">
                                                 <div className="flex justify-between items-start mb-1">
                                                     <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">{console.manufacturer?.name}</span>
                                                     <span className="text-[10px] font-mono text-zinc-600">{releaseDisplay.split(' ')[0]}</span>
                                                 </div>
-                                                <h3 className="text-sm font-bold text-white leading-tight group-hover:text-violet-300 transition-colors truncate">
+                                                <h3 className="text-sm font-bold text-text-primary leading-tight group-hover:text-violet-300 transition-colors truncate">
                                                     {console.name}
                                                 </h3>
                                             </div>
@@ -385,7 +385,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                                         <Link
                                             href={`/consoles/${console.slug}`}
                                             key={console.id}
-                                            className="group block bg-black border border-zinc-800 hover:border-violet-500 transition-all relative overflow-hidden"
+                                            className="group block bg-bg-primary border border-zinc-800 hover:border-violet-500 transition-all relative overflow-hidden"
                                         >
                                             <div className="flex flex-row h-32">
                                                 <div className="w-1/3 bg-zinc-900/50 relative flex items-center justify-center p-2 border-r border-zinc-800">
@@ -405,7 +405,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                                                                 </span>
                                                             )}
                                                         </div>
-                                                        <h3 className="font-bold text-lg text-white group-hover:text-violet-400 mt-1">{console.name}</h3>
+                                                        <h3 className="font-bold text-lg text-text-primary group-hover:text-violet-400 mt-1">{console.name}</h3>
                                                     </div>
                                                     <div className="flex justify-between items-end border-t border-zinc-800 pt-2 mt-2">
                                                         <span className="text-[10px] font-mono text-zinc-500">{releaseDisplay}</span>
@@ -422,7 +422,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
 
                     {/* Pagination */}
                     {totalPages > 1 && (
-                        <div className="flex justify-center items-center gap-4 py-16 border-t border-white/5 mt-16">
+                        <div className="flex justify-center items-center gap-4 py-16 border-t border-border-strong/5 mt-16">
                             <SwissButton
                                 variant="secondary"
                                 onClick={() => setPage(p => Math.max(1, p - 1))}

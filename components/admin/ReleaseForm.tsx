@@ -113,7 +113,7 @@ export const ReleaseForm = ({ initialData, onSuccess, onError }: ReleaseFormProp
                         type="text"
                         value={formData.version}
                         onChange={e => setFormData({ ...formData, version: e.target.value })}
-                        className="w-full bg-black border border-gray-800 p-2 font-mono text-sm text-white focus:border-emerald-500 outline-none uppercase"
+                        className="w-full bg-bg-primary border border-gray-800 p-2 font-mono text-sm text-text-primary focus:border-emerald-500 outline-none uppercase"
                         placeholder="e.g. 0.5.0"
                     />
                 </div>
@@ -124,7 +124,7 @@ export const ReleaseForm = ({ initialData, onSuccess, onError }: ReleaseFormProp
                         type="date"
                         value={formData.release_date}
                         onChange={e => setFormData({ ...formData, release_date: e.target.value })}
-                        className="w-full bg-black border border-gray-800 p-2 font-mono text-sm text-white focus:border-emerald-500 outline-none uppercase"
+                        className="w-full bg-bg-primary border border-gray-800 p-2 font-mono text-sm text-text-primary focus:border-emerald-500 outline-none uppercase"
                     />
                 </div>
             </div>
@@ -135,7 +135,7 @@ export const ReleaseForm = ({ initialData, onSuccess, onError }: ReleaseFormProp
                     type="text"
                     value={formData.title}
                     onChange={e => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full bg-black border border-gray-800 p-2 font-mono text-sm text-white focus:border-emerald-500 outline-none uppercase"
+                    className="w-full bg-bg-primary border border-gray-800 p-2 font-mono text-sm text-text-primary focus:border-emerald-500 outline-none uppercase"
                     placeholder="THE UI UPDATE"
                 />
             </div>
@@ -145,14 +145,14 @@ export const ReleaseForm = ({ initialData, onSuccess, onError }: ReleaseFormProp
                 <textarea
                     value={formData.description}
                     onChange={e => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full bg-black border border-gray-800 p-2 font-mono text-sm text-white focus:border-emerald-500 outline-none h-32 uppercase"
+                    className="w-full bg-bg-primary border border-gray-800 p-2 font-mono text-sm text-text-primary focus:border-emerald-500 outline-none h-32 uppercase"
                     placeholder="Brief summary of changes..."
                 />
             </div>
 
             <div className="space-y-2">
                  <label className="text-[10px] font-mono uppercase tracking-widest text-gray-500">Included Features (Completed Items)</label>
-                 <div className="bg-black border border-gray-800 p-4 max-h-48 overflow-y-auto space-y-2">
+                 <div className="bg-bg-primary border border-gray-800 p-4 max-h-48 overflow-y-auto space-y-2">
                     {availableFeatures.length === 0 ? (
                         <div className="text-gray-600 text-xs font-mono">NO ASSIGNABLE FEATURES FOUND</div>
                     ) : (
@@ -162,10 +162,10 @@ export const ReleaseForm = ({ initialData, onSuccess, onError }: ReleaseFormProp
                                     type="checkbox"
                                     checked={selectedFeatureIds.has(feature.id)}
                                     onChange={() => toggleFeature(feature.id)}
-                                    className="accent-emerald-500 bg-black border-gray-700"
+                                    className="accent-emerald-500 bg-bg-primary border-gray-700"
                                 />
                                 <div className="flex-1">
-                                    <div className="text-xs font-mono text-gray-300 group-hover:text-white uppercase">{feature.title}</div>
+                                    <div className="text-xs font-mono text-gray-300 group-hover:text-text-primary uppercase">{feature.title}</div>
                                     <div className="text-[9px] font-mono text-gray-600 flex gap-2">
                                         <span>{feature.category}</span>
                                     </div>
@@ -182,7 +182,7 @@ export const ReleaseForm = ({ initialData, onSuccess, onError }: ReleaseFormProp
                     id="is_published"
                     checked={formData.is_published}
                     onChange={e => setFormData({ ...formData, is_published: e.target.checked })}
-                    className="w-4 h-4 accent-emerald-500 bg-black border-gray-700"
+                    className="w-4 h-4 accent-emerald-500 bg-bg-primary border-gray-700"
                 />
                 <label htmlFor="is_published" className="text-xs font-mono text-emerald-500 uppercase tracking-widest cursor-pointer select-none">
                     PUBLISH RELEASE IMMEDIATELY

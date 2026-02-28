@@ -123,7 +123,7 @@ export const EmulationForm: FC<EmulationFormProps> = ({ variantId, onSave }) => 
     if (loading) return <div className="p-8 text-center font-mono text-secondary animate-pulse">LOADING PROFILE...</div>;
 
     return (
-        <div className="bg-black/80 border border-border-normal p-6 animate-fadeIn">
+        <div className="bg-bg-primary/80 border border-border-normal p-6 animate-fadeIn">
             {message && <div className={`mb-4 p-2 text-xs font-mono border ${message.includes('ERROR') ? 'border-accent text-accent' : 'border-secondary text-secondary'}`}>{message}</div>}
 
             {SYSTEM_TIERS.map((tier) => (
@@ -137,7 +137,7 @@ export const EmulationForm: FC<EmulationFormProps> = ({ variantId, onSave }) => 
                                     <label className="block text-[10px] font-mono text-gray-500 uppercase mb-1">{sys.label}</label>
                                     <SwissDropdown
                                     className="w-full"
-                                    buttonClassName={`bg-black border border-gray-700 p-2 text-xs font-mono outline-none focus:border-secondary h-[34px] flex justify-between items-center ${getColorForRating(currentValue)}`}
+                                    buttonClassName={`bg-bg-primary border border-gray-700 p-2 text-xs font-mono outline-none focus:border-secondary h-[34px] flex justify-between items-center ${getColorForRating(currentValue)}`}
                                     value={currentValue}
                                     onChange={(val) => handleChange(sys.key, val as string)}
                                     options={RATINGS.map(r => ({ label: r, value: r }))}
@@ -153,7 +153,7 @@ export const EmulationForm: FC<EmulationFormProps> = ({ variantId, onSave }) => 
             <div className="mb-6">
                 <label className="block text-[10px] font-mono text-gray-500 uppercase mb-1">ANALYST SUMMARY / NOTES</label>
                 <textarea
-                    className="w-full bg-black border border-gray-700 p-3 text-xs font-mono text-white outline-none focus:border-secondary min-h-[100px]"
+                    className="w-full bg-bg-primary border border-gray-700 p-3 text-xs font-mono text-text-primary outline-none focus:border-secondary min-h-[100px]"
                     placeholder="Enter performance notes..."
                     value={profile.summary_text || ''}
                     onChange={(e) => handleChange('summary_text', e.target.value)}
@@ -168,7 +168,7 @@ export const EmulationForm: FC<EmulationFormProps> = ({ variantId, onSave }) => 
                          <label className="block text-[10px] font-mono text-gray-500 uppercase mb-1">Data Source / Reviewer</label>
                          <input
                             type="text"
-                            className="w-full bg-black border border-gray-700 p-2 text-xs font-mono text-white outline-none focus:border-secondary"
+                            className="w-full bg-bg-primary border border-gray-700 p-2 text-xs font-mono text-text-primary outline-none focus:border-secondary"
                             placeholder="e.g., Retro Dodo Review, Self-tested"
                             value={profile.source || ''}
                             onChange={(e) => handleChange('source', e.target.value)}
@@ -178,7 +178,7 @@ export const EmulationForm: FC<EmulationFormProps> = ({ variantId, onSave }) => 
                         <label className="block text-[10px] font-mono text-gray-500 uppercase mb-1">Last Verified Date</label>
                         <input
                             type="date"
-                            className="w-full bg-black border border-gray-700 p-2 text-xs font-mono text-white outline-none focus:border-secondary"
+                            className="w-full bg-bg-primary border border-gray-700 p-2 text-xs font-mono text-text-primary outline-none focus:border-secondary"
                             value={profile.last_verified instanceof Date ? profile.last_verified.toISOString().split('T')[0] : (profile.last_verified || '')}
                             onChange={(e) => handleChange('last_verified', e.target.value)}
                         />

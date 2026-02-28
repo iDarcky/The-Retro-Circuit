@@ -45,24 +45,24 @@ export default function ProfileClient({ initialUser, initialAdminStatus }: Profi
                         </div>
                         <button
                             onClick={() => setEditingAvatar(!editingAvatar)}
-                            className="absolute bottom-0 right-0 bg-primary text-black text-xs px-2 py-1 font-bold border border-white hover:bg-white transition-colors"
+                            className="absolute bottom-0 right-0 bg-primary text-black text-xs px-2 py-1 font-bold border border-border-strong hover:bg-white transition-colors"
                         >
                             EDIT
                         </button>
                     </div>
 
                     {editingAvatar && (
-                        <div className="mb-4 animate-fadeIn bg-black p-2 border border-border-normal">
+                        <div className="mb-4 animate-fadeIn bg-bg-primary p-2 border border-border-normal">
                             <AvatarSelector selectedId={avatarId} onSelect={handleAvatarUpdate} />
                         </div>
                     )}
 
-                    <h2 className="text-xl font-pixel text-white mb-1 truncate px-2">{user.user_metadata?.username || 'User'}</h2>
+                    <h2 className="text-xl font-pixel text-text-primary mb-1 truncate px-2">{user.user_metadata?.username || 'User'}</h2>
                     <div className="text-xs font-mono text-gray-500 mb-6 truncate px-2">{user.email}</div>
 
                     {isAdmin && (
                         <Link href="/admin">
-                            <SwissButton variant="secondary" className="w-full text-xs mb-3 border-accent text-accent hover:bg-accent hover:text-white">
+                            <SwissButton variant="secondary" className="w-full text-xs mb-3 border-accent text-accent hover:bg-accent hover:text-text-primary">
                                 ACCESS ADMIN PANEL
                             </SwissButton>
                         </Link>

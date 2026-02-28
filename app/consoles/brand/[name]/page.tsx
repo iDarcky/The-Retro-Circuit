@@ -74,13 +74,13 @@ export default async function ManufacturerDetailPage(props: Props) {
                 <div className="flex flex-col md:flex-row justify-between items-start border-b border-gray-800 pb-6 mb-6 gap-6">
                     <div className="flex-1 w-full">
                         <div className="flex flex-wrap gap-2 mb-2 items-center justify-between md:justify-start">
-                             <Link href="/console" className="font-mono text-xs text-gray-500 hover:text-white">&lt; HARDWARE DB</Link>
+                             <Link href="/console" className="font-mono text-xs text-gray-500 hover:text-text-primary">&lt; HARDWARE DB</Link>
                              <div className={`font-mono text-xs border inline-block px-2 py-0.5 ${theme.color}`}>CONFIDENTIAL</div>
                         </div>
                         
                         <div className="flex items-center gap-4 mt-4">
                             {profile.image_url && (
-                                <div className="bg-black/20 p-2 border border-gray-700 rounded md:hidden">
+                                <div className="bg-bg-primary/20 p-2 border border-gray-700 rounded md:hidden">
                                      <img src={profile.image_url} className="h-12 w-auto object-contain" />
                                 </div>
                             )}
@@ -90,7 +90,7 @@ export default async function ManufacturerDetailPage(props: Props) {
                         </div>
 
                         {profile.website && (
-                             <a href={profile.website} target="_blank" className="font-mono text-xs text-gray-500 hover:text-white mt-2 inline-block break-all">
+                             <a href={profile.website} target="_blank" className="font-mono text-xs text-gray-500 hover:text-text-primary mt-2 inline-block break-all">
                                  [ {profile.website.replace('https://', '').replace('http://', '')} ]
                              </a>
                         )}
@@ -102,11 +102,11 @@ export default async function ManufacturerDetailPage(props: Props) {
                         )}
                         <div className="flex flex-col md:items-end">
                             <div className="font-mono text-gray-500 text-[10px] uppercase">FOUNDED</div>
-                            <div className="font-pixel text-white text-lg">{profile.founded_year}</div>
+                            <div className="font-pixel text-text-primary text-lg">{profile.founded_year}</div>
                         </div>
                         <div className="flex flex-col md:items-end">
                             <div className="font-mono text-gray-500 text-[10px] uppercase">HQ ORIGIN</div>
-                            <div className="font-pixel text-white text-lg">{profile.country}</div>
+                            <div className="font-pixel text-text-primary text-lg">{profile.country}</div>
                         </div>
                     </div>
                 </div>
@@ -119,12 +119,12 @@ export default async function ManufacturerDetailPage(props: Props) {
                         </p>
                     </div>
                     
-                    <div className={`bg-black/30 p-6 border border-gray-800 h-fit`}>
+                    <div className={`bg-bg-primary/30 p-6 border border-gray-800 h-fit`}>
                         <div className="mb-0">
                             <h4 className="font-pixel text-xs text-gray-500 mb-4 border-b border-gray-800 pb-2">KEY FRANCHISES</h4>
                             <div className="flex flex-wrap gap-2">
                                 {(profile.key_franchises || "").split(',').map((f: string) => (
-                                    <span key={f.trim()} className={`font-mono text-xs border px-2 py-1 ${theme.color} bg-black/50`}>
+                                    <span key={f.trim()} className={`font-mono text-xs border px-2 py-1 ${theme.color} bg-bg-primary/50`}>
                                         {f.trim()}
                                     </span>
                                 ))}
@@ -149,7 +149,7 @@ export default async function ManufacturerDetailPage(props: Props) {
                                 key={console.id}
                                 className={`group block border border-border-normal bg-bg-primary relative overflow-hidden transition-all ${theme.hover}`}
                             >
-                                <div className="h-32 bg-black/40 flex items-center justify-center p-4 relative">
+                                <div className="h-32 bg-bg-primary/40 flex items-center justify-center p-4 relative">
                                     {console.image_url ? (
                                         <img src={console.image_url} className="max-h-full object-contain" />
                                     ) : (
@@ -161,7 +161,7 @@ export default async function ManufacturerDetailPage(props: Props) {
                                         <span>{formatReleaseDate(console.specs?.release_date, console.specs?.release_date_precision) || 'TBA'}</span>
                                         <span>{console.generation}</span>
                                     </div>
-                                    <h3 className="font-pixel text-xs text-white group-hover:text-secondary truncate">
+                                    <h3 className="font-pixel text-xs text-text-primary group-hover:text-secondary truncate">
                                         {console.name}
                                     </h3>
                                 </div>

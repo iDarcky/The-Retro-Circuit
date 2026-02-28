@@ -118,13 +118,13 @@ export default function RoadmapView({ releases, upcomingItems, isAdmin }: Roadma
       )}
 
       {/* Tab Switcher */}
-      <div className="flex border-b border-white/10 mb-8">
+      <div className="flex border-b border-border-subtle mb-8">
         <button
             onClick={() => setActiveTab('upcoming')}
             className={`px-6 py-3 text-sm font-mono uppercase tracking-widest border-b-2 transition-all duration-300 ${
                 activeTab === 'upcoming'
                 ? 'border-blue-500 text-blue-400 bg-blue-500/5'
-                : 'border-transparent text-text-secondary hover:text-white hover:bg-white/5'
+                : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
             }`}
         >
             Incoming Transmissions
@@ -135,7 +135,7 @@ export default function RoadmapView({ releases, upcomingItems, isAdmin }: Roadma
             className={`px-6 py-3 text-sm font-mono uppercase tracking-widest border-b-2 transition-all duration-300 ${
                 activeTab === 'changelog'
                 ? 'border-emerald-500 text-emerald-400 bg-emerald-500/5'
-                : 'border-transparent text-text-secondary hover:text-white hover:bg-white/5'
+                : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
             }`}
         >
             Changelog
@@ -176,7 +176,7 @@ export default function RoadmapView({ releases, upcomingItems, isAdmin }: Roadma
                     <div className="flex items-center gap-3 mb-4">
                         <div className="h-2 w-2 bg-zinc-500 rounded-full opacity-50"></div>
                         <h3 className="text-sm font-mono uppercase tracking-widest text-zinc-400">Planned</h3>
-                         <div className="h-px bg-white/10 flex-1"></div>
+                         <div className="h-px bg-border-subtle flex-1"></div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {plannedItems.map((item) => (
@@ -194,7 +194,7 @@ export default function RoadmapView({ releases, upcomingItems, isAdmin }: Roadma
             )}
 
             {upcomingItems.length === 0 && (
-                 <div className="col-span-full py-24 text-center text-text-muted font-mono uppercase tracking-widest opacity-50 border border-dashed border-white/10">
+                 <div className="col-span-full py-24 text-center text-text-muted font-mono uppercase tracking-widest opacity-50 border border-dashed border-border-subtle">
                     No Pending Features
                 </div>
             )}
@@ -202,7 +202,7 @@ export default function RoadmapView({ releases, upcomingItems, isAdmin }: Roadma
       ) : (
           <div className="relative animate-fade-in">
               {/* Continuous Timeline Line */}
-              <div className="absolute left-4 top-4 bottom-4 w-px bg-white/10 md:left-1/2 md:-ml-[0.5px]"></div>
+              <div className="absolute left-4 top-4 bottom-4 w-px bg-border-subtle md:left-1/2 md:-ml-[0.5px]"></div>
 
               <div className="space-y-12">
                   {releases.map((release, index) => (
@@ -222,11 +222,11 @@ export default function RoadmapView({ releases, upcomingItems, isAdmin }: Roadma
 
                                {/* Card - Added min-w-0 */}
                                <div className="flex-1 w-full min-w-0 pl-12 md:pl-0">
-                                   <div className="bg-white/[0.02] border border-white/10 p-6 md:p-8 hover:border-emerald-500/30 transition-colors relative overflow-hidden group/card">
+                                   <div className="bg-bg-tertiary border border-border-subtle p-6 md:p-8 hover:border-emerald-500/30 transition-colors relative overflow-hidden group/card">
 
                                         {/* Admin Controls for Release */}
                                         {isAdmin && (
-                                            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover/card:opacity-100 transition-opacity bg-black/80 p-1 rounded border border-white/10 backdrop-blur-sm z-20">
+                                            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover/card:opacity-100 transition-opacity bg-bg-primary/80 p-1 rounded border border-border-subtle backdrop-blur-sm z-20">
                                                 <button
                                                     onClick={() => handleOpenEditRelease(release)}
                                                     className="p-1 hover:text-blue-400 hover:bg-blue-500/20 rounded transition-colors"
@@ -246,7 +246,7 @@ export default function RoadmapView({ releases, upcomingItems, isAdmin }: Roadma
 
                                         <div className="flex flex-col gap-2 mb-6">
                                             <div className="flex items-center gap-3">
-                                                <span className="text-xl font-bold font-pixel text-white">v{release.version}</span>
+                                                <span className="text-xl font-bold font-pixel text-text-primary">v{release.version}</span>
                                                 <span className={`text-[10px] border px-2 py-0.5 rounded-full uppercase tracking-widest ${release.is_published ? 'text-emerald-500 border-emerald-500/30 bg-emerald-500/5' : 'text-amber-500 border-amber-500/30 bg-amber-500/5'}`}>
                                                     {release.is_published ? 'Released' : 'Draft'}
                                                 </span>
@@ -262,14 +262,14 @@ export default function RoadmapView({ releases, upcomingItems, isAdmin }: Roadma
                                         </div>
 
                                         {release.description && (
-                                            <p className="text-zinc-400 text-sm leading-relaxed mb-6 font-light border-l-2 border-white/5 pl-4">
+                                            <p className="text-zinc-400 text-sm leading-relaxed mb-6 font-light border-l-2 border-border-strong/5 pl-4">
                                                 {release.description}
                                             </p>
                                         )}
 
                                         {release.roadmap_features && release.roadmap_features.length > 0 && (
                                             <div className="space-y-2">
-                                                <h4 className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-3 border-b border-white/5 pb-1">Included Updates</h4>
+                                                <h4 className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-3 border-b border-border-strong/5 pb-1">Included Updates</h4>
                                                 <ul className="space-y-2">
                                                     {release.roadmap_features.map(feat => (
                                                         <li key={feat.id} className="flex items-start gap-2 text-xs text-zinc-300 font-mono">
@@ -289,7 +289,7 @@ export default function RoadmapView({ releases, upcomingItems, isAdmin }: Roadma
               </div>
 
               {releases.length === 0 && (
-                 <div className="py-24 text-center text-text-muted font-mono uppercase tracking-widest opacity-50 border border-dashed border-white/10">
+                 <div className="py-24 text-center text-text-muted font-mono uppercase tracking-widest opacity-50 border border-dashed border-border-subtle">
                     No Release History Logged
                 </div>
               )}

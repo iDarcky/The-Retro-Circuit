@@ -39,7 +39,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
 
     return createPortal(
         <div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fadeIn p-4"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-bg-primary/80 backdrop-blur-sm animate-fadeIn p-4"
             onClick={onClose}
         >
             <div
@@ -47,13 +47,13 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="flex justify-between items-center bg-black border-b border-secondary p-4 sticky top-0 z-10 backdrop-blur-md">
+                <div className="flex justify-between items-center bg-bg-primary border-b border-secondary p-4 sticky top-0 z-10 backdrop-blur-md">
                     <h2 className="font-pixel text-sm md:text-lg text-secondary uppercase tracking-widest drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]">
                         {title}
                     </h2>
                     <button
                         onClick={onClose}
-                        className="text-secondary hover:text-white font-mono text-xl leading-none px-4 py-1 border border-transparent hover:border-secondary transition-all"
+                        className="text-secondary hover:text-text-primary font-mono text-xl leading-none px-4 py-1 border border-transparent hover:border-secondary transition-all"
                         aria-label="Close"
                     >
                         [ESC]

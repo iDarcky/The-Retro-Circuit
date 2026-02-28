@@ -10,7 +10,7 @@ interface TechnicalReferenceProps {
 const SpecRow = ({ label, value, unit }: { label: string, value: string | number | undefined | null, unit?: string }) => {
     if (value === undefined || value === null || value === '') return null;
     return (
-        <div className="grid grid-cols-[120px_1fr] sm:grid-cols-[160px_1fr] border-b border-white/10 py-2 last:border-0 hover:bg-white/[0.02] transition-colors">
+        <div className="grid grid-cols-[120px_1fr] sm:grid-cols-[160px_1fr] border-b border-border-subtle py-2 last:border-0 hover:bg-bg-tertiary transition-colors">
             <span className="text-[10px] text-gray-500 uppercase tracking-widest pt-0.5">{label}</span>
             <span className="font-mono text-xs sm:text-sm text-gray-300 break-words">
                 {value} {unit && <span className="text-[10px] text-gray-500 ml-0.5">{unit}</span>}
@@ -134,7 +134,7 @@ export default function TechnicalReference({ mergedSpecs }: TechnicalReferencePr
                     <SpecRow label="Touchscreen" value={mergedSpecs.touchscreen ? 'YES' : 'NO'} />
                     {mergedSpecs.second_screen_size && (
                         <>
-                             <div className="py-2 border-b border-white/10 text-[10px] font-mono text-gray-500 uppercase mt-2">Secondary Display</div>
+                             <div className="py-2 border-b border-border-subtle text-[10px] font-mono text-gray-500 uppercase mt-2">Secondary Display</div>
                              <SpecRow label="Size 2" value={mergedSpecs.second_screen_size} unit='"' />
                              <SpecRow label="Res 2" value={`${mergedSpecs.second_screen_resolution_x} x ${mergedSpecs.second_screen_resolution_y}`} />
                         </>

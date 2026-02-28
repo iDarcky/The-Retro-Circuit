@@ -31,8 +31,8 @@ export const ArenaRivals = ({ currentA, currentB, allConsoles }: ArenaRivalsProp
     if (!rivals.length) return null;
 
     return (
-        <div className="w-full mt-16 mb-8 border-t border-white/10 pt-8 animate-fadeIn">
-            <h3 className="font-pixel text-center text-white/50 mb-6 text-sm uppercase tracking-widest">
+        <div className="w-full mt-16 mb-8 border-t border-border-subtle pt-8 animate-fadeIn">
+            <h3 className="font-pixel text-center text-text-muted mb-6 text-sm uppercase tracking-widest">
                 Potential Rivals
             </h3>
 
@@ -41,14 +41,14 @@ export const ArenaRivals = ({ currentA, currentB, allConsoles }: ArenaRivalsProp
                     <Link 
                         key={rival.slug}
                         href={`/arena?p1=${currentA || rival.slug}&p2=${rival.slug}`} // Compare Rival vs Current A (or Rival vs Rival if empty)
-                        className="group border border-white/5 bg-white/5 hover:bg-white/10 p-4 flex items-center justify-between transition-all hover:border-white/20"
+                        className="group border border-border-strong/5 bg-bg-tertiary hover:bg-border-subtle p-4 flex items-center justify-between transition-all hover:border-border-normal"
                     >
                         <div className="flex flex-col">
                             <span className="font-mono text-xs text-blue-400 group-hover:text-blue-300 transition-colors uppercase">CHALLENGER</span>
-                            <span className="font-pixel text-sm text-white truncate max-w-[150px]">{rival.name}</span>
+                            <span className="font-pixel text-sm text-text-primary truncate max-w-[150px]">{rival.name}</span>
                         </div>
-                        <div className="text-white/20 group-hover:text-white transition-colors">
-                            <span className="text-xs font-mono border border-white/20 px-2 py-1 rounded-sm uppercase">VS</span>
+                        <div className="text-border-normal group-hover:text-text-primary transition-colors">
+                            <span className="text-xs font-mono border border-border-normal px-2 py-1 rounded-sm uppercase">VS</span>
                         </div>
                     </Link>
                 ))}

@@ -1,16 +1,15 @@
-export const TechBadge = ({ label, active, color = "bg-violet-500" }: { label: string, active?: boolean | string | null, color?: string }) => {
-    // If active is undefined/null/empty, don't show the badge at all
-    if (active === undefined || active === null || active === '') return null;
 
-    // Strict boolean check because DB might return "false" string which is truthy in JS
-    const isActive = active === true || active === 'true';
+
+export const TechBadge = ({ label, active, color = "bg-violet-500" }: { label: string, active?: boolean, color?: string }) => {
+    // If explicitly provided active state, use it, otherwise default to active for visual presence
+    const isActive = active !== undefined ? active : true;
 
     return (
         <div className={`
-            inline-flex items-center gap-2 px-3 py-1 border text-[10px] font-mono uppercase tracking-tight
-            ${isActive ? 'border-white/10 bg-white/5 text-white' : 'border-white/5 text-gray-500 bg-transparent'}
+            inline-flex items-center gap-2 px-3 py-1 border-2 text-[10px] font-bold uppercase tracking-widest font-sans
+            ${isActive ? 'border-border-strong bg-bg-secondary text-text-primary' : 'border-border-subtle text-text-muted bg-transparent'}
         `}>
-            <span className={`w-2 h-2 rounded-none ${isActive ? color : 'bg-gray-800'}`}></span>
+            <span className={`w-3 h-3 rounded-none border border-border-strong ${isActive ? color : 'bg-transparent'}`}></span>
             {label}
         </div>
     );

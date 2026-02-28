@@ -54,7 +54,7 @@ export default async function LandingPage({ version }: LandingPageProps) {
               System Online // {version}
             </div>
 
-            <h1 className="flex flex-col text-[7vw] md:text-[5vw] lg:text-[3vw] leading-[1.1] font-pixel font-bold tracking-tighter uppercase mb-4 md:mb-8 text-white drop-shadow-2xl max-w-full break-words">
+            <h1 className="flex flex-col text-[7vw] md:text-[5vw] lg:text-[3vw] leading-[1.1] font-pixel font-bold tracking-tighter uppercase mb-4 md:mb-8 text-text-primary drop-shadow-2xl max-w-full break-words">
               <span className="whitespace-nowrap">WELCOME TO</span>
               <span className="whitespace-nowrap">THE CIRCUIT<span className="text-violet-500 animate-pulse">_</span></span>
             </h1>
@@ -70,14 +70,14 @@ export default async function LandingPage({ version }: LandingPageProps) {
                 <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-violet-500 transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-violet-400/50"></div>
                 <Link
                   href="/consoles"
-                  className="relative z-10 inline-flex items-center gap-3 bg-violet-600 text-white font-mono text-sm md:text-base px-8 py-4 hover:brightness-110 transition-all uppercase tracking-widest border border-violet-500 shadow-lg shadow-violet-500/20 w-full justify-center"
+                  className="relative z-10 inline-flex items-center gap-3 bg-violet-600 text-text-primary font-mono text-sm md:text-base px-8 py-4 hover:brightness-110 transition-all uppercase tracking-widest border border-violet-500 shadow-lg shadow-violet-500/20 w-full justify-center"
                 >
                   Browse Consoles <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
               <Link
                 href="/about"
-                className="inline-flex items-center gap-3 bg-transparent text-text-secondary font-mono text-sm md:text-base px-8 py-4 hover:text-white hover:bg-white/5 transition-all uppercase tracking-widest border border-border-normal hover:border-white w-full md:w-auto justify-center"
+                className="inline-flex items-center gap-3 bg-transparent text-text-secondary font-mono text-sm md:text-base px-8 py-4 hover:text-text-primary hover:bg-bg-tertiary transition-all uppercase tracking-widest border border-border-normal hover:border-border-strong w-full md:w-auto justify-center"
               >
                 Manifesto
               </Link>

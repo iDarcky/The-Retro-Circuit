@@ -46,7 +46,7 @@ export const SignalManager: React.FC<SignalManagerProps> = ({ signals }) => {
     <div className="w-full max-w-4xl mx-auto p-6 space-y-8">
 
       {/* Create Signal Form */}
-      <div className="bg-black/80 border border-white/10 p-6">
+      <div className="bg-bg-primary/80 border border-border-subtle p-6">
         <h2 className="text-xl font-pixel text-emerald-500 mb-6 flex items-center gap-2">
            <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
            TRANSMIT SIGNAL
@@ -58,7 +58,7 @@ export const SignalManager: React.FC<SignalManagerProps> = ({ signals }) => {
              <textarea
                value={content}
                onChange={(e) => setContent(e.target.value)}
-               className="w-full bg-black border border-white/20 p-3 text-sm font-mono text-emerald-400 placeholder:text-emerald-900/50 focus:border-emerald-500 focus:outline-none h-24"
+               className="w-full bg-bg-primary border border-border-normal p-3 text-sm font-mono text-emerald-400 placeholder:text-emerald-900/50 focus:border-emerald-500 focus:outline-none h-24"
                placeholder="> ENTER_TRANSMISSION..."
                required
              />
@@ -78,7 +78,7 @@ export const SignalManager: React.FC<SignalManagerProps> = ({ signals }) => {
                  ]}
                  labelPrefix="" inverted={false}
                  className="w-full"
-                 buttonClassName="bg-black border border-white/20 p-3 text-sm font-mono text-white focus:border-emerald-500 focus:outline-none h-[46px] flex justify-between items-center"
+                 buttonClassName="bg-bg-primary border border-border-normal p-3 text-sm font-mono text-text-primary focus:border-emerald-500 focus:outline-none h-[46px] flex justify-between items-center"
                />
              </div>
 
@@ -96,12 +96,12 @@ export const SignalManager: React.FC<SignalManagerProps> = ({ signals }) => {
       </div>
 
       {/* Signal List */}
-      <div className="bg-black/40 border border-white/5 p-6">
+      <div className="bg-bg-primary/40 border border-border-strong/5 p-6">
         <h3 className="text-sm font-mono text-gray-500 uppercase mb-4">Transmission Log</h3>
 
         <div className="space-y-2">
           {signals.map((signal) => (
-            <div key={signal.id} className={`flex items-start justify-between p-4 border ${signal.is_active ? 'border-emerald-500/30 bg-emerald-950/10' : 'border-white/5 bg-black/20 opacity-50'}`}>
+            <div key={signal.id} className={`flex items-start justify-between p-4 border ${signal.is_active ? 'border-emerald-500/30 bg-emerald-950/10' : 'border-border-strong/5 bg-bg-primary/20 opacity-50'}`}>
 
               <div className="flex-1">
                  <div className="flex items-center gap-2 mb-1">

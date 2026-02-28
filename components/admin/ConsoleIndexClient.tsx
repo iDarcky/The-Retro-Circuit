@@ -78,7 +78,7 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                         CONSOLE INDEX
                     </h1>
                     <div className="flex gap-4">
-                        <Link href="/admin" className="font-mono text-xs text-gray-500 hover:text-white hover:underline">
+                        <Link href="/admin" className="font-mono text-xs text-gray-500 hover:text-text-primary hover:underline">
                             &lt; ROOT TERMINAL
                         </Link>
                         <p className="font-mono text-xs text-gray-500 tracking-widest">
@@ -104,7 +104,7 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                             className={`font-mono text-xs px-3 py-1 border transition-colors uppercase tracking-wider ${
                                 filter === f
                                 ? 'bg-secondary text-black border-secondary font-bold'
-                                : 'bg-black text-gray-500 border-gray-800 hover:text-white hover:border-gray-600'
+                                : 'bg-bg-primary text-gray-500 border-gray-800 hover:text-text-primary hover:border-gray-600'
                             }`}
                         >
                             {f} ({counts[f as keyof typeof counts]})
@@ -117,7 +117,7 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                         placeholder="SEARCH_DB..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="bg-black border border-gray-700 text-white font-mono text-sm px-4 py-2 w-full md:w-64 focus:border-secondary outline-none uppercase placeholder:text-gray-700"
+                        className="bg-bg-primary border border-gray-700 text-text-primary font-mono text-sm px-4 py-2 w-full md:w-64 focus:border-secondary outline-none uppercase placeholder:text-gray-700"
                     />
                 </div>
             </div>
@@ -127,7 +127,7 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                  <div className="overflow-x-auto relative z-10">
                     <table className="w-full text-left font-mono text-sm">
                         <thead>
-                            <tr className="border-b border-gray-800 bg-black/50 text-gray-500 text-xs uppercase tracking-widest">
+                            <tr className="border-b border-gray-800 bg-bg-primary/50 text-gray-500 text-xs uppercase tracking-widest">
                                 <th className="p-4 w-16">ID</th>
                                 <th className="p-4">Console Name</th>
                                 <th className="p-4">Manufacturer</th>
@@ -141,10 +141,10 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                                 <tr
                                     key={console.id}
                                     onClick={() => router.push(`/admin/consoles/${console.slug}`)}
-                                    className="border-b border-gray-800 hover:bg-white/5 transition-colors group cursor-pointer"
+                                    className="border-b border-gray-800 hover:bg-bg-tertiary transition-colors group cursor-pointer"
                                 >
                                     <td className="p-4 text-gray-600 font-xs truncate max-w-[50px]">{console.id.substring(0,4)}</td>
-                                    <td className="p-4 font-bold text-white group-hover:text-secondary">
+                                    <td className="p-4 font-bold text-text-primary group-hover:text-secondary">
                                         {console.name}
                                         <div className="text-[10px] text-gray-500 font-normal mt-1 lowercase opacity-50">{console.slug}</div>
                                     </td>
@@ -170,7 +170,7 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                                                 e.stopPropagation();
                                                 router.push(`/admin/consoles/${console.slug}`);
                                             }}
-                                            className="text-[10px] border border-gray-600 text-gray-400 px-3 py-1 hover:border-white hover:text-white transition-colors uppercase tracking-widest"
+                                            className="text-[10px] border border-gray-600 text-gray-400 px-3 py-1 hover:border-border-strong hover:text-text-primary transition-colors uppercase tracking-widest"
                                         >
                                             EDIT
                                         </button>
@@ -181,7 +181,7 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                                                     e.stopPropagation();
                                                     handleDelete(console.id, console.name);
                                                 }}
-                                                className="text-[10px] border border-red-900 text-red-700 px-3 py-1 hover:bg-red-900 hover:text-white transition-colors uppercase tracking-widest"
+                                                className="text-[10px] border border-red-900 text-red-700 px-3 py-1 hover:bg-red-900 hover:text-text-primary transition-colors uppercase tracking-widest"
                                                 title="Delete Draft"
                                             >
                                                 DEL

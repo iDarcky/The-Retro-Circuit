@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  /* LIGHT MODE (Default off-white / gray base) */
+  /* LIGHT MODE (Zinc base, high contrast black text/borders) */
   :root {
     --bg-primary: #f4f4f5;   /* Zinc 100 */
     --bg-secondary: #ffffff; /* White */
@@ -11,20 +11,20 @@
     --bg-card: #ffffff;
     --bg-glass: #ffffff;
 
-    --text-primary: #18181b; /* Zinc 900 */
-    --text-secondary: #52525b; /* Zinc 600 */
-    --text-muted: #71717a;   /* Zinc 500 */
-    --text-inverse: #ffffff; /* White on accent */
+    --text-primary: #000000; /* Pure Black for maximum contrast */
+    --text-secondary: #18181b; /* Zinc 900 */
+    --text-muted: #52525b;   /* Zinc 600 */
+    --text-inverse: #ffffff; /* White on accent/dark backgrounds */
 
-    --color-primary: #ea580c;   /* Orange 600 (Darker for contrast) */
-    --color-secondary: #18181b; /* Black */
+    --color-primary: #ea580c;   /* Orange 600 */
+    --color-secondary: #000000; /* Black */
     --color-accent: #ea580c;
     --color-success: #059669;   /* Emerald 600 */
     --color-warning: #d97706;   /* Amber 600 */
 
     --border-subtle: #d4d4d8;   /* Zinc 300 */
     --border-normal: #a1a1aa;   /* Zinc 400 */
-    --border-strong: #18181b;   /* Black */
+    --border-strong: #000000;   /* Pure Black for Swiss aesthetic */
     --border-primary: var(--color-primary);
 
     --background: var(--bg-primary);

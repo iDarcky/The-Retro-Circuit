@@ -9,10 +9,10 @@ interface NewsCardProps {
 export const NewsCard: React.FC<NewsCardProps> = ({ news }) => {
   return (
     <Link href={`/news/${news.slug}`} className="block group">
-      <div className="relative border border-white/10 bg-black/40 p-6 flex flex-col md:flex-row gap-6 hover:border-violet-500/50 hover:bg-violet-950/5 transition-all duration-300">
+      <div className="relative border border-border-subtle bg-bg-primary/40 p-6 flex flex-col md:flex-row gap-6 hover:border-violet-500/50 hover:bg-violet-950/5 transition-all duration-300">
 
         {/* Date / Metadata */}
-        <div className="flex flex-col md:w-32 shrink-0 border-b md:border-b-0 md:border-r border-white/10 pb-4 md:pb-0 md:pr-4">
+        <div className="flex flex-col md:w-32 shrink-0 border-b md:border-b-0 md:border-r border-border-subtle pb-4 md:pb-0 md:pr-4">
            <span className="font-pixel text-4xl text-violet-500/80 leading-none mb-2">
               {new Date(news.published_at).getDate().toString().padStart(2, '0')}
            </span>
@@ -26,7 +26,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({ news }) => {
 
         {/* Content */}
         <div className="flex-1">
-            <h3 className="font-bold text-xl md:text-2xl text-white group-hover:text-violet-400 transition-colors leading-tight mb-3 font-sans tracking-tight">
+            <h3 className="font-bold text-xl md:text-2xl text-text-primary group-hover:text-violet-400 transition-colors leading-tight mb-3 font-sans tracking-tight">
                 {news.title}
             </h3>
             <p className="text-sm md:text-base text-gray-400 font-light leading-relaxed mb-4 line-clamp-2">
@@ -38,7 +38,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({ news }) => {
         </div>
 
         {/* Image (Optional / Small) */}
-        <div className="hidden md:block w-32 h-32 bg-gray-900 border border-white/5 shrink-0 relative overflow-hidden group-hover:border-violet-500/30 transition-colors">
+        <div className="hidden md:block w-32 h-32 bg-gray-900 border border-border-strong/5 shrink-0 relative overflow-hidden group-hover:border-violet-500/30 transition-colors">
             {/* Placeholder */}
             <div className="absolute inset-0 flex items-center justify-center text-[10px] text-gray-700 font-pixel">
                 NO IMG

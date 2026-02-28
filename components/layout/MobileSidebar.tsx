@@ -26,10 +26,10 @@ const SidebarItem = ({ to, label, exact = false, index }: SidebarItemProps) => {
   return (
     <Link
       href={to}
-      className={`group flex items-center px-6 py-6 border-b border-white/10 transition-all duration-300 ${
+      className={`group flex items-center px-6 py-6 border-b border-border-subtle transition-all duration-300 ${
         isActive
-          ? 'bg-violet-600 text-white'
-          : 'bg-transparent text-white/60 hover:text-white hover:bg-white/5'
+          ? 'bg-violet-600 text-text-primary'
+          : 'bg-transparent text-text-muted hover:text-text-primary hover:bg-bg-tertiary'
       }`}
     >
       <span className="font-sans font-black text-3xl tracking-tighter uppercase w-full">
@@ -47,7 +47,7 @@ export const MobileSidebar: FC<MobileSidebarProps> = ({ isOpen, onClose, openSea
       {/* MOBILE DRAWER BACKDROP (z-50) */}
       {isOpen && (
         <div
-          className="md:hidden fixed inset-0 z-[50] bg-black/90 backdrop-blur-sm animate-fadeIn"
+          className="md:hidden fixed inset-0 z-[50] bg-bg-primary/90 backdrop-blur-sm animate-fadeIn"
           onClick={onClose}
         />
       )}
@@ -66,7 +66,7 @@ export const MobileSidebar: FC<MobileSidebarProps> = ({ isOpen, onClose, openSea
           ${isOpen ? 'translate-x-0' : 'translate-x-full'}
       `}>
         {/* HEADER: Strict Grid, High Contrast */}
-        <div className="p-6 border-b-2 border-white flex items-center justify-between bg-white text-black min-h-[80px]">
+        <div className="p-6 border-b-2 border-border-strong flex items-center justify-between bg-white text-black min-h-[80px]">
              <span className="font-sans font-black text-4xl tracking-tighter uppercase">MENU</span>
              <button
                 onClick={onClose}
@@ -79,13 +79,13 @@ export const MobileSidebar: FC<MobileSidebarProps> = ({ isOpen, onClose, openSea
 
         <nav className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
            {/* SEARCH TRIGGER: Brutalist Block */}
-           <div className="border-b border-white/10">
+           <div className="border-b border-border-subtle">
                 <button
                     onClick={openSearch}
-                    className="w-full bg-white/5 hover:bg-white/10 transition-colors text-white/60 font-sans font-bold text-lg px-6 py-6 flex justify-between items-center group uppercase tracking-widest"
+                    className="w-full bg-bg-tertiary hover:bg-border-subtle transition-colors text-text-muted font-sans font-bold text-lg px-6 py-6 flex justify-between items-center group uppercase tracking-widest"
                 >
                     <span>SEARCH</span>
-                    <IconSearch className="w-6 h-6 text-white/40 group-hover:text-violet-500 transition-colors" />
+                    <IconSearch className="w-6 h-6 text-border-normal group-hover:text-violet-500 transition-colors" />
                 </button>
            </div>
 

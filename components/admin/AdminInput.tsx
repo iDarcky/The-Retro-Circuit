@@ -25,12 +25,12 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
     const val = value !== undefined && value !== null ? value : (type === 'checkbox' ? false : '');
     
     // Updated CSS Variables and Style
-    const borderColor = error ? 'border-accent' : 'border-border-normal focus:border-white';
+    const borderColor = error ? 'border-accent' : 'border-border-normal focus:border-border-strong';
     const labelColor = error ? 'text-accent' : 'text-gray-500';
 
     // Visual styles for computed fields (read-only appearance)
     const isComputed = field.visualStyle === 'computed';
-    const computedBg = isComputed ? 'bg-bg-secondary text-gray-500 cursor-not-allowed opacity-75' : 'bg-bg-primary text-white';
+    const computedBg = isComputed ? 'bg-bg-secondary text-gray-500 cursor-not-allowed opacity-75' : 'bg-bg-primary text-text-primary';
     
     const baseInputClasses = `w-full bg-bg-primary border p-3 font-mono text-sm outline-none transition-all duration-200 uppercase placeholder:text-gray-700`;
 
@@ -39,7 +39,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
             <div>
                 <label htmlFor={field.key} className={`text-[10px] mb-1 block uppercase tracking-wider ${labelColor}`}>{field.label}</label>
                 <div className="flex gap-2 h-[46px]">
-                    <div className="relative w-12 h-full border border-border-normal group hover:border-white transition-colors">
+                    <div className="relative w-12 h-full border border-border-normal group hover:border-border-strong transition-colors">
                         <input
                             type="color"
                             className="absolute inset-0 w-full h-full p-0 border-0 outline-none cursor-pointer opacity-0"
@@ -102,14 +102,14 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                             onChange(field.key, !isChecked);
                         }
                     }}
-                    className={`flex items-center justify-between bg-bg-primary border p-3 cursor-pointer group transition-all h-[46px] mt-[21px] ${borderColor} hover:border-white`}
+                    className={`flex items-center justify-between bg-bg-primary border p-3 cursor-pointer group transition-all h-[46px] mt-[21px] ${borderColor} hover:border-border-strong`}
                     onClick={() => onChange(field.key, !isChecked)}
                 >
-                    <span className={`text-[10px] uppercase font-bold tracking-wider group-hover:text-white transition-colors ${labelColor}`}>
+                    <span className={`text-[10px] uppercase font-bold tracking-wider group-hover:text-text-primary transition-colors ${labelColor}`}>
                         {field.label}
                     </span>
-                    <div className={`w-4 h-4 border flex items-center justify-center transition-all ${isChecked ? 'bg-secondary border-secondary' : 'border-gray-600 bg-transparent group-hover:border-white'}`}>
-                        {isChecked && <div className="w-2 h-2 bg-black"></div>}
+                    <div className={`w-4 h-4 border flex items-center justify-center transition-all ${isChecked ? 'bg-secondary border-secondary' : 'border-gray-600 bg-transparent group-hover:border-border-strong'}`}>
+                        {isChecked && <div className="w-2 h-2 bg-bg-primary"></div>}
                     </div>
                 </div>
                 {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}

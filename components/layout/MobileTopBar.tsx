@@ -19,7 +19,7 @@ const MobileTopBar: FC<MobileTopBarProps> = ({ onMenuClick, isSidebarOpen }) => 
         {/* Left: Logo */}
         <div className="flex items-center h-full hover:bg-bg-secondary transition-colors duration-300 border-r border-border-subtle">
             <Link href="/" className="flex items-center group min-h-[44px] px-3 h-full">
-                <span className="font-pixel text-xs leading-tight text-white/40 group-hover:text-secondary transition-colors">RETRO CIRCUIT_</span>
+                <span className="font-pixel text-xs leading-tight text-border-normal group-hover:text-secondary transition-colors">RETRO CIRCUIT_</span>
             </Link>
         </div>
 
@@ -27,14 +27,14 @@ const MobileTopBar: FC<MobileTopBarProps> = ({ onMenuClick, isSidebarOpen }) => 
         <div className="flex items-center gap-1">
             <button 
                 onClick={openSearch}
-                className="transition-colors text-gray-400 hover:text-white min-w-[44px] min-h-[44px] flex items-center justify-center"
+                className="transition-colors text-gray-400 hover:text-text-primary min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Search"
             >
                 <IconSearch className="w-6 h-6" />
             </button>
             <button 
                 onClick={onMenuClick}
-                className="text-gray-400 hover:text-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                className="text-gray-400 hover:text-text-primary transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Menu"
             >
                 {isSidebarOpen ? <IconClose className="w-6 h-6" /> : <IconMenu className="w-6 h-6" />}

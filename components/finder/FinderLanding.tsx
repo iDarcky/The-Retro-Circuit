@@ -12,13 +12,13 @@ export const FinderLanding: FC<FinderLandingProps> = ({ onStart }) => {
     <div className="w-full flex flex-col items-center justify-center animate-in fade-in duration-500">
 
       {/* HEADER SECTION (Vault Style) */}
-      <div className="relative w-full py-24 md:py-32 px-6 md:px-12 border-b border-white/5 overflow-hidden flex flex-col items-center text-center">
+      <div className="relative w-full py-24 md:py-32 px-6 md:px-12 border-b border-border-strong/5 overflow-hidden flex flex-col items-center text-center">
          {/* Background Effects */}
          <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.05] pointer-events-none"></div>
          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-bg-bg-primary/50 to-bg-bg-primary pointer-events-none"></div>
 
          <div className="max-w-4xl mx-auto relative z-10">
-            <h1 className="text-4xl md:text-7xl font-pixel font-bold tracking-tighter text-white uppercase drop-shadow-lg leading-tight mb-6">
+            <h1 className="text-4xl md:text-7xl font-pixel font-bold tracking-tighter text-text-primary uppercase drop-shadow-lg leading-tight mb-6">
                 Handheld <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Finder</span><span className="text-emerald-500 animate-pulse">_</span>
             </h1>
             <p className="text-lg md:text-2xl text-zinc-400 font-light font-mono max-w-2xl mx-auto mb-12">

@@ -59,9 +59,9 @@ export function RoadmapForm({ initialData, onSuccess, onError }: RoadmapFormProp
   };
 
   // Base input styles mimicking the screenshot
-  const inputClass = "w-full bg-black border border-white/20 p-3 pl-4 font-mono text-sm text-white focus:border-white outline-none transition-colors placeholder:text-white/30 tracking-wider h-12 rounded-none";
+  const inputClass = "w-full bg-bg-primary border border-border-normal p-3 pl-4 font-mono text-sm text-text-primary focus:border-border-strong outline-none transition-colors placeholder:text-border-normal tracking-wider h-12 rounded-none";
   const labelClass = "block text-[10px] uppercase text-zinc-500 mb-1.5 tracking-widest font-mono ml-1";
-  const selectClass = "w-full bg-black border border-white/20 p-3 pl-4 font-mono text-sm text-white focus:border-white outline-none transition-colors appearance-none tracking-wider h-12 uppercase rounded-none cursor-pointer";
+  const selectClass = "w-full bg-bg-primary border border-border-normal p-3 pl-4 font-mono text-sm text-text-primary focus:border-border-strong outline-none transition-colors appearance-none tracking-wider h-12 uppercase rounded-none cursor-pointer";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 animate-fadeIn">
@@ -80,7 +80,7 @@ export function RoadmapForm({ initialData, onSuccess, onError }: RoadmapFormProp
               required
               autoComplete="off"
             />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-border-normal pointer-events-none">
               <AlignLeft size={16} />
             </div>
           </div>
@@ -112,7 +112,7 @@ export function RoadmapForm({ initialData, onSuccess, onError }: RoadmapFormProp
               className={inputClass}
               placeholder="mm / dd / yyyy"
             />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-border-normal pointer-events-none">
               <Calendar size={16} />
             </div>
           </div>
@@ -132,7 +132,7 @@ export function RoadmapForm({ initialData, onSuccess, onError }: RoadmapFormProp
               <option value="in-progress">⇅ IN PROGRESS</option>
               <option value="completed">⇅ COMPLETED</option>
             </select>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-border-normal pointer-events-none">
               <ChevronDown size={16} />
             </div>
           </div>
@@ -152,7 +152,7 @@ export function RoadmapForm({ initialData, onSuccess, onError }: RoadmapFormProp
               <option value="must-have">⇅ MUST HAVE</option>
               <option value="nice-to-have">⇅ NICE TO HAVE</option>
             </select>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-border-normal pointer-events-none">
               <ChevronDown size={16} />
             </div>
           </div>
@@ -171,17 +171,17 @@ export function RoadmapForm({ initialData, onSuccess, onError }: RoadmapFormProp
               required
             />
              {/* Decorative corner accent for text area */}
-            <div className="absolute bottom-2 right-2 w-2 h-2 border-r border-b border-white/20 pointer-events-none" />
+            <div className="absolute bottom-2 right-2 w-2 h-2 border-r border-b border-border-normal pointer-events-none" />
           </div>
         </div>
       </div>
 
       {/* Footer Actions */}
-      <div className="pt-6 mt-2 border-t border-white/10 flex justify-end">
+      <div className="pt-6 mt-2 border-t border-border-subtle flex justify-end">
         <button
             type="submit"
             disabled={loading}
-            className="bg-black border border-white text-white hover:bg-white hover:text-black font-mono tracking-widest px-8 py-3 text-xs uppercase transition-colors"
+            className="bg-bg-primary border border-border-strong text-text-primary hover:bg-white hover:text-black font-mono tracking-widest px-8 py-3 text-xs uppercase transition-colors"
         >
           {loading ? 'PROCESSING...' : (initialData ? 'UPDATE MISSION' : 'ADD MISSION')}
         </button>

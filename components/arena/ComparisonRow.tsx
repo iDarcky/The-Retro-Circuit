@@ -61,7 +61,7 @@ export const ComparisonRow: FC<ComparisonRowProps> = ({
     }
 
     const getDisplayValue = (val: any, variant: ConsoleVariant) => {
-        if (!exists(val)) return <span className="text-white/10 text-xs font-light">---</span>;
+        if (!exists(val)) return <span className="text-border-subtle text-xs font-light">---</span>;
 
         if (metric.key === 'ram_mb') {
              const mb = Number(val);
@@ -72,7 +72,7 @@ export const ComparisonRow: FC<ComparisonRowProps> = ({
             return (
                 <span>
                     {val}W
-                    {variant.charging_tech && <span className="text-[10px] text-white/30 ml-1 hidden md:inline">({variant.charging_tech})</span>}
+                    {variant.charging_tech && <span className="text-[10px] text-border-normal ml-1 hidden md:inline">({variant.charging_tech})</span>}
                 </span>
             );
         }
@@ -95,8 +95,8 @@ export const ComparisonRow: FC<ComparisonRowProps> = ({
     const winClassA = "text-blue-300 font-bold drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]";
     const winClassB = "text-red-300 font-bold drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]";
     
-    const loseClass = "text-white/40 grayscale-[0.3]";
-    const tieClass = "text-white/80";
+    const loseClass = "text-border-normal grayscale-[0.3]";
+    const tieClass = "text-text-secondary";
 
     let classA = loseClass;
     let classB = loseClass;
@@ -113,11 +113,11 @@ export const ComparisonRow: FC<ComparisonRowProps> = ({
     }
 
     return (
-        <div className="relative border-b border-white/5 py-4 px-4 hover:bg-white/5 transition-colors group">
+        <div className="relative border-b border-border-strong/5 py-4 px-4 hover:bg-bg-tertiary transition-colors group">
             
             {/* Mobile Label (Top) */}
-            <div className="md:hidden text-center mb-3 border-b border-white/5 pb-2">
-                <span className="font-pixel text-[10px] text-white/50 uppercase tracking-widest">{metric.label}</span>
+            <div className="md:hidden text-center mb-3 border-b border-border-strong/5 pb-2">
+                <span className="font-pixel text-[10px] text-text-muted uppercase tracking-widest">{metric.label}</span>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-12 gap-4 items-center">
@@ -129,8 +129,8 @@ export const ComparisonRow: FC<ComparisonRowProps> = ({
                 </div>
 
                 {/* Desktop Label (Center) */}
-                <div className="hidden md:flex col-span-4 items-center justify-center border-l border-r border-white/5 h-full order-2 px-2">
-                    <span className="font-pixel text-[10px] text-white/30 uppercase tracking-widest group-hover:text-white transition-colors text-center">
+                <div className="hidden md:flex col-span-4 items-center justify-center border-l border-r border-border-strong/5 h-full order-2 px-2">
+                    <span className="font-pixel text-[10px] text-border-normal uppercase tracking-widest group-hover:text-text-primary transition-colors text-center">
                         {metric.label}
                     </span>
                 </div>

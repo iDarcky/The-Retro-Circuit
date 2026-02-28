@@ -69,7 +69,7 @@ export const NewsManager: React.FC<NewsManagerProps> = ({ news }) => {
     <div className="w-full max-w-6xl mx-auto p-6 space-y-8">
 
       {/* Create Form */}
-      <div className="bg-black/80 border border-white/10 p-6">
+      <div className="bg-bg-primary/80 border border-border-subtle p-6">
         <h2 className="text-xl font-pixel text-violet-500 mb-6 flex items-center gap-2">
            <span className="w-2 h-2 bg-violet-500 rounded-full animate-pulse"></span>
            PUBLISH NEWS
@@ -84,7 +84,7 @@ export const NewsManager: React.FC<NewsManagerProps> = ({ news }) => {
                      name="title"
                      value={formData.title}
                      onChange={handleChange}
-                     className="w-full bg-black border border-white/20 p-3 text-sm font-mono text-white placeholder:text-gray-700 focus:border-violet-500 focus:outline-none"
+                     className="w-full bg-bg-primary border border-border-normal p-3 text-sm font-mono text-text-primary placeholder:text-gray-700 focus:border-violet-500 focus:outline-none"
                      placeholder="> ENTER_HEADLINE..."
                      required
                    />
@@ -103,7 +103,7 @@ export const NewsManager: React.FC<NewsManagerProps> = ({ news }) => {
                      ]}
                      labelPrefix="" inverted={false}
                      className="w-full"
-                     buttonClassName="bg-black border border-white/20 p-3 text-sm font-mono text-white focus:border-violet-500 focus:outline-none h-[46px] flex justify-between items-center"
+                     buttonClassName="bg-bg-primary border border-border-normal p-3 text-sm font-mono text-text-primary focus:border-violet-500 focus:outline-none h-[46px] flex justify-between items-center"
                    />
                </div>
            </div>
@@ -114,7 +114,7 @@ export const NewsManager: React.FC<NewsManagerProps> = ({ news }) => {
                name="excerpt"
                value={formData.excerpt}
                onChange={handleChange}
-               className="w-full bg-black border border-white/20 p-3 text-sm font-mono text-white placeholder:text-gray-700 focus:border-violet-500 focus:outline-none h-20"
+               className="w-full bg-bg-primary border border-border-normal p-3 text-sm font-mono text-text-primary placeholder:text-gray-700 focus:border-violet-500 focus:outline-none h-20"
                placeholder="> ENTER_SUMMARY..."
                required
                maxLength={300}
@@ -127,7 +127,7 @@ export const NewsManager: React.FC<NewsManagerProps> = ({ news }) => {
                name="content"
                value={formData.content}
                onChange={handleChange}
-               className="w-full bg-black border border-white/20 p-3 text-sm font-mono text-white placeholder:text-gray-700 focus:border-violet-500 focus:outline-none h-64"
+               className="w-full bg-bg-primary border border-border-normal p-3 text-sm font-mono text-text-primary placeholder:text-gray-700 focus:border-violet-500 focus:outline-none h-64"
                placeholder="> ENTER_CONTENT..."
              />
            </div>
@@ -145,12 +145,12 @@ export const NewsManager: React.FC<NewsManagerProps> = ({ news }) => {
       </div>
 
       {/* List */}
-      <div className="bg-black/40 border border-white/5 p-6">
+      <div className="bg-bg-primary/40 border border-border-strong/5 p-6">
         <h3 className="text-sm font-mono text-gray-500 uppercase mb-4">Recent Articles</h3>
 
         <div className="space-y-4">
           {news.map((item) => (
-            <div key={item.id} className="flex items-start justify-between p-4 border border-white/10 bg-black/20 hover:border-violet-500/30 transition-colors">
+            <div key={item.id} className="flex items-start justify-between p-4 border border-border-subtle bg-bg-primary/20 hover:border-violet-500/30 transition-colors">
               <div className="flex-1">
                  <div className="flex items-center gap-2 mb-2">
                     <span className="text-[10px] font-mono text-violet-500 border border-violet-500/30 px-2 py-0.5 uppercase">
@@ -160,7 +160,7 @@ export const NewsManager: React.FC<NewsManagerProps> = ({ news }) => {
                        {new Date(item.published_at).toLocaleDateString()}
                     </span>
                  </div>
-                 <h4 className="font-bold text-white mb-1">{item.title}</h4>
+                 <h4 className="font-bold text-text-primary mb-1">{item.title}</h4>
                  <p className="font-mono text-xs text-gray-400 line-clamp-1">
                     {item.excerpt}
                  </p>

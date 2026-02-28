@@ -28,7 +28,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ number, title, sub
         <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${pulseColor}`}></div>
         {number} {'//'} {subtitle || 'SECTION'}
       </div>
-      <h2 className="text-2xl md:text-4xl font-pixel text-white tracking-tighter uppercase">
+      <h2 className="text-2xl md:text-4xl font-pixel text-text-primary tracking-tighter uppercase">
         {title}<span className={`animate-pulse ${pulseColor.replace('bg-', 'text-')}`}>_</span>
       </h2>
     </div>

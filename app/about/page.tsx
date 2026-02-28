@@ -11,10 +11,10 @@ export const metadata = {
 export default async function AboutPage() {
   const version = await getSystemVersion();
   return (
-    <div className="bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-orange-500/30 selection:text-white pb-24">
+    <div className="bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-orange-500/30 selection:text-text-primary pb-24">
       
       {/* 1. HERO HEADER */}
-      <header className="px-6 md:px-12 pt-12 md:pt-24 pb-8 md:pb-16 border-b border-white/5 relative overflow-hidden">
+      <header className="px-6 md:px-12 pt-12 md:pt-24 pb-8 md:pb-16 border-b border-border-strong/5 relative overflow-hidden">
 
         {/* Background Effects */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.05] pointer-events-none"></div>
@@ -28,7 +28,7 @@ export default async function AboutPage() {
            </div>
 
            {/* Title */}
-           <h1 className="text-4xl md:text-6xl font-pixel text-white leading-none tracking-tighter mb-8">
+           <h1 className="text-4xl md:text-6xl font-pixel text-text-primary leading-none tracking-tighter mb-8">
               THE RETRO <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-400">CIRCUIT</span><span className="text-orange-500 animate-pulse">_</span>
            </h1>
@@ -47,13 +47,13 @@ export default async function AboutPage() {
             </div>
 
             <div className="space-y-8">
-                <p className="text-2xl md:text-3xl lg:text-4xl font-light leading-tight text-white">
+                <p className="text-2xl md:text-3xl lg:text-4xl font-light leading-tight text-text-primary">
                     The retro handheld market is a labyrinth of fragmented data. Variants, revisions, and silent upgrades create static in the signal.
                 </p>
                 <div className="pl-6 border-l-2 border-orange-500">
                     <p className="text-lg md:text-xl text-zinc-400 font-light leading-relaxed">
                         In a sea of subjective noise, we provide the raw signal. <br />
-                        <span className="text-white font-medium">No feelings. Just data.</span>
+                        <span className="text-text-primary font-medium">No feelings. Just data.</span>
                     </p>
                 </div>
             </div>
@@ -66,7 +66,7 @@ export default async function AboutPage() {
                <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">System Architecture</h2>
             </div>
 
-            <div className="border-t border-white/10">
+            <div className="border-t border-border-subtle">
                 <ArchitectureRow label="Core Framework" value="Next.js 16 (App Router)" icon={<Monitor size={14} />} />
                 <ArchitectureRow label="Server Components" value="React 19" icon={<Code size={14} />} />
                 <ArchitectureRow label="Data Layer" value="Supabase (PostgreSQL)" icon={<Database size={14} />} />
@@ -83,20 +83,20 @@ export default async function AboutPage() {
                <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">Operator Log</h2>
             </div>
 
-            <div className="border border-white/10 bg-white/[0.02] p-6 md:p-8 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden group">
+            <div className="border border-border-subtle bg-bg-tertiary p-6 md:p-8 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden group">
                 {/* Avatar Placeholder */}
-                <div className="w-24 h-24 md:w-32 md:h-32 bg-zinc-900 border border-white/10 flex items-center justify-center shrink-0">
-                    <span className="font-pixel text-2xl text-zinc-700 group-hover:text-white transition-colors">OP</span>
+                <div className="w-24 h-24 md:w-32 md:h-32 bg-zinc-900 border border-border-subtle flex items-center justify-center shrink-0">
+                    <span className="font-pixel text-2xl text-zinc-700 group-hover:text-text-primary transition-colors">OP</span>
                 </div>
 
                 {/* Details */}
                 <div className="flex-1 space-y-6 relative z-10">
                     <div>
                         <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-xl text-white font-bold tracking-tight uppercase">Product Lead</h3>
+                            <h3 className="text-xl text-text-primary font-bold tracking-tight uppercase">Product Lead</h3>
                             <span className="font-mono text-xs text-orange-500 border border-orange-500/30 bg-orange-500/5 px-2 py-0.5">ADMIN_ACCESS</span>
                         </div>
-                        <div className="h-px w-full bg-white/10 mb-4"></div>
+                        <div className="h-px w-full bg-border-subtle mb-4"></div>
                         <p className="font-mono text-sm text-zinc-400 leading-relaxed max-w-lg">
                             Built to solve the chaos of handheld specifications. This project serves as both a public utility for the retro gaming community and a demonstration of modern full-stack architecture.
                         </p>
@@ -146,30 +146,30 @@ import { Shield as ShieldIcon } from 'lucide-react';
 
 function ArchitectureRow({ label, value, icon }: { label: string, value: string, icon: React.ReactNode }) {
     return (
-        <div className="flex items-center justify-between py-4 border-b border-white/10 group hover:bg-white/[0.02] transition-colors px-2 -mx-2">
+        <div className="flex items-center justify-between py-4 border-b border-border-subtle group hover:bg-bg-tertiary transition-colors px-2 -mx-2">
             <div className="flex items-center gap-3 text-zinc-500 group-hover:text-zinc-300 transition-colors">
                 {icon}
                 <span className="font-mono text-xs uppercase tracking-wider">{label}</span>
             </div>
-            <span className="font-mono text-xs text-zinc-300 group-hover:text-white transition-colors text-right">{value}</span>
+            <span className="font-mono text-xs text-zinc-300 group-hover:text-text-primary transition-colors text-right">{value}</span>
         </div>
     );
 }
 
 function ActionCard({ href, label, sublabel, icon, external }: { href: string, label: string, sublabel: string, icon: React.ReactNode, external?: boolean }) {
-    const className = "group block border border-white/10 bg-white/[0.02] p-4 hover:bg-white/5 transition-all hover:border-orange-500/30 relative overflow-hidden";
+    const className = "group block border border-border-subtle bg-bg-tertiary p-4 hover:bg-bg-tertiary transition-all hover:border-orange-500/30 relative overflow-hidden";
     const content = (
         <div className="flex items-center justify-between relative z-10">
             <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-400 group-hover:text-white group-hover:border-orange-500/50 transition-colors">
+                <div className="w-10 h-10 bg-zinc-900 border border-border-subtle flex items-center justify-center text-zinc-400 group-hover:text-text-primary group-hover:border-orange-500/50 transition-colors">
                     {icon}
                 </div>
                 <div>
-                    <div className="text-white font-medium text-sm group-hover:text-orange-400 transition-colors">{label}</div>
+                    <div className="text-text-primary font-medium text-sm group-hover:text-orange-400 transition-colors">{label}</div>
                     <div className="text-zinc-500 text-xs font-mono">{sublabel}</div>
                 </div>
             </div>
-            <ArrowRight size={16} className="text-zinc-600 group-hover:text-white group-hover:translate-x-1 transition-all" />
+            <ArrowRight size={16} className="text-zinc-600 group-hover:text-text-primary group-hover:translate-x-1 transition-all" />
         </div>
     );
 

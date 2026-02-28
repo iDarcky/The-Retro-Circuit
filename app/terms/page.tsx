@@ -7,13 +7,13 @@ export const metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-rose-500/30 selection:text-white pb-24 relative overflow-hidden">
+    <div className="bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-rose-500/30 selection:text-text-primary pb-24 relative overflow-hidden">
 
       {/* Background Effects */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.05] pointer-events-none"></div>
 
       {/* 1. HERO HEADER */}
-      <header className="px-6 md:px-12 pt-12 md:pt-24 pb-8 md:pb-16 border-b border-white/5 relative z-10">
+      <header className="px-6 md:px-12 pt-12 md:pt-24 pb-8 md:pb-16 border-b border-border-strong/5 relative z-10">
         <div className="max-w-4xl mx-auto w-full">
 
            {/* Metadata Pill - Rose Variant */}
@@ -23,7 +23,7 @@ export default function TermsPage() {
            </div>
 
            {/* Title */}
-           <h1 className="text-4xl md:text-6xl font-pixel text-white leading-none tracking-tighter mb-8">
+           <h1 className="text-4xl md:text-6xl font-pixel text-text-primary leading-none tracking-tighter mb-8">
               TERMS OF <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-red-400">SERVICE</span><span className="text-rose-500 animate-pulse">_</span>
            </h1>
@@ -94,9 +94,9 @@ export default function TermsPage() {
                <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Ownership</h2>
             </div>
 
-             <div className="border border-white/10 bg-white/[0.02] p-6 md:p-8 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden hover:bg-white/[0.04] transition-colors">
+             <div className="border border-border-subtle bg-bg-tertiary p-6 md:p-8 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden hover:bg-white/[0.04] transition-colors">
                 {/* IP Icon */}
-                <div className="w-20 h-20 bg-zinc-900 border border-white/10 flex items-center justify-center shrink-0">
+                <div className="w-20 h-20 bg-zinc-900 border border-border-subtle flex items-center justify-center shrink-0">
                     <span className="font-pixel text-xl text-zinc-700">IP</span>
                 </div>
 
@@ -104,10 +104,10 @@ export default function TermsPage() {
                 <div className="flex-1 space-y-4 relative z-10">
                     <div>
                         <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-lg text-white font-bold tracking-tight uppercase">Content Rights</h3>
+                            <h3 className="text-lg text-text-primary font-bold tracking-tight uppercase">Content Rights</h3>
                             <span className="font-mono text-xs text-rose-500 border border-rose-500/30 bg-rose-500/5 px-2 py-0.5">PROTECTED</span>
                         </div>
-                        <div className="h-px w-full bg-white/10 mb-4"></div>
+                        <div className="h-px w-full bg-border-subtle mb-4"></div>
                         <p className="font-light text-zinc-400 leading-relaxed text-sm">
                             The materials contained in this website are protected by applicable copyright and trademark law. The Retro Circuit architecture, code, design, and specific data aggregations are proprietary.
                         </p>

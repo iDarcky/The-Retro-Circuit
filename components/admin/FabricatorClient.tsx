@@ -85,7 +85,7 @@ export default function FabricatorClient({ initialManufacturers }: FabricatorCli
                         FABRICATORS
                     </h1>
                     <div className="flex gap-4 font-mono text-xs text-gray-500 uppercase tracking-widest">
-                        <Link href="/admin" className="hover:text-white hover:underline">
+                        <Link href="/admin" className="hover:text-text-primary hover:underline">
                             &lt; ROOT TERMINAL
                         </Link>
                         <span>|</span>
@@ -110,7 +110,7 @@ export default function FabricatorClient({ initialManufacturers }: FabricatorCli
                         placeholder="SEARCH_ENTITIES..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="bg-black border border-border-normal text-white font-mono text-sm px-4 py-2 w-full md:w-64 focus:border-white outline-none uppercase placeholder:text-gray-700 transition-colors"
+                        className="bg-bg-primary border border-border-normal text-text-primary font-mono text-sm px-4 py-2 w-full md:w-64 focus:border-border-strong outline-none uppercase placeholder:text-gray-700 transition-colors"
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 text-[10px]">▼</div>
                 </div>
@@ -121,11 +121,11 @@ export default function FabricatorClient({ initialManufacturers }: FabricatorCli
                 {filteredManufacturers.map((manu) => (
                     <div
                         key={manu.id}
-                        className="bg-bg-secondary border border-border-normal p-6 hover:border-white transition-colors group relative overflow-hidden flex flex-col h-full min-h-[160px]"
+                        className="bg-bg-secondary border border-border-normal p-6 hover:border-border-strong transition-colors group relative overflow-hidden flex flex-col h-full min-h-[160px]"
                     >
                         <div className="flex justify-between items-start mb-4 relative z-10">
                             <div>
-                                <h3 className="font-pixel text-lg text-white group-hover:text-secondary transition-colors mb-1">
+                                <h3 className="font-pixel text-lg text-text-primary group-hover:text-secondary transition-colors mb-1">
                                     {manu.name}
                                 </h3>
                                 <div className="text-[10px] font-mono text-gray-500 uppercase tracking-wider flex flex-col">
@@ -144,14 +144,14 @@ export default function FabricatorClient({ initialManufacturers }: FabricatorCli
                             <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button
                                     onClick={(e) => handleDelete(e, manu)}
-                                    className="text-[10px] font-mono border border-red-900 text-red-700 px-3 py-1 hover:bg-red-900 hover:text-white transition-colors uppercase tracking-widest"
+                                    className="text-[10px] font-mono border border-red-900 text-red-700 px-3 py-1 hover:bg-red-900 hover:text-text-primary transition-colors uppercase tracking-widest"
                                     title="Delete Fabricator"
                                 >
                                     [ DEL ]
                                 </button>
                                 <button
                                     onClick={() => handleOpenEdit(manu)}
-                                    className="text-[10px] font-mono border border-border-normal text-gray-400 px-3 py-1 hover:bg-white hover:text-black hover:border-white transition-colors uppercase tracking-widest"
+                                    className="text-[10px] font-mono border border-border-normal text-gray-400 px-3 py-1 hover:bg-white hover:text-black hover:border-border-strong transition-colors uppercase tracking-widest"
                                 >
                                     [ EDIT ]
                                 </button>

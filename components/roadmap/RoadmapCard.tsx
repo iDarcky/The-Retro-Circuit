@@ -36,7 +36,7 @@ const RoadmapCard: FC<RoadmapCardProps> = ({ item, isAdmin, onEdit, onDelete, on
             StatusIcon = ThumbsUp;
             break;
         default:
-            statusColor = 'text-zinc-400 border-white/10 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20';
+            statusColor = 'text-zinc-400 border-border-subtle bg-bg-tertiary hover:bg-white/[0.05] hover:border-border-normal';
             accentColor = 'bg-zinc-500';
             StatusIcon = Zap;
     }
@@ -50,7 +50,7 @@ const RoadmapCard: FC<RoadmapCardProps> = ({ item, isAdmin, onEdit, onDelete, on
 
             {/* Top Bar: Category & Status */}
             <div className="flex justify-between items-start">
-                 <div className="text-[10px] font-mono uppercase tracking-widest opacity-70 border border-white/10 px-2 py-0.5 rounded-full">
+                 <div className="text-[10px] font-mono uppercase tracking-widest opacity-70 border border-border-subtle px-2 py-0.5 rounded-full">
                      {item.category || 'Roadmap'}
                  </div>
                  <div className="mt-1 flex items-center gap-2">
@@ -73,14 +73,14 @@ const RoadmapCard: FC<RoadmapCardProps> = ({ item, isAdmin, onEdit, onDelete, on
             </div>
 
              {/* Footer: Date or ID */}
-             <div className="pt-4 border-t border-white/5 flex justify-between items-end">
+             <div className="pt-4 border-t border-border-strong/5 flex justify-between items-end">
                   <div className={`h-0.5 w-8 ${accentColor} opacity-50`}></div>
                   {item.target_date && <div className="text-[9px] font-mono uppercase tracking-widest opacity-50">{new Date(item.target_date).toLocaleDateString()}</div>}
              </div>
 
              {/* Admin Controls */}
              {isAdmin && (
-                <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 p-1 rounded border border-white/10 backdrop-blur-sm z-20">
+                <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-bg-primary/80 p-1 rounded border border-border-subtle backdrop-blur-sm z-20">
                     {item.status !== 'completed' && onComplete && (
                         <button
                             onClick={(e) => { e.preventDefault(); onComplete(item); }}

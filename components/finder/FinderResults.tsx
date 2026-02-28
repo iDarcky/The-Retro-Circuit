@@ -40,8 +40,8 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
   if (loading) {
     return (
         <div className="w-full h-96 flex flex-col items-center justify-center p-4">
-            <div className="w-16 h-16 border-4 border-white/20 border-t-white rounded-none animate-spin mb-6"></div>
-            <div className="font-pixel text-white text-xs animate-pulse tracking-widest">CALCULATING MATCHES...</div>
+            <div className="w-16 h-16 border-4 border-border-normal border-t-white rounded-none animate-spin mb-6"></div>
+            <div className="font-pixel text-text-primary text-xs animate-pulse tracking-widest">CALCULATING MATCHES...</div>
         </div>
     );
   }
@@ -69,7 +69,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
 
       {/* Header */}
       <div className="text-center mb-16">
-        <h2 className="text-3xl md:text-5xl font-pixel text-white mb-4">
+        <h2 className="text-3xl md:text-5xl font-pixel text-text-primary mb-4">
           {isGift ? 'GIFT PICKS_' : 'YOUR MATCHES_'}
         </h2>
         <p className="text-zinc-500 font-mono text-sm md:text-base max-w-2xl mx-auto">
@@ -81,14 +81,14 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
       </div>
 
       {/* PRIMARY WINNER CARD */}
-      <div className="mb-16 border border-white/10 bg-white/[0.02] p-6 md:p-12 relative group">
+      <div className="mb-16 border border-border-subtle bg-bg-tertiary p-6 md:p-12 relative group">
         <div className="absolute top-0 left-0 bg-white text-black font-pixel text-xs px-4 py-2 uppercase tracking-widest z-10">
             {winner.match_label || 'WINNER'}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             {/* Image Side */}
-            <div className="relative aspect-video md:aspect-square flex items-center justify-center bg-black/20 border border-white/5 p-8">
+            <div className="relative aspect-video md:aspect-square flex items-center justify-center bg-bg-primary/20 border border-border-strong/5 p-8">
                 {winner.image_url ? (
                     <Image
                         src={winner.image_url}
@@ -108,31 +108,31 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                 <div className="text-xs font-mono text-zinc-500 uppercase tracking-widest mb-2">
                     {winner.manufacturer?.name || 'UNKNOWN'}
                 </div>
-                <h3 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-none">
+                <h3 className="text-3xl md:text-5xl font-bold text-text-primary mb-6 leading-none">
                     {winner.name}
                 </h3>
 
-                <div className="mb-8 p-4 bg-white/[0.03] border-l-2 border-white text-zinc-300 font-mono text-sm italic">
+                <div className="mb-8 p-4 bg-white/[0.03] border-l-2 border-border-strong text-zinc-300 font-mono text-sm italic">
                     "{winner.match_reason}"
                 </div>
 
                 {/* Specs Grid */}
                 <div className="grid grid-cols-2 gap-4 mb-8 font-mono text-xs text-zinc-400">
-                     <div className="border border-white/10 p-3">
+                     <div className="border border-border-subtle p-3">
                         <span className="block text-zinc-600 mb-1">PRICE</span>
-                        <span className="text-white text-lg">${winner.price || '???'}</span>
+                        <span className="text-text-primary text-lg">${winner.price || '???'}</span>
                      </div>
-                     <div className="border border-white/10 p-3">
+                     <div className="border border-border-subtle p-3">
                         <span className="block text-zinc-600 mb-1">FORM FACTOR</span>
-                        <span className="text-white uppercase">{winner.form_factor || 'N/A'}</span>
+                        <span className="text-text-primary uppercase">{winner.form_factor || 'N/A'}</span>
                      </div>
-                     <div className="border border-white/10 p-3">
+                     <div className="border border-border-subtle p-3">
                         <span className="block text-zinc-600 mb-1">RELEASE</span>
-                        <span className="text-white">{winner.release_date ? winner.release_date.substring(0, 4) : 'N/A'}</span>
+                        <span className="text-text-primary">{winner.release_date ? winner.release_date.substring(0, 4) : 'N/A'}</span>
                      </div>
-                     <div className="border border-white/10 p-3">
+                     <div className="border border-border-subtle p-3">
                         <span className="block text-zinc-600 mb-1">SCORE</span>
-                        <span className="text-white">{Math.round(winner._score)}% MATCH</span>
+                        <span className="text-text-primary">{Math.round(winner._score)}% MATCH</span>
                      </div>
                 </div>
 
@@ -156,12 +156,12 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
       {alternatives.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
             {alternatives.map((consoleItem) => (
-                <div key={consoleItem.id} className="border border-white/10 bg-white/[0.02] p-6 flex flex-col relative group hover:border-white/30 transition-colors">
-                    <div className="absolute top-0 right-0 bg-white/10 text-zinc-300 font-mono text-[10px] px-3 py-1 uppercase tracking-wider">
+                <div key={consoleItem.id} className="border border-border-subtle bg-bg-tertiary p-6 flex flex-col relative group hover:border-border-strong/30 transition-colors">
+                    <div className="absolute top-0 right-0 bg-border-subtle text-zinc-300 font-mono text-[10px] px-3 py-1 uppercase tracking-wider">
                         {consoleItem.match_label || 'ALTERNATIVE'}
                     </div>
 
-                    <div className="h-48 bg-black/20 flex items-center justify-center mb-6 p-4 border border-white/5">
+                    <div className="h-48 bg-bg-primary/20 flex items-center justify-center mb-6 p-4 border border-border-strong/5">
                         {consoleItem.image_url ? (
                             <Image
                                 src={consoleItem.image_url}
@@ -179,7 +179,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                         <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-1">
                             {consoleItem.manufacturer?.name}
                         </div>
-                        <h4 className="text-xl md:text-2xl font-bold text-white mb-4 leading-tight">
+                        <h4 className="text-xl md:text-2xl font-bold text-text-primary mb-4 leading-tight">
                             {consoleItem.name}
                         </h4>
 
@@ -188,16 +188,16 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                         </p>
 
                         <div className="grid grid-cols-3 gap-2 mb-6 font-mono text-[10px] text-zinc-500">
-                             <div className="bg-white/[0.02] p-2 text-center border border-white/5">
-                                <span className="block text-white mb-0.5">${consoleItem.price}</span>
+                             <div className="bg-bg-tertiary p-2 text-center border border-border-strong/5">
+                                <span className="block text-text-primary mb-0.5">${consoleItem.price}</span>
                                 PRICE
                              </div>
-                             <div className="bg-white/[0.02] p-2 text-center border border-white/5">
-                                <span className="block text-white mb-0.5">{consoleItem.form_factor}</span>
+                             <div className="bg-bg-tertiary p-2 text-center border border-border-strong/5">
+                                <span className="block text-text-primary mb-0.5">{consoleItem.form_factor}</span>
                                 FORM
                              </div>
-                             <div className="bg-white/[0.02] p-2 text-center border border-white/5">
-                                <span className="block text-white mb-0.5">{Math.round(consoleItem._score)}%</span>
+                             <div className="bg-bg-tertiary p-2 text-center border border-border-strong/5">
+                                <span className="block text-text-primary mb-0.5">{Math.round(consoleItem._score)}%</span>
                                 MATCH
                              </div>
                         </div>
@@ -211,7 +211,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
 
                              {/* COMPARE BUTTON */}
                              <Link href={`/arena/${winner.slug}-vs-${consoleItem.slug}`} className="w-full">
-                                <button className="w-full py-3 border border-white/20 text-zinc-400 text-xs font-mono uppercase hover:bg-white hover:text-black hover:border-white transition-all">
+                                <button className="w-full py-3 border border-border-normal text-zinc-400 text-xs font-mono uppercase hover:bg-white hover:text-black hover:border-border-strong transition-all">
                                     COMPARE VS WINNER
                                 </button>
                              </Link>
@@ -229,8 +229,8 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
           </div>
       )}
 
-      <div className="flex justify-center border-t border-white/10 pt-12">
-        <button onClick={onRestart} className="flex items-center text-zinc-500 hover:text-white font-mono text-sm tracking-widest transition-colors py-4 px-6 uppercase">
+      <div className="flex justify-center border-t border-border-subtle pt-12">
+        <button onClick={onRestart} className="flex items-center text-zinc-500 hover:text-text-primary font-mono text-sm tracking-widest transition-colors py-4 px-6 uppercase">
           <span className="mr-2 text-lg">↺</span> RESTART QUIZ
         </button>
       </div>

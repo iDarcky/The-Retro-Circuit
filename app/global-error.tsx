@@ -33,7 +33,7 @@ export default function GlobalError({
       <body className={`${pressStart.variable} ${jetBrainsMono.variable} ${shareTechMono.variable} bg-bg-primary text-primary font-mono h-screen flex flex-col items-center justify-center p-4 overflow-hidden`}>
 
         {/* Main Error Container */}
-        <div className="relative border-4 border-accent p-8 md:p-12 max-w-3xl w-full bg-black/80 shadow-[0_0_50px_rgba(255,0,255,0.2)]">
+        <div className="relative border-4 border-accent p-8 md:p-12 max-w-3xl w-full bg-bg-primary/80 shadow-[0_0_50px_rgba(255,0,255,0.2)]">
 
             {/* Header / System Halt */}
             <div className="text-center border-b-2 border-accent/50 pb-8 mb-8">
@@ -47,7 +47,7 @@ export default function GlobalError({
 
             {/* Error Details */}
             <div className="flex flex-col gap-6 mb-12">
-                <div className="bg-black border border-border-normal p-4 font-mono text-sm text-gray-400">
+                <div className="bg-bg-primary border border-border-normal p-4 font-mono text-sm text-gray-400">
                     <p className="text-primary text-xs uppercase mb-2">Error Diagnostic:</p>
                     <div className="h-[120px] overflow-y-auto custom-scrollbar p-2 bg-bg-primary/50">
                         <pre className="font-mono text-sm text-accent/90 whitespace-pre-wrap break-words">

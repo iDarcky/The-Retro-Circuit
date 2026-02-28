@@ -55,7 +55,7 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                         EDIT CONSOLE
                     </h1>
                     <div className="flex gap-4 items-center">
-                        <Link href="/admin/consoles" className="font-mono text-xs text-gray-500 hover:text-white hover:underline">
+                        <Link href="/admin/consoles" className="font-mono text-xs text-gray-500 hover:text-text-primary hover:underline">
                             &lt; BACK TO INDEX
                         </Link>
                         <span className="font-mono text-xs text-gray-700">|</span>
@@ -94,7 +94,7 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
             {/* NEW VARIANTS SECTION */}
             <div className="mt-8 border-t border-dashed border-gray-800 pt-8">
                  <div className="flex justify-between items-center mb-6">
-                     <h3 className="font-pixel text-lg text-white">HARDWARE VARIANTS</h3>
+                     <h3 className="font-pixel text-lg text-text-primary">HARDWARE VARIANTS</h3>
                      <Button variant="secondary" className="text-xs" onClick={handleOpenCreateVariant}>
                         + ADD NEW VARIANT
                      </Button>
@@ -103,9 +103,9 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                  <div className="grid grid-cols-1 gap-4">
                      {consoleData.variants && consoleData.variants.length > 0 ? (
                          consoleData.variants.map((variant) => (
-                             <div key={variant.id} className="bg-black/40 border border-border-normal p-4 flex justify-between items-center hover:border-secondary transition-colors">
+                             <div key={variant.id} className="bg-bg-primary/40 border border-border-normal p-4 flex justify-between items-center hover:border-secondary transition-colors">
                                  <div>
-                                     <div className="font-bold text-white mb-1">
+                                     <div className="font-bold text-text-primary mb-1">
                                          {variant.variant_name}
                                          {variant.is_default && <span className="ml-2 text-[10px] bg-secondary text-black px-1.5 py-0.5 font-mono">DEFAULT</span>}
                                      </div>
@@ -115,7 +115,7 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                                  </div>
                                  <Button
                                     variant="secondary"
-                                    className="text-xs border-gray-600 text-gray-400 hover:border-white hover:text-white"
+                                    className="text-xs border-gray-600 text-gray-400 hover:border-border-strong hover:text-text-primary"
                                     onClick={() => handleOpenEditVariant(variant)}
                                  >
                                      EDIT SPECS

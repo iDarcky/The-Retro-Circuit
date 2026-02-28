@@ -391,16 +391,16 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
     return (
         <div className="space-y-6">
-            <div className={`border-l-4 p-5 mb-6 bg-black/40 shadow-md ${isEditMode ? 'border-secondary' : 'border-accent'}`}>
+            <div className={`border-l-4 p-5 mb-6 bg-bg-primary/40 shadow-md ${isEditMode ? 'border-secondary' : 'border-accent'}`}>
                 <h3 className={`font-bold text-sm uppercase font-mono tracking-widest ${isEditMode ? 'text-secondary' : 'border-accent'}`}>{isEditMode ? 'Edit Mode: Variant Specs' : 'Step 2: Technical Specs'}</h3>
                 <p className="text-xs text-gray-400 mt-2 font-mono">{isEditMode ? `Modifying Variant ID: ${initialData?.id}` : 'Define hardware capabilities. Create multiple variants (Pro, Slim, etc.) for a console.'}</p>
             </div>
 
             <form className="space-y-6">
-                <div className="mb-8 space-y-6 bg-black/20 p-6 border border-border-normal">
+                <div className="mb-8 space-y-6 bg-bg-primary/20 p-6 border border-border-normal">
                     <div>
                         <label className={`text-[10px] mb-2 block uppercase font-bold ${fieldErrors.console_id ? 'text-accent' : 'text-gray-500'}`}>Target Console Folder</label>
-                        <select className={`w-full bg-black border p-3 outline-none text-white font-mono text-sm ${fieldErrors.console_id ? 'border-accent' : 'border-gray-700 focus:border-secondary'} ${isEditMode ? 'opacity-50 cursor-not-allowed' : ''}`} value={formData.console_id || ''} onChange={(e: ChangeEvent<HTMLSelectElement>) => handleInputChange('console_id', e.target.value)} required disabled={isEditMode}>
+                        <select className={`w-full bg-bg-primary border p-3 outline-none text-text-primary font-mono text-sm ${fieldErrors.console_id ? 'border-accent' : 'border-gray-700 focus:border-secondary'} ${isEditMode ? 'opacity-50 cursor-not-allowed' : ''}`} value={formData.console_id || ''} onChange={(e: ChangeEvent<HTMLSelectElement>) => handleInputChange('console_id', e.target.value)} required disabled={isEditMode}>
                             <option value="">-- Select Console Folder --</option>
                             {consoleList.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
@@ -408,7 +408,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     {!isEditMode && existingVariants.length > 0 && (
                         <div className="p-4 border border-dashed border-primary bg-primary/5">
                             <label className="text-[10px] text-primary mb-2 block uppercase font-bold">Quick Fill: Copy Specs</label>
-                            <select className="w-full bg-black border border-primary text-primary p-2 font-mono text-xs" value={selectedTemplate} onChange={(e: ChangeEvent<HTMLSelectElement>) => handleTemplateSelect(e.target.value)}>
+                            <select className="w-full bg-bg-primary border border-primary text-primary p-2 font-mono text-xs" value={selectedTemplate} onChange={(e: ChangeEvent<HTMLSelectElement>) => handleTemplateSelect(e.target.value)}>
                                 <option value="">-- Select a Base Model Template --</option>
                                 {existingVariants.map(v => <option key={v.id} value={v.id}>{v.variant_name} {v.is_default ? '(Default)' : ''}</option>)}
                             </select>
@@ -421,12 +421,12 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                         const isOpen = openSections[group.title];
                         const hasError = group.fields.some(f => f.key && fieldErrors[f.key as keyof typeof fieldErrors]);
                         return (
-                            <div key={idx} className={`bg-black/40 border-l-4 ${hasError ? 'border-accent' : 'border-secondary'} shadow-lg`}>
-                                <button type="button" onClick={() => toggleSection(group.title)} className={`w-full flex justify-between items-center p-4 text-left font-mono uppercase tracking-widest text-sm ${isOpen ? 'text-white bg-white/5 font-bold' : 'text-gray-400 hover:text-white'}`}>
+                            <div key={idx} className={`bg-bg-primary/40 border-l-4 ${hasError ? 'border-accent' : 'border-secondary'} shadow-lg`}>
+                                <button type="button" onClick={() => toggleSection(group.title)} className={`w-full flex justify-between items-center p-4 text-left font-mono uppercase tracking-widest text-sm ${isOpen ? 'text-text-primary bg-bg-tertiary font-bold' : 'text-gray-400 hover:text-text-primary'}`}>
                                     <span>{group.title}</span><div className={`${isOpen ? 'rotate-180 text-secondary' : 'text-gray-600'}`}><ChevronDown /></div>
                                 </button>
                                 {isOpen && (
-                                    <div className="p-6 grid grid-cols-1 md:grid-cols-12 gap-6 border-t border-white/5">
+                                    <div className="p-6 grid grid-cols-1 md:grid-cols-12 gap-6 border-t border-border-strong/5">
                                         {group.fields.map((field: any, fieldIdx: number) => {
                                             let colSpan = 'md:col-span-6';
                                             if (field.width === 'full') colSpan = 'md:col-span-12';
@@ -445,7 +445,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                             <label className="text-[10px] mb-1 block uppercase text-gray-500">Date Precision</label>
                                                             <SwissDropdown
                                                                 className="w-full"
-                                                                buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center"
+                                                                buttonClassName="bg-bg-primary border border-gray-700 p-3 outline-none text-text-primary font-mono text-sm h-[46px] flex justify-between items-center"
                                                                 value={datePrecision}
                                                                 onChange={(val) => {
                                                                     setDatePrecision(val as any);
@@ -467,7 +467,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                                 </label>
                                                                 <input
                                                                     type={datePrecision === 'year' ? 'number' : datePrecision === 'month' ? 'month' : 'date'}
-                                                                    className="w-full bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm"
+                                                                    className="w-full bg-bg-primary border border-gray-700 p-3 outline-none text-text-primary font-mono text-sm"
                                                                     value={dateValue}
                                                                     onChange={(e) => setDateValue(e.target.value)}
                                                                     placeholder={datePrecision === 'year' ? 'YYYY' : ''}
@@ -483,8 +483,8 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                     <div key={field.key || `field-${fieldIdx}`} className={`${colSpan}`}>
                                                         <label className={`text-[10px] mb-1 block uppercase ${error ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
                                                         <div className="flex gap-2">
-                                                            <input type="number" className={`flex-1 border p-3 outline-none font-mono text-sm bg-black text-white ${error ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`} value={ramInput.value} onChange={(e) => handleRamChange(e.target.value, ramInput.unit)} />
-                                                            <SwissDropdown value={ramInput.unit} onChange={(val) => handleRamChange(ramInput.value, val as 'GB' | 'MB')} options={[{label: 'GB', value: 'GB'}, {label: 'MB', value: 'MB'}]} className="w-24" buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center" labelPrefix="" inverted={false} />
+                                                            <input type="number" className={`flex-1 border p-3 outline-none font-mono text-sm bg-bg-primary text-text-primary ${error ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`} value={ramInput.value} onChange={(e) => handleRamChange(e.target.value, ramInput.unit)} />
+                                                            <SwissDropdown value={ramInput.unit} onChange={(val) => handleRamChange(ramInput.value, val as 'GB' | 'MB')} options={[{label: 'GB', value: 'GB'}, {label: 'MB', value: 'MB'}]} className="w-24" buttonClassName="bg-bg-primary border border-gray-700 p-3 outline-none text-text-primary font-mono text-sm h-[46px] flex justify-between items-center" labelPrefix="" inverted={false} />
                                                         </div>
                                                         {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
                                                     </div>
@@ -500,11 +500,11 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                         <div className="flex gap-2">
                                                             <input
                                                                 type="number"
-                                                                className={`flex-1 border p-3 outline-none font-mono text-sm bg-black text-white ${error ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`}
+                                                                className={`flex-1 border p-3 outline-none font-mono text-sm bg-bg-primary text-text-primary ${error ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`}
                                                                 value={inputState.value}
                                                                 onChange={(e) => handleCpuClockChange(isMax ? 'max' : 'min', e.target.value, inputState.unit)}
                                                             />
-                                                            <SwissDropdown value={inputState.unit} onChange={(val) => handleCpuClockChange(isMax ? 'max' : 'min', inputState.value, val as 'GHz' | 'MHz')} options={[{label: 'GHz', value: 'GHz'}, {label: 'MHz', value: 'MHz'}]} className="w-24" buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center" labelPrefix="" inverted={false} />
+                                                            <SwissDropdown value={inputState.unit} onChange={(val) => handleCpuClockChange(isMax ? 'max' : 'min', inputState.value, val as 'GHz' | 'MHz')} options={[{label: 'GHz', value: 'GHz'}, {label: 'MHz', value: 'MHz'}]} className="w-24" buttonClassName="bg-bg-primary border border-gray-700 p-3 outline-none text-text-primary font-mono text-sm h-[46px] flex justify-between items-center" labelPrefix="" inverted={false} />
                                                         </div>
                                                         {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
                                                     </div>
@@ -542,7 +542,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                             <div className="border-2 border-primary">
                                 <div className="bg-primary/20 p-2 flex justify-between items-center border-b border-primary/50">
                                     <span className="text-[10px] font-mono text-primary px-2">PERFORMANCE MATRIX</span>
-                                    <button type="button" onClick={() => setShowEmulationForm(false)} className="text-[10px] font-mono text-primary hover:text-white px-2 py-1">[ CLOSE ]</button>
+                                    <button type="button" onClick={() => setShowEmulationForm(false)} className="text-[10px] font-mono text-primary hover:text-text-primary px-2 py-1">[ CLOSE ]</button>
                                 </div>
                                 <EmulationForm variantId={initialData.id} onSave={() => onSuccess("EMULATION DATA SYNCED.")} />
                             </div>

@@ -84,7 +84,7 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
                   BONUS ROUND
                 </span>
             ) : (
-                <span className="font-mono text-zinc-500 text-xs tracking-wider border border-white/5 px-2 py-1">
+                <span className="font-mono text-zinc-500 text-xs tracking-wider border border-border-strong/5 px-2 py-1">
                     0{stepNumber} / 0{totalSteps}
                 </span>
             )}
@@ -95,7 +95,7 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
             )}
         </div>
 
-        <h2 className="text-2xl md:text-4xl font-pixel text-white mb-4 leading-relaxed uppercase">
+        <h2 className="text-2xl md:text-4xl font-pixel text-text-primary mb-4 leading-relaxed uppercase">
           {question}
         </h2>
 
@@ -124,8 +124,8 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
                 "group relative text-left transition-all duration-200 focus:outline-none p-6 border",
                 // Swiss Interactive States
                 isSelected
-                    ? "bg-white border-white text-black"
-                    : "bg-transparent border-white/10 text-zinc-400 hover:border-white hover:text-white"
+                    ? "bg-white border-border-strong text-black"
+                    : "bg-transparent border-border-subtle text-zinc-400 hover:border-border-strong hover:text-text-primary"
                 )}
             >
                 {/* Selection Indicator (Radio/Checkbox Style) */}
@@ -133,7 +133,7 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
                     <div className="flex-1">
                         <h3 className={clsx(
                             "text-sm font-bold font-mono uppercase tracking-wide mb-2",
-                            isSelected ? "text-black" : "text-white group-hover:text-white"
+                            isSelected ? "text-black" : "text-text-primary group-hover:text-text-primary"
                         )}>
                             {option.label}
                         </h3>
@@ -150,7 +150,7 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
                     {/* Checkbox Graphic */}
                     <div className={clsx(
                         "w-4 h-4 border flex items-center justify-center transition-colors mt-0.5",
-                        isSelected ? "border-black bg-black text-white" : "border-zinc-700 group-hover:border-white"
+                        isSelected ? "border-black bg-bg-primary text-text-primary" : "border-zinc-700 group-hover:border-border-strong"
                     )}>
                         {isSelected && <div className="w-2 h-2 bg-white" />}
                     </div>

@@ -6,13 +6,13 @@ export default function BroadcastHub() {
     <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn min-h-screen flex flex-col">
 
       {/* HEADER */}
-      <header className="mb-12 pt-8 border-b border-white pb-6">
+      <header className="mb-12 pt-8 border-b border-border-strong pb-6">
         <div className="flex justify-between items-end">
            <div>
-              <Link href="/admin" className="flex items-center gap-2 text-xs font-mono text-gray-500 hover:text-white transition-colors mb-4 uppercase tracking-widest">
+              <Link href="/admin" className="flex items-center gap-2 text-xs font-mono text-gray-500 hover:text-text-primary transition-colors mb-4 uppercase tracking-widest">
                  <ArrowLeft size={14} /> Return to Mainframe
               </Link>
-              <h1 className="text-4xl md:text-8xl font-pixel text-white leading-none tracking-tighter mix-blend-difference">
+              <h1 className="text-4xl md:text-8xl font-pixel text-text-primary leading-none tracking-tighter mix-blend-difference">
                  BROADCAST
               </h1>
               <p className="font-mono text-xs md:text-sm text-gray-500 mt-2 tracking-widest uppercase">

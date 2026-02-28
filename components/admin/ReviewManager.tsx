@@ -85,7 +85,7 @@ export const ReviewManager: React.FC<ReviewManagerProps> = ({ reviews, consoles 
     <div className="w-full max-w-6xl mx-auto p-6 space-y-8">
 
       {/* Create Form */}
-      <div className="bg-black/80 border border-white/10 p-6">
+      <div className="bg-bg-primary/80 border border-border-subtle p-6">
         <h2 className="text-xl font-pixel text-cyan-500 mb-6 flex items-center gap-2">
            <span className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse"></span>
            PUBLISH ANALYSIS
@@ -104,7 +104,7 @@ export const ReviewManager: React.FC<ReviewManagerProps> = ({ reviews, consoles 
                      ]}
                      labelPrefix="" inverted={false}
                      className="w-full"
-                     buttonClassName="bg-black border border-white/20 p-3 text-sm font-mono text-white focus:border-cyan-500 focus:outline-none h-[46px] flex justify-between items-center"
+                     buttonClassName="bg-bg-primary border border-border-normal p-3 text-sm font-mono text-text-primary focus:border-cyan-500 focus:outline-none h-[46px] flex justify-between items-center"
                    />
                </div>
 
@@ -118,7 +118,7 @@ export const ReviewManager: React.FC<ReviewManagerProps> = ({ reviews, consoles 
                      step="0.1"
                      value={formData.score}
                      onChange={handleChange}
-                     className="w-full bg-black border border-white/20 p-3 text-sm font-mono text-white focus:border-cyan-500 focus:outline-none"
+                     className="w-full bg-bg-primary border border-border-normal p-3 text-sm font-mono text-text-primary focus:border-cyan-500 focus:outline-none"
                      required
                    />
                </div>
@@ -131,7 +131,7 @@ export const ReviewManager: React.FC<ReviewManagerProps> = ({ reviews, consoles 
                name="title"
                value={formData.title}
                onChange={handleChange}
-               className="w-full bg-black border border-white/20 p-3 text-sm font-mono text-white placeholder:text-gray-700 focus:border-cyan-500 focus:outline-none"
+               className="w-full bg-bg-primary border border-border-normal p-3 text-sm font-mono text-text-primary placeholder:text-gray-700 focus:border-cyan-500 focus:outline-none"
                placeholder="> ENTER_TITLE..."
                required
              />
@@ -143,7 +143,7 @@ export const ReviewManager: React.FC<ReviewManagerProps> = ({ reviews, consoles 
                name="summary"
                value={formData.summary}
                onChange={handleChange}
-               className="w-full bg-black border border-white/20 p-3 text-sm font-mono text-white placeholder:text-gray-700 focus:border-cyan-500 focus:outline-none h-32"
+               className="w-full bg-bg-primary border border-border-normal p-3 text-sm font-mono text-text-primary placeholder:text-gray-700 focus:border-cyan-500 focus:outline-none h-32"
                placeholder="> ENTER_ANALYSIS..."
                required
              />
@@ -157,7 +157,7 @@ export const ReviewManager: React.FC<ReviewManagerProps> = ({ reviews, consoles 
                      name="pros"
                      value={formData.pros}
                      onChange={handleChange}
-                     className="w-full bg-black border border-white/20 p-3 text-sm font-mono text-emerald-400 placeholder:text-emerald-900/50 focus:border-emerald-500 focus:outline-none"
+                     className="w-full bg-bg-primary border border-border-normal p-3 text-sm font-mono text-emerald-400 placeholder:text-emerald-900/50 focus:border-emerald-500 focus:outline-none"
                      placeholder="Great Screen, Good Battery..."
                    />
                </div>
@@ -168,7 +168,7 @@ export const ReviewManager: React.FC<ReviewManagerProps> = ({ reviews, consoles 
                      name="cons"
                      value={formData.cons}
                      onChange={handleChange}
-                     className="w-full bg-black border border-white/20 p-3 text-sm font-mono text-rose-400 placeholder:text-rose-900/50 focus:border-rose-500 focus:outline-none"
+                     className="w-full bg-bg-primary border border-border-normal p-3 text-sm font-mono text-rose-400 placeholder:text-rose-900/50 focus:border-rose-500 focus:outline-none"
                      placeholder="Heavy, Expensive..."
                    />
                </div>
@@ -187,12 +187,12 @@ export const ReviewManager: React.FC<ReviewManagerProps> = ({ reviews, consoles 
       </div>
 
       {/* List */}
-      <div className="bg-black/40 border border-white/5 p-6">
+      <div className="bg-bg-primary/40 border border-border-strong/5 p-6">
         <h3 className="text-sm font-mono text-gray-500 uppercase mb-4">Published Reviews</h3>
 
         <div className="space-y-4">
           {reviews.map((review) => (
-            <div key={review.id} className="flex items-start justify-between p-4 border border-white/10 bg-black/20 hover:border-cyan-500/30 transition-colors">
+            <div key={review.id} className="flex items-start justify-between p-4 border border-border-subtle bg-bg-primary/20 hover:border-cyan-500/30 transition-colors">
               <div className="flex-1">
                  <div className="flex items-center gap-2 mb-2">
                     <span className="text-[10px] font-mono text-cyan-500 border border-cyan-500/30 px-2 py-0.5">
@@ -202,7 +202,7 @@ export const ReviewManager: React.FC<ReviewManagerProps> = ({ reviews, consoles 
                        {review.console_name}
                     </span>
                  </div>
-                 <h4 className="font-bold text-white mb-1">{review.title}</h4>
+                 <h4 className="font-bold text-text-primary mb-1">{review.title}</h4>
                  <p className="font-mono text-xs text-gray-400 line-clamp-2">
                     {review.summary}
                  </p>

@@ -32,13 +32,13 @@ export const ArenaStickyHeader = ({ selectionA, selectionB, onReset }: ArenaStic
                 ${isVisible ? 'translate-y-0' : '-translate-y-full'}
             `}
         >
-            <div className="bg-black/80 backdrop-blur-md border-b border-white/10 shadow-2xl">
+            <div className="bg-bg-primary/80 backdrop-blur-md border-b border-border-subtle shadow-2xl">
                 <div className="max-w-7xl mx-auto px-4 py-2">
                     <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
                         
                         {/* Player A (Left) */}
                         <div className="flex items-center gap-3 min-w-0">
-                            <div className="w-10 h-10 bg-white/5 border border-white/10 flex-shrink-0 relative overflow-hidden hidden sm:block">
+                            <div className="w-10 h-10 bg-bg-tertiary border border-border-subtle flex-shrink-0 relative overflow-hidden hidden sm:block">
                                 {(selectionA.selectedVariant?.image_url || selectionA.details.image_url) ? (
                                     <img 
                                         src={selectionA.selectedVariant?.image_url || selectionA.details.image_url} 
@@ -46,14 +46,14 @@ export const ArenaStickyHeader = ({ selectionA, selectionB, onReset }: ArenaStic
                                         className="w-full h-full object-contain p-1"
                                     />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-[8px] font-mono text-white/20">IMG</div>
+                                    <div className="w-full h-full flex items-center justify-center text-[8px] font-mono text-border-normal">IMG</div>
                                 )}
                             </div>
                             <div className="flex flex-col min-w-0">
                                 <span className="font-pixel text-[10px] sm:text-xs text-blue-400 truncate uppercase tracking-wide">
                                     {selectionA.details.name}
                                 </span>
-                                <span className="font-mono text-[10px] text-white/50 truncate hidden sm:inline">
+                                <span className="font-mono text-[10px] text-text-muted truncate hidden sm:inline">
                                     {selectionA.selectedVariant?.variant_name || 'Base Model'}
                                 </span>
                             </div>
@@ -61,10 +61,10 @@ export const ArenaStickyHeader = ({ selectionA, selectionB, onReset }: ArenaStic
 
                         {/* Center - VS / Reset */}
                         <div className="flex flex-col items-center justify-center gap-1">
-                            <span className="font-pixel text-white/20 text-xs">VS</span>
+                            <span className="font-pixel text-border-normal text-xs">VS</span>
                             <button 
                                 onClick={onReset}
-                                className="text-[10px] font-mono text-white/50 hover:text-white underline decoration-dotted transition-colors uppercase"
+                                className="text-[10px] font-mono text-text-muted hover:text-text-primary underline decoration-dotted transition-colors uppercase"
                             >
                                 CHANGE
                             </button>
@@ -76,11 +76,11 @@ export const ArenaStickyHeader = ({ selectionA, selectionB, onReset }: ArenaStic
                                 <span className="font-pixel text-[10px] sm:text-xs text-red-400 truncate uppercase tracking-wide text-right">
                                     {selectionB.details.name}
                                 </span>
-                                <span className="font-mono text-[10px] text-white/50 truncate hidden sm:inline text-right">
+                                <span className="font-mono text-[10px] text-text-muted truncate hidden sm:inline text-right">
                                     {selectionB.selectedVariant?.variant_name || 'Base Model'}
                                 </span>
                             </div>
-                            <div className="w-10 h-10 bg-white/5 border border-white/10 flex-shrink-0 relative overflow-hidden hidden sm:block">
+                            <div className="w-10 h-10 bg-bg-tertiary border border-border-subtle flex-shrink-0 relative overflow-hidden hidden sm:block">
                                 {(selectionB.selectedVariant?.image_url || selectionB.details.image_url) ? (
                                     <img 
                                         src={selectionB.selectedVariant?.image_url || selectionB.details.image_url} 
@@ -88,7 +88,7 @@ export const ArenaStickyHeader = ({ selectionA, selectionB, onReset }: ArenaStic
                                         className="w-full h-full object-contain p-1"
                                     />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-[8px] font-mono text-white/20">IMG</div>
+                                    <div className="w-full h-full flex items-center justify-center text-[8px] font-mono text-border-normal">IMG</div>
                                 )}
                             </div>
                         </div>

@@ -14,7 +14,7 @@ const StatBar = ({ value, max, color }: { value: number; max: number; color: 'bl
     const bgClass = color === 'blue' ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]';
 
     return (
-        <div className="w-full h-1.5 bg-white/10 mt-2 rounded-sm overflow-hidden flex justify-start">
+        <div className="w-full h-1.5 bg-border-subtle mt-2 rounded-sm overflow-hidden flex justify-start">
             <div 
                 className={`h-full ${bgClass} transition-all duration-1000 ease-out`} 
                 style={{ width: `${percentage}%` }}
@@ -67,7 +67,7 @@ const TaleRow = ({
     const maxVal = (showBar && numA && numB) ? Math.max(numA, numB) : 0;
 
     return (
-        <div className="group flex flex-col md:flex-row items-center justify-between py-5 border-b border-white/5 hover:bg-white/5 transition-colors relative">
+        <div className="group flex flex-col md:flex-row items-center justify-between py-5 border-b border-border-strong/5 hover:bg-bg-tertiary transition-colors relative">
             
             {/* Player A (Left) */}
             <div className="w-full md:w-5/12 text-center md:text-right order-2 md:order-1 px-4 flex flex-col items-center md:items-end">
@@ -86,8 +86,8 @@ const TaleRow = ({
 
             {/* Label (Center) */}
             <div className="w-full md:w-2/12 text-center order-1 md:order-2 mb-2 md:mb-0 relative">
-                <div className="absolute inset-0 bg-white/5 blur-xl rounded-full opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                <span className="font-pixel text-[10px] md:text-xs uppercase tracking-[0.2em] text-white/40 group-hover:text-white transition-colors relative z-10">
+                <div className="absolute inset-0 bg-bg-tertiary blur-xl rounded-full opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                <span className="font-pixel text-[10px] md:text-xs uppercase tracking-[0.2em] text-border-normal group-hover:text-text-primary transition-colors relative z-10">
                     {label}
                 </span>
             </div>
@@ -160,13 +160,13 @@ export const GlanceComparison = ({ variantA, variantB }: GlanceComparisonProps) 
         <div className="w-full mb-12 animate-fadeIn">
             <div className="flex items-center gap-4 mb-8">
                 <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent flex-1"></div>
-                <h3 className="font-pixel text-xl md:text-3xl text-white text-center tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
+                <h3 className="font-pixel text-xl md:text-3xl text-text-primary text-center tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
                     TALE OF THE TAPE
                 </h3>
                 <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent flex-1"></div>
             </div>
 
-            <div className="flex flex-col border-t border-b border-white/10 bg-black/20 backdrop-blur-sm">
+            <div className="flex flex-col border-t border-b border-border-subtle bg-bg-primary/20 backdrop-blur-sm">
                 
                 {/* 0. Max Emulation (New) */}
                 <TaleRow

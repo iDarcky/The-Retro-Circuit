@@ -51,7 +51,7 @@ export default async function NewsPage() {
    };
 
    return (
-      <div className="w-full bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-violet-500/30 selection:text-white pb-24 relative overflow-hidden">
+      <div className="w-full bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-violet-500/30 selection:text-text-primary pb-24 relative overflow-hidden">
          <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -61,14 +61,14 @@ export default async function NewsPage() {
          <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.05] pointer-events-none"></div>
 
          {/* HERO HEADER */}
-         <header className="px-6 md:px-12 pt-12 md:pt-24 pb-8 md:pb-16 border-b border-white/5 relative z-10">
+         <header className="px-6 md:px-12 pt-12 md:pt-24 pb-8 md:pb-16 border-b border-border-strong/5 relative z-10">
             <div className="max-w-7xl mx-auto w-full">
                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-violet-900/30 bg-violet-950/10 text-[9px] md:text-xs font-mono uppercase tracking-widest text-violet-400 mb-8 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(139,92,246,0.1)]">
                   <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-violet-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(139,92,246,0.5)]"></div>
                   Transmission Feed // v1.0
                </div>
 
-               <h1 className="text-4xl md:text-6xl font-pixel text-white leading-none tracking-tighter mb-4">
+               <h1 className="text-4xl md:text-6xl font-pixel text-text-primary leading-none tracking-tighter mb-4">
                   NEWS & <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">SIGNALS</span><span className="text-violet-500 animate-pulse">_</span>
                </h1>
@@ -105,7 +105,7 @@ export default async function NewsPage() {
                {reviews.length > 0 ? (
                   <ReviewGrid reviews={reviews} />
                ) : (
-                  <div className="text-center py-12 border border-white/10 bg-white/5 rounded-lg">
+                  <div className="text-center py-12 border border-border-subtle bg-bg-tertiary rounded-lg">
                      <p className="font-mono text-sm text-gray-500">NO_DATA_AVAILABLE</p>
                   </div>
                )}
@@ -127,7 +127,7 @@ export default async function NewsPage() {
                      {newsItems.length > 0 ? (
                         <NewsFeed news={newsItems} />
                      ) : (
-                        <div className="text-center py-12 border border-white/10 bg-white/5 rounded-lg">
+                        <div className="text-center py-12 border border-border-subtle bg-bg-tertiary rounded-lg">
                            <p className="font-mono text-sm text-gray-500">NO_DATA_AVAILABLE</p>
                         </div>
                      )}

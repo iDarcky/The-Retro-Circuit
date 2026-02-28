@@ -7,7 +7,7 @@ interface SignalFeedProps {
 
 export const SignalFeed: React.FC<SignalFeedProps> = ({ signals }) => {
   return (
-    <div className="w-full bg-black/80 border border-white/10 p-4 md:p-6 overflow-hidden relative group">
+    <div className="w-full bg-bg-primary/80 border border-border-subtle p-4 md:p-6 overflow-hidden relative group">
       {/* Decorative */}
       <div className="absolute top-0 right-0 p-2 opacity-20">
         <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]"></div>

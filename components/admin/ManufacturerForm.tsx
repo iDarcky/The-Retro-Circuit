@@ -182,7 +182,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                 </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-black/20 p-6 border border-border-normal">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-bg-primary/20 p-6 border border-border-normal">
                 {MANUFACTURER_FORM_FIELDS.map(field => {
                     if (field.key === 'slug') {
                         return (
@@ -192,7 +192,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                                     <button
                                         type="button"
                                         onClick={() => setIsSlugLocked(!isSlugLocked)}
-                                        className="text-[10px] text-gray-500 hover:text-white transition-colors cursor-pointer"
+                                        className="text-[10px] text-gray-500 hover:text-text-primary transition-colors cursor-pointer"
                                         title={isSlugLocked ? "Unlock to edit manually" : "Lock to auto-generate from name"}
                                     >
                                         [{isSlugLocked ? 'UNLOCK' : 'LOCK'}]
@@ -202,7 +202,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                                     type="text"
                                     className={`w-full border p-3 font-mono text-sm outline-none transition-colors ${isSlugLocked
                                             ? 'bg-bg-secondary border-border-normal text-gray-500 cursor-not-allowed opacity-75'
-                                            : `bg-bg-primary text-white ${fieldErrors.slug ? 'border-accent' : 'border-border-normal focus:border-white'}`
+                                            : `bg-bg-primary text-text-primary ${fieldErrors.slug ? 'border-accent' : 'border-border-normal focus:border-border-strong'}`
                                         }`}
                                     value={formData[field.key] || ''}
                                     onChange={(e: ChangeEvent<HTMLInputElement>) => handleInputChange(field.key, e.target.value)}
@@ -217,16 +217,16 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                         return (
                             <div key={field.key} className="col-span-1 md:col-span-2">
                                 <label className="text-[10px] text-gray-500 mb-1 block uppercase tracking-wider">{field.label}</label>
-                                <div className="w-full bg-bg-primary border border-border-normal p-2 font-mono flex flex-wrap gap-2 min-h-[50px] transition-colors hover:border-white">
+                                <div className="w-full bg-bg-primary border border-border-normal p-2 font-mono flex flex-wrap gap-2 min-h-[50px] transition-colors hover:border-border-strong">
                                     {franchises.map(tag => (
                                         <span key={tag} className="bg-bg-secondary text-primary px-2 py-1 text-xs border border-border-normal flex items-center gap-1 uppercase">
                                             {tag}
-                                            <button type="button" onClick={() => removeFranchise(tag)} className="hover:text-white font-bold text-gray-500">×</button>
+                                            <button type="button" onClick={() => removeFranchise(tag)} className="hover:text-text-primary font-bold text-gray-500">×</button>
                                         </span>
                                     ))}
                                     <input
                                         type="text"
-                                        className="bg-transparent outline-none text-white flex-1 min-w-[120px] text-xs uppercase placeholder:text-gray-700"
+                                        className="bg-transparent outline-none text-text-primary flex-1 min-w-[120px] text-xs uppercase placeholder:text-gray-700"
                                         placeholder="TYPE & ENTER..."
                                         value={franchiseInput}
                                         onChange={(e: ChangeEvent<HTMLInputElement>) => setFranchiseInput(e.target.value)}
@@ -241,7 +241,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                         return (
                             <div key={field.key} className="col-span-1 md:col-span-2">
                                 <label className={`text-[10px] mb-1 block uppercase tracking-wider ${fieldErrors.image_url ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
-                                <div className="border border-border-normal bg-black p-4">
+                                <div className="border border-border-normal bg-bg-primary p-4">
                                     <ImageUpload
                                         value={formData[field.key]}
                                         onChange={(url) => handleInputChange(field.key, url)}
@@ -261,7 +261,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                         type="button"
                         onClick={handleDelete}
                         disabled={loading}
-                        className="font-mono text-xs text-red-500 border border-red-900 bg-red-900/10 px-4 py-2 hover:bg-red-500 hover:text-white transition-colors uppercase tracking-widest"
+                        className="font-mono text-xs text-red-500 border border-red-900 bg-red-900/10 px-4 py-2 hover:bg-red-500 hover:text-text-primary transition-colors uppercase tracking-widest"
                     >
                         [ DELETE RECORD ]
                     </button>

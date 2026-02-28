@@ -75,11 +75,11 @@ const AdminEditTrigger: FC<AdminEditTriggerProps> = ({
             className={`${positionClasses} group ${className}`}
         >
             <div className={`
-                bg-black/90 border px-3 py-1.5 flex items-center gap-2 
+                bg-bg-primary/90 border px-3 py-1.5 flex items-center gap-2
                 transition-all duration-300 backdrop-blur-sm clip-path-slant hover:text-black
                 ${selectedColor}
             `}>
-                <div className={`w-1.5 h-1.5 rounded-full animate-pulse group-hover:bg-black ${selectedDot}`}></div>
+                <div className={`w-1.5 h-1.5 rounded-full animate-pulse group-hover:bg-bg-primary ${selectedDot}`}></div>
                 <span className="font-mono text-[10px] uppercase font-bold tracking-widest">
                     {defaultLabel}
                 </span>

@@ -78,12 +78,12 @@ export default function VariantComparisonTable({ variants, baseSpecs }: VariantC
         <div className="w-full overflow-x-auto pb-4">
             <table className="w-full text-left border-collapse min-w-[800px]">
                 <thead>
-                    <tr className="border-b border-white/20">
-                        <th className="p-4 w-[200px] bg-[#09090b] sticky left-0 z-10 font-pixel text-xs text-orange-500 uppercase tracking-widest border-r border-white/10">
+                    <tr className="border-b border-border-normal">
+                        <th className="p-4 w-[200px] bg-[#09090b] sticky left-0 z-10 font-pixel text-xs text-orange-500 uppercase tracking-widest border-r border-border-subtle">
                             Specification
                         </th>
                         {fullVariants.map(v => (
-                            <th key={v.id} className="p-4 min-w-[200px] font-pixel text-xs text-white uppercase tracking-wider text-center border-r border-white/10 last:border-0">
+                            <th key={v.id} className="p-4 min-w-[200px] font-pixel text-xs text-text-primary uppercase tracking-wider text-center border-r border-border-subtle last:border-0">
                                 {v.variant_name}
                                 {v.is_default && <span className="block text-[9px] text-gray-500 mt-1 font-mono tracking-tight">(DEFAULT)</span>}
                             </th>
@@ -95,7 +95,7 @@ export default function VariantComparisonTable({ variants, baseSpecs }: VariantC
                         <div key={section.title} className="contents group">
                             {/* Section Header */}
                             <tr className="bg-white/[0.03]">
-                                <td className="p-2 pl-4 font-bold text-gray-500 uppercase tracking-widest text-[10px] sticky left-0 bg-[#111113] border-r border-white/10 z-10" colSpan={1}>
+                                <td className="p-2 pl-4 font-bold text-gray-500 uppercase tracking-widest text-[10px] sticky left-0 bg-[#111113] border-r border-border-subtle z-10" colSpan={1}>
                                     {section.title}
                                 </td>
                                 <td colSpan={fullVariants.length} className="bg-white/[0.03]"></td>
@@ -113,9 +113,9 @@ export default function VariantComparisonTable({ variants, baseSpecs }: VariantC
                                 if (allEmpty) return null;
 
                                 return (
-                                    <tr key={spec.key} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                                    <tr key={spec.key} className="border-b border-border-strong/5 hover:bg-bg-tertiary transition-colors">
                                         {/* Label */}
-                                        <td className="p-3 pl-4 text-gray-400 sticky left-0 bg-[#09090b] border-r border-white/10 z-10">
+                                        <td className="p-3 pl-4 text-gray-400 sticky left-0 bg-[#09090b] border-r border-border-subtle z-10">
                                             {spec.label}
                                         </td>
 
@@ -138,7 +138,7 @@ export default function VariantComparisonTable({ variants, baseSpecs }: VariantC
                                                 <td
                                                     key={v.id}
                                                     className={`
-                                                        p-3 text-center border-r border-white/10 last:border-0
+                                                        p-3 text-center border-r border-border-subtle last:border-0
                                                         ${hasDiff ? 'text-orange-400 font-bold bg-orange-500/[0.03]' : 'text-gray-300'}
                                                     `}
                                                 >

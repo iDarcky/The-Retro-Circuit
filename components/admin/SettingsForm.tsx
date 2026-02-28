@@ -55,7 +55,7 @@ export const SettingsForm: FC<SettingsFormProps> = ({ customLogo, onLogoUpdate, 
                         </div>
                     )}
                 </div>
-                <div className="bg-black/50 border border-gray-700 p-8 flex flex-col items-center justify-center min-h-[200px]">
+                <div className="bg-bg-primary/50 border border-gray-700 p-8 flex flex-col items-center justify-center min-h-[200px]">
                     <p className="text-[10px] text-gray-500 mb-4 uppercase tracking-widest">Preview</p>
                     {customLogo ? (
                         <img src={customLogo} alt="Logo Preview" className="h-24 w-auto object-contain" />

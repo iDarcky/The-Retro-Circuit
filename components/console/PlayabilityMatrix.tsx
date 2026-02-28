@@ -39,7 +39,7 @@ const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) 
     };
 
     return (
-        <div className="bg-black">
+        <div className="bg-bg-primary">
             <div className="space-y-4">
                 {SYSTEM_TIERS.map((tier) => {
                     let activeSystems: { key: string, label: string, status: string }[] = [];
@@ -54,17 +54,17 @@ const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) 
                     const isOpen = openTiers[tier.title];
 
                     return (
-                        <div key={tier.title} className="border border-white/10 bg-white/[0.02]">
+                        <div key={tier.title} className="border border-border-subtle bg-bg-tertiary">
                             <button
                                 onClick={() => toggleTier(tier.title)}
-                                className="w-full flex justify-between items-center px-4 py-3 hover:bg-white/5 transition-colors group"
+                                className="w-full flex justify-between items-center px-4 py-3 hover:bg-bg-tertiary transition-colors group"
                             >
-                                <span className="font-mono text-xs text-gray-400 uppercase tracking-widest group-hover:text-white transition-colors">{tier.title}</span>
+                                <span className="font-mono text-xs text-gray-400 uppercase tracking-widest group-hover:text-text-primary transition-colors">{tier.title}</span>
                                 <span className="font-mono text-[10px] text-gray-600">{isOpen ? '[-]' : '[+]'}</span>
                             </button>
 
                             {isOpen && (
-                                <div className="p-4 border-t border-white/10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                                <div className="p-4 border-t border-border-subtle grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                     {activeSystems.map((sys) => {
                                         const style = getStatusStyle(sys.status);
                                         return (
@@ -81,7 +81,7 @@ const PlayabilityMatrix: FC<PlayabilityMatrixProps> = ({ profile: rawProfile }) 
                 })}
 
                 {profile.summary_text && (
-                    <div className="mt-6 pt-4 border-t border-white/10">
+                    <div className="mt-6 pt-4 border-t border-border-subtle">
                         <p className="font-mono text-xs text-gray-400 leading-relaxed whitespace-pre-line">
                             <span className="text-orange-500 mr-2">» ANALYST NOTE:</span>
                             {profile.summary_text}

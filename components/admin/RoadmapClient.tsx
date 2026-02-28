@@ -129,22 +129,22 @@ export default function RoadmapClient({ initialRoadmap, initialReleases }: Roadm
                         MISSION CONTROL
                     </h1>
                     <div className="flex gap-4 font-mono text-xs text-gray-500 uppercase tracking-widest">
-                        <Link href="/admin" className="hover:text-white hover:underline">
+                        <Link href="/admin" className="hover:text-text-primary hover:underline">
                             &lt; ROOT TERMINAL
                         </Link>
                         <span>|</span>
-                        <button onClick={() => setView('ROADMAP')} className={view === 'ROADMAP' ? 'text-white font-bold' : 'hover:text-white'}>
+                        <button onClick={() => setView('ROADMAP')} className={view === 'ROADMAP' ? 'text-text-primary font-bold' : 'hover:text-text-primary'}>
                             // ROADMAP_ITEMS: {roadmap.length}
                         </button>
                         <span>|</span>
-                         <button onClick={() => setView('RELEASES')} className={view === 'RELEASES' ? 'text-white font-bold' : 'hover:text-white'}>
+                         <button onClick={() => setView('RELEASES')} className={view === 'RELEASES' ? 'text-text-primary font-bold' : 'hover:text-text-primary'}>
                             // SYSTEM_RELEASES: {releases.length}
                         </button>
                     </div>
                 </div>
 
                 <div className="flex gap-2">
-                    <Button variant="secondary" className="text-xs border border-white/20" onClick={handleDownload}>
+                    <Button variant="secondary" className="text-xs border border-border-normal" onClick={handleDownload}>
                          DOWNLOAD .MD
                     </Button>
                     {view === 'ROADMAP' ? (
@@ -164,7 +164,7 @@ export default function RoadmapClient({ initialRoadmap, initialReleases }: Roadm
                  <button
                     onClick={() => setView('ROADMAP')}
                     className={`px-6 py-2 text-xs font-mono uppercase tracking-widest border-b-2 transition-colors ${
-                        view === 'ROADMAP' ? 'border-secondary text-secondary' : 'border-transparent text-gray-500 hover:text-white'
+                        view === 'ROADMAP' ? 'border-secondary text-secondary' : 'border-transparent text-gray-500 hover:text-text-primary'
                     }`}
                 >
                     Mission Log
@@ -172,7 +172,7 @@ export default function RoadmapClient({ initialRoadmap, initialReleases }: Roadm
                 <button
                     onClick={() => setView('RELEASES')}
                     className={`px-6 py-2 text-xs font-mono uppercase tracking-widest border-b-2 transition-colors ${
-                        view === 'RELEASES' ? 'border-secondary text-secondary' : 'border-transparent text-gray-500 hover:text-white'
+                        view === 'RELEASES' ? 'border-secondary text-secondary' : 'border-transparent text-gray-500 hover:text-text-primary'
                     }`}
                 >
                     Release History
@@ -191,7 +191,7 @@ export default function RoadmapClient({ initialRoadmap, initialReleases }: Roadm
                                 className={`font-mono text-xs px-3 py-1 border transition-colors uppercase tracking-wider ${
                                     filter === f
                                     ? 'bg-secondary text-black border-secondary font-bold shadow-[0_0_10px_rgba(0,255,157,0.5)]'
-                                    : 'bg-black text-gray-500 border-gray-800 hover:text-white hover:border-gray-600'
+                                    : 'bg-bg-primary text-gray-500 border-gray-800 hover:text-text-primary hover:border-gray-600'
                                 }`}
                             >
                                 {f.replace('_', ' ')}
@@ -204,7 +204,7 @@ export default function RoadmapClient({ initialRoadmap, initialReleases }: Roadm
                         {filteredRoadmap.map((item) => (
                             <div
                                 key={item.id}
-                                className={`bg-bg-secondary border border-border-normal p-4 flex flex-col md:flex-row justify-between items-start md:items-center group hover:border-white transition-colors relative overflow-hidden ${item.status === 'completed' ? 'opacity-50 hover:opacity-100 grayscale hover:grayscale-0' : ''}`}
+                                className={`bg-bg-secondary border border-border-normal p-4 flex flex-col md:flex-row justify-between items-start md:items-center group hover:border-border-strong transition-colors relative overflow-hidden ${item.status === 'completed' ? 'opacity-50 hover:opacity-100 grayscale hover:grayscale-0' : ''}`}
                             >
                                 <div className="flex items-center gap-6 relative z-10 w-full md:w-auto">
                                     {/* Status Pill */}
@@ -218,7 +218,7 @@ export default function RoadmapClient({ initialRoadmap, initialReleases }: Roadm
 
                                     <div className="flex-1">
                                         <div className="flex items-center gap-3">
-                                            <h3 className={`font-pixel text-sm uppercase ${item.status === 'completed' ? 'line-through text-gray-600 decoration-gray-600' : 'text-white group-hover:text-secondary transition-colors'}`}>
+                                            <h3 className={`font-pixel text-sm uppercase ${item.status === 'completed' ? 'line-through text-gray-600 decoration-gray-600' : 'text-text-primary group-hover:text-secondary transition-colors'}`}>
                                                 {item.title}
                                             </h3>
                                              <span className={`text-[9px] px-1 py-0.5 border uppercase font-mono tracking-tighter ${
@@ -248,13 +248,13 @@ export default function RoadmapClient({ initialRoadmap, initialReleases }: Roadm
                                     )}
                                     <button
                                         onClick={() => handleOpenEditFeature(item)}
-                                        className="text-[9px] font-mono border border-border-normal text-gray-400 hover:bg-white hover:text-black hover:border-white px-3 py-1 uppercase tracking-widest transition-colors"
+                                        className="text-[9px] font-mono border border-border-normal text-gray-400 hover:bg-white hover:text-black hover:border-border-strong px-3 py-1 uppercase tracking-widest transition-colors"
                                     >
                                         [ EDIT ]
                                     </button>
                                     <button
                                         onClick={() => handleDeleteFeature(item.id)}
-                                        className="text-[9px] font-mono border border-red-900/30 text-red-800 hover:bg-red-500 hover:text-white hover:border-red-500 px-3 py-1 uppercase tracking-widest transition-colors"
+                                        className="text-[9px] font-mono border border-red-900/30 text-red-800 hover:bg-red-500 hover:text-text-primary hover:border-red-500 px-3 py-1 uppercase tracking-widest transition-colors"
                                     >
                                         [ X ]
                                     </button>
@@ -272,14 +272,14 @@ export default function RoadmapClient({ initialRoadmap, initialReleases }: Roadm
                 <div className="grid gap-4">
                      {/* Release List */}
                      {releases.map(release => (
-                        <div key={release.id} className="bg-bg-secondary border border-border-normal p-6 group hover:border-white transition-colors relative overflow-hidden">
+                        <div key={release.id} className="bg-bg-secondary border border-border-normal p-6 group hover:border-border-strong transition-colors relative overflow-hidden">
                              <div className="flex flex-col md:flex-row justify-between items-start gap-6 relative z-10">
                                 <div className="flex-1">
                                     <div className="flex items-center gap-4 mb-2">
                                         <span className={`text-[10px] font-bold px-2 py-1 uppercase tracking-widest border ${release.is_published ? 'bg-emerald-900/20 text-emerald-500 border-emerald-900' : 'bg-amber-900/20 text-amber-500 border-amber-900'}`}>
                                             {release.is_published ? 'PUBLISHED' : 'DRAFT'}
                                         </span>
-                                        <h3 className="font-pixel text-xl text-white">v{release.version}</h3>
+                                        <h3 className="font-pixel text-xl text-text-primary">v{release.version}</h3>
                                         {release.title && <span className="font-mono text-sm text-gray-400 uppercase tracking-wide">// {release.title}</span>}
                                     </div>
                                     <p className="font-mono text-xs text-gray-500 mb-4 uppercase tracking-wider">
@@ -303,13 +303,13 @@ export default function RoadmapClient({ initialRoadmap, initialReleases }: Roadm
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => handleOpenEditRelease(release)}
-                                        className="text-[9px] font-mono border border-border-normal text-gray-400 hover:bg-white hover:text-black hover:border-white px-3 py-1 uppercase tracking-widest transition-colors"
+                                        className="text-[9px] font-mono border border-border-normal text-gray-400 hover:bg-white hover:text-black hover:border-border-strong px-3 py-1 uppercase tracking-widest transition-colors"
                                     >
                                         [ EDIT ]
                                     </button>
                                      <button
                                         onClick={() => handleDeleteRelease(release.id)}
-                                        className="text-[9px] font-mono border border-red-900/30 text-red-800 hover:bg-red-500 hover:text-white hover:border-red-500 px-3 py-1 uppercase tracking-widest transition-colors"
+                                        className="text-[9px] font-mono border border-red-900/30 text-red-800 hover:bg-red-500 hover:text-text-primary hover:border-red-500 px-3 py-1 uppercase tracking-widest transition-colors"
                                     >
                                         [ X ]
                                     </button>

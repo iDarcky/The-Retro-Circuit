@@ -88,7 +88,7 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
   return (
     <div className={`w-full ${className}`}>
       {value ? (
-        <div className="relative group border border-border-normal bg-black/40 p-2">
+        <div className="relative group border border-border-normal bg-bg-primary/40 p-2">
             <div className="aspect-video w-full relative flex items-center justify-center bg-[linear-gradient(45deg,#0f0f1b_25%,transparent_25%,transparent_75%,#0f0f1b_75%,#0f0f1b),linear-gradient(45deg,#0f0f1b_25%,transparent_25%,transparent_75%,#0f0f1b_75%,#0f0f1b)] bg-[length:20px_20px] bg-[position:0_0,10px_10px]">
                 <img 
                     src={value} 
@@ -100,13 +100,13 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
                 type="button"
                 onClick={handleRemove}
                 disabled={disabled}
-                className="absolute top-2 right-2 bg-accent text-white w-8 h-8 flex items-center justify-center border border-white hover:bg-red-600 transition-colors shadow-lg z-10"
+                className="absolute top-2 right-2 bg-accent text-text-primary w-8 h-8 flex items-center justify-center border border-border-strong hover:bg-red-600 transition-colors shadow-lg z-10"
                 title="Remove Image"
                 aria-label="Remove Image"
             >
                 X
             </button>
-            <div className="absolute bottom-2 left-2 bg-black/80 px-2 py-1 border border-border-normal text-[9px] font-mono text-secondary truncate max-w-[90%]">
+            <div className="absolute bottom-2 left-2 bg-bg-primary/80 px-2 py-1 border border-border-normal text-[9px] font-mono text-secondary truncate max-w-[90%]">
                 {value.split('/').pop()}
             </div>
         </div>
@@ -124,7 +124,7 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
                 relative h-32 border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary
                 ${isDragging 
                     ? 'border-secondary bg-secondary/10 scale-[1.02]'
-                    : 'border-gray-700 bg-black/20 hover:border-primary hover:bg-black/40'
+                    : 'border-gray-700 bg-bg-primary/20 hover:border-primary hover:bg-bg-primary/40'
                 }
                 ${disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}
             `}

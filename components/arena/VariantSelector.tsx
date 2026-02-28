@@ -57,7 +57,7 @@ export const VariantSelector: FC<VariantSelectorProps> = ({ variants, selectedSl
         <div className="relative inline-block w-full md:w-auto z-40" ref={wrapperRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`group flex items-center gap-2 font-mono text-[10px] md:text-xs text-white outline-none w-full md:w-auto hover:bg-white/5 p-1 rounded-none transition-colors border border-transparent hover:border-white/10`}
+                className={`group flex items-center gap-2 font-mono text-[10px] md:text-xs text-text-primary outline-none w-full md:w-auto hover:bg-bg-tertiary p-1 rounded-none transition-colors border border-transparent hover:border-border-subtle`}
             >
                 <span className="opacity-50 uppercase tracking-widest">VARIANT:</span>
                 <span className={`underline decoration-1 underline-offset-4 ${theme.text} font-bold truncate uppercase`}>
@@ -67,14 +67,14 @@ export const VariantSelector: FC<VariantSelectorProps> = ({ variants, selectedSl
             </button>
 
             {isOpen && (
-                <div className={`absolute left-0 top-full mt-1 w-full md:w-48 max-h-48 overflow-y-auto bg-black border ${theme.border} shadow-xl`}>
+                <div className={`absolute left-0 top-full mt-1 w-full md:w-48 max-h-48 overflow-y-auto bg-bg-primary border ${theme.border} shadow-xl`}>
                     {variants.map(v => (
                         <div
                             key={v.id}
                             onClick={() => handleSelect(v.slug || '')}
                             className={`
-                                p-3 text-[10px] md:text-xs font-mono cursor-pointer border-b border-white/10 last:border-0 
-                                ${v.slug === selectedSlug ? `bg-white/10 text-white` : `text-white/60 hover:bg-white/5 hover:text-white`} 
+                                p-3 text-[10px] md:text-xs font-mono cursor-pointer border-b border-border-subtle last:border-0
+                                ${v.slug === selectedSlug ? `bg-border-subtle text-text-primary` : `text-text-muted hover:bg-bg-tertiary hover:text-text-primary`}
                                 transition-colors uppercase tracking-wide
                             `}
                         >

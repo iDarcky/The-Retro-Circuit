@@ -123,7 +123,7 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
         <form onSubmit={handleSubmit} className="w-full max-w-4xl animate-fadeIn space-y-8">
             <div className="flex justify-between items-center border-b border-border-normal pb-4">
                 <div>
-                    <h2 className="text-xl font-pixel text-white uppercase tracking-widest flex items-center gap-3">
+                    <h2 className="text-xl font-pixel text-text-primary uppercase tracking-widest flex items-center gap-3">
                         <span className="w-2 h-2 bg-secondary animate-pulse"></span>
                         {isEditMode ? `EDITING: ${initialData?.name}` : 'NEW HARDWARE ENTRY'}
                     </h2>
@@ -158,13 +158,13 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-black/20 p-6 border border-border-normal">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-bg-primary/20 p-6 border border-border-normal">
                 <div className="col-span-1 md:col-span-2">
                     <label className={`text-[10px] mb-1 block uppercase tracking-wider ${fieldErrors.manufacturer_id ? 'text-accent' : 'text-gray-500'}`}>Manufacturer</label>
                     <div className="relative">
                         <SwissDropdown
                             className="w-full"
-                            buttonClassName={`bg-bg-primary border p-3 outline-none text-white font-mono text-sm cursor-pointer hover:border-white transition-colors h-[46px] flex justify-between items-center ${fieldErrors.manufacturer_id ? 'border-accent' : 'border-border-normal focus:border-white'}`}
+                            buttonClassName={`bg-bg-primary border p-3 outline-none text-text-primary font-mono text-sm cursor-pointer hover:border-border-strong transition-colors h-[46px] flex justify-between items-center ${fieldErrors.manufacturer_id ? 'border-accent' : 'border-border-normal focus:border-border-strong'}`}
                             value={formData.manufacturer_id || ''}
                             onChange={(val) => handleInputChange('manufacturer_id', val)}
                             options={[
@@ -181,7 +181,7 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
                     if (!field.key && field.subHeader) {
                         return (
                             <div key={`sub-${idx}`} className="col-span-1 md:col-span-2 mt-6 mb-2">
-                                <h4 className="font-pixel text-white text-xs border-b border-border-normal pb-2 uppercase tracking-widest flex items-center gap-2">
+                                <h4 className="font-pixel text-text-primary text-xs border-b border-border-normal pb-2 uppercase tracking-widest flex items-center gap-2">
                                     <span className="w-1 h-1 bg-secondary inline-block"></span>
                                     {field.subHeader}
                                 </h4>
@@ -194,9 +194,9 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
                             <div key={field.key}>
                                 <label className={`text-[10px] mb-1 block uppercase tracking-wider flex justify-between items-center ${fieldErrors.slug ? 'text-accent' : 'text-gray-500'}`}>
                                     {field.label}
-                                    <button type="button" onClick={() => setIsSlugLocked(!isSlugLocked)} className="text-[10px] text-gray-500 hover:text-white transition-colors">[{isSlugLocked ? 'UNLOCK' : 'LOCK'}]</button>
+                                    <button type="button" onClick={() => setIsSlugLocked(!isSlugLocked)} className="text-[10px] text-gray-500 hover:text-text-primary transition-colors">[{isSlugLocked ? 'UNLOCK' : 'LOCK'}]</button>
                                 </label>
-                                <input type="text" className={`w-full border p-3 font-mono text-sm outline-none transition-colors ${isSlugLocked ? 'bg-bg-secondary border-border-normal text-gray-500 cursor-not-allowed opacity-75' : `bg-bg-primary text-white ${fieldErrors.slug ? 'border-accent' : 'border-border-normal focus:border-white'}`}`} value={(formData as any)[field.key] || ''} onChange={(e: ChangeEvent<HTMLInputElement>) => handleInputChange(field.key, e.target.value)} readOnly={isSlugLocked} />
+                                <input type="text" className={`w-full border p-3 font-mono text-sm outline-none transition-colors ${isSlugLocked ? 'bg-bg-secondary border-border-normal text-gray-500 cursor-not-allowed opacity-75' : `bg-bg-primary text-text-primary ${fieldErrors.slug ? 'border-accent' : 'border-border-normal focus:border-border-strong'}`}`} value={(formData as any)[field.key] || ''} onChange={(e: ChangeEvent<HTMLInputElement>) => handleInputChange(field.key, e.target.value)} readOnly={isSlugLocked} />
                                 {fieldErrors.slug && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold">! {fieldErrors.slug}</div>}
                             </div>
                         );
@@ -205,7 +205,7 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
                         return (
                             <div key={field.key} className="col-span-1 md:col-span-2">
                                 <label className={`text-[10px] mb-1 block uppercase tracking-wider ${fieldErrors.image_url ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
-                                <div className="border border-border-normal bg-black p-4">
+                                <div className="border border-border-normal bg-bg-primary p-4">
                                     <ImageUpload value={(formData as any)[field.key]} onChange={(url) => handleInputChange(field.key, url)} />
                                 </div>
                                 {fieldErrors.image_url && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold">! {fieldErrors.image_url}</div>}
@@ -217,7 +217,7 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
 
                 {/* ---- DEVICE TYPE SECTION ---- */}
                 <div className="col-span-1 md:col-span-2 mt-8 pt-6 border-t border-border-normal">
-                    <h4 className="font-pixel text-white text-xs mb-4 uppercase tracking-widest flex items-center gap-2">
+                    <h4 className="font-pixel text-text-primary text-xs mb-4 uppercase tracking-widest flex items-center gap-2">
                         <span className="w-1 h-1 bg-secondary inline-block"></span>
                         Device Classification
                     </h4>
@@ -227,7 +227,7 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
                             <div className="relative">
                                 <SwissDropdown
                                     className="w-full"
-                                    buttonClassName="bg-bg-primary border border-border-normal p-3 outline-none text-white font-mono text-sm cursor-pointer hover:border-white transition-colors focus:border-white h-[46px] flex justify-between items-center"
+                                    buttonClassName="bg-bg-primary border border-border-normal p-3 outline-none text-text-primary font-mono text-sm cursor-pointer hover:border-border-strong transition-colors focus:border-border-strong h-[46px] flex justify-between items-center"
                                     value={formData.device_category || 'emulation'}
                                     onChange={(val) => handleInputChange('device_category', val)}
                                     options={[
@@ -246,14 +246,14 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
 
                 {/* ---- PHYSICAL MEDIA SECTION ---- */}
                 <div className="col-span-1 md:col-span-2 mt-8 pt-6 border-t border-border-normal">
-                    <h4 className="font-pixel text-white text-xs mb-4 uppercase tracking-widest flex items-center gap-2">
+                    <h4 className="font-pixel text-text-primary text-xs mb-4 uppercase tracking-widest flex items-center gap-2">
                         <span className="w-1 h-1 bg-secondary inline-block"></span>
                         Physical Media Support
                     </h4>
-                    <div className="flex items-center justify-between bg-bg-primary border border-border-normal p-3 hover:border-white transition-colors cursor-pointer group" onClick={() => handleInputChange('has_cartridge_slot', !formData.has_cartridge_slot)}>
-                        <label className="font-mono text-xs text-gray-400 group-hover:text-white uppercase tracking-wider cursor-pointer">Has Cartridge Slot?</label>
+                    <div className="flex items-center justify-between bg-bg-primary border border-border-normal p-3 hover:border-border-strong transition-colors cursor-pointer group" onClick={() => handleInputChange('has_cartridge_slot', !formData.has_cartridge_slot)}>
+                        <label className="font-mono text-xs text-gray-400 group-hover:text-text-primary uppercase tracking-wider cursor-pointer">Has Cartridge Slot?</label>
                         <div className={`w-4 h-4 border flex items-center justify-center transition-all ${formData.has_cartridge_slot ? 'bg-secondary border-secondary' : 'border-gray-600 bg-transparent'}`}>
-                             {formData.has_cartridge_slot && <div className="w-2 h-2 bg-black"></div>}
+                             {formData.has_cartridge_slot && <div className="w-2 h-2 bg-bg-primary"></div>}
                         </div>
                     </div>
                     {formData.has_cartridge_slot && (
@@ -274,7 +274,7 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
                         type="button"
                         onClick={handleDelete}
                         disabled={loading}
-                        className="font-mono text-xs text-red-500 border border-red-900 bg-red-900/10 px-4 py-2 hover:bg-red-500 hover:text-white transition-colors uppercase tracking-widest"
+                        className="font-mono text-xs text-red-500 border border-red-900 bg-red-900/10 px-4 py-2 hover:bg-red-500 hover:text-text-primary transition-colors uppercase tracking-widest"
                     >
                         [ DELETE DRAFT ]
                     </button>

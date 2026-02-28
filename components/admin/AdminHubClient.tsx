@@ -14,10 +14,10 @@ export default function AdminHubClient() {
         <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn min-h-screen flex flex-col">
 
             {/* HEADER */}
-            <header className="mb-12 pt-8 border-b border-white pb-6">
+            <header className="mb-12 pt-8 border-b border-border-strong pb-6">
                 <div className="flex justify-between items-end">
                     <div>
-                        <h1 className="text-4xl md:text-8xl font-pixel text-white leading-none tracking-tighter mix-blend-difference">
+                        <h1 className="text-4xl md:text-8xl font-pixel text-text-primary leading-none tracking-tighter mix-blend-difference">
                             ADMIN_HUB
                         </h1>
                         <p className="font-mono text-xs md:text-sm text-gray-500 mt-2 tracking-widest uppercase">
@@ -37,12 +37,12 @@ export default function AdminHubClient() {
             <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
 
                 {/* 1. CONSOLES */}
-                <Link href="/admin/consoles" className="group relative block h-64 bg-bg-secondary border border-border-normal overflow-hidden hover:border-white transition-colors">
+                <Link href="/admin/consoles" className="group relative block h-64 bg-bg-secondary border border-border-normal overflow-hidden hover:border-border-strong transition-colors">
                     <div className="absolute top-4 left-4 z-10">
-                        <span className="font-mono text-xs text-gray-500 group-hover:text-white transition-colors">01 // DATABASE</span>
+                        <span className="font-mono text-xs text-gray-500 group-hover:text-text-primary transition-colors">01 // DATABASE</span>
                     </div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <h2 className="font-pixel text-3xl text-gray-700 group-hover:text-white transition-colors duration-300">
+                        <h2 className="font-pixel text-3xl text-gray-700 group-hover:text-text-primary transition-colors duration-300">
                             CONSOLES
                         </h2>
                     </div>
@@ -56,12 +56,12 @@ export default function AdminHubClient() {
                 </Link>
 
                 {/* 2. FABRICATORS */}
-                <Link href="/admin/fabricators" className="group relative block h-64 bg-bg-secondary border border-border-normal overflow-hidden hover:border-white transition-colors">
+                <Link href="/admin/fabricators" className="group relative block h-64 bg-bg-secondary border border-border-normal overflow-hidden hover:border-border-strong transition-colors">
                     <div className="absolute top-4 left-4 z-10">
-                        <span className="font-mono text-xs text-gray-500 group-hover:text-white transition-colors">02 // MANUFACTURERS</span>
+                        <span className="font-mono text-xs text-gray-500 group-hover:text-text-primary transition-colors">02 // MANUFACTURERS</span>
                     </div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <h2 className="font-pixel text-3xl text-gray-700 group-hover:text-white transition-colors duration-300">
+                        <h2 className="font-pixel text-3xl text-gray-700 group-hover:text-text-primary transition-colors duration-300">
                             FABRICATORS
                         </h2>
                     </div>
@@ -74,12 +74,12 @@ export default function AdminHubClient() {
                 </Link>
 
                 {/* 3. ROADMAP */}
-                <Link href="/admin/roadmap" className="group relative block h-64 bg-bg-secondary border border-border-normal overflow-hidden hover:border-white transition-colors">
+                <Link href="/admin/roadmap" className="group relative block h-64 bg-bg-secondary border border-border-normal overflow-hidden hover:border-border-strong transition-colors">
                     <div className="absolute top-4 left-4 z-10">
-                        <span className="font-mono text-xs text-gray-500 group-hover:text-white transition-colors">03 // PLANNING</span>
+                        <span className="font-mono text-xs text-gray-500 group-hover:text-text-primary transition-colors">03 // PLANNING</span>
                     </div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <h2 className="font-pixel text-3xl text-gray-700 group-hover:text-white transition-colors duration-300">
+                        <h2 className="font-pixel text-3xl text-gray-700 group-hover:text-text-primary transition-colors duration-300">
                             ROADMAP
                         </h2>
                     </div>
@@ -92,12 +92,12 @@ export default function AdminHubClient() {
                 </Link>
 
                 {/* 4. DESIGN SYSTEM */}
-                <Link href="/design" className="group relative block h-64 bg-bg-secondary border border-border-normal overflow-hidden hover:border-white transition-colors">
+                <Link href="/design" className="group relative block h-64 bg-bg-secondary border border-border-normal overflow-hidden hover:border-border-strong transition-colors">
                     <div className="absolute top-4 left-4 z-10">
-                        <span className="font-mono text-xs text-gray-500 group-hover:text-white transition-colors">04 // AESTHETICS</span>
+                        <span className="font-mono text-xs text-gray-500 group-hover:text-text-primary transition-colors">04 // AESTHETICS</span>
                     </div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <h2 className="font-pixel text-3xl text-gray-700 group-hover:text-white transition-colors duration-300 text-center">
+                        <h2 className="font-pixel text-3xl text-gray-700 group-hover:text-text-primary transition-colors duration-300 text-center">
                             DESIGN<br/>SYSTEM
                         </h2>
                     </div>
@@ -110,12 +110,12 @@ export default function AdminHubClient() {
                 </Link>
 
                 {/* 4. BROADCAST HUB (Consolidated Signals/Reviews/News) */}
-                <Link href="/admin/broadcast" className="group relative block h-64 bg-bg-secondary border border-border-normal overflow-hidden hover:border-white transition-colors">
+                <Link href="/admin/broadcast" className="group relative block h-64 bg-bg-secondary border border-border-normal overflow-hidden hover:border-border-strong transition-colors">
                     <div className="absolute top-4 left-4 z-10">
-                        <span className="font-mono text-xs text-gray-500 group-hover:text-white transition-colors">04 // BROADCAST</span>
+                        <span className="font-mono text-xs text-gray-500 group-hover:text-text-primary transition-colors">04 // BROADCAST</span>
                     </div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <h2 className="font-pixel text-3xl text-gray-700 group-hover:text-white transition-colors duration-300">
+                        <h2 className="font-pixel text-3xl text-gray-700 group-hover:text-text-primary transition-colors duration-300">
                             BROADCAST
                         </h2>
                     </div>
@@ -128,7 +128,7 @@ export default function AdminHubClient() {
                 </Link>
 
                 {/* 5. FEATURED [LOCKED] */}
-                <div className="relative block h-64 bg-black border border-border-subtle opacity-50 cursor-not-allowed grayscale">
+                <div className="relative block h-64 bg-bg-primary border border-border-subtle opacity-50 cursor-not-allowed grayscale">
                      <div className="absolute top-4 left-4 z-10">
                         <span className="font-mono text-xs text-gray-700">05 // CURATION</span>
                     </div>
@@ -143,7 +143,7 @@ export default function AdminHubClient() {
                 </div>
 
                 {/* 6. SETTINGS / LOGS [FUTURE] */}
-                <div className="relative block h-64 bg-black border border-border-subtle opacity-50 cursor-not-allowed grayscale">
+                <div className="relative block h-64 bg-bg-primary border border-border-subtle opacity-50 cursor-not-allowed grayscale">
                      <div className="absolute top-4 left-4 z-10">
                         <span className="font-mono text-xs text-gray-700">06 // LOGS</span>
                     </div>

@@ -18,11 +18,11 @@ export const CookieBanner: React.FC = () => {
     <>
       {/* Backdrop Blur Overlay - Hidden on Privacy Page for readability */}
       {!isPrivacyPage && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] transition-opacity duration-300" />
+        <div className="fixed inset-0 bg-bg-primary/60 backdrop-blur-sm z-[70] transition-opacity duration-300" />
       )}
 
       {/* Banner */}
-      <div className="fixed bottom-0 left-0 right-0 z-[80] bg-bg-primary border-t border-white/10 p-4 md:p-6 shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
+      <div className="fixed bottom-0 left-0 right-0 z-[80] bg-bg-primary border-t border-border-subtle p-4 md:p-6 shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
         <div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex-1 max-w-4xl">
           <div className="flex items-center gap-3 mb-2">
@@ -35,20 +35,20 @@ export const CookieBanner: React.FC = () => {
             We use cookies to enhance your experience and analyze traffic.
             By continuing, you agree to our use of cookies.
             <span className="block mt-1 text-xs text-zinc-500">
-              Read our <Link href="/privacy" className="text-white hover:underline underline-offset-4 decoration-zinc-600">Privacy Policy</Link> for details.
+              Read our <Link href="/privacy" className="text-text-primary hover:underline underline-offset-4 decoration-zinc-600">Privacy Policy</Link> for details.
             </span>
           </p>
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto">
           <button
             onClick={decline}
-            className="flex-1 md:flex-none px-6 py-3 text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white border border-white/10 hover:border-white transition-colors bg-black/20"
+            className="flex-1 md:flex-none px-6 py-3 text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-text-primary border border-border-subtle hover:border-border-strong transition-colors bg-bg-primary/20"
           >
             Decline
           </button>
           <button
             onClick={accept}
-            className="flex-1 md:flex-none px-6 py-3 bg-white text-black text-xs font-bold uppercase tracking-wider hover:bg-zinc-200 transition-colors border border-white"
+            className="flex-1 md:flex-none px-6 py-3 bg-white text-black text-xs font-bold uppercase tracking-wider hover:bg-zinc-200 transition-colors border border-border-strong"
           >
             Accept
           </button>

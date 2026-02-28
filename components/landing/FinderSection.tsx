@@ -8,7 +8,7 @@ export default function FinderSection() {
             <div className="max-w-[1800px] mx-auto relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center">
                     <div>
-                        <h2 className="text-3xl font-bold tracking-tighter text-white uppercase text-center md:text-left">
+                        <h2 className="text-3xl font-bold tracking-tighter text-text-primary uppercase text-center md:text-left">
                             Don&apos;t Know Where to Start?
                         </h2>
                         <p className="text-text-secondary font-light max-w-xl text-lg leading-relaxed">
@@ -22,7 +22,7 @@ export default function FinderSection() {
                             <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-cyan-500 transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-cyan-400/50"></div>
                             <Link
                                 href="/finder"
-                                className="relative z-10 inline-flex items-center gap-3 bg-cyan-600 text-white font-mono text-sm md:text-base px-8 py-4 hover:brightness-110 transition-all uppercase tracking-widest border border-cyan-500 shadow-lg shadow-cyan-500/20 w-full md:w-auto justify-center"
+                                className="relative z-10 inline-flex items-center gap-3 bg-cyan-600 text-text-primary font-mono text-sm md:text-base px-8 py-4 hover:brightness-110 transition-all uppercase tracking-widest border border-cyan-500 shadow-lg shadow-cyan-500/20 w-full md:w-auto justify-center"
                             >
                                 Start Quiz <ArrowRight className="w-4 h-4" />
                             </Link>

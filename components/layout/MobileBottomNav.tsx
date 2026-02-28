@@ -26,7 +26,7 @@ const MobileBottomNav = () => {
                         key={item.path}
                         href={item.path}
                         className={`relative flex flex-col items-center justify-center w-10 h-10 rounded-full transition-all duration-300 group ${
-                            isActive ? 'text-white' : 'text-gray-400 hover:text-gray-200'
+                            isActive ? 'text-text-primary' : 'text-gray-400 hover:text-gray-200'
                         }`}
                     >
                         {/* Icon Container with subtle glow on active */}

@@ -90,7 +90,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
     const emulationProfile = mergedSpecs.emulation_profile || (mergedSpecs as any).emulation_profiles;
 
     return (
-        <div className="w-full min-h-screen bg-[#09090b] text-white selection:bg-orange-500/30 selection:text-white pb-20">
+        <div className="w-full min-h-screen bg-[#09090b] text-text-primary selection:bg-orange-500/30 selection:text-text-primary pb-20">
 
              {/* SECTION I: IDENTITY & HEADER */}
              <ConsoleIdentitySection
@@ -113,11 +113,11 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                     {/* VISUALS (Left - Span 8) */}
                     <div className="lg:col-span-8 flex flex-col gap-4">
-                        <div className="relative w-full aspect-video bg-black/50 border border-white/10 flex items-center justify-center overflow-hidden group">
+                        <div className="relative w-full aspect-video bg-bg-primary/50 border border-border-subtle flex items-center justify-center overflow-hidden group">
                             {/* Technical Markings */}
-                            <div className="absolute top-4 left-4 text-[10px] font-mono text-white/30 tracking-widest">FIG. 01 // {consoleData.name.toUpperCase()}</div>
-                            <div className="absolute bottom-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">SCALE 1:1</div>
-                            <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">
+                            <div className="absolute top-4 left-4 text-[10px] font-mono text-border-normal tracking-widest">FIG. 01 // {consoleData.name.toUpperCase()}</div>
+                            <div className="absolute bottom-4 right-4 text-[10px] font-mono text-border-normal tracking-widest">SCALE 1:1</div>
+                            <div className="absolute top-4 right-4 text-[10px] font-mono text-border-normal tracking-widest">
                                 {consoleData.form_factor?.toUpperCase() || 'SYSTEM'}
                             </div>
 
@@ -136,7 +136,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                     </div>
 
                     {/* BRIEFING (Right - Span 4) */}
-                    <div className="lg:col-span-4 flex flex-col h-full border-t border-white/10 lg:border-t-0 lg:border-l lg:pl-8 pt-8 lg:pt-0">
+                    <div className="lg:col-span-4 flex flex-col h-full border-t border-border-subtle lg:border-t-0 lg:border-l lg:pl-8 pt-8 lg:pt-0">
                         
                         {/* COMBINED METRICS & EMULATION SUMMARY */}
                         <div className="space-y-8">
@@ -159,7 +159,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                 </div>
 
                 {/* ROW 2: ANALYSIS & LOGISTICS (Rearranged) */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 border-t border-white/10 pt-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 border-t border-border-subtle pt-8">
                     {/* System Analysis (Span 8) */}
                     <section className="lg:col-span-8">
                         <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">SYSTEM ANALYSIS</h2>
@@ -173,7 +173,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                 </div>
 
                 {/* ROW 3: TECHNICAL REFERENCE */}
-                <section id="tech" className="border-t border-white/10 pt-8">
+                <section id="tech" className="border-t border-border-subtle pt-8">
                      <TechnicalReference mergedSpecs={mergedSpecs} />
                 </section>
 

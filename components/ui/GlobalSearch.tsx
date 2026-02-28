@@ -103,7 +103,7 @@ const GlobalSearch: FC = () => {
 
     return (
         <div
-            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-start justify-center pt-20 animate-fadeIn"
+            className="fixed inset-0 z-[100] bg-bg-primary/90 backdrop-blur-sm flex items-start justify-center pt-20 animate-fadeIn"
             onClick={closeSearch}
         >
             {/* PANEL: Swiss Industrial - Solid Black, White/10 Borders, Violet Accents */}
@@ -118,14 +118,14 @@ const GlobalSearch: FC = () => {
                     <input
                         ref={inputRef}
                         type="text"
-                        className="flex-1 bg-transparent border-none outline-none text-white font-mono text-sm placeholder-text-muted uppercase tracking-wider"
+                        className="flex-1 bg-transparent border-none outline-none text-text-primary font-mono text-sm placeholder-text-muted uppercase tracking-wider"
                         placeholder="SEARCH DATABASE..."
                         value={query}
                         onChange={(e: ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
                         onKeyDown={handleKeyDown}
                     />
-                    <button onClick={closeSearch} className="text-text-muted hover:text-white transition-colors">
-                        <span className="text-[10px] font-mono border border-border-normal px-2 py-1 text-text-muted hover:border-white transition-colors">ESC</span>
+                    <button onClick={closeSearch} className="text-text-muted hover:text-text-primary transition-colors">
+                        <span className="text-[10px] font-mono border border-border-normal px-2 py-1 text-text-muted hover:border-border-strong transition-colors">ESC</span>
                     </button>
                 </div>
 
@@ -158,7 +158,7 @@ const GlobalSearch: FC = () => {
                                     `}
                                 >
                                     {/* Image Placeholder - Slightly larger */}
-                                    <div className={`w-12 h-12 bg-black border flex-shrink-0 flex items-center justify-center overflow-hidden transition-colors relative
+                                    <div className={`w-12 h-12 bg-bg-primary border flex-shrink-0 flex items-center justify-center overflow-hidden transition-colors relative
                                         ${isSelected ? 'border-violet-500/50' : 'border-border-normal group-hover:border-violet-500/50'}
                                     `}>
                                         <div className="absolute inset-0 w-full h-full bg-[url('/retro-grid.png')] opacity-[0.05] pointer-events-none mix-blend-overlay"></div>
@@ -172,7 +172,7 @@ const GlobalSearch: FC = () => {
                                     {/* Text Info */}
                                     <div className="flex-1 min-w-0">
                                         <div className={`font-mono text-sm uppercase tracking-wide truncate mb-1.5 transition-colors
-                                            ${isSelected ? 'text-white' : 'text-text-secondary group-hover:text-white'}
+                                            ${isSelected ? 'text-text-primary' : 'text-text-secondary group-hover:text-text-primary'}
                                         `}>
                                             {res.title}
                                         </div>

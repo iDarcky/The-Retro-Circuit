@@ -81,9 +81,9 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
     const theme = getThemeClasses();
 
     // Determine input text color
-    const inputTextColor = textColor === 'white' ? 'text-white' : 'text-text-primary';
+    const inputTextColor = textColor === 'white' ? 'text-text-primary' : 'text-text-primary';
     // Determine icon color
-    const iconColor = textColor === 'white' ? 'text-white/50 group-focus-within:text-white' : 'text-text-muted group-focus-within:text-text-primary';
+    const iconColor = textColor === 'white' ? 'text-text-muted group-focus-within:text-text-primary' : 'text-text-muted group-focus-within:text-text-primary';
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (!isOpen) {
@@ -149,9 +149,9 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                     onKeyDown={handleKeyDown}
                     placeholder={currentSelection || placeholder}
                     className={`
-                        w-full bg-black/50 border border-white/10 p-4 pl-10 
+                        w-full bg-bg-primary/50 border border-border-subtle p-4 pl-10
                         font-mono text-sm ${inputTextColor} uppercase tracking-wider 
-                        rounded-none transition-all placeholder:text-white/20 
+                        rounded-none transition-all placeholder:text-border-normal
                         ${theme.border} focus-visible:ring-1 ${theme.ring} focus:outline-none
                     `}
                 />
@@ -163,7 +163,7 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
             {isOpen && (
                 <div
                     ref={listRef}
-                    className="absolute left-0 right-0 top-[calc(100%-1px)] max-h-[300px] overflow-y-auto bg-black border border-white/10 border-t-transparent z-[9999] shadow-xl"
+                    className="absolute left-0 right-0 top-[calc(100%-1px)] max-h-[300px] overflow-y-auto bg-bg-primary border border-border-subtle border-t-transparent z-[9999] shadow-xl"
                 >
                     {filtered.map((c, idx) => (
                         <div 
@@ -174,10 +174,10 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                                 setIsOpen(false);
                             }}
                             className={`
-                                p-3 px-4 text-xs font-mono cursor-pointer border-b border-white/5 last:border-0 flex justify-between items-center group transition-colors uppercase tracking-wide border-l-4
+                                p-3 px-4 text-xs font-mono cursor-pointer border-b border-border-strong/5 last:border-0 flex justify-between items-center group transition-colors uppercase tracking-wide border-l-4
                                 ${idx === activeIndex 
-                                    ? `bg-white/10 text-white ${theme.activeItem}` 
-                                    : `text-white/60 border-transparent hover:bg-white/5 hover:text-white hover:border-white/20`}
+                                    ? `bg-border-subtle text-text-primary ${theme.activeItem}`
+                                    : `text-text-muted border-transparent hover:bg-bg-tertiary hover:text-text-primary hover:border-border-normal`}
                             `}
                         >
                             <span>{c.name}</span>
@@ -185,9 +185,9 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                         </div>
                     ))}
                     {filtered.length === 0 && (
-                        <div className="p-4 bg-black/50 border-t border-white/5 flex flex-col items-center justify-center gap-2">
-                            <span className="text-xs font-mono text-white/40 text-center uppercase tracking-wider">NO MATCHES FOUND</span>
-                            <span className="text-[10px] font-mono text-white/20 text-center uppercase tracking-widest">TRY &apos;GAMEBOY&apos;</span>
+                        <div className="p-4 bg-bg-primary/50 border-t border-border-strong/5 flex flex-col items-center justify-center gap-2">
+                            <span className="text-xs font-mono text-border-normal text-center uppercase tracking-wider">NO MATCHES FOUND</span>
+                            <span className="text-[10px] font-mono text-border-normal text-center uppercase tracking-widest">TRY &apos;GAMEBOY&apos;</span>
                         </div>
                     )}
                 </div>

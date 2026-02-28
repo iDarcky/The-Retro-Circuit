@@ -57,10 +57,10 @@ export function SwissDropdown<T extends string | number>({
                     ${compact ? 'px-2 py-1 text-[10px]' : 'px-4 py-2 text-xs'}
                     ${inverted
                         ? (isOpen
-                            ? 'bg-white text-black border-white'
-                            : 'text-white border-white/20 hover:border-white/50 bg-black/40')
+                            ? 'bg-white text-black border-border-strong'
+                            : 'text-text-primary border-border-normal hover:border-border-strong/50 bg-bg-primary/40')
                         : (isOpen
-                            ? 'bg-zinc-800 text-white border-white'
+                            ? 'bg-zinc-800 text-text-primary border-border-strong'
                             : 'text-zinc-300 border-zinc-700 hover:border-zinc-500 bg-zinc-900/50')
                     }
                     ${buttonClassName}
@@ -81,7 +81,7 @@ export function SwissDropdown<T extends string | number>({
             </button>
 
             {isOpen && (
-                <div className={`absolute top-[calc(100%+4px)] right-0 min-w-full w-max bg-[#09090b] border border-white/20 shadow-2xl flex flex-col ${menuClassName}`}>
+                <div className={`absolute top-[calc(100%+4px)] right-0 min-w-full w-max bg-[#09090b] border border-border-normal shadow-2xl flex flex-col ${menuClassName}`}>
                     {options.map((option) => (
                         <button
                             key={String(option.value)}
@@ -93,8 +93,8 @@ export function SwissDropdown<T extends string | number>({
                             className={`text-left font-mono uppercase tracking-wider border-l-4 transition-colors flex items-center justify-between whitespace-nowrap gap-4
                                 ${compact ? 'px-3 py-2 text-[10px]' : 'px-4 py-3 text-xs'}
                                 ${value === option.value
-                                ? 'bg-white/5 text-white border-violet-500'
-                                : 'text-zinc-500 border-transparent hover:bg-white/5 hover:text-white hover:border-white/50'
+                                ? 'bg-bg-tertiary text-text-primary border-violet-500'
+                                : 'text-zinc-500 border-transparent hover:bg-bg-tertiary hover:text-text-primary hover:border-border-strong/50'
                             }`}
                         >
                             {option.label}

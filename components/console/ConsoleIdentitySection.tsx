@@ -77,7 +77,7 @@ const CompareButton = ({ compact = false, compareUrl }: CompareButtonProps) => {
             <Link href={compareUrl}>
                 <SwissButton
                     variant="secondary"
-                    className="px-2 py-1 text-[10px] h-[26px] bg-violet-600 border-violet-500 text-white hover:bg-violet-500 hover:border-violet-400"
+                    className="px-2 py-1 text-[10px] h-[26px] bg-violet-600 border-violet-500 text-text-primary hover:bg-violet-500 hover:border-violet-400"
                 >
                     <IconVS className="w-3 h-3" />
                     VS
@@ -158,28 +158,28 @@ export default function ConsoleIdentitySection({
     return (
         <>
             {/* --- STATE A: NORMAL FLOW --- */}
-            <div className="relative w-full border-b border-white/10 bg-[#09090b] z-20">
+            <div className="relative w-full border-b border-border-subtle bg-[#09090b] z-20">
                 <div className="max-w-[1600px] mx-auto px-4 md:px-8 py-12 flex flex-col gap-6">
 
                     {/* Breadcrumb */}
-                    <Link href="/consoles" className="text-gray-500 font-mono text-xs hover:text-white transition-colors w-fit">
+                    <Link href="/consoles" className="text-gray-500 font-mono text-xs hover:text-text-primary transition-colors w-fit">
                         ← RETURN TO ARCHIVE
                     </Link>
 
                     {/* HEADLINE */}
                     <div className="flex flex-col gap-2">
                         {manufacturer && (
-                            <Link href={`/fabricators/${manufacturer.slug}`} className="block font-pixel text-xl md:text-2xl text-gray-600 hover:text-white transition-colors">
+                            <Link href={`/fabricators/${manufacturer.slug}`} className="block font-pixel text-xl md:text-2xl text-gray-600 hover:text-text-primary transition-colors">
                                 {fabName}
                             </Link>
                         )}
-                        <h1 className="font-pixel text-4xl md:text-6xl lg:text-6xl text-white uppercase leading-none tracking-tighter break-words">
+                        <h1 className="font-pixel text-4xl md:text-6xl lg:text-6xl text-text-primary uppercase leading-none tracking-tighter break-words">
                             {consoleData.name}
                         </h1>
                     </div>
 
                     {/* CONTROLS */}
-                    <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-white/10">
+                    <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-border-subtle">
 
                         <div className="flex items-center gap-4">
                             <VariantDropdown
@@ -191,14 +191,14 @@ export default function ConsoleIdentitySection({
                                 <SwissButton
                                     variant="secondary"
                                     onClick={onCompareVariants}
-                                    className="!border-white/20 hover:!border-white !text-gray-300 hover:!text-white hidden sm:flex"
+                                    className="!border-border-normal hover:!border-border-strong !text-gray-300 hover:!text-text-primary hidden sm:flex"
                                 >
                                     <Layers className="w-3 h-3" />
                                     VARIANTS
                                 </SwissButton>
                             )}
 
-                            <div className="hidden md:block w-px h-6 bg-white/10"></div>
+                            <div className="hidden md:block w-px h-6 bg-border-subtle"></div>
                             <div className="hidden md:block">
                                 <JumpLinks scrollToSection={scrollToSection} />
                             </div>
@@ -225,13 +225,13 @@ export default function ConsoleIdentitySection({
             {/* --- STATE B: STICKY BAR --- */}
             <div
                 className={`
-                    fixed top-0 left-0 w-full z-50 bg-[#09090b]/95 backdrop-blur-md border-b border-white/10 py-2 transition-transform duration-300 ease-out
+                    fixed top-0 left-0 w-full z-50 bg-[#09090b]/95 backdrop-blur-md border-b border-border-subtle py-2 transition-transform duration-300 ease-out
                     ${isSticky ? 'translate-y-[64px]' : '-translate-y-full'}
                 `}
             >
                 <div className="max-w-[1600px] mx-auto px-4 md:px-8 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                         <h2 className="font-pixel text-xs md:text-sm text-white uppercase tracking-wider">
+                         <h2 className="font-pixel text-xs md:text-sm text-text-primary uppercase tracking-wider">
                             <span className="text-gray-500 mr-2">{fabName}</span>
                             {consoleData.name}
                         </h2>
@@ -241,7 +241,7 @@ export default function ConsoleIdentitySection({
                          {hasMultipleVariants && (
                                 <button
                                     onClick={onCompareVariants}
-                                    className="hidden sm:flex items-center gap-2 text-[10px] font-mono uppercase text-gray-400 hover:text-white border border-white/10 hover:border-white/50 px-2 py-1 transition-colors"
+                                    className="hidden sm:flex items-center gap-2 text-[10px] font-mono uppercase text-gray-400 hover:text-text-primary border border-border-subtle hover:border-border-strong/50 px-2 py-1 transition-colors"
                                 >
                                     <Layers className="w-3 h-3" />
                                     VARIANTS
@@ -253,7 +253,7 @@ export default function ConsoleIdentitySection({
                             selectedVariantId={selectedVariantId}
                             onVariantChange={onVariantChange}
                         />
-                        <div className="w-px h-4 bg-white/10 hidden sm:block"></div>
+                        <div className="w-px h-4 bg-border-subtle hidden sm:block"></div>
                         <CompareButton compact compareUrl={compareUrl} />
                     </div>
                 </div>

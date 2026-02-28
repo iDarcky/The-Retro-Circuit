@@ -177,7 +177,7 @@ export const MatchSummary = ({ variantA, variantB, profileA, profileB }: MatchSu
             </div>
 
             {/* Main Content */}
-            <div className="bg-black/80 border border-gray-700 shadow-2xl backdrop-blur-sm">
+            <div className="bg-bg-primary/80 border border-gray-700 shadow-2xl backdrop-blur-sm">
 
                 {/* Desktop Grid Layout Setup */}
                 <div className="md:grid md:grid-cols-[140px_1fr_1fr] md:gap-x-8 md:px-6">

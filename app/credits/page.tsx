@@ -8,13 +8,13 @@ export const metadata = {
 export default async function CreditsPage() {
   const version = await getSystemVersion();
   return (
-    <div className="bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-violet-500/30 selection:text-white pb-24 relative overflow-hidden">
+    <div className="bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-violet-500/30 selection:text-text-primary pb-24 relative overflow-hidden">
 
       {/* Background Effects */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.05] pointer-events-none"></div>
 
       {/* 1. HERO HEADER */}
-      <header className="px-6 md:px-12 pt-12 md:pt-24 pb-8 md:pb-16 border-b border-white/5 relative z-10">
+      <header className="px-6 md:px-12 pt-12 md:pt-24 pb-8 md:pb-16 border-b border-border-strong/5 relative z-10">
         <div className="max-w-4xl mx-auto w-full">
 
            {/* Metadata Pill - Violet Variant */}
@@ -24,7 +24,7 @@ export default async function CreditsPage() {
            </div>
 
            {/* Title */}
-           <h1 className="text-4xl md:text-6xl font-pixel text-white leading-none tracking-tighter mb-8">
+           <h1 className="text-4xl md:text-6xl font-pixel text-text-primary leading-none tracking-tighter mb-8">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-purple-400">CREDITS</span><span className="text-violet-500 animate-pulse">_</span>
            </h1>
 
@@ -59,7 +59,7 @@ export default async function CreditsPage() {
                <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Data Fragments</h2>
             </div>
 
-            <div className="bg-white/[0.02] border border-dashed border-zinc-800 p-12 text-center relative overflow-hidden group">
+            <div className="bg-bg-tertiary border border-dashed border-zinc-800 p-12 text-center relative overflow-hidden group">
                  <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.02)_50%,transparent_75%,transparent_100%)] bg-[length:250%_250%,100%_100%] animate-shine pointer-events-none" />
 
                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 mb-6 group-hover:border-violet-500/30 transition-colors">

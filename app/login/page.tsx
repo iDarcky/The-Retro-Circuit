@@ -116,7 +116,7 @@ export default function LoginPage() {
                                 required 
                                 value={username}
                                 onChange={(e: ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
-                                className="w-full bg-black border border-border-normal p-3 text-white font-mono focus:border-secondary outline-none transition-colors"
+                                className="w-full bg-bg-primary border border-border-normal p-3 text-text-primary font-mono focus:border-secondary outline-none transition-colors"
                                 placeholder="ENTER USERNAME"
                             />
                         </div>
@@ -130,7 +130,7 @@ export default function LoginPage() {
                                 required 
                                 value={email}
                                 onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                                className="w-full bg-black border border-border-normal p-3 text-white font-mono focus:border-secondary outline-none transition-colors"
+                                className="w-full bg-bg-primary border border-border-normal p-3 text-text-primary font-mono focus:border-secondary outline-none transition-colors"
                                 placeholder="USER@EXAMPLE.COM"
                             />
                         </div>
@@ -144,7 +144,7 @@ export default function LoginPage() {
                                 required 
                                 value={password}
                                 onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                                className="w-full bg-black border border-border-normal p-3 text-white font-mono focus:border-secondary outline-none transition-colors"
+                                className="w-full bg-bg-primary border border-border-normal p-3 text-text-primary font-mono focus:border-secondary outline-none transition-colors"
                                 placeholder="••••••••"
                             />
                         </div>
@@ -166,7 +166,7 @@ export default function LoginPage() {
                         </>
                     )}
                     {(mode === 'SIGNUP' || mode === 'RECOVERY') && (
-                        <button onClick={() => { setMode('LOGIN'); setMessage(null); }} className="hover:text-white transition-colors">RETURN TO LOGIN</button>
+                        <button onClick={() => { setMode('LOGIN'); setMessage(null); }} className="hover:text-text-primary transition-colors">RETURN TO LOGIN</button>
                     )}
                 </div>
             </div>

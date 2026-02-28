@@ -15,7 +15,7 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
 
       {/* Title - Left Aligned */}
       <div className="flex flex-col gap-2 mb-8 justify-start">
-        <h2 className="text-3xl font-bold tracking-tighter text-white uppercase">Featured Consoles</h2>
+        <h2 className="text-3xl font-bold tracking-tighter text-text-primary uppercase">Featured Consoles</h2>
         <div className="w-1/3 h-0.5 bg-gradient-to-r from-violet-500 to-transparent"></div>
       </div>
 
@@ -28,7 +28,7 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
             <Link
               key={console.id}
               href={`/consoles/${console.slug}`}
-              className="group flex flex-col bg-white/[0.02] backdrop-blur-md border border-white/5 hover:border-violet-500/50 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-violet-500/20 rounded-xl overflow-hidden"
+              className="group flex flex-col bg-bg-tertiary backdrop-blur-md border border-border-strong/5 hover:border-violet-500/50 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-violet-500/20 rounded-xl overflow-hidden"
             >
               {/* Image Container - 4:3 Aspect Ratio for Uniformity */}
               <div className="relative w-full aspect-[4/3] flex items-center justify-center p-4 pb-0">
@@ -51,7 +51,7 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
 
               {/* Info Section */}
               <div className="p-4 flex flex-col gap-1.5">
-                <h3 className="text-sm font-bold text-white tracking-wider uppercase leading-snug group-hover:text-white transition-colors truncate">
+                <h3 className="text-sm font-bold text-text-primary tracking-wider uppercase leading-snug group-hover:text-text-primary transition-colors truncate">
                   {console.name}
                 </h3>
                 <div className="flex justify-between items-end">

@@ -9,7 +9,7 @@ interface SwissHeaderProps {
 export const SwissHeader: FC<SwissHeaderProps> = ({ title, subtitle, borderColor }) => {
     return (
         <div
-            className={`relative pt-24 pb-12 px-6 md:px-12 border-b overflow-hidden ${!borderColor ? 'border-white/5' : ''}`}
+            className={`relative pt-24 pb-12 px-6 md:px-12 border-b overflow-hidden ${!borderColor ? 'border-border-strong/5' : ''}`}
             style={borderColor ? { borderColor } : undefined}
         >
              {/* Background Effects */}
@@ -17,7 +17,7 @@ export const SwissHeader: FC<SwissHeaderProps> = ({ title, subtitle, borderColor
 
              <div className="max-w-[1800px] mx-auto relative z-10">
                 <div className="flex flex-col items-start gap-4">
-                     <h1 className="text-4xl md:text-6xl font-pixel font-bold tracking-tighter text-white uppercase drop-shadow-lg leading-tight">
+                     <h1 className="text-4xl md:text-6xl font-pixel font-bold tracking-tighter text-text-primary uppercase drop-shadow-lg leading-tight">
                         {title}
                      </h1>
                      <p className="text-lg md:text-xl text-zinc-400 max-w-2xl font-light font-mono">
