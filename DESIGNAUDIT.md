@@ -1,6 +1,6 @@
 # Design Audit
 
-This audit evaluates the current state of UI components across the application against the established "Swiss Design" methodology.
+This audit evaluates the current state of UI components across the application against the established **"Cyber-Swiss / Terminal"** methodology—a blend of strict brutalist geometry and retro-hacker aesthetics.
 
 ## Key Principles of Swiss Design (System Console)
 1. **High Contrast:** Pure black (`bg-bg-primary`) and pure white text (`text-text-primary`) with vibrant highlight colors (Violet, Cyan, Orange).
@@ -35,7 +35,7 @@ This audit evaluates the current state of UI components across the application a
 
 
 ### 5. Missing / Future Components
-To fully realize the Swiss Design methodology across the entire application, several standard interactive components still need to be designed and implemented:
+To fully realize the "Cyber-Swiss" aesthetic across the entire application, several standard interactive components still need to be designed and implemented:
 
 * **Number Stepper / Adjuster:**
   * **Current:** We use standard HTML number inputs.
@@ -45,13 +45,13 @@ To fully realize the Swiss Design methodology across the entire application, sev
   * **Swiss Target:** For checkboxes: A sharp `w-4 h-4` square (`rounded-none`) with a solid border that fills with a vibrant brand color (Cyan/Orange/Violet) when checked, containing a blocky pixelated checkmark. For toggles: A strict rectangular track (`rounded-none`) with a square thumb, avoiding soft pill shapes.
 * **Text Inputs / Textareas:**
   * **Current:** Inputs in `AdminInput` or Auth forms might have soft borders or generic focus rings.
-  * **Swiss Target:** Strict `rounded-none` containers. A solid dark background (`bg-white/5`), a sharp bottom border or full thin border (`border-white/10`), and a dense, mono-spaced font for input text. Focus states should rely on solid, thick high-contrast borders (e.g., `focus:border-l-4 focus:border-violet-500`).
-* **Modal Dialogs:**
+  * **Cyber-Swiss Target:** Strict `rounded-none` terminal-style prompts. Monospace text (e.g., `ENTER_COMMAND...`), zero rounding, and sharp solid borders that "power up" with vibrant brand colors (Cyan, Emerald, Violet) on focus.
+* **Modal / Info Dialogs:**
   * **Current:** Often employ `rounded-md` or `rounded-lg` with deep drop shadows.
-  * **Swiss Target:** A sharp, borderless rectangle that heavily dims the background (high-contrast overlay). No rounded corners, no box shadows—just a thick colored border (e.g., `border-t-4 border-orange-500`) and a strict typographic grid inside.
-* **Alerts / Toasts:**
-  * **Current:** Generic notification bubbles.
-  * **Swiss Target:** "System Notification" style blocks. Dense, flat rectangles anchored rigidly to the bottom right or top of the screen.
+  * **Cyber-Swiss Target:** Hard-edged popovers anchored directly to a mathematical grid (`border-2 border-white/20`). No soft drop shadows; instead, strict typographic boundaries or subtle neon glows (`shadow-[0_0_15px_rgba(...)]`) for severe warnings.
+* **Data Output / Loading Skeletons:**
+  * **Current:** Generic notification bubbles or pulsing blobs for loading.
+  * **Cyber-Swiss Target:** Terminal-style loading bars (`[||||....] 60%`), rigid accordions (`+` / `-`), and stark directory-path breadcrumbs (`ROOT / SYS / NINTENDO`).
 
 ---
 
