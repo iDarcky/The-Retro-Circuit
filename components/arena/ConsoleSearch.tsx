@@ -10,9 +10,10 @@ interface ConsoleSearchProps {
     themeColor: 'primary' | 'secondary' | 'cyan' | 'pink' | 'orange' | 'blue' | 'red';
     currentSelection?: string;
     textColor?: 'default' | 'white';
+    highlightSelection?: boolean;
 }
 
-export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, placeholder = "SELECT SYSTEM...", themeColor, currentSelection, textColor = 'default' }) => {
+export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, placeholder = "SELECT SYSTEM...", themeColor, currentSelection, textColor = 'default', highlightSelection = false }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [activeIndex, setActiveIndex] = useState(-1);
@@ -81,7 +82,7 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
     const theme = getThemeClasses();
 
     // Determine input text color
-    const inputTextColor = textColor === 'white' ? 'text-white' : 'text-text-primary';
+    const inputTextColor = (currentSelection && highlightSelection) ? theme.text : textColor === 'white' ? 'text-white' : 'text-text-primary';
     // Determine icon color
     const iconColor = textColor === 'white' ? 'text-white/50 group-focus-within:text-white' : 'text-text-muted group-focus-within:text-text-primary';
 
@@ -151,7 +152,7 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                     className={`
                         w-full bg-black/50 border border-white/10 p-4 pl-10 
                         font-mono text-sm ${inputTextColor} uppercase tracking-wider 
-                        rounded-none transition-all ${currentSelection ? theme.text : 'placeholder:text-white/20'}
+                        rounded-none transition-all placeholder:text-white/20
                         ${theme.border} focus-visible:ring-1 ${theme.ring} focus:outline-none
                     `}
                 />

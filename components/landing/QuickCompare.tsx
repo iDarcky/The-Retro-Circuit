@@ -41,6 +41,7 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
                 themeColor="blue"
                 currentSelection={p1?.name}
                 textColor="white"
+                highlightSelection={true}
             />
         </div>
 
@@ -61,6 +62,7 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
                 themeColor="red"
                 currentSelection={p2?.name}
                 textColor="white"
+                highlightSelection={true}
             />
         </div>
       </div>
