@@ -4,11 +4,11 @@ import { ConsoleDetails } from '../types';
 export type ProfileType = 'nostalgia' | 'completionist' | 'performance' | 'onthego' | 'gift';
 
 export interface FinderWeights {
-  power: number;
-  portability: number;
-  ease: number;
-  value: number;
-  library: number;
+    power: number;
+    portability: number;
+    ease: number;
+    value: number;
+    library: number;
 }
 
 // Q1 Multipliers (User Defined)
@@ -332,13 +332,13 @@ export const calculateConsoleScore = (
             tierMultiplier = 1.00;
         } else if (tierFit >= 0.25) {
             // "Struggles" (0.25) -> It runs, but not well. Roughly equivalent to 1 tier below in experience.
-            tierMultiplier = 0.70;
+            tierMultiplier = 0.10;
         } else if (tierFit > 0) {
             // Trace capability (< 0.25) -> Very poor experience. Roughly 2 tiers below.
-            tierMultiplier = 0.40;
+            tierMultiplier = 0.05;
         } else {
             // Unplayable (0.0) -> Cannot play target games. 3+ tiers below.
-            tierMultiplier = 0.20;
+            tierMultiplier = 0.00;
         }
     }
 
@@ -357,7 +357,7 @@ export const calculateConsoleScore = (
 
         if (pref === 'surprise') {
         } else if (factor === pref) {
-            formFactorBonus = 0.10;
+            formFactorBonus = 2.0;
         }
     }
 
@@ -367,14 +367,16 @@ export const calculateConsoleScore = (
 
     if (inputs.setupAnswer === 'power' || inputs.setupAnswer === 'tinker') {
         if (deviceEase <= 2) {
-            setupBonus = 0.05;
+            setupBonus = 0.5;
             if (inputs.toneMode === 'gift') {
                 setupBonus = setupBonus * 0.5;
             }
         }
     } else if (inputs.setupAnswer === 'beginner') {
-        if (deviceEase >= 4) {
-            setupBonus = 0.05;
+        if (deviceEase <= 2) {
+            setupBonus = -2.0;
+        } else if (deviceEase >= 4) {
+            setupBonus = 1.0;
         }
     }
 
@@ -385,7 +387,7 @@ export const calculateConsoleScore = (
         const pref = inputs.aestheticPref.toLowerCase();
 
         let keywords: string[] = [];
-        switch(pref) {
+        switch (pref) {
             case 'retro':
                 keywords = ['grey', 'gray', 'beige', 'classic', 'dmg', 'wood', 'gold', 'famicom'];
                 break;
@@ -401,7 +403,7 @@ export const calculateConsoleScore = (
         }
 
         if (keywords.some(k => availableColors.includes(k))) {
-            aestheticBonus = 0.02;
+            aestheticBonus = 1.0;
         }
     }
 
