@@ -151,7 +151,7 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                     className={`
                         w-full bg-black/50 border border-white/10 p-4 pl-10 
                         font-mono text-sm ${inputTextColor} uppercase tracking-wider 
-                        rounded-none transition-all placeholder:text-white/20 
+                        rounded-none transition-all ${currentSelection ? theme.text : 'placeholder:text-white/20'}
                         ${theme.border} focus-visible:ring-1 ${theme.ring} focus:outline-none
                     `}
                 />
