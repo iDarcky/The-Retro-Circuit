@@ -103,7 +103,7 @@ export default function ArenaComparisonClient({
                 ? `${selectionB.details.slug}-${selectionB.selectedVariant.slug}`
                 : selectionB.details.slug;
 
-            router.push(`/arena/${part1}-vs-${part2}`);
+            router.push(`/arena/${part1}-vs-${part2}`, { scroll: false });
 
             setTimeout(() => {
                 matchSummaryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -139,23 +139,23 @@ export default function ArenaComparisonClient({
             />
 
             <div className="sticky top-0 z-50 bg-bg-primary/80 backdrop-blur-xl border-b border-white/10 px-6 md:px-12 py-4">
-                 <div className="max-w-[1800px] mx-auto flex justify-between items-center gap-4">
-                     <div className="flex items-center gap-2 text-xs font-mono text-zinc-500">
+                <div className="max-w-[1800px] mx-auto flex justify-between items-center gap-4">
+                    <div className="flex items-center gap-2 text-xs font-mono text-zinc-500">
                         <Swords size={14} className="text-blue-400" />
                         <span className={isArenaMode ? "text-white font-bold" : "text-zinc-500"}>
                             {isArenaMode ? "ACTIVE MATCH" : "SELECT FIGHTERS"}
                         </span>
-                     </div>
+                    </div>
 
-                     {isArenaMode && (
+                    {isArenaMode && (
                         <button
                             onClick={handleNewMatch}
                             className="flex items-center gap-2 text-[10px] font-mono uppercase bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded transition-colors text-zinc-400 hover:text-white"
                         >
                             Reset Match
                         </button>
-                     )}
-                 </div>
+                    )}
+                </div>
             </div>
 
             <div className="px-6 md:px-12 py-8 max-w-[1800px] mx-auto min-h-[50vh]">
@@ -179,7 +179,7 @@ export default function ArenaComparisonClient({
                             <div className="flex justify-between items-start mb-6 border-b border-blue-500/20 pb-4">
                                 <h2 className="font-pixel text-[10px] md:text-sm text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]">[ PLAYER 1 ]</h2>
                                 {isArenaMode && selectionA.details && (
-                                     <span className="font-mono text-xs text-blue-300 animate-pulse font-bold tracking-widest drop-shadow-[0_0_5px_rgba(96,165,250,1)]">READY</span>
+                                    <span className="font-mono text-xs text-blue-300 animate-pulse font-bold tracking-widest drop-shadow-[0_0_5px_rgba(96,165,250,1)]">READY</span>
                                 )}
                             </div>
 
@@ -246,7 +246,7 @@ export default function ArenaComparisonClient({
                             <div className="flex justify-between items-start mb-6 border-b border-red-500/20 pb-4">
                                 <h2 className="font-pixel text-[10px] md:text-sm text-red-400 drop-shadow-[0_0_8px_rgba(248,113,113,0.8)] text-left md:text-right w-full">[ PLAYER 2 ]</h2>
                                 {isArenaMode && selectionB.details && (
-                                     <span className="font-mono text-xs text-red-300 animate-pulse font-bold tracking-widest drop-shadow-[0_0_5px_rgba(248,113,113,1)] order-first md:order-last">READY</span>
+                                    <span className="font-mono text-xs text-red-300 animate-pulse font-bold tracking-widest drop-shadow-[0_0_5px_rgba(248,113,113,1)] order-first md:order-last">READY</span>
                                 )}
                             </div>
 
