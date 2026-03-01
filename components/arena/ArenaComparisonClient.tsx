@@ -93,17 +93,25 @@ export default function ArenaComparisonClient({
         if (selectionA.selectedVariant && selectionB.selectedVariant && selectionA.details && selectionB.details) {
             setIsArenaMode(true);
 
+            // Helper to get manufacturer slug
+            const getMfgSlug = (details: ConsoleDetails) => {
+                return details.manufacturer?.slug || details.manufacturer?.name.toLowerCase().replace(/\s+/g, '-') || 'unknown';
+            };
+
             // Construct path
-            // Format is /arena/slugA[-variantA]-vs-slugB[-variantB]
+            // Format is /arena/[mfg]-[slugA][-variantA]-vs-[mfg]-[slugB][-variantB]
+            const mfgA = getMfgSlug(selectionA.details);
             const part1 = selectionA.selectedVariant.slug !== selectionA.details.variants?.find(v => v.is_default)?.slug && selectionA.selectedVariant.slug
-                ? `${selectionA.details.slug}-${selectionA.selectedVariant.slug}`
-                : selectionA.details.slug;
+                ? `${mfgA}-${selectionA.details.slug}-${selectionA.selectedVariant.slug}`
+                : `${mfgA}-${selectionA.details.slug}`;
 
+            const mfgB = getMfgSlug(selectionB.details);
             const part2 = selectionB.selectedVariant.slug !== selectionB.details.variants?.find(v => v.is_default)?.slug && selectionB.selectedVariant.slug
-                ? `${selectionB.details.slug}-${selectionB.selectedVariant.slug}`
-                : selectionB.details.slug;
+                ? `${mfgB}-${selectionB.details.slug}-${selectionB.selectedVariant.slug}`
+                : `${mfgB}-${selectionB.details.slug}`;
 
-            router.push(`/arena/${part1}-vs-${part2}`, { scroll: false });
+            // Use window.history.pushState to completely avoid Next.js hydration flicker
+            window.history.pushState(null, '', `/arena/${part1}-vs-${part2}`);
 
             setTimeout(() => {
                 matchSummaryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });

@@ -22,7 +22,11 @@ export default async function LandingPage({ version }: LandingPageProps) {
   ]);
 
   // Prepare simple console list for the finder
-  const searchableConsoles = allConsoles.map(c => ({ name: c.name, slug: c.slug }));
+  const searchableConsoles = allConsoles.map(c => ({
+    name: c.name,
+    slug: c.slug,
+    manufacturerSlug: c.manufacturer?.slug || c.manufacturer?.name.toLowerCase().replace(/\s+/g, '-') || 'unknown'
+  }));
 
   return (
     <div className="bg-bg-primary min-h-screen text-text-primary font-sans">

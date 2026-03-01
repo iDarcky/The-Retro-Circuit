@@ -49,17 +49,56 @@ export default async function ArenaVersusPage({ params }: { params: Promise<{ ve
     const resolveSlug = async (raw: string) => {
         if (!raw || raw === 'select') return { p: null, v: null, details: null, variant: null };
 
-        // 1. Try exact match (Console)
+        // 1. Try to resolve using new manufacturer-inclusive format
+        // Fetch minimal console data to match against (there's <100 consoles, so this is fast)
+        const { data: allConsoles } = await supabase.from('consoles').select('id, slug, manufacturer:manufacturer(slug, name)');
+
+        if (allConsoles) {
+            let matchedConsole = null;
+            let matchedVariantSlug = null;
+
+            for (const c of allConsoles) {
+                const mfgName = (c.manufacturer as any)?.name;
+                const mfgSlug = (c.manufacturer as any)?.slug || (mfgName ? mfgName.toLowerCase().replace(/\s+/g, '-') : 'unknown');
+                const baseStr = `${mfgSlug}-${c.slug}`;
+
+                if (raw === baseStr) {
+                    matchedConsole = c;
+                    break;
+                } else if (raw.startsWith(baseStr + '-')) {
+                    matchedConsole = c;
+                    matchedVariantSlug = raw.substring(baseStr.length + 1);
+                    break; // Pick the first match. You could sort by length descending to be safer if slugs overlap
+                }
+            }
+
+            if (matchedConsole) {
+                const { data: fullConsole } = await supabase.from('consoles').select('*, manufacturer:manufacturer(*)').eq('id', matchedConsole.id).maybeSingle();
+                if (fullConsole) {
+                    const { data: variants } = await supabase.from('console_variants').select('*, emulation_profiles(*), variant_input_profile(*)').eq('console_id', fullConsole.id);
+                    fullConsole.variants = variants?.map(normalizeVariant);
+
+                    let variantMatch = null;
+                    if (matchedVariantSlug) {
+                        variantMatch = fullConsole.variants?.find((v: any) => v.slug === matchedVariantSlug);
+                    }
+                    if (!variantMatch) {
+                        variantMatch = fullConsole.variants?.find((v: any) => v.is_default) || fullConsole.variants?.[0];
+                    }
+                    return { p: raw, v: matchedVariantSlug, details: fullConsole, variant: variantMatch || null };
+                }
+            }
+        }
+
+        // 2. Fallback to old URL logic (backwards compatibility for existing links)
         const { data: consoleMatch } = await supabase.from('consoles').select('*, manufacturer:manufacturer(*)').eq('slug', raw).maybeSingle();
         if (consoleMatch) {
-            // Get default variant
             const { data: variants } = await supabase.from('console_variants').select('*, emulation_profiles(*), variant_input_profile(*)').eq('console_id', consoleMatch.id);
             const defaultVar = variants?.find((v: any) => v.is_default) || variants?.[0];
-            consoleMatch.variants = variants?.map(normalizeVariant); // Attach variants for the selector
+            consoleMatch.variants = variants?.map(normalizeVariant);
             return { p: raw, v: null, details: consoleMatch, variant: normalizeVariant(defaultVar) };
         }
 
-        // 2. Try splitting
         let lastIndex = raw.lastIndexOf('-');
         while (lastIndex > 0) {
             const potentialConsole = raw.substring(0, lastIndex);
@@ -69,7 +108,6 @@ export default async function ArenaVersusPage({ params }: { params: Promise<{ ve
             if (cMatch) {
                 const { data: vMatch } = await supabase.from('console_variants').select('*, emulation_profiles(*), variant_input_profile(*)').eq('console_id', cMatch.id).eq('slug', potentialVariant).maybeSingle();
                 if (vMatch) {
-                    // Fetch all variants for the selector
                     const { data: allVars } = await supabase.from('console_variants').select('*, emulation_profiles(*), variant_input_profile(*)').eq('console_id', cMatch.id);
                     cMatch.variants = allVars?.map(normalizeVariant);
                     return { p: potentialConsole, v: potentialVariant, details: cMatch, variant: normalizeVariant(vMatch) };

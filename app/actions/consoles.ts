@@ -145,10 +145,10 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
     }
 };
 
-export const fetchConsoleList = async (includeHidden: boolean = false): Promise<{ name: string, slug: string, id: string, status?: string, updated_at?: string }[]> => {
+export const fetchConsoleList = async (includeHidden: boolean = false): Promise<{ name: string, slug: string, id: string, status?: string, updated_at?: string, manufacturer?: { name: string, slug: string } }[]> => {
     const supabase = supabaseAnon;
     // Updated to include manufacturer name for better searchability in Arena
-    let query = supabase.from('consoles').select('id, name, slug, status, updated_at, manufacturer(name)').order('name');
+    let query = supabase.from('consoles').select('id, name, slug, status, updated_at, manufacturer(name, slug)').order('name');
 
     if (!includeHidden) {
         query = query.eq('status', 'published');
@@ -164,7 +164,8 @@ export const fetchConsoleList = async (includeHidden: boolean = false): Promise<
         name: item.manufacturer?.name ? `${item.manufacturer.name} ${item.name}` : item.name,
         slug: item.slug,
         status: item.status,
-        updated_at: item.updated_at
+        updated_at: item.updated_at,
+        manufacturer: item.manufacturer
     }));
 };
 

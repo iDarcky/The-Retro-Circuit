@@ -89,7 +89,7 @@ const CompareButton = ({ compact = false, compareUrl }: CompareButtonProps) => {
     return (
         <div className="relative group inline-block">
             <Link href={compareUrl}>
-                 <SwissButton variant="secondary" className="relative !border-violet-500 !text-violet-400 hover:!bg-violet-500/10 hover:!text-violet-300">
+                <SwissButton variant="secondary" className="relative !border-violet-500 !text-violet-400 hover:!bg-violet-500/10 hover:!text-violet-300">
                     <IconVS className="w-4 h-4" />
                     COMPARE
                 </SwissButton>
@@ -111,7 +111,8 @@ export default function ConsoleIdentitySection({
     const sentinelRef = useRef<HTMLDivElement>(null);
 
     const currentVariant = variants.find(v => v.id === selectedVariantId) || null;
-    const compareUrl = `/arena/${consoleData.slug}${currentVariant?.slug ? `-${currentVariant.slug}` : ''}-vs-select`;
+    const getMfgSlug = () => manufacturer?.slug || (manufacturer?.name ? manufacturer.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
+    const compareUrl = `/arena/${getMfgSlug()}-${consoleData.slug}${currentVariant?.slug ? `-${currentVariant.slug}` : ''}-vs-select`;
 
     const fabName = manufacturer?.name || 'UNKNOWN';
 
@@ -231,22 +232,22 @@ export default function ConsoleIdentitySection({
             >
                 <div className="max-w-[1600px] mx-auto px-4 md:px-8 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                         <h2 className="font-pixel text-xs md:text-sm text-white uppercase tracking-wider">
+                        <h2 className="font-pixel text-xs md:text-sm text-white uppercase tracking-wider">
                             <span className="text-gray-500 mr-2">{fabName}</span>
                             {consoleData.name}
                         </h2>
                     </div>
 
                     <div className="flex items-center gap-4">
-                         {hasMultipleVariants && (
-                                <button
-                                    onClick={onCompareVariants}
-                                    className="hidden sm:flex items-center gap-2 text-[10px] font-mono uppercase text-gray-400 hover:text-white border border-white/10 hover:border-white/50 px-2 py-1 transition-colors"
-                                >
-                                    <Layers className="w-3 h-3" />
-                                    VARIANTS
-                                </button>
-                            )}
+                        {hasMultipleVariants && (
+                            <button
+                                onClick={onCompareVariants}
+                                className="hidden sm:flex items-center gap-2 text-[10px] font-mono uppercase text-gray-400 hover:text-white border border-white/10 hover:border-white/50 px-2 py-1 transition-colors"
+                            >
+                                <Layers className="w-3 h-3" />
+                                VARIANTS
+                            </button>
+                        )}
                         <VariantDropdown
                             compact
                             variants={variants}
