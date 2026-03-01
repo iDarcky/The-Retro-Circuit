@@ -169,7 +169,7 @@ export default function ArenaComparisonClient({
 
                     {/* Player 1 Card - Blue */}
                     <div className={`
-                        border-2 border-blue-600/30 bg-blue-900/20 relative transition-all z-10 rounded-xl
+                        border-2 relative transition-all z-10 rounded-xl border-blue-600/30 bg-blue-900/20
                         ${isArenaMode ? 'border-blue-500 shadow-[0_0_60px_rgba(37,99,235,0.25)]' : 'hover:border-blue-500/50 hover:bg-blue-900/30'}
                     `}>
                         {/* Status Bar */}
@@ -236,7 +236,7 @@ export default function ArenaComparisonClient({
 
                     {/* Player 2 Card - Red */}
                     <div className={`
-                        border-2 border-red-600/30 bg-red-900/20 relative transition-all z-0 rounded-xl
+                        border-2 relative transition-all z-0 rounded-xl border-red-600/30 bg-red-900/20
                         ${isArenaMode ? 'border-red-500 shadow-[0_0_60px_rgba(220,38,38,0.25)]' : 'hover:border-red-500/50 hover:bg-red-900/30'}
                     `}>
                         {/* Status Bar */}
