@@ -133,8 +133,13 @@ export const GlanceComparison = ({ variantA, variantB }: GlanceComparisonProps) 
     const battA = variantA.battery_capacity_mah;
     const battB = variantB.battery_capacity_mah;
 
+console.log('GlanceComparison variantA emulation_profile:', variantA?.emulation_profile);
+console.log('GlanceComparison variantA emulation_profiles:', (variantA as any)?.emulation_profiles);
+
     // Helper to calculate highest tier
     const getHighestTier = (profile?: EmulationProfile | null) => {
+        if (!profile) return null;
+
         if (!profile) return null;
         for (let i = SYSTEM_TIERS.length - 1; i >= 0; i--) {
             const tier = SYSTEM_TIERS[i];
@@ -153,8 +158,8 @@ export const GlanceComparison = ({ variantA, variantB }: GlanceComparisonProps) 
         return null;
     };
 
-    const tierA = getHighestTier(variantA.emulation_profile || (variantA as any).emulation_profiles);
-    const tierB = getHighestTier(variantB.emulation_profile || (variantB as any).emulation_profiles);
+    const tierA = getHighestTier(variantA?.emulation_profile || ((variantA as any)?.emulation_profiles ? (Array.isArray((variantA as any).emulation_profiles) ? (variantA as any).emulation_profiles[0] : (variantA as any).emulation_profiles) : null));
+    const tierB = getHighestTier(variantB?.emulation_profile || ((variantB as any)?.emulation_profiles ? (Array.isArray((variantB as any).emulation_profiles) ? (variantB as any).emulation_profiles[0] : (variantB as any).emulation_profiles) : null));
 
     return (
         <div className="w-full mb-12 animate-fadeIn">

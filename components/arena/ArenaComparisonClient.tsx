@@ -132,7 +132,7 @@ export default function ArenaComparisonClient({
             <SwissHeader
                 title={
                     <>
-                        Comparison <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-orange-400">Arena</span><span className="text-red-500 animate-pulse">_</span>
+                        Comparison <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-red-500">Arena</span><span className="text-red-500 animate-pulse">_</span>
                     </>
                 }
                 subtitle="Head-to-head hardware analysis. Compare technical specifications, dimensions, and performance metrics."
