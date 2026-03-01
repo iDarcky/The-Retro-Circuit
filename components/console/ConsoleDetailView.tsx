@@ -177,7 +177,6 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                 <section id="tech" className="border-t border-white/10 pt-8">
                      <TechnicalReference mergedSpecs={mergedSpecs} />
                 </section>
-                </section>
 
                 {/* ROW 4: SIMILAR CONSOLES */}
                 <section id="similar" className="border-t border-white/10 pt-8 mt-12">

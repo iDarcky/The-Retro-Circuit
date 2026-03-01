@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ConsoleDetails } from '../../../lib/types';
 import { fetchVaultConsoles } from '../../../app/actions';
-import SwissButton from '../../ui/SwissButton';
+import SwissButton from './SwissButton';
 
 interface SimilarConsolesProps {
     currentConsole: ConsoleDetails;
