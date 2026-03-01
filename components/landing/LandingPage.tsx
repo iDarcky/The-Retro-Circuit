@@ -114,10 +114,10 @@ export default async function LandingPage({ version }: LandingPageProps) {
               </Link>
             </div>
 
-            <div className="relative group">
+            <div className="relative group z-20">
               <div className="relative z-10 border border-border-subtle bg-bg-primary p-6 shadow-2xl transition-transform duration-500 group-hover:-translate-y-2 hover:border-violet-500/30">
-                <div className="absolute -top-3 -left-3 w-6 h-6 border-t-2 border-l-2 border-violet-500 transition-all duration-300 group-hover:w-full group-hover:h-full group-hover:border-violet-500/20"></div>
-                <div className="absolute -bottom-3 -right-3 w-6 h-6 border-b-2 border-r-2 border-violet-500 transition-all duration-300 group-hover:w-full group-hover:h-full group-hover:border-violet-500/20"></div>
+                <div className="absolute -top-3 -left-3 w-6 h-6 border-t-2 border-l-2 border-violet-500 transition-all duration-300 group-hover:w-full group-hover:h-full group-hover:border-violet-500/20 pointer-events-none"></div>
+                <div className="absolute -bottom-3 -right-3 w-6 h-6 border-b-2 border-r-2 border-violet-500 transition-all duration-300 group-hover:w-full group-hover:h-full group-hover:border-violet-500/20 pointer-events-none"></div>
                 {/* OPTIMIZATION: Pass only necessary data (searchableConsoles) to reduce client component payload */}
                 <QuickCompare consoles={searchableConsoles} />
               </div>

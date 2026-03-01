@@ -1,7 +1,13 @@
 
 import { createClient } from '../../../lib/supabase/server';
 import ArenaComparisonClient from '../../../components/arena/ArenaComparisonClient';
-import { getSystemVersion } from '../../../app/actions/roadmap';
+// Quick inline normalize for server
+function normalizeVariant(v: any): any {
+    if (!v) return v;
+    if (Array.isArray(v.variant_input_profile)) { v.variant_input_profile = v.variant_input_profile[0] || null; }
+    if (Array.isArray(v.emulation_profiles)) { v.emulation_profile = v.emulation_profiles[0] || null; }
+    return v;
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ versus: string }> }) {
     const { versus } = await params;
@@ -28,7 +34,6 @@ export async function generateMetadata({ params }: { params: Promise<{ versus: s
 export default async function ArenaVersusPage({ params }: { params: Promise<{ versus: string }> }) {
   const { versus } = await params;
   const supabase = await createClient();
-  const version = await getSystemVersion();
 
   const parts = versus.split('-vs-');
 
@@ -47,10 +52,10 @@ export default async function ArenaVersusPage({ params }: { params: Promise<{ ve
      const { data: consoleMatch } = await supabase.from('consoles').select('*, manufacturer:manufacturer(*)').eq('slug', raw).maybeSingle();
      if (consoleMatch) {
          // Get default variant
-         const { data: variants } = await supabase.from('console_variants').select('*').eq('console_id', consoleMatch.id);
+         const { data: variants } = await supabase.from('console_variants').select('*, emulation_profiles(*), variant_input_profile(*)').eq('console_id', consoleMatch.id);
          const defaultVar = variants?.find((v: any) => v.is_default) || variants?.[0];
-         consoleMatch.variants = variants; // Attach variants for the selector
-         return { p: raw, v: null, details: consoleMatch, variant: defaultVar };
+         consoleMatch.variants = variants?.map(normalizeVariant); // Attach variants for the selector
+         return { p: raw, v: null, details: consoleMatch, variant: normalizeVariant(defaultVar) };
      }
 
      // 2. Try splitting
@@ -61,12 +66,12 @@ export default async function ArenaVersusPage({ params }: { params: Promise<{ ve
 
          const { data: cMatch } = await supabase.from('consoles').select('*, manufacturer:manufacturer(*)').eq('slug', potentialConsole).maybeSingle();
          if (cMatch) {
-             const { data: vMatch } = await supabase.from('console_variants').select('*').eq('console_id', cMatch.id).eq('slug', potentialVariant).maybeSingle();
+             const { data: vMatch } = await supabase.from('console_variants').select('*, emulation_profiles(*), variant_input_profile(*)').eq('console_id', cMatch.id).eq('slug', potentialVariant).maybeSingle();
              if (vMatch) {
                  // Fetch all variants for the selector
-                 const { data: allVars } = await supabase.from('console_variants').select('*').eq('console_id', cMatch.id);
-                 cMatch.variants = allVars;
-                 return { p: potentialConsole, v: potentialVariant, details: cMatch, variant: vMatch };
+                 const { data: allVars } = await supabase.from('console_variants').select('*, emulation_profiles(*), variant_input_profile(*)').eq('console_id', cMatch.id);
+                 cMatch.variants = allVars?.map(normalizeVariant);
+                 return { p: potentialConsole, v: potentialVariant, details: cMatch, variant: normalizeVariant(vMatch) };
              }
          }
          lastIndex = raw.lastIndexOf('-', lastIndex - 1);
@@ -100,7 +105,6 @@ export default async function ArenaVersusPage({ params }: { params: Promise<{ ve
       <ArenaComparisonClient
           initialSelectionA={initialSelectionA}
           initialSelectionB={initialSelectionB}
-          version={version}
       />
   );
 }
