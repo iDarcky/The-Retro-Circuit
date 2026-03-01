@@ -47,6 +47,7 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                     border: 'focus:border-blue-500',
                     activeItem: 'border-blue-500',
                     text: 'text-blue-500',
+                    placeholder: 'placeholder:text-blue-500',
                     bgHover: 'hover:bg-blue-500/10',
                     ring: 'focus-visible:ring-blue-500'
                 };
@@ -57,6 +58,7 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                     border: 'focus:border-red-500',
                     activeItem: 'border-red-500',
                     text: 'text-red-500',
+                    placeholder: 'placeholder:text-red-500',
                     bgHover: 'hover:bg-red-500/10',
                     ring: 'focus-visible:ring-red-500'
                 };
@@ -65,6 +67,7 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                     border: 'focus:border-pink-500',
                     activeItem: 'border-pink-500',
                     text: 'text-pink-500',
+                    placeholder: 'placeholder:text-pink-500',
                     bgHover: 'hover:bg-pink-500/10',
                     ring: 'focus-visible:ring-pink-500'
                 };
@@ -73,6 +76,7 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                     border: 'focus:border-violet-500',
                     activeItem: 'border-violet-500',
                     text: 'text-violet-500',
+                    placeholder: 'placeholder:text-violet-500',
                     bgHover: 'hover:bg-violet-500/10',
                     ring: 'focus-visible:ring-violet-500'
                 };
@@ -83,6 +87,8 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
 
     // Determine input text color
     const inputTextColor = (currentSelection && highlightSelection) ? theme.text : textColor === 'white' ? 'text-white' : 'text-text-primary';
+    const inputPlaceholderColor = (currentSelection && highlightSelection) ? theme.placeholder : 'placeholder:text-white/20';
+
     // Determine icon color
     const iconColor = textColor === 'white' ? 'text-white/50 group-focus-within:text-white' : 'text-text-muted group-focus-within:text-text-primary';
 
@@ -151,8 +157,8 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                     placeholder={currentSelection || placeholder}
                     className={`
                         w-full bg-black/50 border border-white/10 p-4 pl-10 
-                        font-mono text-sm ${inputTextColor} uppercase tracking-wider 
-                        rounded-none transition-all placeholder:text-white/20
+                        font-mono text-sm ${inputTextColor} ${inputPlaceholderColor} uppercase tracking-wider
+                        rounded-none transition-all
                         ${theme.border} focus-visible:ring-1 ${theme.ring} focus:outline-none
                     `}
                 />
@@ -174,12 +180,7 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                                 setSearchTerm('');
                                 setIsOpen(false);
                             }}
-                            className={`
-                                p-3 px-4 text-xs font-mono cursor-pointer border-b border-white/5 last:border-0 flex justify-between items-center group transition-colors uppercase tracking-wide border-l-4
-                                ${idx === activeIndex 
-                                    ? `bg-white/10 text-white ${theme.activeItem}` 
-                                    : `text-white/60 border-transparent hover:bg-white/5 hover:text-white hover:border-white/20`}
-                            `}
+                            className={`p-3 px-4 text-xs font-mono cursor-pointer border-b border-white/5 last:border-0 flex justify-between items-center group transition-colors uppercase tracking-wide border-l-4 ${idx === activeIndex ? "bg-white/10 text-white " + theme.activeItem : "text-white/60 border-transparent hover:bg-white/5 hover:text-white hover:border-white/20"}`}
                         >
                             <span>{c.name}</span>
                             <span className={`opacity-0 ${idx === activeIndex ? 'opacity-100' : 'group-hover:opacity-100'} text-[10px] ${theme.text}`}>SELECT</span>
