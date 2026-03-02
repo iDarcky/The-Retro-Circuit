@@ -11,14 +11,15 @@ export interface FinderWeights {
     library: number;
 }
 
-// Q1 Multipliers (User Defined)
-const PROFILE_MULTIPLIERS: Record<string, FinderWeights> = {
-    nostalgia: { power: 0.95, portability: 1.0, ease: 1.15, value: 1.0, library: 1.05 },
-    completionist: { power: 1.05, portability: 1.0, ease: 1.0, value: 1.10, library: 1.20 },
-    performance: { power: 1.25, portability: 1.0, ease: 0.95, value: 1.0, library: 1.0 },
-    onthego: { power: 0.95, portability: 1.25, ease: 1.0, value: 1.0, library: 1.0 },
-    gift: { power: 0.90, portability: 1.0, ease: 1.25, value: 1.0, library: 1.05 },
-    default: { power: 1.0, portability: 1.0, ease: 1.0, value: 1.0, library: 1.0 }
+// Q1 100-Point Weights (User Defined Points)
+// This distributes exactly 100 points across the 5 categories based on the user's Profile.
+const PROFILE_WEIGHTS: Record<string, FinderWeights> = {
+    nostalgia: { power: 20, portability: 20, ease: 25, value: 15, library: 20 },
+    completionist: { power: 20, portability: 15, ease: 15, value: 20, library: 30 },
+    performance: { power: 40, portability: 10, ease: 10, value: 15, library: 25 },
+    onthego: { power: 15, portability: 40, ease: 15, value: 15, library: 15 },
+    gift: { power: 15, portability: 15, ease: 40, value: 15, library: 15 },
+    default: { power: 20, portability: 20, ease: 20, value: 20, library: 20 }
 };
 
 // System Era Weights for Library/Power Calculation
@@ -276,9 +277,9 @@ export const calculateConsoleScore = (
     // Q5 Special Logic: Portability Match
     const portabilityMatch = calculatePortabilityMatchScore(consoleItem, inputs.portabilityPref);
 
-    // --- STEP 2: APPLY Q1 PROFILE MULTIPLIERS ---
+    // --- STEP 2: APPLY Q1 PROFILE WEIGHTS (100-point total distribution) ---
     const profileKey = (inputs.profile || 'default').toLowerCase();
-    const weights = PROFILE_MULTIPLIERS[profileKey] || PROFILE_MULTIPLIERS['default'];
+    const weights = PROFILE_WEIGHTS[profileKey] || PROFILE_WEIGHTS['default'];
 
     const sPower = powerRaw * weights.power;
     const sLibrary = libraryRaw * weights.library;
@@ -287,6 +288,8 @@ export const calculateConsoleScore = (
     const sValue = valueRaw * weights.value;
 
     // --- STEP 3: COMPUTE BASE WEIGHTED SCORE ---
+    // The sum is naturally out of 100 since the weights distribute precisely 100 points
+    // and the RAW values are explicitly clamped 0.0 to 1.0
     const baseWeightedScore = sPower + sLibrary + sPortability + sEase + sValue;
 
     // --- STEP 4 & 5: APPLY MAJOR MULTIPLIERS (Tier & Budget) ---
