@@ -40,13 +40,55 @@ const QUESTIONS = [
             { id: '6thgen', label: '6th generation consoles', description: 'PS2, GameCube, Dreamcast' },
             { id: 'modern', label: 'Modern Era', description: 'Switch, PS3, Vita, 3DS' },
         ]
+    },
+    {
+        id: 'q4',
+        question: "What's your budget?",
+        subtitle: "We’ll aim to stay inside your range. If your performance target needs more power, we’ll show the closest option and explain why.",
+        options: [
+            { id: 'b_under_60', label: 'Budget-friendly', description: 'Under $60' },
+            { id: 'b_60_120', label: 'Sweet spot', description: '$60–$120' },
+            { id: 'b_120_180', label: 'Mid-range', description: '$120–$180' },
+            { id: 'b_180_300', label: 'High-end', description: '$180–$300' },
+            { id: 'b_300_plus', label: 'No budget limit', description: '$300+' },
+        ]
     }
 ];
+
+// --- CONFLICT LOGIC ---
+const checkBudgetConflict = (tier: string | null, budget: string | null) => {
+    if (!tier || !budget) return null;
+
+    if (tier === 'modern' && (budget === 'b_under_60' || budget === 'b_60_120')) {
+        return {
+            tierName: 'Switch/PS3',
+            minBudget: 150,
+            budgetVal: budget === 'b_under_60' ? 60 : 120,
+            lowerTier: '2000s Handhelds (PSP/DS) or PS1/N64',
+            lowerTierId: '2000s',
+            minRequiredBudgetId: 'b_120_180'
+        };
+    }
+
+    if (tier === '6thgen' && budget === 'b_under_60') {
+        return {
+            tierName: 'PS2/GameCube',
+            minBudget: 100,
+            budgetVal: 60,
+            lowerTier: 'PS1/N64 and below',
+            lowerTierId: '32bit',
+            minRequiredBudgetId: 'b_60_120'
+        };
+    }
+
+    return null;
+};
 
 const FinderTestFlowContent = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [isClient, setIsClient] = useState(false);
+    const [conflictState, setConflictState] = useState<any>(null);
 
     useEffect(() => {
         setIsClient(true);
@@ -57,12 +99,28 @@ const FinderTestFlowContent = () => {
     let stepIndex = 0;
     if (stepParam === 'results') {
         stepIndex = QUESTIONS.length;
+    } else if (stepParam === 'conflict') {
+        stepIndex = QUESTIONS.length + 1; // Special Step
     } else if (stepParam?.startsWith('q')) {
         const qNum = parseInt(stepParam.substring(1));
         if (!isNaN(qNum) && qNum >= 1 && qNum <= QUESTIONS.length) {
             stepIndex = qNum - 1;
         }
     }
+
+    useEffect(() => {
+        if (stepParam === 'results') {
+            const tier = searchParams.get('target_tier');
+            const budget = searchParams.get('budget_band');
+            const conflict = checkBudgetConflict(tier, budget);
+            if (conflict) {
+                setConflictState(conflict);
+                const newParams = new URLSearchParams(searchParams.toString());
+                newParams.set('step', 'conflict');
+                router.replace(`/finder-test?${newParams.toString()}`);
+            }
+        }
+    }, [stepParam, searchParams, router]);
 
     const handleAnswer = (answer: string | string[]) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -89,6 +147,11 @@ const FinderTestFlowContent = () => {
             params.set('target_tier', optionId);
         }
 
+        // Q4 Logic
+        if (stepIndex === 3) {
+            params.set('budget_band', optionId);
+        }
+
         // Navigation
         if (stepIndex < QUESTIONS.length - 1) {
             params.set('step', `q${stepIndex + 2}`);
@@ -96,6 +159,20 @@ const FinderTestFlowContent = () => {
             params.set('step', 'results');
         }
 
+        router.push(`/finder-test?${params.toString()}`);
+    };
+
+    const resolveConflict = (action: 'lower_tier' | 'increase_budget' | 'ignore') => {
+        const params = new URLSearchParams(searchParams.toString());
+
+        if (action === 'lower_tier' && conflictState) {
+            params.set('target_tier', conflictState.lowerTierId);
+        } else if (action === 'increase_budget' && conflictState) {
+            params.set('budget_band', conflictState.minRequiredBudgetId);
+        }
+
+        params.set('step', 'results');
+        setConflictState(null);
         router.push(`/finder-test?${params.toString()}`);
     };
 
@@ -128,12 +205,45 @@ const FinderTestFlowContent = () => {
                 />
             )}
 
-            {stepIndex >= QUESTIONS.length && (
+            {stepParam === 'conflict' && conflictState && (
+                <div className="max-w-2xl mx-auto p-8 bg-zinc-900 border border-orange-500/50 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-red-500"></div>
+                    <h2 className="text-2xl font-pixel text-orange-400 mb-4">Your picks clash a bit — here’s the trade-off</h2>
+                    <p className="text-zinc-300 font-mono text-sm mb-8 leading-relaxed">
+                        Devices that can run <strong className="text-white">{conflictState.tierName}</strong> reliably start above <strong className="text-white">${conflictState.minBudget}</strong>.
+                        Under <strong className="text-white">${conflictState.budgetVal}</strong>, the best experience is typically <strong className="text-white">{conflictState.lowerTier}</strong>.
+                    </p>
+
+                    <div className="flex flex-col gap-3">
+                        <button
+                            onClick={() => resolveConflict('lower_tier')}
+                            className="bg-white text-black hover:bg-zinc-200 font-pixel text-xs py-4 px-6 text-left"
+                        >
+                            <span className="text-zinc-500 mr-2">[RECOMMENDED]</span>
+                            Show best under ${conflictState.budgetVal} for {conflictState.lowerTier}
+                        </button>
+                        <button
+                            onClick={() => resolveConflict('increase_budget')}
+                            className="border border-white/20 text-white hover:bg-white/10 font-pixel text-xs py-4 px-6 text-left transition-colors"
+                        >
+                            Show the cheapest devices that can do {conflictState.tierName}
+                        </button>
+                        <button
+                            onClick={() => resolveConflict('ignore')}
+                            className="text-zinc-500 hover:text-white font-mono text-xs py-4 px-6 text-center underline decoration-zinc-800 underline-offset-4 transition-colors"
+                        >
+                            Show closest match (Show best overall even if over budget)
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {stepIndex === QUESTIONS.length && stepParam === 'results' && (
                 <div className="mt-8 border-t border-zinc-800 pt-8">
                     <div className="text-center p-8 bg-zinc-900 border border-zinc-800 mb-8">
                         <h2 className="text-2xl font-pixel text-white mb-4">END OF CURRENT TEST PHASE</h2>
                         <p className="text-zinc-400 mb-6 font-mono text-sm">
-                            You have completed the currently implemented test questions (Q1 and Q2).<br />
+                            You have completed the currently implemented test questions (Q1 - Q4).<br />
                             Below are the live results based <strong>only</strong> on these parameters.
                         </p>
                     </div>
