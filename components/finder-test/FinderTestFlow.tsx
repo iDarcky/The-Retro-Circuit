@@ -28,6 +28,18 @@ const QUESTIONS = [
             { id: 'clamshell', label: 'Clamshell flip-style (like DS/GBA SP)' },
             { id: 'surprise', label: 'Surprise me!' },
         ]
+    },
+    {
+        id: 'q3',
+        question: "What do you mainly want to play?",
+        subtitle: "We’ll make sure your top matches can handle these systems perfectly.",
+        options: [
+            { id: '8bit', label: '8-16 bit era', description: 'NES, SNES, Game Boy, Genesis' },
+            { id: '32bit', label: 'PlayStation 1 & Nintendo 64', description: 'The early 3D era' },
+            { id: '2000s', label: '2000s Handhelds', description: 'GBA, PSP, Nintendo DS' },
+            { id: '6thgen', label: '6th generation consoles', description: 'PS2, GameCube, Dreamcast' },
+            { id: 'modern', label: 'Modern Era', description: 'Switch, PS3, Vita, 3DS' },
+        ]
     }
 ];
 
@@ -70,6 +82,11 @@ const FinderTestFlowContent = () => {
         // Q2 Logic
         if (stepIndex === 1) {
             params.set('form_factor_pref', optionId);
+        }
+
+        // Q3 Logic
+        if (stepIndex === 2) {
+            params.set('target_tier', optionId);
         }
 
         // Navigation
