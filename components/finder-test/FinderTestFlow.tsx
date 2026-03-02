@@ -52,6 +52,17 @@ const QUESTIONS = [
             { id: 'b_180_300', label: 'High-end', description: '$180–$300' },
             { id: 'b_300_plus', label: 'No budget limit', description: '$300+' },
         ]
+    },
+    {
+        id: 'q5',
+        question: "How portable do you want it to be?",
+        subtitle: "Portability usually trades off with screen size and comfort — we’ll balance based on your pick.",
+        options: [
+            { id: 'pocket', label: 'Pocket Carry', description: 'Must fit in a standard jeans pocket' },
+            { id: 'jacket', label: 'Bag/Jacket Carry', description: 'I don\'t mind a little bulk if the screen is better' },
+            { id: 'home', label: 'Home-focused', description: 'Portability not important, bigger screens welcome' },
+            { id: 'versatile', label: 'Versatile', description: 'Mix of portability and screen size' },
+        ]
     }
 ];
 
@@ -152,6 +163,11 @@ const FinderTestFlowContent = () => {
             params.set('budget_band', optionId);
         }
 
+        // Q5 Logic
+        if (stepIndex === 4) {
+            params.set('portability_pref', optionId);
+        }
+
         // Navigation
         if (stepIndex < QUESTIONS.length - 1) {
             params.set('step', `q${stepIndex + 2}`);
@@ -243,7 +259,7 @@ const FinderTestFlowContent = () => {
                     <div className="text-center p-8 bg-zinc-900 border border-zinc-800 mb-8">
                         <h2 className="text-2xl font-pixel text-white mb-4">END OF CURRENT TEST PHASE</h2>
                         <p className="text-zinc-400 mb-6 font-mono text-sm">
-                            You have completed the currently implemented test questions (Q1 - Q4).<br />
+                            You have completed the currently implemented test questions (Q1 - Q5).<br />
                             Below are the live results based <strong>only</strong> on these parameters.
                         </p>
                     </div>

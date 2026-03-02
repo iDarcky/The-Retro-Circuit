@@ -131,21 +131,55 @@ export const calculateTierFitScore = (consoleItem: ConsoleDetails, targetTier: s
         const profile = Array.isArray(rawProfile) ? rawProfile[0] : rawProfile;
         if (!profile) continue;
 
-        let sum = 0;
-        let count = 0;
+        let passCount = 0;
+        let highestStateScore = 0; // Track highest quality pass for bonus
 
         for (const anchor of anchors) {
             const state = profile[anchor];
             const s = state ? state.charAt(0).toUpperCase() + state.slice(1).toLowerCase() : 'N/A';
             const score = STATE_SCORES[s] !== undefined ? STATE_SCORES[s] : 0;
 
-            sum += score;
-            count++;
+            // "Playable" (0.65), "Great" (0.85), "Perfect" (1.0)
+            if (score >= 0.65) {
+                passCount++;
+                if (score > highestStateScore) highestStateScore = score;
+            }
         }
 
-        if (count > 0) {
-            const avg = sum / count;
-            if (avg > bestFitScore) bestFitScore = avg;
+        // --- NEW STRICT RULES ---
+        let variantFitScore = 0;
+
+        switch (targetTier) {
+            case '8bit':
+                variantFitScore = 1.0; // Trivial
+                break;
+            case '32bit': // ps1 + n64 + dc (Needs >= 2)
+            case '6thgen': // ps2 + gc + wii (Needs >= 2)
+                if (passCount >= 2) {
+                    // It passes structurally. We use the highestStateScore to reward Perfect vs Playable
+                    variantFitScore = highestStateScore;
+                }
+                break;
+            case '2000s': // psp + nds (Needs >= 1)
+                if (passCount >= 1) {
+                    variantFitScore = highestStateScore;
+                }
+                break;
+            case 'modern': // switch + ps3 (Switch MUST pass. ps3 is bonus/later, but we anchor primarily on switch for now)
+                // Assuming modern anchors are [switch, ps3]. 
+                // We'll enforce that passCount >= 1 and Specifically switch_state passes.
+                const switchState = profile['switch_state'];
+                const switchS = switchState ? switchState.charAt(0).toUpperCase() + switchState.slice(1).toLowerCase() : 'N/A';
+                const switchScore = STATE_SCORES[switchS] !== undefined ? STATE_SCORES[switchS] : 0;
+
+                if (switchScore >= 0.65) {
+                    variantFitScore = switchScore;
+                }
+                break;
+        }
+
+        if (variantFitScore > bestFitScore) {
+            bestFitScore = variantFitScore;
         }
     }
 
@@ -189,27 +223,44 @@ export const calculatePortabilityScore = (consoleItem: ConsoleDetails): number =
 };
 
 export const calculatePortabilityMatchScore = (consoleItem: ConsoleDetails, pref: string | null): number => {
+    // If no preference is given, the raw portability score (0.0 - 1.0) 
+    // simply relies on its 100-point weight from Q1 (e.g. 40 points if 'onthego')
     if (!pref) return 1.0;
 
-    const pScore = calculatePortabilityScore(consoleItem);
+    const specs = consoleItem.specs as any;
+    const screen = specs?.screen_size_inch || 999;
+    const weight = specs?.weight_g || 999;
 
+    // We no longer rely on the raw pScore. We directly look at specs for the Q5 hard constraints.
+    // Q5 acts as a multiplier against the Q1 base Portability points.
     switch (pref) {
         case 'pocket':
-            return pScore;
+            // "Must fit in a standard jeans pocket"
+            if (screen <= 3.5 && weight <= 250) return 1.0; // Perfect, keep all Q1 portability points
+            if (screen <= 4.0 && weight <= 300) return 0.5; // Stretch, keep half
+            return 0.0; // Fail. Loses all Portability points.
 
         case 'jacket':
-            if (pScore >= 0.8) return 0.8;
-            if (pScore >= 0.4) return 1.0;
-            return 0.2;
+            // "Bag/Jacket Carry"
+            if (screen <= 5.5 && weight <= 450) return 1.0;
+            if (screen <= 7.0 && weight <= 650) return 0.7;
+            return 0.1; // Too big even for a jacket, crush Portability
 
         case 'home':
-            if (pScore <= 0.2) return 1.0;
-            if (pScore <= 0.6) return 0.7;
-            return 0.4;
+            // "Home-focused (bigger screens welcome)"
+            // Here, we actually WANT it to be big. 
+            // The score engine treats Portability = 1.0 as "Lightweight". 
+            // So if they want Home, Portability points are virtually useless to them, 
+            // BUT we should heavily penalize tiny pocket screens.
+            if (screen >= 5.5) return 1.0; // Good home screen
+            if (screen >= 4.0) return 0.6; // Acceptable
+            return 0.0; // Tiny screen is awful for Home.
 
         case 'versatile':
-            if (pScore >= 0.4 && pScore <= 0.8) return 1.0;
-            return 0.6;
+            // "Mix of portability and screen size"
+            if (screen >= 4.0 && screen <= 6.0 && weight <= 500) return 1.0; // The holy grail middle
+            if (screen >= 3.5 && screen <= 7.0 && weight <= 650) return 0.6;
+            return 0.2; // Too extreme in either direction
 
         default:
             return 1.0;
