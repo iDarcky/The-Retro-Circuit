@@ -63,6 +63,17 @@ const QUESTIONS = [
             { id: 'home', label: 'Home-focused', description: 'Portability not important, bigger screens welcome' },
             { id: 'versatile', label: 'Versatile', description: 'Mix of portability and screen size' },
         ]
+    },
+    {
+        id: 'q6',
+        question: "How much setup are you willing to do?",
+        subtitle: "Some handhelds are plug-and-play, others need a bit of tuning. This keeps recommendations realistic.",
+        options: [
+            { id: 'beginner', label: 'Total beginner', description: 'want it to work out of the box' },
+            { id: 'guide', label: 'I can follow a guide or tutorial' },
+            { id: 'tinker', label: 'Happy to tinker and customize' },
+            { id: 'power', label: 'Power user', description: 'give me all the options' },
+        ]
     }
 ];
 
@@ -168,6 +179,11 @@ const FinderTestFlowContent = () => {
             params.set('portability_pref', optionId);
         }
 
+        // Q6 Logic
+        if (stepIndex === 5) {
+            params.set('setup_answer', optionId);
+        }
+
         // Navigation
         if (stepIndex < QUESTIONS.length - 1) {
             params.set('step', `q${stepIndex + 2}`);
@@ -259,7 +275,7 @@ const FinderTestFlowContent = () => {
                     <div className="text-center p-8 bg-zinc-900 border border-zinc-800 mb-8">
                         <h2 className="text-2xl font-pixel text-white mb-4">END OF CURRENT TEST PHASE</h2>
                         <p className="text-zinc-400 mb-6 font-mono text-sm">
-                            You have completed the currently implemented test questions (Q1 - Q5).<br />
+                            You have completed the currently implemented test questions (Q1 - Q6).<br />
                             Below are the live results based <strong>only</strong> on these parameters.
                         </p>
                     </div>

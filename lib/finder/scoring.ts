@@ -412,8 +412,33 @@ export const calculateConsoleScore = (
         }
     }
 
+    // --- Q6: Setup Multiplier ---
+    // User requested explicit protections so beginners don't get hard-to-setup Linux consoles.
+    let setupMultiplier = 1.0;
+    const deviceEase = consoleItem.setup_ease_score || 3;
+
+    if (inputs.setupAnswer === 'beginner') {
+        if (deviceEase <= 2) {
+            setupMultiplier = 0.1; // Total beginners won't survive a heavily tinkered device
+        } else if (deviceEase <= 3) {
+            setupMultiplier = 0.5; // Guide required, which they don't want
+        }
+    } else if (inputs.setupAnswer === 'guide') {
+        if (deviceEase <= 1) {
+            setupMultiplier = 0.2; // Even with a guide, a '1' is painful
+        } else if (deviceEase <= 2) {
+            setupMultiplier = 0.8; // Takes work, but manageable
+        }
+    } else if (inputs.setupAnswer === 'power' || inputs.setupAnswer === 'tinker') {
+        // Power users and tinkers don't get penalized for complexity.
+        // If it's a gift tone though, we still need to be a bit careful:
+        if (inputs.toneMode === 'gift' && deviceEase <= 2) {
+            setupMultiplier = 0.6; // Even if they are buying for a tinker, 'very hard' is a risky gift
+        }
+    }
+
     // Apply Multipliers to Base
-    const intermediateScore = baseWeightedScore * tierMultiplier * budgetMultiplier * categoryMultiplier;
+    const intermediateScore = baseWeightedScore * tierMultiplier * budgetMultiplier * categoryMultiplier * setupMultiplier;
 
     // --- STEP 6: APPLY SMALL BONUSES (Additive) ---
     // Bonuses are added AFTER penalties/multipliers to allow tie-breaking
@@ -428,25 +453,6 @@ export const calculateConsoleScore = (
         if (pref === 'surprise') {
         } else if (factor === pref) {
             formFactorBonus = 2.0;
-        }
-    }
-
-    // Q6: Setup Bonus (Gift Logic)
-    let setupBonus = 0;
-    const deviceEase = consoleItem.setup_ease_score || 3;
-
-    if (inputs.setupAnswer === 'power' || inputs.setupAnswer === 'tinker') {
-        if (deviceEase <= 2) {
-            setupBonus = 0.5;
-            if (inputs.toneMode === 'gift') {
-                setupBonus = setupBonus * 0.5;
-            }
-        }
-    } else if (inputs.setupAnswer === 'beginner') {
-        if (deviceEase <= 2) {
-            setupBonus = -2.0;
-        } else if (deviceEase >= 4) {
-            setupBonus = 1.0;
         }
     }
 
@@ -478,7 +484,7 @@ export const calculateConsoleScore = (
     }
 
     // --- FINAL TOTAL & CLAMPING ---
-    let total = intermediateScore + formFactorBonus + setupBonus + aestheticBonus;
+    let total = intermediateScore + formFactorBonus + aestheticBonus;
 
     // Safety Clamp (Score shouldn't be negative)
     if (total < 0) total = 0;
