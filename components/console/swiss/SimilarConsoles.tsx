@@ -30,10 +30,10 @@ export default function SimilarConsoles({ currentConsole }: SimilarConsolesProps
                 // Get base variant price or default to 0
                 let currentPrice = 0;
                 if (currentConsole.variants && currentConsole.variants.length > 0) {
-                     const defaultVar = currentConsole.variants.find(v => v.is_default) || currentConsole.variants[0];
-                     currentPrice = defaultVar?.price_launch_usd || 0;
+                    const defaultVar = currentConsole.variants.find(v => v.is_default) || currentConsole.variants[0];
+                    currentPrice = defaultVar?.price_launch_usd || 0;
                 } else {
-                     currentPrice = currentConsole.specs?.price_launch_usd || 0;
+                    currentPrice = currentConsole.specs?.price_launch_usd || 0;
                 }
 
                 // 3. Score the remaining consoles
@@ -42,10 +42,10 @@ export default function SimilarConsoles({ currentConsole }: SimilarConsolesProps
 
                     let price = 0;
                     if (c.variants && c.variants.length > 0) {
-                         const defaultVar = c.variants.find(v => v.is_default) || c.variants[0];
-                         price = defaultVar?.price_launch_usd || 0;
+                        const defaultVar = c.variants.find(v => v.is_default) || c.variants[0];
+                        price = defaultVar?.price_launch_usd || 0;
                     } else {
-                         price = c.specs?.price_launch_usd || 0;
+                        price = c.specs?.price_launch_usd || 0;
                     }
 
                     const formFactor = c.form_factor;
@@ -62,7 +62,7 @@ export default function SimilarConsoles({ currentConsole }: SimilarConsolesProps
                             // Up to 50 points based on how close the price is
                             score += Math.max(0, 50 - priceDiff);
                         } else if (priceDiff <= 100) {
-                             score += 20; // Some points if within $100
+                            score += 20; // Some points if within $100
                         }
                     }
 
@@ -94,15 +94,17 @@ export default function SimilarConsoles({ currentConsole }: SimilarConsolesProps
 
     if (isLoading) {
         return (
-             <div className="w-full h-48 flex items-center justify-center border border-white/10 bg-white/[0.02]">
-                 <div className="font-mono text-zinc-500 text-sm animate-pulse">ANALYZING DATABASE FOR MATCHES...</div>
-             </div>
+            <div className="w-full h-48 flex items-center justify-center border border-white/10 bg-white/[0.02]">
+                <div className="font-mono text-zinc-500 text-sm animate-pulse">ANALYZING DATABASE FOR MATCHES...</div>
+            </div>
         );
     }
 
     if (similarConsoles.length === 0) {
         return null; // Don't show the section if no similar consoles are found
     }
+
+    const getMfgSlug = (c: any) => c.manufacturer?.slug || (c.manufacturer?.name ? c.manufacturer.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -112,8 +114,8 @@ export default function SimilarConsoles({ currentConsole }: SimilarConsolesProps
                 // Construct proper image URL logic
                 let imageUrl = consoleItem.image_url;
                 if (!imageUrl && consoleItem.variants && consoleItem.variants.length > 0) {
-                     const defaultVar = consoleItem.variants.find(v => v.is_default) || consoleItem.variants[0];
-                     imageUrl = defaultVar?.image_url;
+                    const defaultVar = consoleItem.variants.find(v => v.is_default) || consoleItem.variants[0];
+                    imageUrl = defaultVar?.image_url;
                 }
 
                 return (
@@ -144,29 +146,29 @@ export default function SimilarConsoles({ currentConsole }: SimilarConsolesProps
                             </h4>
 
                             <div className="grid grid-cols-2 gap-2 mb-6 font-mono text-[10px] text-zinc-500">
-                                 <div className="bg-white/[0.02] p-2 text-center border border-white/5">
+                                <div className="bg-white/[0.02] p-2 text-center border border-white/5">
                                     <span className="block text-white mb-0.5">{displayPrice > 0 ? `$${displayPrice}` : 'N/A'}</span>
                                     PRICE
-                                 </div>
-                                 <div className="bg-white/[0.02] p-2 text-center border border-white/5">
+                                </div>
+                                <div className="bg-white/[0.02] p-2 text-center border border-white/5">
                                     <span className="block text-white mb-0.5">{consoleItem.form_factor?.toUpperCase() || 'N/A'}</span>
                                     FORM
-                                 </div>
+                                </div>
                             </div>
 
                             <div className="mt-auto flex flex-col gap-3">
-                                 <Link href={`/consoles/${consoleItem.slug}`} className="w-full">
+                                <Link href={`/consoles/${consoleItem.slug}`} className="w-full">
                                     <SwissButton variant="orange" className="w-full text-xs">
                                         VIEW DETAILS
                                     </SwissButton>
-                                 </Link>
+                                </Link>
 
-                                 {/* COMPARE BUTTON */}
-                                 <Link href={`/arena/${currentConsole.slug}-vs-${consoleItem.slug}`} className="w-full">
+                                {/* COMPARE BUTTON */}
+                                <Link href={`/arena/${getMfgSlug(currentConsole)}-${currentConsole.slug}-vs-${getMfgSlug(consoleItem)}-${consoleItem.slug}`} className="w-full">
                                     <button className="w-full py-3 border border-white/20 text-zinc-400 text-xs font-mono uppercase hover:bg-white hover:text-black hover:border-white transition-all">
                                         COMPARE VS {currentConsole.name.toUpperCase()}
                                     </button>
-                                 </Link>
+                                </Link>
                             </div>
                         </div>
                     </div>

@@ -68,7 +68,8 @@ const GlobalSearch: FC = () => {
 
         switch (result.type) {
             case 'CONSOLE':
-                path = `/consoles/${result.slug}`;
+                const mfgSlug = result.subtitle ? result.subtitle.toLowerCase().replace(/\s+/g, '-') : 'unknown';
+                path = `/consoles/${mfgSlug}-${result.slug}`;
                 break;
             case 'FABRICATOR':
                 path = `/fabricators/${result.slug}`;
@@ -110,7 +111,7 @@ const GlobalSearch: FC = () => {
             <div
                 className="w-full max-w-3xl bg-bg-primary border border-border-normal shadow-2xl relative overflow-hidden flex flex-col max-h-[80vh] m-4 rounded-none"
                 onClick={e => e.stopPropagation()}
-                // Removed onKeyDown from container to prevent bubble-up issues, relying on input focus
+            // Removed onKeyDown from container to prevent bubble-up issues, relying on input focus
             >
                 {/* Header / Input */}
                 <div className="p-6 border-b border-border-normal flex items-center gap-4 bg-bg-primary">
@@ -179,7 +180,7 @@ const GlobalSearch: FC = () => {
                                         <div className="flex items-center gap-3">
                                             <span className={`text-[10px] font-mono px-1.5 py-0.5 border
                                                 ${res.type === 'CONSOLE' ? 'text-orange-500 border-orange-500/30' :
-                                                res.type === 'FABRICATOR' ? 'text-cyan-500 border-cyan-500/30' : 'text-text-muted border-border-normal'
+                                                    res.type === 'FABRICATOR' ? 'text-cyan-500 border-cyan-500/30' : 'text-text-muted border-border-normal'
                                                 }`}>
                                                 {res.type}
                                             </span>
