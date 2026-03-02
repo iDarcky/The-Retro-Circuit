@@ -15,6 +15,11 @@ import { ArenaRivals } from '../../components/arena/ArenaRivals';
 import { ChevronDown, ChevronUp, Swords } from 'lucide-react';
 import { SwissHeader } from '../../components/ui/SwissHeader';
 
+// Helper to get manufacturer slug
+const getMfgSlug = (details: ConsoleDetails) => {
+    return details.manufacturer?.slug || details.manufacturer?.name.toLowerCase().replace(/\s+/g, '-') || 'unknown';
+};
+
 interface SelectionState {
     slug: string | null;
     details: ConsoleDetails | null;
@@ -92,11 +97,6 @@ export default function ArenaComparisonClient({
     const handleFight = () => {
         if (selectionA.selectedVariant && selectionB.selectedVariant && selectionA.details && selectionB.details) {
             setIsArenaMode(true);
-
-            // Helper to get manufacturer slug
-            const getMfgSlug = (details: ConsoleDetails) => {
-                return details.manufacturer?.slug || details.manufacturer?.name.toLowerCase().replace(/\s+/g, '-') || 'unknown';
-            };
 
             // Construct path
             // Format is /arena/[mfg]-[slugA][-variantA]-vs-[mfg]-[slugB][-variantB]
