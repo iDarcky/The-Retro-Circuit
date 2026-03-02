@@ -2,7 +2,7 @@
 
 import { fetchAllConsoles } from '../../app/actions/consoles';
 import { calculateConsoleScore, ScoreBreakdown, getDeviceTierLevel } from '../../lib/finder/scoring';
-import { ConsoleDetails } from '../../lib/types/domain'; // REMOVED
+
 
 export interface FinderResultConsole {
     id: string;
