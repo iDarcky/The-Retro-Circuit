@@ -54,62 +54,13 @@ export async function getFinderResults(
         let filteredConsoles = [...allConsoles];
         let relaxedFeatures: string[] = [];
 
-        // --- Q7: FEATURE FILTERING ---
-        if (inputs.features && inputs.features !== 'none') {
-            const requiredFeatures = inputs.features.split(',').filter(f => f !== 'none');
-
-            const checkFeature = (consoleItem: ConsoleDetails, feature: string): boolean => {
-                const variant = consoleItem.specs as any;
-                if (!variant) return false;
-
-                switch (feature) {
-                    case 'hdmi':
-                        return !!variant.video_out && variant.video_out.toLowerCase().includes('hdmi');
-                    case 'bluetooth':
-                        return !!variant.bluetooth_specs || (!!variant.other_connectivity && variant.other_connectivity.toLowerCase().includes('bluetooth'));
-                    case 'wifi':
-                        return !!variant.wifi_specs;
-                    case 'dual_sticks':
-                        // Check new input profile first, fallback to legacy checks if needed (though deprecated)
-                        if (variant.variant_input_profile) {
-                            const count = variant.variant_input_profile.stick_count;
-                            return count !== null && count >= 2;
-                        }
-                        // Fallback for legacy data/structure if input_profile is missing
-                        const sticks = (variant.thumbstick_layout || '') + (variant.input_layout || '');
-                        return sticks.toLowerCase().includes('dual') || sticks.toLowerCase().includes('twin');
-                    case 'dual_screen':
-                        return (variant.second_screen_size_inch || 0) > 0;
-                    default:
-                        return true;
-                }
-            };
-
-            const relaxationOrder = ['dual_screen', 'dual_sticks', 'hdmi', 'wifi', 'bluetooth'];
-            let currentRequirements = [...requiredFeatures];
-
-            const performFilter = () => {
-                return filteredConsoles.filter(c => {
-                    return currentRequirements.every(req => checkFeature(c, req));
-                });
-            };
-
-            let tempResults = performFilter();
-
-            while (tempResults.length === 0 && currentRequirements.length > 0) {
-                const nextToRemove = relaxationOrder.find(r => currentRequirements.includes(r));
-
-                if (nextToRemove) {
-                    relaxedFeatures.push(nextToRemove);
-                    currentRequirements = currentRequirements.filter(r => r !== nextToRemove);
-                    tempResults = performFilter();
-                } else {
-                    const popped = currentRequirements.pop();
-                    if (popped) relaxedFeatures.push(popped);
-                    tempResults = performFilter();
-                }
-            }
-            filteredConsoles = tempResults;
+        // --- Q2: FORM FACTOR HARD CUT ---
+        if (inputs.formFactorPref && inputs.formFactorPref !== 'surprise') {
+            filteredConsoles = filteredConsoles.filter(c => {
+                const deviceForm = (c.form_factor || '').toLowerCase();
+                const prefForm = inputs.formFactorPref!.toLowerCase();
+                return deviceForm === prefForm;
+            });
         }
 
         // --- SCORING ---
