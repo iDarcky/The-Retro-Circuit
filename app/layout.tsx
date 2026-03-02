@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import type { Metadata, Viewport } from "next";
 import { Press_Start_2P, JetBrains_Mono, Share_Tech_Mono, Inter } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import ClientShell from "../components/layout/ClientShell";
 import AuthSync from "../components/auth/AuthSync";
@@ -145,6 +146,7 @@ export default async function RootLayout({
           <CookieBanner />
           <AnalyticsWrapper />
         </ConsentProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
