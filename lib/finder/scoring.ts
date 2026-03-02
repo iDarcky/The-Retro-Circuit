@@ -437,8 +437,50 @@ export const calculateConsoleScore = (
         }
     }
 
+    // --- Q7: Special Features (Dealbreakers) ---
+    let featureMultiplier = 1.0;
+    if (inputs.features && inputs.features.length > 0) {
+        // features comes in as a comma-separated string from the URL
+        const requestedFeatures = inputs.features.split(',');
+        const specs = consoleItem.specs as any;
+        const formFactor = consoleItem.form_factor?.toLowerCase() || '';
+        const chassisFeatures = consoleItem.chassis_features || '';
+
+        for (const req of requestedFeatures) {
+            if (req === 'none') continue;
+
+            if (req === 'hdmi') {
+                if (!specs?.video_output || specs.video_output.toLowerCase() === 'no' || specs.video_output.toLowerCase() === 'none') {
+                    featureMultiplier = 0.0;
+                }
+            } else if (req === 'bluetooth') {
+                if (!specs?.bluetooth || specs.bluetooth.toLowerCase() === 'no' || specs.bluetooth.toLowerCase() === 'none') {
+                    featureMultiplier = 0.0;
+                }
+            } else if (req === 'wifi') {
+                if (!specs?.wifi || specs.wifi.toLowerCase() === 'no' || specs.wifi.toLowerCase() === 'none') {
+                    featureMultiplier = 0.0;
+                }
+            } else if (req === 'dual_sticks') {
+                const sticks = parseInt(specs?.joysticks || '0');
+                if (isNaN(sticks) || sticks < 2) {
+                    featureMultiplier = 0.0;
+                }
+            } else if (req === 'dual_screen') {
+                // Must have native dual screens, or be a huge screen to emulate side-by-side
+                const hasDualChassis = chassisFeatures.toLowerCase().includes('dual screen');
+                const isClamshell = formFactor === 'clamshell';
+                const screen = parseFloat(specs?.screen_size_inch || '0');
+
+                if (!hasDualChassis && !isClamshell && screen < 5.0) {
+                    featureMultiplier = 0.0;
+                }
+            }
+        }
+    }
+
     // Apply Multipliers to Base
-    const intermediateScore = baseWeightedScore * tierMultiplier * budgetMultiplier * categoryMultiplier * setupMultiplier;
+    const intermediateScore = baseWeightedScore * tierMultiplier * budgetMultiplier * categoryMultiplier * setupMultiplier * featureMultiplier;
 
     // --- STEP 6: APPLY SMALL BONUSES (Additive) ---
     // Bonuses are added AFTER penalties/multipliers to allow tie-breaking

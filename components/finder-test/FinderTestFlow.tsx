@@ -74,6 +74,21 @@ const QUESTIONS = [
             { id: 'tinker', label: 'Happy to tinker and customize' },
             { id: 'power', label: 'Power user', description: 'give me all the options' },
         ]
+    },
+    {
+        id: 'q7',
+        question: "Any must-have features?",
+        subtitle: "Optional — select only if it’s a deal-breaker. Leaving this blank gives the best recommendations.",
+        multiSelect: true,
+        isOptional: true,
+        options: [
+            { id: 'hdmi', label: 'Must have HDMI / video output' },
+            { id: 'bluetooth', label: 'Must have Bluetooth', description: 'wireless audio/controllers' },
+            { id: 'wifi', label: 'Must have Wi-Fi', description: 'updates, scraping, online features' },
+            { id: 'dual_sticks', label: 'Must have dual analog sticks' },
+            { id: 'dual_screen', label: 'Must support dual-screen', description: 'for DS games' },
+            { id: 'none', label: 'None of these matter' },
+        ]
     }
 ];
 
@@ -184,6 +199,12 @@ const FinderTestFlowContent = () => {
             params.set('setup_answer', optionId);
         }
 
+        // Q7 Logic
+        if (stepIndex === 6) {
+            // Because Q7 is multi-select, answer might be an array or string
+            params.set('features', optionId);
+        }
+
         // Navigation
         if (stepIndex < QUESTIONS.length - 1) {
             params.set('step', `q${stepIndex + 2}`);
@@ -275,7 +296,7 @@ const FinderTestFlowContent = () => {
                     <div className="text-center p-8 bg-zinc-900 border border-zinc-800 mb-8">
                         <h2 className="text-2xl font-pixel text-white mb-4">END OF CURRENT TEST PHASE</h2>
                         <p className="text-zinc-400 mb-6 font-mono text-sm">
-                            You have completed the currently implemented test questions (Q1 - Q6).<br />
+                            You have completed the currently implemented test questions (Q1 - Q7).<br />
                             Below are the live results based <strong>only</strong> on these parameters.
                         </p>
                     </div>
