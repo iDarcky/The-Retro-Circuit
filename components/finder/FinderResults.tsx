@@ -139,7 +139,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href={`/consoles/${winner.slug}`} className="flex-1">
+              <Link href={`/consoles/${getMfgSlug(winner)}-${winner.slug}`} className="flex-1">
                 <SwissButton variant="orange" className="w-full py-4 text-sm font-pixel">
                   VIEW DETAILS
                 </SwissButton>
@@ -205,7 +205,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                 </div>
 
                 <div className="mt-auto flex flex-col gap-3">
-                  <Link href={`/consoles/${consoleItem.slug}`} className="w-full">
+                  <Link href={`/consoles/${getMfgSlug(consoleItem)}-${consoleItem.slug}`} className="w-full">
                     <SwissButton variant="orange" className="w-full text-xs">
                       VIEW DETAILS
                     </SwissButton>

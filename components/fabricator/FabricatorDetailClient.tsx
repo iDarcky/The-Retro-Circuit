@@ -29,6 +29,10 @@ const SORT_OPTIONS: { value: SortOption, label: string }[] = [
 ];
 
 export default function FabricatorDetailClient({ profile, consoles }: Props) {
+    const getMfgSlug = (c: ConsoleDetails) => {
+        const mfg = c.manufacturer || profile;
+        return mfg?.slug || (mfg?.name ? mfg.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
+    };
     // --- COLOR & THEME SETUP ---
     const staticHexMap: Record<string, string> = {
         'Nintendo': '#ef4444',
@@ -76,7 +80,7 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
     useEffect(() => {
         // Only scroll if we are not at the top to avoid jarring jumps on initial load if navigated to anchor
         if (window.scrollY > 500) {
-             window.scrollTo({ top: 500, behavior: 'smooth' }); // Scroll to roughly the list start
+            window.scrollTo({ top: 500, behavior: 'smooth' }); // Scroll to roughly the list start
         }
     }, [page]);
 
@@ -185,12 +189,12 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
             <SwissHeader
                 title={
                     <div className="flex items-center gap-4 flex-wrap">
-                         {profile.name}
-                         <AdminEditTrigger
+                        {profile.name}
+                        <AdminEditTrigger
                             id={profile.id}
                             type="fabricator"
                             displayMode="inline"
-                         />
+                        />
                     </div>
                 }
                 subtitle=""
@@ -204,38 +208,38 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                     {/* Left: Brand Identity & Stats (4 Cols) */}
                     <div className="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24">
 
-                         {/* Logo Container */}
-                         <div className="w-full aspect-video bg-black/40 border-t border-b border-[var(--brand-color)] flex items-center justify-center p-8 relative overflow-hidden group shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-                             <div className="absolute inset-0 bg-gradient-to-tr from-[var(--brand-color)]/10 to-transparent opacity-50"></div>
-                             {profile.image_url ? (
+                        {/* Logo Container */}
+                        <div className="w-full aspect-video bg-black/40 border-t border-b border-[var(--brand-color)] flex items-center justify-center p-8 relative overflow-hidden group shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+                            <div className="absolute inset-0 bg-gradient-to-tr from-[var(--brand-color)]/10 to-transparent opacity-50"></div>
+                            {profile.image_url ? (
                                 <Image
                                     src={profile.image_url}
                                     alt={profile.name}
                                     fill
                                     className="object-contain p-6 drop-shadow-2xl relative z-10"
                                 />
-                             ) : (
+                            ) : (
                                 <span className="font-pixel text-4xl text-white/20">?</span>
-                             )}
-                         </div>
+                            )}
+                        </div>
 
-                         {/* Stats Data */}
-                         <div className="grid grid-cols-2 gap-px bg-white/10 border border-white/10">
-                             <div className="bg-[#09090b] p-4 flex flex-col gap-1">
-                                 <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider flex items-center gap-2"><MapPin size={10}/> Origin</span>
-                                 <span className="text-sm font-mono text-zinc-200">{profile.country || 'N/A'}</span>
-                             </div>
-                             <div className="bg-[#09090b] p-4 flex flex-col gap-1">
-                                 <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider flex items-center gap-2"><Calendar size={10}/> Est.</span>
-                                 <span className="text-sm font-mono text-zinc-200">{profile.founded_year || 'N/A'}</span>
-                             </div>
-                             <div className="bg-[#09090b] p-4 flex items-center justify-between col-span-2">
-                                 <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider flex items-center gap-2"><HardDrive size={10}/> Hardware Output</span>
-                                 <span className="text-xl font-pixel text-[var(--brand-color)]">{consoles.length}</span>
-                             </div>
-                         </div>
+                        {/* Stats Data */}
+                        <div className="grid grid-cols-2 gap-px bg-white/10 border border-white/10">
+                            <div className="bg-[#09090b] p-4 flex flex-col gap-1">
+                                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider flex items-center gap-2"><MapPin size={10} /> Origin</span>
+                                <span className="text-sm font-mono text-zinc-200">{profile.country || 'N/A'}</span>
+                            </div>
+                            <div className="bg-[#09090b] p-4 flex flex-col gap-1">
+                                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider flex items-center gap-2"><Calendar size={10} /> Est.</span>
+                                <span className="text-sm font-mono text-zinc-200">{profile.founded_year || 'N/A'}</span>
+                            </div>
+                            <div className="bg-[#09090b] p-4 flex items-center justify-between col-span-2">
+                                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider flex items-center gap-2"><HardDrive size={10} /> Hardware Output</span>
+                                <span className="text-xl font-pixel text-[var(--brand-color)]">{consoles.length}</span>
+                            </div>
+                        </div>
 
-                         {profile.website && (
+                        {profile.website && (
                             <a
                                 href={profile.website}
                                 target="_blank"
@@ -270,9 +274,9 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
 
             {/* --- CONTROLS BAR (Sticky) --- */}
             <div className="sticky top-0 z-50 bg-bg-primary/80 backdrop-blur-xl border-y border-white/10 px-6 md:px-12 py-4">
-                 <div className="max-w-[1800px] mx-auto flex flex-col md:flex-row gap-4 md:justify-between md:items-center">
-                     <div className="flex items-center gap-4 justify-between w-full md:w-auto">
-                         <div className="flex items-center gap-2">
+                <div className="max-w-[1800px] mx-auto flex flex-col md:flex-row gap-4 md:justify-between md:items-center">
+                    <div className="flex items-center gap-4 justify-between w-full md:w-auto">
+                        <div className="flex items-center gap-2">
                             <button
                                 onClick={() => setShowFilters(!showFilters)}
                                 className={`flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-wider border transition-all ${showFilters ? 'bg-white text-black border-white' : 'text-white border-white/20 hover:border-white/50 bg-black/40'}`}
@@ -282,35 +286,35 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                                 <span className="md:hidden">FILTERS</span>
                             </button>
 
-                             <SwissDropdown
+                            <SwissDropdown
                                 value={sortOrder}
                                 onChange={setSortOrder}
                                 options={SORT_OPTIONS}
-                             />
-                         </div>
+                            />
+                        </div>
 
-                         <div className="hidden md:flex items-center gap-2 text-xs font-mono text-zinc-500">
+                        <div className="hidden md:flex items-center gap-2 text-xs font-mono text-zinc-500">
                             <span className="text-[var(--brand-color)]">{filteredConsoles.length}</span> UNITS FOUND
-                         </div>
-                     </div>
+                        </div>
+                    </div>
 
-                     <div className="flex items-center gap-2 bg-black/40 p-1 rounded-lg border border-white/10 self-end md:self-auto">
-                         <button
+                    <div className="flex items-center gap-2 bg-black/40 p-1 rounded-lg border border-white/10 self-end md:self-auto">
+                        <button
                             onClick={() => { setViewMode('swiss'); setPage(1); }}
                             className={`p-2 rounded transition-colors ${viewMode === 'swiss' ? 'bg-white/10 text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
                             title="Grid View"
-                         >
+                        >
                             <LayoutGrid size={16} />
-                         </button>
-                         <button
+                        </button>
+                        <button
                             onClick={() => { setViewMode('classic'); setPage(1); }}
                             className={`p-2 rounded transition-colors ${viewMode === 'classic' ? 'bg-white/10 text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
                             title="List View"
-                         >
+                        >
                             <List size={16} />
-                         </button>
-                     </div>
-                 </div>
+                        </button>
+                    </div>
+                </div>
             </div>
 
             {/* --- EXPANDABLE FILTERS --- */}
@@ -318,38 +322,37 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                 <div className="max-w-[1800px] mx-auto flex flex-col md:flex-row gap-6 items-start md:items-center justify-between flex-wrap">
 
                     {/* Timeline */}
-                  <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2">
                         <label className="text-xs font-mono font-bold uppercase text-white tracking-wider">Timeline</label>
                         <div className="flex gap-2 items-center">
-                                <input
+                            <input
                                 type="number"
                                 className="bg-transparent border-b border-white/20 text-white font-mono text-xs py-1 w-16 text-center focus:border-[var(--brand-color)] outline-none"
                                 value={filters.minYear}
-                                onChange={(e: ChangeEvent<HTMLInputElement>) => setFilters({...filters, minYear: Number(e.target.value)})}
-                                />
-                                <span className="text-zinc-600">-</span>
-                                <input
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => setFilters({ ...filters, minYear: Number(e.target.value) })}
+                            />
+                            <span className="text-zinc-600">-</span>
+                            <input
                                 type="number"
                                 className="bg-transparent border-b border-white/20 text-white font-mono text-xs py-1 w-16 text-center focus:border-[var(--brand-color)] outline-none"
                                 value={filters.maxYear}
-                                onChange={(e: ChangeEvent<HTMLInputElement>) => setFilters({...filters, maxYear: Number(e.target.value)})}
-                                />
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => setFilters({ ...filters, maxYear: Number(e.target.value) })}
+                            />
                         </div>
                     </div>
 
                     {/* Form Factor Toggles */}
-                  <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2">
                         <label className="text-xs font-mono font-bold uppercase text-white tracking-wider">Form Factor</label>
                         <div className="flex gap-2">
                             {['Horizontal', 'Vertical', 'Clamshell'].map(ff => (
                                 <button
                                     key={ff}
                                     onClick={() => toggleFilter('form_factors', ff)}
-                                    className={`text-[10px] px-2 py-1 border transition-colors ${
-                                        filters.form_factors.includes(ff)
-                                        ? 'border-[var(--brand-color)] text-[var(--brand-color)] bg-[rgba(var(--brand-rgb),0.1)]'
-                                        : 'border-white/10 text-zinc-500 hover:border-white/30'
-                                    }`}
+                                    className={`text-[10px] px-2 py-1 border transition-colors ${filters.form_factors.includes(ff)
+                                            ? 'border-[var(--brand-color)] text-[var(--brand-color)] bg-[rgba(var(--brand-rgb),0.1)]'
+                                            : 'border-white/10 text-zinc-500 hover:border-white/30'
+                                        }`}
                                 >
                                     {ff.toUpperCase()}
                                 </button>
@@ -358,18 +361,17 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                     </div>
 
                     {/* Screen Tech Toggles */}
-                  <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2">
                         <label className="text-xs font-mono font-bold uppercase text-white tracking-wider">Screen Tech</label>
                         <div className="flex gap-2">
                             {['OLED', 'IPS'].map(pt => (
                                 <button
                                     key={pt}
                                     onClick={() => toggleFilter('panel_types', pt)}
-                                    className={`text-[10px] px-2 py-1 border transition-colors ${
-                                        filters.panel_types.includes(pt)
-                                        ? 'border-[var(--brand-color)] text-[var(--brand-color)] bg-[rgba(var(--brand-rgb),0.1)]'
-                                        : 'border-white/10 text-zinc-500 hover:border-white/30'
-                                    }`}
+                                    className={`text-[10px] px-2 py-1 border transition-colors ${filters.panel_types.includes(pt)
+                                            ? 'border-[var(--brand-color)] text-[var(--brand-color)] bg-[rgba(var(--brand-rgb),0.1)]'
+                                            : 'border-white/10 text-zinc-500 hover:border-white/30'
+                                        }`}
                                 >
                                     {pt}
                                 </button>
@@ -412,11 +414,10 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                         </button>
                     </div>
                 ) : (
-                    <div className={`grid gap-6 ${
-                        viewMode === 'swiss'
-                        ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
-                        : 'grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'
-                    }`}>
+                    <div className={`grid gap-6 ${viewMode === 'swiss'
+                            ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
+                            : 'grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'
+                        }`}>
                         {paginatedConsoles.map((console) => {
                             const specs: any = console.specs || {};
                             const releaseDisplay = formatReleaseDate(specs.release_date, specs.release_date_precision) || 'TBA';
@@ -425,13 +426,13 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                                 // SWISS STYLE CARD (Manufacturer Themed)
                                 return (
                                     <Link
-                                        href={`/consoles/${console.slug}`}
+                                        href={`/consoles/${getMfgSlug(console)}-${console.slug}`}
                                         key={console.id}
                                         className="group relative flex flex-col bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-[var(--brand-color)] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[0_0_15px_rgba(var(--brand-rgb),0.1)] rounded-xl overflow-hidden"
                                     >
                                         <div className="aspect-square p-6 flex items-center justify-center relative bg-gradient-to-b from-transparent to-black/20">
-                                             {console.image_url ? (
-                                                 <div className="relative w-full h-full transition-transform duration-500 group-hover:scale-110">
+                                            {console.image_url ? (
+                                                <div className="relative w-full h-full transition-transform duration-500 group-hover:scale-110">
                                                     <Image
                                                         src={console.image_url}
                                                         alt={console.name}
@@ -439,13 +440,13 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                                                         className="object-contain drop-shadow-2xl"
                                                         sizes="(max-width: 768px) 50vw, 20vw"
                                                     />
-                                                 </div>
-                                             ) : (
-                                                 <div className="text-zinc-700 font-mono text-xs">NO VISUAL</div>
-                                             )}
+                                                </div>
+                                            ) : (
+                                                <div className="text-zinc-700 font-mono text-xs">NO VISUAL</div>
+                                            )}
 
-                                             {/* Status Indicator */}
-                                             <div className="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-emerald-500/50 group-hover:bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.2)] transition-colors"></div>
+                                            {/* Status Indicator */}
+                                            <div className="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-emerald-500/50 group-hover:bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.2)] transition-colors"></div>
                                         </div>
 
                                         <div className="p-4 border-t border-white/5 bg-white/[0.01]">
@@ -463,17 +464,17 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                                 // CLASSIC STYLE CARD (Manufacturer Themed)
                                 return (
                                     <Link
-                                        href={`/consoles/${console.slug}`}
+                                        href={`/consoles/${getMfgSlug(console)}-${console.slug}`}
                                         key={console.id}
                                         className="group block bg-black border border-zinc-800 hover:border-[var(--brand-color)] transition-all relative overflow-hidden"
                                     >
                                         <div className="flex flex-row h-32">
                                             <div className="w-1/3 bg-zinc-900/50 relative flex items-center justify-center p-2 border-r border-zinc-800">
-                                                 {console.image_url ? (
-                                                     <img src={console.image_url} alt={console.name} className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform" />
-                                                 ) : (
-                                                     <span className="font-pixel text-zinc-700 text-xl">?</span>
-                                                 )}
+                                                {console.image_url ? (
+                                                    <img src={console.image_url} alt={console.name} className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform" />
+                                                ) : (
+                                                    <span className="font-pixel text-zinc-700 text-xl">?</span>
+                                                )}
                                             </div>
                                             <div className="w-2/3 p-4 flex flex-col justify-between">
                                                 <div>

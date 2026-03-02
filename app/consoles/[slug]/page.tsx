@@ -1,6 +1,7 @@
 
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { fetchConsoleBySlug } from '../../../app/actions';
+import { fetchConsoleList } from '../../../app/actions/consoles';
 import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
 
 export const revalidate = 3600; // 1 hour
@@ -9,15 +10,55 @@ type Props = {
   params: Promise<{ slug: string }>
 };
 
+async function resolveConsoleSlug(rawSlug: string) {
+  // 1. Try exact DB match (Legacy URL e.g. /consoles/mini)
+  const exactMatch = await fetchConsoleBySlug(rawSlug, false);
+  if (exactMatch.data) {
+    const mfg = exactMatch.data.manufacturer;
+    const mfgSlug = mfg?.slug || (mfg?.name ? mfg.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
+    const idealSlug = `${mfgSlug}-${exactMatch.data.slug}`;
+
+    // If the URL is exactly the DB slug, and the ideal slug is different, REDIRECT.
+    if (rawSlug !== idealSlug) {
+      return { redirectUrl: `/consoles/${idealSlug}`, data: null };
+    }
+    return { redirectUrl: null, data: exactMatch.data };
+  }
+
+  // 2. Try New Format Match ([mfg]-[slug])
+  const allConsoles = await fetchConsoleList(false);
+  for (const c of allConsoles) {
+    const mfgSlug = c.manufacturer?.slug || (c.manufacturer?.name ? c.manufacturer.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
+    const targetSlug = `${mfgSlug}-${c.slug}`;
+    if (rawSlug === targetSlug) {
+      const fullMatch = await fetchConsoleBySlug(c.slug, false);
+      return { redirectUrl: null, data: fullMatch.data };
+    }
+  }
+
+  return { redirectUrl: null, data: null };
+}
+
 export async function generateMetadata(props: Props) {
   try {
     const params = await props.params;
     const slug = decodeURIComponent(params.slug);
 
-    // Use a lightweight fetch or the same API helper
-    const { data, error } = await fetchConsoleBySlug(slug, false);
+    const { redirectUrl, data: resolvedData } = await resolveConsoleSlug(slug);
 
-    if (!data || error) return { title: 'Unknown Hardware | The Retro Circuit' };
+    // Note: if there's a redirect, we technically don't need metadata, but we might just return empty if it's going to redirect anyway in the component. Actually, we can't redirect in generateMetadata. Next.js does not support redirect() inside generateMetadata reliably. It's better to let the page component do the redirect.
+    // However, for metadata, we still need the data! Wait, if it redirects, the metadata doesn't matter much because the browser/crawler follows the 301.
+    // But if we want to fetch the data anyway for the legacy URL to render metadata before redirect? 
+    // Usually, 301 redirects are just followed. Let's return default if redirect (the page component will handle the actual Next.js redirect).
+
+    // Actually, let's just fetch the exact match data if there is a redirect URL, just so the OG tags are valid *during* the redirect hop.
+    let data = resolvedData;
+    if (redirectUrl && !data) {
+      const legacyMatch = await fetchConsoleBySlug(slug, false);
+      data = legacyMatch.data;
+    }
+
+    if (!data) return { title: 'Unknown Hardware | The Retro Circuit' };
 
     // Logic to determine best image: Console Image -> Default Variant Image -> First Variant Image
     let finalImage = data.image_url;
@@ -132,17 +173,13 @@ export default async function ConsoleSpecsPage(props: Props) {
   let consoleData = null;
 
   try {
-    // PURELY PUBLIC FETCH
-    // No auth checks, no cookies.
-    // Force includeHidden = false.
-    const { data, error } = await fetchConsoleBySlug(slug, false);
-    consoleData = data;
+    const { redirectUrl, data } = await resolveConsoleSlug(slug);
 
-    // Log error but we don't display it directly anymore since we redirect to notFound()
-    if (error) {
-      console.error("[ConsoleSpecsPage] Fetch Error:", error);
+    if (redirectUrl) {
+      redirect(redirectUrl);
     }
 
+    consoleData = data;
   } catch (err: any) {
     console.error("[ConsoleSpecsPage] Critical Error:", err);
   }

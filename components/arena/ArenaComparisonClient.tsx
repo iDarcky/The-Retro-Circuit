@@ -204,7 +204,7 @@ export default function ArenaComparisonClient({
                             ) : selectionA.details ? (
                                 <div className="mt-4 flex-1 flex flex-col md:items-center animate-fadeIn">
                                     <Link
-                                        href={`/consoles/${selectionA.details.slug}`}
+                                        href={`/consoles/${getMfgSlug(selectionA.details)}-${selectionA.details.slug}`}
                                         className="flex flex-row md:flex-col items-center gap-6 mb-6 group w-full"
                                     >
                                         <div className="relative w-24 h-24 md:w-full md:h-64 flex-shrink-0 bg-black/40 md:bg-transparent border border-blue-500/10 md:border-0 p-4 transition-transform group-hover:scale-105 duration-500 shadow-inner md:shadow-none rounded-lg md:rounded-none">
@@ -270,7 +270,7 @@ export default function ArenaComparisonClient({
                             ) : selectionB.details ? (
                                 <div className="mt-4 flex-1 flex flex-col md:items-center animate-fadeIn">
                                     <Link
-                                        href={`/consoles/${selectionB.details.slug}`}
+                                        href={`/consoles/${getMfgSlug(selectionB.details)}-${selectionB.details.slug}`}
                                         className="flex flex-row md:flex-col items-center gap-6 mb-6 group w-full"
                                     >
                                         <div className="relative w-24 h-24 md:w-full md:h-64 flex-shrink-0 bg-black/40 md:bg-transparent border border-red-500/10 md:border-0 p-4 transition-transform group-hover:scale-105 duration-500 shadow-inner md:shadow-none rounded-lg md:rounded-none">
