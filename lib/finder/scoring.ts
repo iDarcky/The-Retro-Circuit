@@ -345,8 +345,24 @@ export const calculateConsoleScore = (
         }
     }
 
+    // --- NEW: Category Cut logic based on Target Tier ---
+    // User requested explicit splits between pure emulation devices vs PC handhelds for lower tiers
+    let categoryMultiplier = 1.0;
+    if (inputs.targetTier && consoleItem.device_category === 'pc_gaming') {
+        const tier = inputs.targetTier;
+        if (tier === '8bit' || tier === '32bit') {
+            categoryMultiplier = 0.0; // Hard exclude PCs for retro 2D/PS1
+        } else if (tier === '2000s') {
+            categoryMultiplier = 0.50; // Heavy penalty to emulate 70-30 split favoring Android
+        } else if (tier === '6thgen') {
+            categoryMultiplier = 0.80; // Soft penalty to emulate 60-40 split favoring Android
+        } else if (tier === 'modern') {
+            categoryMultiplier = 1.0; // 50-50 neutral for modern
+        }
+    }
+
     // Apply Multipliers to Base
-    const intermediateScore = baseWeightedScore * tierMultiplier * budgetMultiplier;
+    const intermediateScore = baseWeightedScore * tierMultiplier * budgetMultiplier * categoryMultiplier;
 
     // --- STEP 6: APPLY SMALL BONUSES (Additive) ---
     // Bonuses are added AFTER penalties/multipliers to allow tie-breaking
