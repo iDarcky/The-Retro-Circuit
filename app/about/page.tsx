@@ -45,7 +45,7 @@ export default async function AboutPage() {
         <section className="lg:col-span-7">
             <div className="flex items-center gap-4 mb-8">
                <span className="font-mono text-xs text-orange-500 border border-orange-500/30 px-2 py-0.5 bg-orange-500/5">[ 01 ]</span>
-               <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">ORIGIN SIGNAL</h2>
+               <h2 className="font-mono text-sm tracking-widest text-orange-500 uppercase">ORIGIN SIGNAL</h2>
             </div>
 
             <div className="space-y-8">
@@ -67,7 +67,7 @@ export default async function AboutPage() {
         <section className="lg:col-span-5">
              <div className="flex items-center gap-4 mb-8">
                <span className="font-mono text-xs text-orange-500 border border-orange-500/30 px-2 py-0.5 bg-orange-500/5">[ 02 ]</span>
-               <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">STATE OF THE BUILD</h2>
+               <h2 className="font-mono text-sm tracking-widest text-orange-500 uppercase">STATE OF THE BUILD</h2>
             </div>
 
             <div className="space-y-6 text-zinc-300 font-light leading-relaxed">
@@ -99,7 +99,7 @@ export default async function AboutPage() {
         <section className="lg:col-span-7">
             <div className="flex items-center gap-4 mb-8">
                <span className="font-mono text-xs text-orange-500 border border-orange-500/30 px-2 py-0.5 bg-orange-500/5">[ 03 ]</span>
-               <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">CREDITS & ACKNOWLEDGEMENTS</h2>
+               <h2 className="font-mono text-sm tracking-widest text-orange-500 uppercase">CREDITS & ACKNOWLEDGEMENTS</h2>
             </div>
 
             <div className="space-y-6 text-zinc-300 font-light leading-relaxed">
@@ -128,7 +128,7 @@ export default async function AboutPage() {
          <section className="lg:col-span-5">
              <div className="flex items-center gap-4 mb-8">
                <span className="font-mono text-xs text-orange-500 border border-orange-500/30 px-2 py-0.5 bg-orange-500/5">[ 04 ]</span>
-               <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">SYSTEM ARCHITECTURE</h2>
+               <h2 className="font-mono text-sm tracking-widest text-orange-500 uppercase">SYSTEM ARCHITECTURE</h2>
             </div>
 
             <div className="border-t border-white/10">
@@ -145,7 +145,7 @@ export default async function AboutPage() {
         <section className="lg:col-span-7">
             <div className="flex items-center gap-4 mb-8">
                <span className="font-mono text-xs text-orange-500 border border-orange-500/30 px-2 py-0.5 bg-orange-500/5">[ 05 ]</span>
-               <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">OPERATOR LOG</h2>
+               <h2 className="font-mono text-sm tracking-widest text-orange-500 uppercase">OPERATOR LOG</h2>
             </div>
 
             <div className="border border-white/10 bg-white/[0.02] p-6 md:p-8 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden group">
@@ -182,8 +182,8 @@ export default async function AboutPage() {
          {/* 6. ACTIONS (Relevant Links) */}
          <section className="lg:col-span-5">
              <div className="flex items-center gap-4 mb-8">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 06 ]</span>
-               <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">Relevant Links</h2>
+               <span className="font-mono text-xs text-orange-500 border border-orange-500/30 px-2 py-0.5 bg-orange-500/5">[ 06 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-orange-500 uppercase">RELEVANT LINKS</h2>
             </div>
 
             <div className="grid grid-cols-1 gap-4">
