@@ -1,5 +1,5 @@
 import { siteConfig } from '../../config/site';
-import { ArrowRight, Mail, Linkedin, Database, Layout, Globe, Monitor, Code } from 'lucide-react';
+import { ArrowRight, Linkedin, Database, Layout, Globe, Monitor, Code } from 'lucide-react';
 import Link from 'next/link';
 import { getSystemVersion } from '../../app/actions/roadmap';
 import EmailActionCard from '../../components/about/EmailActionCard';
