@@ -6,7 +6,13 @@ export const revalidate = 0;
 
 export default async function QuizAnalyticsPage() {
 
-    const scenarios = [
+    type Scenario = {
+        name: string;
+        expected: string[];
+        inputs: Record<string, string>;
+    };
+
+    const scenarios: Scenario[] = [
         {
             name: "The Budget Beginner",
             expected: ["Miyoo Mini", "RG35XX", "Trimui"],
@@ -36,7 +42,7 @@ export default async function QuizAnalyticsPage() {
     // getFinderResults handles caching reasonably well if allConsoles is optimized, but sequential is safer for logs.
     for (const scenario of scenarios) {
         try {
-            const matches = await getFinderResults(scenario.inputs);
+            const matches = await getFinderResults(scenario.inputs as Record<string, string>);
 
             // Only care about the top 3 recommendations
             const top3 = matches.slice(0, 3);
