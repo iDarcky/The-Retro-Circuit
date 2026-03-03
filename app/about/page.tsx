@@ -49,13 +49,13 @@ export default async function AboutPage() {
             </div>
 
             <div className="space-y-8">
-                <div className="text-xl md:text-2xl lg:text-3xl font-light leading-tight text-white space-y-6">
+                <div className="text-lg text-zinc-300 font-light leading-relaxed space-y-6">
                     <p>The retro handheld market is a labyrinth of fragmented data. Variants, revisions, and silent upgrades create static in the signal.</p>
                     <p>The Circuit exists to cut through that. Not by cataloguing everything, but by cataloguing things correctly &mdash; with the kind of judgment that knows when two devices that share a name are actually the same product, and when they're not.</p>
                     <p>There are already solutions in this space and this isn't an attempt to replace them. It's a different take. A hub where good data, good design, and a genuine love for the hardware finally coexist.</p>
                 </div>
                 <div className="pl-6 border-l-2 border-orange-500">
-                    <p className="text-lg md:text-xl text-zinc-400 font-light leading-relaxed">
+                    <p className="text-lg text-zinc-400 font-light leading-relaxed">
                         In a sea of subjective noise, we provide the raw signal. <br />
                         <span className="text-white font-medium">No feelings. Just data.</span>
                     </p>
@@ -103,13 +103,13 @@ export default async function AboutPage() {
             </div>
 
             <div className="space-y-6 text-zinc-300 font-light leading-relaxed">
-                <p className="text-xl md:text-2xl text-white">
+                <p>
                     The Circuit wasn't built in a vacuum. The tools, open-source projects, and resources that made this possible are all catalogued on the Credits page.
                 </p>
-                <p className="text-lg">
+                <p>
                     This space has people who have put real work into it. The goal was never to compete with that or copy it, but to add to it. To contribute something that didn't exist in quite this way before.
                 </p>
-                <p className="text-lg">
+                <p>
                     If something here helped you or sparked something in you, that's the point and we are happy.
                 </p>
 
@@ -162,7 +162,7 @@ export default async function AboutPage() {
                             <span className="font-mono text-xs text-orange-500 border border-orange-500/30 bg-orange-500/5 px-2 py-0.5">ADMIN_ACCESS</span>
                         </div>
                         <div className="h-px w-full bg-white/10 mb-4"></div>
-                        <div className="font-mono text-sm text-zinc-400 leading-relaxed max-w-lg space-y-4">
+                        <div className="text-lg text-zinc-300 font-light leading-relaxed max-w-2xl space-y-6">
                             <p>I've wanted to build something like this for almost five years. The idea was always there. The problem was I couldn't code, so it stayed an idea.</p>
                             <p>I'm a Product Manager by trade. I know how to define a problem, design a system, and know when the output is wrong. What I didn't have was the ability to build. AI changed that equation.</p>
                             <p>The Circuit is the result of finally being able to close the gap between the thing in my head and the thing on the screen. It's built out of a love for data, a love for design, and a love for consoles that goes back further than I'd like to admit.</p>
