@@ -12,6 +12,7 @@ interface TechnicalReferenceProps {
     mergedSpecs: Partial<ConsoleSpecs> & Partial<ConsoleVariant>;
 }
 
+
 const SpecRow = ({ label, value, unit }: { label: string, value: string | number | undefined | null | React.ReactNode, unit?: string | null }) => {
     const viewMode = useContext(TechViewContext);
     if (value === undefined || value === null || value === '') return null;
@@ -19,9 +20,9 @@ const SpecRow = ({ label, value, unit }: { label: string, value: string | number
     if (viewMode === 'ribbon') {
         return (
             <div className="flex flex-col border-r border-white/10 px-4 min-w-max last:border-r-0 hover:bg-white/[0.04] transition-colors justify-center py-3">
-                <span className="text-[10px] text-gray-500 uppercase tracking-wider mb-1 flex items-end">{label}</span>
-                <span className="font-mono text-xs text-white break-words">
-                    {value} {unit && <span className="text-[10px] font-mono text-gray-500 ml-0.5">{unit}</span>}
+                <span className="text-xs text-gray-500 uppercase tracking-wider mb-1 flex items-end">{label}</span>
+                <span className="font-mono text-sm text-white break-words">
+                    {value} {unit && <span className="text-xs font-mono text-gray-500 ml-0.5">{unit}</span>}
                 </span>
             </div>
         );
@@ -30,9 +31,9 @@ const SpecRow = ({ label, value, unit }: { label: string, value: string | number
     if (viewMode === 'table') {
         return (
             <tr className="border-b border-white/10 hover:bg-white/[0.04] transition-colors last:border-b-0">
-                <td className="py-2.5 pr-6 pl-4 text-[10px] text-gray-500 uppercase tracking-wider bg-white/[0.02] border-r border-white/10 align-top w-1/3 min-w-[140px]">{label}</td>
-                <td className="py-2.5 pl-4 pr-4 font-mono text-xs text-white align-top">
-                    {value} {unit && <span className="text-[10px] text-gray-500 ml-1">{unit}</span>}
+                <td className="py-2.5 pr-6 pl-4 text-xs text-gray-400 uppercase tracking-wider bg-white/[0.02] border-r border-white/10 align-top w-1/3 min-w-[140px]">{label}</td>
+                <td className="py-2.5 pl-4 pr-4 font-mono text-sm text-white align-top">
+                    {value} {unit && <span className="text-xs text-gray-500 ml-1">{unit}</span>}
                 </td>
             </tr>
         );
@@ -40,13 +41,14 @@ const SpecRow = ({ label, value, unit }: { label: string, value: string | number
 
     return (
         <div className="flex flex-row items-baseline justify-between border-b border-white/5 py-2.5 last:border-0 hover:bg-white/[0.04] transition-colors">
-            <span className="text-[10px] text-gray-500 uppercase tracking-wider pr-4">{label}</span>
-            <span className="font-mono text-xs text-white text-right break-words max-w-[60%]">
-                {value} {unit && <span className="text-[10px] font-mono text-gray-500 ml-0.5">{unit}</span>}
+            <span className="text-xs text-gray-500 uppercase tracking-wider pr-4">{label}</span>
+            <span className="font-mono text-sm text-white text-right break-words max-w-[60%]">
+                {value} {unit && <span className="text-xs font-mono text-gray-500 ml-0.5">{unit}</span>}
             </span>
         </div>
     );
 };
+
 
 const SpecSection = ({ title, children, colorClass = "text-orange-500 border-orange-500/20" }: { title: string, children: React.ReactNode, colorClass?: string }) => {
     const viewMode = useContext(TechViewContext);
