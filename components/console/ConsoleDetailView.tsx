@@ -60,6 +60,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
     // Modal State
     const [isVariantModalOpen, setIsVariantModalOpen] = useState(false);
     const [isEmulationModalOpen, setIsEmulationModalOpen] = useState(false);
+    const [techViewMode, setTechViewMode] = useState<'grid' | 'table' | 'ribbon'>('grid');
 
     useEffect(() => {
         const variantSlug = searchParams?.get('variant');
@@ -175,7 +176,25 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                 {/* ROW 3: TECHNICAL REFERENCE */}
                 <section id="tech" className="border-t border-white/10 pt-8">
-                     <TechnicalReference mergedSpecs={mergedSpecs} />
+                     <div className="flex items-center justify-between mb-6">
+                         <h2 className="font-pixel text-sm text-orange-500 uppercase tracking-widest">FULL SPECIFICATIONS</h2>
+                         <div className="flex flex-wrap font-mono text-[10px] md:text-xs gap-2 md:gap-4 text-gray-500">
+                             <button
+                                onClick={() => setTechViewMode('grid')}
+                                className={`transition-colors hover:text-white pb-1 ${techViewMode === 'grid' ? 'text-white border-b border-orange-500' : ''}`}
+                             >[ GRID ]</button>
+                             <button
+                                onClick={() => setTechViewMode('table')}
+                                className={`transition-colors hover:text-white pb-1 ${techViewMode === 'table' ? 'text-white border-b border-orange-500' : ''}`}
+                             >[ TABLE ]</button>
+                             <button
+                                onClick={() => setTechViewMode('ribbon')}
+                                className={`transition-colors hover:text-white pb-1 ${techViewMode === 'ribbon' ? 'text-white border-b border-orange-500' : ''}`}
+                             >[ RIBBON ]</button>
+                         </div>
+                     </div>
+                     <hr className="border-t border-white/10 mb-8" />
+                     <TechnicalReference mergedSpecs={mergedSpecs} viewMode={techViewMode as 'grid' | 'table' | 'ribbon'} />
                 </section>
 
                 {/* ROW 4: SIMILAR CONSOLES */}
