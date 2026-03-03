@@ -10,18 +10,18 @@ interface TechnicalReferenceProps {
 const SpecRow = ({ label, value, unit }: { label: string, value: string | number | undefined | null, unit?: string }) => {
     if (value === undefined || value === null || value === '') return null;
     return (
-        <div className="grid grid-cols-[120px_1fr] sm:grid-cols-[160px_1fr] border-b border-white/10 py-2 last:border-0 hover:bg-white/[0.02] transition-colors">
-            <span className="text-xs text-gray-500 uppercase tracking-widest pt-0.5">{label}</span>
+        <div className="grid grid-cols-[120px_1fr] sm:grid-cols-[160px_1fr] border-b border-white/5 py-2 last:border-0 hover:bg-white/[0.04] odd:bg-white/[0.01] transition-colors">
+            <span className="text-[10px] text-gray-500 uppercase tracking-widest pt-0.5">{label}</span>
             <span className="font-mono text-sm sm:text-base text-gray-300 break-words">
-                {value} {unit && <span className="text-xs text-gray-500 ml-0.5">{unit}</span>}
+                {value} {unit && <span className="text-[10px] font-mono text-gray-500 ml-0.5">{unit}</span>}
             </span>
         </div>
     );
 };
 
-const SpecSection = ({ title, children }: { title: string, children: React.ReactNode }) => (
+const SpecSection = ({ title, children, colorClass = "text-orange-500 border-orange-500/20" }: { title: string, children: React.ReactNode, colorClass?: string }) => (
     <div className="mb-8 break-inside-avoid">
-        <h3 className="font-pixel text-xs text-orange-500 uppercase tracking-widest mb-4 border-b border-orange-500/20 pb-2">
+        <h3 className={`font-pixel text-xs uppercase tracking-widest mb-4 border-b pb-2 ${colorClass}`}>
             {title}
         </h3>
         <div className="flex flex-col">
@@ -94,7 +94,7 @@ export default function TechnicalReference({ mergedSpecs }: TechnicalReferencePr
 
              {/* SILICON CORE */}
              {hasData(SECTIONS.SILICON, mergedSpecs) && (
-                <SpecSection title="Silicon Architecture">
+                <SpecSection title="Silicon Architecture" colorClass="text-orange-500 border-orange-500/20">
                     <SpecRow label="OS / Firmware" value={mergedSpecs.os} />
                     <SpecRow label="UI Skin" value={mergedSpecs.ui_skin} />
                     <SpecRow label="Model No" value={mergedSpecs.model_no} />
@@ -115,7 +115,7 @@ export default function TechnicalReference({ mergedSpecs }: TechnicalReferencePr
 
             {/* MEMORY & STORAGE */}
             {hasData(SECTIONS.MEMORY, mergedSpecs) && (
-                <SpecSection title="Memory & Storage">
+                <SpecSection title="Memory & Storage" colorClass="text-blue-400 border-blue-400/20">
                     <SpecRow label="RAM" value={ramData?.val} unit={ramData?.unit} />
                     <SpecRow label="RAM Type" value={mergedSpecs.ram_type} />
                     <SpecRow label="RAM Speed" value={mergedSpecs.ram_speed_mhz} unit="MHz" />
@@ -127,7 +127,7 @@ export default function TechnicalReference({ mergedSpecs }: TechnicalReferencePr
 
             {/* DISPLAY */}
             {hasData(SECTIONS.DISPLAY, mergedSpecs) && (
-                <SpecSection title="Display Matrix">
+                <SpecSection title="Display Matrix" colorClass="text-cyan-500 border-cyan-500/20">
                     <SpecRow label="Size" value={mergedSpecs.screen_size_inch} unit='"' />
                     <SpecRow label="Resolution" value={`${mergedSpecs.screen_resolution_x} x ${mergedSpecs.screen_resolution_y}`} />
                     <SpecRow label="Panel Type" value={mergedSpecs.display_type} />
@@ -154,7 +154,7 @@ export default function TechnicalReference({ mergedSpecs }: TechnicalReferencePr
 
             {/* INPUT */}
             {hasData(SECTIONS.INPUT, mergedSpecs) && (
-                <SpecSection title="Input Interface">
+                <SpecSection title="Input Interface" colorClass="text-violet-500 border-violet-500/20">
                     {mergedSpecs.variant_input_profile ? (
                         <>
                             <SpecRow label="D-Pad Shape" value={formatInputEnum('rc_dpad_shape', mergedSpecs.variant_input_profile.dpad_shape)} />
@@ -191,7 +191,7 @@ export default function TechnicalReference({ mergedSpecs }: TechnicalReferencePr
 
             {/* CONNECTIVITY */}
             {hasData(SECTIONS.CONNECTIVITY, mergedSpecs) && (
-                <SpecSection title="Connectivity">
+                <SpecSection title="Connectivity" colorClass="text-yellow-500 border-yellow-500/20">
                     <SpecRow label="Wi-Fi" value={mergedSpecs.wifi_specs} />
                     <SpecRow label="Bluetooth" value={mergedSpecs.bluetooth_specs} />
                     <SpecRow label="Cellular" value={mergedSpecs.cellular_connectivity ? 'YES' : 'NO'} />
@@ -203,7 +203,7 @@ export default function TechnicalReference({ mergedSpecs }: TechnicalReferencePr
 
             {/* POWER & CHASSIS */}
             {hasData(SECTIONS.POWER, mergedSpecs) && (
-                <SpecSection title="Power & Chassis">
+                <SpecSection title="Power & Chassis" colorClass="text-emerald-500 border-emerald-500/20">
                     <SpecRow label="Battery Cap" value={mergedSpecs.battery_capacity_mah} unit="mAh" />
                     <SpecRow label="Battery Energy" value={mergedSpecs.battery_capacity_wh} unit="Wh" />
                     <SpecRow label="Type" value={mergedSpecs.battery_type} />
@@ -219,7 +219,7 @@ export default function TechnicalReference({ mergedSpecs }: TechnicalReferencePr
 
             {/* AUDIO & EXTRAS */}
             {hasData(SECTIONS.AUDIO, mergedSpecs) && (
-                <SpecSection title="Audio & Extras">
+                <SpecSection title="Audio & Extras" colorClass="text-pink-500 border-pink-500/20">
                     <SpecRow label="Speakers" value={mergedSpecs.audio_speakers} />
                     <SpecRow label="Headphone Jack" value={mergedSpecs.has_headphone_jack ? 'YES' : 'NO'} />
                     <SpecRow label="Microphone" value={mergedSpecs.has_microphone ? 'YES' : 'NO'} />
