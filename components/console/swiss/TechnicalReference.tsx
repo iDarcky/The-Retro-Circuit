@@ -56,7 +56,7 @@ const SpecSection = ({ title, children, colorClass = "text-orange-500 border-ora
     if (viewMode === 'ribbon') {
         return (
             <div className="flex flex-col w-full border-x border-b border-white/10 bg-black/40 first:border-t first:rounded-t-sm last:rounded-b-sm overflow-hidden">
-                <h3 className={`font-pixel text-[10px] uppercase tracking-widest px-4 py-3 bg-white/[0.02] border-b border-white/10 m-0 ${colorClass}`}>
+                <h3 className={`font-pixel text-[10px] uppercase tracking-widest px-4 py-3 bg-white/[0.02] border-b m-0 ${colorClass}`}>
                     {title}
                 </h3>
                 <div className="flex flex-row overflow-x-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
@@ -70,8 +70,8 @@ const SpecSection = ({ title, children, colorClass = "text-orange-500 border-ora
         return (
             <>
                 <tr>
-                    <td colSpan={2} className={`font-pixel text-[10px] uppercase tracking-widest px-4 py-3 bg-white/[0.02] border-y border-white/10 m-0 ${colorClass.replace(/text-/, 'bg-').replace(/500/, '500/10')}`}>
-                        <span className={`${colorClass.split(' ')[0]}`}>{title}</span>
+                    <td colSpan={2} className={`font-pixel text-[10px] uppercase tracking-widest px-4 py-3 bg-white/[0.02] border-b border-t border-t-white/10 m-0 ${colorClass}`}>
+                        <span className={`${colorClass.split(" ")[0]}`}>{title}</span>
                     </td>
                 </tr>
                 {children}
