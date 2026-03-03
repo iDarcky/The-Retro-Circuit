@@ -80,9 +80,9 @@ export default function TechnicalReference({ mergedSpecs }: TechnicalReferencePr
     };
 
     const SECTIONS = {
-        SILICON: ['os', 'ui_skin', 'cpu_model', 'cpu_architecture', 'cpu_process_node', 'cpu_cores', 'cpu_clock_max_mhz', 'gpu_model', 'gpu_architecture', 'gpu_compute_units', 'gpu_clock_mhz', 'gpu_teraflops'],
+        SILICON: ['os', 'ui_skin', 'model_no', 'cpu_model', 'cpu_architecture', 'cpu_process_node', 'cpu_cores', 'cpu_threads', 'cpu_clock_max_mhz', 'gpu_model', 'gpu_architecture', 'gpu_cores', 'gpu_compute_units', 'gpu_clock_mhz', 'gpu_teraflops'],
         MEMORY: ['ram_mb', 'ram_type', 'ram_speed_mhz', 'storage_gb', 'storage_type', 'storage_expandable'],
-        DISPLAY: ['screen_size_inch', 'screen_resolution_x', 'display_type', 'display_tech', 'refresh_rate_hz', 'brightness_nits', 'touchscreen', 'second_screen_size'],
+        DISPLAY: ['screen_size_inch', 'screen_resolution_x', 'display_type', 'display_tech', 'refresh_rate_hz', 'brightness_nits', 'touchscreen', 'aspect_ratio', 'ppi', 'second_screen_size', 'second_screen_touch', 'second_screen_ppi', 'second_screen_aspect_ratio', 'second_screen_refresh_rate', 'second_screen_nits'],
         INPUT: ['variant_input_profile', 'input_layout', 'dpad_mechanism', 'thumbstick_mechanism', 'trigger_mechanism', 'haptics'],
         CONNECTIVITY: ['wifi_specs', 'bluetooth_specs', 'other_connectivity', 'cellular_connectivity', 'video_out', 'ports'],
         POWER: ['battery_capacity_mah', 'battery_capacity_wh', 'battery_type', 'charging_speed_w', 'tdp_wattage', 'charging_tech', 'cooling_solution', 'width_mm', 'weight_g', 'body_material', 'available_colors'],
@@ -97,13 +97,16 @@ export default function TechnicalReference({ mergedSpecs }: TechnicalReferencePr
                 <SpecSection title="Silicon Architecture">
                     <SpecRow label="OS / Firmware" value={mergedSpecs.os} />
                     <SpecRow label="UI Skin" value={mergedSpecs.ui_skin} />
+                    <SpecRow label="Model No" value={mergedSpecs.model_no} />
                     <SpecRow label="CPU Model" value={mergedSpecs.cpu_model} />
                     <SpecRow label="Architecture" value={mergedSpecs.cpu_architecture} />
                     <SpecRow label="Process Node" value={mergedSpecs.cpu_process_node} />
                     <SpecRow label="CPU Cores" value={mergedSpecs.cpu_cores} />
+                    <SpecRow label="CPU Threads" value={mergedSpecs.cpu_threads} />
                     <SpecRow label="CPU Clock" value={cpuClockData.value} unit={cpuClockData.unit} />
                     <SpecRow label="GPU Model" value={mergedSpecs.gpu_model} />
                     <SpecRow label="GPU Arch" value={mergedSpecs.gpu_architecture} />
+                    <SpecRow label="GPU Cores" value={mergedSpecs.gpu_cores} />
                     <SpecRow label="Compute Units" value={mergedSpecs.gpu_compute_units} />
                     <SpecRow label="GPU Clock" value={mergedSpecs.gpu_clock_mhz} unit="MHz" />
                     <SpecRow label="GPU Perf" value={mergedSpecs.gpu_teraflops} unit="TFLOPS" />
@@ -132,11 +135,18 @@ export default function TechnicalReference({ mergedSpecs }: TechnicalReferencePr
                     <SpecRow label="Refresh Rate" value={mergedSpecs.refresh_rate_hz} unit="Hz" />
                     <SpecRow label="Brightness" value={mergedSpecs.brightness_nits} unit="nits" />
                     <SpecRow label="Touchscreen" value={mergedSpecs.touchscreen ? 'YES' : 'NO'} />
+                    <SpecRow label="Aspect Ratio" value={mergedSpecs.aspect_ratio} />
+                    <SpecRow label="PPI" value={mergedSpecs.ppi} />
                     {mergedSpecs.second_screen_size && (
                         <>
                              <div className="py-2 border-b border-white/10 text-[10px] font-mono text-gray-500 uppercase mt-2">Secondary Display</div>
                              <SpecRow label="Size 2" value={mergedSpecs.second_screen_size} unit='"' />
                              <SpecRow label="Res 2" value={`${mergedSpecs.second_screen_resolution_x} x ${mergedSpecs.second_screen_resolution_y}`} />
+                             <SpecRow label="Touch 2" value={mergedSpecs.second_screen_touch ? 'YES' : 'NO'} />
+                             <SpecRow label="Aspect Ratio 2" value={mergedSpecs.second_screen_aspect_ratio} />
+                             <SpecRow label="PPI 2" value={mergedSpecs.second_screen_ppi} />
+                             <SpecRow label="Refresh 2" value={mergedSpecs.second_screen_refresh_rate} unit="Hz" />
+                             <SpecRow label="Brightness 2" value={mergedSpecs.second_screen_nits} unit="nits" />
                         </>
                     )}
                 </SpecSection>
@@ -149,16 +159,28 @@ export default function TechnicalReference({ mergedSpecs }: TechnicalReferencePr
                         <>
                             <SpecRow label="D-Pad Shape" value={formatInputEnum('rc_dpad_shape', mergedSpecs.variant_input_profile.dpad_shape)} />
                             <SpecRow label="D-Pad Tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.dpad_tech)} />
+                            <SpecRow label="D-Pad Pos" value={formatInputEnum('rc_placement', mergedSpecs.variant_input_profile.dpad_placement)} />
                             <SpecRow label="Face Buttons" value={mergedSpecs.variant_input_profile.face_button_count} />
                             <SpecRow label="Face Tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.face_button_tech)} />
+                            <SpecRow label="Face Labels" value={formatInputEnum('rc_label_scheme', mergedSpecs.variant_input_profile.face_label_scheme)} />
                             <SpecRow label="Sticks" value={mergedSpecs.variant_input_profile.stick_count} />
                             <SpecRow label="Stick Layout" value={formatInputEnum('rc_stick_layout', mergedSpecs.variant_input_profile.stick_layout)} />
                             <SpecRow label="Stick Tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.stick_tech)} />
+                            <SpecRow label="Stick Clicks" value={mergedSpecs.variant_input_profile.stick_clicks ? 'YES' : 'NO'} />
+                            <SpecRow label="Stick Cap" value={formatInputEnum('rc_stick_cap', mergedSpecs.variant_input_profile.stick_cap)} />
                             <SpecRow label="Triggers" value={formatInputEnum('rc_trigger_type', mergedSpecs.variant_input_profile.trigger_type)} />
                             <SpecRow label="Trigger Tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.trigger_tech)} />
+                            <SpecRow label="Trigger Layout" value={formatInputEnum('rc_trigger_layout', mergedSpecs.variant_input_profile.trigger_layout)} />
+                            <SpecRow label="Bumper Tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.bumper_tech)} />
                             <SpecRow label="Back Buttons" value={mergedSpecs.variant_input_profile.back_button_count} />
-                            <SpecRow label="Gyro" value={mergedSpecs.variant_input_profile.has_gyro ? 'YES' : null} />
+                            <SpecRow label="System Buttons" value={formatInputEnum('rc_system_button_set', mergedSpecs.variant_input_profile.system_button_set)} />
+                            <SpecRow label="System Labels" value={mergedSpecs.variant_input_profile.system_buttons_text} />
+                            <SpecRow label="Gyro" value={mergedSpecs.variant_input_profile.has_gyro ? 'YES' : 'NO'} />
                             <SpecRow label="Touchpads" value={mergedSpecs.variant_input_profile.touchpad_count} />
+                            <SpecRow label="Pad Clicks" value={mergedSpecs.variant_input_profile.touchpad_clickable ? 'YES' : 'NO'} />
+                            <SpecRow label="Keyboard" value={mergedSpecs.variant_input_profile.has_keyboard ? 'YES' : 'NO'} />
+                            <SpecRow label="Confidence" value={formatInputEnum('rc_confidence', mergedSpecs.variant_input_profile.input_confidence)} />
+                            {mergedSpecs.variant_input_profile.input_notes && <SpecRow label="Input Notes" value={mergedSpecs.variant_input_profile.input_notes} />}
                         </>
                     ) : (
                         <div className="text-xs font-mono text-gray-600 py-2">[ NO INPUT DATA ]</div>
