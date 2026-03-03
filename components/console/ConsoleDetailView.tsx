@@ -60,7 +60,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
     // Modal State
     const [isVariantModalOpen, setIsVariantModalOpen] = useState(false);
     const [isEmulationModalOpen, setIsEmulationModalOpen] = useState(false);
-    const [techViewMode, setTechViewMode] = useState<'grid' | 'table' | 'matrix' | 'terminal' | 'ribbon'>('grid');
+    const [techViewMode, setTechViewMode] = useState<'grid' | 'table' | 'ribbon'>('grid');
 
     useEffect(() => {
         const variantSlug = searchParams?.get('variant');
@@ -191,26 +191,10 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                                 onClick={() => setTechViewMode('ribbon')}
                                 className={`transition-colors hover:text-white pb-1 ${techViewMode === 'ribbon' ? 'text-white border-b border-orange-500' : ''}`}
                              >[ RIBBON ]</button>
-                             <button
-                                onClick={() => setTechViewMode('terminal')}
-                                className={`transition-colors hover:text-white pb-1 ${techViewMode === 'terminal' ? 'text-white border-b border-orange-500' : ''}`}
-                             >[ TERMINAL ]</button>
-                             {hasVariants && (
-                                 <button
-                                    onClick={() => setTechViewMode('matrix')}
-                                    className={`transition-colors hover:text-white pb-1 ${techViewMode === 'matrix' ? 'text-white border-b border-orange-500' : ''}`}
-                                 >[ MATRIX ]</button>
-                             )}
                          </div>
                      </div>
                      <hr className="border-t border-white/10 mb-8" />
-                     {techViewMode === 'matrix' ? (
-                        <div className="overflow-x-auto pb-4 custom-scrollbar bg-[#0a0a0c] p-4 border border-white/10 rounded-sm">
-                            <VariantComparisonTable variants={variants} baseSpecs={consoleData.specs || {}} />
-                        </div>
-                     ) : (
-                        <TechnicalReference mergedSpecs={mergedSpecs} viewMode={techViewMode as 'grid' | 'table' | 'terminal' | 'ribbon'} />
-                     )}
+                     <TechnicalReference mergedSpecs={mergedSpecs} viewMode={techViewMode as 'grid' | 'table' | 'ribbon'} />
                 </section>
 
                 {/* ROW 4: SIMILAR CONSOLES */}
