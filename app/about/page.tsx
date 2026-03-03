@@ -2,6 +2,7 @@ import { siteConfig } from '../../config/site';
 import { ArrowRight, Mail, Linkedin, Database, Layout, Globe, Monitor, Code } from 'lucide-react';
 import Link from 'next/link';
 import { getSystemVersion } from '../../app/actions/roadmap';
+import EmailActionCard from '../../components/about/EmailActionCard';
 import { fetchConsoleAndVariantCounts } from '../../app/actions/consoles';
 
 export const metadata = {
@@ -187,12 +188,7 @@ export default async function AboutPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-4">
-                <ActionCard
-                    href="mailto:contact@theretrocircuit.com"
-                    label="Open Comms"
-                    sublabel="contact@theretrocircuit.com"
-                    icon={<Mail size={18} />}
-                />
+                <EmailActionCard />
                  <ActionCard
                     href="https://www.linkedin.com/in/danielnmaghis/"
                     label="Connect"
