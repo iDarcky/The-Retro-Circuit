@@ -1,7 +1,9 @@
 import { siteConfig } from '../../config/site';
-import { ArrowRight, Mail, Linkedin, Database, Layout, Globe, Monitor, Code } from 'lucide-react';
+import { ArrowRight, Linkedin, Database, Layout, Globe, Monitor, Code } from 'lucide-react';
 import Link from 'next/link';
 import { getSystemVersion } from '../../app/actions/roadmap';
+import EmailActionCard from '../../components/about/EmailActionCard';
+import { fetchConsoleAndVariantCounts } from '../../app/actions/consoles';
 
 export const metadata = {
   title: 'System Manifesto | The Retro Circuit',
@@ -10,6 +12,7 @@ export const metadata = {
 
 export default async function AboutPage() {
   const version = await getSystemVersion();
+  const counts = await fetchConsoleAndVariantCounts();
   return (
     <div className="bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-orange-500/30 selection:text-white pb-24">
       
@@ -43,15 +46,17 @@ export default async function AboutPage() {
         <section className="lg:col-span-7">
             <div className="flex items-center gap-4 mb-8">
                <span className="font-mono text-xs text-orange-500 border border-orange-500/30 px-2 py-0.5 bg-orange-500/5">[ 01 ]</span>
-               <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">Signal Noise Ratio</h2>
+               <h2 className="font-mono text-sm tracking-widest text-orange-500 uppercase">ORIGIN SIGNAL</h2>
             </div>
 
             <div className="space-y-8">
-                <p className="text-2xl md:text-3xl lg:text-4xl font-light leading-tight text-white">
-                    The retro handheld market is a labyrinth of fragmented data. Variants, revisions, and silent upgrades create static in the signal.
-                </p>
+                <div className="text-lg text-zinc-300 font-light leading-relaxed space-y-6">
+                    <p>The retro handheld market is a labyrinth of fragmented data. Variants, revisions, and silent upgrades create static in the signal.</p>
+                    <p>The Circuit exists to cut through that. Not by cataloguing everything, but by cataloguing things correctly &mdash; with the kind of judgment that knows when two devices that share a name are actually the same product, and when they're not.</p>
+                    <p>There are already solutions in this space and this isn't an attempt to replace them. It's a different take. A hub where good data, good design, and a genuine love for the hardware finally coexist.</p>
+                </div>
                 <div className="pl-6 border-l-2 border-orange-500">
-                    <p className="text-lg md:text-xl text-zinc-400 font-light leading-relaxed">
+                    <p className="text-lg text-zinc-400 font-light leading-relaxed">
                         In a sea of subjective noise, we provide the raw signal. <br />
                         <span className="text-white font-medium">No feelings. Just data.</span>
                     </p>
@@ -59,11 +64,72 @@ export default async function AboutPage() {
             </div>
         </section>
 
-        {/* 2. SYSTEM ARCHITECTURE (Clean Data Table) */}
+        {/* 2. STATE OF THE BUILD */}
         <section className="lg:col-span-5">
              <div className="flex items-center gap-4 mb-8">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 02 ]</span>
-               <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">System Architecture</h2>
+               <span className="font-mono text-xs text-orange-500 border border-orange-500/30 px-2 py-0.5 bg-orange-500/5">[ 02 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-orange-500 uppercase">STATE OF THE BUILD</h2>
+            </div>
+
+            <div className="space-y-6 text-zinc-300 font-light leading-relaxed">
+                <p>
+                    The Circuit is live but unfinished. Pre-Alpha means the data is growing, features are evolving, and things may occasionally break. That's the deal for now.
+                </p>
+                <p>
+                    <span className="text-white font-medium">{counts.consoles}</span> consoles catalogued. <span className="text-white font-medium">{counts.variants}</span> hardware variants. The Console Vault is live. Arena VS is live. The Finder — the feature that answers "what should I actually buy?" — is in active development.
+                </p>
+                <p>
+                    Signals, reviews, and editorial content are planned. The priority right now is getting the data right before building on top of it.
+                </p>
+                <p>
+                    Everything being built, fixed, and shipped is on the public roadmap. No vague promises, just a changelog and a queue.
+                </p>
+
+                <div className="pt-4">
+                    <Link
+                        href="/roadmap"
+                        className="inline-flex items-center gap-3 bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-orange-500/30 transition-all px-6 py-3 font-mono text-sm uppercase tracking-widest group"
+                    >
+                        [ &rarr; ] VIEW PUBLIC ROADMAP
+                    </Link>
+                </div>
+            </div>
+        </section>
+
+        {/* 3. CREDITS & ACKNOWLEDGEMENTS */}
+        <section className="lg:col-span-7">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-orange-500 border border-orange-500/30 px-2 py-0.5 bg-orange-500/5">[ 03 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-orange-500 uppercase">CREDITS & ACKNOWLEDGEMENTS</h2>
+            </div>
+
+            <div className="space-y-6 text-zinc-300 font-light leading-relaxed">
+                <p>
+                    The Circuit wasn't built in a vacuum. The tools, open-source projects, and resources that made this possible are all catalogued on the Credits page.
+                </p>
+                <p>
+                    This space has people who have put real work into it. The goal was never to compete with that or copy it, but to add to it. To contribute something that didn't exist in quite this way before.
+                </p>
+                <p>
+                    If something here helped you or sparked something in you, that's the point and we are happy.
+                </p>
+
+                <div className="pt-4">
+                    <Link
+                        href="/credits"
+                        className="inline-flex items-center gap-3 bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-orange-500/30 transition-all px-6 py-3 font-mono text-sm uppercase tracking-widest group"
+                    >
+                        [ &rarr; ] VIEW CREDITS
+                    </Link>
+                </div>
+            </div>
+        </section>
+
+         {/* 4. SYSTEM ARCHITECTURE (Clean Data Table) */}
+         <section className="lg:col-span-5">
+             <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-orange-500 border border-orange-500/30 px-2 py-0.5 bg-orange-500/5">[ 04 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-orange-500 uppercase">SYSTEM ARCHITECTURE</h2>
             </div>
 
             <div className="border-t border-white/10">
@@ -76,11 +142,11 @@ export default async function AboutPage() {
             </div>
         </section>
 
-        {/* 3. OPERATOR LOG (Swiss Identity Card) */}
+        {/* 5. OPERATOR LOG (Swiss Identity Card) */}
         <section className="lg:col-span-7">
             <div className="flex items-center gap-4 mb-8">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 03 ]</span>
-               <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">Operator Log</h2>
+               <span className="font-mono text-xs text-orange-500 border border-orange-500/30 px-2 py-0.5 bg-orange-500/5">[ 05 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-orange-500 uppercase">OPERATOR LOG</h2>
             </div>
 
             <div className="border border-white/10 bg-white/[0.02] p-6 md:p-8 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden group">
@@ -93,13 +159,17 @@ export default async function AboutPage() {
                 <div className="flex-1 space-y-6 relative z-10">
                     <div>
                         <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-xl text-white font-bold tracking-tight uppercase">Product Lead</h3>
+                            <h3 className="text-xl text-white font-bold tracking-tight uppercase">PRODUCT LEAD</h3>
                             <span className="font-mono text-xs text-orange-500 border border-orange-500/30 bg-orange-500/5 px-2 py-0.5">ADMIN_ACCESS</span>
                         </div>
                         <div className="h-px w-full bg-white/10 mb-4"></div>
-                        <p className="font-mono text-sm text-zinc-400 leading-relaxed max-w-lg">
-                            Built to solve the chaos of handheld specifications. This project serves as both a public utility for the retro gaming community and a demonstration of modern full-stack architecture.
-                        </p>
+                        <div className="text-lg text-zinc-300 font-light leading-relaxed max-w-2xl space-y-6">
+                            <p>I've wanted to build something like this for almost five years. The idea was always there. The problem was I couldn't code, so it stayed an idea.</p>
+                            <p>I'm a Product Manager by trade. I know how to define a problem, design a system, and know when the output is wrong. What I didn't have was the ability to build. AI changed that equation.</p>
+                            <p>The Circuit is the result of finally being able to close the gap between the thing in my head and the thing on the screen. It's built out of a love for data, a love for design, and a love for consoles that goes back further than I'd like to admit.</p>
+                            <p>It's not finished. It probably never fully will be. But it's real, it's live, and it's mine.</p>
+                            <p className="text-zinc-300 italic">Your Captain, Daniel (iDarkcy)</p>
+                        </div>
                     </div>
 
                     <div className="font-mono text-xs text-zinc-500 flex items-center gap-2">
@@ -110,20 +180,15 @@ export default async function AboutPage() {
             </div>
         </section>
 
-         {/* 4. ACTIONS (Relevant Links) */}
+         {/* 6. ACTIONS (Relevant Links) */}
          <section className="lg:col-span-5">
              <div className="flex items-center gap-4 mb-8">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 04 ]</span>
-               <h2 className="font-mono text-sm tracking-widest text-zinc-400 uppercase">Relevant Links</h2>
+               <span className="font-mono text-xs text-orange-500 border border-orange-500/30 px-2 py-0.5 bg-orange-500/5">[ 06 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-orange-500 uppercase">RELEVANT LINKS</h2>
             </div>
 
             <div className="grid grid-cols-1 gap-4">
-                <ActionCard
-                    href="mailto:contact@theretrocircuit.com"
-                    label="Open Comms"
-                    sublabel="contact@theretrocircuit.com"
-                    icon={<Mail size={18} />}
-                />
+                <EmailActionCard />
                  <ActionCard
                     href="https://www.linkedin.com/in/danielnmaghis/"
                     label="Connect"
