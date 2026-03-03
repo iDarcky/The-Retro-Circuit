@@ -30,7 +30,7 @@ const SpecRow = ({ label, value, unit }: { label: string, value: string | number
 
     if (viewMode === 'table') {
         return (
-            <tr className="border-b border-white/10 hover:bg-white/[0.04] transition-colors last:border-b-0">
+            <tr className="border-b border-white/10 hover:bg-white/[0.04] transition-colors last:border-b-0 odd:bg-white/[0.02] even:bg-transparent">
                 <td className="py-2.5 pr-6 pl-4 text-xs text-gray-400 uppercase tracking-wider bg-white/[0.02] border-r border-white/10 align-top w-1/3 min-w-[140px]">{label}</td>
                 <td className="py-2.5 pl-4 pr-4 font-mono text-sm text-white align-top">
                     {value} {unit && <span className="text-xs text-gray-500 ml-1">{unit}</span>}
@@ -40,7 +40,7 @@ const SpecRow = ({ label, value, unit }: { label: string, value: string | number
     }
 
     return (
-        <div className="flex flex-row items-baseline justify-between border-b border-white/5 py-2.5 last:border-0 hover:bg-white/[0.04] transition-colors">
+        <div className="flex flex-row items-baseline justify-between border-b border-white/5 py-2.5 px-2 last:border-0 hover:bg-white/[0.04] odd:bg-white/[0.02] even:bg-transparent transition-colors">
             <span className="text-xs text-gray-500 uppercase tracking-wider pr-4">{label}</span>
             <span className="font-mono text-sm text-white text-right break-words max-w-[60%]">
                 {value} {unit && <span className="text-xs font-mono text-gray-500 ml-0.5">{unit}</span>}
