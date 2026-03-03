@@ -15,16 +15,17 @@ interface TechnicalReferenceProps {
 
 
 
+
 const SpecRow = ({ label, value, unit }: { label: string, value: string | number | undefined | null | React.ReactNode, unit?: string }) => {
     const viewMode = useContext(TechViewContext);
     if (value === undefined || value === null || value === '') return null;
 
     if (viewMode === 'ribbon') {
         return (
-            <div className="flex flex-col border-r border-white/10 px-6 min-w-max last:border-0 hover:bg-white/[0.04] transition-colors justify-between">
-                <span className="text-[10px] text-gray-500 uppercase tracking-widest pb-2 border-b border-white/5 mb-3 flex items-end min-h-[30px]">{label}</span>
-                <span className="font-mono text-sm sm:text-base text-gray-300 break-words py-2 pb-4">
-                    {value} {unit && <span className="text-[10px] font-mono text-gray-500 ml-0.5">{unit}</span>}
+            <div className="flex flex-col border-r border-white/10 px-4 min-w-max last:border-r-0 hover:bg-white/[0.04] transition-colors justify-center py-2">
+                <span className="text-xs text-gray-500 uppercase tracking-wider mb-1 flex items-end">{label}</span>
+                <span className="font-mono text-xs text-white break-words">
+                    {value} {unit && <span className="text-xs font-mono text-gray-500 ml-0.5">{unit}</span>}
                 </span>
             </div>
         );
@@ -32,24 +33,26 @@ const SpecRow = ({ label, value, unit }: { label: string, value: string | number
 
     if (viewMode === 'table') {
         return (
-            <tr className="border-b border-white/5 hover:bg-white/[0.04] transition-colors last:border-0">
-                <td className="py-2 pr-6 pl-2 text-[10px] text-gray-500 uppercase tracking-widest bg-white/[0.02] border-r border-white/5 align-top w-1/3 min-w-[140px]">{label}</td>
-                <td className="py-2 pl-4 pr-2 font-mono text-sm sm:text-base text-gray-300 align-top">
-                    {value} {unit && <span className="text-[10px] text-gray-500 ml-1">{unit}</span>}
-                </td>
-            </tr>
+            <div className="flex flex-row items-center border border-white/10 bg-[#09090b] hover:bg-white/[0.04] transition-colors w-max overflow-hidden">
+                <span className="px-3 py-1.5 text-xs text-gray-400 uppercase tracking-wider bg-white/[0.02] border-r border-white/10">{label}</span>
+                <span className="px-3 py-1.5 font-mono text-xs text-white">
+                    {value} {unit && <span className="text-xs text-gray-500 ml-1">{unit}</span>}
+                </span>
+            </div>
         );
     }
 
     return (
-        <div className="grid grid-cols-[120px_1fr] sm:grid-cols-[160px_1fr] border-b border-white/5 py-2 last:border-0 hover:bg-white/[0.04] odd:bg-white/[0.01] transition-colors">
-            <span className="text-[10px] text-gray-500 uppercase tracking-widest pt-0.5">{label}</span>
-            <span className="font-mono text-sm sm:text-base text-gray-300 break-words">
-                {value} {unit && <span className="text-[10px] font-mono text-gray-500 ml-0.5">{unit}</span>}
+        <div className="flex flex-row items-baseline gap-2 w-max py-1">
+            <span className="text-xs text-gray-500 uppercase tracking-wider after:content-[':'] after:ml-0.5">{label}</span>
+            <span className="font-mono text-xs text-white break-words">
+                {value} {unit && <span className="text-xs font-mono text-gray-500 ml-0.5">{unit}</span>}
             </span>
         </div>
     );
 };
+
+
 
 
 
@@ -62,12 +65,14 @@ const SpecSection = ({ title, children, colorClass = "text-orange-500 border-ora
 
     if (viewMode === 'ribbon') {
         return (
-            <div className="flex flex-col mb-8 w-full border border-white/10 bg-black/40 rounded-sm overflow-hidden">
-                <h3 className={`font-pixel text-[10px] uppercase tracking-widest px-4 py-3 bg-white/[0.02] border-b border-white/10 m-0 sticky left-0 z-10 ${colorClass}`}>
-                    {title}
-                </h3>
-                <div className="flex flex-row overflow-x-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-                    {children}
+            <div className="flex flex-col w-full border border-white/10 bg-black/40 border-t-0 first:border-t first:rounded-t-sm last:rounded-b-sm overflow-hidden -mt-[1px]">
+                <div className="flex flex-row">
+                    <h3 className={`font-pixel text-[10px] uppercase tracking-widest px-4 py-3 bg-white/[0.02] border-r border-white/10 m-0 w-[160px] shrink-0 flex items-center justify-start ${colorClass}`}>
+                        {title}
+                    </h3>
+                    <div className="flex flex-row overflow-x-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent flex-1">
+                        {children}
+                    </div>
                 </div>
             </div>
         );
@@ -75,15 +80,13 @@ const SpecSection = ({ title, children, colorClass = "text-orange-500 border-ora
 
     if (viewMode === 'table') {
         return (
-            <div className="mb-8 overflow-hidden rounded-sm border border-white/10 bg-[#09090b]">
-                <h3 className={`font-pixel text-[10px] uppercase tracking-widest px-4 py-3 bg-white/[0.02] border-b border-white/10 m-0 ${colorClass.replace(/text-/, 'bg-').replace(/500/, '500/10')}`}>
-                    <span className={`${colorClass.split(' ')[0]}`}>{title}</span>
+            <div className="mb-8">
+                <h3 className={`font-pixel text-[10px] uppercase tracking-widest mb-4 border-b pb-2 inline-block ${colorClass}`}>
+                    {title}
                 </h3>
-                <table className="w-full text-left border-collapse">
-                    <tbody>
-                        {children}
-                    </tbody>
-                </table>
+                <div className="flex flex-wrap gap-3">
+                    {children}
+                </div>
             </div>
         );
     }
@@ -93,12 +96,13 @@ const SpecSection = ({ title, children, colorClass = "text-orange-500 border-ora
             <h3 className={`font-pixel text-xs uppercase tracking-widest mb-4 border-b pb-2 ${colorClass}`}>
                 {title}
             </h3>
-            <div className="flex flex-col">
+            <div className="flex flex-wrap gap-x-8 gap-y-2">
                 {children}
             </div>
         </div>
     );
 };
+
 
 
 
@@ -165,9 +169,9 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
     return (
         <TechViewContext.Provider value={viewMode}>
         <div className={
-            viewMode === 'ribbon' ? "flex flex-col space-y-4" :
-            viewMode === 'table' ? "grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 items-start" :
-            "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-8"
+            viewMode === 'ribbon' ? "flex flex-col rounded-sm overflow-hidden" :
+            viewMode === 'table' ? "flex flex-col" :
+            "columns-1 md:columns-2 gap-12"
         }>
 
              {/* SILICON CORE */}
