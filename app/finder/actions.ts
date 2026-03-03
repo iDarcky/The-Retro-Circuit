@@ -56,18 +56,23 @@ export async function getFinderResults(
 
         // --- Q2: FORM FACTOR HARD CUT ---
         if (inputs.formFactorPref && inputs.formFactorPref !== 'surprise') {
-            filteredConsoles = filteredConsoles.filter(c => {
+            const temp = filteredConsoles.filter(c => {
                 const deviceForm = (c.form_factor || '').toLowerCase();
                 const prefForm = inputs.formFactorPref!.toLowerCase();
                 return deviceForm === prefForm;
             });
+            if (temp.length > 0) {
+                filteredConsoles = temp;
+            } else {
+                relaxedFeatures.push('form_factor');
+            }
         }
 
         // --- Q7: DEALBREAKERS (MUST-HAVES) ---
         if (inputs.features && inputs.features !== 'none') {
             const requestedFeatures = inputs.features.split(',').map(f => f.trim().toLowerCase());
 
-            filteredConsoles = filteredConsoles.filter(consoleItem => {
+            const temp = filteredConsoles.filter(consoleItem => {
                 const specs = consoleItem.specs as any || {};
                 const formFactor = consoleItem.form_factor?.toLowerCase() || '';
                 const chassisFeatures = consoleItem.chassis_features || '';
@@ -93,6 +98,13 @@ export async function getFinderResults(
                 }
                 return true;
             });
+
+            if (temp.length > 0) {
+                filteredConsoles = temp;
+            } else {
+                // progressive fallback: try removing feature filters if they eliminate EVERYTHING
+                relaxedFeatures.push('features');
+            }
         }
 
         // --- SCORING ---
