@@ -1,13 +1,17 @@
---- components/console/swiss/SimilarConsoles.tsx
-+++ components/console/swiss/SimilarConsoles.tsx
-@@ -89,8 +89,8 @@
-         setSimilarConsoles([]);
-       }
-     }
--
--  }, [currentConsole.id, currentConsole.specs?.price_launch_usd, currentConsole.variants, isMobile]);
-+    // eslint-disable-next-line react-hooks/exhaustive-deps
-+  }, [currentConsole.id, currentConsole.specs?.price_launch_usd, currentConsole.variants]);
+--- components/console/ConsoleDetailView.tsx
++++ components/console/ConsoleDetailView.tsx
+@@ -176,14 +176,14 @@
+                 {/* ROW 3: TECHNICAL REFERENCE */}
+                 <section id="tech" className="border-t border-white/10 pt-8">
+                      <TechnicalReference mergedSpecs={mergedSpecs} />
+                 </section>
 
-   // Add horizontal scrolling behavior for desktop
-   useEffect(() => {
+                 {/* ROW 4: SIMILAR CONSOLES */}
+                 <section id="similar" className="border-t border-white/10 pt-8 mt-12">
+                      <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">SIMILAR HARDWARE</h2>
+                      <SimilarConsoles currentConsole={consoleData} />
++                </section>
+
+              </main>
+
+             {/* VARIANT COMPARISON MODAL */}
