@@ -60,7 +60,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
     // Modal State
     const [isVariantModalOpen, setIsVariantModalOpen] = useState(false);
     const [isEmulationModalOpen, setIsEmulationModalOpen] = useState(false);
-    const [techViewMode, setTechViewMode] = useState<'grid' | 'datasheet'>('grid');
+    const [techViewMode, setTechViewMode] = useState<'grid' | 'table' | 'matrix' | 'terminal' | 'ribbon'>('grid');
 
     useEffect(() => {
         const variantSlug = searchParams?.get('variant');
@@ -178,19 +178,39 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                 <section id="tech" className="border-t border-white/10 pt-8">
                      <div className="flex items-center justify-between mb-6">
                          <h2 className="font-pixel text-sm text-orange-500 uppercase tracking-widest">FULL SPECIFICATIONS</h2>
-                         <div className="flex font-mono text-xs gap-4 text-gray-500">
+                         <div className="flex flex-wrap font-mono text-[10px] md:text-xs gap-2 md:gap-4 text-gray-500">
                              <button
                                 onClick={() => setTechViewMode('grid')}
-                                className={`transition-colors hover:text-white ${techViewMode === 'grid' ? 'text-white border-b border-orange-500' : ''}`}
+                                className={`transition-colors hover:text-white pb-1 ${techViewMode === 'grid' ? 'text-white border-b border-orange-500' : ''}`}
                              >[ GRID ]</button>
                              <button
-                                onClick={() => setTechViewMode('datasheet')}
-                                className={`transition-colors hover:text-white ${techViewMode === 'datasheet' ? 'text-white border-b border-orange-500' : ''}`}
-                             >[ DATASHEET ]</button>
+                                onClick={() => setTechViewMode('table')}
+                                className={`transition-colors hover:text-white pb-1 ${techViewMode === 'table' ? 'text-white border-b border-orange-500' : ''}`}
+                             >[ TABLE ]</button>
+                             <button
+                                onClick={() => setTechViewMode('ribbon')}
+                                className={`transition-colors hover:text-white pb-1 ${techViewMode === 'ribbon' ? 'text-white border-b border-orange-500' : ''}`}
+                             >[ RIBBON ]</button>
+                             <button
+                                onClick={() => setTechViewMode('terminal')}
+                                className={`transition-colors hover:text-white pb-1 ${techViewMode === 'terminal' ? 'text-white border-b border-orange-500' : ''}`}
+                             >[ TERMINAL ]</button>
+                             {hasVariants && (
+                                 <button
+                                    onClick={() => setTechViewMode('matrix')}
+                                    className={`transition-colors hover:text-white pb-1 ${techViewMode === 'matrix' ? 'text-white border-b border-orange-500' : ''}`}
+                                 >[ MATRIX ]</button>
+                             )}
                          </div>
                      </div>
                      <hr className="border-t border-white/10 mb-8" />
-                     <TechnicalReference mergedSpecs={mergedSpecs} viewMode={techViewMode} />
+                     {techViewMode === 'matrix' ? (
+                        <div className="overflow-x-auto pb-4 custom-scrollbar bg-[#0a0a0c] p-4 border border-white/10 rounded-sm">
+                            <VariantComparisonTable variants={variants} baseSpecs={consoleData.specs || {}} />
+                        </div>
+                     ) : (
+                        <TechnicalReference mergedSpecs={mergedSpecs} viewMode={techViewMode as 'grid' | 'table' | 'terminal' | 'ribbon'} />
+                     )}
                 </section>
 
                 {/* ROW 4: SIMILAR CONSOLES */}
