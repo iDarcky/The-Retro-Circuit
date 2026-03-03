@@ -2,7 +2,7 @@
 
 import { fetchAllConsoles } from '../../app/actions/consoles';
 import { calculateConsoleScore, ScoreBreakdown, getDeviceTierLevel } from '../../lib/finder/scoring';
-import { ConsoleDetails } from '../../lib/types/domain';
+
 
 export interface FinderResultConsole {
     id: string;
@@ -42,74 +42,69 @@ export async function getFinderResults(
         const inputs = {
             profile: searchParams.profile || 'default',
             toneMode: searchParams.tone_mode || null,
-            setupAnswer: searchParams.setup || null, // Q6
+            setupAnswer: searchParams.setup_answer || searchParams.setup || null, // Q6
             budgetBand: searchParams.budget_band || null,
             targetTier: searchParams.target_tier || null,
-            portabilityPref: searchParams.portability || null,
+            portabilityPref: searchParams.portability_pref || searchParams.portability || null,
             formFactorPref: searchParams.form_factor_pref || null,
             features: searchParams.features || null,
-            aestheticPref: searchParams.aesthetic || null
+            aestheticPref: searchParams.aesthetic_pref || searchParams.aesthetic || null
         };
 
         let filteredConsoles = [...allConsoles];
         let relaxedFeatures: string[] = [];
 
-        // --- Q7: FEATURE FILTERING ---
-        if (inputs.features && inputs.features !== 'none') {
-            const requiredFeatures = inputs.features.split(',').filter(f => f !== 'none');
-
-            const checkFeature = (consoleItem: ConsoleDetails, feature: string): boolean => {
-                const variant = consoleItem.specs as any;
-                if (!variant) return false;
-
-                switch (feature) {
-                    case 'hdmi':
-                        return !!variant.video_out && variant.video_out.toLowerCase().includes('hdmi');
-                    case 'bluetooth':
-                        return !!variant.bluetooth_specs || (!!variant.other_connectivity && variant.other_connectivity.toLowerCase().includes('bluetooth'));
-                    case 'wifi':
-                        return !!variant.wifi_specs;
-                    case 'dual_sticks':
-                        // Check new input profile first, fallback to legacy checks if needed (though deprecated)
-                        if (variant.variant_input_profile) {
-                            const count = variant.variant_input_profile.stick_count;
-                            return count !== null && count >= 2;
-                        }
-                        // Fallback for legacy data/structure if input_profile is missing
-                        const sticks = (variant.thumbstick_layout || '') + (variant.input_layout || '');
-                        return sticks.toLowerCase().includes('dual') || sticks.toLowerCase().includes('twin');
-                    case 'dual_screen':
-                        return (variant.second_screen_size_inch || 0) > 0;
-                    default:
-                        return true;
-                }
-            };
-
-            const relaxationOrder = ['dual_screen', 'dual_sticks', 'hdmi', 'wifi', 'bluetooth'];
-            let currentRequirements = [...requiredFeatures];
-
-            const performFilter = () => {
-                return filteredConsoles.filter(c => {
-                    return currentRequirements.every(req => checkFeature(c, req));
-                });
-            };
-
-            let tempResults = performFilter();
-
-            while (tempResults.length === 0 && currentRequirements.length > 0) {
-                const nextToRemove = relaxationOrder.find(r => currentRequirements.includes(r));
-
-                if (nextToRemove) {
-                    relaxedFeatures.push(nextToRemove);
-                    currentRequirements = currentRequirements.filter(r => r !== nextToRemove);
-                    tempResults = performFilter();
-                } else {
-                    const popped = currentRequirements.pop();
-                    if (popped) relaxedFeatures.push(popped);
-                    tempResults = performFilter();
-                }
+        // --- Q2: FORM FACTOR HARD CUT ---
+        if (inputs.formFactorPref && inputs.formFactorPref !== 'surprise') {
+            const temp = filteredConsoles.filter(c => {
+                const deviceForm = (c.form_factor || '').toLowerCase();
+                const prefForm = inputs.formFactorPref!.toLowerCase();
+                return deviceForm === prefForm;
+            });
+            if (temp.length > 0) {
+                filteredConsoles = temp;
+            } else {
+                relaxedFeatures.push('form_factor');
             }
-            filteredConsoles = tempResults;
+        }
+
+        // --- Q7: DEALBREAKERS (MUST-HAVES) ---
+        if (inputs.features && inputs.features !== 'none') {
+            const requestedFeatures = inputs.features.split(',').map(f => f.trim().toLowerCase());
+
+            const temp = filteredConsoles.filter(consoleItem => {
+                const specs = consoleItem.specs as any || {};
+                const formFactor = consoleItem.form_factor?.toLowerCase() || '';
+                const chassisFeatures = consoleItem.chassis_features || '';
+
+                for (const req of requestedFeatures) {
+                    if (req === 'none') continue;
+
+                    if (req === 'hdmi') {
+                        if (!specs.video_output || specs.video_output.toLowerCase() === 'no' || specs.video_output.toLowerCase() === 'none') return false;
+                    } else if (req === 'bluetooth') {
+                        if (!specs.bluetooth || specs.bluetooth.toLowerCase() === 'no' || specs.bluetooth.toLowerCase() === 'none') return false;
+                    } else if (req === 'wifi') {
+                        if (!specs.wifi || specs.wifi.toLowerCase() === 'no' || specs.wifi.toLowerCase() === 'none') return false;
+                    } else if (req === 'dual_sticks') {
+                        const sticks = parseInt(specs.joysticks || '0');
+                        if (isNaN(sticks) || sticks < 2) return false;
+                    } else if (req === 'dual_screen') {
+                        const hasDualChassis = chassisFeatures.toLowerCase().includes('dual screen');
+                        const isClamshell = formFactor === 'clamshell';
+                        const screen = parseFloat(specs.screen_size_inch || '0');
+                        if (!hasDualChassis && !isClamshell && screen < 5.0) return false;
+                    }
+                }
+                return true;
+            });
+
+            if (temp.length > 0) {
+                filteredConsoles = temp;
+            } else {
+                // progressive fallback: try removing feature filters if they eliminate EVERYTHING
+                relaxedFeatures.push('features');
+            }
         }
 
         // --- SCORING ---
