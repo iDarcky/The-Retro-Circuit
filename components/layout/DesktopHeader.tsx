@@ -28,7 +28,7 @@ export default function DesktopHeader() {
           </div>
           {/* LEFT: Pre-alpha Badge - Grid Cell 1.5 */}
           <div className="flex shrink-0 bg-bg-primary hover:bg-orange-500/10 transition-colors duration-300">
-              <Link href="/about" className="flex items-center justify-center px-4 group h-full w-full">
+              <Link href="/about" className="flex items-start justify-center pt-5 px-4 group h-full w-full">
                   <div className="border border-orange-500 bg-orange-500/10 px-2 py-1 flex items-center group-hover:bg-orange-500 transition-colors duration-300">
                       <span className="font-pixel text-[10px] leading-tight text-orange-500 group-hover:text-black transition-colors">PRE-ALPHA | Learn more</span>
                   </div>
