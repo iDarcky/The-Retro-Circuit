@@ -6,6 +6,17 @@ export const revalidate = 0;
 
 export default async function QuizAnalyticsPage() {
 
+    type BreakdownInfo = {
+        power: number;
+        powerCeiling: number;
+        tierFit: number;
+        portability: number;
+        ease: number;
+        value: number;
+        library: number;
+        total: number;
+    };
+
     type Scenario = {
         name: string;
         expected: string[];
@@ -62,7 +73,8 @@ export default async function QuizAnalyticsPage() {
                     name: c.name,
                     price: c.price,
                     score: Math.round(c._score),
-                    tierFit: c._breakdown?.tierFit
+                    tierFit: c._breakdown?.tierFit,
+                    breakdown: c._breakdown as BreakdownInfo | undefined
                 }))
             });
 
@@ -140,17 +152,55 @@ export default async function QuizAnalyticsPage() {
                                 {res.error ? (
                                     <div className="text-red-400 text-xs">{res.error}</div>
                                 ) : (
-                                    <ul className="space-y-2">
+                                    <ul className="space-y-4">
                                         {res.topPicks.map((pick, pIdx) => (
-                                            <li key={pIdx} className="text-sm flex justify-between items-center border-b border-zinc-800/50 pb-2 last:border-0">
-                                                <span className="text-white">
-                                                    <span className="text-zinc-600 mr-2">{pIdx + 1}.</span>
-                                                    {pick.name}
-                                                </span>
-                                                <div className="text-right">
-                                                    <span className="bg-white/10 px-2 py-0.5 rounded text-xs ml-2">${pick.price}</span>
-                                                    <span className="bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded text-xs ml-2">Score: {pick.score}</span>
+                                            <li key={pIdx} className="border-b border-zinc-800/50 pb-4 last:border-0">
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <span className="text-white font-bold text-base">
+                                                        <span className="text-zinc-600 mr-2">{pIdx + 1}.</span>
+                                                        {pick.name}
+                                                    </span>
+                                                    <div className="text-right flex items-center gap-2">
+                                                        <span className="bg-white/10 px-2 py-1 rounded text-xs text-zinc-300 font-mono">${pick.price}</span>
+                                                        <span className="bg-orange-500/20 text-orange-400 px-2 py-1 rounded text-sm font-bold font-mono">Score: {pick.score}</span>
+                                                    </div>
                                                 </div>
+
+                                                {/* Details Breakdown */}
+                                                {pick.breakdown && (
+                                                    <div className="mt-2 bg-black/50 p-3 rounded text-xs grid grid-cols-2 md:grid-cols-4 gap-2 border border-white/5">
+                                                        <div>
+                                                            <span className="text-zinc-500 block">Tier Fit Matrix</span>
+                                                            <span className={pick.breakdown.tierFit >= 0.65 ? 'text-emerald-400' : 'text-red-400'}>
+                                                                {pick.breakdown.tierFit.toFixed(2)}
+                                                            </span>
+                                                        </div>
+                                                        <div>
+                                                            <span className="text-zinc-500 block">Power Wall</span>
+                                                            <span className="text-zinc-300">{pick.breakdown.powerCeiling.toFixed(2)}</span>
+                                                        </div>
+                                                        <div>
+                                                            <span className="text-zinc-500 block">Portability Multiplier</span>
+                                                            <span className={pick.breakdown.portability >= 10 ? 'text-emerald-400' : 'text-zinc-400'}>
+                                                                {pick.breakdown.portability.toFixed(1)} pts
+                                                            </span>
+                                                        </div>
+                                                        <div>
+                                                            <span className="text-zinc-500 block">Value Metric</span>
+                                                            <span className="text-zinc-300">{pick.breakdown.value.toFixed(1)} pts</span>
+                                                        </div>
+                                                        <div className="col-span-2 md:col-span-4 mt-1 pt-2 border-t border-white/5">
+                                                            <span className="text-zinc-500 mr-2">Core Points Sum:</span>
+                                                            <span className="text-zinc-400 font-mono">
+                                                                Pwr: {pick.breakdown.power.toFixed(0)} |
+                                                                Lib: {pick.breakdown.library.toFixed(0)} |
+                                                                Port: {pick.breakdown.portability.toFixed(0)} |
+                                                                Ease: {pick.breakdown.ease.toFixed(0)} |
+                                                                Val: {pick.breakdown.value.toFixed(0)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </li>
                                         ))}
                                     </ul>
