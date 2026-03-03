@@ -63,6 +63,38 @@ export async function getFinderResults(
             });
         }
 
+        // --- Q7: DEALBREAKERS (MUST-HAVES) ---
+        if (inputs.features && inputs.features !== 'none') {
+            const requestedFeatures = inputs.features.split(',').map(f => f.trim().toLowerCase());
+
+            filteredConsoles = filteredConsoles.filter(consoleItem => {
+                const specs = consoleItem.specs as any || {};
+                const formFactor = consoleItem.form_factor?.toLowerCase() || '';
+                const chassisFeatures = consoleItem.chassis_features || '';
+
+                for (const req of requestedFeatures) {
+                    if (req === 'none') continue;
+
+                    if (req === 'hdmi') {
+                        if (!specs.video_output || specs.video_output.toLowerCase() === 'no' || specs.video_output.toLowerCase() === 'none') return false;
+                    } else if (req === 'bluetooth') {
+                        if (!specs.bluetooth || specs.bluetooth.toLowerCase() === 'no' || specs.bluetooth.toLowerCase() === 'none') return false;
+                    } else if (req === 'wifi') {
+                        if (!specs.wifi || specs.wifi.toLowerCase() === 'no' || specs.wifi.toLowerCase() === 'none') return false;
+                    } else if (req === 'dual_sticks') {
+                        const sticks = parseInt(specs.joysticks || '0');
+                        if (isNaN(sticks) || sticks < 2) return false;
+                    } else if (req === 'dual_screen') {
+                        const hasDualChassis = chassisFeatures.toLowerCase().includes('dual screen');
+                        const isClamshell = formFactor === 'clamshell';
+                        const screen = parseFloat(specs.screen_size_inch || '0');
+                        if (!hasDualChassis && !isClamshell && screen < 5.0) return false;
+                    }
+                }
+                return true;
+            });
+        }
+
         // --- SCORING ---
         // Score everything first. Explicitly type the array to FinderResultConsole[]
         // so that objects in it are known to have optional match_label/match_reason fields.

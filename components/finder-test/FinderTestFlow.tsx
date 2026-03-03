@@ -159,14 +159,16 @@ const FinderTestFlowContent = () => {
     }
 
     useEffect(() => {
-        if (stepParam === 'results') {
+        if (stepParam === 'conflict') {
             const tier = searchParams.get('target_tier');
             const budget = searchParams.get('budget_band');
             const conflict = checkBudgetConflict(tier, budget);
             if (conflict) {
                 setConflictState(conflict);
+            } else {
+                // If somehow they landed here without a conflict, push them safely to q5
                 const newParams = new URLSearchParams(searchParams.toString());
-                newParams.set('step', 'conflict');
+                newParams.set('step', 'q5');
                 router.replace(`/finder-test?${newParams.toString()}`);
             }
         }
@@ -224,7 +226,18 @@ const FinderTestFlowContent = () => {
         }
 
         // Navigation
-        if (stepIndex < QUESTIONS.length - 1) {
+        if (stepIndex === 3) {
+            // STEP 4 (Budget) completed - verify for conflict *immediately*
+            const tier = params.get('target_tier');
+            const budget = params.get('budget_band');
+            const conflict = checkBudgetConflict(tier, budget);
+            if (conflict) {
+                params.set('step', 'conflict');
+                router.push(`/finder-test?${params.toString()}`);
+                return;
+            }
+            params.set('step', `q5`);
+        } else if (stepIndex < QUESTIONS.length - 1) {
             params.set('step', `q${stepIndex + 2}`);
         } else {
             params.set('step', 'results');
@@ -242,7 +255,8 @@ const FinderTestFlowContent = () => {
             params.set('budget_band', conflictState.minRequiredBudgetId);
         }
 
-        params.set('step', 'results');
+        // Always continue to Q5 after resolving a Q4 conflict
+        params.set('step', 'q5');
         setConflictState(null);
         router.push(`/finder-test?${params.toString()}`);
     };
