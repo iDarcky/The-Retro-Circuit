@@ -1,3 +1,4 @@
+
 'use client';
 
 import { ConsoleSpecs, ConsoleVariant } from '../../../lib/types';
@@ -6,26 +7,21 @@ import { formatInputEnum } from '../../../lib/utils/formatters';
 import { createContext, useContext } from 'react';
 const TechViewContext = createContext<'grid' | 'table' | 'ribbon'>('grid');
 
-
 interface TechnicalReferenceProps {
     viewMode?: 'grid' | 'table' | 'ribbon';
     mergedSpecs: Partial<ConsoleSpecs> & Partial<ConsoleVariant>;
 }
 
-
-
-
-
-const SpecRow = ({ label, value, unit }: { label: string, value: string | number | undefined | null | React.ReactNode, unit?: string }) => {
+const SpecRow = ({ label, value, unit }: { label: string, value: string | number | undefined | null | React.ReactNode, unit?: string | null }) => {
     const viewMode = useContext(TechViewContext);
     if (value === undefined || value === null || value === '') return null;
 
     if (viewMode === 'ribbon') {
         return (
-            <div className="flex flex-col border-r border-white/10 px-4 min-w-max last:border-r-0 hover:bg-white/[0.04] transition-colors justify-center py-2">
-                <span className="text-xs text-gray-500 uppercase tracking-wider mb-1 flex items-end">{label}</span>
+            <div className="flex flex-col border-r border-white/10 px-4 min-w-max last:border-r-0 hover:bg-white/[0.04] transition-colors justify-center py-3">
+                <span className="text-[10px] text-gray-500 uppercase tracking-wider mb-1 flex items-end">{label}</span>
                 <span className="font-mono text-xs text-white break-words">
-                    {value} {unit && <span className="text-xs font-mono text-gray-500 ml-0.5">{unit}</span>}
+                    {value} {unit && <span className="text-[10px] font-mono text-gray-500 ml-0.5">{unit}</span>}
                 </span>
             </div>
         );
@@ -33,46 +29,36 @@ const SpecRow = ({ label, value, unit }: { label: string, value: string | number
 
     if (viewMode === 'table') {
         return (
-            <div className="flex flex-row items-center border border-white/10 bg-[#09090b] hover:bg-white/[0.04] transition-colors w-max overflow-hidden">
-                <span className="px-3 py-1.5 text-xs text-gray-400 uppercase tracking-wider bg-white/[0.02] border-r border-white/10">{label}</span>
-                <span className="px-3 py-1.5 font-mono text-xs text-white">
-                    {value} {unit && <span className="text-xs text-gray-500 ml-1">{unit}</span>}
-                </span>
-            </div>
+            <tr className="border-b border-white/10 hover:bg-white/[0.04] transition-colors last:border-b-0">
+                <td className="py-2.5 pr-6 pl-4 text-[10px] text-gray-500 uppercase tracking-wider bg-white/[0.02] border-r border-white/10 align-top w-1/3 min-w-[140px]">{label}</td>
+                <td className="py-2.5 pl-4 pr-4 font-mono text-xs text-white align-top">
+                    {value} {unit && <span className="text-[10px] text-gray-500 ml-1">{unit}</span>}
+                </td>
+            </tr>
         );
     }
 
     return (
-        <div className="flex flex-row items-baseline gap-2 w-max py-1">
-            <span className="text-xs text-gray-500 uppercase tracking-wider after:content-[':'] after:ml-0.5">{label}</span>
-            <span className="font-mono text-xs text-white break-words">
-                {value} {unit && <span className="text-xs font-mono text-gray-500 ml-0.5">{unit}</span>}
+        <div className="flex flex-row items-baseline justify-between border-b border-white/5 py-2.5 last:border-0 hover:bg-white/[0.04] transition-colors">
+            <span className="text-[10px] text-gray-500 uppercase tracking-wider pr-4">{label}</span>
+            <span className="font-mono text-xs text-white text-right break-words max-w-[60%]">
+                {value} {unit && <span className="text-[10px] font-mono text-gray-500 ml-0.5">{unit}</span>}
             </span>
         </div>
     );
 };
-
-
-
-
-
-
-
-
 
 const SpecSection = ({ title, children, colorClass = "text-orange-500 border-orange-500/20" }: { title: string, children: React.ReactNode, colorClass?: string }) => {
     const viewMode = useContext(TechViewContext);
 
     if (viewMode === 'ribbon') {
         return (
-            <div className="flex flex-col w-full border border-white/10 bg-black/40 border-t-0 first:border-t first:rounded-t-sm last:rounded-b-sm overflow-hidden -mt-[1px]">
-                <div className="flex flex-row">
-                    <h3 className={`font-pixel text-[10px] uppercase tracking-widest px-4 py-3 bg-white/[0.02] border-r border-white/10 m-0 w-[160px] shrink-0 flex items-center justify-start ${colorClass}`}>
-                        {title}
-                    </h3>
-                    <div className="flex flex-row overflow-x-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent flex-1">
-                        {children}
-                    </div>
+            <div className="flex flex-col w-full border-x border-b border-white/10 bg-black/40 first:border-t first:rounded-t-sm last:rounded-b-sm overflow-hidden">
+                <h3 className={`font-pixel text-[10px] uppercase tracking-widest px-4 py-3 bg-white/[0.02] border-b border-white/10 m-0 ${colorClass}`}>
+                    {title}
+                </h3>
+                <div className="flex flex-row overflow-x-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                    {children}
                 </div>
             </div>
         );
@@ -80,34 +66,29 @@ const SpecSection = ({ title, children, colorClass = "text-orange-500 border-ora
 
     if (viewMode === 'table') {
         return (
-            <div className="mb-8">
-                <h3 className={`font-pixel text-[10px] uppercase tracking-widest mb-4 border-b pb-2 inline-block ${colorClass}`}>
-                    {title}
-                </h3>
-                <div className="flex flex-wrap gap-3">
-                    {children}
-                </div>
-            </div>
+            <>
+                <tr>
+                    <td colSpan={2} className={`font-pixel text-[10px] uppercase tracking-widest px-4 py-3 bg-white/[0.02] border-y border-white/10 m-0 ${colorClass.replace(/text-/, 'bg-').replace(/500/, '500/10')}`}>
+                        <span className={`${colorClass.split(' ')[0]}`}>{title}</span>
+                    </td>
+                </tr>
+                {children}
+            </>
         );
     }
 
     return (
-        <div className="mb-8 break-inside-avoid">
+        <div className="mb-8 break-inside-avoid border border-white/5 bg-black/20 rounded-sm p-4 hover:border-white/20 transition-colors shadow-xl">
             <h3 className={`font-pixel text-xs uppercase tracking-widest mb-4 border-b pb-2 ${colorClass}`}>
                 {title}
             </h3>
-            <div className="flex flex-wrap gap-x-8 gap-y-2">
+            <div className="flex flex-col">
                 {children}
             </div>
         </div>
     );
 };
 
-
-
-
-
-// Helper to check if a section has any data (simplified)
 const hasData = (keys: string[], specs: any): boolean => {
     if (!specs) return false;
     return keys.some(key => {
@@ -127,15 +108,17 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
         return null;
     };
 
-    const formatRam = (mb?: number) => {
-        if (!mb) return null;
-        if (mb >= 1024) return { val: Math.round((mb / 1024) * 100) / 100, unit: 'GB' };
-        return { val: mb, unit: 'MB' };
+    const formatRam = () => {
+        if (!mergedSpecs.ram_mb) return null;
+        if (mergedSpecs.ram_mb >= 1024) {
+            return { val: parseFloat((mergedSpecs.ram_mb / 1024).toFixed(2)), unit: 'GB' };
+        }
+        return { val: mergedSpecs.ram_mb, unit: 'MB' };
     };
-    const ramData = formatRam(mergedSpecs.ram_mb);
+    const ramData = formatRam();
 
     const formatCpuClock = (min?: number, max?: number) => {
-        if (!min && !max) return { value: undefined, unit: 'MHz' };
+        if (!max && !min) return { value: null, unit: null };
         const refValue = max || min || 0;
         const useGhz = refValue >= 1000;
         const unit = useGhz ? 'GHz' : 'MHz';
@@ -149,7 +132,6 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
     };
     const cpuClockData = formatCpuClock(mergedSpecs.cpu_clock_min_mhz, mergedSpecs.cpu_clock_max_mhz);
 
-    // Color formatter
     const formatColors = (colors: string | string[] | undefined) => {
         if (!colors) return null;
         if (Array.isArray(colors)) return colors.join(', ');
@@ -166,16 +148,10 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
         AUDIO: ['audio_speakers', 'has_headphone_jack', 'has_microphone', 'biometrics', 'camera_specs']
     };
 
-    return (
+    const content = (
         <TechViewContext.Provider value={viewMode}>
-        <div className={
-            viewMode === 'ribbon' ? "flex flex-col rounded-sm overflow-hidden" :
-            viewMode === 'table' ? "flex flex-col" :
-            "columns-1 md:columns-2 gap-12"
-        }>
-
-             {/* SILICON CORE */}
-             {hasData(SECTIONS.SILICON, mergedSpecs) && (
+            {/* SILICON CORE */}
+            {hasData(SECTIONS.SILICON, mergedSpecs) && (
                 <SpecSection title="Silicon Architecture" colorClass="text-orange-500 border-orange-500/20">
                     <SpecRow label="OS / Firmware" value={mergedSpecs.os} />
                     <SpecRow label="UI Skin" value={mergedSpecs.ui_skin} />
@@ -221,7 +197,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                     <SpecRow label="PPI" value={mergedSpecs.ppi} />
                     {mergedSpecs.second_screen_size && (
                         <>
-                             <div className="py-2 border-b border-white/10 text-[10px] font-mono text-gray-500 uppercase mt-2">Secondary Display</div>
+                             {viewMode === 'grid' && <div className="py-2 border-b border-white/10 text-[10px] font-mono text-gray-500 uppercase mt-2">Secondary Display</div>}
                              <SpecRow label="Size 2" value={mergedSpecs.second_screen_size} unit='"' />
                              <SpecRow label="Res 2" value={`${mergedSpecs.second_screen_resolution_x} x ${mergedSpecs.second_screen_resolution_y}`} />
                              <SpecRow label="Touch 2" value={mergedSpecs.second_screen_touch ? 'YES' : 'NO'} />
@@ -265,7 +241,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                             {mergedSpecs.variant_input_profile.input_notes && <SpecRow label="Input Notes" value={mergedSpecs.variant_input_profile.input_notes} />}
                         </>
                     ) : (
-                        <div className="text-xs font-mono text-gray-600 py-2">[ NO INPUT DATA ]</div>
+                        <div className="text-xs font-mono text-gray-600 py-2 px-4">[ NO INPUT DATA ]</div>
                     )}
                      <SpecRow label="Haptics" value={mergedSpecs.haptics ? 'YES' : null} />
                 </SpecSection>
@@ -310,7 +286,33 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                 </SpecSection>
             )}
 
-        </div>
         </TechViewContext.Provider>
+    );
+
+    if (viewMode === 'table') {
+        return (
+            <div className="overflow-x-auto w-full border border-white/10 rounded-sm bg-[#09090b]">
+                <table className="w-full text-left border-collapse min-w-[600px]">
+                    <tbody>
+                        {content}
+                    </tbody>
+                </table>
+            </div>
+        );
+    }
+
+    if (viewMode === 'ribbon') {
+        return (
+            <div className="flex flex-col rounded-sm overflow-hidden">
+                {content}
+            </div>
+        );
+    }
+
+    // Default Grid (Masonry Columns)
+    return (
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8 pb-12">
+            {content}
+        </div>
     );
 }
