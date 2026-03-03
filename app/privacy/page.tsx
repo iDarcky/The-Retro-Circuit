@@ -36,10 +36,10 @@ export default async function PrivacyPage() {
       <div className="max-w-4xl mx-auto px-6 md:px-12 py-16 space-y-16 relative z-10">
 
           {/* Section 1: Overview */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-             <div className="flex items-center gap-3 self-start pt-1">
+          <section className="space-y-6">
+             <div className="flex items-center gap-4 mb-8">
                <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 01 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Overview</h2>
+               <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Overview</h2>
             </div>
             <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
               <p>
@@ -57,10 +57,10 @@ export default async function PrivacyPage() {
           </section>
 
           {/* Section 2: What We Collect */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-            <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 02 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">What We Collect</h2>
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 02 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">What We Collect</h2>
             </div>
             <div className="space-y-10 text-gray-300 leading-relaxed text-lg font-light">
 
@@ -111,10 +111,10 @@ export default async function PrivacyPage() {
           </section>
 
           {/* Section 3: What We Do Not Collect */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-            <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 03 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">What We Do Not Collect</h2>
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 03 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">What We Do Not Collect</h2>
             </div>
             <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
               <p>We do not collect or store:</p>
@@ -129,10 +129,10 @@ export default async function PrivacyPage() {
           </section>
 
           {/* Section 4: Data Storage */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-            <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 04 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Data Storage</h2>
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 04 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Data Storage</h2>
             </div>
             <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
               <p>
@@ -145,10 +145,10 @@ export default async function PrivacyPage() {
           </section>
 
           {/* Section 5: Third Party Services */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-            <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 05 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Third Party Services</h2>
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 05 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Third Party Services</h2>
             </div>
             <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
               <p>The Retro Circuit uses the following third-party services to operate:</p>
@@ -166,10 +166,10 @@ export default async function PrivacyPage() {
           </section>
 
           {/* Section 6: Cookies */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-            <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 06 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Cookies</h2>
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 06 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Cookies</h2>
             </div>
             <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
               <p>
@@ -190,10 +190,10 @@ export default async function PrivacyPage() {
           </section>
 
           {/* Section 7: Your Rights */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-            <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 07 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Your Rights</h2>
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 07 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Your Rights</h2>
             </div>
             <div className="space-y-8 text-gray-300 leading-relaxed text-lg font-light">
               <p>
@@ -242,10 +242,10 @@ export default async function PrivacyPage() {
           </section>
 
           {/* Section 8: Changes To This Policy */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-            <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 08 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Changes To This Policy</h2>
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 08 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Changes To This Policy</h2>
             </div>
             <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
               <p>
@@ -255,10 +255,10 @@ export default async function PrivacyPage() {
           </section>
 
           {/* Section 9: Contact */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-            <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 09 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Contact</h2>
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 09 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Contact</h2>
             </div>
             <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
               <p>For any privacy-related questions or requests:</p>
