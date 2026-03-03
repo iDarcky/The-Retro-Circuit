@@ -87,7 +87,20 @@ const QUESTIONS = [
             { id: 'wifi', label: 'Must have Wi-Fi', description: 'updates, scraping, online features' },
             { id: 'dual_sticks', label: 'Must have dual analog sticks' },
             { id: 'dual_screen', label: 'Must support dual-screen', description: 'for DS games' },
-            { id: 'none', label: 'None of these matter' },
+            { id: 'none', label: 'None of these matter' }
+        ]
+    },
+    {
+        id: 'q8',
+        question: "Does color or aesthetic matter?",
+        subtitle: "We can slightly boost consoles that match your vibe.",
+        isBonus: true,
+        options: [
+            { id: 'retro', label: 'Classic Retro', description: 'Grey, beige, DMG style, woodgrain' },
+            { id: 'transparent', label: 'Transparent', description: 'Clear, atomic purple, ice blue' },
+            { id: 'modern', label: 'Sleek & Modern', description: 'Matte black, silver, minimal' },
+            { id: 'colorful', label: 'Fun & Colorful', description: 'Bright reds, blues, yellows' },
+            { id: 'surprise', label: 'Anything, surprise me!', description: 'No color preference, just the best device' }
         ]
     }
 ];
@@ -205,6 +218,11 @@ const FinderTestFlowContent = () => {
             params.set('features', optionId);
         }
 
+        // Q8 Logic
+        if (stepIndex === 7) {
+            params.set('aesthetic_pref', optionId);
+        }
+
         // Navigation
         if (stepIndex < QUESTIONS.length - 1) {
             params.set('step', `q${stepIndex + 2}`);
@@ -296,7 +314,7 @@ const FinderTestFlowContent = () => {
                     <div className="text-center p-8 bg-zinc-900 border border-zinc-800 mb-8">
                         <h2 className="text-2xl font-pixel text-white mb-4">END OF CURRENT TEST PHASE</h2>
                         <p className="text-zinc-400 mb-6 font-mono text-sm">
-                            You have completed the currently implemented test questions (Q1 - Q7).<br />
+                            You have completed the currently implemented test questions (Q1 - Q8).<br />
                             Below are the live results based <strong>only</strong> on these parameters.
                         </p>
                     </div>

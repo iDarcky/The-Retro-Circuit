@@ -42,13 +42,13 @@ export async function getFinderResults(
         const inputs = {
             profile: searchParams.profile || 'default',
             toneMode: searchParams.tone_mode || null,
-            setupAnswer: searchParams.setup || null, // Q6
+            setupAnswer: searchParams.setup_answer || searchParams.setup || null, // Q6
             budgetBand: searchParams.budget_band || null,
             targetTier: searchParams.target_tier || null,
-            portabilityPref: searchParams.portability || null,
+            portabilityPref: searchParams.portability_pref || searchParams.portability || null,
             formFactorPref: searchParams.form_factor_pref || null,
             features: searchParams.features || null,
-            aestheticPref: searchParams.aesthetic || null
+            aestheticPref: searchParams.aesthetic_pref || searchParams.aesthetic || null
         };
 
         let filteredConsoles = [...allConsoles];

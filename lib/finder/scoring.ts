@@ -502,25 +502,31 @@ export const calculateConsoleScore = (
     let aestheticBonus = 0;
     if (inputs.aestheticPref) {
         const availableColors = (consoleItem.specs as any)?.available_colors?.toLowerCase() || '';
+        const material = (consoleItem.specs as any)?.chassis_material?.toLowerCase() || '';
         const pref = inputs.aestheticPref.toLowerCase();
 
-        let keywords: string[] = [];
+        let colorKeywords: string[] = [];
+        let materialKeywords: string[] = [];
         switch (pref) {
             case 'retro':
-                keywords = ['grey', 'gray', 'beige', 'classic', 'dmg', 'wood', 'gold', 'famicom'];
+                colorKeywords = ['grey', 'gray', 'beige', 'classic', 'dmg', 'wood', 'gold', 'famicom'];
                 break;
             case 'transparent':
-                keywords = ['transparent', 'clear', 'atomic', 'crystal', 'ice', 'purple', 'blue'];
+                colorKeywords = ['transparent', 'clear', 'atomic', 'crystal', 'ice', 'purple', 'blue'];
                 break;
             case 'modern':
-                keywords = ['black', 'white', 'silver', 'metal', 'matte', 'slate'];
+                colorKeywords = ['black', 'white', 'silver', 'matte', 'slate'];
+                materialKeywords = ['metal', 'aluminium', 'aluminum', 'alloy'];
                 break;
             case 'colorful':
-                keywords = ['yellow', 'blue', 'red', 'green', 'pink', 'orange', 'teal', 'indigo', 'turquoise'];
+                colorKeywords = ['yellow', 'blue', 'red', 'green', 'pink', 'orange', 'teal', 'indigo', 'turquoise'];
                 break;
         }
 
-        if (keywords.some(k => availableColors.includes(k))) {
+        const colorMatch = colorKeywords.some(k => availableColors.includes(k));
+        const materialMatch = materialKeywords.some(k => material.includes(k));
+
+        if (colorMatch || materialMatch) {
             aestheticBonus = 1.0;
         }
     }
