@@ -60,6 +60,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
     // Modal State
     const [isVariantModalOpen, setIsVariantModalOpen] = useState(false);
     const [isEmulationModalOpen, setIsEmulationModalOpen] = useState(false);
+    const [techViewMode, setTechViewMode] = useState<'grid' | 'datasheet'>('grid');
 
     useEffect(() => {
         const variantSlug = searchParams?.get('variant');
@@ -175,9 +176,21 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                 {/* ROW 3: TECHNICAL REFERENCE */}
                 <section id="tech" className="border-t border-white/10 pt-8">
-                     <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">FULL SPECIFICATIONS</h2>
+                     <div className="flex items-center justify-between mb-6">
+                         <h2 className="font-pixel text-sm text-orange-500 uppercase tracking-widest">FULL SPECIFICATIONS</h2>
+                         <div className="flex font-mono text-xs gap-4 text-gray-500">
+                             <button
+                                onClick={() => setTechViewMode('grid')}
+                                className={`transition-colors hover:text-white ${techViewMode === 'grid' ? 'text-white border-b border-orange-500' : ''}`}
+                             >[ GRID ]</button>
+                             <button
+                                onClick={() => setTechViewMode('datasheet')}
+                                className={`transition-colors hover:text-white ${techViewMode === 'datasheet' ? 'text-white border-b border-orange-500' : ''}`}
+                             >[ DATASHEET ]</button>
+                         </div>
+                     </div>
                      <hr className="border-t border-white/10 mb-8" />
-                     <TechnicalReference mergedSpecs={mergedSpecs} />
+                     <TechnicalReference mergedSpecs={mergedSpecs} viewMode={techViewMode} />
                 </section>
 
                 {/* ROW 4: SIMILAR CONSOLES */}

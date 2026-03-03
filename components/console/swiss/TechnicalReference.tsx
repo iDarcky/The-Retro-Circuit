@@ -3,12 +3,31 @@
 import { ConsoleSpecs, ConsoleVariant } from '../../../lib/types';
 import { formatInputEnum } from '../../../lib/utils/formatters';
 
+import { createContext, useContext } from 'react';
+const TechViewContext = createContext<'grid' | 'datasheet'>('grid');
+
+
 interface TechnicalReferenceProps {
+    viewMode?: 'grid' | 'datasheet';
     mergedSpecs: Partial<ConsoleSpecs> & Partial<ConsoleVariant>;
 }
 
-const SpecRow = ({ label, value, unit }: { label: string, value: string | number | undefined | null, unit?: string }) => {
+
+const SpecRow = ({ label, value, unit }: { label: string, value: string | number | undefined | null | React.ReactNode, unit?: string }) => {
+    const viewMode = useContext(TechViewContext);
     if (value === undefined || value === null || value === '') return null;
+
+    if (viewMode === 'datasheet') {
+        return (
+            <div className="flex flex-col border-r border-white/10 px-4 min-w-[150px] last:border-0">
+                <span className="text-[10px] text-gray-500 uppercase tracking-widest pb-2 border-b border-white/5 mb-2 flex items-end min-h-[40px]">{label}</span>
+                <span className="font-mono text-sm text-gray-300 break-words py-2">
+                    {value} {unit && <span className="text-[10px] font-mono text-gray-500 ml-0.5">{unit}</span>}
+                </span>
+            </div>
+        );
+    }
+
     return (
         <div className="grid grid-cols-[120px_1fr] sm:grid-cols-[160px_1fr] border-b border-white/5 py-2 last:border-0 hover:bg-white/[0.04] odd:bg-white/[0.01] transition-colors">
             <span className="text-[10px] text-gray-500 uppercase tracking-widest pt-0.5">{label}</span>
@@ -19,16 +38,36 @@ const SpecRow = ({ label, value, unit }: { label: string, value: string | number
     );
 };
 
-const SpecSection = ({ title, children, colorClass = "text-orange-500 border-orange-500/20" }: { title: string, children: React.ReactNode, colorClass?: string }) => (
-    <div className="mb-8 break-inside-avoid">
-        <h3 className={`font-pixel text-xs uppercase tracking-widest mb-4 border-b pb-2 ${colorClass}`}>
-            {title}
-        </h3>
-        <div className="flex flex-col">
-            {children}
+
+
+const SpecSection = ({ title, children, colorClass = "text-orange-500 border-orange-500/20" }: { title: string, children: React.ReactNode, colorClass?: string }) => {
+    const viewMode = useContext(TechViewContext);
+
+    if (viewMode === 'datasheet') {
+        return (
+            <div className="flex flex-col mb-8 mr-8 min-w-max border border-white/10 bg-black/40 rounded-sm overflow-hidden">
+                <h3 className={`font-pixel text-[10px] uppercase tracking-widest px-4 py-2 bg-white/[0.02] border-b border-white/10 m-0 ${colorClass}`}>
+                    {title}
+                </h3>
+                <div className="flex flex-row p-4">
+                    {children}
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="mb-8 break-inside-avoid">
+            <h3 className={`font-pixel text-xs uppercase tracking-widest mb-4 border-b pb-2 ${colorClass}`}>
+                {title}
+            </h3>
+            <div className="flex flex-col">
+                {children}
+            </div>
         </div>
-    </div>
-);
+    );
+};
+
 
 // Helper to check if a section has any data (simplified)
 const hasData = (keys: string[], specs: any): boolean => {
@@ -40,7 +79,7 @@ const hasData = (keys: string[], specs: any): boolean => {
     });
 };
 
-export default function TechnicalReference({ mergedSpecs }: TechnicalReferenceProps) {
+export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: TechnicalReferenceProps) {
 
     // --- FORMATTERS ---
     const getDimString = () => {
@@ -90,7 +129,8 @@ export default function TechnicalReference({ mergedSpecs }: TechnicalReferencePr
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-8">
+        <TechViewContext.Provider value={viewMode}>
+        <div className={viewMode === 'datasheet' ? "flex flex-row overflow-x-auto pb-8 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-8"}>
 
              {/* SILICON CORE */}
              {hasData(SECTIONS.SILICON, mergedSpecs) && (
@@ -229,5 +269,6 @@ export default function TechnicalReference({ mergedSpecs }: TechnicalReferencePr
             )}
 
         </div>
+        </TechViewContext.Provider>
     );
 }
