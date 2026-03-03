@@ -2,14 +2,17 @@ import { Metadata } from 'next';
 import { FinderFlow } from '@/components/finder/FinderFlow';
 
 export const metadata: Metadata = {
-  title: 'Handheld Finder | Retro Circuit',
-  description: 'Take a short quiz to find the best retro handheld console for your budget and play style. Get 2–3 personalized picks, compare specs, and find where to buy.',
-  openGraph: {
-    title: 'Find Your Perfect Handheld',
-    description: 'Answer a few quick questions and we’ll recommend 2–3 handhelds that fit your budget, comfort, and the games you want to play.',
-  },
+    title: 'Handheld Finder | The Retro Circuit',
+    description: 'Test page for iterating on the new Finder algorithm.',
 };
 
-export default function FinderPage() {
-  return <FinderFlow />;
+export default function FinderTestPage() {
+    return (
+        <main className="min-h-screen bg-bg-primary text-text-primary pt-24 pb-12">
+            <div className="container mx-auto px-4 max-w-4xl">
+                <h1 className="text-4xl font-pixel text-white mb-8 text-center">FINDER_</h1>
+                <FinderFlow />
+            </div>
+        </main>
+    );
 }
