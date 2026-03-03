@@ -8,7 +8,7 @@ export default function FinderSection() {
             <div className="max-w-[1800px] mx-auto relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center">
                     <div>
-                        <h2 className="text-3xl font-bold tracking-tighter text-white uppercase text-center md:text-left">
+                        <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6 text-white uppercase text-left">
                             Don&apos;t Know Where to Start?
                         </h2>
                         <p className="text-text-secondary font-light max-w-xl text-lg leading-relaxed">
