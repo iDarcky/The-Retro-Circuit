@@ -175,6 +175,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                 {/* ROW 3: TECHNICAL REFERENCE */}
                 <section id="tech" className="border-t border-white/10 pt-8">
+                     <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">FULL SPECIFICATIONS</h2>
                      <TechnicalReference mergedSpecs={mergedSpecs} />
                 </section>
 

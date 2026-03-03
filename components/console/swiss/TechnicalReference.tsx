@@ -11,9 +11,9 @@ const SpecRow = ({ label, value, unit }: { label: string, value: string | number
     if (value === undefined || value === null || value === '') return null;
     return (
         <div className="grid grid-cols-[120px_1fr] sm:grid-cols-[160px_1fr] border-b border-white/10 py-2 last:border-0 hover:bg-white/[0.02] transition-colors">
-            <span className="text-[10px] text-gray-500 uppercase tracking-widest pt-0.5">{label}</span>
-            <span className="font-mono text-xs sm:text-sm text-gray-300 break-words">
-                {value} {unit && <span className="text-[10px] text-gray-500 ml-0.5">{unit}</span>}
+            <span className="text-xs text-gray-500 uppercase tracking-widest pt-0.5">{label}</span>
+            <span className="font-mono text-sm sm:text-base text-gray-300 break-words">
+                {value} {unit && <span className="text-xs text-gray-500 ml-0.5">{unit}</span>}
             </span>
         </div>
     );
