@@ -26,23 +26,73 @@ export default async function QuizAnalyticsPage() {
     const scenarios: Scenario[] = [
         {
             name: "The Budget Beginner",
-            expected: ["Miyoo Mini", "RG35XX", "Trimui"],
+            expected: ["Miyoo Mini", "RG35XX", "Trimui", "A30"],
             inputs: { profile: "nostalgia", target_tier: "8bit", budget_band: "b_under_60", portability_pref: "pocket", setup_answer: "beginner" }
         },
         {
             name: "The PS2 Powerhouse",
-            expected: ["Retroid Pocket 4 Pro", "Odin", "RG556"],
+            expected: ["Retroid Pocket 4 Pro", "Odin", "RG556", "Pocket 4"],
             inputs: { profile: "performance", target_tier: "6thgen", budget_band: "b_180_300", portability_pref: "versatile", setup_answer: "guide", form_factor_pref: "horizontal" }
         },
         {
             name: "The Metal Enthusiast",
-            expected: ["Odin 2 Mini", "RG401M", "Retroid Pocket 4 Pro", "Steam Deck", "ROG Ally"],
+            expected: ["Odin 2 Mini", "RG401M", "Retroid Pocket 4 Pro", "Steam Deck", "ROG Ally", "Pocket S Mini"],
             inputs: { profile: "performance", target_tier: "modern", budget_band: "b_300_plus", portability_pref: "versatile", setup_answer: "tinker", aesthetic_pref: "modern" }
         },
         {
             name: "The Commuter (PSP/DS Focus)",
-            expected: ["Retroid Pocket 3+", "RG405M", "RG505"],
+            expected: ["Retroid Pocket 3+", "RG405M", "RG505", "Pocket Micro", "Pocket 4"],
             inputs: { profile: "onthego", target_tier: "2000s", budget_band: "b_120_180", portability_pref: "jacket", setup_answer: "guide" }
+        },
+        {
+            name: "The Ultimate PC Gamer",
+            expected: ["Steam Deck", "ROG Ally", "Legion Go", "Ayaneo"],
+            inputs: { profile: "completionist", target_tier: "modern", budget_band: "b_300_plus", portability_pref: "home", setup_answer: "tinker" }
+        },
+        {
+            name: "The Pure Nostalgia Clamshell",
+            expected: ["Retroid Pocket Flip", "RG35XXSP", "V90"],
+            inputs: { profile: "nostalgia", target_tier: "32bit", budget_band: "b_60_120", form_factor_pref: "clamshell" }
+        },
+        {
+            name: "The Premium PS1 Pocket",
+            expected: ["RG405M", "RG353M", "Miyoo Mini v4"],
+            inputs: { profile: "onthego", target_tier: "32bit", budget_band: "b_120_180", portability_pref: "pocket", aesthetic_pref: "modern" }
+        },
+        {
+            name: "The N64 Sweet Spot",
+            expected: ["RG353V", "Retroid Pocket 2S", "RGB30"],
+            inputs: { target_tier: "32bit", budget_band: "b_60_120", setup_answer: "beginner" }
+        },
+        {
+            name: "The GameCube Budget Stretch",
+            expected: ["Retroid Pocket 4", "RG505", "RG405V"],
+            inputs: { target_tier: "6thgen", budget_band: "b_120_180" }
+        },
+        {
+            name: "The Gift for a Child",
+            expected: ["Miyoo Mini", "RG35XX", "Trimui", "A30"],
+            inputs: { profile: "gift", target_tier: "8bit", budget_band: "b_under_60", setup_answer: "beginner" }
+        },
+        {
+            name: "The Transparent Tinkerer",
+            expected: ["RG353P", "Retroid Pocket 3", "Trimui Smart Pro"],
+            inputs: { target_tier: "2000s", budget_band: "b_60_120", aesthetic_pref: "transparent", setup_answer: "tinker" }
+        },
+        {
+            name: "The Big Screen Android",
+            expected: ["Odin 2", "RG556", "Pocket 4 Pro", "Logitech G Cloud"],
+            inputs: { target_tier: "6thgen", budget_band: "b_180_300", portability_pref: "home" }
+        },
+        {
+            name: "The Setup Zero Tolerance",
+            expected: ["Evercade", "Switch", "Super Pocket", "RG35XX"],
+            inputs: { target_tier: "32bit", budget_band: "b_60_120", setup_answer: "beginner" }
+        },
+        {
+            name: "The TV Console Hybrid",
+            expected: ["Odin 2", "Retroid Pocket 4 Pro", "Steam Deck", "Switch"],
+            inputs: { profile: "performance", target_tier: "6thgen", budget_band: "b_300_plus", portability_pref: "home", features: "hdmi" }
         }
     ];
 

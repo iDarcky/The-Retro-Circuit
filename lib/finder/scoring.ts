@@ -92,13 +92,31 @@ export const getDeviceTierLevel = (powerCeiling: number): number => {
     return 1;                        // 8-bit
 };
 
+const getTierMaxWeight = (tier: string | null) => {
+    switch (tier) {
+        case '8bit': return 0.25;
+        case '32bit': return 0.50;
+        case '2000s': return 0.75;
+        case '6thgen': return 1.0;
+        case 'modern': return 1.25;
+        default: return MAX_RAW_POWER;
+    }
+};
+
+const getTierMaxLibrary = (tier: string | null) => {
+    if (!tier) return MAX_RAW_LIBRARY;
+    const maxW = getTierMaxWeight(tier);
+    return Object.values(SYSTEM_WEIGHTS).filter(w => w <= maxW).reduce((a, b) => a + b, 0);
+};
+
 // --- SCORING FUNCTIONS ---
 
-export const calculatePowerCeilingScore = (consoleItem: ConsoleDetails): number => {
+export const calculatePowerCeilingScore = (consoleItem: ConsoleDetails, targetTier: string | null = null): number => {
     const variants = consoleItem.variants || [];
     if (variants.length === 0) return 0;
     if (consoleItem.device_category === 'pc_gaming') return 1.0;
 
+    const targetMax = getTierMaxWeight(targetTier);
     let maxWeight = 0;
 
     for (const variant of variants) {
@@ -113,7 +131,7 @@ export const calculatePowerCeilingScore = (consoleItem: ConsoleDetails): number 
         }
     }
 
-    return normalize(maxWeight, 0, MAX_RAW_POWER);
+    return normalize(maxWeight, 0, targetMax);
 };
 
 export const calculateTierFitScore = (consoleItem: ConsoleDetails, targetTier: string | null): number => {
@@ -186,11 +204,12 @@ export const calculateTierFitScore = (consoleItem: ConsoleDetails, targetTier: s
     return bestFitScore;
 };
 
-export const calculateLibraryScore = (consoleItem: ConsoleDetails): number => {
+export const calculateLibraryScore = (consoleItem: ConsoleDetails, targetTier: string | null = null): number => {
     const variants = consoleItem.variants || [];
     if (variants.length === 0) return 0;
     if (consoleItem.device_category === 'pc_gaming') return 1.0;
 
+    const targetMax = getTierMaxLibrary(targetTier);
     let bestScore = 0;
 
     for (const variant of variants) {
@@ -207,7 +226,7 @@ export const calculateLibraryScore = (consoleItem: ConsoleDetails): number => {
         if (currentSum > bestScore) bestScore = currentSum;
     }
 
-    return normalize(bestScore, 0, MAX_RAW_LIBRARY);
+    return normalize(bestScore, 0, targetMax);
 };
 
 export const calculatePortabilityScore = (consoleItem: ConsoleDetails): number => {
@@ -274,7 +293,7 @@ export const calculateEaseScore = (consoleItem: ConsoleDetails): number => {
 };
 
 export const calculateValueScore = (powerNormalized: number, libraryNormalized: number, price: number | null): number => {
-    if (price === null || price === undefined) return 0.5;
+    if (price === null || price === undefined) return 0.1;
 
     let p = price;
     if (p < MIN_RAW_PRICE) p = MIN_RAW_PRICE;
@@ -314,11 +333,11 @@ export const calculateConsoleScore = (
 ): ScoreBreakdown => {
 
     // --- STEP 1: COMPUTE NORMALIZED CORE SCORES (0.0 - 1.0) ---
-    const powerCeiling = calculatePowerCeilingScore(consoleItem);
+    const powerCeiling = calculatePowerCeilingScore(consoleItem, inputs.targetTier);
     const tierFit = calculateTierFitScore(consoleItem, inputs.targetTier);
     const powerRaw = powerCeiling; // Base power metric is ceiling
 
-    const libraryRaw = calculateLibraryScore(consoleItem);
+    const libraryRaw = calculateLibraryScore(consoleItem, inputs.targetTier);
     const portabilityRaw = calculatePortabilityScore(consoleItem);
     const easeRaw = calculateEaseScore(consoleItem);
 
@@ -350,28 +369,30 @@ export const calculateConsoleScore = (
     let tierMultiplier = 1.0;
 
     // Q4: Budget Multiplier
-    if (inputs.budgetBand && price !== null && price !== undefined) {
-        let maxBudget = 9999;
-        switch (inputs.budgetBand) {
-            case 'b_under_60': maxBudget = 60; break;
-            case 'b_60_120': maxBudget = 120; break;
-            case 'b_120_180': maxBudget = 180; break;
-            case 'b_180_300': maxBudget = 300; break;
-            case 'b_300_plus': maxBudget = 9999; break;
-        }
+    if (inputs.budgetBand) {
+        if (price === null || price === undefined) {
+            budgetMultiplier = 0.05; // Punish null prices heavily on budget requests
+        } else {
+            let maxBudget = 9999;
+            switch (inputs.budgetBand) {
+                case 'b_under_60': maxBudget = 60; break;
+                case 'b_60_120': maxBudget = 120; break;
+                case 'b_120_180': maxBudget = 180; break;
+                case 'b_180_300': maxBudget = 300; break;
+                case 'b_300_plus': maxBudget = 9999; break;
+            }
 
-        if (price > maxBudget) {
-            const overage = (price - maxBudget) / maxBudget;
-            if (overage <= 0.10) {
-                budgetMultiplier = 0.95;
-            } else if (overage <= 0.25) {
-                budgetMultiplier = 0.85;
-            } else if (overage <= 0.50) {
-                budgetMultiplier = 0.70;
-            } else if (overage <= 1.0) {
-                budgetMultiplier = 0.50;
-            } else {
-                budgetMultiplier = 0.10;
+            if (price > maxBudget) {
+                const overage = (price - maxBudget) / maxBudget;
+                if (overage <= 0.10) {
+                    budgetMultiplier = 0.80;
+                } else if (overage <= 0.25) {
+                    budgetMultiplier = 0.50;
+                } else if (overage <= 0.50) {
+                    budgetMultiplier = 0.20;
+                } else {
+                    budgetMultiplier = 0.01;
+                }
             }
         }
     }
