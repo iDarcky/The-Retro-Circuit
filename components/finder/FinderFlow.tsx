@@ -269,13 +269,6 @@ const FinderFlowContent = () => {
 
     return (
         <div className="relative pb-12">
-            <div className="mb-8 p-4 bg-zinc-900 border border-zinc-800 rounded-lg overflow-auto">
-                <h3 className="font-mono text-zinc-400 text-sm mb-2">DEBUG STATE:</h3>
-                <pre className="font-mono text-xs text-emerald-400">
-                    {JSON.stringify(Object.fromEntries(searchParams.entries()), null, 2)}
-                </pre>
-            </div>
-
             {stepIndex >= 0 && stepIndex < QUESTIONS.length && (
                 <QuizQuestion
                     question={QUESTIONS[stepIndex].question}
@@ -324,15 +317,7 @@ const FinderFlowContent = () => {
             )}
 
             {stepIndex === QUESTIONS.length && stepParam === 'results' && (
-                <div className="mt-8 border-t border-zinc-800 pt-8">
-                    <div className="text-center p-8 bg-zinc-900 border border-zinc-800 mb-8">
-                        <h2 className="text-2xl font-pixel text-white mb-4">END OF CURRENT TEST PHASE</h2>
-                        <p className="text-zinc-400 mb-6 font-mono text-sm">
-                            You have completed the currently implemented test questions (Q1 - Q8).<br />
-                            Below are the live results based <strong>only</strong> on these parameters.
-                        </p>
-                    </div>
-
+                <div className="mt-8 pt-8 border-t border-zinc-800">
                     <FinderResults onRestart={handleRestart} />
                 </div>
             )}
