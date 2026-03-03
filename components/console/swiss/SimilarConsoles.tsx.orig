@@ -90,7 +90,7 @@ export default function SimilarConsoles({ currentConsole }: SimilarConsolesProps
         }
 
         loadSimilar();
-    }, [currentConsole.id, currentConsole.form_factor, currentConsole.manufacturer?.id, currentConsole.specs?.price_launch_usd, currentConsole.variants]);
+    }, [currentConsole.id, currentConsole.form_factor, currentConsole.manufacturer?.id]); // Omit price obj from deps
 
     if (isLoading) {
         return (

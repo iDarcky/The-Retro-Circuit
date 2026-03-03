@@ -1,5 +1,5 @@
---- components/console/swiss/SimilarConsoles.tsx
-+++ components/console/swiss/SimilarConsoles.tsx
+--- SimilarConsoles.tsx
++++ SimilarConsoles.tsx
 @@ -89,8 +89,8 @@
          setSimilarConsoles([]);
        }
