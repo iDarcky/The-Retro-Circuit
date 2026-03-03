@@ -23,6 +23,15 @@ const MobileTopBar: FC<MobileTopBarProps> = ({ onMenuClick, isSidebarOpen }) => 
             </Link>
         </div>
 
+        {/* Left: Pre-alpha Badge */}
+        <div className="flex items-center h-full hover:bg-orange-500/10 transition-colors duration-300 border-r border-border-subtle">
+            <Link href="/about" className="flex items-center group px-3 h-full w-full justify-center">
+                <div className="border border-orange-500 bg-orange-500/10 px-1.5 py-0.5 flex items-center group-hover:bg-orange-500 transition-colors duration-300">
+                    <span className="font-pixel text-[8px] leading-tight text-orange-500 group-hover:text-black transition-colors">PRE-ALPHA</span>
+                </div>
+            </Link>
+        </div>
+
         {/* Right: Actions */}
         <div className="flex items-center gap-1">
             <button 
