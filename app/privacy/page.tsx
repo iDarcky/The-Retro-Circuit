@@ -3,8 +3,7 @@ import { getSystemVersion } from '../../app/actions/roadmap';
 import EmailActionCard from '../../components/about/EmailActionCard';
 
 export const metadata = {
-  title: 'Privacy Protocol | The Retro Circuit',
-  description: 'Privacy policy and data handling protocols.',
+  title: 'Privacy Policy | The Retro Circuit',
 };
 
 export default async function PrivacyPage() {

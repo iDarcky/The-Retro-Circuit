@@ -4,8 +4,8 @@ import FabricatorListClient from '../../components/fabricator/FabricatorListClie
 export const revalidate = 600; // 10 minutes
 
 export const metadata = {
-  title: 'Fabricators | Manufacturer Database',
-  description: 'Authorized hardware fabricators and corporate entities.',
+  title: 'Fabricators | Retro Handheld Manufacturers | The Retro Circuit',
+  description: 'Browse all retro handheld manufacturers and modders. Explore their full device catalogues and specs.',
 };
 
 export default async function FabricatorsPage() {

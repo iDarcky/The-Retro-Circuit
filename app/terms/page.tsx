@@ -3,8 +3,7 @@ import { siteConfig } from '../../config/site';
 import EmailActionCard from '../../components/about/EmailActionCard';
 
 export const metadata = {
-  title: 'Terms of Use | The Retro Circuit',
-  description: 'Terms of service and usage guidelines.',
+  title: 'Terms of Service | The Retro Circuit',
 };
 
 export default function TermsPage() {

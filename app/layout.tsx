@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     default: siteConfig.name,
     template: `%s | ${siteConfig.name}`,
   },
-  description: siteConfig.description,
+  description: 'The hub for retro handheld consoles. Compare specs, find your perfect device with The Finder, and go head-to-head in Arena VS.',
   icons: {
     icon: '/favicon-v2.png',
     shortcut: '/favicon-v2.png',
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: siteConfig.url,
     title: siteConfig.name,
-    description: siteConfig.description,
+    description: 'The hub for retro handheld consoles. Compare specs, find your perfect device with The Finder, and go head-to-head in Arena VS.',
     siteName: siteConfig.name,
     images: [
       {
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: siteConfig.name,
-    description: siteConfig.description,
+    description: 'The hub for retro handheld consoles. Compare specs, find your perfect device with The Finder, and go head-to-head in Arena VS.',
     images: ['/og-v2.png'],
   },
   alternates: {
@@ -98,7 +98,7 @@ export default async function RootLayout({
     name: siteConfig.name,
     alternateName: 'The Retro Circuit',
     url: siteConfig.url,
-    description: siteConfig.description,
+    description: 'The hub for retro handheld consoles. Compare specs, find your perfect device with The Finder, and go head-to-head in Arena VS.',
     potentialAction: {
       '@type': 'SearchAction',
       target: `${siteConfig.url}/finder?q={search_term_string}`,
