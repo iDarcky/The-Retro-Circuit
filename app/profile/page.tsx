@@ -3,6 +3,14 @@ import { redirect } from 'next/navigation';
 import { createClient } from '../../lib/supabase/server';
 import ProfileClient from '../../components/auth/ProfileClient';
 
+export const metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
+
 export default async function ProfilePage() {
     const supabase = await createClient();
 

@@ -6,8 +6,8 @@ import EmailActionCard from '../../components/about/EmailActionCard';
 import { fetchConsoleAndVariantCounts } from '../../app/actions/consoles';
 
 export const metadata = {
-  title: 'System Manifesto | The Retro Circuit',
-  description: 'Operational manual, system specifications, and operator data.',
+  title: 'About | The Retro Circuit',
+  description: "The story behind The Retro Circuit. Why it was built, what it stands for, and where it's going.",
 };
 
 export default async function AboutPage() {

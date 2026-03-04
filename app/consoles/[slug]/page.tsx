@@ -134,14 +134,12 @@ export async function generateMetadata(props: Props) {
       specsParts.push(defaultVar.os);
     }
 
-    const specsString = specsParts.join(', ');
+
 
     // Construct Description
-    const description = specsString
-      ? `${specsString}. Detailed technical specs, emulation performance, and comparisons for the ${data.name}.`
-      : `View full technical specifications, release date, and variant comparisons for the ${data.name}.`;
+    const description = `Full specs, variants, and pricing for the ${data.manufacturer?.name ? data.manufacturer.name + '-' : ''}${data.name}. Compare emulation performance and find the right console.`;
 
-    const title = `${data.manufacturer?.name ? data.manufacturer.name + ' ' : ''}${data.name} Specs, Price, Release Date & Comparisons`;
+    const title = `${data.manufacturer?.name ? data.manufacturer.name + '-' : ''}${data.name} Specs, Price & Variants | The Retro Circuit`;
 
     return {
       title: title,
