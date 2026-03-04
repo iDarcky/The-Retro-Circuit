@@ -1,5 +1,7 @@
 import { getSystemVersion } from '../../app/actions/roadmap';
 
+import EmailActionCard from '../../components/about/EmailActionCard';
+
 export const metadata = {
   title: 'Privacy Protocol | The Retro Circuit',
   description: 'Privacy policy and data handling protocols.',
@@ -41,7 +43,7 @@ export default async function PrivacyPage() {
                <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 01 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Overview</h2>
             </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
               <p>
                 At The Retro Circuit, we believe in transparency and data minimalism. We only collect what is strictly necessary to operate the service, and we do not sell, share, or trade your information with anyone.
               </p>
@@ -62,7 +64,7 @@ export default async function PrivacyPage() {
                <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 02 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">What We Collect</h2>
             </div>
-            <div className="space-y-10 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-10 text-lg text-zinc-300 font-light leading-relaxed">
 
               {/* Analytics */}
               <div className="space-y-4">
@@ -116,7 +118,7 @@ export default async function PrivacyPage() {
                <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 03 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">What We Do Not Collect</h2>
             </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
               <p>We do not collect or store:</p>
               <ul className="list-disc pl-6 space-y-2 text-zinc-400">
                 <li>User accounts or passwords</li>
@@ -134,7 +136,7 @@ export default async function PrivacyPage() {
                <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 04 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Data Storage</h2>
             </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
               <p>
                 We use <strong className="text-white font-medium">Supabase</strong> as our primary database provider. All data is encrypted at rest and in transit. The Retro Circuit database contains only hardware specification data — no personal user data is stored there.
               </p>
@@ -150,7 +152,7 @@ export default async function PrivacyPage() {
                <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 05 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Third Party Services</h2>
             </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
               <p>The Retro Circuit uses the following third-party services to operate:</p>
               <ul className="list-none space-y-3 text-zinc-400">
                 <li><strong className="text-white font-medium">Vercel</strong> — hosting and analytics (<a href="https://vercel.com/legal/privacy-policy" className="text-sky-400 hover:underline" target="_blank" rel="noopener noreferrer">vercel.com/legal/privacy-policy</a>)</li>
@@ -171,7 +173,7 @@ export default async function PrivacyPage() {
                <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 06 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Cookies</h2>
             </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
               <p>
                 The Retro Circuit does not use tracking cookies. The only cookies that may be set are strictly functional — such as remembering your cookie preferences — and do not collect personal data.
               </p>
@@ -195,7 +197,7 @@ export default async function PrivacyPage() {
                <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 07 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Your Rights</h2>
             </div>
-            <div className="space-y-8 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-8 text-lg text-zinc-300 font-light leading-relaxed">
               <p>
                 Under GDPR and other applicable privacy regulations, you have the right to:
               </p>
@@ -223,8 +225,8 @@ export default async function PrivacyPage() {
                  </div>
 
                  {/* Data Requests */}
-                 <a href="mailto:contact@theretrocircuit.com?subject=DATA%20REQUEST" className="border border-white/10 bg-white/[0.02] p-6 hover:border-sky-500/30 transition-colors block group">
-                    <h3 className="text-white group-hover:text-sky-400 transition-colors font-bold uppercase text-xs tracking-widest mb-4 font-mono">Data Requests</h3>
+                 <div className="border border-white/10 bg-white/[0.02] p-6">
+                    <h3 className="text-white font-bold uppercase text-xs tracking-widest mb-4 font-mono">Data Requests</h3>
                     <p className="text-sm text-zinc-400 mb-4">
                       To exercise any of your data rights, contact us at: <br/>
                       <span className="text-white truncate">contact@theretrocircuit.com</span>
@@ -233,10 +235,7 @@ export default async function PrivacyPage() {
                       Subject line: DATA REQUEST <br/>
                       We will respond within 30 days.
                     </p>
-                     <div className="text-xs font-mono text-zinc-600 group-hover:text-sky-400 transition-colors">
-                        &gt; SEND_MESSAGE
-                    </div>
-                 </a>
+                 </div>
               </div>
             </div>
           </section>
@@ -247,7 +246,7 @@ export default async function PrivacyPage() {
                <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 08 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Changes To This Policy</h2>
             </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
               <p>
                 We may update this policy as the site evolves. Changes will be reflected in the updated date at the top of this page. Continued use of The Retro Circuit after changes are posted constitutes acceptance of the updated policy.
               </p>
@@ -260,19 +259,15 @@ export default async function PrivacyPage() {
                <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 09 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Contact</h2>
             </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
               <p>For any privacy-related questions or requests:</p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                 <a href="mailto:contact@theretrocircuit.com" className="border border-white/10 bg-white/[0.02] p-6 hover:border-sky-500/30 transition-colors block group">
-                    <h3 className="text-white group-hover:text-sky-400 transition-colors font-bold uppercase text-xs tracking-widest mb-4 font-mono">Contact Us</h3>
-                    <p className="text-sm text-zinc-400 mb-4 truncate">
-                      contact@theretrocircuit.com
-                    </p>
-                     <div className="text-xs font-mono text-zinc-600 group-hover:text-sky-400 transition-colors">
-                        &gt; SEND_MESSAGE
-                    </div>
-                 </a>
+                 <EmailActionCard
+                    hoverBorderColor="hover:border-sky-500/30"
+                    hoverIconBorderColor="group-hover:border-sky-500/50"
+                    hoverTextColor="group-hover:text-sky-400"
+                 />
               </div>
             </div>
           </section>
