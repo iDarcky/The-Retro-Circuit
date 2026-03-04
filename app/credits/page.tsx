@@ -1,8 +1,7 @@
 import { getSystemVersion } from '../../app/actions/roadmap';
 
 export const metadata = {
-  title: 'Credits & Inspiration | The Retro Circuit',
-  description: 'Source attribution and project inspiration.',
+  title: 'Credits | The Retro Circuit',
 };
 
 export default async function CreditsPage() {

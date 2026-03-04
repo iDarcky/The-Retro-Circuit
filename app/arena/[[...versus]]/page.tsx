@@ -13,13 +13,13 @@ export async function generateMetadata({ params }: { params: Promise<{ versus?: 
     const { versus } = await params;
 
     if (!versus || versus.length === 0) {
-        return { title: 'Head-to-Head Arena | The Retro Circuit', robots: { index: false, follow: false } };
+        return { title: 'Arena VS | Compare Any Two Handhelds | The Retro Circuit', description: 'Pick any two retro handhelds and compare them head-to-head. Specs, performance, price, and emulation targets.', robots: { index: false, follow: false } };
     }
 
     const parts = versus[0].split('-vs-');
 
     // Basic title if not fully parseable yet
-    if (parts.length !== 2) return { title: 'Head-to-Head Arena | The Retro Circuit', robots: { index: false, follow: false } };
+    if (parts.length !== 2) return { title: 'Arena VS | Compare Any Two Handhelds | The Retro Circuit', description: 'Pick any two retro handhelds and compare them head-to-head. Specs, performance, price, and emulation targets.', robots: { index: false, follow: false } };
 
     // Simply format the slugs for the title (capitalized)
     const formatName = (s: string) => s.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
