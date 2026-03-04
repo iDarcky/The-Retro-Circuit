@@ -11,7 +11,7 @@ export default function FinderTestPage() {
         <main className="min-h-screen bg-bg-primary text-text-primary pt-24 pb-12">
             <div className="container mx-auto px-4 max-w-4xl">
                 <h1 className="text-4xl font-pixel text-white mb-4 text-center">FINDER_</h1>
-                <div className="mb-8 p-4 bg-white/[0.03] border border-white/10 text-center font-mono text-sm text-zinc-300">
+                <div className="mb-8 p-4 bg-orange-500/10 border border-orange-500/30 text-center font-mono text-sm text-orange-400">
                     The finder is still a work in progress - have fun
                 </div>
                 <FinderFlow />
