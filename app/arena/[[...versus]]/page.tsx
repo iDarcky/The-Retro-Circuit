@@ -13,13 +13,13 @@ export async function generateMetadata({ params }: { params: Promise<{ versus?: 
     const { versus } = await params;
 
     if (!versus || versus.length === 0) {
-        return { title: 'Head-to-Head Arena | The Retro Circuit' };
+        return { title: 'Head-to-Head Arena | The Retro Circuit', robots: { index: false, follow: false } };
     }
 
     const parts = versus[0].split('-vs-');
 
     // Basic title if not fully parseable yet
-    if (parts.length !== 2) return { title: 'Head-to-Head Arena | The Retro Circuit' };
+    if (parts.length !== 2) return { title: 'Head-to-Head Arena | The Retro Circuit', robots: { index: false, follow: false } };
 
     // Simply format the slugs for the title (capitalized)
     const formatName = (s: string) => s.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
@@ -27,6 +27,10 @@ export async function generateMetadata({ params }: { params: Promise<{ versus?: 
     const name2 = formatName(parts[1]);
 
     return {
+        robots: {
+            index: false,
+            follow: false,
+        },
         title: `${name1} vs ${name2} | The Retro Circuit Arena`,
         description: `Detailed spec comparison: ${name1} versus ${name2}. Compare CPU, Screen, Battery, and more.`,
         openGraph: {
