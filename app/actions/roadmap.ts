@@ -5,6 +5,7 @@ import { supabaseAnon } from "../../lib/supabase/anon";
 import { RoadmapFeature, Release } from "../../lib/types/domain";
 import { siteConfig } from "../../config/site";
 import { formatRoadmapMarkdown } from "../../lib/roadmap-formatter";
+import { revalidatePath } from "next/cache";
 
 export async function getSystemVersion() {
     const dbVersion = await fetchLatestVersion();
@@ -47,6 +48,9 @@ export async function createRoadmapItem(item: Omit<RoadmapFeature, 'id' | 'creat
     throw error;
   }
 
+  revalidatePath('/roadmap');
+  revalidatePath('/');
+
   return data as RoadmapFeature;
 }
 
@@ -71,6 +75,9 @@ export async function updateRoadmapItem(id: string, updates: Partial<RoadmapFeat
     throw error;
   }
 
+  revalidatePath('/roadmap');
+  revalidatePath('/');
+
   return data as RoadmapFeature;
 }
 
@@ -85,6 +92,9 @@ export async function deleteRoadmapItem(id: string) {
     console.error('Error deleting roadmap item:', error);
     throw error;
   }
+
+  revalidatePath('/roadmap');
+  revalidatePath('/');
 }
 
 // --- Releases ---
@@ -178,6 +188,12 @@ export async function createRelease(release: Omit<Release, 'id' | 'created_at' |
         console.error('Error creating release:', error);
         throw error;
     }
+
+    revalidatePath('/roadmap');
+    revalidatePath('/');
+    revalidatePath('/credits');
+    revalidatePath('/about');
+
     return data as Release;
 }
 
@@ -200,6 +216,12 @@ export async function updateRelease(id: string, updates: Partial<Release>) {
         console.error('Error updating release:', error);
         throw error;
     }
+
+    revalidatePath('/roadmap');
+    revalidatePath('/');
+    revalidatePath('/credits');
+    revalidatePath('/about');
+
     return data as Release;
 }
 
@@ -214,6 +236,11 @@ export async function deleteRelease(id: string) {
         console.error('Error deleting release:', error);
         throw error;
     }
+
+    revalidatePath('/roadmap');
+    revalidatePath('/');
+    revalidatePath('/credits');
+    revalidatePath('/about');
 }
 
 // --- Markdown Export ---

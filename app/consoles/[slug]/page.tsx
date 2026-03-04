@@ -6,6 +6,11 @@ import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
 
 export const revalidate = 3600; // 1 hour
 
+export async function generateStaticParams() {
+  const consoles = await fetchConsoleList(false);
+  return consoles.map((c) => ({ slug: c.slug }));
+}
+
 type Props = {
   params: Promise<{ slug: string }>
 };
