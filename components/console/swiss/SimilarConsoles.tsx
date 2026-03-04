@@ -90,7 +90,8 @@ export default function SimilarConsoles({ currentConsole }: SimilarConsolesProps
         }
 
         loadSimilar();
-    }, [currentConsole.id, currentConsole.form_factor, currentConsole.manufacturer?.id]); // Omit price obj from deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentConsole.id]); // Omit price obj from deps
 
     if (isLoading) {
         return (

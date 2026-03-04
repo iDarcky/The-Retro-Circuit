@@ -1,5 +1,7 @@
 import { getSystemVersion } from '../../app/actions/roadmap';
 
+import EmailActionCard from '../../components/about/EmailActionCard';
+
 export const metadata = {
   title: 'Privacy Protocol | The Retro Circuit',
   description: 'Privacy policy and data handling protocols.',
@@ -20,7 +22,7 @@ export default async function PrivacyPage() {
            {/* Metadata Pill - Sky Blue Variant */}
            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-sky-900/30 bg-sky-950/10 text-[9px] md:text-xs font-mono uppercase tracking-widest text-sky-400 mb-8 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(56,189,248,0.1)]">
                <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-sky-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(56,189,248,0.5)]"></div>
-               Secure Protocol // v{version} // Updated: {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+               Secure Protocol // v{version}
            </div>
 
            {/* Title */}
@@ -36,116 +38,236 @@ export default async function PrivacyPage() {
       <div className="max-w-4xl mx-auto px-6 md:px-12 py-16 space-y-16 relative z-10">
 
           {/* Section 1: Overview */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-             <div className="flex items-center gap-3 self-start pt-1">
+          <section className="space-y-6">
+             <div className="flex items-center gap-4 mb-8">
                <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 01 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Overview</h2>
+               <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Overview</h2>
             </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
               <p>
-                At The Retro Circuit, we believe in transparency and data minimalism. We only collect data that is strictly necessary for the operation of our service or to improve the user experience, and only with your explicit consent.
+                At The Retro Circuit, we believe in transparency and data minimalism. We only collect what is strictly necessary to operate the service, and we do not sell, share, or trade your information with anyone.
+              </p>
+              <p>
+                This policy outlines what we collect, why we collect it, and your rights as a user. By using The Retro Circuit, you agree to the practices described here.
               </p>
               <div className="pl-6 border-l-2 border-sky-500/50">
                   <p className="text-zinc-400 font-light italic">
-                    This policy outlines our practices regarding data collection, storage, and your rights as a user. By using our services, you agree to the collection and use of information in accordance with this policy.
+                    Last updated: March 2026
                   </p>
               </div>
             </div>
           </section>
 
-          {/* Section 2: Cookies & Analytics */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-            <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 02 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Analytics</h2>
+          {/* Section 2: What We Collect */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 02 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">What We Collect</h2>
             </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-10 text-lg text-zinc-300 font-light leading-relaxed">
+
+              {/* Analytics */}
+              <div className="space-y-4">
+                <h3 className="text-sky-400 font-bold uppercase text-xs tracking-widest font-mono">Analytics</h3>
+                <p>
+                  We use <strong className="text-white font-medium">Vercel Analytics</strong> to understand how users interact with the site. Vercel Analytics is cookieless and privacy-first by design. It does not track individuals, does not store personal data, and does not require a consent banner under GDPR. No personally identifiable information is collected through analytics.
+                </p>
+                <div className="bg-sky-500/5 border border-sky-500/20 p-4 md:p-6 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-4 opacity-10">
+                      <div className="w-16 h-16 border-2 border-sky-500 rounded-full border-dashed animate-spin-slow"></div>
+                  </div>
+                  <p className="text-sm text-sky-400 font-mono m-0">
+                    &gt; STATUS: USER_CONTROLLED — no consent required
+                  </p>
+                </div>
+              </div>
+
+              {/* Contact Form */}
+              <div className="space-y-4">
+                <h3 className="text-sky-400 font-bold uppercase text-xs tracking-widest font-mono">Contact Form</h3>
+                <p>
+                  If you choose to contact us via the contact form or by email, we receive your email address and the content of your message. This information is used solely to respond to your enquiry and is never stored in a database, shared with third parties, or used for marketing.
+                </p>
+              </div>
+
+              {/* Rate Limiting */}
+              <div className="space-y-4">
+                <h3 className="text-sky-400 font-bold uppercase text-xs tracking-widest font-mono">Rate Limiting</h3>
+                <p>
+                  To protect the site from automated abuse and denial of service attacks, we use <strong className="text-white font-medium">Upstash Redis</strong> for rate limiting on specific API endpoints such as search and form submissions. This temporarily stores your IP address in an ephemeral, memory-based cache for a few seconds or minutes to verify that request rates are within safe limits.
+                </p>
+                <p>
+                  This data is completely anonymous, automatically discarded after its expiration window, and is never used for tracking, profiling, or analytics.
+                </p>
+                <div className="bg-sky-500/5 border border-sky-500/20 p-4 md:p-6 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-4 opacity-10">
+                      <div className="w-16 h-16 border-2 border-sky-500 rounded-full border-dashed animate-spin-slow"></div>
+                  </div>
+                  <p className="text-sm text-sky-400 font-mono m-0">
+                    &gt; STATUS: ANONYMOUS — auto-discarded
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          {/* Section 3: What We Do Not Collect */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 03 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">What We Do Not Collect</h2>
+            </div>
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
+              <p>We do not collect or store:</p>
+              <ul className="list-disc pl-6 space-y-2 text-zinc-400">
+                <li>User accounts or passwords</li>
+                <li>Payment information</li>
+                <li>Browsing history or behavioural data</li>
+                <li>Device fingerprints</li>
+                <li>Location data beyond approximate region for analytics</li>
+              </ul>
+            </div>
+          </section>
+
+          {/* Section 4: Data Storage */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 04 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Data Storage</h2>
+            </div>
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
               <p>
-                We use <strong className="text-white font-medium">Vercel Analytics</strong> to understand how users interact with our website. This helps us identify performance bottlenecks and improve content relevance.
+                We use <strong className="text-white font-medium">Supabase</strong> as our primary database provider. All data is encrypted at rest and in transit. The Retro Circuit database contains only hardware specification data — no personal user data is stored there.
               </p>
-              <div className="bg-sky-500/5 border border-sky-500/20 p-6 md:p-8 relative overflow-hidden group">
-                 {/* Decorative background element */}
+              <p>
+                We do not sell, trade, or transfer your personally identifiable information to any outside parties under any circumstances.
+              </p>
+            </div>
+          </section>
+
+          {/* Section 5: Third Party Services */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 05 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Third Party Services</h2>
+            </div>
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
+              <p>The Retro Circuit uses the following third-party services to operate:</p>
+              <ul className="list-none space-y-3 text-zinc-400">
+                <li><strong className="text-white font-medium">Vercel</strong> — hosting and analytics (<a href="https://vercel.com/legal/privacy-policy" className="text-sky-400 hover:underline" target="_blank" rel="noopener noreferrer">vercel.com/legal/privacy-policy</a>)</li>
+                <li><strong className="text-white font-medium">Supabase</strong> — database infrastructure (<a href="https://supabase.com/privacy" className="text-sky-400 hover:underline" target="_blank" rel="noopener noreferrer">supabase.com/privacy</a>)</li>
+                <li><strong className="text-white font-medium">Upstash</strong> — rate limiting (<a href="https://upstash.com/trust/privacy.pdf" className="text-sky-400 hover:underline" target="_blank" rel="noopener noreferrer">upstash.com/trust/privacy.pdf</a>)</li>
+                <li><strong className="text-white font-medium">Zoho Mail</strong> — email communications (<a href="https://www.zoho.com/privacy.html" className="text-sky-400 hover:underline" target="_blank" rel="noopener noreferrer">zoho.com/privacy.html</a>)</li>
+                <li><strong className="text-white font-medium">Resend</strong> — transactional email (<a href="https://resend.com/legal/privacy-policy" className="text-sky-400 hover:underline" target="_blank" rel="noopener noreferrer">resend.com/legal/privacy-policy</a>)</li>
+              </ul>
+              <p>
+                Each of these providers maintains their own privacy policies. The Retro Circuit is not responsible for the practices of these third-party services beyond our use of them.
+              </p>
+            </div>
+          </section>
+
+          {/* Section 6: Cookies */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 06 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Cookies</h2>
+            </div>
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
+              <p>
+                The Retro Circuit does not use tracking cookies. The only cookies that may be set are strictly functional — such as remembering your cookie preferences — and do not collect personal data.
+              </p>
+              <p>
+                Non-essential cookies and analytics scripts are not loaded without your explicit consent via the cookie banner.
+              </p>
+              <div className="bg-sky-500/5 border border-sky-500/20 p-4 md:p-6 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-4 opacity-10">
                     <div className="w-16 h-16 border-2 border-sky-500 rounded-full border-dashed animate-spin-slow"></div>
                 </div>
-
-                <h3 className="text-sky-400 font-bold mb-2 uppercase text-xs tracking-widest font-mono">Strict Consent Policy</h3>
-                <div className="h-px w-full bg-sky-500/20 mb-4"></div>
-                <p className="text-sm text-gray-400 mb-4 font-mono leading-relaxed">
-                  By default, all non-essential cookies and analytics scripts are <strong className="text-white">BLOCKED</strong>. We do not track your activity until you explicitly click &quot;Accept&quot; on our cookie banner.
-                </p>
-                <p className="text-sm text-gray-400 font-mono">
+                <p className="text-sm text-sky-400 font-mono m-0">
                   &gt; STATUS: USER_CONTROLLED
                 </p>
               </div>
             </div>
           </section>
 
-          {/* Section 3: Data Storage */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-            <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 03 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Storage</h2>
+          {/* Section 7: Your Rights */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 07 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Your Rights</h2>
             </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-8 text-lg text-zinc-300 font-light leading-relaxed">
               <p>
-                We utilize <strong className="text-white font-medium">Supabase</strong> as our primary database provider. All data is encrypted at rest and in transit. We do not sell, trade, or otherwise transfer your personally identifiable information to outside parties.
+                Under GDPR and other applicable privacy regulations, you have the right to:
               </p>
-            </div>
-          </section>
-
-
-          {/* Section 4: Security & API Protection */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-            <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 04 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Security</h2>
-            </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+              <ul className="list-disc pl-6 space-y-2 text-zinc-400">
+                <li>Access any personal data we hold about you</li>
+                <li>Rectify inaccurate personal data</li>
+                <li>Request erasure of your personal data</li>
+                <li>Withdraw consent for data processing at any time</li>
+                <li>Lodge a complaint with your local data protection authority</li>
+              </ul>
               <p>
-                To protect our infrastructure from abuse, automated attacks, and Denial of Service (DoS) attempts, we utilize <strong className="text-white font-medium">Upstash Redis</strong> for rate limiting on specific API endpoints (such as search and form submissions).
-              </p>
-              <div className="pl-6 border-l-2 border-sky-500/50">
-                  <p className="text-zinc-400 font-light italic">
-                    This process involves temporarily storing your IP address in an ephemeral, memory-based cache. The data is held only for a few seconds or minutes to verify that the request rate is within safe limits. This information is completely anonymous, immediately discarded after its expiration window, and is strictly used for security—never for tracking, profiling, or analytics.
-                  </p>
-              </div>
-            </div>
-          </section>
-
-          {/* Section 5: Your Rights */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-            <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 05 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Your Rights</h2>
-            </div>
-            <div className="space-y-8 text-gray-300 leading-relaxed text-lg font-light">
-              <p>
-                Under GDPR and other privacy regulations, you have the right to access, rectify, or erase your personal data. You also have the right to withdraw consent for data processing.
+                Given that The Retro Circuit does not store personal user data, most of these rights have limited practical application. However, we take them seriously and will respond to any request promptly.
               </p>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                 {/* Card 1 */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                 {/* Managing Consent */}
                  <div className="border border-white/10 bg-white/[0.02] p-6 hover:border-sky-500/30 transition-colors">
                     <h3 className="text-white font-bold uppercase text-xs tracking-widest mb-4 font-mono">Managing Consent</h3>
                     <p className="text-sm text-zinc-400 mb-4">
-                      Reset your preferences at any time via the footer.
+                      You can reset your cookie preferences at any time via the cookie settings link in the footer.
                     </p>
                     <div className="text-xs font-mono text-sky-400">
                         ACTION: SCROLL_TO_FOOTER
                     </div>
                  </div>
 
-                 {/* Card 2 */}
-                 <a href="mailto:contact@theretrocircuit.com" className="border border-white/10 bg-white/[0.02] p-6 hover:border-sky-500/30 transition-colors block group">
-                    <h3 className="text-white group-hover:text-sky-400 transition-colors font-bold uppercase text-xs tracking-widest mb-4 font-mono">Contact Us</h3>
-                    <p className="text-sm text-zinc-400 mb-4 truncate">
-                      contact@theretrocircuit.com
+                 {/* Data Requests */}
+                 <div className="border border-white/10 bg-white/[0.02] p-6">
+                    <h3 className="text-white font-bold uppercase text-xs tracking-widest mb-4 font-mono">Data Requests</h3>
+                    <p className="text-sm text-zinc-400 mb-4">
+                      To exercise any of your data rights, contact us at: <br/>
+                      <span className="text-white truncate">contact@theretrocircuit.com</span>
                     </p>
-                     <div className="text-xs font-mono text-zinc-600 group-hover:text-sky-400 transition-colors">
-                        &gt; SEND_MESSAGE
-                    </div>
-                 </a>
+                    <p className="text-sm text-zinc-400 mb-4">
+                      Subject line: DATA REQUEST <br/>
+                      We will respond within 30 days.
+                    </p>
+                 </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Section 8: Changes To This Policy */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 08 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Changes To This Policy</h2>
+            </div>
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
+              <p>
+                We may update this policy as the site evolves. Changes will be reflected in the updated date at the top of this page. Continued use of The Retro Circuit after changes are posted constitutes acceptance of the updated policy.
+              </p>
+            </div>
+          </section>
+
+          {/* Section 9: Contact */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 09 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Contact</h2>
+            </div>
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
+              <p>For any privacy-related questions or requests:</p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <EmailActionCard
+                    hoverBorderColor="hover:border-sky-500/30"
+                    hoverIconBorderColor="group-hover:border-sky-500/50"
+                    hoverTextColor="group-hover:text-sky-400"
+                 />
               </div>
             </div>
           </section>

@@ -1,5 +1,7 @@
 import { siteConfig } from '../../config/site';
 
+import EmailActionCard from '../../components/about/EmailActionCard';
+
 export const metadata = {
   title: 'Terms of Use | The Retro Circuit',
   description: 'Terms of service and usage guidelines.',
@@ -34,13 +36,13 @@ export default function TermsPage() {
       {/* MAIN CONTENT */}
       <div className="max-w-4xl mx-auto px-6 md:px-12 py-16 space-y-16 relative z-10">
 
-          {/* Section 1: Acceptance */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-             <div className="flex items-center gap-3 self-start pt-1">
+          {/* [ 01 ] ACCEPTANCE */}
+          <section className="space-y-6">
+             <div className="flex items-center gap-4 mb-8">
                <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 01 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Acceptance</h2>
+               <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Acceptance</h2>
             </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
               <p>
                 By accessing or using The Retro Circuit, you agree to be bound by these Terms of Service and all applicable laws and regulations.
               </p>
@@ -49,21 +51,66 @@ export default function TermsPage() {
                     If you do not agree with any of these terms, you are prohibited from using or accessing this site. Access to this database is a privilege, not a right.
                   </p>
               </div>
+              <p>
+                These terms apply to all visitors, users, and anyone else who accesses The Retro Circuit.
+              </p>
+              <p className="text-sm font-mono text-zinc-500">
+                Last updated: March 2026
+              </p>
             </div>
           </section>
 
-          {/* Section 2: Prohibited */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-            <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 02 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Prohibited</h2>
+          {/* [ 02 ] ACCURACY DISCLAIMER */}
+          <section className="space-y-6">
+             <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 02 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Accuracy Disclaimer</h2>
             </div>
-            <div className="space-y-6">
-              <p className="text-gray-300 leading-relaxed text-lg font-light">
-                To maintain the integrity of our data ecosystem, specific actions are strictly forbidden.
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
+              <p>
+                The Retro Circuit provides hardware specification data for informational purposes only.
               </p>
 
-              {/* Critical Alert Box */}
+              <div className="space-y-2">
+                <h3 className="text-white font-bold tracking-tight uppercase text-sm">No Guarantee of Accuracy</h3>
+                <p className="text-zinc-400 text-base">
+                  While we make every effort to ensure specifications are correct and up to date, we make no guarantees about the accuracy, completeness, or timeliness of any information listed on this site. Hardware specifications can change without notice, and manufacturers may release updates, revisions, or variants that have not yet been catalogued.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="text-white font-bold tracking-tight uppercase text-sm">Purchase Decisions</h3>
+                <p className="text-zinc-400 text-base">
+                  Always verify critical specifications directly with the manufacturer or retailer before making a purchase decision. The Retro Circuit accepts no responsibility for decisions made based on information found on this site.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="text-white font-bold tracking-tight uppercase text-sm">Pre-Alpha Status</h3>
+                <p className="text-zinc-400 text-base">
+                  The Retro Circuit is currently in Pre-Alpha. Data may be incomplete, features may change, and information may be updated or corrected at any time without prior notice.
+                </p>
+              </div>
+
+              <div className="mt-4 inline-flex items-center gap-2 font-mono text-xs text-zinc-500 border border-zinc-800 px-3 py-1 bg-zinc-900/50">
+                <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>
+                STATUS: DATA_INFORMATIONAL_ONLY
+              </div>
+            </div>
+          </section>
+
+          {/* [ 03 ] PROHIBITED CONDUCT */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 03 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Prohibited Conduct</h2>
+            </div>
+            <div className="space-y-8">
+              <p className="text-lg text-zinc-300 font-light leading-relaxed">
+                To maintain the integrity of our data ecosystem, the following actions are strictly forbidden.
+              </p>
+
+              {/* Automated Access - Critical Alert Box */}
               <div className="bg-rose-500/5 border border-rose-500/30 p-6 md:p-8 relative overflow-hidden group">
                  {/* Decorative background element */}
                 <div className="absolute -top-6 -right-6 opacity-10 rotate-12">
@@ -72,52 +119,178 @@ export default function TermsPage() {
 
                 <div className="flex items-center gap-3 mb-4">
                     <div className="w-2 h-2 bg-rose-500 animate-pulse"></div>
-                    <h3 className="text-rose-400 font-bold uppercase text-xs tracking-widest font-mono">CRITICAL WARNING</h3>
+                    <h3 className="text-rose-400 font-bold uppercase text-xs tracking-widest font-mono">Automated Access</h3>
                 </div>
 
                 <div className="h-px w-full bg-rose-500/20 mb-4"></div>
 
                 <p className="text-sm text-rose-200 mb-4 font-mono leading-relaxed relative z-10">
-                   Automated scraping, data harvesting, bulk export, or unauthorized redistribution of this database structure is <strong className="text-rose-500 bg-rose-950/30 px-1 border border-rose-500/30">STRICTLY PROHIBITED</strong>.
+                   Automated scraping, data harvesting, bulk export, or any form of automated access to The Retro Circuit&apos;s database structure is <strong className="text-rose-500 bg-rose-950/30 px-1 border border-rose-500/30">STRICTLY PROHIBITED</strong> without prior written permission.
                 </p>
                 <p className="text-xs text-rose-500/70 font-mono">
                   &gt; VIOLATION_RESPONSE: IP_BAN_IMMEDIATE
                 </p>
               </div>
+
+              {/* Unauthorised Redistribution */}
+              <div className="space-y-2">
+                <h3 className="text-white font-bold tracking-tight uppercase text-sm">Unauthorised Redistribution</h3>
+                <p className="text-zinc-400 text-base leading-relaxed font-light">
+                  Reproducing, redistributing, or republishing The Retro Circuit&apos;s data aggregations, database structure, or compiled specifications in any form — commercial or otherwise — without explicit written permission is prohibited.
+                </p>
+              </div>
+
+              {/* Interference */}
+              <div className="space-y-2">
+                <h3 className="text-white font-bold tracking-tight uppercase text-sm">Interference</h3>
+                <p className="text-zinc-400 text-base leading-relaxed font-light">
+                  Attempting to interfere with, disrupt, or compromise the integrity or security of the site, its infrastructure, or its data is strictly prohibited.
+                </p>
+              </div>
+
             </div>
           </section>
 
-          {/* Section 3: Intellectual Property */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-            <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 03 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Ownership</h2>
+          {/* [ 04 ] OWNERSHIP */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 04 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Ownership</h2>
             </div>
 
-             <div className="border border-white/10 bg-white/[0.02] p-6 md:p-8 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden hover:bg-white/[0.04] transition-colors">
-                {/* IP Icon */}
-                <div className="w-20 h-20 bg-zinc-900 border border-white/10 flex items-center justify-center shrink-0">
-                    <span className="font-pixel text-xl text-zinc-700">IP</span>
-                </div>
+            <div className="space-y-8">
+               {/* Content Rights Box */}
+               <div className="border border-white/10 bg-white/[0.02] p-6 md:p-8 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden hover:bg-white/[0.04] transition-colors">
+                  {/* IP Icon */}
+                  <div className="w-20 h-20 bg-zinc-900 border border-white/10 flex items-center justify-center shrink-0">
+                      <span className="font-pixel text-xl text-zinc-700">IP</span>
+                  </div>
 
-                {/* Details */}
-                <div className="flex-1 space-y-4 relative z-10">
-                    <div>
-                        <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-lg text-white font-bold tracking-tight uppercase">Content Rights</h3>
-                            <span className="font-mono text-xs text-rose-500 border border-rose-500/30 bg-rose-500/5 px-2 py-0.5">PROTECTED</span>
-                        </div>
-                        <div className="h-px w-full bg-white/10 mb-4"></div>
-                        <p className="font-light text-zinc-400 leading-relaxed text-sm">
-                            The materials contained in this website are protected by applicable copyright and trademark law. The Retro Circuit architecture, code, design, and specific data aggregations are proprietary.
-                        </p>
-                    </div>
+                  {/* Details */}
+                  <div className="flex-1 space-y-4 relative z-10">
+                      <div>
+                          <div className="flex items-center justify-between mb-2">
+                              <h3 className="text-lg text-white font-bold tracking-tight uppercase">Content Rights</h3>
+                              <span className="font-mono text-xs text-rose-500 border border-rose-500/30 bg-rose-500/5 px-2 py-0.5">PROTECTED</span>
+                          </div>
+                          <div className="h-px w-full bg-white/10 mb-4"></div>
+                          <p className="font-light text-zinc-400 leading-relaxed text-sm">
+                              The materials contained on this site — including the architecture, code, design system, curation methodology, and specific data aggregations — are protected by applicable copyright and trademark law. The Retro Circuit&apos;s unique compilation and presentation of hardware data is proprietary.
+                          </p>
+                      </div>
 
-                    <div className="font-mono text-xs text-zinc-500 flex items-center gap-2">
-                         <span className="w-1.5 h-1.5 bg-rose-500 rounded-full"></span>
-                         STATUS: ALL_RIGHTS_RESERVED
-                    </div>
-                </div>
+                      <div className="font-mono text-xs text-zinc-500 flex items-center gap-2">
+                           <span className="w-1.5 h-1.5 bg-rose-500 rounded-full"></span>
+                           STATUS: ALL_RIGHTS_RESERVED
+                      </div>
+                  </div>
+              </div>
+
+              {/* Hardware Data */}
+              <div className="space-y-2">
+                <h3 className="text-white font-bold tracking-tight uppercase text-sm">Hardware Data</h3>
+                <p className="text-zinc-400 text-base leading-relaxed font-light">
+                  Individual hardware specifications are factual information and are not claimed as proprietary. The specific compilation, structure, variant model, and curation of this data is the intellectual property of The Retro Circuit.
+                </p>
+              </div>
+
+              {/* User Content */}
+              <div className="space-y-2">
+                <h3 className="text-white font-bold tracking-tight uppercase text-sm">User Content</h3>
+                <p className="text-zinc-400 text-base leading-relaxed font-light">
+                  By submitting any content or information to The Retro Circuit — including via the contact form — you grant us a non-exclusive right to use that information to improve the service.
+                </p>
+              </div>
+
+            </div>
+          </section>
+
+          {/* [ 05 ] LIMITATION OF LIABILITY */}
+          <section className="space-y-6">
+             <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 05 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Limitation of Liability</h2>
+            </div>
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
+              <p>
+                To the fullest extent permitted by applicable law, The Retro Circuit and its operator shall not be liable for:
+              </p>
+
+              <ul className="list-disc list-inside space-y-2 text-zinc-400 text-base ml-4">
+                <li>Any inaccuracies in hardware specifications</li>
+                <li>Any decisions made based on information found on this site</li>
+                <li>Any direct, indirect, incidental, or consequential damages arising from your use of the site</li>
+                <li>Any temporary unavailability of the service, particularly during this Pre-Alpha phase</li>
+              </ul>
+
+              <p className="text-base text-zinc-400 pt-4">
+                The Retro Circuit is operated by a single individual as a personal project. It is not a commercial entity and does not provide warranties of any kind, express or implied.
+              </p>
+            </div>
+          </section>
+
+          {/* [ 06 ] EXTERNAL LINKS */}
+          <section className="space-y-6">
+             <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 06 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">External Links</h2>
+            </div>
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
+              <p>
+                The Retro Circuit may link to third-party websites including manufacturer pages, retailer listings, and community resources.
+              </p>
+              <p className="text-zinc-400 text-base">
+                We are not responsible for the content, accuracy, or practices of any external sites. Links do not constitute endorsement.
+              </p>
+            </div>
+          </section>
+
+          {/* [ 07 ] CHANGES TO THESE TERMS */}
+          <section className="space-y-6">
+             <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 07 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Changes to Terms</h2>
+            </div>
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
+              <p>
+                We reserve the right to update these Terms of Service at any time. Changes will be reflected in the updated date at the top of this page.
+              </p>
+              <p className="text-zinc-400 text-base">
+                Continued use of The Retro Circuit after changes are posted constitutes acceptance of the updated terms.
+              </p>
+            </div>
+          </section>
+
+          {/* [ 08 ] GOVERNING LAW */}
+          <section className="space-y-6">
+             <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 08 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Governing Law</h2>
+            </div>
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
+              <p>
+                These Terms of Service are governed by the laws of Romania and applicable European Union regulations, without regard to conflict of law principles.
+              </p>
+            </div>
+          </section>
+
+          {/* [ 09 ] CONTACT */}
+          <section className="space-y-6">
+             <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 09 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Contact</h2>
+            </div>
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
+              <p>
+                For any questions regarding these terms:
+              </p>
+              <div className="pt-2">
+                 <EmailActionCard
+                    hoverBorderColor="hover:border-rose-500/30"
+                    hoverIconBorderColor="group-hover:border-rose-500/50"
+                    hoverTextColor="group-hover:text-rose-400"
+                 />
+              </div>
             </div>
           </section>
 
