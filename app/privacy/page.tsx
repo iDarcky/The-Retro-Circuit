@@ -225,8 +225,8 @@ export default async function PrivacyPage() {
                  </div>
 
                  {/* Data Requests */}
-                 <a href="mailto:contact@theretrocircuit.com?subject=DATA%20REQUEST" className="border border-white/10 bg-white/[0.02] p-6 hover:border-sky-500/30 transition-colors block group">
-                    <h3 className="text-white group-hover:text-sky-400 transition-colors font-bold uppercase text-xs tracking-widest mb-4 font-mono">Data Requests</h3>
+                 <div className="border border-white/10 bg-white/[0.02] p-6">
+                    <h3 className="text-white font-bold uppercase text-xs tracking-widest mb-4 font-mono">Data Requests</h3>
                     <p className="text-sm text-zinc-400 mb-4">
                       To exercise any of your data rights, contact us at: <br/>
                       <span className="text-white truncate">contact@theretrocircuit.com</span>
@@ -235,10 +235,7 @@ export default async function PrivacyPage() {
                       Subject line: DATA REQUEST <br/>
                       We will respond within 30 days.
                     </p>
-                     <div className="text-xs font-mono text-zinc-600 group-hover:text-sky-400 transition-colors">
-                        &gt; SEND_MESSAGE
-                    </div>
-                 </a>
+                 </div>
               </div>
             </div>
           </section>
