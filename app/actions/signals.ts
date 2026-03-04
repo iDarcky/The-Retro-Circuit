@@ -3,17 +3,29 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { Signal, SignalType } from '@/lib/types/news';
+import { submitToIndexNow } from '@/lib/indexnow';
 
 export async function createSignal(content: string, type: SignalType) {
   const supabase = await createClient();
 
-  const { error } = await supabase
+const { data: newSignal, error } = await supabase
     .from('signals')
-    .insert([{ content, type, is_active: true }]);
+    .insert([{ content, type, is_active: true }])
+    .select('id, is_active')
+    .single();
 
   if (error) {
     console.error('Error creating signal:', error);
     throw new Error(error.message);
+  }
+
+  // Signals are essentially part of /news right now,
+  // but if they have an individual route we can index them.
+  // Let's index the news page they live on, or if there's a dedicated route:
+  if (newSignal && newSignal.is_active) {
+      // Assuming signals don't have their own detailed page, submit /news
+      // If they do, submit `https://theretrocircuit.com/news/signals/${newSignal.id}`
+      submitToIndexNow([`https://theretrocircuit.com/news`]);
   }
 
   revalidatePath('/news');
@@ -24,7 +36,7 @@ export async function createSignal(content: string, type: SignalType) {
 export async function toggleSignalStatus(id: string, isActive: boolean) {
   const supabase = await createClient();
 
-  const { error } = await supabase
+const { error } = await supabase
     .from('signals')
     .update({ is_active: isActive })
     .eq('id', id);
@@ -32,6 +44,10 @@ export async function toggleSignalStatus(id: string, isActive: boolean) {
   if (error) {
     console.error('Error toggling signal:', error);
     throw new Error(error.message);
+  }
+
+  if (isActive) {
+      submitToIndexNow([`https://theretrocircuit.com/news`]);
   }
 
   revalidatePath('/news');
