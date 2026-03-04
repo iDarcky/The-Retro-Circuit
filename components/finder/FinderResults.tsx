@@ -116,12 +116,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
 
             <div className="mb-8 p-4 bg-white/[0.03] border-l-2 border-white text-zinc-300 font-mono text-sm italic">
               "{winner.match_reason}"
-              {winner._relaxed_features && winner._relaxed_features.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-white/10 text-orange-400 not-italic text-xs font-pixel leading-relaxed">
-                  ⚠️ STRICT FILTER OVERRIDE:<br />
-                  <span className="font-mono text-zinc-400 mt-2 block">We couldn't find a device matching your exact hardware constraints, so we expanded the search to find the best overall alternatives.</span>
-                </div>
-              )}
+
             </div>
 
             {/* Specs Grid */}
