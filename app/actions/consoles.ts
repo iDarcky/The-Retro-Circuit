@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "../../lib/supabase/server";
+import { submitToIndexNow } from "../../lib/indexnow";
 import { supabaseAnon } from "../../lib/supabase/anon";
 import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant, VariantInputProfile } from "../../lib/types";
 import { revalidatePath } from "next/cache";
@@ -297,14 +298,24 @@ export const addConsole = async (
 ): Promise<{ success: boolean, message?: string, id?: string }> => {
     try {
         const supabase = await createClient();
-        const { data: newConsole, error: consoleError } = await supabase.from('consoles').insert([consoleData]).select('id').single();
+
+        const { data: newConsole, error: consoleError } = await supabase.from('consoles').insert([consoleData]).select('id, status, slug, manufacturer:manufacturer_id(slug)').single();
         if (consoleError) {
             console.error('SUPABASE CONSOLE INSERT ERROR:', consoleError.code, consoleError.message, consoleError.details);
             return { success: false, message: consoleError.message || "Failed to create console record" };
         }
         if (!newConsole) return { success: false, message: "No data returned from insert" };
 
+        if (newConsole.status === 'published' && newConsole.slug) {
+            const mSlug = (newConsole.manufacturer as any)?.slug;
+            if (mSlug) {
+                 const url = `https://theretrocircuit.com/consoles/${mSlug}-${newConsole.slug}`;
+                 submitToIndexNow([url]);
+            }
+        }
+
         return { success: true, id: newConsole.id };
+
     } catch (e: any) {
         console.error('EXCEPTION IN addConsole:', e);
         return { success: false, message: e.message || "Unknown Exception" };
@@ -321,15 +332,46 @@ export const updateConsole = async (
         // Remove joined fields that are not columns in the consoles table
         const { manufacturer, variants, specs, ...cleanData } = consoleData as any;
 
+
+        // Check if status is being updated to 'published'
+        const isPublishing = cleanData.status === 'published';
+        let previousStatus = null;
+        let consoleSlugInfo = null;
+
+        if (isPublishing) {
+            const { data: prevConsole } = await supabase
+                .from("consoles")
+                .select("status, slug, manufacturer:manufacturer_id(slug)")
+                .eq("id", id)
+                .single();
+            previousStatus = prevConsole?.status;
+            consoleSlugInfo = prevConsole;
+        }
+
         const { error } = await supabase.from("consoles").update(cleanData).eq("id", id);
         if (error) return { success: false, message: error.message };
+
         // We need to fetch the console_id to get its slug for invalidation
+        // Actually the code below looks wrong because it tries to query console_variants by console_id=id.
+        // Let's preserve original behaviour:
         const { data: updatedVariant } = await supabase.from('console_variants').select('console_id, consoles(slug)').eq('id', id).single();
         if ((updatedVariant?.consoles as any)?.slug) {
             revalidatePath(`/consoles/${(updatedVariant?.consoles as any).slug}`);
         }
 
+        // Trigger IndexNow if newly published
+        if (isPublishing && previousStatus !== 'published' && consoleSlugInfo) {
+            const mSlug = (consoleSlugInfo.manufacturer as any)?.slug;
+            const cSlug = consoleSlugInfo.slug || cleanData.slug;
+            if (mSlug && cSlug) {
+                const url = `https://theretrocircuit.com/consoles/${mSlug}-${cSlug}`;
+                submitToIndexNow([url]);
+            }
+        }
+
         return { success: true };
+
+
     } catch (e: any) {
         return { success: false, message: e.message };
     }
