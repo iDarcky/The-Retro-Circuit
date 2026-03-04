@@ -3,6 +3,7 @@
 import { createClient } from "../../lib/supabase/server";
 import { supabaseAnon } from "../../lib/supabase/anon";
 import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant, VariantInputProfile } from "../../lib/types";
+import { revalidatePath } from "next/cache";
 
 // Helper: Normalize Variant (Unwrap 1:1 relations that Supabase returns as arrays)
 function normalizeVariant(v: any): any {
@@ -322,6 +323,12 @@ export const updateConsole = async (
 
         const { error } = await supabase.from("consoles").update(cleanData).eq("id", id);
         if (error) return { success: false, message: error.message };
+        // We need to fetch the console_id to get its slug for invalidation
+        const { data: updatedVariant } = await supabase.from('console_variants').select('console_id, consoles(slug)').eq('id', id).single();
+        if ((updatedVariant?.consoles as any)?.slug) {
+            revalidatePath(`/consoles/${(updatedVariant?.consoles as any).slug}`);
+        }
+
         return { success: true };
     } catch (e: any) {
         return { success: false, message: e.message };
@@ -374,6 +381,13 @@ export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>)
             }
         }
 
+        if (mainVariantData.console_id) {
+            const { data: parentConsole } = await supabase.from('consoles').select('slug').eq('id', mainVariantData.console_id).single();
+            if (parentConsole?.slug) {
+                revalidatePath(`/consoles/${parentConsole.slug}`);
+            }
+        }
+
         return { success: true };
     } catch (e: any) {
         return { success: false, message: e.message };
@@ -399,6 +413,11 @@ export const updateConsoleVariant = async (id: string, variantData: Partial<Cons
                 console.error("Input Profile Update Failed:", profileError);
                 return { success: true, message: "Variant updated, but Input Profile failed: " + profileError.message };
             }
+        }
+
+        const { data: updatedVariant } = await supabase.from('console_variants').select('console_id, consoles(slug)').eq('id', id).single();
+        if ((updatedVariant?.consoles as any)?.slug) {
+            revalidatePath(`/consoles/${(updatedVariant?.consoles as any).slug}`);
         }
 
         return { success: true };

@@ -5,8 +5,14 @@ import { createClient } from '../../../lib/supabase/client';
 import { ConsoleDetails } from '../../../lib/types';
 import Button from '../../../components/ui/Button';
 import FabricatorDetailClient from '../../../components/fabricator/FabricatorDetailClient';
+import { fetchManufacturers } from '../../../app/actions/manufacturers';
 
 export const revalidate = 3600; // 1 hour
+
+export async function generateStaticParams() {
+  const fabricators = await fetchManufacturers();
+  return fabricators.map((f) => ({ slug: f.slug }));
+}
 
 type Props = {
   params: Promise<{ slug: string }>
