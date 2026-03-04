@@ -1,5 +1,7 @@
 import { siteConfig } from '../../config/site';
 
+import EmailActionCard from '../../components/about/EmailActionCard';
+
 export const metadata = {
   title: 'Terms of Use | The Retro Circuit',
   description: 'Terms of service and usage guidelines.',
@@ -35,12 +37,12 @@ export default function TermsPage() {
       <div className="max-w-4xl mx-auto px-6 md:px-12 py-16 space-y-16 relative z-10">
 
           {/* [ 01 ] ACCEPTANCE */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-             <div className="flex items-center gap-3 self-start pt-1">
+          <section className="space-y-6">
+             <div className="flex items-center gap-4 mb-8">
                <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 01 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Acceptance</h2>
+               <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Acceptance</h2>
             </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
               <p>
                 By accessing or using The Retro Circuit, you agree to be bound by these Terms of Service and all applicable laws and regulations.
               </p>
@@ -59,12 +61,12 @@ export default function TermsPage() {
           </section>
 
           {/* [ 02 ] ACCURACY DISCLAIMER */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-             <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 02 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Accuracy Disclaimer</h2>
+          <section className="space-y-6">
+             <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 02 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Accuracy Disclaimer</h2>
             </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
               <p>
                 The Retro Circuit provides hardware specification data for informational purposes only.
               </p>
@@ -98,13 +100,13 @@ export default function TermsPage() {
           </section>
 
           {/* [ 03 ] PROHIBITED CONDUCT */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-            <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 03 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Prohibited Conduct</h2>
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 03 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Prohibited Conduct</h2>
             </div>
             <div className="space-y-8">
-              <p className="text-gray-300 leading-relaxed text-lg font-light">
+              <p className="text-lg text-zinc-300 font-light leading-relaxed">
                 To maintain the integrity of our data ecosystem, the following actions are strictly forbidden.
               </p>
 
@@ -150,10 +152,10 @@ export default function TermsPage() {
           </section>
 
           {/* [ 04 ] OWNERSHIP */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-            <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 04 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Ownership</h2>
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 04 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Ownership</h2>
             </div>
 
             <div className="space-y-8">
@@ -204,12 +206,12 @@ export default function TermsPage() {
           </section>
 
           {/* [ 05 ] LIMITATION OF LIABILITY */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-             <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 05 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Limitation of Liability</h2>
+          <section className="space-y-6">
+             <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 05 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Limitation of Liability</h2>
             </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
               <p>
                 To the fullest extent permitted by applicable law, The Retro Circuit and its operator shall not be liable for:
               </p>
@@ -228,12 +230,12 @@ export default function TermsPage() {
           </section>
 
           {/* [ 06 ] EXTERNAL LINKS */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-             <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 06 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">External Links</h2>
+          <section className="space-y-6">
+             <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 06 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">External Links</h2>
             </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
               <p>
                 The Retro Circuit may link to third-party websites including manufacturer pages, retailer listings, and community resources.
               </p>
@@ -244,12 +246,12 @@ export default function TermsPage() {
           </section>
 
           {/* [ 07 ] CHANGES TO THESE TERMS */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-             <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 07 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Changes to Terms</h2>
+          <section className="space-y-6">
+             <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 07 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Changes to Terms</h2>
             </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
               <p>
                 We reserve the right to update these Terms of Service at any time. Changes will be reflected in the updated date at the top of this page.
               </p>
@@ -260,12 +262,12 @@ export default function TermsPage() {
           </section>
 
           {/* [ 08 ] GOVERNING LAW */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-             <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 08 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Governing Law</h2>
+          <section className="space-y-6">
+             <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 08 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Governing Law</h2>
             </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
               <p>
                 These Terms of Service are governed by the laws of Romania and applicable European Union regulations, without regard to conflict of law principles.
               </p>
@@ -273,18 +275,22 @@ export default function TermsPage() {
           </section>
 
           {/* [ 09 ] CONTACT */}
-          <section className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8">
-             <div className="flex items-center gap-3 self-start pt-1">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 09 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Contact</h2>
+          <section className="space-y-6">
+             <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 09 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Contact</h2>
             </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
               <p>
                 For any questions regarding these terms:
               </p>
-              <a href="mailto:contact@theretrocircuit.com" className="inline-block text-rose-400 hover:text-rose-300 font-mono text-base border-b border-rose-500/30 hover:border-rose-300 transition-colors pb-1">
-                contact@theretrocircuit.com
-              </a>
+              <div className="pt-2">
+                 <EmailActionCard
+                    hoverBorderColor="hover:border-rose-500/30"
+                    hoverIconBorderColor="group-hover:border-rose-500/50"
+                    hoverTextColor="group-hover:text-rose-400"
+                 />
+              </div>
             </div>
           </section>
 
