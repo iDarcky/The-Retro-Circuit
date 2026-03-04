@@ -13,31 +13,36 @@ export async function generateMetadata({ params }: { params: Promise<{ versus?: 
     const { versus } = await params;
 
     if (!versus || versus.length === 0) {
-        return { title: 'Arena VS | Compare Any Two Handhelds | The Retro Circuit', description: 'Pick any two retro handhelds and compare them head-to-head. Specs, performance, price, and emulation targets.', robots: { index: false, follow: false } };
+        return { title: 'Arena VS | Compare Any Two Handhelds | The Retro Circuit', description: 'Pick any two retro handhelds and compare them head-to-head. Specs, performance, price, and emulation targets.' };
     }
 
     const parts = versus[0].split('-vs-');
 
     // Basic title if not fully parseable yet
-    if (parts.length !== 2) return { title: 'Arena VS | Compare Any Two Handhelds | The Retro Circuit', description: 'Pick any two retro handhelds and compare them head-to-head. Specs, performance, price, and emulation targets.', robots: { index: false, follow: false } };
+    if (parts.length !== 2) return { title: 'Arena VS | Compare Any Two Handhelds | The Retro Circuit', description: 'Pick any two retro handhelds and compare them head-to-head. Specs, performance, price, and emulation targets.' };
 
     // Simply format the slugs for the title (capitalized)
     const formatName = (s: string) => s.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     const name1 = formatName(parts[0]);
     const name2 = formatName(parts[1]);
 
+
+    const sortedSlugs = [parts[0], parts[1]].sort();
+    const canonicalPath = `/arena/${sortedSlugs[0]}-vs-${sortedSlugs[1]}`;
+
     return {
-        robots: {
-            index: false,
-            follow: false,
+        // Now allowing indexing with canonical tag pointing to alphabetically sorted URL
+        title: `${name1} vs ${name2} | The Retro Circuit`,
+        description: `Head-to-head spec comparison: ${name1} vs ${name2}. Performance, price, and emulation targets.`,
+        alternates: {
+            canonical: canonicalPath,
         },
-        title: `${name1} vs ${name2} | The Retro Circuit Arena`,
-        description: `Detailed spec comparison: ${name1} versus ${name2}. Compare CPU, Screen, Battery, and more.`,
         openGraph: {
-            title: `${name1} vs ${name2} - Fight!`,
-            description: 'Who wins? Check the specs.',
+            title: `${name1} vs ${name2} | The Retro Circuit Arena`,
+            description: `Head-to-head spec comparison: ${name1} vs ${name2}.`,
         }
     };
+
 }
 
 export default async function ArenaVersusPage({ params }: { params: Promise<{ versus?: string[] }> }) {
