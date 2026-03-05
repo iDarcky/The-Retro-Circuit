@@ -4,7 +4,7 @@ import { fetchConsoleBySlug } from '../../../app/actions';
 import { fetchConsoleList } from '../../../app/actions/consoles';
 import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
 
-export const revalidate = 3600; // 1 hour
+export const revalidate = false;
 
 export async function generateStaticParams() {
   const consoles = await fetchConsoleList(false);
