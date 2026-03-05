@@ -1,8 +1,8 @@
-
 import { notFound, redirect } from 'next/navigation';
 import { fetchConsoleBySlug } from '../../../app/actions';
 import { fetchConsoleList } from '../../../app/actions/consoles';
 import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
+import { createClient } from '../../../lib/supabase/server';
 
 export const revalidate = false;
 
@@ -30,15 +30,53 @@ async function resolveConsoleSlug(rawSlug: string) {
     return { redirectUrl: null, data: exactMatch.data };
   }
 
-  // 2. Try New Format Match ([mfg]-[slug])
-  const allConsoles = await fetchConsoleList(false);
-  for (const c of allConsoles) {
-    const mfgSlug = c.manufacturer?.slug || (c.manufacturer?.name ? c.manufacturer.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
-    const targetSlug = `${mfgSlug}-${c.slug}`;
-    if (rawSlug === targetSlug) {
-      const fullMatch = await fetchConsoleBySlug(c.slug, false);
-      return { redirectUrl: null, data: fullMatch.data };
+  // 2. Optimized Try New Format Match ([mfg]-[slug])
+  // Instead of fetching all consoles, we try to split the slug and query directly.
+  // E.g., 'anbernic-rg35xx' -> mfg_slug: 'anbernic', console_slug: 'rg35xx'
+  const firstHyphenIndex = rawSlug.indexOf('-');
+  if (firstHyphenIndex > 0) {
+    const possibleMfgSlug = rawSlug.substring(0, firstHyphenIndex);
+    const possibleConsoleSlug = rawSlug.substring(firstHyphenIndex + 1);
+
+    const supabase = await createClient();
+
+    // First verify if the possibleMfgSlug is actually a manufacturer
+    const { data: mfg } = await supabase
+        .from('manufacturers')
+        .select('id, slug')
+        .eq('slug', possibleMfgSlug)
+        .maybeSingle();
+
+    if (mfg) {
+        // Now try to fetch the console by slug where manufacturer matches
+        const { data: consoleMatch } = await supabase
+            .from('consoles')
+            .select('slug')
+            .eq('slug', possibleConsoleSlug)
+            .eq('manufacturer_id', mfg.id)
+            .maybeSingle();
+
+        if (consoleMatch) {
+            const fullMatch = await fetchConsoleBySlug(consoleMatch.slug, false);
+            return { redirectUrl: null, data: fullMatch.data };
+        }
     }
+  }
+
+  // Fallback: the manufacturer slug might contain hyphens (e.g. some-mfg-slug-console-slug)
+  // To avoid complex DB queries in extreme edge cases, do the minimal fetch just for mapping.
+  const supabase = await createClient();
+  const { data: allMap } = await supabase.from('consoles').select('slug, manufacturer:manufacturer(slug, name)');
+
+  if (allMap) {
+      for (const c of allMap) {
+        const mfgSlug = (c.manufacturer as any)?.slug || ((c.manufacturer as any)?.name ? (c.manufacturer as any).name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
+        const targetSlug = `${mfgSlug}-${c.slug}`;
+        if (rawSlug === targetSlug) {
+          const fullMatch = await fetchConsoleBySlug(c.slug, false);
+          return { redirectUrl: null, data: fullMatch.data };
+        }
+      }
   }
 
   return { redirectUrl: null, data: null };
@@ -50,11 +88,6 @@ export async function generateMetadata(props: Props) {
     const slug = decodeURIComponent(params.slug);
 
     const { redirectUrl, data: resolvedData } = await resolveConsoleSlug(slug);
-
-    // Note: if there's a redirect, we technically don't need metadata, but we might just return empty if it's going to redirect anyway in the component. Actually, we can't redirect in generateMetadata. Next.js does not support redirect() inside generateMetadata reliably. It's better to let the page component do the redirect.
-    // However, for metadata, we still need the data! Wait, if it redirects, the metadata doesn't matter much because the browser/crawler follows the 301.
-    // But if we want to fetch the data anyway for the legacy URL to render metadata before redirect? 
-    // Usually, 301 redirects are just followed. Let's return default if redirect (the page component will handle the actual Next.js redirect).
 
     // Actually, let's just fetch the exact match data if there is a redirect URL, just so the OG tags are valid *during* the redirect hop.
     let data = resolvedData;
@@ -82,12 +115,6 @@ export async function generateMetadata(props: Props) {
     finalImage = finalImage || '/logo.png';
 
     // Define OG Image URL
-    // By Next.js convention, placing opengraph-image.tsx in the route folder
-    // automatically handles generation, but we explicitly point to it here to be safe.
-    // If we rely on automatic generation, we often don't need to specify images here,
-    // but specifying it ensures we override any parent metadata.
-    // We append a cache buster `?v=` to break social media caches when data updates.
-    // Use an 'any' cast as `updated_at` or `created_at` may not be in the exact ConsoleDetails type definition
     const consoleRecord = data as any;
     const cacheBuster = consoleRecord.updated_at
       ? new Date(consoleRecord.updated_at).getTime()
