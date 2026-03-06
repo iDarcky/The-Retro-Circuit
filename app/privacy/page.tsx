@@ -59,10 +59,23 @@ export default async function PrivacyPage() {
             </div>
           </section>
 
-          {/* Section 2: What We Collect */}
+          {/* Section 2: Affiliate Disclosure */}
           <section className="space-y-6">
             <div className="flex items-center gap-4 mb-8">
                <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 02 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Affiliate Disclosure</h2>
+            </div>
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
+              <p>
+                The Retro Circuit participates in the Amazon Associates Programme, an affiliate advertising programme designed to provide a means for sites to earn advertising fees by advertising and linking to Amazon.com. When you click an Amazon link and make a purchase, we may earn a small commission at no additional cost to you.
+              </p>
+            </div>
+          </section>
+
+          {/* Section 3: What We Collect */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 03 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">What We Collect</h2>
             </div>
             <div className="space-y-10 text-lg text-zinc-300 font-light leading-relaxed">
@@ -113,10 +126,10 @@ export default async function PrivacyPage() {
             </div>
           </section>
 
-          {/* Section 3: What We Do Not Collect */}
+          {/* Section 4: What We Do Not Collect */}
           <section className="space-y-6">
             <div className="flex items-center gap-4 mb-8">
-               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 03 ]</span>
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 04 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">What We Do Not Collect</h2>
             </div>
             <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
@@ -131,10 +144,10 @@ export default async function PrivacyPage() {
             </div>
           </section>
 
-          {/* Section 4: Data Storage */}
+          {/* Section 5: Data Storage */}
           <section className="space-y-6">
             <div className="flex items-center gap-4 mb-8">
-               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 04 ]</span>
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 05 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Data Storage</h2>
             </div>
             <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
@@ -147,10 +160,10 @@ export default async function PrivacyPage() {
             </div>
           </section>
 
-          {/* Section 5: Third Party Services */}
+          {/* Section 6: Third Party Services */}
           <section className="space-y-6">
             <div className="flex items-center gap-4 mb-8">
-               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 05 ]</span>
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 06 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Third Party Services</h2>
             </div>
             <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
@@ -168,10 +181,10 @@ export default async function PrivacyPage() {
             </div>
           </section>
 
-          {/* Section 6: Cookies */}
+          {/* Section 7: Cookies */}
           <section className="space-y-6">
             <div className="flex items-center gap-4 mb-8">
-               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 06 ]</span>
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 07 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Cookies</h2>
             </div>
             <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
@@ -192,10 +205,10 @@ export default async function PrivacyPage() {
             </div>
           </section>
 
-          {/* Section 7: Your Rights */}
+          {/* Section 8: Your Rights */}
           <section className="space-y-6">
             <div className="flex items-center gap-4 mb-8">
-               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 07 ]</span>
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 08 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Your Rights</h2>
             </div>
             <div className="space-y-8 text-lg text-zinc-300 font-light leading-relaxed">
@@ -241,10 +254,10 @@ export default async function PrivacyPage() {
             </div>
           </section>
 
-          {/* Section 8: Changes To This Policy */}
+          {/* Section 9: Changes To This Policy */}
           <section className="space-y-6">
             <div className="flex items-center gap-4 mb-8">
-               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 08 ]</span>
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 09 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Changes To This Policy</h2>
             </div>
             <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
@@ -254,10 +267,10 @@ export default async function PrivacyPage() {
             </div>
           </section>
 
-          {/* Section 9: Contact */}
+          {/* Section 10: Contact */}
           <section className="space-y-6">
             <div className="flex items-center gap-4 mb-8">
-               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 09 ]</span>
+               <span className="font-mono text-xs text-sky-500 border border-sky-500/30 px-2 py-0.5 bg-sky-500/5">[ 10 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-sky-400 uppercase">Contact</h2>
             </div>
             <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">

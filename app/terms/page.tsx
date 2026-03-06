@@ -61,10 +61,23 @@ export default function TermsPage() {
             </div>
           </section>
 
-          {/* [ 02 ] ACCURACY DISCLAIMER */}
+          {/* [ 02 ] AFFILIATE DISCLOSURE */}
           <section className="space-y-6">
              <div className="flex items-center gap-4 mb-8">
                <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 02 ]</span>
+               <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Affiliate Disclosure</h2>
+            </div>
+            <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
+              <p>
+                The Retro Circuit participates in the Amazon Associates Programme, an affiliate advertising programme designed to provide a means for sites to earn advertising fees by advertising and linking to Amazon.com. When you click an Amazon link and make a purchase, we may earn a small commission at no additional cost to you.
+              </p>
+            </div>
+          </section>
+
+          {/* [ 03 ] ACCURACY DISCLAIMER */}
+          <section className="space-y-6">
+             <div className="flex items-center gap-4 mb-8">
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 03 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Accuracy Disclaimer</h2>
             </div>
             <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
@@ -100,10 +113,10 @@ export default function TermsPage() {
             </div>
           </section>
 
-          {/* [ 03 ] PROHIBITED CONDUCT */}
+          {/* [ 04 ] PROHIBITED CONDUCT */}
           <section className="space-y-6">
             <div className="flex items-center gap-4 mb-8">
-               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 03 ]</span>
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 04 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Prohibited Conduct</h2>
             </div>
             <div className="space-y-8">
@@ -152,10 +165,10 @@ export default function TermsPage() {
             </div>
           </section>
 
-          {/* [ 04 ] OWNERSHIP */}
+          {/* [ 05 ] OWNERSHIP */}
           <section className="space-y-6">
             <div className="flex items-center gap-4 mb-8">
-               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 04 ]</span>
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 05 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Ownership</h2>
             </div>
 
@@ -206,10 +219,10 @@ export default function TermsPage() {
             </div>
           </section>
 
-          {/* [ 05 ] LIMITATION OF LIABILITY */}
+          {/* [ 06 ] LIMITATION OF LIABILITY */}
           <section className="space-y-6">
              <div className="flex items-center gap-4 mb-8">
-               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 05 ]</span>
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 06 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Limitation of Liability</h2>
             </div>
             <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
@@ -230,10 +243,10 @@ export default function TermsPage() {
             </div>
           </section>
 
-          {/* [ 06 ] EXTERNAL LINKS */}
+          {/* [ 07 ] EXTERNAL LINKS */}
           <section className="space-y-6">
              <div className="flex items-center gap-4 mb-8">
-               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 06 ]</span>
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 07 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">External Links</h2>
             </div>
             <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
@@ -246,10 +259,10 @@ export default function TermsPage() {
             </div>
           </section>
 
-          {/* [ 07 ] CHANGES TO THESE TERMS */}
+          {/* [ 08 ] CHANGES TO THESE TERMS */}
           <section className="space-y-6">
              <div className="flex items-center gap-4 mb-8">
-               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 07 ]</span>
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 08 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Changes to Terms</h2>
             </div>
             <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
@@ -262,10 +275,10 @@ export default function TermsPage() {
             </div>
           </section>
 
-          {/* [ 08 ] GOVERNING LAW */}
+          {/* [ 09 ] GOVERNING LAW */}
           <section className="space-y-6">
              <div className="flex items-center gap-4 mb-8">
-               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 08 ]</span>
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 09 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Governing Law</h2>
             </div>
             <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
@@ -275,10 +288,10 @@ export default function TermsPage() {
             </div>
           </section>
 
-          {/* [ 09 ] CONTACT */}
+          {/* [ 10 ] CONTACT */}
           <section className="space-y-6">
              <div className="flex items-center gap-4 mb-8">
-               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 09 ]</span>
+               <span className="font-mono text-xs text-rose-500 border border-rose-500/30 px-2 py-0.5 bg-rose-500/5">[ 10 ]</span>
                <h2 className="font-mono text-sm tracking-widest text-rose-400 uppercase">Contact</h2>
             </div>
             <div className="space-y-6 text-lg text-zinc-300 font-light leading-relaxed">
