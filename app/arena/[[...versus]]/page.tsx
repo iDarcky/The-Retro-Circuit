@@ -1,3 +1,5 @@
+export const revalidate = false;
+
 import { createClient } from '../../../lib/supabase/server';
 import ArenaComparisonClient from '../../../components/arena/ArenaComparisonClient';
 
@@ -58,8 +60,8 @@ export default async function ArenaVersusPage({ params }: { params: Promise<{ ve
     const resolveSlug = async (raw: string) => {
         if (!raw || raw === 'select') return { p: null, v: null, details: null, variant: null };
 
-        // 1. Try to resolve using new manufacturer-inclusive format
-        // Fetch minimal console data to match against (there's <100 consoles, so this is fast)
+        // 1. Try to resolve using optimized lookup instead of fetching full consoles first
+        // We only fetch ID, slug, and manufacturer slug/name to avoid huge memory payloads.
         const { data: allConsoles } = await supabase.from('consoles').select('id, slug, manufacturer:manufacturer(slug, name)');
 
         if (allConsoles) {
@@ -77,7 +79,7 @@ export default async function ArenaVersusPage({ params }: { params: Promise<{ ve
                 } else if (raw.startsWith(baseStr + '-')) {
                     matchedConsole = c;
                     matchedVariantSlug = raw.substring(baseStr.length + 1);
-                    break; // Pick the first match. You could sort by length descending to be safer if slugs overlap
+                    break;
                 }
             }
 

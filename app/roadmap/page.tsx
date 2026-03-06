@@ -1,9 +1,6 @@
 import { Metadata } from 'next';
 import RoadmapView from '../../components/roadmap/RoadmapView';
-import { fetchRoadmapItems, getSystemVersion, fetchReleases, fetchAdminReleases } from '../../app/actions/roadmap';
-import { createClient } from '../../lib/supabase/server';
-
-export const dynamic = 'force-dynamic';
+import { fetchRoadmapItems, getSystemVersion, fetchReleases } from '../../app/actions/roadmap';
 
 export const metadata: Metadata = {
   title: 'Project Roadmap | The Retro Circuit',
@@ -11,26 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default async function RoadmapPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  let isAdmin = false;
-  if (user) {
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-    isAdmin = profile?.role === 'admin';
-  }
-
-  // Use appropriate release fetching function based on role
-  // fetchAdminReleases includes drafts
-  const releasesPromise = isAdmin ? fetchAdminReleases() : fetchReleases();
-
   const [roadmapItems, releases, version] = await Promise.all([
       fetchRoadmapItems(),
-      releasesPromise,
+      fetchReleases(),
       getSystemVersion()
   ]);
 
@@ -39,14 +19,11 @@ export default async function RoadmapPage() {
   return (
     <div className="min-h-screen bg-bg-primary text-text-primary px-6 py-12 md:py-24">
       <div className="max-w-6xl mx-auto">
-        {/* Hero Section */}
         <div className="mb-16">
-          {/* System Online Pill - Dynamic Version */}
           <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded-full border border-emerald-900/30 bg-emerald-950/10 text-[10px] md:px-3 md:py-1 md:text-xs font-mono uppercase tracking-widest text-emerald-400 mb-6 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(16,185,129,0.1)]">
             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
             System Online // {version}
           </div>
-
           <h1 className="text-4xl md:text-6xl font-bold font-pixel tracking-tighter mb-6">
             SYSTEM<br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400">
@@ -58,12 +35,7 @@ export default async function RoadmapPage() {
             Here is our mission plan to launch Version 1.0.0.
           </p>
         </div>
-
-        {/* Tabbed View Component */}
-        {/* @ts-ignore - isAdmin prop will be added to RoadmapView in next steps */}
-        <RoadmapView releases={releases} upcomingItems={upcomingItems} isAdmin={isAdmin} />
-
-        {/* Community CTA */}
+        <RoadmapView releases={releases} upcomingItems={upcomingItems} isAdmin={false} />
         <div className="mt-24 p-8 border border-border-normal bg-bg-secondary/10 rounded-none relative overflow-hidden group">
           <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none"></div>
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
