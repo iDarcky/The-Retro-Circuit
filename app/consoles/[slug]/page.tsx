@@ -168,5 +168,49 @@ export default async function ConsoleSpecsPage(props: Props) {
     notFound();
   }
 
-  return <ConsoleDetailView consoleData={consoleData} />;
+  // Generate JSON-LD Product Schema
+  const mfgName = consoleData.manufacturer?.name || '';
+  const fullName = mfgName ? `${mfgName} ${consoleData.name}` : consoleData.name;
+
+  let minPrice = Infinity;
+  if (consoleData.variants && Array.isArray(consoleData.variants)) {
+    consoleData.variants.forEach((v) => {
+      if (v.price_launch_usd && v.price_launch_usd > 0 && v.price_launch_usd < minPrice) {
+        minPrice = v.price_launch_usd;
+      }
+    });
+  }
+
+  const hasPrice = minPrice !== Infinity;
+
+  const jsonLd: any = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: fullName,
+    image: consoleData.image_url || 'https://theretrocircuit.com/logo.png',
+    description: consoleData.description || `Full specs, variants, and pricing for the ${fullName}.`,
+    brand: {
+      '@type': 'Brand',
+      name: mfgName
+    }
+  };
+
+  if (hasPrice) {
+    jsonLd.offers = {
+      '@type': 'Offer',
+      price: minPrice.toString(),
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock'
+    };
+  }
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ConsoleDetailView consoleData={consoleData} />
+    </>
+  );
 }
