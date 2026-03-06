@@ -13,30 +13,18 @@ export default function BuySection({ asin }: BuySectionProps) {
             </h3>
 
             <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 border border-dashed border-white/20 bg-white/[0.02]">
-                    <div className="flex flex-col gap-1">
-                        <span className="font-mono text-xs text-gray-400 uppercase tracking-widest">Market Price</span>
-                        <span className="font-pixel text-lg text-white">---</span>
-                    </div>
-                    <div className="text-[10px] font-mono text-gray-500 uppercase px-2 py-1 bg-white/5 border border-white/10">
-                        UNLISTED
-                    </div>
-                </div>
-
-                <div className="pt-2">
-                    {asin ? (
-                        <BuyButton asin={asin} />
-                    ) : (
-                        <>
-                             <SwissButton variant="secondary" className="w-full justify-center opacity-50 cursor-not-allowed">
-                                CHECK AVAILABILITY
-                             </SwissButton>
-                             <p className="text-[10px] font-mono text-gray-600 text-center mt-3 uppercase tracking-wider">
-                                [ NO LIVE DATA FEEDS ]
-                             </p>
-                        </>
-                    )}
-                </div>
+                {asin ? (
+                    <BuyButton asin={asin} />
+                ) : (
+                    <>
+                        <SwissButton variant="secondary" className="w-full justify-center opacity-50 cursor-not-allowed">
+                            CHECK AVAILABILITY
+                        </SwissButton>
+                        <p className="text-[10px] font-mono text-gray-600 text-center mt-3 uppercase tracking-wider">
+                            [ NO LIVE DATA FEEDS ]
+                        </p>
+                    </>
+                )}
             </div>
         </div>
     );
