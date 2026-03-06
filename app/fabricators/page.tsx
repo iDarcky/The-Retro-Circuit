@@ -4,7 +4,7 @@ import FabricatorListClient from '../../components/fabricator/FabricatorListClie
 export const revalidate = false;
 
 export const metadata = {
-  title: 'Fabricators | Retro Handheld Manufacturers | The Retro Circuit',
+  title: { absolute: 'Retro Handheld Manufacturers & Brands | The Retro Circuit' },
   description: 'Browse all retro handheld manufacturers and modders. Explore their full device catalogues and specs.',
 };
 

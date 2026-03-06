@@ -25,6 +25,7 @@ export async function generateMetadata() {
   return {
     title: 'Console Vault | All Retro Handhelds | The Retro Circuit',
     description: `Browse, filter, and sort every retro handheld console in the database. ${numConsoles} consoles, ${numVariants} hardware variants.`,
+    alternates: { canonical: "https://theretrocircuit.com/consoles" },
   };
 }
 
