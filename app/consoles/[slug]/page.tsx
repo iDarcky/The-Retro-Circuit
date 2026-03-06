@@ -187,6 +187,7 @@ export default async function ConsoleSpecsPage(props: Props) {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: fullName,
+    url: `https://theretrocircuit.com/consoles/${slug}`,
     image: consoleData.image_url || 'https://theretrocircuit.com/logo.png',
     description: consoleData.description || `Full specs, variants, and pricing for the ${fullName}.`,
     brand: {
