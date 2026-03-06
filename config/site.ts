@@ -6,8 +6,7 @@ export const siteConfig = {
   est: "2025",
   links: {
     email: "mailto:contact@theretrocircuit.com",
-    github: "https://github.com/YOUR_USERNAME",
-    linkedin: "https://linkedin.com/in/YOUR_PROFILE"
+    linkedin: "https://linkedin.com/in/danielnmaghis"
   },
   routes: [
     { label: "About Us", href: "/about" },
