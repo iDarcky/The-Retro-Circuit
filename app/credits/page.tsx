@@ -2,6 +2,8 @@ import { getSystemVersion } from '../../app/actions/roadmap';
 
 export const metadata = {
   title: 'Credits | The Retro Circuit',
+  description: 'Acknowledgments and credits for the open-source tools, data, and contributors powering The Retro Circuit.',
+  robots: { index: false, follow: true }
 };
 
 export default async function CreditsPage() {

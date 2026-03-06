@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import { FinderFlow } from '@/components/finder/FinderFlow';
 
 export const metadata: Metadata = {
-    title: 'Handheld Finder | The Retro Circuit',
-    description: 'Test page for iterating on the new Finder algorithm.',
+    title: { absolute: 'Find the Best Retro Handheld for You | The Retro Circuit Quiz' },
+    description: "Not sure which retro handheld to buy? Answer a few quick questions about your budget and emulation needs, and we'll match you with the perfect device.",
 };
 
 export default function FinderTestPage() {

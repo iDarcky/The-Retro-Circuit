@@ -128,7 +128,21 @@ export default async function FabricatorDetailPage(props: Props) {
         );
     }
 
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Brand",
+        "name": profile.name,
+        "url": `https://theretrocircuit.com/fabricators/${profile.slug}`,
+        "logo": profile.image_url
+    };
+
     return (
-        <FabricatorDetailClient profile={profile} consoles={consoles} />
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <FabricatorDetailClient profile={profile} consoles={consoles} />
+        </>
     );
 }
