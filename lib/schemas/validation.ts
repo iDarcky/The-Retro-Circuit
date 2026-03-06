@@ -88,6 +88,7 @@ export const ConsoleVariantSchema = z.object({
   release_date_precision: z.enum(['year', 'month', 'day']).nullable().optional(),
   model_no: safeString,
   price_launch_usd: safeNumber,
+  amazon_asin: safeString.nullable().optional(),
   image_url: safeString,
 
   // Silicon

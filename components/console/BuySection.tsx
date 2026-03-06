@@ -1,6 +1,11 @@
 import SwissButton from './swiss/SwissButton';
+import BuyButton from './BuyButton';
 
-export default function BuySection() {
+interface BuySectionProps {
+    asin?: string | null;
+}
+
+export default function BuySection({ asin }: BuySectionProps) {
     return (
         <div className="border border-white/10 p-6 bg-white/[0.01]">
             <h3 className="font-pixel text-xs text-white uppercase tracking-widest mb-6 border-b border-white/10 pb-2">
@@ -19,12 +24,18 @@ export default function BuySection() {
                 </div>
 
                 <div className="pt-2">
-                     <SwissButton variant="secondary" className="w-full justify-center opacity-50 cursor-not-allowed">
-                        CHECK AVAILABILITY
-                     </SwissButton>
-                     <p className="text-[10px] font-mono text-gray-600 text-center mt-3 uppercase tracking-wider">
-                        [ NO LIVE DATA FEEDS ]
-                     </p>
+                    {asin ? (
+                        <BuyButton asin={asin} />
+                    ) : (
+                        <>
+                             <SwissButton variant="secondary" className="w-full justify-center opacity-50 cursor-not-allowed">
+                                CHECK AVAILABILITY
+                             </SwissButton>
+                             <p className="text-[10px] font-mono text-gray-600 text-center mt-3 uppercase tracking-wider">
+                                [ NO LIVE DATA FEEDS ]
+                             </p>
+                        </>
+                    )}
                 </div>
             </div>
         </div>

@@ -36,6 +36,7 @@ const Footer: FC<FooterProps> = ({ version }) => {
              The Retro Circuit
            </Link>
            <span className="text-[10px]">© {currentYear} All Rights Reserved.</span>
+           <span className="text-[10px]">As an Amazon Associate I earn from qualifying purchases.</span>
            <button
              onClick={reset}
              className="text-[10px] uppercase text-zinc-600 hover:text-zinc-400 transition-colors cursor-pointer text-left"
