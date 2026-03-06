@@ -163,6 +163,7 @@ export interface VariantInputProfile {
 
 export interface ConsoleVariant {
   id: string;
+  amazon_asin?: string | null;
   console_id: string;
   variant_name: string;
   slug?: string;

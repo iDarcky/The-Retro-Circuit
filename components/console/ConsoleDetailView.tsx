@@ -170,7 +170,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                     {/* Acquisition (Span 4) */}
                     <section id="buy" className="lg:col-span-4">
-                        <BuySection />
+                        <BuySection asin={currentVariant?.amazon_asin || null} />
                     </section>
                 </div>
 
