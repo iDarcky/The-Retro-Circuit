@@ -7,7 +7,7 @@ import Button from '../../../components/ui/Button';
 import FabricatorDetailClient from '../../../components/fabricator/FabricatorDetailClient';
 import { fetchManufacturers } from '../../../app/actions/manufacturers';
 
-export const revalidate = 3600; // 1 hour
+export const revalidate = false;
 
 export async function generateStaticParams() {
   const fabricators = await fetchManufacturers();
