@@ -354,9 +354,11 @@ export const updateConsole = async (
         // We need to fetch the console_id to get its slug for invalidation
         // Actually the code below looks wrong because it tries to query console_variants by console_id=id.
         // Let's preserve original behaviour:
-        const { data: updatedVariant } = await supabase.from('console_variants').select('console_id, consoles(slug)').eq('id', id).single();
+        const { data: updatedVariant } = await supabase.from('console_variants').select('console_id, consoles(slug, manufacturer:manufacturer(slug, name))').eq('id', id).single();
         if ((updatedVariant?.consoles as any)?.slug) {
-            revalidatePath(`/consoles/${(updatedVariant?.consoles as any).slug}`);
+            const mfg = (updatedVariant?.consoles as any)?.manufacturer;
+            const mfgSlug = mfg?.slug || (mfg?.name ? mfg.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
+            revalidatePath(`/consoles/${mfgSlug}-${(updatedVariant?.consoles as any).slug}`);
         }
 
         // Trigger IndexNow if newly published
@@ -424,9 +426,11 @@ export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>)
         }
 
         if (mainVariantData.console_id) {
-            const { data: parentConsole } = await supabase.from('consoles').select('slug').eq('id', mainVariantData.console_id).single();
+            const { data: parentConsole } = await supabase.from('consoles').select('slug, manufacturer:manufacturer(slug, name)').eq('id', mainVariantData.console_id).single();
             if (parentConsole?.slug) {
-                revalidatePath(`/consoles/${parentConsole.slug}`);
+                const mfg = (parentConsole as any).manufacturer;
+                const mfgSlug = mfg?.slug || (mfg?.name ? mfg.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
+                revalidatePath(`/consoles/${mfgSlug}-${parentConsole.slug}`);
             }
         }
 
@@ -457,9 +461,11 @@ export const updateConsoleVariant = async (id: string, variantData: Partial<Cons
             }
         }
 
-        const { data: updatedVariant } = await supabase.from('console_variants').select('console_id, consoles(slug)').eq('id', id).single();
+        const { data: updatedVariant } = await supabase.from('console_variants').select('console_id, consoles(slug, manufacturer:manufacturer(slug, name))').eq('id', id).single();
         if ((updatedVariant?.consoles as any)?.slug) {
-            revalidatePath(`/consoles/${(updatedVariant?.consoles as any).slug}`);
+            const mfg = (updatedVariant?.consoles as any)?.manufacturer;
+            const mfgSlug = mfg?.slug || (mfg?.name ? mfg.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
+            revalidatePath(`/consoles/${mfgSlug}-${(updatedVariant?.consoles as any).slug}`);
         }
 
         return { success: true };
