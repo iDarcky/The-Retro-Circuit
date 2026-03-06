@@ -4,6 +4,8 @@ import EmailActionCard from '../../components/about/EmailActionCard';
 
 export const metadata = {
   title: 'Terms of Service | The Retro Circuit',
+  description: 'Terms of Service and usage conditions for The Retro Circuit database.',
+  robots: { index: false, follow: true }
 };
 
 export default function TermsPage() {
