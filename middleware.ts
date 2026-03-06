@@ -13,7 +13,7 @@ if (redisUrl && redisToken) {
   const redis = new Redis({ url: redisUrl, token: redisToken });
   ratelimit = new Ratelimit({
     redis,
-    limiter: Ratelimit.slidingWindow(60, '1 m'), // 60 requests per minute per IP globally
+    limiter: Ratelimit.slidingWindow(300, '1 m'), // 300 requests per minute to account for Next.js internal calls
     analytics: false,
     prefix: 'ratelimit:global',
   });
@@ -26,8 +26,12 @@ export async function middleware(request: NextRequest) {
     },
   });
 
+  // Bypass rate limiting for internal Next.js requests and static assets
+  const isInternal = request.nextUrl.pathname.startsWith('/_next') ||
+                     request.nextUrl.pathname.match(/\.(png|jpg|jpeg|gif|webp|svg|ico)$/);
+
   // --- 1. Global Rate Limiting ---
-  if (ratelimit) {
+  if (ratelimit && !isInternal) {
     // Extract IP address from headers
     let ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip');
     if (ip) {

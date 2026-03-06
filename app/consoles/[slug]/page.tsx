@@ -24,7 +24,7 @@ async function resolveConsoleSlug(rawSlug: string) {
     const idealSlug = `${mfgSlug}-${exactMatch.data.slug}`;
 
     // If the URL is exactly the DB slug, and the ideal slug is different, REDIRECT.
-    if (rawSlug !== idealSlug) {
+    if (rawSlug !== idealSlug && mfg) { // Added && mfg so we don't infinitely redirect if no manufacturer
       return { redirectUrl: `/consoles/${idealSlug}`, data: null };
     }
     return { redirectUrl: null, data: exactMatch.data };
@@ -207,6 +207,7 @@ export default async function ConsoleSpecsPage(props: Props) {
 
     if (redirectUrl) {
       redirect(redirectUrl);
+      return null;
     }
 
     consoleData = data;
