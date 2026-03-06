@@ -1,4 +1,4 @@
-export const revalidate = 60;
+export const revalidate = false;
 
 import LandingPage from '@/components/landing/LandingPage';
 import { getSystemVersion } from './actions/roadmap';
