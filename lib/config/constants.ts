@@ -44,6 +44,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Variant Name (e.g. "OLED Model")', key: 'variant_name', type: 'text', required: false, width: 'full' },
             { label: 'Release Date', key: 'release_date', type: 'custom_date', required: false, width: 'full' },
             { label: 'Launch Price ($)', key: 'price_launch_usd', type: 'number', required: false },
+            { label: 'Amazon ASIN', key: 'amazon_asin', type: 'text', required: false },
             { label: 'Is Default/Base Model?', key: 'is_default', type: 'checkbox', required: false },
             { label: 'Model No.', key: 'model_no', type: 'text', required: false },
             { label: 'Image URL', key: 'image_url', type: 'url', required: false, width: 'full' },
