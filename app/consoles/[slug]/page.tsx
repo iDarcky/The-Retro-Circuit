@@ -118,12 +118,12 @@ export async function generateMetadata(props: Props) {
       specsParts.push(defaultVar.os);
     }
 
-    const mfgName = data.manufacturer?.name ? data.manufacturer.name + '-' : '';
+    const mfgName = data.manufacturer?.name ? data.manufacturer.name + ' ' : '';
     const description = `Full specs, variants, and pricing for the ${mfgName}${data.name}. Compare emulation performance and find the right console.`;
     const title = `${mfgName}${data.name} Specs, Price & Variants | The Retro Circuit`;
 
     return {
-      title,
+      title: { absolute: title },
       description,
       openGraph: {
         title,
@@ -201,7 +201,8 @@ export default async function ConsoleSpecsPage(props: Props) {
       '@type': 'Offer',
       price: minPrice.toString(),
       priceCurrency: 'USD',
-      availability: 'https://schema.org/InStock'
+      availability: 'https://schema.org/InStock',
+      url: `https://theretrocircuit.com/consoles/${slug}`
     };
   }
 

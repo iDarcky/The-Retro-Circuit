@@ -109,11 +109,10 @@ export default async function RootLayout({
   const orgLd = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: siteConfig.name,
+    name: "The Retro Circuit",
     url: siteConfig.url,
     logo: `${siteConfig.url}/favicon-v2.png`,
     sameAs: [
-      siteConfig.links.github,
       siteConfig.links.linkedin
     ]
   };
