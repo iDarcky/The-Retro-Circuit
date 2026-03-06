@@ -8,7 +8,7 @@ import { fetchActiveSignals } from '../actions/signals';
 import { fetchAllReviews } from '../actions/reviews';
 import { fetchAllNews } from '../actions/news';
 
-export const revalidate = false;
+export const revalidate = 300; // 5 minutes
 
 export const metadata: Metadata = {
    title: 'Transmission Feed | The Retro Circuit',

@@ -1,23 +1,5 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import { Redis } from '@upstash/redis';
-import { Ratelimit } from '@upstash/ratelimit';
-
-// Initialize Redis client explicitly with the Vercel KV env vars
-const redisUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-const redisToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
-
-let ratelimit: Ratelimit | null = null;
-
-if (redisUrl && redisToken) {
-  const redis = new Redis({ url: redisUrl, token: redisToken });
-  ratelimit = new Ratelimit({
-    redis,
-    limiter: Ratelimit.slidingWindow(300, '1 m'), // 300 requests per minute to account for Next.js internal calls
-    analytics: false,
-    prefix: 'ratelimit:global',
-  });
-}
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -25,33 +7,6 @@ export async function middleware(request: NextRequest) {
       headers: request.headers,
     },
   });
-
-  // Bypass rate limiting for internal Next.js requests and static assets
-  const isInternal = request.nextUrl.pathname.startsWith('/_next') ||
-                     request.nextUrl.pathname.match(/\.(png|jpg|jpeg|gif|webp|svg|ico)$/);
-
-  // --- 1. Global Rate Limiting ---
-  if (ratelimit && !isInternal) {
-    // Extract IP address from headers
-    let ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip');
-    if (ip) {
-      ip = ip.split(',')[0].trim();
-    } else {
-      ip = 'anonymous'; // Fallback
-    }
-
-    try {
-      const { success } = await ratelimit.limit(ip);
-      if (!success) {
-        return new NextResponse(
-          JSON.stringify({ error: 'Too Many Requests', message: 'You have been rate limited.' }),
-          { status: 429, headers: { 'Content-Type': 'application/json' } }
-        );
-      }
-    } catch (e) {
-      console.warn('Rate limit error, failing open:', e);
-    }
-  }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -82,14 +37,14 @@ export async function middleware(request: NextRequest) {
       }
     );
 
-    // 2. Refresh the session
+    // 1. Refresh the session
     const { data: { user } } = await supabase.auth.getUser();
 
     const isLoginRoute = request.nextUrl.pathname.startsWith('/login');
     const isProfileRoute = request.nextUrl.pathname.startsWith('/profile');
     const isAdminRoute = request.nextUrl.pathname.startsWith('/admin') || request.nextUrl.pathname.startsWith('/design');
 
-    // 3. Auth Redirection Logic
+    // 2. Auth Redirection Logic
     const url = request.nextUrl.clone();
 
     // IF USER IS LOGGED IN
@@ -109,7 +64,7 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    // 4. Protect Admin Routes
+    // 3. Protect Admin Routes
     if (isAdminRoute) {
       if (!user) {
         return NextResponse.redirect(new URL('/login', request.url));
@@ -139,7 +94,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 5. Security Headers
+  // 4. Security Headers
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');

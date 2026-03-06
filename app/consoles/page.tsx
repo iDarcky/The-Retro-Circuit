@@ -29,7 +29,7 @@ export async function generateMetadata() {
 }
 
 
-export const revalidate = false;
+export const revalidate = 60;
 
 export default async function ConsoleVaultPage() {
   let manufacturers: any[] = [];

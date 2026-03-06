@@ -28,14 +28,14 @@ This document reflects the current Next.js caching and revalidation configuratio
 
 | Route | Type | Revalidate | Fetching Supabase? | Notes |
 | :--- | :---: | :---: | :---: | :--- |
-| `/consoles` | Static (`○`) | `false` | Yes (`consoles`, `manufacturer`) | *Optimized.* Changed from 60s ISR to indefinite. Revalidated on console/manufacturer updates. |
-| `/consoles/[slug]` | Static (`○`) | `false` | Yes (Deep relations) | *Optimized.* Pre-built at deploy via `generateStaticParams`. Changed from 1h ISR to indefinite. Invalidated on save. |
+| `/consoles` | Static (`○`) | `false` | Yes (`consoles`, `manufacturer`) | Caches indefinitely. Revalidated on console/manufacturer updates. |
+| `/consoles/[slug]` | SSG (`●`) | `3600` | Yes (Deep relations) | *Optimized.* Pre-built at deploy via `generateStaticParams`. Still uses 1h ISR as a fallback for high-velocity variants. Invalidated on save. |
 | `/consoles/brand/[name]`| Static (`○`) | `false` | Yes (`manufacturer`) | Caches indefinitely. Revalidated on manufacturer updates. |
-| `/fabricators` | Static (`○`) | `false` | Yes (`manufacturer`) | *Optimized.* Changed from 10m ISR to indefinite. Revalidated on manufacturer updates. |
-| `/fabricators/[slug]` | Static (`○`) | `false` | Yes (`manufacturer`, `consoles`) | *Optimized.* Pre-built at deploy via `generateStaticParams`. Changed from 1h ISR to indefinite. |
-| `/news` | Static (`○`) | `false` | Yes (`signals`, `news`, `reviews`)| *Optimized.* Changed from 5m ISR to indefinite. Revalidated via Server Actions when new items are published. |
+| `/fabricators` | Static (`○`) | `false` | Yes (`manufacturer`) | Caches indefinitely. Revalidated on manufacturer updates. |
+| `/fabricators/[slug]` | SSG (`●`) | `3600` | Yes (`manufacturer`, `consoles`) | *Optimized.* Pre-built at deploy via `generateStaticParams`. |
+| `/news` | Static (`○`) | `false` | Yes (`signals`, `news`, `reviews`)| Caches indefinitely. Revalidated via Server Actions when new items are published. |
 | `/arena/[[...versus]]` | Dynamic/ISR| `3600` | Yes (`consoles`, `variants`) | Set to 1 hour ISR. Infinite URL combinations make static generation impossible. |
-| `/roadmap` | Static (`○`) | `false` | Yes (`roadmap_features`) | *Fixed.* Removed `force-dynamic` (huge CPU drain). Now builds fully static. Admin drafts fetch moved to `/admin/roadmap`. |
+| `/roadmap` | Static (`○`) | `false` | Yes (`roadmap_features`) | *Fixed.* Previously `force-dynamic` (huge CPU drain). Now builds fully static. Admin drafts fetch entirely client-side. |
 
 ## Admin Pages
 

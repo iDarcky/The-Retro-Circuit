@@ -1,7 +1,7 @@
 import { fetchManufacturers } from '../../app/actions';
 import FabricatorListClient from '../../components/fabricator/FabricatorListClient';
 
-export const revalidate = false;
+export const revalidate = 600; // 10 minutes
 
 export const metadata = {
   title: 'Fabricators | Retro Handheld Manufacturers | The Retro Circuit',
