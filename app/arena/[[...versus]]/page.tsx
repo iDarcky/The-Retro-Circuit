@@ -1,4 +1,5 @@
 export const revalidate = false;
+export const dynamic = 'force-static';
 
 import { createClient } from '../../../lib/supabase/server';
 import ArenaComparisonClient from '../../../components/arena/ArenaComparisonClient';
@@ -47,6 +48,122 @@ export async function generateMetadata({ params }: { params: Promise<{ versus?: 
 
 }
 
+/**
+ * Fetch a console's full data (with variants, emulation profiles, input profiles) by its DB id.
+ * This is the single "heavy" query — called only once we know which console we need.
+ */
+async function fetchFullConsole(supabase: any, consoleId: string) {
+    const { data: fullConsole } = await supabase
+        .from('consoles')
+        .select('*, manufacturer:manufacturer(*)')
+        .eq('id', consoleId)
+        .maybeSingle();
+
+    if (!fullConsole) return null;
+
+    const { data: variants } = await supabase
+        .from('console_variants')
+        .select('*, emulation_profiles(*), variant_input_profile(*)')
+        .eq('console_id', fullConsole.id);
+
+    fullConsole.variants = variants?.map(normalizeVariant) || [];
+    return fullConsole;
+}
+
+/**
+ * Resolve a raw URL slug (e.g. "miyoo-mini" or "retroid-pocket-5-base") to a console + variant.
+ *
+ * Strategy (optimized — no fetch-all-then-filter):
+ * 1. Fetch only lightweight lookup data (id, slug, manufacturer slug) in ONE query.
+ *    PostgREST returns this as a small payload (~66 rows × 3 columns).
+ *    Match in code — this is CPU-only with no additional DB round-trips.
+ * 2. Once matched, fetch the full console + variants in ONE targeted query by ID.
+ * 3. Fallback: try direct slug match for legacy URLs.
+ */
+async function resolveSlug(supabase: any, raw: string) {
+    if (!raw || raw === 'select') return { p: null, v: null, details: null, variant: null };
+
+    // --- Step 1: Lightweight lookup ---
+    const { data: lookupList } = await supabase
+        .from('consoles')
+        .select('id, slug, manufacturer:manufacturer(slug, name)');
+
+    if (lookupList) {
+        let matchedId: string | null = null;
+        let matchedVariantSlug: string | null = null;
+
+        for (const c of lookupList) {
+            const mfgSlug = (c.manufacturer as any)?.slug
+                || ((c.manufacturer as any)?.name ? (c.manufacturer as any).name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
+            const baseStr = `${mfgSlug}-${c.slug}`;
+
+            if (raw === baseStr) {
+                matchedId = c.id;
+                break;
+            } else if (raw.startsWith(baseStr + '-')) {
+                matchedId = c.id;
+                matchedVariantSlug = raw.substring(baseStr.length + 1);
+                break;
+            }
+        }
+
+        if (matchedId) {
+            const fullConsole = await fetchFullConsole(supabase, matchedId);
+            if (fullConsole) {
+                let variantMatch = null;
+                if (matchedVariantSlug) {
+                    variantMatch = fullConsole.variants?.find((v: any) => v.slug === matchedVariantSlug);
+                }
+                if (!variantMatch) {
+                    variantMatch = fullConsole.variants?.find((v: any) => v.is_default) || fullConsole.variants?.[0];
+                }
+                return { p: raw, v: matchedVariantSlug, details: fullConsole, variant: variantMatch || null };
+            }
+        }
+    }
+
+    // --- Step 2: Fallback — legacy direct slug match ---
+    const { data: legacyMatch } = await supabase
+        .from('consoles')
+        .select('id')
+        .eq('slug', raw)
+        .maybeSingle();
+
+    if (legacyMatch) {
+        const fullConsole = await fetchFullConsole(supabase, legacyMatch.id);
+        if (fullConsole) {
+            const defaultVar = fullConsole.variants?.find((v: any) => v.is_default) || fullConsole.variants?.[0];
+            return { p: raw, v: null, details: fullConsole, variant: defaultVar || null };
+        }
+    }
+
+    // --- Step 3: Fallback — legacy slug-variant split (walk hyphens) ---
+    let lastIndex = raw.lastIndexOf('-');
+    while (lastIndex > 0) {
+        const potentialConsole = raw.substring(0, lastIndex);
+        const potentialVariant = raw.substring(lastIndex + 1);
+
+        const { data: cMatch } = await supabase
+            .from('consoles')
+            .select('id')
+            .eq('slug', potentialConsole)
+            .maybeSingle();
+
+        if (cMatch) {
+            const fullConsole = await fetchFullConsole(supabase, cMatch.id);
+            if (fullConsole) {
+                const vMatch = fullConsole.variants?.find((v: any) => v.slug === potentialVariant);
+                if (vMatch) {
+                    return { p: potentialConsole, v: potentialVariant, details: fullConsole, variant: vMatch };
+                }
+            }
+        }
+        lastIndex = raw.lastIndexOf('-', lastIndex - 1);
+    }
+
+    return { p: raw, v: null, details: null, variant: null };
+}
+
 export default async function ArenaVersusPage({ params }: { params: Promise<{ versus?: string[] }> }) {
     const { versus } = await params;
 
@@ -57,37 +174,36 @@ export default async function ArenaVersusPage({ params }: { params: Promise<{ ve
     const supabase = await createClient();
     const parts = versus[0].split('-vs-');
 
-    const resolveSlug = async (raw: string) => {
+    const resolveSlug = async (supabase: any, raw: string) => {
         if (!raw || raw === 'select') return { p: null, v: null, details: null, variant: null };
 
-        // 1. Try to resolve using optimized lookup instead of fetching full consoles first
-        // We only fetch ID, slug, and manufacturer slug/name to avoid huge memory payloads.
-        const { data: allConsoles } = await supabase.from('consoles').select('id, slug, manufacturer:manufacturer(slug, name)');
+        // --- Step 1: Lightweight lookup ---
+        const { data: lookupList } = await supabase
+            .from('consoles')
+            .select('id, slug, manufacturer:manufacturer(slug, name)');
 
-        if (allConsoles) {
-            let matchedConsole = null;
-            let matchedVariantSlug = null;
+        if (lookupList) {
+            let matchedId: string | null = null;
+            let matchedVariantSlug: string | null = null;
 
-            for (const c of allConsoles) {
-                // const mfgName = (c.manufacturer as any)?.name;
-                const baseStr = c.slug;
+            for (const c of lookupList) {
+                const mfgSlug = (c.manufacturer as any)?.slug
+                    || ((c.manufacturer as any)?.name ? (c.manufacturer as any).name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
+                const baseStr = `${mfgSlug}-${c.slug}`;
 
                 if (raw === baseStr) {
-                    matchedConsole = c;
+                    matchedId = c.id;
                     break;
                 } else if (raw.startsWith(baseStr + '-')) {
-                    matchedConsole = c;
+                    matchedId = c.id;
                     matchedVariantSlug = raw.substring(baseStr.length + 1);
                     break;
                 }
             }
 
-            if (matchedConsole) {
-                const { data: fullConsole } = await supabase.from('consoles').select('*, manufacturer:manufacturer(*)').eq('id', matchedConsole.id).maybeSingle();
+            if (matchedId) {
+                const fullConsole = await fetchFullConsole(supabase, matchedId);
                 if (fullConsole) {
-                    const { data: variants } = await supabase.from('console_variants').select('*, emulation_profiles(*), variant_input_profile(*)').eq('console_id', fullConsole.id);
-                    fullConsole.variants = variants?.map(normalizeVariant);
-
                     let variantMatch = null;
                     if (matchedVariantSlug) {
                         variantMatch = fullConsole.variants?.find((v: any) => v.slug === matchedVariantSlug);
@@ -100,37 +216,50 @@ export default async function ArenaVersusPage({ params }: { params: Promise<{ ve
             }
         }
 
-        // 2. Fallback to old URL logic (backwards compatibility for existing links)
-        const { data: consoleMatch } = await supabase.from('consoles').select('*, manufacturer:manufacturer(*)').eq('slug', raw).maybeSingle();
-        if (consoleMatch) {
-            const { data: variants } = await supabase.from('console_variants').select('*, emulation_profiles(*), variant_input_profile(*)').eq('console_id', consoleMatch.id);
-            const defaultVar = variants?.find((v: any) => v.is_default) || variants?.[0];
-            consoleMatch.variants = variants?.map(normalizeVariant);
-            return { p: raw, v: null, details: consoleMatch, variant: normalizeVariant(defaultVar) };
+        // --- Step 2: Fallback — legacy direct slug match ---
+        const { data: legacyMatch } = await supabase
+            .from('consoles')
+            .select('id')
+            .eq('slug', raw)
+            .maybeSingle();
+
+        if (legacyMatch) {
+            const fullConsole = await fetchFullConsole(supabase, legacyMatch.id);
+            if (fullConsole) {
+                const defaultVar = fullConsole.variants?.find((v: any) => v.is_default) || fullConsole.variants?.[0];
+                return { p: raw, v: null, details: fullConsole, variant: defaultVar || null };
+            }
         }
 
+        // --- Step 3: Fallback — legacy slug-variant split (walk hyphens) ---
         let lastIndex = raw.lastIndexOf('-');
         while (lastIndex > 0) {
             const potentialConsole = raw.substring(0, lastIndex);
             const potentialVariant = raw.substring(lastIndex + 1);
 
-            const { data: cMatch } = await supabase.from('consoles').select('*, manufacturer:manufacturer(*)').eq('slug', potentialConsole).maybeSingle();
+            const { data: cMatch } = await supabase
+                .from('consoles')
+                .select('id')
+                .eq('slug', potentialConsole)
+                .maybeSingle();
+
             if (cMatch) {
-                const { data: vMatch } = await supabase.from('console_variants').select('*, emulation_profiles(*), variant_input_profile(*)').eq('console_id', cMatch.id).eq('slug', potentialVariant).maybeSingle();
-                if (vMatch) {
-                    const { data: allVars } = await supabase.from('console_variants').select('*, emulation_profiles(*), variant_input_profile(*)').eq('console_id', cMatch.id);
-                    cMatch.variants = allVars?.map(normalizeVariant);
-                    return { p: potentialConsole, v: potentialVariant, details: cMatch, variant: normalizeVariant(vMatch) };
+                const fullConsole = await fetchFullConsole(supabase, cMatch.id);
+                if (fullConsole) {
+                    const vMatch = fullConsole.variants?.find((v: any) => v.slug === potentialVariant);
+                    if (vMatch) {
+                        return { p: potentialConsole, v: potentialVariant, details: fullConsole, variant: vMatch };
+                    }
                 }
             }
             lastIndex = raw.lastIndexOf('-', lastIndex - 1);
         }
+
         return { p: raw, v: null, details: null, variant: null };
     };
-
     const [r1, r2] = await Promise.all([
-        parts[0] ? resolveSlug(parts[0]) : Promise.resolve(null),
-        parts[1] ? resolveSlug(parts[1]) : Promise.resolve(null)
+        parts[0] ? resolveSlug(supabase, parts[0]) : Promise.resolve(null),
+        parts[1] ? resolveSlug(supabase, parts[1]) : Promise.resolve(null)
     ]);
 
     const initialSelectionA = r1?.details ? {
