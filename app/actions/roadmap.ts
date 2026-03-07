@@ -8,8 +8,7 @@ import { formatRoadmapMarkdown } from "../../lib/roadmap-formatter";
 import { revalidatePath } from "next/cache";
 
 export async function getSystemVersion() {
-    const dbVersion = await fetchLatestVersion();
-    return dbVersion || siteConfig.version;
+  return siteConfig.version;
 }
 
 export async function fetchRoadmapItems() {
@@ -103,15 +102,15 @@ export async function fetchReleases() {
   try {
     const supabase = supabaseAnon;
     const { data, error } = await supabase
-        .from('releases')
-        .select('*, roadmap_features(*)')
-        .eq('is_published', true)
-        .order('release_date', { ascending: false })
-        .order('created_at', { ascending: false });
+      .from('releases')
+      .select('*, roadmap_features(*)')
+      .eq('is_published', true)
+      .order('release_date', { ascending: false })
+      .order('created_at', { ascending: false });
 
     if (error) {
-        console.error('Error fetching releases:', error);
-        return [];
+      console.error('Error fetching releases:', error);
+      return [];
     }
 
     // Cast to include joined features
@@ -123,124 +122,124 @@ export async function fetchReleases() {
 }
 
 export async function fetchAdminReleases() {
-    try {
-        const supabase = await createClient(); // Authenticated
-        const { data, error } = await supabase
-            .from('releases')
-            .select('*, roadmap_features(*)')
-            .order('release_date', { ascending: false })
-            .order('created_at', { ascending: false });
+  try {
+    const supabase = await createClient(); // Authenticated
+    const { data, error } = await supabase
+      .from('releases')
+      .select('*, roadmap_features(*)')
+      .order('release_date', { ascending: false })
+      .order('created_at', { ascending: false });
 
-        if (error) {
-            console.error('Error fetching admin releases:', error);
-            return [];
-        }
-
-        return data as (Release & { roadmap_features: RoadmapFeature[] })[];
-    } catch (err) {
-        console.error('Error fetching admin releases:', err);
-        return [];
+    if (error) {
+      console.error('Error fetching admin releases:', error);
+      return [];
     }
+
+    return data as (Release & { roadmap_features: RoadmapFeature[] })[];
+  } catch (err) {
+    console.error('Error fetching admin releases:', err);
+    return [];
+  }
 }
 
 export async function fetchLatestVersion() {
-    try {
-        const supabase = supabaseAnon;
-        const { data, error } = await supabase
-            .from('releases')
-            .select('version')
-            .eq('is_published', true)
-            .order('release_date', { ascending: false })
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .single();
+  try {
+    const supabase = supabaseAnon;
+    const { data, error } = await supabase
+      .from('releases')
+      .select('version')
+      .eq('is_published', true)
+      .order('release_date', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
 
-        if (error) {
-            // If no rows or table doesn't exist yet, just return null (fallback to config)
-            if (error.code !== 'PGRST116') {
-                 console.error('Error fetching latest version:', error);
-            }
-            return null;
-        }
-
-        return data?.version || null;
-    } catch (err) {
-        console.error('Error fetching latest version:', err);
-        return null;
+    if (error) {
+      // If no rows or table doesn't exist yet, just return null (fallback to config)
+      if (error.code !== 'PGRST116') {
+        console.error('Error fetching latest version:', error);
+      }
+      return null;
     }
+
+    return data?.version || null;
+  } catch (err) {
+    console.error('Error fetching latest version:', err);
+    return null;
+  }
 }
 
 export async function createRelease(release: Omit<Release, 'id' | 'created_at' | 'updated_at'>) {
-    const supabase = await createClient();
+  const supabase = await createClient();
 
-    const cleanRelease = {
-        ...release,
-        release_date: release.release_date === '' ? new Date().toISOString() : release.release_date
-    };
+  const cleanRelease = {
+    ...release,
+    release_date: release.release_date === '' ? new Date().toISOString() : release.release_date
+  };
 
-    const { data, error } = await supabase
-        .from('releases')
-        .insert([cleanRelease])
-        .select()
-        .single();
+  const { data, error } = await supabase
+    .from('releases')
+    .insert([cleanRelease])
+    .select()
+    .single();
 
-    if (error) {
-        console.error('Error creating release:', error);
-        throw error;
-    }
+  if (error) {
+    console.error('Error creating release:', error);
+    throw error;
+  }
 
-    revalidatePath('/roadmap');
-    revalidatePath('/');
-    revalidatePath('/credits');
-    revalidatePath('/about');
+  revalidatePath('/roadmap');
+  revalidatePath('/');
+  revalidatePath('/credits');
+  revalidatePath('/about');
 
-    return data as Release;
+  return data as Release;
 }
 
 export async function updateRelease(id: string, updates: Partial<Release>) {
-    const supabase = await createClient();
+  const supabase = await createClient();
 
-    const cleanUpdates = {
-        ...updates,
-        release_date: updates.release_date === '' ? new Date().toISOString() : updates.release_date
-    };
+  const cleanUpdates = {
+    ...updates,
+    release_date: updates.release_date === '' ? new Date().toISOString() : updates.release_date
+  };
 
-    const { data, error } = await supabase
-        .from('releases')
-        .update(cleanUpdates)
-        .eq('id', id)
-        .select()
-        .single();
+  const { data, error } = await supabase
+    .from('releases')
+    .update(cleanUpdates)
+    .eq('id', id)
+    .select()
+    .single();
 
-    if (error) {
-        console.error('Error updating release:', error);
-        throw error;
-    }
+  if (error) {
+    console.error('Error updating release:', error);
+    throw error;
+  }
 
-    revalidatePath('/roadmap');
-    revalidatePath('/');
-    revalidatePath('/credits');
-    revalidatePath('/about');
+  revalidatePath('/roadmap');
+  revalidatePath('/');
+  revalidatePath('/credits');
+  revalidatePath('/about');
 
-    return data as Release;
+  return data as Release;
 }
 
 export async function deleteRelease(id: string) {
-    const supabase = await createClient();
-    const { error } = await supabase
-        .from('releases')
-        .delete()
-        .eq('id', id);
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from('releases')
+    .delete()
+    .eq('id', id);
 
-    if (error) {
-        console.error('Error deleting release:', error);
-        throw error;
-    }
+  if (error) {
+    console.error('Error deleting release:', error);
+    throw error;
+  }
 
-    revalidatePath('/roadmap');
-    revalidatePath('/');
-    revalidatePath('/credits');
-    revalidatePath('/about');
+  revalidatePath('/roadmap');
+  revalidatePath('/');
+  revalidatePath('/credits');
+  revalidatePath('/about');
 }
 
 // --- Markdown Export ---
@@ -268,8 +267,8 @@ export async function generateRoadmapMarkdown() {
     if (featuresError) throw featuresError;
 
     return formatRoadmapMarkdown(
-        (releases as (Release & { roadmap_features: RoadmapFeature[] })[]) || [],
-        (unreleasedFeatures as RoadmapFeature[]) || []
+      (releases as (Release & { roadmap_features: RoadmapFeature[] })[]) || [],
+      (unreleasedFeatures as RoadmapFeature[]) || []
     );
 
   } catch (error) {
