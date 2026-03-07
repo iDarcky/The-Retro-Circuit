@@ -105,7 +105,6 @@ export default function SimilarConsoles({ currentConsole }: SimilarConsolesProps
         return null; // Don't show the section if no similar consoles are found
     }
 
-    const getMfgSlug = (c: any) => c.manufacturer?.slug || (c.manufacturer?.name ? c.manufacturer.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -158,14 +157,14 @@ export default function SimilarConsoles({ currentConsole }: SimilarConsolesProps
                             </div>
 
                             <div className="mt-auto flex flex-col gap-3">
-                                <Link href={`/consoles/${getMfgSlug(consoleItem)}-${consoleItem.slug}`} className="w-full">
+                                <Link href={`/consoles/${consoleItem.slug}`} className="w-full">
                                     <SwissButton variant="orange" className="w-full text-xs">
                                         VIEW DETAILS
                                     </SwissButton>
                                 </Link>
 
                                 {/* COMPARE BUTTON */}
-                                <Link href={`/arena/${getMfgSlug(currentConsole)}-${currentConsole.slug}-vs-${getMfgSlug(consoleItem)}-${consoleItem.slug}`} className="w-full">
+                                <Link href={`/arena/${currentConsole.slug}-vs-${consoleItem.slug}`} className="w-full">
                                     <button className="w-full py-3 border border-white/20 text-zinc-400 text-xs font-mono uppercase hover:bg-white hover:text-black hover:border-white transition-all">
                                         COMPARE VS {currentConsole.name.toUpperCase()}
                                     </button>

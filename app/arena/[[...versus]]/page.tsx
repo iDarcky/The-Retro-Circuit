@@ -69,9 +69,8 @@ export default async function ArenaVersusPage({ params }: { params: Promise<{ ve
             let matchedVariantSlug = null;
 
             for (const c of allConsoles) {
-                const mfgName = (c.manufacturer as any)?.name;
-                const mfgSlug = (c.manufacturer as any)?.slug || (mfgName ? mfgName.toLowerCase().replace(/\s+/g, '-') : 'unknown');
-                const baseStr = `${mfgSlug}-${c.slug}`;
+                // const mfgName = (c.manufacturer as any)?.name;
+                const baseStr = c.slug;
 
                 if (raw === baseStr) {
                     matchedConsole = c;

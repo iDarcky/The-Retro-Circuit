@@ -16,9 +16,6 @@ import { ChevronDown, ChevronUp, Swords } from 'lucide-react';
 import { SwissHeader } from '../../components/ui/SwissHeader';
 
 // Helper to get manufacturer slug
-const getMfgSlug = (details: ConsoleDetails) => {
-    return details.manufacturer?.slug || details.manufacturer?.name.toLowerCase().replace(/\s+/g, '-') || 'unknown';
-};
 
 interface SelectionState {
     slug: string | null;
@@ -100,15 +97,13 @@ export default function ArenaComparisonClient({
 
             // Construct path
             // Format is /arena/[mfg]-[slugA][-variantA]-vs-[mfg]-[slugB][-variantB]
-            const mfgA = getMfgSlug(selectionA.details);
-            const part1 = selectionA.selectedVariant.slug !== selectionA.details.variants?.find(v => v.is_default)?.slug && selectionA.selectedVariant.slug
-                ? `${mfgA}-${selectionA.details.slug}-${selectionA.selectedVariant.slug}`
-                : `${mfgA}-${selectionA.details.slug}`;
+                        const part1 = selectionA.selectedVariant.slug !== selectionA.details.variants?.find(v => v.is_default)?.slug && selectionA.selectedVariant.slug
+                ? `${selectionA.details.slug}-${selectionA.selectedVariant.slug}`
+                : `${selectionA.details.slug}`;
 
-            const mfgB = getMfgSlug(selectionB.details);
-            const part2 = selectionB.selectedVariant.slug !== selectionB.details.variants?.find(v => v.is_default)?.slug && selectionB.selectedVariant.slug
-                ? `${mfgB}-${selectionB.details.slug}-${selectionB.selectedVariant.slug}`
-                : `${mfgB}-${selectionB.details.slug}`;
+                        const part2 = selectionB.selectedVariant.slug !== selectionB.details.variants?.find(v => v.is_default)?.slug && selectionB.selectedVariant.slug
+                ? `${selectionB.details.slug}-${selectionB.selectedVariant.slug}`
+                : `${selectionB.details.slug}`;
 
             // Use window.history.pushState to completely avoid Next.js hydration flicker
             window.history.pushState(null, '', `/arena/${part1}-vs-${part2}`);
@@ -204,7 +199,7 @@ export default function ArenaComparisonClient({
                             ) : selectionA.details ? (
                                 <div className="mt-4 flex-1 flex flex-col md:items-center animate-fadeIn">
                                     <Link
-                                        href={`/consoles/${getMfgSlug(selectionA.details)}-${selectionA.details.slug}`}
+                                        href={`/consoles/${selectionA.details.slug}`}
                                         className="flex flex-row md:flex-col items-center gap-6 mb-6 group w-full"
                                     >
                                         <div className="relative w-24 h-24 md:w-full md:h-64 flex-shrink-0 bg-black/40 md:bg-transparent border border-blue-500/10 md:border-0 p-4 transition-transform group-hover:scale-105 duration-500 shadow-inner md:shadow-none rounded-lg md:rounded-none">
@@ -270,7 +265,7 @@ export default function ArenaComparisonClient({
                             ) : selectionB.details ? (
                                 <div className="mt-4 flex-1 flex flex-col md:items-center animate-fadeIn">
                                     <Link
-                                        href={`/consoles/${getMfgSlug(selectionB.details)}-${selectionB.details.slug}`}
+                                        href={`/consoles/${selectionB.details.slug}`}
                                         className="flex flex-row md:flex-col items-center gap-6 mb-6 group w-full"
                                     >
                                         <div className="relative w-24 h-24 md:w-full md:h-64 flex-shrink-0 bg-black/40 md:bg-transparent border border-red-500/10 md:border-0 p-4 transition-transform group-hover:scale-105 duration-500 shadow-inner md:shadow-none rounded-lg md:rounded-none">
