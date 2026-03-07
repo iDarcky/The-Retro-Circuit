@@ -27,8 +27,7 @@ const SORT_OPTIONS: { value: SortOption, label: string }[] = [
 ];
 
 const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers, initialConsoles }) => {
-    const getMfgSlug = (c: ConsoleDetails) => c.manufacturer?.slug || (c.manufacturer?.name ? c.manufacturer.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
-    const [allConsoles] = useState<ConsoleDetails[]>(initialConsoles);
+        const [allConsoles] = useState<ConsoleDetails[]>(initialConsoles);
     const [filteredConsoles, setFilteredConsoles] = useState<ConsoleDetails[]>(initialConsoles);
     const [manufacturers] = useState<Manufacturer[]>(initialManufacturers);
     const [loading] = useState(false);
@@ -343,7 +342,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                                         // SWISS STYLE CARD
                                         return (
                                             <Link
-                                                href={`/consoles/${getMfgSlug(console)}-${console.slug}`}
+                                                href={`/consoles/${console.slug}`}
                                                 key={console.id}
                                                 className="group relative flex flex-col bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-violet-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-violet-500/10 rounded-xl overflow-hidden"
                                             >
@@ -381,7 +380,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                                         // CLASSIC STYLE CARD (Updated for full width grid)
                                         return (
                                             <Link
-                                                href={`/consoles/${getMfgSlug(console)}-${console.slug}`}
+                                                href={`/consoles/${console.slug}`}
                                                 key={console.id}
                                                 className="group block bg-black border border-zinc-800 hover:border-violet-500 transition-all relative overflow-hidden"
                                             >

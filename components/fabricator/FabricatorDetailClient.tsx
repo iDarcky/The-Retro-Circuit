@@ -29,11 +29,7 @@ const SORT_OPTIONS: { value: SortOption, label: string }[] = [
 ];
 
 export default function FabricatorDetailClient({ profile, consoles }: Props) {
-    const getMfgSlug = (c: ConsoleDetails) => {
-        const mfg = c.manufacturer || profile;
-        return mfg?.slug || (mfg?.name ? mfg.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
-    };
-    // --- COLOR & THEME SETUP ---
+        // --- COLOR & THEME SETUP ---
     const staticHexMap: Record<string, string> = {
         'Nintendo': '#ef4444',
         'Sega': '#3b82f6',
@@ -426,7 +422,7 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                                 // SWISS STYLE CARD (Manufacturer Themed)
                                 return (
                                     <Link
-                                        href={`/consoles/${getMfgSlug(console)}-${console.slug}`}
+                                        href={`/consoles/${console.slug}`}
                                         key={console.id}
                                         className="group relative flex flex-col bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-[var(--brand-color)] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[0_0_15px_rgba(var(--brand-rgb),0.1)] rounded-xl overflow-hidden"
                                     >
@@ -464,7 +460,7 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                                 // CLASSIC STYLE CARD (Manufacturer Themed)
                                 return (
                                     <Link
-                                        href={`/consoles/${getMfgSlug(console)}-${console.slug}`}
+                                        href={`/consoles/${console.slug}`}
                                         key={console.id}
                                         className="group block bg-black border border-zinc-800 hover:border-[var(--brand-color)] transition-all relative overflow-hidden"
                                     >
