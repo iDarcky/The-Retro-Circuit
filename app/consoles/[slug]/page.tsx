@@ -5,10 +5,14 @@ import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
 import { ConsoleDetails } from '../../../lib/types';
 
 export const revalidate = false;
+export const dynamic = 'force-static';
 
 export async function generateStaticParams() {
   const consoles = await fetchConsoleList(false);
-  return consoles.map((c) => ({ slug: c.slug }));
+  return consoles.map((c) => {
+    const mfgSlug = c.manufacturer?.slug || (c.manufacturer?.name ? c.manufacturer.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
+    return { slug: `${mfgSlug}-${c.slug}` };
+  });
 }
 
 type Props = {
@@ -84,13 +88,9 @@ export async function generateMetadata(props: Props) {
       }
     }
 
-    finalImage = finalImage || '/logo.png';
+    finalImage = finalImage || '/og-v2.png';
 
-    const consoleRecord = data as any;
-    const cacheBuster = consoleRecord.updated_at
-      ? new Date(consoleRecord.updated_at).getTime()
-      : new Date().getTime();
-    const ogImageUrl = `/consoles/${slug}/opengraph-image?v=${cacheBuster}`;
+    const ogImageUrl = '/og-v2.png';
 
     const specsParts: string[] = [];
     if (defaultVar) {
