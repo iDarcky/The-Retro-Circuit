@@ -43,9 +43,10 @@ verification/
 # debug
 pnpm-debug.log*
 
-# IDE / Editor
+# IDE / Editor / AI Agents
 .vscode/
 .idea/
+.gemini/
 
 # OS-generated files
 Thumbs.db
