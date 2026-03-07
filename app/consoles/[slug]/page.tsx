@@ -1,4 +1,4 @@
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { fetchConsoleBySlug } from '../../../app/actions';
 import { fetchConsoleList } from '../../../app/actions/consoles';
 import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
@@ -15,45 +15,16 @@ type Props = {
   params: Promise<{ slug: string }>
 };
 
-async function resolveConsoleSlug(rawSlug: string): Promise<{ redirectUrl: string | null, data: ConsoleDetails | null }> {
+async function resolveConsoleSlug(rawSlug: string): Promise<{ data: ConsoleDetails | null }> {
   try {
-    // 1. Try exact DB match first (Legacy URL e.g. /consoles/mini)
     const exactMatch = await fetchConsoleBySlug(rawSlug, false);
     if (exactMatch && exactMatch.data) {
-      const mfg = exactMatch.data.manufacturer;
-      const mfgSlug = mfg?.slug || (mfg?.name ? mfg.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
-      const idealSlug = `${mfgSlug}-${exactMatch.data.slug}`;
-
-      // If the URL is exactly the DB slug, and the ideal slug is different, REDIRECT.
-      if (rawSlug !== idealSlug && mfg) {
-        return { redirectUrl: `/consoles/${idealSlug}`, data: null };
-      }
-      return { redirectUrl: null, data: exactMatch.data };
+      return { data: exactMatch.data };
     }
-
-    // 2. Try New Format Match ([mfg]-[slug]) using strict separation logic
-    // This assumes all new URLs are built as manufacturerSlug-consoleSlug
-    const allConsoles = await fetchConsoleList(false);
-
-    if (allConsoles && Array.isArray(allConsoles)) {
-      for (const c of allConsoles) {
-        const mfg = c.manufacturer as any;
-        const mfgSlug = mfg?.slug || (mfg?.name ? mfg.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
-        const targetSlug = `${mfgSlug}-${c.slug}`;
-
-        if (rawSlug === targetSlug) {
-          const fullMatch = await fetchConsoleBySlug(c.slug, false);
-          if (fullMatch && fullMatch.data) {
-            return { redirectUrl: null, data: fullMatch.data };
-          }
-        }
-      }
-    }
-
-    return { redirectUrl: null, data: null };
+    return { data: null };
   } catch (error) {
     console.error("[resolveConsoleSlug] Error:", error);
-    return { redirectUrl: null, data: null };
+    return { data: null };
   }
 }
 
@@ -62,13 +33,8 @@ export async function generateMetadata(props: Props) {
     const params = await props.params;
     const slug = decodeURIComponent(params.slug);
 
-    const { redirectUrl, data: resolvedData } = await resolveConsoleSlug(slug);
-
-    let data = resolvedData;
-    if (redirectUrl && !data) {
-      const legacyMatch = await fetchConsoleBySlug(slug, false);
-      data = legacyMatch?.data || null;
-    }
+    const { data: resolvedData } = await resolveConsoleSlug(slug);
+    const data = resolvedData;
 
     if (!data) return { title: 'Unknown Hardware | The Retro Circuit' };
 
@@ -150,18 +116,12 @@ export default async function ConsoleSpecsPage(props: Props) {
   const slug = decodeURIComponent(params.slug);
 
   let consoleData = null;
-  let shouldRedirect = null;
 
   try {
-    const { redirectUrl, data } = await resolveConsoleSlug(slug);
-    shouldRedirect = redirectUrl;
+    const { data } = await resolveConsoleSlug(slug);
     consoleData = data;
   } catch (err: any) {
     console.error("[ConsoleSpecsPage] Critical Error:", err);
-  }
-
-  if (shouldRedirect) {
-    redirect(shouldRedirect);
   }
 
   if (!consoleData) {

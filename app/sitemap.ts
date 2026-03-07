@@ -25,10 +25,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const { data: consoles } = await supabase.from('consoles').select('slug, updated_at, manufacturer:manufacturer(slug, name)');
     if (consoles) {
       consoles.forEach((item: any) => {
-        const mfg = item.manufacturer;
-        const mfgSlug = mfg?.slug || (mfg?.name ? mfg.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
         routes.push({
-          url: `${baseUrl}/consoles/${mfgSlug}-${item.slug}`,
+          url: `${baseUrl}/consoles/${item.slug}`,
           lastModified: new Date(item.updated_at || new Date()),
           changeFrequency: 'weekly',
           priority: 0.8,
