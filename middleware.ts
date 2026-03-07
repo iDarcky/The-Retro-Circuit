@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
 
   // Bypass rate limiting for internal Next.js requests and static assets
   const isInternal = request.nextUrl.pathname.startsWith('/_next') ||
-                     request.nextUrl.pathname.match(/\.(png|jpg|jpeg|gif|webp|svg|ico)$/);
+    request.nextUrl.pathname.match(/\.(png|jpg|jpeg|gif|webp|svg|ico)$/);
 
   // --- 1. Global Rate Limiting ---
   if (ratelimit && !isInternal) {
@@ -144,9 +144,10 @@ export async function middleware(request: NextRequest) {
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), browsing-topics=()');
 
   // Content Security Policy
+  const isDev = process.env.NODE_ENV === 'development';
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'unsafe-inline' 'unsafe-eval'; /* unsafe-eval required for Next.js dev */
+    script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''};
     style-src 'self' 'unsafe-inline';
     img-src 'self' blob: data: https:;
     font-src 'self' data:;
