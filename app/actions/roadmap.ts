@@ -5,10 +5,20 @@ import { supabaseAnon } from "../../lib/supabase/anon";
 import { RoadmapFeature, Release } from "../../lib/types/domain";
 import { siteConfig } from "../../config/site";
 import { formatRoadmapMarkdown } from "../../lib/roadmap-formatter";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { unstable_cache } from "next/cache";
+
+const getCachedVersion = unstable_cache(
+  async () => {
+    const dbVersion = await fetchLatestVersion();
+    return dbVersion || siteConfig.version;
+  },
+  ['system-version'],
+  { tags: ['system-version'] }
+);
 
 export async function getSystemVersion() {
-  return siteConfig.version;
+  return getCachedVersion();
 }
 
 export async function fetchRoadmapItems() {
@@ -192,6 +202,8 @@ export async function createRelease(release: Omit<Release, 'id' | 'created_at' |
   revalidatePath('/');
   revalidatePath('/credits');
   revalidatePath('/about');
+  revalidatePath('/privacy');
+  revalidateTag('system-version', { expire: 0 });
 
   return data as Release;
 }
@@ -220,6 +232,8 @@ export async function updateRelease(id: string, updates: Partial<Release>) {
   revalidatePath('/');
   revalidatePath('/credits');
   revalidatePath('/about');
+  revalidatePath('/privacy');
+  revalidateTag('system-version', { expire: 0 });
 
   return data as Release;
 }
@@ -240,6 +254,8 @@ export async function deleteRelease(id: string) {
   revalidatePath('/');
   revalidatePath('/credits');
   revalidatePath('/about');
+  revalidatePath('/privacy');
+  revalidateTag('system-version', { expire: 0 });
 }
 
 // --- Markdown Export ---
