@@ -111,8 +111,7 @@ export default function ConsoleIdentitySection({
     const sentinelRef = useRef<HTMLDivElement>(null);
 
     const currentVariant = variants.find(v => v.id === selectedVariantId) || null;
-    const getMfgSlug = () => manufacturer?.slug || (manufacturer?.name ? manufacturer.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
-    const compareUrl = `/arena/${getMfgSlug()}-${consoleData.slug}${currentVariant?.slug ? `-${currentVariant.slug}` : ''}-vs-select`;
+        const compareUrl = `/arena/${consoleData.slug}${currentVariant?.slug ? `-${currentVariant.slug}` : ''}-vs-select`;
 
     const fabName = manufacturer?.name || 'UNKNOWN';
 

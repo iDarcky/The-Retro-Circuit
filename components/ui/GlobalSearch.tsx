@@ -68,8 +68,7 @@ const GlobalSearch: FC = () => {
 
         switch (result.type) {
             case 'CONSOLE':
-                const mfgSlug = result.subtitle ? result.subtitle.toLowerCase().replace(/\s+/g, '-') : 'unknown';
-                path = `/consoles/${mfgSlug}-${result.slug}`;
+                                path = `/consoles/${result.slug}`;
                 break;
             case 'FABRICATOR':
                 path = `/fabricators/${result.slug}`;

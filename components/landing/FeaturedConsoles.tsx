@@ -25,11 +25,10 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
         {/* grid-cols-2 (mobile) -> grid-cols-3 (md) -> grid-cols-5 (lg) -> grid-cols-8 (2xl) */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 2xl:grid-cols-8 gap-4">
           {consoles.map((console) => {
-            const mfgSlug = console.manufacturer?.slug || (console.manufacturer?.name ? console.manufacturer.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
-            return (
+                        return (
               <Link
                 key={console.id}
-                href={`/consoles/${mfgSlug}-${console.slug}`}
+                href={`/consoles/${console.slug}`}
                 className="group flex flex-col bg-white/[0.02] backdrop-blur-md border border-white/5 hover:border-violet-500/50 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-violet-500/20 rounded-xl overflow-hidden"
               >
                 {/* Image Container - 4:3 Aspect Ratio for Uniformity */}

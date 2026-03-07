@@ -307,9 +307,8 @@ export const addConsole = async (
         if (!newConsole) return { success: false, message: "No data returned from insert" };
 
         if (newConsole.status === 'published' && newConsole.slug) {
-            const mSlug = (newConsole.manufacturer as any)?.slug;
-            if (mSlug) {
-                 const url = `https://theretrocircuit.com/consoles/${mSlug}-${newConsole.slug}`;
+            if (newConsole.slug) {
+                 const url = `https://theretrocircuit.com/consoles/${newConsole.slug}`;
                  submitToIndexNow([url]);
             }
         }
@@ -356,17 +355,14 @@ export const updateConsole = async (
         // Let's preserve original behaviour:
         const { data: updatedVariant } = await supabase.from('console_variants').select('console_id, consoles(slug, manufacturer:manufacturer(slug, name))').eq('id', id).single();
         if ((updatedVariant?.consoles as any)?.slug) {
-            const mfg = (updatedVariant?.consoles as any)?.manufacturer;
-            const mfgSlug = mfg?.slug || (mfg?.name ? mfg.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
-            revalidatePath(`/consoles/${mfgSlug}-${(updatedVariant?.consoles as any).slug}`);
+            revalidatePath(`/consoles/${(updatedVariant?.consoles as any).slug}`);
         }
 
         // Trigger IndexNow if newly published
         if (isPublishing && previousStatus !== 'published' && consoleSlugInfo) {
-            const mSlug = (consoleSlugInfo.manufacturer as any)?.slug;
             const cSlug = consoleSlugInfo.slug || cleanData.slug;
-            if (mSlug && cSlug) {
-                const url = `https://theretrocircuit.com/consoles/${mSlug}-${cSlug}`;
+            if (cSlug) {
+                const url = `https://theretrocircuit.com/consoles/${cSlug}`;
                 submitToIndexNow([url]);
             }
         }
@@ -428,9 +424,7 @@ export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>)
         if (mainVariantData.console_id) {
             const { data: parentConsole } = await supabase.from('consoles').select('slug, manufacturer:manufacturer(slug, name)').eq('id', mainVariantData.console_id).single();
             if (parentConsole?.slug) {
-                const mfg = (parentConsole as any).manufacturer;
-                const mfgSlug = mfg?.slug || (mfg?.name ? mfg.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
-                revalidatePath(`/consoles/${mfgSlug}-${parentConsole.slug}`);
+                revalidatePath(`/consoles/${parentConsole.slug}`);
             }
         }
 
@@ -463,9 +457,7 @@ export const updateConsoleVariant = async (id: string, variantData: Partial<Cons
 
         const { data: updatedVariant } = await supabase.from('console_variants').select('console_id, consoles(slug, manufacturer:manufacturer(slug, name))').eq('id', id).single();
         if ((updatedVariant?.consoles as any)?.slug) {
-            const mfg = (updatedVariant?.consoles as any)?.manufacturer;
-            const mfgSlug = mfg?.slug || (mfg?.name ? mfg.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
-            revalidatePath(`/consoles/${mfgSlug}-${(updatedVariant?.consoles as any).slug}`);
+            revalidatePath(`/consoles/${(updatedVariant?.consoles as any).slug}`);
         }
 
         return { success: true };

@@ -26,13 +26,13 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
         manufacturer_id: '', // Ensure default is empty string, not undefined
     });
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-    const [isSlugLocked, setIsSlugLocked] = useState(!!initialData);
+    const [isSlugLocked, setIsSlugLocked] = useState(false);
 
     useEffect(() => {
         if (initialData) {
             setFormData(initialData);
             setIsEditMode(true);
-            setIsSlugLocked(true);
+            // setIsSlugLocked(true);
         }
     }, [initialData]);
 

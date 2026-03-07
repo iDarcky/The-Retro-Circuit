@@ -64,7 +64,6 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
   const winner = results.find(r => r.match_label === 'WINNER') || results[0];
   const alternatives = results.filter(r => r.id !== winner.id);
 
-  const getMfgSlug = (c: any) => c.manufacturer?.slug || (c.manufacturer?.name ? c.manufacturer.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
 
   return (
     <div className="max-w-6xl mx-auto px-4 w-full animate-in fade-in slide-in-from-bottom-8 duration-700 pb-24">
@@ -140,7 +139,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href={`/consoles/${getMfgSlug(winner)}-${winner.slug}`} className="flex-1">
+              <Link href={`/consoles/${winner.slug}`} className="flex-1">
                 <SwissButton variant="orange" className="w-full py-4 text-sm font-pixel">
                   VIEW DETAILS
                 </SwissButton>
@@ -206,14 +205,14 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                 </div>
 
                 <div className="mt-auto flex flex-col gap-3">
-                  <Link href={`/consoles/${getMfgSlug(consoleItem)}-${consoleItem.slug}`} className="w-full">
+                  <Link href={`/consoles/${consoleItem.slug}`} className="w-full">
                     <SwissButton variant="orange" className="w-full text-xs">
                       VIEW DETAILS
                     </SwissButton>
                   </Link>
 
                   {/* COMPARE BUTTON */}
-                  <Link href={`/arena/${getMfgSlug(winner)}-${winner.slug}-vs-${getMfgSlug(consoleItem)}-${consoleItem.slug}`} className="w-full">
+                  <Link href={`/arena/${winner.slug}-vs-${consoleItem.slug}`} className="w-full">
                     <button className="w-full py-3 border border-white/20 text-zinc-400 text-xs font-mono uppercase hover:bg-white hover:text-black hover:border-white transition-all">
                       COMPARE VS WINNER
                     </button>
