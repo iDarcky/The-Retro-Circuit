@@ -6,6 +6,8 @@ import { fetchConsoleList, fetchConsoleAndVariantCounts } from '../../app/action
 import QuickCompare from './QuickCompare';
 import FinderSection from './FinderSection';
 import FeaturedConsoles from './FeaturedConsoles';
+import EmailCTA from './EmailCTA';
+import CircuitPattern from './CircuitPattern';
 
 interface LandingPageProps {
   version: string;
@@ -104,7 +106,9 @@ export default async function LandingPage({ version }: LandingPageProps) {
       <FinderSection />
 
       {/* 3. ANALYSIS & COMPARE */}
-      <section className="px-6 md:px-12 py-12 md:py-24 border-b border-border-subtle bg-bg-secondary/20 relative z-20">
+      <section className="px-6 md:px-12 py-12 md:py-24 border-b border-border-subtle bg-bg-secondary/20 relative overflow-hidden">
+        {/* Circuit board background */}
+        <CircuitPattern accentColor="violet" className="absolute inset-0 w-full h-full opacity-60" />
 
         <div className="max-w-[1800px] mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center">
@@ -129,6 +133,9 @@ export default async function LandingPage({ version }: LandingPageProps) {
           </div>
         </div>
       </section>
+
+      {/* 4. EMAIL - THE SIGNAL */}
+      <EmailCTA />
 
     </div>
   );
