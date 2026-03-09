@@ -52,7 +52,7 @@ export default async function UnsubscribePage({ searchParams }: UnsubscribePageP
                             SIGNAL TERMINATED<span className="animate-pulse">_</span>
                         </h1>
                         <p className="text-text-secondary font-mono text-sm tracking-wider">
-                            YouYou've been unsubscribed.apos;ve been unsubscribed. You wonYou won't hear from us again.apos;t hear from us again.
+                            You&apos;ve been unsubscribed. You won&apos;t hear from us again.
                         </p>
                     </>
                 ) : (
