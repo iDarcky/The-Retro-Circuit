@@ -72,18 +72,18 @@ export default async function LandingPage({ version }: LandingPageProps) {
             {/* CTA Buttons */}
             <div className="flex flex-col md:flex-row items-center gap-6 animate-fade-in w-full md:w-auto mb-8" style={{ animationDelay: '0.2s' }}>
               <div className="relative group w-full md:w-auto">
-                <div className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-violet-500 transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-violet-400/50"></div>
-                <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-violet-500 transition-all duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-violet-400/50"></div>
+                <div className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-violet-500 transition-[width,height,border-color] duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-violet-400/50"></div>
+                <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-violet-500 transition-[width,height,border-color] duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-violet-400/50"></div>
                 <Link
                   href="/consoles"
-                  className="relative z-10 inline-flex items-center gap-3 bg-violet-600 text-white font-mono text-sm md:text-base px-8 py-4 hover:brightness-110 transition-all uppercase tracking-widest border border-violet-500 shadow-lg shadow-violet-500/20 w-full justify-center"
+                  className="relative z-10 inline-flex items-center gap-3 bg-violet-600 text-white font-mono text-sm md:text-base px-8 py-4 hover:brightness-110 transition-[filter] uppercase tracking-widest border border-violet-500 shadow-lg shadow-violet-500/20 w-full justify-center"
                 >
                   Browse Consoles <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
               <Link
                 href="/about"
-                className="inline-flex items-center gap-3 bg-transparent text-text-secondary font-mono text-sm md:text-base px-8 py-4 hover:text-white hover:bg-white/5 transition-all uppercase tracking-widest border border-border-normal hover:border-white w-full md:w-auto justify-center"
+                className="inline-flex items-center gap-3 bg-transparent text-text-secondary font-mono text-sm md:text-base px-8 py-4 hover:text-white hover:bg-white/5 transition-[color,background-color,border-color] uppercase tracking-widest border border-border-normal hover:border-white w-full md:w-auto justify-center"
               >
                 Manifesto
               </Link>
@@ -123,9 +123,9 @@ export default async function LandingPage({ version }: LandingPageProps) {
             </div>
 
             <div className="relative group z-20">
-              <div className="relative z-10 border border-border-subtle bg-bg-primary p-6 shadow-2xl transition-transform duration-500 group-hover:-translate-y-2 hover:border-violet-500/30">
-                <div className="absolute -top-3 -left-3 w-6 h-6 border-t-2 border-l-2 border-violet-500 transition-all duration-300 group-hover:w-full group-hover:h-full group-hover:border-violet-500/20 pointer-events-none"></div>
-                <div className="absolute -bottom-3 -right-3 w-6 h-6 border-b-2 border-r-2 border-violet-500 transition-all duration-300 group-hover:w-full group-hover:h-full group-hover:border-violet-500/20 pointer-events-none"></div>
+              <div className="relative z-10 border border-border-subtle bg-bg-primary p-6 shadow-2xl transition-[transform,border-color] duration-500 group-hover:-translate-y-2 hover:border-violet-500/30">
+                <div className="absolute -top-3 -left-3 w-6 h-6 border-t-2 border-l-2 border-violet-500 transition-[width,height,border-color] duration-300 group-hover:w-full group-hover:h-full group-hover:border-violet-500/20 pointer-events-none"></div>
+                <div className="absolute -bottom-3 -right-3 w-6 h-6 border-b-2 border-r-2 border-violet-500 transition-[width,height,border-color] duration-300 group-hover:w-full group-hover:h-full group-hover:border-violet-500/20 pointer-events-none"></div>
                 {/* OPTIMIZATION: Pass only necessary data (searchableConsoles) to reduce client component payload */}
                 <QuickCompare consoles={searchableConsoles} />
               </div>

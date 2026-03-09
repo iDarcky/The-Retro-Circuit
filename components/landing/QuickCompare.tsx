@@ -33,7 +33,7 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
       <div className="flex flex-col lg:flex-row items-center gap-6">
 
         {/* Device A */}
-        <div className={`flex-1 w-full relative transition-all border-l-2 pl-2 ${p1Selected ? 'border-blue-500' : 'border-blue-500/30'}`}>
+        <div className={`flex-1 w-full relative transition-colors border-l-2 pl-2 ${p1Selected ? 'border-blue-500' : 'border-blue-500/30'}`}>
           <span className={`absolute -top-3 left-4 px-1 bg-bg-primary text-[10px] font-mono uppercase tracking-widest z-10 ${p1Selected ? 'text-blue-400 font-bold' : 'text-blue-500/50'}`}>
             PLAYER 1
           </span>
@@ -57,7 +57,7 @@ export default function QuickCompare({ consoles }: QuickCompareProps) {
         </div>
 
         {/* Device B */}
-        <div className={`flex-1 w-full relative transition-all border-l-2 pl-2 ${p2Selected ? 'border-red-500' : 'border-red-500/30'}`}>
+        <div className={`flex-1 w-full relative transition-colors border-l-2 pl-2 ${p2Selected ? 'border-red-500' : 'border-red-500/30'}`}>
           <span className={`absolute -top-3 left-4 px-1 bg-bg-primary text-[10px] font-mono uppercase tracking-widest z-10 ${p2Selected ? 'text-red-400 font-bold' : 'text-red-500/50'}`}>
             PLAYER 2
           </span>

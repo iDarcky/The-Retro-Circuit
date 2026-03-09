@@ -75,7 +75,7 @@ export default function EmailCTA() {
                                     <button
                                         type="submit"
                                         disabled={status === "loading"}
-                                        className="inline-flex items-center gap-2 bg-rose-600 text-white font-mono text-xs px-4 py-2 hover:brightness-110 transition-all uppercase tracking-widest border border-rose-500 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                                        className="inline-flex items-center gap-2 bg-rose-600 text-white font-mono text-xs px-4 py-2 hover:brightness-110 transition-[filter,opacity] uppercase tracking-widest border border-rose-500 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
                                     >
                                         {status === "loading" ? (
                                             <Loader2 className="w-3 h-3 animate-spin" />
