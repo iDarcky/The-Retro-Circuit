@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import { ArrowRight, Check, Loader2 } from "lucide-react";
-import { subscribeEmail } from "../../app/actions/newsletter";
+import { ArrowRight, Loader2 } from "lucide-react";
+import { subscribeEmail } from "../../app/actions/subscribers";
 import CircuitPattern from "./CircuitPattern";
 
 type Status = "idle" | "loading" | "success" | "error";
@@ -20,7 +20,7 @@ export default function EmailCTA() {
         if (!email) return;
 
         setStatus("loading");
-        const result = await subscribeEmail(email);
+        const result = await subscribeEmail(email, "homepage");
 
         if (result.success) {
             setStatus("success");
@@ -53,9 +53,8 @@ export default function EmailCTA() {
                     {/* Right — Form or success */}
                     <div className="shrink-0">
                         {status === "success" ? (
-                            <div className="inline-flex items-center gap-2 text-rose-400 font-mono text-xs uppercase tracking-widest">
-                                <Check className="w-4 h-4" />
-                                {message}
+                            <div className="inline-flex items-center gap-2 text-rose-400 font-mono text-xs md:text-sm uppercase tracking-widest animate-fade-in">
+                                {message}<span className="animate-pulse">_</span>
                             </div>
                         ) : (
                             <div className="relative">
