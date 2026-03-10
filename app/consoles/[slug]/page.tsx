@@ -166,16 +166,20 @@ export default async function ConsoleSpecsPage(props: Props) {
     }
   };
 
-  // Only include offers if there is a purchase link (ASIN) or the device is in pre-order
-  if (hasPrice && (hasAsin || isFutureRelease)) {
+  // Always include offers when price exists — Google requires offers, review, or aggregateRating
+  // Use correct availability: InStock (has ASIN), PreOrder (future release), Discontinued (otherwise)
+  if (hasPrice) {
     const firstAsin = consoleData.variants?.find((v) => v.amazon_asin)?.amazon_asin;
+    const availability = hasAsin
+      ? 'https://schema.org/InStock'
+      : isFutureRelease
+        ? 'https://schema.org/PreOrder'
+        : 'https://schema.org/Discontinued';
     jsonLd.offers = {
       '@type': 'Offer',
       price: minPrice.toString(),
       priceCurrency: 'USD',
-      availability: hasAsin
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/PreOrder',
+      availability,
       url: firstAsin
         ? `https://www.amazon.com/dp/${firstAsin}?tag=theretrocircu-20`
         : `https://theretrocircuit.com/consoles/${slug}`
