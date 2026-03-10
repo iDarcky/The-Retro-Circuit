@@ -22,14 +22,13 @@ const FeaturedConsoles: FC<FeaturedConsolesProps> = ({ consoles }) => {
       {/* Swiss Grid Layout - Full Width, Left Aligned */}
       <div className="w-full">
         {/* The Grid of Cards - Responsive, filling the row */}
-        {/* grid-cols-2 (mobile) -> grid-cols-3 (md) -> grid-cols-5 (lg) -> grid-cols-8 (2xl) */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 2xl:grid-cols-8 gap-4">
           {consoles.map((console) => {
-                        return (
+            return (
               <Link
                 key={console.id}
                 href={`/consoles/${console.slug}`}
-                className="group flex flex-col bg-white/[0.02] backdrop-blur-md border border-white/5 hover:border-violet-500/50 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-violet-500/20 rounded-xl overflow-hidden"
+                className="group flex flex-col bg-white/[0.02] backdrop-blur-md border border-white/5 hover:border-violet-500/50 hover:-translate-y-1 transition-[transform,border-color,box-shadow] duration-300 shadow-sm hover:shadow-lg hover:shadow-violet-500/20 rounded-xl overflow-hidden"
               >
                 {/* Image Container - 4:3 Aspect Ratio for Uniformity */}
                 <div className="relative w-full aspect-[4/3] flex items-center justify-center p-4 pb-0">

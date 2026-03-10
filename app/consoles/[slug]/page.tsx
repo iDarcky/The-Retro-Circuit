@@ -133,15 +133,25 @@ export default async function ConsoleSpecsPage(props: Props) {
   const fullName = mfgName ? `${mfgName} ${consoleData.name}` : consoleData.name;
 
   let minPrice = Infinity;
+  let hasAsin = false;
   if (consoleData.variants && Array.isArray(consoleData.variants)) {
     consoleData.variants.forEach((v) => {
       if (v.price_launch_usd && v.price_launch_usd > 0 && v.price_launch_usd < minPrice) {
         minPrice = v.price_launch_usd;
       }
+      if (v.amazon_asin) {
+        hasAsin = true;
+      }
     });
   }
 
   const hasPrice = minPrice !== Infinity;
+
+  // Determine if the device has a future release date (for PreOrder status)
+  const defaultVariant = consoleData.variants?.find((v) => v.is_default) || consoleData.variants?.[0];
+  const isFutureRelease = defaultVariant?.release_date
+    ? new Date(defaultVariant.release_date) > new Date()
+    : false;
 
   const jsonLd: any = {
     '@context': 'https://schema.org',
@@ -156,13 +166,19 @@ export default async function ConsoleSpecsPage(props: Props) {
     }
   };
 
-  if (hasPrice) {
+  // Only include offers if there is a purchase link (ASIN) or the device is in pre-order
+  if (hasPrice && (hasAsin || isFutureRelease)) {
+    const firstAsin = consoleData.variants?.find((v) => v.amazon_asin)?.amazon_asin;
     jsonLd.offers = {
       '@type': 'Offer',
       price: minPrice.toString(),
       priceCurrency: 'USD',
-      availability: 'https://schema.org/InStock',
-      url: `https://theretrocircuit.com/consoles/${slug}`
+      availability: hasAsin
+        ? 'https://schema.org/InStock'
+        : 'https://schema.org/PreOrder',
+      url: firstAsin
+        ? `https://www.amazon.com/dp/${firstAsin}?tag=theretrocircu-20`
+        : `https://theretrocircuit.com/consoles/${slug}`
     };
   }
 
