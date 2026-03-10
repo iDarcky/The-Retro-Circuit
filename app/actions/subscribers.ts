@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '../../lib/supabase/server';
+import { createAdminClient } from '../../lib/supabase/admin';
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -25,7 +26,34 @@ export async function subscribeEmail(email: string, source: string): Promise<{ s
         if (error) {
             // Check if it's a unique constraint violation (duplicate email)
             if (error.code === '23505') {
-                // If email already exists, just return success gracefully
+                // Fetch the existing user
+                const adminClient = createAdminClient();
+                const { data: existingUser, error: fetchError } = await adminClient
+                    .from('subscribers')
+                    .select('unsubscribed_at')
+                    .eq('email', normalizedEmail)
+                    .single();
+
+                if (!fetchError && existingUser && existingUser.unsubscribed_at !== null) {
+                    // User previously unsubscribed, so re-subscribe them
+                    const { error: updateError } = await adminClient
+                        .from('subscribers')
+                        .update({
+                            unsubscribed_at: null,
+                            subscribed_at: new Date().toISOString()
+                        })
+                        .eq('email', normalizedEmail);
+
+                    if (!updateError) {
+                        // Send welcome email again on successful re-subscription
+                        await sendWelcomeEmail(normalizedEmail);
+                    } else {
+                        console.error('Failed to update unsubscribed user:', updateError);
+                        // Even if update fails, we return success to the user as requested
+                    }
+                }
+
+                // Return success gracefully in all unique constraint scenarios
                 return { success: true, message: 'TRANSMISSION RECEIVED_' };
             }
             console.error('Newsletter subscription error:', error);
@@ -33,7 +61,17 @@ export async function subscribeEmail(email: string, source: string): Promise<{ s
         }
 
         // Successfully inserted, now send the welcome email
-        try {
+        await sendWelcomeEmail(normalizedEmail);
+
+        return { success: true, message: 'TRANSMISSION RECEIVED_' };
+    } catch (err) {
+        console.error('Newsletter subscription error:', err);
+        return { success: false, message: 'Something went wrong. Please try again.' };
+    }
+}
+
+async function sendWelcomeEmail(normalizedEmail: string) {
+    try {
             const htmlContent = `
 <!DOCTYPE html>
 <html>
@@ -90,10 +128,4 @@ export async function subscribeEmail(email: string, source: string): Promise<{ s
             console.error('Failed to send welcome email:', emailError);
             // We don't fail the subscription if the email fails, just log it.
         }
-
-        return { success: true, message: 'TRANSMISSION RECEIVED_' };
-    } catch (err) {
-        console.error('Newsletter subscription error:', err);
-        return { success: false, message: 'Something went wrong. Please try again.' };
-    }
 }
