@@ -79,7 +79,23 @@ If you are a California resident, you have rights under the CCPA, including the 
 
 ---
 
-## 8. Email Communications
+## 8. Managing Consent
+
+You can reset your cookie preferences at any time via the cookie settings link in the footer.
+
+---
+
+## 9. Data Requests
+
+To exercise any of your data rights, contact us at:
+contact@theretrocircuit.com
+
+Subject line: DATA REQUEST
+We will respond within 30 days.
+
+---
+
+## 10. Email Communications
 
 If you subscribe to our newsletter, we will send you a monthly update about new consoles, spec changes, and features on The Retro Circuit. You can unsubscribe at any time by clicking the unsubscribe link in any email, or by emailing us at [contact@theretrocircuit.com](mailto:contact@theretrocircuit.com).
 
@@ -87,30 +103,30 @@ We send emails from [hello@theretrocircuit.com](mailto:hello@theretrocircuit.com
 
 ---
 
-## 9. Data Retention
+## 11. Data Retention
 
 We retain your email address for as long as you are subscribed to our newsletter or have an active account. If you unsubscribe or delete your account, we will remove your personal data within 30 days, except where we are required by law to retain it.
 
 ---
 
-## 10. Cookies
+## 12. Cookies
 
 The Site does not use tracking or advertising cookies. Vercel Analytics is cookieless. If this changes, we will update this policy and add a cookie notice.
 
 ---
 
-## 11. Data Transfers
+## 13. Data Transfers
 
 Your data may be transferred to and stored in countries outside the European Economic Area, including the United States, where our hosting provider Vercel operates. These transfers are covered by appropriate safeguards including standard contractual clauses.
 
 ---
 
-## 12. Changes to This Policy
+## 14. Changes to This Policy
 
 We may update this Privacy Policy from time to time. The "Last updated" date at the top of this page will reflect any changes. Continued use of the Site after changes are posted constitutes your acceptance of the revised policy.
 
 ---
 
-## 13. Contact
+## 15. Contact
 
 For any questions about this Privacy Policy or to exercise your data rights, contact us at [contact@theretrocircuit.com](mailto:contact@theretrocircuit.com).

@@ -38,7 +38,19 @@ When using the Site, you agree not to:
 
 ---
 
-## 5. Affiliate Links
+## 5. Automated Access
+
+Automated scraping, data harvesting, bulk export, or any form of automated access to The Retro Circuit's database structure is STRICTLY PROHIBITED without prior written permission.
+
+---
+
+## 6. Content Rights
+
+The materials contained on this site — including the architecture, code, design system, curation methodology, and specific data aggregations — are protected by applicable copyright and trademark law. The Retro Circuit's unique compilation and presentation of hardware data is proprietary.
+
+---
+
+## 7. Affiliate Links
 
 The Site contains affiliate links to third-party retailers, including Amazon. When you click one of these links and make a purchase, we may earn a small commission at no additional cost to you. We only link to products that are genuinely relevant to the content on the Site. We are not responsible for the content, policies, or practices of any third-party websites.
 
@@ -46,48 +58,48 @@ The Site contains affiliate links to third-party retailers, including Amazon. Wh
 
 ---
 
-## 6. Intellectual Property
+## 8. Intellectual Property
 
 All content on the Site — including text, data, design, and code — is owned by or licensed to **The Retro Circuit**, unless otherwise stated. You may not reproduce, distribute, or create derivative works from our content without our prior written permission.
 
 ---
 
-## 7. Disclaimer of Warranties
+## 9. Disclaimer of Warranties
 
 The Site is provided "as is" and "as available" without warranties of any kind, express or implied. We do not warrant that the Site will be uninterrupted, error-free, or free of viruses or other harmful components.
 
 ---
 
-## 8. Limitation of Liability
+## 10. Limitation of Liability
 
 To the fullest extent permitted by law, **The Retro Circuit** shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of the Site. Our total liability to you for any claim arising from your use of the Site shall not exceed the amount you have paid us in the twelve months prior to the claim. Since the Site is currently free to use, this effectively limits our liability to zero.
 
 ---
 
-## 9. Third-Party Links
+## 11. Third-Party Links
 
 The Site may link to third-party websites, including manufacturer sites and retailers. We are not responsible for the content or practices of any linked sites. Visiting third-party links is at your own risk.
 
 ---
 
-## 10. Dispute Resolution
+## 12. Dispute Resolution
 
 If a dispute arises between you and us, we ask that you first contact us at [contact@theretrocircuit.com](mailto:contact@theretrocircuit.com) to attempt to resolve the matter informally. If we cannot resolve it within **30 days**, either party may initiate arbitration proceedings in **Timișoara, Romania**, conducted in the **English language**.
 
 ---
 
-## 11. Governing Law
+## 13. Governing Law
 
 These Terms are governed by the laws of **Romania**, without regard to conflict of law principles. Any legal proceedings not subject to arbitration shall take place in Timiș County, Romania.
 
 ---
 
-## 12. Changes to These Terms
+## 14. Changes to These Terms
 
 We may update these Terms from time to time. The "Last updated" date at the top of this page will reflect any changes. Continued use of the Site after changes are posted constitutes your acceptance of the revised Terms.
 
 ---
 
-## 13. Contact
+## 15. Contact
 
 For any questions about these Terms, contact us at [contact@theretrocircuit.com](mailto:contact@theretrocircuit.com).
