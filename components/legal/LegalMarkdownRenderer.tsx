@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface LegalMarkdownRendererProps {
   content: string;
@@ -26,6 +27,7 @@ export default function LegalMarkdownRenderer({ content, themeColor }: LegalMark
 
   return (
     <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
       components={{
         // Global paragraph styling
         p: ({ node, ...props }) => {
@@ -64,7 +66,7 @@ export default function LegalMarkdownRenderer({ content, themeColor }: LegalMark
             const title = match[2];
 
             return (
-              <div className="flex items-center gap-4 mb-8 mt-16" {...props}>
+              <div className="flex items-center gap-4 mb-4 mt-8" {...props}>
                 <span className={`font-mono text-xs ${theme.bracketText} border ${theme.bracketBorder} px-2 py-0.5 ${theme.bracketBg}`}>
                   [ {num} ]
                 </span>
@@ -76,11 +78,11 @@ export default function LegalMarkdownRenderer({ content, themeColor }: LegalMark
           }
 
           // Fallback if it doesn't match the numbered pattern
-          return <h2 className={`font-mono text-sm tracking-widest ${theme.headingText} uppercase mb-8 mt-16`} {...props}>{children}</h2>;
+          return <h2 className={`font-mono text-sm tracking-widest ${theme.headingText} uppercase mb-4 mt-8`} {...props}>{children}</h2>;
         },
         // Heading 3
         h3: ({ node, ...props }) => (
-          <h3 className="text-xl font-medium text-white mt-8 mb-4" {...props} />
+          <h3 className="text-xl font-medium text-white mt-6 mb-3" {...props} />
         ),
         // Lists
         ul: ({ node, ...props }) => (
@@ -107,11 +109,11 @@ export default function LegalMarkdownRenderer({ content, themeColor }: LegalMark
         // Tables
         table: ({ node, ...props }) => (
           <div className="overflow-x-auto mb-6">
-            <table className="w-full border-collapse text-left text-lg text-zinc-300 font-light" {...props} />
+            <table className="w-full border-collapse text-left text-lg text-zinc-300 font-light border border-zinc-800" {...props} />
           </div>
         ),
         thead: ({ node, ...props }) => (
-          <thead className="border-b border-zinc-700 text-white font-medium" {...props} />
+          <thead className="bg-zinc-900/30 border-b border-zinc-700 text-white font-medium" {...props} />
         ),
         tbody: ({ node, ...props }) => (
           <tbody className="divide-y divide-zinc-800" {...props} />
@@ -120,14 +122,14 @@ export default function LegalMarkdownRenderer({ content, themeColor }: LegalMark
           <tr className="hover:bg-zinc-900/50 transition-colors" {...props} />
         ),
         th: ({ node, ...props }) => (
-          <th className="py-3 px-4 font-mono text-sm tracking-wide text-zinc-300" {...props} />
+          <th className="py-3 px-4 font-mono text-xs tracking-wide text-zinc-400 uppercase" {...props} />
         ),
         td: ({ node, ...props }) => (
           <td className="py-3 px-4" {...props} />
         ),
         // Horizontal Rule
         hr: ({ node, ...props }) => (
-          <hr className="border-white/10 my-12" {...props} />
+          <hr className="border-white/10 my-8" {...props} />
         )
       }}
     >
