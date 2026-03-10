@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '../../lib/supabase/server';
+import { createAdminClient } from '../../lib/supabase/admin';
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -26,7 +27,8 @@ export async function subscribeEmail(email: string, source: string): Promise<{ s
             // Check if it's a unique constraint violation (duplicate email)
             if (error.code === '23505') {
                 // Fetch the existing user
-                const { data: existingUser, error: fetchError } = await supabase
+                const adminClient = createAdminClient();
+                const { data: existingUser, error: fetchError } = await adminClient
                     .from('subscribers')
                     .select('unsubscribed_at')
                     .eq('email', normalizedEmail)
@@ -34,7 +36,7 @@ export async function subscribeEmail(email: string, source: string): Promise<{ s
 
                 if (!fetchError && existingUser && existingUser.unsubscribed_at !== null) {
                     // User previously unsubscribed, so re-subscribe them
-                    const { error: updateError } = await supabase
+                    const { error: updateError } = await adminClient
                         .from('subscribers')
                         .update({
                             unsubscribed_at: null,
