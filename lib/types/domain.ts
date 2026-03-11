@@ -1,4 +1,3 @@
-
 export interface SearchResult {
     type: 'GAME' | 'CONSOLE' | 'FABRICATOR';
     id: string;
@@ -55,6 +54,8 @@ export interface Manufacturer {
   image_url?: string;
     og_icon_url?: string;
   brand_color?: string;
+  known_for?: string[];
+  who_its_for?: string;
 }
 
 export interface ConsoleFilterState {
@@ -285,6 +286,7 @@ export interface ConsoleDetails {
     community_score?: number | null;
 
     status?: ContentStatus;
+    is_featured?: boolean;
 }
 
 export interface Release {

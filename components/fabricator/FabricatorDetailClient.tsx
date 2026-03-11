@@ -1,5 +1,7 @@
 'use client';
 
+import ManufacturerProfile from './ManufacturerProfile';
+
 import { useState, useEffect, type ChangeEvent } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -15,6 +17,7 @@ import SwissButton from '@/components/console/swiss/SwissButton';
 interface Props {
     profile: Manufacturer;
     consoles: ConsoleDetails[];
+    featuredConsoles: ConsoleDetails[];
 }
 
 type SortOption = 'release_desc' | 'release_asc' | 'name_asc' | 'name_desc' | 'price_asc' | 'price_desc';
@@ -28,7 +31,7 @@ const SORT_OPTIONS: { value: SortOption, label: string }[] = [
     { value: 'price_desc', label: 'PRICE (HIGH-LOW)' },
 ];
 
-export default function FabricatorDetailClient({ profile, consoles }: Props) {
+export default function FabricatorDetailClient({ profile, consoles, featuredConsoles }: Props) {
     // --- COLOR & THEME SETUP ---
     const staticHexMap: Record<string, string> = {
         'Nintendo': '#ef4444',
@@ -526,6 +529,8 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                     </div>
                 )}
             </div>
+
+            <ManufacturerProfile manufacturer={profile} featuredConsoles={featuredConsoles} />
         </div>
     );
 }

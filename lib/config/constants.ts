@@ -9,6 +9,8 @@ export const MANUFACTURER_FORM_FIELDS = [
   { label: 'Brand Color', key: 'brand_color', type: 'color', required: false, note: 'Hex code or use picker' },
   { label: 'Key Franchises', key: 'key_franchises', type: 'text', required: false },
   { label: 'Description', key: 'description', type: 'textarea', required: false },
+  { label: 'Known For', key: 'known_for', type: 'custom_tags', required: false },
+  { label: 'Who It\'s For', key: 'who_its_for', type: 'textarea', required: false },
 ];
 
 export const CONSOLE_FORM_FIELDS = [
@@ -16,9 +18,13 @@ export const CONSOLE_FORM_FIELDS = [
     { label: 'Slug (Auto)', key: 'slug', type: 'text', required: true },
     { label: 'Form Factor (Handheld, Console, etc.)', key: 'form_factor', type: 'text', required: false },
     { label: 'Description', key: 'description', type: 'textarea', required: false },
+  { label: 'Known For', key: 'known_for', type: 'custom_tags', required: false },
+  { label: 'Who It\'s For', key: 'who_its_for', type: 'textarea', required: false },
     { label: 'Image URL', key: 'image_url', type: 'url', required: false },
 
     { subHeader: 'Finder Traits' },
+    { label: 'Is Featured?', key: 'is_featured', type: 'checkbox', required: false, width: 'full', note: 'Show in Manufacturer KEY DEVICES' },
+
     {
         label: 'Setup Ease (1=Hard, 5=Easy)',
         key: 'setup_ease_score',

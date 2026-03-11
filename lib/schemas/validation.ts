@@ -25,6 +25,8 @@ export const ManufacturerSchema = z.object({
   key_franchises: safeString,
   image_url: safeString,
   brand_color: safeString,
+  who_its_for: safeString,
+  known_for: z.array(safeString).optional().nullable(),
 });
 
 export const ConsoleSchema = z.object({
@@ -47,6 +49,7 @@ export const ConsoleSchema = z.object({
 
     // Status
     status: safeString,
+    is_featured: safeBoolean,
 });
 
 export const VariantInputProfileSchema = z.object({

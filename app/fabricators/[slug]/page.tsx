@@ -51,6 +51,7 @@ export default async function FabricatorDetailPage(props: Props) {
 
     let profile = null;
     let consoles: ConsoleDetails[] = [];
+    let featuredConsoles: ConsoleDetails[] = [];
     let fetchError: any = null;
 
     try {
@@ -102,6 +103,18 @@ export default async function FabricatorDetailPage(props: Props) {
                  return dateB - dateA;
             });
         }
+
+        // Separate featured consoles (ordered by release date descending, limited to 3)
+        featuredConsoles = consoles
+            .filter((c: any) => c.is_featured)
+            .sort((a: any, b: any) => {
+                 const dateA = a.specs?.release_date ? new Date(a.specs.release_date).getTime() : 0;
+                 const dateB = b.specs?.release_date ? new Date(b.specs.release_date).getTime() : 0;
+                 return dateB - dateA;
+            })
+            .slice(0, 3);
+
+
     } catch (err: any) {
         console.error("[FabricatorDetailPage] Error:", err);
         fetchError = err;
@@ -142,7 +155,7 @@ export default async function FabricatorDetailPage(props: Props) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            <FabricatorDetailClient profile={profile} consoles={consoles} />
+            <FabricatorDetailClient profile={profile} consoles={consoles} featuredConsoles={featuredConsoles} />
         </>
     );
 }

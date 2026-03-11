@@ -27,6 +27,8 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
 
     // Franchise Tag State
     const [franchises, setFranchises] = useState<string[]>([]);
+    const [knownForTags, setKnownForTags] = useState<string[]>(initialData?.known_for || []);
+    const [knownForInput, setKnownForInput] = useState('');
     const [franchiseInput, setFranchiseInput] = useState('');
 
     // Edit Mode Flag
@@ -85,6 +87,22 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
         setFranchises(franchises.filter(f => f !== tag));
     };
 
+    const handleKnownForKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const trimmed = knownForInput.trim();
+            if (trimmed && !knownForTags.includes(trimmed)) {
+                setKnownForTags([...knownForTags, trimmed]);
+            }
+            setKnownForInput('');
+        }
+    };
+
+    const removeKnownFor = (tag: string) => {
+        setKnownForTags(knownForTags.filter(f => f !== tag));
+    };
+
+
     const handleDelete = async () => {
         if (!initialData?.id) return;
 
@@ -124,7 +142,8 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
         const rawData = {
             ...formData,
             key_franchises: franchises.join(', '),
-            founded_year: formData.founded_year // safeSchema handles parsing
+            founded_year: formData.founded_year, // safeSchema handles parsing
+            known_for: knownForTags.length > 0 ? knownForTags : null
         };
 
         const result = ManufacturerSchema.safeParse(rawData);
@@ -155,6 +174,8 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                     setFormData({});
                     setFranchises([]);
                     setFranchiseInput('');
+                    setKnownForTags([]);
+                    setKnownForInput('');
                     setIsSlugLocked(true);
                 }
                 setFieldErrors({});
@@ -231,6 +252,31 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                                         value={franchiseInput}
                                         onChange={(e: ChangeEvent<HTMLInputElement>) => setFranchiseInput(e.target.value)}
                                         onKeyDown={handleFranchiseKeyDown}
+                                    />
+                                </div>
+                            </div>
+                        );
+                    }
+
+
+                    if (field.type === 'custom_tags' && field.key === 'known_for') {
+                        return (
+                            <div key={field.key} className="col-span-1 md:col-span-2">
+                                <label className="text-[10px] text-gray-500 mb-1 block uppercase tracking-wider">{field.label}</label>
+                                <div className="w-full bg-bg-primary border border-border-normal p-2 font-mono flex flex-wrap gap-2 min-h-[50px] transition-colors hover:border-white">
+                                    {knownForTags.map(tag => (
+                                        <span key={tag} className="bg-bg-secondary text-primary px-2 py-1 text-xs border border-border-normal flex items-center gap-1 uppercase">
+                                            {tag}
+                                            <button type="button" onClick={() => removeKnownFor(tag)} className="hover:text-white font-bold text-gray-500" aria-label="Remove item">×</button>
+                                        </span>
+                                    ))}
+                                    <input
+                                        type="text"
+                                        className="bg-transparent outline-none text-white flex-1 min-w-[120px] text-xs placeholder:text-gray-700"
+                                        placeholder="TYPE & ENTER..."
+                                        value={knownForInput}
+                                        onChange={(e: ChangeEvent<HTMLInputElement>) => setKnownForInput(e.target.value)}
+                                        onKeyDown={handleKnownForKeyDown}
                                     />
                                 </div>
                             </div>
