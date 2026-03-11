@@ -19,9 +19,12 @@ export async function createReview(data: Omit<Review, 'id' | 'author' | 'publish
 
   const supabase = await createClient();
 
-const { data: newReview, error } = await supabase
+  // Strip redundant columns before insert so we don't rely on them
+  const { console_name, console_slug, ...cleanData } = data as any;
+
+  const { data: newReview, error } = await supabase
     .from('reviews')
-    .insert([{ ...data }])
+    .insert([{ ...cleanData }])
     .select('id, status')
     .single();
 
@@ -60,15 +63,25 @@ export async function deleteReview(id: string) {
 export async function fetchAllReviews(): Promise<Review[]> {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const { data: rawData, error } = await supabase
     .from('reviews')
-    .select('*')
+    .select('*, consoles!inner(name, slug)')
     .order('published_at', { ascending: false });
 
   if (error) {
     console.error('Error fetching reviews:', error);
     return [];
   }
+
+  // Flatten the result to match the expected Review interface
+  const data = rawData.map((review: any) => {
+    const { consoles, ...rest } = review;
+    return {
+      ...rest,
+      console_name: consoles?.name || rest.console_name,
+      console_slug: consoles?.slug || rest.console_slug,
+    };
+  });
 
   return data as Review[];
 }
@@ -86,9 +99,12 @@ export async function updateReview(id: string, data: Partial<Review>) {
     previousStatus = prevReview?.status;
   }
 
+  // Strip redundant columns before update
+  const { console_name, console_slug, consoles, ...cleanData } = data as any;
+
   const { error } = await supabase
     .from('reviews')
-    .update(data)
+    .update(cleanData)
     .eq('id', id);
 
   if (error) {
