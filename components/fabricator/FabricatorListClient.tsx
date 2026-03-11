@@ -58,10 +58,10 @@ export default function FabricatorListClient({ manufacturers }: Props) {
 
             {/* CONTROLS BAR */}
             <div className="sticky top-0 z-50 bg-bg-primary/80 backdrop-blur-xl border-b border-white/10 px-6 md:px-12 py-4">
-                 <div className="max-w-[1800px] mx-auto flex justify-between items-center gap-4">
+                <div className="max-w-[1800px] mx-auto flex justify-between items-center gap-4">
 
-                     {/* Search Input */}
-                     <div className="flex-1 max-w-md relative">
+                    {/* Search Input */}
+                    <div className="flex-1 max-w-md relative">
                         <Search className="absolute left-0 top-1/2 -translate-y-1/2 text-zinc-500 w-4 h-4" />
                         <input
                             type="text"
@@ -70,31 +70,33 @@ export default function FabricatorListClient({ manufacturers }: Props) {
                             onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                             className="w-full bg-transparent border-b border-white/20 pl-6 py-2 text-sm font-mono text-white focus:border-emerald-500 outline-none placeholder:text-zinc-600 transition-colors"
                         />
-                     </div>
+                    </div>
 
-                     <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4">
                         <div className="hidden md:flex items-center gap-2 text-xs font-mono text-zinc-500">
                             <span className="text-emerald-500">{filteredManufacturers.length}</span> UNITS FOUND
                         </div>
 
-                         <div className="flex items-center gap-2 bg-black/40 p-1 rounded-lg border border-white/10">
-                             <button
+                        <div className="flex items-center gap-2 bg-black/40 p-1 rounded-lg border border-white/10">
+                            <button
                                 onClick={() => { setViewMode('swiss'); setPage(1); }}
                                 className={`p-2 rounded transition-colors ${viewMode === 'swiss' ? 'bg-white/10 text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
                                 title="Grid View"
-                             >
+                                aria-label="Grid View"
+                            >
                                 <LayoutGrid size={16} />
-                             </button>
-                             <button
+                            </button>
+                            <button
                                 onClick={() => { setViewMode('classic'); setPage(1); }}
                                 className={`p-2 rounded transition-colors ${viewMode === 'classic' ? 'bg-white/10 text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
                                 title="List View"
-                             >
+                                aria-label="List View"
+                            >
                                 <List size={16} />
-                             </button>
-                         </div>
-                     </div>
-                 </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* MAIN GRID */}
@@ -108,11 +110,10 @@ export default function FabricatorListClient({ manufacturers }: Props) {
                         </button>
                     </div>
                 ) : (
-                    <div className={`grid gap-6 ${
-                        viewMode === 'swiss'
-                        ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
-                        : 'grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'
-                    }`}>
+                    <div className={`grid gap-6 ${viewMode === 'swiss'
+                            ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
+                            : 'grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'
+                        }`}>
                         {paginatedManufacturers.map((manufacturer) => {
                             if (viewMode === 'swiss') {
                                 // SWISS STYLE CARD
@@ -123,8 +124,8 @@ export default function FabricatorListClient({ manufacturers }: Props) {
                                         className="group relative flex flex-col bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-emerald-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10 rounded-xl overflow-hidden"
                                     >
                                         <div className="aspect-square p-8 flex items-center justify-center relative bg-gradient-to-b from-transparent to-black/20">
-                                             {manufacturer.image_url ? (
-                                                 <div className="relative w-full h-full transition-transform duration-500 group-hover:scale-110">
+                                            {manufacturer.image_url ? (
+                                                <div className="relative w-full h-full transition-transform duration-500 group-hover:scale-110">
                                                     <Image
                                                         src={manufacturer.image_url}
                                                         alt={manufacturer.name}
@@ -132,10 +133,10 @@ export default function FabricatorListClient({ manufacturers }: Props) {
                                                         className="object-contain drop-shadow-xl"
                                                         sizes="(max-width: 768px) 50vw, 20vw"
                                                     />
-                                                 </div>
-                                             ) : (
-                                                 <div className="text-zinc-700 font-mono text-xl font-bold">{manufacturer.name.charAt(0)}</div>
-                                             )}
+                                                </div>
+                                            ) : (
+                                                <div className="text-zinc-700 font-mono text-xl font-bold">{manufacturer.name.charAt(0)}</div>
+                                            )}
                                         </div>
 
                                         <div className="p-4 border-t border-white/5 bg-white/[0.01] mt-auto">
@@ -160,18 +161,18 @@ export default function FabricatorListClient({ manufacturers }: Props) {
                                     >
                                         <div className="flex flex-row h-24">
                                             <div className="w-24 bg-zinc-900/50 relative flex items-center justify-center p-4 border-r border-zinc-800 shrink-0">
-                                                 {manufacturer.image_url ? (
-                                                     <div className="relative w-full h-full">
+                                                {manufacturer.image_url ? (
+                                                    <div className="relative w-full h-full">
                                                         <Image
                                                             src={manufacturer.image_url}
                                                             alt={manufacturer.name}
                                                             fill
                                                             className="object-contain group-hover:scale-105 transition-transform"
                                                         />
-                                                     </div>
-                                                 ) : (
-                                                     <span className="font-pixel text-zinc-700 text-xl">{manufacturer.name.charAt(0)}</span>
-                                                 )}
+                                                    </div>
+                                                ) : (
+                                                    <span className="font-pixel text-zinc-700 text-xl">{manufacturer.name.charAt(0)}</span>
+                                                )}
                                             </div>
                                             <div className="flex-1 p-4 flex flex-col justify-center">
                                                 <div className="flex justify-between items-start mb-1">

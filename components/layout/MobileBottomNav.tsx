@@ -25,16 +25,15 @@ const MobileBottomNav = () => {
                     <Link
                         key={item.path}
                         href={item.path}
-                        className={`relative flex flex-col items-center justify-center w-10 h-10 rounded-full transition-all duration-300 group ${
-                            isActive ? 'text-white' : 'text-gray-400 hover:text-gray-200'
-                        }`}
+                        aria-label={item.label}
+                        className={`relative flex flex-col items-center justify-center w-10 h-10 rounded-full transition-all duration-300 group ${isActive ? 'text-white' : 'text-gray-400 hover:text-gray-200'
+                            }`}
                     >
                         {/* Icon Container with subtle glow on active */}
-                        <div className={`transition-transform duration-300 ${
-                            isActive
+                        <div className={`transition-transform duration-300 ${isActive
                                 ? 'scale-110 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]'
                                 : 'group-hover:scale-105'
-                        }`}>
+                            }`}>
                             <item.icon className="w-5 h-5" />
                         </div>
 
