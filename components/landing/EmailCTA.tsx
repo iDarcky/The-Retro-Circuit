@@ -62,6 +62,7 @@ export default function EmailCTA() {
                                     <input
                                         id="newsletter-email"
                                         type="email"
+                                        aria-label="Email Address"
                                         value={email}
                                         onChange={(e) => {
                                             setEmail(e.target.value);

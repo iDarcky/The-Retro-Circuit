@@ -19,10 +19,13 @@ export async function createReview(data: Omit<Review, 'id' | 'author' | 'publish
 
   const supabase = await createClient();
 
-const { data: newReview, error } = await supabase
+  // Strip redundant columns before insert so we don't rely on them
+  const { console_name, console_slug, ...cleanData } = data as any;
+
+  const { data: newReview, error } = await supabase
     .from('reviews')
-    .insert([{ ...data }])
-    .select('id, status')
+    .insert([{ ...cleanData }])
+    .select('id')
     .single();
 
   if (error) {
@@ -30,7 +33,7 @@ const { data: newReview, error } = await supabase
     throw new Error(error.message);
   }
 
-  if (newReview && newReview.status === 'published') {
+  if (newReview) {
       submitToIndexNow([`https://theretrocircuit.com/news/reviews/${newReview.id}`]);
   }
 
@@ -60,15 +63,25 @@ export async function deleteReview(id: string) {
 export async function fetchAllReviews(): Promise<Review[]> {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const { data: rawData, error } = await supabase
     .from('reviews')
-    .select('*')
+    .select('*, consoles!inner(name, slug)')
     .order('published_at', { ascending: false });
 
   if (error) {
     console.error('Error fetching reviews:', error);
     return [];
   }
+
+  // Flatten the result to match the expected Review interface
+  const data = rawData.map((review: any) => {
+    const { consoles, ...rest } = review;
+    return {
+      ...rest,
+      console_name: consoles?.name || rest.console_name,
+      console_slug: consoles?.slug || rest.console_slug,
+    };
+  });
 
   return data as Review[];
 }
@@ -77,18 +90,12 @@ export async function fetchAllReviews(): Promise<Review[]> {
 export async function updateReview(id: string, data: Partial<Review>) {
   const supabase = await createClient();
 
-  // Check previous status
-  const isPublishing = (data as any).status === 'published';
-  let previousStatus = null;
-
-  if (isPublishing) {
-    const { data: prevReview } = await supabase.from('reviews').select('status').eq('id', id).single();
-    previousStatus = prevReview?.status;
-  }
+  // Strip redundant columns before update
+  const { console_name: _n, console_slug: _s, consoles: _c, ...updateData } = data as any;
 
   const { error } = await supabase
     .from('reviews')
-    .update(data)
+    .update(updateData)
     .eq('id', id);
 
   if (error) {
@@ -96,9 +103,7 @@ export async function updateReview(id: string, data: Partial<Review>) {
     throw new Error(error.message);
   }
 
-  if (isPublishing && previousStatus !== 'published') {
-    submitToIndexNow([`https://theretrocircuit.com/news/reviews/${id}`]);
-  }
+  submitToIndexNow([`https://theretrocircuit.com/news/reviews/${id}`]);
 
   revalidatePath('/news');
   revalidatePath('/admin/reviews');

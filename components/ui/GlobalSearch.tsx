@@ -68,7 +68,7 @@ const GlobalSearch: FC = () => {
 
         switch (result.type) {
             case 'CONSOLE':
-                                path = `/consoles/${result.slug}`;
+                path = `/consoles/${result.slug}`;
                 break;
             case 'FABRICATOR':
                 path = `/fabricators/${result.slug}`;
@@ -118,6 +118,7 @@ const GlobalSearch: FC = () => {
                     <input
                         ref={inputRef}
                         type="text"
+                        aria-label="Search Database"
                         className="flex-1 bg-transparent border-none outline-none text-white font-mono text-sm placeholder-text-muted uppercase tracking-wider"
                         placeholder="SEARCH DATABASE..."
                         value={query}

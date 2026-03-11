@@ -201,8 +201,8 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                                 <input
                                     type="text"
                                     className={`w-full border p-3 font-mono text-sm outline-none transition-colors ${isSlugLocked
-                                            ? 'bg-bg-secondary border-border-normal text-gray-500 cursor-not-allowed opacity-75'
-                                            : `bg-bg-primary text-white ${fieldErrors.slug ? 'border-accent' : 'border-border-normal focus:border-white'}`
+                                        ? 'bg-bg-secondary border-border-normal text-gray-500 cursor-not-allowed opacity-75'
+                                        : `bg-bg-primary text-white ${fieldErrors.slug ? 'border-accent' : 'border-border-normal focus:border-white'}`
                                         }`}
                                     value={formData[field.key] || ''}
                                     onChange={(e: ChangeEvent<HTMLInputElement>) => handleInputChange(field.key, e.target.value)}
@@ -221,7 +221,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                                     {franchises.map(tag => (
                                         <span key={tag} className="bg-bg-secondary text-primary px-2 py-1 text-xs border border-border-normal flex items-center gap-1 uppercase">
                                             {tag}
-                                            <button type="button" onClick={() => removeFranchise(tag)} className="hover:text-white font-bold text-gray-500">×</button>
+                                            <button type="button" onClick={() => removeFranchise(tag)} className="hover:text-white font-bold text-gray-500" aria-label="Remove franchise">×</button>
                                         </span>
                                     ))}
                                     <input
@@ -257,7 +257,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
 
             <div className="flex justify-between items-center pt-6 border-t border-border-normal">
                 {isEditMode ? (
-                     <button
+                    <button
                         type="button"
                         onClick={handleDelete}
                         disabled={loading}

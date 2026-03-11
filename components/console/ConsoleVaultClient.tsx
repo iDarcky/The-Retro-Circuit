@@ -27,7 +27,7 @@ const SORT_OPTIONS: { value: SortOption, label: string }[] = [
 ];
 
 const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers, initialConsoles }) => {
-        const [allConsoles] = useState<ConsoleDetails[]>(initialConsoles);
+    const [allConsoles] = useState<ConsoleDetails[]>(initialConsoles);
     const [filteredConsoles, setFilteredConsoles] = useState<ConsoleDetails[]>(initialConsoles);
     const [manufacturers] = useState<Manufacturer[]>(initialManufacturers);
     const [loading] = useState(false);
@@ -206,6 +206,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                             onClick={() => { setViewMode('swiss'); setPage(1); }}
                             className={`p-2 rounded transition-colors ${viewMode === 'swiss' ? 'bg-white/10 text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
                             title="Grid View"
+                            aria-label="Grid View"
                         >
                             <LayoutGrid size={16} />
                         </button>
@@ -213,6 +214,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                             onClick={() => { setViewMode('classic'); setPage(1); }}
                             className={`p-2 rounded transition-colors ${viewMode === 'classic' ? 'bg-white/10 text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
                             title="List View"
+                            aria-label="List View"
                         >
                             <List size={16} />
                         </button>
@@ -264,8 +266,8 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                                     key={ff}
                                     onClick={() => toggleFilter('form_factors', ff)}
                                     className={`text-[10px] px-2 py-1 border transition-colors ${filters.form_factors.includes(ff)
-                                            ? 'border-violet-500 text-violet-400 bg-violet-900/20'
-                                            : 'border-white/10 text-zinc-500 hover:border-white/30'
+                                        ? 'border-violet-500 text-violet-400 bg-violet-900/20'
+                                        : 'border-white/10 text-zinc-500 hover:border-white/30'
                                         }`}
                                 >
                                     {ff.toUpperCase()}
@@ -283,8 +285,8 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                                     key={pt}
                                     onClick={() => toggleFilter('panel_types', pt)}
                                     className={`text-[10px] px-2 py-1 border transition-colors ${filters.panel_types.includes(pt)
-                                            ? 'border-emerald-500 text-emerald-400 bg-emerald-900/20'
-                                            : 'border-white/10 text-zinc-500 hover:border-white/30'
+                                        ? 'border-emerald-500 text-emerald-400 bg-emerald-900/20'
+                                        : 'border-white/10 text-zinc-500 hover:border-white/30'
                                         }`}
                                 >
                                     {pt}
@@ -331,8 +333,8 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                             </div>
                         ) : (
                             <div className={`grid gap-6 ${viewMode === 'swiss'
-                                    ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
-                                    : 'grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'
+                                ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
+                                : 'grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'
                                 }`}>
                                 {paginatedConsoles.map((console) => {
                                     const specs: any = console.specs || {};

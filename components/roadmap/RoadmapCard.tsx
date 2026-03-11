@@ -50,12 +50,12 @@ const RoadmapCard: FC<RoadmapCardProps> = ({ item, isAdmin, onEdit, onDelete, on
 
             {/* Top Bar: Category & Status */}
             <div className="flex justify-between items-start">
-                 <div className="text-[10px] font-mono uppercase tracking-widest opacity-70 border border-white/10 px-2 py-0.5 rounded-full">
-                     {item.category || 'Roadmap'}
-                 </div>
-                 <div className="mt-1 flex items-center gap-2">
+                <div className="text-[10px] font-mono uppercase tracking-widest opacity-70 border border-white/10 px-2 py-0.5 rounded-full">
+                    {item.category || 'Roadmap'}
+                </div>
+                <div className="mt-1 flex items-center gap-2">
                     <StatusIcon size={16} />
-                 </div>
+                </div>
             </div>
 
             {/* Content */}
@@ -72,20 +72,21 @@ const RoadmapCard: FC<RoadmapCardProps> = ({ item, isAdmin, onEdit, onDelete, on
                 <p className="text-xs text-text-secondary leading-relaxed font-light">{item.description}</p>
             </div>
 
-             {/* Footer: Date or ID */}
-             <div className="pt-4 border-t border-white/5 flex justify-between items-end">
-                  <div className={`h-0.5 w-8 ${accentColor} opacity-50`}></div>
-                  {item.target_date && <div className="text-[9px] font-mono uppercase tracking-widest opacity-50">{new Date(item.target_date).toLocaleDateString()}</div>}
-             </div>
+            {/* Footer: Date or ID */}
+            <div className="pt-4 border-t border-white/5 flex justify-between items-end">
+                <div className={`h-0.5 w-8 ${accentColor} opacity-50`}></div>
+                {item.target_date && <div className="text-[9px] font-mono uppercase tracking-widest opacity-50">{new Date(item.target_date).toLocaleDateString()}</div>}
+            </div>
 
-             {/* Admin Controls */}
-             {isAdmin && (
+            {/* Admin Controls */}
+            {isAdmin && (
                 <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 p-1 rounded border border-white/10 backdrop-blur-sm z-20">
                     {item.status !== 'completed' && onComplete && (
                         <button
                             onClick={(e) => { e.preventDefault(); onComplete(item); }}
                             className="p-1 hover:text-emerald-400 hover:bg-emerald-500/20 rounded transition-colors"
                             title="Mark Complete"
+                            aria-label="Mark Complete"
                         >
                             <Check size={12} />
                         </button>
@@ -95,6 +96,7 @@ const RoadmapCard: FC<RoadmapCardProps> = ({ item, isAdmin, onEdit, onDelete, on
                             onClick={(e) => { e.preventDefault(); onEdit(item); }}
                             className="p-1 hover:text-blue-400 hover:bg-blue-500/20 rounded transition-colors"
                             title="Edit"
+                            aria-label="Edit Item"
                         >
                             <Edit size={12} />
                         </button>
@@ -104,12 +106,13 @@ const RoadmapCard: FC<RoadmapCardProps> = ({ item, isAdmin, onEdit, onDelete, on
                             onClick={(e) => { e.preventDefault(); onDelete(item.id); }}
                             className="p-1 hover:text-red-400 hover:bg-red-500/20 rounded transition-colors"
                             title="Delete"
+                            aria-label="Delete Item"
                         >
                             <Trash2 size={12} />
                         </button>
                     )}
                 </div>
-             )}
+            )}
         </div>
     );
 }
