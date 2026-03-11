@@ -91,14 +91,11 @@ export async function updateReview(id: string, data: Partial<Review>) {
   const supabase = await createClient();
 
   // Strip redundant columns before update
-  const { console_name, console_slug, consoles, ...cleanData } = data as any;
-
-  // Strip redundant columns before update
-  const { console_name, console_slug, consoles, ...cleanData } = data as any;
+  const { console_name: _n, console_slug: _s, consoles: _c, ...updateData } = data as any;
 
   const { error } = await supabase
     .from('reviews')
-    .update(cleanData)
+    .update(updateData)
     .eq('id', id);
 
   if (error) {
