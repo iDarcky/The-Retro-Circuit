@@ -77,7 +77,7 @@ const CompareButton = ({ compact = false, compareUrl }: CompareButtonProps) => {
             <Link href={compareUrl}>
                 <SwissButton
                     variant="secondary"
-                    className="px-2 py-1 text-[10px] h-[26px] bg-violet-600 border-violet-500 text-white hover:bg-violet-500 hover:border-violet-400"
+                    className="px-2 py-1 text-[10px] h-[26px] bg-violet-600 border-violet-500 text-white hover:bg-violet-500 hover:border-violet-400 flex items-center gap-1"
                 >
                     <IconVS className="w-3 h-3" />
                     VS
