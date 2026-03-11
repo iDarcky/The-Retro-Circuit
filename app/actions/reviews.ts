@@ -25,7 +25,7 @@ export async function createReview(data: Omit<Review, 'id' | 'author' | 'publish
   const { data: newReview, error } = await supabase
     .from('reviews')
     .insert([{ ...cleanData }])
-    .select('id, status')
+    .select('id')
     .single();
 
   if (error) {
@@ -33,7 +33,7 @@ export async function createReview(data: Omit<Review, 'id' | 'author' | 'publish
     throw new Error(error.message);
   }
 
-  if (newReview && newReview.status === 'published') {
+  if (newReview) {
       submitToIndexNow([`https://theretrocircuit.com/news/reviews/${newReview.id}`]);
   }
 
@@ -90,21 +90,12 @@ export async function fetchAllReviews(): Promise<Review[]> {
 export async function updateReview(id: string, data: Partial<Review>) {
   const supabase = await createClient();
 
-  // Check previous status
-  const isPublishing = (data as any).status === 'published';
-  let previousStatus = null;
-
-  if (isPublishing) {
-    const { data: prevReview } = await supabase.from('reviews').select('status').eq('id', id).single();
-    previousStatus = prevReview?.status;
-  }
-
   // Strip redundant columns before update
-  const { console_name, console_slug, consoles, ...cleanData } = data as any;
+  const { console_name: _n, console_slug: _s, consoles: _c, ...updateData } = data as any;
 
   const { error } = await supabase
     .from('reviews')
-    .update(cleanData)
+    .update(updateData)
     .eq('id', id);
 
   if (error) {
@@ -112,9 +103,7 @@ export async function updateReview(id: string, data: Partial<Review>) {
     throw new Error(error.message);
   }
 
-  if (isPublishing && previousStatus !== 'published') {
-    submitToIndexNow([`https://theretrocircuit.com/news/reviews/${id}`]);
-  }
+  submitToIndexNow([`https://theretrocircuit.com/news/reviews/${id}`]);
 
   revalidatePath('/news');
   revalidatePath('/admin/reviews');
