@@ -29,7 +29,7 @@ const SORT_OPTIONS: { value: SortOption, label: string }[] = [
 ];
 
 export default function FabricatorDetailClient({ profile, consoles }: Props) {
-        // --- COLOR & THEME SETUP ---
+    // --- COLOR & THEME SETUP ---
     const staticHexMap: Record<string, string> = {
         'Nintendo': '#ef4444',
         'Sega': '#3b82f6',
@@ -299,6 +299,7 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                             onClick={() => { setViewMode('swiss'); setPage(1); }}
                             className={`p-2 rounded transition-colors ${viewMode === 'swiss' ? 'bg-white/10 text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
                             title="Grid View"
+                            aria-label="Grid View"
                         >
                             <LayoutGrid size={16} />
                         </button>
@@ -306,6 +307,7 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                             onClick={() => { setViewMode('classic'); setPage(1); }}
                             className={`p-2 rounded transition-colors ${viewMode === 'classic' ? 'bg-white/10 text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
                             title="List View"
+                            aria-label="List View"
                         >
                             <List size={16} />
                         </button>
@@ -346,8 +348,8 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                                     key={ff}
                                     onClick={() => toggleFilter('form_factors', ff)}
                                     className={`text-[10px] px-2 py-1 border transition-colors ${filters.form_factors.includes(ff)
-                                            ? 'border-[var(--brand-color)] text-[var(--brand-color)] bg-[rgba(var(--brand-rgb),0.1)]'
-                                            : 'border-white/10 text-zinc-500 hover:border-white/30'
+                                        ? 'border-[var(--brand-color)] text-[var(--brand-color)] bg-[rgba(var(--brand-rgb),0.1)]'
+                                        : 'border-white/10 text-zinc-500 hover:border-white/30'
                                         }`}
                                 >
                                     {ff.toUpperCase()}
@@ -365,8 +367,8 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                                     key={pt}
                                     onClick={() => toggleFilter('panel_types', pt)}
                                     className={`text-[10px] px-2 py-1 border transition-colors ${filters.panel_types.includes(pt)
-                                            ? 'border-[var(--brand-color)] text-[var(--brand-color)] bg-[rgba(var(--brand-rgb),0.1)]'
-                                            : 'border-white/10 text-zinc-500 hover:border-white/30'
+                                        ? 'border-[var(--brand-color)] text-[var(--brand-color)] bg-[rgba(var(--brand-rgb),0.1)]'
+                                        : 'border-white/10 text-zinc-500 hover:border-white/30'
                                         }`}
                                 >
                                     {pt}
@@ -411,8 +413,8 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                     </div>
                 ) : (
                     <div className={`grid gap-6 ${viewMode === 'swiss'
-                            ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
-                            : 'grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'
+                        ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
+                        : 'grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'
                         }`}>
                         {paginatedConsoles.map((console) => {
                             const specs: any = console.specs || {};

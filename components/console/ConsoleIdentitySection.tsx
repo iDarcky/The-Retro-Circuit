@@ -77,7 +77,7 @@ const CompareButton = ({ compact = false, compareUrl }: CompareButtonProps) => {
             <Link href={compareUrl}>
                 <SwissButton
                     variant="secondary"
-                    className="px-2 py-1 text-[10px] h-[26px] bg-violet-600 border-violet-500 text-white hover:bg-violet-500 hover:border-violet-400"
+                    className="px-2 py-1 text-[10px] h-[26px] bg-violet-600 border-violet-500 text-white hover:bg-violet-500 hover:border-violet-400 flex items-center gap-1"
                 >
                     <IconVS className="w-3 h-3" />
                     VS
@@ -111,7 +111,7 @@ export default function ConsoleIdentitySection({
     const sentinelRef = useRef<HTMLDivElement>(null);
 
     const currentVariant = variants.find(v => v.id === selectedVariantId) || null;
-        const compareUrl = `/arena/${consoleData.slug}${currentVariant?.slug ? `-${currentVariant.slug}` : ''}-vs-select`;
+    const compareUrl = `/arena/${consoleData.slug}${currentVariant?.slug ? `-${currentVariant.slug}` : ''}-vs-select`;
 
     const fabName = manufacturer?.name || 'UNKNOWN';
 
@@ -206,7 +206,7 @@ export default function ConsoleIdentitySection({
 
                         <div className="flex items-center gap-3">
                             <CompareButton compareUrl={compareUrl} />
-                            <SwissButton variant="secondary" onClick={handleShare} className="relative">
+                            <SwissButton variant="secondary" onClick={handleShare} className="relative" aria-label="Share Console">
                                 <Share2 className="w-4 h-4" />
                                 {showShareTooltip && (
                                     <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-[9px] bg-white text-black px-2 py-1 font-mono whitespace-nowrap">
@@ -226,7 +226,7 @@ export default function ConsoleIdentitySection({
             <div
                 className={`
                     fixed top-0 left-0 w-full z-50 bg-[#09090b]/95 backdrop-blur-md border-b border-white/10 py-2 transition-transform duration-300 ease-out
-                    ${isSticky ? 'translate-y-[64px]' : '-translate-y-full'}
+                    ${isSticky ? 'translate-y-[48px] md:translate-y-[64px]' : '-translate-y-full'}
                 `}
             >
                 <div className="max-w-[1600px] mx-auto px-4 md:px-8 flex items-center justify-between gap-4">

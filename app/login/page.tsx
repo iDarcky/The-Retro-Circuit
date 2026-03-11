@@ -8,11 +8,11 @@ import SwissButton from '@/components/console/swiss/SwissButton';
 
 export default function LoginPage() {
     const router = useRouter();
-    
+
     // Auth State
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    
+
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'error' | 'success', text: string } | null>(null);
 
@@ -28,8 +28,8 @@ export default function LoginPage() {
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (event === "SIGNED_IN" && session) {
-                 // Redirect to profile on sign in
-                 router.replace('/profile');
+                // Redirect to profile on sign in
+                router.replace('/profile');
             }
         });
         return () => subscription.unsubscribe();
@@ -48,7 +48,7 @@ export default function LoginPage() {
             // 2. Success - Redirect handled by onAuthStateChange listener or manual push
             setMessage({ type: 'success', text: 'ACCESS GRANTED. INITIALIZING...' });
             router.push('/profile');
-                
+
         } catch (err: any) {
             console.error(err);
             setMessage({ type: 'error', text: err.message || 'AUTHENTICATION FAILED' });
@@ -69,17 +69,17 @@ export default function LoginPage() {
                 </h2>
 
                 {message && (
-                    <div className={`p-3 mb-6 text-xs font-mono border animate-pulse ${
-                        message.type === 'error' ? 'border-accent text-accent bg-accent/10' : 'border-secondary text-secondary bg-secondary/10'
-                    }`}>
+                    <div className={`p-3 mb-6 text-xs font-mono border animate-pulse ${message.type === 'error' ? 'border-accent text-accent bg-accent/10' : 'border-secondary text-secondary bg-secondary/10'
+                        }`}>
                         &gt; {message.text}
                     </div>
                 )}
 
                 <form onSubmit={handleAuth} className="space-y-4">
                     <div>
-                        <label className="block text-xs font-mono text-primary mb-1 tracking-widest">EMAIL ADDRESS</label>
+                        <label htmlFor="email" className="block text-xs font-mono text-primary mb-1 tracking-widest">EMAIL ADDRESS</label>
                         <input
+                            id="email"
                             type="email"
                             required
                             value={email}
@@ -90,8 +90,9 @@ export default function LoginPage() {
                     </div>
 
                     <div>
-                        <label className="block text-xs font-mono text-primary mb-1 tracking-widest">ACCESS CODE</label>
+                        <label htmlFor="password" className="block text-xs font-mono text-primary mb-1 tracking-widest">ACCESS CODE</label>
                         <input
+                            id="password"
                             type="password"
                             required
                             value={password}
