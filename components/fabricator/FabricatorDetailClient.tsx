@@ -317,6 +317,7 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
 
             {/* --- EXPANDABLE FILTERS --- */}
             <div className={`w-full bg-black/40 backdrop-blur-md border-b border-white/10 p-4 transition-all duration-300 ${showFilters ? 'block' : 'hidden'}`}>
+                {/* ... existing filter content ... */}
                 <div className="max-w-[1800px] mx-auto flex flex-col md:flex-row gap-6 items-start md:items-center justify-between flex-wrap">
 
                     {/* Timeline */}
@@ -393,6 +394,93 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                     </button>
                 </div>
             </div>
+
+            {/* --- MANUFACTURER PROFILE --- */}
+            {(profile.known_for?.length || profile.who_its_for || consoles.some(c => c.is_featured)) && (
+                <div className="px-6 md:px-12 py-12 max-w-[1800px] mx-auto border-b border-white/5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                        {/* 1. KNOWN FOR */}
+                        {profile.known_for && profile.known_for.length > 0 && (
+                            <div className="flex flex-col gap-4">
+                                <h3 className="font-pixel text-lg text-white uppercase tracking-widest border-b border-white/10 pb-2 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-[var(--brand-color)] shadow-[0_0_10px_rgba(var(--brand-rgb),0.5)]"></span>
+                                    KNOWN FOR
+                                </h3>
+                                <ul className="space-y-3 font-mono text-sm text-zinc-400">
+                                    {profile.known_for.map((item, idx) => (
+                                        <li key={idx} className="flex gap-3 leading-relaxed">
+                                            <span className="text-[var(--brand-color)] font-bold opacity-75 mt-0.5">›</span>
+                                            {item}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
+                        {/* 2. WHO IT'S FOR */}
+                        {profile.who_its_for && (
+                            <div className="flex flex-col gap-4">
+                                <h3 className="font-pixel text-lg text-white uppercase tracking-widest border-b border-white/10 pb-2 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-[var(--brand-color)] shadow-[0_0_10px_rgba(var(--brand-rgb),0.5)]"></span>
+                                    WHO IT&apos;S FOR
+                                </h3>
+                                <div className="font-mono text-sm leading-relaxed text-zinc-400 bg-white/[0.02] p-4 border border-white/5 border-l-2 border-l-[var(--brand-color)]">
+                                    {profile.who_its_for}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 3. KEY DEVICES */}
+                        {consoles.some(c => c.is_featured) && (
+                            <div className={`flex flex-col gap-4 ${(!profile.who_its_for || (!profile.known_for || profile.known_for.length === 0)) ? 'lg:col-span-2' : ''}`}>
+                                <h3 className="font-pixel text-lg text-white uppercase tracking-widest border-b border-white/10 pb-2 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-[var(--brand-color)] shadow-[0_0_10px_rgba(var(--brand-rgb),0.5)]"></span>
+                                    KEY DEVICES
+                                </h3>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    {consoles.filter(c => c.is_featured).slice(0, 3).map(consoleItem => {
+                                        let imageUrl = consoleItem.image_url;
+                                        if (!imageUrl && consoleItem.variants && consoleItem.variants.length > 0) {
+                                            const defaultVar = consoleItem.variants.find(v => v.is_default) || consoleItem.variants[0];
+                                            imageUrl = defaultVar?.image_url;
+                                        }
+
+                                        let price = 0;
+                                        if (consoleItem.variants && consoleItem.variants.length > 0) {
+                                            const defaultVar = consoleItem.variants.find(v => v.is_default) || consoleItem.variants[0];
+                                            price = defaultVar?.price_launch_usd || 0;
+                                        } else {
+                                            price = consoleItem.specs?.price_launch_usd || 0;
+                                        }
+
+                                        return (
+                                            <Link href={`/consoles/${consoleItem.slug}`} key={consoleItem.id} className="group border border-white/10 bg-black/40 p-3 hover:border-[var(--brand-color)] hover:bg-white/[0.02] transition-colors flex flex-col">
+                                                <div className="aspect-video bg-white/5 border border-white/5 mb-3 p-2 flex items-center justify-center relative overflow-hidden group-hover:bg-white/10 transition-colors">
+                                                    {imageUrl ? (
+                                                        <img
+                                                            src={imageUrl.startsWith('http') ? imageUrl : `/${imageUrl.replace(/^\//, '')}`}
+                                                            alt={consoleItem.name}
+                                                            className="w-full h-full object-contain filter drop-shadow-lg group-hover:scale-110 transition-transform duration-500"
+                                                        />
+                                                    ) : (
+                                                        <span className="font-pixel text-zinc-600">?</span>
+                                                    )}
+                                                </div>
+                                                <h4 className="font-bold text-white text-xs truncate group-hover:text-[var(--brand-color)] transition-colors">{consoleItem.name}</h4>
+                                                <div className="flex justify-between items-center mt-1 pt-2 border-t border-white/5">
+                                                    <span className="font-mono text-[10px] text-zinc-500">{consoleItem.form_factor || 'UNKNOWN'}</span>
+                                                    <span className="font-mono text-[10px] text-[var(--brand-color)]">{price ? `$${price}` : 'N/A'}</span>
+                                                </div>
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* --- MAIN GRID --- */}
             <div className="px-6 md:px-12 py-12 max-w-[1800px] mx-auto min-h-[50vh]">

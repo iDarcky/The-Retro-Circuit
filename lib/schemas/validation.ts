@@ -25,56 +25,59 @@ export const ManufacturerSchema = z.object({
   key_franchises: safeString,
   image_url: safeString,
   brand_color: safeString,
+  known_for: z.array(z.string()).optional(),
+  who_its_for: safeString.optional(),
 });
 
 export const ConsoleSchema = z.object({
-    manufacturer_id: safeString,
-    name: safeString,
-    slug: safeString,
-    description: safeString,
-    image_url: safeString,
-    form_factor: safeString,
+  manufacturer_id: safeString,
+  name: safeString,
+  slug: safeString,
+  description: safeString,
+  image_url: safeString,
+  form_factor: safeString,
 
-    // Feature Flags & Config
-    device_category: safeString,
-    chassis_features: safeString,
-    has_cartridge_slot: safeBoolean,
-    supported_cartridge_types: safeString,
+  // Feature Flags & Config
+  device_category: safeString,
+  chassis_features: safeString,
+  has_cartridge_slot: safeBoolean,
+  supported_cartridge_types: safeString,
 
-    // New Finder Traits
-    setup_ease_score: safeNumber,
-    community_score: safeNumber,
+  // New Finder Traits
+  setup_ease_score: safeNumber,
+  community_score: safeNumber,
 
-    // Status
-    status: safeString,
+  // Status
+  status: safeString,
+  is_featured: safeBoolean,
 });
 
 export const VariantInputProfileSchema = z.object({
-    dpad_tech: safeString,
-    dpad_shape: safeString,
-    dpad_placement: safeString,
-    face_button_count: safeNumber,
-    face_button_tech: safeString,
-    face_label_scheme: safeString,
-    stick_count: safeNumber,
-    stick_tech: safeString,
-    stick_layout: safeString,
-    stick_clicks: safeBoolean,
-    stick_cap: safeString,
-    bumper_tech: safeString,
-    trigger_tech: safeString,
-    trigger_type: safeString,
-    trigger_layout: safeString,
-    back_button_count: safeNumber,
-    has_gyro: safeBoolean,
-    has_keyboard: safeBoolean,
-    // keyboard_type: safeString, - Removed
-    system_button_set: safeString,
-    system_buttons_text: safeString,
-    touchpad_count: safeNumber,
-    touchpad_clickable: safeBoolean,
-    input_confidence: safeString,
-    input_notes: safeString,
+  dpad_tech: safeString,
+  dpad_shape: safeString,
+  dpad_placement: safeString,
+  face_button_count: safeNumber,
+  face_button_tech: safeString,
+  face_label_scheme: safeString,
+  stick_count: safeNumber,
+  stick_tech: safeString,
+  stick_layout: safeString,
+  stick_clicks: safeBoolean,
+  stick_cap: safeString,
+  bumper_tech: safeString,
+  trigger_tech: safeString,
+  trigger_type: safeString,
+  trigger_layout: safeString,
+  back_button_count: safeNumber,
+  has_gyro: safeBoolean,
+  has_keyboard: safeBoolean,
+  // keyboard_type: safeString, - Removed
+  system_button_set: safeString,
+  system_buttons_text: safeString,
+  touchpad_count: safeNumber,
+  touchpad_clickable: safeBoolean,
+  input_confidence: safeString,
+  input_notes: safeString,
 });
 
 export const ConsoleVariantSchema = z.object({
@@ -83,7 +86,7 @@ export const ConsoleVariantSchema = z.object({
   variant_name: safeString,
   slug: safeString,
   is_default: safeBoolean,
-  
+
   release_date: safeString.nullable(),
   release_date_precision: z.enum(['year', 'month', 'day']).nullable().optional(),
   model_no: safeString,
@@ -99,21 +102,21 @@ export const ConsoleVariantSchema = z.object({
   cpu_threads: safeNumber,
   cpu_clock_max_mhz: safeNumber,
   cpu_clock_min_mhz: safeNumber,
-  
+
   gpu_model: safeString,
   gpu_architecture: safeString,
   gpu_cores: safeNumber,
   gpu_compute_units: safeString,
   gpu_clock_mhz: safeNumber,
   gpu_teraflops: safeNumber,
-  
+
   os: safeString,
 
   // Memory
   ram_mb: safeNumber,
   ram_type: safeString,
   ram_speed_mhz: safeNumber,
-  
+
   storage_gb: safeNumber,
   storage_type: safeString,
   storage_expandable: safeBoolean,

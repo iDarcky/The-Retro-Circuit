@@ -29,6 +29,10 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
     const [franchises, setFranchises] = useState<string[]>([]);
     const [franchiseInput, setFranchiseInput] = useState('');
 
+    // Known For Tag State
+    const [knownForTags, setKnownForTags] = useState<string[]>([]);
+    const [knownForInput, setKnownForInput] = useState('');
+
     // Edit Mode Flag
     const isEditMode = !!initialData;
 
@@ -38,6 +42,9 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
             setFormData(initialData);
             if (initialData.key_franchises) {
                 setFranchises(initialData.key_franchises.split(',').map(s => s.trim()).filter(Boolean));
+            }
+            if (initialData.known_for) {
+                setKnownForTags(initialData.known_for);
             }
         }
     }, [initialData]);
@@ -85,6 +92,21 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
         setFranchises(franchises.filter(f => f !== tag));
     };
 
+    const handleKnownForKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const trimmed = knownForInput.trim();
+            if (trimmed && !knownForTags.includes(trimmed)) {
+                setKnownForTags([...knownForTags, trimmed]);
+            }
+            setKnownForInput('');
+        }
+    };
+
+    const removeKnownFor = (tag: string) => {
+        setKnownForTags(knownForTags.filter(f => f !== tag));
+    };
+
     const handleDelete = async () => {
         if (!initialData?.id) return;
 
@@ -124,6 +146,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
         const rawData = {
             ...formData,
             key_franchises: franchises.join(', '),
+            known_for: knownForTags,
             founded_year: formData.founded_year // safeSchema handles parsing
         };
 
@@ -155,6 +178,8 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                     setFormData({});
                     setFranchises([]);
                     setFranchiseInput('');
+                    setKnownForTags([]);
+                    setKnownForInput('');
                     setIsSlugLocked(true);
                 }
                 setFieldErrors({});
@@ -253,6 +278,42 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
 
                     return <AdminInput key={field.key} field={field} value={formData[field.key]} onChange={handleInputChange} error={fieldErrors[field.key]} />;
                 })}
+
+                {/* --- KNOWN FOR --- */}
+                <div className="col-span-1 md:col-span-2 mt-4 pt-4 border-t border-border-normal">
+                    <label className="text-[10px] text-gray-500 mb-1 block uppercase tracking-wider">Known For (Bullet Points)</label>
+                    <div className="w-full bg-bg-primary border border-border-normal p-2 font-mono flex flex-col gap-2 min-h-[50px] transition-colors hover:border-white">
+                        <div className="flex flex-wrap gap-2">
+                            {knownForTags.map(tag => (
+                                <span key={tag} className="bg-bg-secondary text-primary px-3 py-1.5 text-xs border border-border-normal flex items-center gap-2 group">
+                                    <span className="w-1.5 h-1.5 bg-[var(--brand-color)] inline-block"></span>
+                                    {tag}
+                                    <button type="button" onClick={() => removeKnownFor(tag)} className="opacity-50 hover:opacity-100 hover:text-white font-bold ml-1 transition-opacity" aria-label="Remove bullet point">×</button>
+                                </span>
+                            ))}
+                        </div>
+                        <input
+                            type="text"
+                            className="bg-transparent outline-none text-white w-full text-sm placeholder:text-gray-700 placeholder:text-xs pt-1 border-t border-dashed border-white/10 mt-2"
+                            placeholder="TYPE BULLET POINT & ENTER (e.g. 'Pioneered blast processing')..."
+                            value={knownForInput}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setKnownForInput(e.target.value)}
+                            onKeyDown={handleKnownForKeyDown}
+                        />
+                    </div>
+                </div>
+
+                {/* --- WHO IT'S FOR --- */}
+                <div className="col-span-1 md:col-span-2">
+                    <label className={`text-[10px] text-gray-500 mb-1 block uppercase tracking-wider ${fieldErrors.who_its_for ? 'text-accent' : ''}`}>Who It's For (Narrative Profile)</label>
+                    <textarea
+                        className={`w-full bg-bg-primary border p-3 font-mono text-sm text-white placeholder:text-gray-700 outline-none transition-colors min-h-[120px] resize-y ${fieldErrors.who_its_for ? 'border-accent' : 'border-border-normal focus:border-white'}`}
+                        placeholder="Write a short paragraph summarizing their target audience and appeal..."
+                        value={formData.who_its_for || ''}
+                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => handleInputChange('who_its_for', e.target.value)}
+                    />
+                    {fieldErrors.who_its_for && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold">! {fieldErrors.who_its_for}</div>}
+                </div>
             </div>
 
             <div className="flex justify-between items-center pt-6 border-t border-border-normal">

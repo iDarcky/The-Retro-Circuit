@@ -146,14 +146,21 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
                             ]}
                             labelPrefix="" inverted={false}
                             className="min-w-[120px]"
-                            buttonClassName={`bg-transparent border-none outline-none font-mono text-xs uppercase cursor-pointer h-auto p-0 flex gap-2 items-center ${
-                                    formData.status === 'published' ? 'text-secondary' :
+                            buttonClassName={`bg-transparent border-none outline-none font-mono text-xs uppercase cursor-pointer h-auto p-0 flex gap-2 items-center ${formData.status === 'published' ? 'text-secondary' :
                                     formData.status === 'archived' ? 'text-red-500' :
-                                    formData.status === 'review' ? 'text-amber-500' : 'text-gray-400'
+                                        formData.status === 'review' ? 'text-amber-500' : 'text-gray-400'
                                 }`}
                             compact
                         />
-                         {fieldErrors.status && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold text-right">! {fieldErrors.status}</div>}
+                        {fieldErrors.status && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold text-right">! {fieldErrors.status}</div>}
+                    </div>
+                    <div className="flex flex-col flex-1 items-end pl-4 ml-4 border-l border-white/10">
+                        <label className="text-[10px] uppercase text-gray-500 mb-2">Featured Hardware</label>
+                        <div className="flex items-center justify-center cursor-pointer group" onClick={() => handleInputChange('is_featured', !formData.is_featured)}>
+                            <div className={`w-4 h-4 border flex items-center justify-center transition-all ${formData.is_featured ? 'bg-amber-400 border-amber-400' : 'border-gray-500 bg-transparent group-hover:border-white'}`}>
+                                {formData.is_featured && <div className="w-2 h-2 bg-black"></div>}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -253,12 +260,12 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
                     <div className="flex items-center justify-between bg-bg-primary border border-border-normal p-3 hover:border-white transition-colors cursor-pointer group" onClick={() => handleInputChange('has_cartridge_slot', !formData.has_cartridge_slot)}>
                         <label className="font-mono text-xs text-gray-400 group-hover:text-white uppercase tracking-wider cursor-pointer">Has Cartridge Slot?</label>
                         <div className={`w-4 h-4 border flex items-center justify-center transition-all ${formData.has_cartridge_slot ? 'bg-secondary border-secondary' : 'border-gray-600 bg-transparent'}`}>
-                             {formData.has_cartridge_slot && <div className="w-2 h-2 bg-black"></div>}
+                            {formData.has_cartridge_slot && <div className="w-2 h-2 bg-black"></div>}
                         </div>
                     </div>
                     {formData.has_cartridge_slot && (
                         <div className="mt-4 animate-fadeIn">
-                             <AdminInput
+                            <AdminInput
                                 field={{ key: 'supported_cartridge_types', label: 'Supported Cartridge Types', placeholder: 'E.G. GAME BOY, DS, 3DS' }}
                                 value={formData.supported_cartridge_types}
                                 onChange={handleInputChange}
@@ -270,7 +277,7 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
 
             <div className="flex justify-between items-center pt-6 border-t border-border-normal">
                 {isEditMode && formData.status === 'draft' ? (
-                     <button
+                    <button
                         type="button"
                         onClick={handleDelete}
                         disabled={loading}

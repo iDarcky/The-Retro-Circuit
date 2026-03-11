@@ -1,11 +1,11 @@
 
 export interface SearchResult {
-    type: 'GAME' | 'CONSOLE' | 'FABRICATOR';
-    id: string;
-    slug: string;
-    title: string;
-    subtitle?: string;
-    image?: string;
+  type: 'GAME' | 'CONSOLE' | 'FABRICATOR';
+  id: string;
+  slug: string;
+  title: string;
+  subtitle?: string;
+  image?: string;
 }
 
 export interface ComparisonPoint {
@@ -53,23 +53,25 @@ export interface Manufacturer {
   website?: string;
   key_franchises: string;
   image_url?: string;
-    og_icon_url?: string;
+  og_icon_url?: string;
   brand_color?: string;
+  known_for?: string[];
+  who_its_for?: string;
 }
 
 export interface ConsoleFilterState {
-    minYear: number;
-    maxYear: number;
-    generations: string[];
-    form_factors: string[];
-    manufacturer_id: string | null;
-    panel_types: string[];
+  minYear: number;
+  maxYear: number;
+  generations: string[];
+  form_factors: string[];
+  manufacturer_id: string | null;
+  panel_types: string[];
 }
 
 export interface ConsoleSpecs {
   id?: string;
   console_id?: string;
-  [key: string]: any; 
+  [key: string]: any;
 }
 
 export interface EmulationProfile {
@@ -172,8 +174,8 @@ export interface ConsoleVariant {
   release_date_precision?: 'year' | 'month' | 'day' | null;
   model_no?: string;
   price_launch_usd?: number;
-  image_url?: string; 
-    og_icon_url?: string;
+  image_url?: string;
+  og_icon_url?: string;
 
   cpu_model?: string;
   cpu_architecture?: string;
@@ -182,22 +184,22 @@ export interface ConsoleVariant {
   cpu_threads?: number;
   cpu_clock_max_mhz?: number;
   cpu_clock_min_mhz?: number;
-  
+
   gpu_model?: string;
   gpu_architecture?: string;
   gpu_cores?: number;
   gpu_compute_units?: string;
   gpu_clock_mhz?: number;
   gpu_teraflops?: number;
-  
+
   os?: string;
-  ram_mb?: number; 
+  ram_mb?: number;
   ram_type?: string;
   ram_speed_mhz?: number;
   storage_gb?: number;
   storage_type?: string;
   storage_expandable?: boolean;
-  
+
   screen_size_inch?: number;
   screen_resolution_x?: number;
   screen_resolution_y?: number;
@@ -222,7 +224,7 @@ export interface ConsoleVariant {
   battery_capacity_wh?: number;
   battery_type?: string;
   charging_speed_w?: number;
-  charging_tech?: string; 
+  charging_tech?: string;
   tdp_wattage?: number | null;
   weight_g?: number;
   cooling_solution?: string;
@@ -235,7 +237,7 @@ export interface ConsoleVariant {
   has_microphone?: boolean;
   camera_specs?: string;
   biometrics?: string;
-  
+
   ports?: string;
   bluetooth_specs?: string;
   wifi_specs?: string;
@@ -243,7 +245,7 @@ export interface ConsoleVariant {
   cellular_connectivity?: string;
   video_out?: string | null;
   haptics?: string;
-  
+
   // Deprecated Fields Removed:
   // input_layout, other_buttons, dpad_mechanism, dpad_shape,
   // thumbstick_mechanism, thumbstick_layout, thumbstick_cap, has_stick_clicks,
@@ -262,29 +264,30 @@ export interface ConsoleVariant {
 export type ContentStatus = 'draft' | 'review' | 'published' | 'archived';
 
 export interface ConsoleDetails {
-    id: string;
-    manufacturer_id: string;
-    name: string;
-    slug: string;
-    description?: string;
-    image_url?: string;
-    og_icon_url?: string;
-    form_factor?: string;
-    manufacturer?: Manufacturer;
-    variants?: ConsoleVariant[];
-    specs?: ConsoleSpecs | Partial<ConsoleVariant>;
-    
-    generation?: string;
+  id: string;
+  manufacturer_id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image_url?: string;
+  og_icon_url?: string;
+  form_factor?: string;
+  manufacturer?: Manufacturer;
+  variants?: ConsoleVariant[];
+  specs?: ConsoleSpecs | Partial<ConsoleVariant>;
 
-    device_category: 'emulation' | 'pc_gaming' | 'fpga' | 'legacy';
-    has_cartridge_slot: boolean;
-    supported_cartridge_types: string | null;
-    chassis_features: string | null;
+  generation?: string;
 
-    setup_ease_score?: number | null;
-    community_score?: number | null;
+  device_category: 'emulation' | 'pc_gaming' | 'fpga' | 'legacy';
+  has_cartridge_slot: boolean;
+  supported_cartridge_types: string | null;
+  chassis_features: string | null;
 
-    status?: ContentStatus;
+  setup_ease_score?: number | null;
+  community_score?: number | null;
+
+  status?: ContentStatus;
+  is_featured?: boolean;
 }
 
 export interface Release {
