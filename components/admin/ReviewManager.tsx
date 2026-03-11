@@ -49,8 +49,8 @@ export const ReviewManager: React.FC<ReviewManagerProps> = ({ reviews, consoles 
         summary: formData.summary,
         score: Number(formData.score),
         image_url: formData.image_url,
-        pros: formData.pros.split(',').map(p => p.trim()),
-        cons: formData.cons.split(',').map(c => c.trim()),
+        pros: formData.pros ? formData.pros.split(',').map(p => p.trim()).filter(Boolean) : [],
+        cons: formData.cons ? formData.cons.split(',').map(c => c.trim()).filter(Boolean) : [],
       });
 
       setFormData({
