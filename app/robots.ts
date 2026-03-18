@@ -7,10 +7,6 @@ export default function robots() {
         userAgent: '*',
         allow: '/',
         disallow: ['/admin/', '/api/', '/design', '/login', '/profile'],
-      },
-      {
-        userAgent: ['GPTBot', 'ChatGPT-User', 'CCBot', 'Google-Extended', 'AnthropicAI', 'Claude-Web', 'Omgilibot', 'FacebookBot'],
-        disallow: '/',
       }
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
