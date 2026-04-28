@@ -1,6 +1,33 @@
 # The Retro Circuit 2026 Mega-Audit Report
 
-This document serves as an exhaustive, 500+ line deep-dive audit of The Retro Circuit. It covers every major pillar of the application: Performance, SEO, Security, Accessibility, Marketing, Database Integrity, UI/UX, and Future-Proofing.
+## Executive Summary
+This document serves as an exhaustive, 500+ line deep-dive audit of The Retro Circuit. The application architecture is fundamentally sound, leveraging Next.js 15, strict Swiss styling, and edge-native protections. However, as the platform scales, critical bottlenecks emerge primarily around deep relational data fetching (causing N+1 issues) and edge function timeouts during bulk data operations.
+
+The most vital strategic shift required is moving from reactive UI building to defensive backend structuring—specifically sanitizing array mutations before they hit Supabase, decoupling background tasks via Upstash QStash, and actively purging orphaned media to save infrastructure costs. Aesthetically, the platform succeeds at gamification (e.g., the VS Arena), which should be doubled down on for user retention.
+
+## Top 5 Critical Priority Action Items
+1. **Fix Array Mutation Crashes:** Build a global utility to strictly strip nested relational JSON payloads (`select('*, variants(*)')`) before passing them to Supabase `.update()` calls.
+2. **Implement QStash for Bulk Operations:** Offload heavy async tasks (like bulk IndexNow pings and media purges) from Vercel Edge Functions to prevent silent timeouts.
+3. **Automate Orphaned Media Purges:** Write a cron job to cross-reference the PostgreSQL tables against the Supabase `public` storage bucket, deleting unlinked `.webp` artifacts to prevent runaway billing.
+4. **Optimize VS Arena Data Fetching:** Refactor the wildcard `select(*)` queries in the Arena to fetch only necessary UI columns, reducing latency and massive JSON payloads.
+5. **Decouple Admin Form State:** Refactor `useEffect` hooks in Admin layouts to rely on strict primitive IDs (`initialData?.id`) or migrate entirely to React Hook Form/Zod to prevent accidental form resets during parent re-renders.
+
+## Table of Contents
+1. [Performance & Architecture Deep Dive](#1-performance--architecture-deep-dive)
+2. [SEO & Organic Discoverability](#2-seo--organic-discoverability)
+3. [Security, Data Integrity & Rate Limiting](#3-security-data-integrity--rate-limiting)
+4. [Accessibility (a11y) & UI Systems](#4-accessibility-a11y--ui-systems)
+5. [Marketing, Retention & Growth Loops](#5-marketing-retention--growth-loops)
+6. [Code Quality & Developer Experience (DX)](#6-code-quality--developer-experience-dx)
+7. [Extended Infrastructure & Database Analytics](#7-extended-infrastructure--database-analytics)
+8. [Deep UI Consistency & Layout Audits](#8-deep-ui-consistency--layout-audits)
+9. [Next-Gen Future-Proofing](#9-next-gen-future-proofing)
+10. [Email, Authentication & User Management](#10-email-authentication--user-management)
+11. [Content Strategy & Markdown Rendering](#11-content-strategy--markdown-rendering)
+12. [Component Prototyping & Design Audits](#12-component-prototyping--design-audits)
+13. [Advanced Testing & Quality Assurance (QA)](#13-advanced-testing--quality-assurance-qa)
+14. [Edge Cases & Disaster Recovery](#14-edge-cases--disaster-recovery)
+15. [Compliance & Long-Term Scalability](#15-compliance--long-term-scalability)
 
 ---
 
