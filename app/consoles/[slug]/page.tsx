@@ -9,10 +9,8 @@ export const dynamic = 'force-static';
 
 export async function generateStaticParams() {
   const consoles = await fetchConsoleList(false);
-  return consoles.map((c) => {
-    const mfgSlug = c.manufacturer?.slug || (c.manufacturer?.name ? c.manufacturer.name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
-    return { slug: `${mfgSlug}-${c.slug}` };
-  });
+  // DB slug already contains the manufacturer prefix (e.g. "anbernic-rg-28xx").
+  return consoles.map((c) => ({ slug: c.slug }));
 }
 
 type Props = {
