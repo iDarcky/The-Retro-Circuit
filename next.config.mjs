@@ -12,6 +12,43 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // ─── Defunct legacy routes → homepage ───
+      { source: '/signals', destination: '/', permanent: true },
+      { source: '/archive', destination: '/', permanent: true },
+      { source: '/games', destination: '/', permanent: true },
+      { source: '/timeline', destination: '/', permanent: true },
+      { source: '/comparer', destination: '/arena', permanent: true },
+      { source: '/chrono', destination: '/', permanent: true },
+      { source: '/systems', destination: '/consoles', permanent: true },
+      { source: '/Consoles.html', destination: '/consoles', permanent: true },
+
+      // ─── Old singular /console → plural /consoles ───
+      { source: '/console', destination: '/consoles', permanent: true },
+      // Specific singular-path slug mappings (handle renames + hyphenation pre-catch-all)
+      { source: '/console/steam-deck', destination: '/consoles/valve-steam-deck', permanent: true },
+      { source: '/console/anbernic-rg28xx', destination: '/consoles/anbernic-rg-28xx', permanent: true },
+      { source: '/console/anbernic-rg35xxsp', destination: '/consoles/anbernic-rg-35xxsp', permanent: true },
+      { source: '/console/anbernic-rg35xx-h', destination: '/consoles/anbernic-rg-35xxh', permanent: true },
+      { source: '/console/anbernic-rg35xx-plus', destination: '/consoles/anbernic-rg-35xx-plus', permanent: true },
+      { source: '/console/anbernic-rg476h', destination: '/consoles/anbernic-rg-476h', permanent: true },
+      { source: '/console/anbernic-rg477v', destination: '/consoles/anbernic-rg-477v', permanent: true },
+      { source: '/console/retroid-pocket', destination: '/fabricators/retroid', permanent: true },
+      { source: '/console/ds', destination: '/consoles/anbernic-rg-ds', permanent: true },
+      { source: '/console/test-console', destination: '/consoles', permanent: true },
+      { source: '/console/brand/:slug', destination: '/fabricators/:slug', permanent: true },
+      // Catch-all for any remaining /console/<slug> → /consoles/<slug>
+      { source: '/console/:path*', destination: '/consoles/:path*', permanent: true },
+
+      // ─── Old hyphenation forms on current /consoles path ───
+      { source: '/consoles/anbernic-rg28xx', destination: '/consoles/anbernic-rg-28xx', permanent: true },
+      { source: '/consoles/anbernic-rg35xxsp', destination: '/consoles/anbernic-rg-35xxsp', permanent: true },
+      { source: '/consoles/anbernic-rg35xx-h', destination: '/consoles/anbernic-rg-35xxh', permanent: true },
+      { source: '/consoles/anbernic-rg35xx-plus', destination: '/consoles/anbernic-rg-35xx-plus', permanent: true },
+      { source: '/consoles/anbernic-rg476h', destination: '/consoles/anbernic-rg-476h', permanent: true },
+      { source: '/consoles/anbernic-rg477v', destination: '/consoles/anbernic-rg-477v', permanent: true },
+      { source: '/consoles/rg35xx-plus', destination: '/consoles/anbernic-rg-35xx-plus', permanent: true },
+      { source: '/consoles/retroid-pocket', destination: '/fabricators/retroid', permanent: true },
+
       {
         source: '/consoles/brand/:slug',
         destination: '/fabricators/:slug',
