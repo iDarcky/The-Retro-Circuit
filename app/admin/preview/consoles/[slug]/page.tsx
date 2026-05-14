@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { fetchConsoleBySlug } from '@/app/actions';
 import ConsoleDetailView from '@/components/console/ConsoleDetailView';
+import SimilarConsoles from '@/components/console/swiss/SimilarConsoles';
 import Button from '@/components/ui/Button';
 import Link from 'next/link';
 
@@ -53,7 +54,10 @@ export default async function AdminConsolePreviewPage(props: Props) {
                 ⚠ ADMIN PREVIEW MODE - SHOWING DRAFT CONTENT ⚠
             </div>
 
-            <ConsoleDetailView consoleData={consoleData} />
+            <ConsoleDetailView
+                consoleData={consoleData}
+                similarConsolesSlot={<SimilarConsoles currentConsole={consoleData} />}
+            />
         </div>
     );
 }

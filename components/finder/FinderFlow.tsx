@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { track } from '@vercel/analytics';
+import { track } from '@/lib/analytics';
 import { QuizQuestion } from '@/components/finder/QuizQuestion';
 import { FinderResults } from '@/components/finder/FinderResults';
 

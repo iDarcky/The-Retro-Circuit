@@ -9,6 +9,7 @@ import Footer from "../components/layout/Footer";
 import { ConsentProvider } from "../components/privacy/ConsentContext";
 import { CookieBanner } from "../components/privacy/CookieBanner";
 import { AnalyticsWrapper } from "../components/privacy/AnalyticsWrapper";
+import { PostHogProvider } from "../components/privacy/PostHogProvider";
 import { siteConfig } from "../config/site";
 import { getSystemVersion } from "./actions/roadmap";
 
@@ -142,6 +143,7 @@ export default async function RootLayout({
 
           <CookieBanner />
           <AnalyticsWrapper />
+          <PostHogProvider />
         </ConsentProvider>
         <SpeedInsights />
       </body>

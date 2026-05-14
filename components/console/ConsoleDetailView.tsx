@@ -15,15 +15,15 @@ import CombinedMetrics from './swiss/CombinedMetrics';
 import TechnicalReference from './swiss/TechnicalReference';
 import SwissModal from './swiss/SwissModal';
 import VariantComparisonTable from './swiss/VariantComparisonTable';
-import SimilarConsoles from './swiss/SimilarConsoles';
 
 interface ConsoleDetailViewProps {
   consoleData: ConsoleDetails;
+  similarConsolesSlot?: React.ReactNode;
 }
 
 // --- MAIN COMPONENT ---
 
-const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
+const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, similarConsolesSlot }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
     
@@ -203,7 +203,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                 {/* ROW 4: SIMILAR CONSOLES */}
                 <section id="similar" className="border-t border-white/10 pt-8 mt-12">
                      <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">SIMILAR HARDWARE</h2>
-                     <SimilarConsoles currentConsole={consoleData} />
+                     {similarConsolesSlot}
                 </section>
 
              </main>

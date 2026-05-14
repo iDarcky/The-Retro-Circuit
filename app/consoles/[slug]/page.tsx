@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { fetchConsoleBySlug } from '../../../app/actions';
 import { fetchConsoleList } from '../../../app/actions/consoles';
 import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
+import SimilarConsoles from '../../../components/console/swiss/SimilarConsoles';
 import { ConsoleDetails } from '../../../lib/types';
 
 export const revalidate = false;
@@ -197,7 +198,10 @@ export default async function ConsoleSpecsPage(props: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ConsoleDetailView consoleData={consoleData} />
+      <ConsoleDetailView
+        consoleData={consoleData}
+        similarConsolesSlot={<SimilarConsoles currentConsole={consoleData} />}
+      />
     </>
   );
 }

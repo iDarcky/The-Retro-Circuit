@@ -4,7 +4,7 @@ import { FC, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
-import { track } from '@vercel/analytics';
+import { track } from '@/lib/analytics';
 import SwissButton from '@/components/console/swiss/SwissButton';
 import { getFinderResults, FinderResultConsole } from '../../app/finder/actions';
 
