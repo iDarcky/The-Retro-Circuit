@@ -341,7 +341,15 @@ export const calculateConsoleScore = (
     const portabilityRaw = calculatePortabilityScore(consoleItem);
     const easeRaw = calculateEaseScore(consoleItem);
 
-    const price = (consoleItem.specs as any)?.price_launch_usd || null;
+    // Price falls back to the cheapest variant if the default variant has no price.
+    // Some devices (unreleased Anbernic models, prototypes) only have prices on later
+    // variants — without the fallback they get nuked by the budget multiplier below.
+    const defaultPrice = (consoleItem.specs as any)?.price_launch_usd ?? null;
+    const variantPrices = (consoleItem.variants || [])
+        .map((v: any) => v?.price_launch_usd)
+        .filter((p: any): p is number => typeof p === 'number' && p > 0);
+    const minVariantPrice = variantPrices.length > 0 ? Math.min(...variantPrices) : null;
+    const price: number | null = defaultPrice ?? minVariantPrice;
     const valueRaw = calculateValueScore(powerRaw, libraryRaw, price);
 
     // Q5 Special Logic: Portability Match
@@ -377,7 +385,9 @@ export const calculateConsoleScore = (
     // Q4: Budget Multiplier
     if (inputs.budgetBand) {
         if (price === null || price === undefined) {
-            budgetMultiplier = 0.05; // Punish null prices heavily on budget requests
+            // Truly priceless devices (no variant has a price → unreleased/vapor).
+            // Penalize but don't eliminate — the user may still want to see them.
+            budgetMultiplier = 0.30;
         } else {
             let maxBudget = 9999;
             switch (inputs.budgetBand) {

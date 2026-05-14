@@ -2,6 +2,7 @@
 
 import { fetchAllConsoles } from '../../app/actions/consoles';
 import { calculateConsoleScore, ScoreBreakdown, getDeviceTierLevel } from '../../lib/finder/scoring';
+import { generateMatchReason } from '../../lib/finder/reasons';
 
 
 export interface FinderResultConsole {
@@ -169,7 +170,7 @@ export async function getFinderResults(
 
         if (bestMatch) {
             bestMatch.match_label = "Best Match";
-            bestMatch.match_reason = "Matches your preferences best across all categories.";
+            bestMatch.match_reason = generateMatchReason('best', bestMatch._breakdown!, inputs, bestMatch.price ?? null);
             finalSelection.push(bestMatch);
             pickedIds.add(bestMatch.id);
         }
@@ -190,7 +191,7 @@ export async function getFinderResults(
 
         if (perfPick) {
             perfPick.match_label = "Best Performance for Budget";
-            perfPick.match_reason = "Maximizes power and compatibility within your price range, prioritizing performance over features.";
+            perfPick.match_reason = generateMatchReason('perf', perfPick._breakdown!, inputs, perfPick.price ?? null);
             finalSelection.push(perfPick);
             pickedIds.add(perfPick.id);
         }
@@ -236,7 +237,7 @@ export async function getFinderResults(
                     candidates.sort((a, b) => (b._breakdown?.powerCeiling || 0) - (a._breakdown?.powerCeiling || 0));
                     upgradePick = candidates[0];
                     upgradePick.match_label = "Upgrade Pick (+$50)";
-                    upgradePick.match_reason = "Slightly over budget, but offers significantly more power or compatibility.";
+                    upgradePick.match_reason = generateMatchReason('upgrade', upgradePick._breakdown!, inputs, upgradePick.price ?? null);
                 }
             }
 
@@ -248,7 +249,7 @@ export async function getFinderResults(
                 remaining.sort((a, b) => b._score - a._score);
                 const runnerUp = remaining[0];
                 runnerUp.match_label = "Runner Up";
-                runnerUp.match_reason = "A strong alternative that nearly matched your top pick.";
+                runnerUp.match_reason = generateMatchReason('runner', runnerUp._breakdown!, inputs, runnerUp.price ?? null);
                 finalSelection.push(runnerUp);
                 pickedIds.add(runnerUp.id);
             }

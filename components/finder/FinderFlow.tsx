@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { track } from '@vercel/analytics';
 import { QuizQuestion } from '@/components/finder/QuizQuestion';
 import { FinderResults } from '@/components/finder/FinderResults';
 
@@ -181,6 +182,7 @@ const FinderFlowContent = () => {
         // Q1 Logic
         if (stepIndex === 0) {
             params.set('profile', optionId);
+            track('finder_started', { profile: optionId });
 
             if (optionId === 'gift') {
                 params.set('tone_mode', 'gift');
@@ -262,6 +264,7 @@ const FinderFlowContent = () => {
     };
 
     const handleRestart = () => {
+        track('finder_restarted');
         router.push('/finder');
     };
 

@@ -4,6 +4,7 @@ import { FC, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
+import { track } from '@vercel/analytics';
 import SwissButton from '@/components/console/swiss/SwissButton';
 import { getFinderResults, FinderResultConsole } from '../../app/finder/actions';
 
@@ -28,6 +29,15 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
 
         const data = await getFinderResults(params);
         setResults(data);
+        if (data.length > 0) {
+          track('finder_completed', {
+            profile: params.profile || 'unknown',
+            target_tier: params.target_tier || 'none',
+            budget_band: params.budget_band || 'none',
+            winner_slug: data[0].slug,
+            result_count: data.length,
+          });
+        }
       } catch (err) {
         console.error('Failed to fetch results', err);
       } finally {
@@ -68,6 +78,15 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
   const relaxedLabels: Record<string, string> = {
     form_factor: "your preferred form factor",
     features: "one or more of your must-have features",
+  };
+
+  const trackClick = (action: 'view' | 'buy' | 'compare', consoleItem: FinderResultConsole, position: number) => {
+    track('finder_result_clicked', {
+      action,
+      slug: consoleItem.slug,
+      label: consoleItem.match_label || 'unknown',
+      position,
+    });
   };
 
 
@@ -152,12 +171,12 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href={`/consoles/${winner.slug}`} className="flex-1">
+              <Link href={`/consoles/${winner.slug}`} className="flex-1" onClick={() => trackClick('view', winner, 0)}>
                 <SwissButton variant="orange" className="w-full py-4 text-sm font-pixel">
                   VIEW DETAILS
                 </SwissButton>
               </Link>
-              <Link href={`/consoles/${winner.slug}#buy`} className="flex-1">
+              <Link href={`/consoles/${winner.slug}#buy`} className="flex-1" onClick={() => trackClick('buy', winner, 0)}>
                 <SwissButton variant="primary" className="w-full py-4 text-sm font-pixel">
                   BUY NOW
                 </SwissButton>
@@ -170,7 +189,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
       {/* ALTERNATIVES GRID */}
       {alternatives.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-          {alternatives.map((consoleItem) => (
+          {alternatives.map((consoleItem, altIdx) => (
             <div key={consoleItem.id} className="border border-white/10 bg-white/[0.02] p-6 flex flex-col relative group hover:border-white/30 transition-colors">
               <div className="absolute top-0 right-0 bg-white/10 text-zinc-300 font-mono text-[10px] px-3 py-1 uppercase tracking-wider">
                 {consoleItem.match_label || 'ALTERNATIVE'}
@@ -218,21 +237,21 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                 </div>
 
                 <div className="mt-auto flex flex-col gap-3">
-                  <Link href={`/consoles/${consoleItem.slug}`} className="w-full">
+                  <Link href={`/consoles/${consoleItem.slug}`} className="w-full" onClick={() => trackClick('view', consoleItem, altIdx + 1)}>
                     <SwissButton variant="orange" className="w-full text-xs">
                       VIEW DETAILS
                     </SwissButton>
                   </Link>
 
                   {/* COMPARE BUTTON */}
-                  <Link href={`/arena/${winner.slug}-vs-${consoleItem.slug}`} className="w-full">
+                  <Link href={`/arena/${winner.slug}-vs-${consoleItem.slug}`} className="w-full" onClick={() => trackClick('compare', consoleItem, altIdx + 1)}>
                     <button className="w-full py-3 border border-white/20 text-zinc-400 text-xs font-mono uppercase hover:bg-white hover:text-black hover:border-white transition-all">
                       COMPARE VS WINNER
                     </button>
                   </Link>
 
                   {/* BUY BUTTON */}
-                  <Link href={`/consoles/${consoleItem.slug}#buy`} className="w-full">
+                  <Link href={`/consoles/${consoleItem.slug}#buy`} className="w-full" onClick={() => trackClick('buy', consoleItem, altIdx + 1)}>
                     <button className="w-full py-3 bg-white text-black text-xs font-mono font-bold uppercase hover:bg-zinc-200 transition-all">
                       BUY NOW
                     </button>
