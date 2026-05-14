@@ -353,7 +353,13 @@ export const calculateConsoleScore = (
 
     const sPower = powerRaw * weights.power;
     const sLibrary = libraryRaw * weights.library;
-    const sPortability = (portabilityRaw * portabilityMatch) * weights.portability; // Q5 logic integrated
+    // For "home" preference, big devices intentionally score 0 on raw portability —
+    // but the user explicitly wants big screens, so we use the match score directly
+    // instead of multiplying and zeroing out their preferred devices.
+    const portabilityComponent = inputs.portabilityPref === 'home'
+        ? portabilityMatch
+        : portabilityRaw * portabilityMatch;
+    const sPortability = portabilityComponent * weights.portability;
     const sEase = easeRaw * weights.ease;
     const sValue = valueRaw * weights.value;
 

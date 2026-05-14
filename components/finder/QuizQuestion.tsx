@@ -16,6 +16,7 @@ interface QuizQuestionProps {
   subtitle?: string;
   options: QuizOption[];
   onAnswer: (answer: string | string[]) => void;
+  onBack?: () => void;
   stepNumber: number;
   totalSteps: number;
   isOptional?: boolean;
@@ -28,6 +29,7 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
   subtitle,
   options,
   onAnswer,
+  onBack,
   stepNumber,
   totalSteps,
   isOptional,
@@ -161,7 +163,15 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-center">
+      <div className="flex items-center justify-center gap-6">
+         {onBack && stepNumber > 1 && (
+            <button
+               onClick={onBack}
+               className="font-mono text-xs text-zinc-500 hover:text-white uppercase tracking-widest transition-colors py-4"
+            >
+               {'<- BACK'}
+            </button>
+         )}
          <SwissButton
             variant="primary" // This usually means Violet
             onClick={handleNext}

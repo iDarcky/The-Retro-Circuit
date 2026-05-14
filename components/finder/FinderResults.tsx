@@ -61,8 +61,14 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
   }
 
   // Identify the Winner and Alternatives
-  const winner = results.find(r => r.match_label === 'WINNER') || results[0];
+  const winner = results.find(r => r.match_label === 'Best Match') || results[0];
   const alternatives = results.filter(r => r.id !== winner.id);
+
+  const relaxed = winner._relaxed_features || [];
+  const relaxedLabels: Record<string, string> = {
+    form_factor: "your preferred form factor",
+    features: "one or more of your must-have features",
+  };
 
 
   return (
@@ -80,6 +86,13 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
           }
         </p>
       </div>
+
+      {relaxed.length > 0 && (
+        <div className="mb-12 p-4 border border-orange-500/30 bg-orange-500/[0.04] font-mono text-sm text-orange-300 max-w-3xl mx-auto">
+          <span className="font-pixel text-xs text-orange-400 tracking-widest uppercase mr-2">[ HEADS UP ]</span>
+          We couldn't find devices matching {relaxed.map(r => relaxedLabels[r] || r).join(' and ')} — showing the closest matches instead.
+        </div>
+      )}
 
       {/* PRIMARY WINNER CARD */}
       <div className="mb-16 border border-white/10 bg-white/[0.02] p-6 md:p-12 relative group">
@@ -144,11 +157,11 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                   VIEW DETAILS
                 </SwissButton>
               </Link>
-              <a href="#" target="_blank" rel="noopener noreferrer" className="flex-1">
+              <Link href={`/consoles/${winner.slug}#buy`} className="flex-1">
                 <SwissButton variant="primary" className="w-full py-4 text-sm font-pixel">
                   BUY NOW
                 </SwissButton>
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -219,11 +232,11 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                   </Link>
 
                   {/* BUY BUTTON */}
-                  <a href="#" target="_blank" rel="noopener noreferrer" className="w-full">
+                  <Link href={`/consoles/${consoleItem.slug}#buy`} className="w-full">
                     <button className="w-full py-3 bg-white text-black text-xs font-mono font-bold uppercase hover:bg-zinc-200 transition-all">
                       BUY NOW
                     </button>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

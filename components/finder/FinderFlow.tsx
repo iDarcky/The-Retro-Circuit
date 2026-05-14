@@ -265,6 +265,21 @@ const FinderFlowContent = () => {
         router.push('/finder');
     };
 
+    // Map a step index back to the URL param it sets, so we can clear it on back-nav.
+    const STEP_PARAM_KEYS = ['profile', 'form_factor_pref', 'target_tier', 'budget_band', 'portability_pref', 'setup_answer', 'features', 'aesthetic_pref'];
+
+    const handleBack = () => {
+        if (stepIndex <= 0) return;
+        const params = new URLSearchParams(searchParams.toString());
+        // Clear the answer the user just gave on the current step, so they can re-pick.
+        const currentKey = STEP_PARAM_KEYS[stepIndex];
+        if (currentKey) params.delete(currentKey);
+        // Also clear tone_mode if leaving the profile step.
+        if (stepIndex === 1) params.delete('tone_mode');
+        params.set('step', `q${stepIndex}`);
+        router.push(`/finder?${params.toString()}`);
+    };
+
     if (!isClient) return null;
 
     return (
@@ -275,6 +290,7 @@ const FinderFlowContent = () => {
                     subtitle={QUESTIONS[stepIndex].subtitle}
                     options={QUESTIONS[stepIndex].options as any}
                     onAnswer={handleAnswer}
+                    onBack={handleBack}
                     stepNumber={stepIndex + 1}
                     totalSteps={QUESTIONS.length}
                     isOptional={(QUESTIONS[stepIndex] as any).isOptional}
