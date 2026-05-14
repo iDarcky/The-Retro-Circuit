@@ -170,7 +170,10 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                     {/* Acquisition (Span 4) */}
                     <section id="buy" className="lg:col-span-4">
-                        <BuySection asin={currentVariant?.amazon_asin || null} />
+                        <BuySection
+                            asin={currentVariant?.amazon_asin || null}
+                            searchQuery={[consoleData.manufacturer?.name, consoleData.name].filter(Boolean).join(' ') || null}
+                        />
                     </section>
                 </div>
 

@@ -165,14 +165,21 @@ export default async function ConsoleSpecsPage(props: Props) {
   };
 
   // Always include offers when price exists — Google requires offers, review, or aggregateRating
-  // Use correct availability: InStock (has ASIN), PreOrder (future release), Discontinued (otherwise)
+  // Availability: InStock (has live ASIN), PreOrder (future release), Discontinued (>3yr old & no ASIN),
+  // LimitedAvailability otherwise — honest fallback, since we don't have a live feed.
   if (hasPrice) {
     const firstAsin = consoleData.variants?.find((v) => v.amazon_asin)?.amazon_asin;
+    const releaseDate = defaultVariant?.release_date ? new Date(defaultVariant.release_date) : null;
+    const threeYearsAgo = new Date();
+    threeYearsAgo.setFullYear(threeYearsAgo.getFullYear() - 3);
+    const isLikelyDiscontinued = releaseDate ? releaseDate < threeYearsAgo : false;
     const availability = hasAsin
       ? 'https://schema.org/InStock'
       : isFutureRelease
         ? 'https://schema.org/PreOrder'
-        : 'https://schema.org/Discontinued';
+        : isLikelyDiscontinued
+          ? 'https://schema.org/Discontinued'
+          : 'https://schema.org/LimitedAvailability';
     jsonLd.offers = {
       '@type': 'Offer',
       price: minPrice.toString(),
