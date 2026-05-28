@@ -7,6 +7,13 @@ import { useSearchParams } from 'next/navigation';
 import SwissButton from '@/components/console/swiss/SwissButton';
 import { getFinderResults, FinderResultConsole } from '../../app/finder/actions';
 
+const AFFILIATE_TAG = 'theretrocircu-20';
+
+function buildAmazonSearchUrl(name: string, manufacturer?: string | null): string {
+    const query = manufacturer ? `${manufacturer} ${name}` : name;
+    return `https://www.amazon.com/s?k=${encodeURIComponent(query)}&tag=${AFFILIATE_TAG}`;
+}
+
 interface FinderResultsProps {
   onRestart: () => void;
 }
@@ -144,9 +151,9 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                   VIEW DETAILS
                 </SwissButton>
               </Link>
-              <a href="#" target="_blank" rel="noopener noreferrer" className="flex-1">
+              <a href={buildAmazonSearchUrl(winner.name, winner.manufacturer?.name)} target="_blank" rel="noopener noreferrer" className="flex-1">
                 <SwissButton variant="primary" className="w-full py-4 text-sm font-pixel">
-                  BUY NOW
+                  SEARCH ON AMAZON
                 </SwissButton>
               </a>
             </div>
@@ -219,9 +226,9 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                   </Link>
 
                   {/* BUY BUTTON */}
-                  <a href="#" target="_blank" rel="noopener noreferrer" className="w-full">
+                  <a href={buildAmazonSearchUrl(consoleItem.name, consoleItem.manufacturer?.name)} target="_blank" rel="noopener noreferrer" className="w-full">
                     <button className="w-full py-3 bg-white text-black text-xs font-mono font-bold uppercase hover:bg-zinc-200 transition-all">
-                      BUY NOW
+                      SEARCH ON AMAZON
                     </button>
                   </a>
                 </div>

@@ -172,15 +172,20 @@ export default async function ConsoleSpecsPage(props: Props) {
       ? 'https://schema.org/InStock'
       : isFutureRelease
         ? 'https://schema.org/PreOrder'
-        : 'https://schema.org/Discontinued';
+        : 'https://schema.org/OutOfStock';
+
+    // Build a monetizable URL: direct ASIN link if available, otherwise Amazon search with affiliate tag
+    const searchQuery = encodeURIComponent(fullName);
+    const offerUrl = firstAsin
+      ? `https://www.amazon.com/dp/${firstAsin}?tag=theretrocircu-20`
+      : `https://www.amazon.com/s?k=${searchQuery}&tag=theretrocircu-20`;
+
     jsonLd.offers = {
       '@type': 'Offer',
       price: minPrice.toString(),
       priceCurrency: 'USD',
       availability,
-      url: firstAsin
-        ? `https://www.amazon.com/dp/${firstAsin}?tag=theretrocircu-20`
-        : `https://theretrocircuit.com/consoles/${slug}`
+      url: offerUrl
     };
   }
 

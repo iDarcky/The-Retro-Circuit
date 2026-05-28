@@ -170,7 +170,11 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
 
                     {/* Acquisition (Span 4) */}
                     <section id="buy" className="lg:col-span-4">
-                        <BuySection asin={currentVariant?.amazon_asin || null} />
+                        <BuySection
+                            asin={currentVariant?.amazon_asin || null}
+                            consoleName={consoleData.name}
+                            manufacturerName={consoleData.manufacturer?.name}
+                        />
                     </section>
                 </div>
 

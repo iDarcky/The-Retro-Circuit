@@ -93,7 +93,7 @@ pnpm lint     # ESLint
 
 ## Known Issues / Active TODOs
 - `Button` still used in most admin components — being phased out for `SwissButton`
-- Affiliate buy links show `[NO LIVE DATA FEEDS]` — revenue mechanism not yet wired
+- ~~Affiliate buy links show `[NO LIVE DATA FEEDS]`~~ → Fixed: fallback search links with affiliate tag now render when no ASIN is stored
 - Fabricators page has invisible logos (black-on-black for some brands)
 - Finder quiz is labelled "work in progress"
 
