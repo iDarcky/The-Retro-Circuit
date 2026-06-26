@@ -1,6 +1,7 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { requireAdmin } from '@/lib/auth/require-admin';
+import { supabaseAnon } from '@/lib/supabase/anon';
 import { revalidatePath } from 'next/cache';
 import { Review } from '@/lib/types/news';
 import { formRateLimit, getIp } from '@/lib/rate-limit';
@@ -17,7 +18,7 @@ export async function createReview(data: Omit<Review, 'id' | 'author' | 'publish
     }
   }
 
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   // Strip redundant columns before insert so we don't rely on them
   const { console_name, console_slug, ...cleanData } = data as any;
@@ -43,7 +44,7 @@ export async function createReview(data: Omit<Review, 'id' | 'author' | 'publish
 }
 
 export async function deleteReview(id: string) {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   const { error } = await supabase
     .from('reviews')
@@ -61,7 +62,8 @@ export async function deleteReview(id: string) {
 }
 
 export async function fetchAllReviews(): Promise<Review[]> {
-  const supabase = await createClient();
+  // Public read via the stateless anon client (no cookies) so /news stays static/ISR.
+  const supabase = supabaseAnon;
 
   const { data: rawData, error } = await supabase
     .from('reviews')
@@ -88,7 +90,7 @@ export async function fetchAllReviews(): Promise<Review[]> {
 
 
 export async function updateReview(id: string, data: Partial<Review>) {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   // Strip redundant columns before update
   const { console_name: _n, console_slug: _s, consoles: _c, ...updateData } = data as any;

@@ -1,12 +1,13 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { requireAdmin } from '@/lib/auth/require-admin';
+import { supabaseAnon } from '@/lib/supabase/anon';
 import { revalidatePath } from 'next/cache';
 import { NewsItem } from '@/lib/types/news';
 import { submitToIndexNow } from '@/lib/indexnow';
 
 export async function createNews(data: Omit<NewsItem, 'id' | 'author' | 'published_at' | 'slug'>) {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   // Simple slug generation
   const slug = data.title
@@ -35,7 +36,7 @@ const { data: newNews, error } = await supabase
 }
 
 export async function deleteNews(id: string) {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   const { error } = await supabase
     .from('news')
@@ -53,7 +54,8 @@ export async function deleteNews(id: string) {
 }
 
 export async function fetchAllNews(): Promise<NewsItem[]> {
-  const supabase = await createClient();
+  // Public read via the stateless anon client (no cookies) so /news stays static/ISR.
+  const supabase = supabaseAnon;
 
   const { data, error } = await supabase
     .from('news')
@@ -70,7 +72,7 @@ export async function fetchAllNews(): Promise<NewsItem[]> {
 
 
 export async function updateNews(id: string, data: Partial<NewsItem>) {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   // Check previous status
   const isPublishing = (data as any).status === 'published';

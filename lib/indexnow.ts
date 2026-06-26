@@ -1,5 +1,8 @@
-export const INDEXNOW_API_KEY = "e0fa4fa524524cc9977e34474132ea62";
-export const INDEXNOW_HOST = "theretrocircuit.com"; // Change this if different
+// IndexNow keys are public by design (served at /<key>.txt for verification), so this is
+// low-sensitivity. We still read it from the environment so it can be rotated without a
+// code change, falling back to the committed key that matches the public verification file.
+export const INDEXNOW_API_KEY = process.env.INDEXNOW_API_KEY || "e0fa4fa524524cc9977e34474132ea62";
+export const INDEXNOW_HOST = process.env.INDEXNOW_HOST || "theretrocircuit.com";
 
 export async function submitToIndexNow(urls: string[]) {
     if (!urls || urls.length === 0) return;

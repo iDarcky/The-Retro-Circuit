@@ -1,9 +1,11 @@
 import { fetchManufacturers, fetchVaultConsoles } from '../../app/actions';
 import ConsoleVaultClient from '../../components/console/ConsoleVaultClient';
-import { createClient } from '../../lib/supabase/server';
+import { supabaseAnon } from '../../lib/supabase/anon';
 
 export async function generateMetadata() {
-  const supabase = await createClient();
+  // Stateless anon client (no cookies) keeps this page static/ISR instead of forcing
+  // per-request dynamic rendering.
+  const supabase = supabaseAnon;
 
   // Get count of published consoles
   const { count: consoleCount } = await supabase

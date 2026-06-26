@@ -181,6 +181,11 @@ CSP), and parameterized Supabase queries (no SQL injection surface).
 
 ## Prioritized roadmap
 
+> **Status:** P0 (compute/rendering) and P1 (security hardening) were implemented on
+> branch `claude/site-audit-performance-mvybyg`. The RLS policy fix is staged as a
+> migration (`supabase/migrations/20260626000000_fix_rls_admin_policies.sql`) to be applied
+> **after a database backup**, per project rules. P2/P3 remain open.
+
 | Priority | Theme | Items |
 |---|---|---|
 | **P0** | **Compute / cost** *(the Fluid Compute fix)* | Gate middleware auth to protected routes · move render-time public reads to `supabaseAnon` · ISR + cache tags. *Biggest savings, lowest risk.* |

@@ -1,8 +1,12 @@
 import Link from 'next/link';
-import { createClient } from '../../../../lib/supabase/server';
+import { supabaseAnon } from '../../../../lib/supabase/anon';
 import { ConsoleDetails } from '../../../../lib/types';
 import { getBrandTheme } from '../../../../data/static';
 import { formatReleaseDate } from '../../../../lib/utils/date-formatter';
+
+// Legacy route (301-redirected to /fabricators/[slug] in next.config.mjs). Reads use the
+// stateless anon client, so we can serve it as ISR rather than per-request dynamic.
+export const revalidate = 3600;
 
 type Props = {
   params: Promise<{ name: string }>
@@ -10,7 +14,7 @@ type Props = {
 
 export async function generateMetadata(props: Props) {
     const params = await props.params;
-    const supabase = await createClient();
+    const supabase = supabaseAnon;
     const { data: profile } = await supabase
         .from('manufacturer')
         .select('name')
@@ -30,8 +34,8 @@ export async function generateMetadata(props: Props) {
 
 export default async function ManufacturerDetailPage(props: Props) {
     const params = await props.params;
-    const supabase = await createClient();
-    const slug = params.name; 
+    const supabase = supabaseAnon;
+    const slug = params.name;
 
     // 1. Fetch Profile
     const { data: profile } = await supabase

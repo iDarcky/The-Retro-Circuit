@@ -56,84 +56,89 @@ export async function middleware(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-  try {
-    const supabase = createServerClient(
-      supabaseUrl,
-      supabaseKey,
-      {
-        cookies: {
-          getAll() {
-            return request.cookies.getAll();
+  // --- 2. Auth (gated to auth-relevant routes only) ---
+  // Public, anonymous traffic (the vast majority) skips the Supabase Auth round-trip
+  // entirely, so those requests can be served statically/ISR from the CDN without
+  // invoking auth compute. Only /login, /profile, /admin, /design need a session.
+  const isLoginRoute = request.nextUrl.pathname.startsWith('/login');
+  const isProfileRoute = request.nextUrl.pathname.startsWith('/profile');
+  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin') || request.nextUrl.pathname.startsWith('/design');
+  const isAuthRelevant = isLoginRoute || isProfileRoute || isAdminRoute;
+
+  if (isAuthRelevant) {
+    try {
+      const supabase = createServerClient(
+        supabaseUrl,
+        supabaseKey,
+        {
+          cookies: {
+            getAll() {
+              return request.cookies.getAll();
+            },
+            setAll(cookiesToSet) {
+              cookiesToSet.forEach(({ name, value }) => {
+                request.cookies.set(name, value);
+              });
+              response = NextResponse.next({
+                request: {
+                  headers: request.headers,
+                },
+              });
+              cookiesToSet.forEach(({ name, value, options }) => {
+                response.cookies.set(name, value, options);
+              });
+            },
           },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value }) => {
-              request.cookies.set(name, value);
-            });
-            response = NextResponse.next({
-              request: {
-                headers: request.headers,
-              },
-            });
-            cookiesToSet.forEach(({ name, value, options }) => {
-              response.cookies.set(name, value, options);
-            });
-          },
-        },
+        }
+      );
+
+      // Refresh the session
+      const { data: { user } } = await supabase.auth.getUser();
+
+      // Auth Redirection Logic
+      const url = request.nextUrl.clone();
+
+      // IF USER IS LOGGED IN
+      if (user) {
+        if (isLoginRoute) {
+          url.pathname = '/profile';
+          return NextResponse.redirect(url);
+        }
       }
-    );
-
-    // 2. Refresh the session
-    const { data: { user } } = await supabase.auth.getUser();
-
-    const isLoginRoute = request.nextUrl.pathname.startsWith('/login');
-    const isProfileRoute = request.nextUrl.pathname.startsWith('/profile');
-    const isAdminRoute = request.nextUrl.pathname.startsWith('/admin') || request.nextUrl.pathname.startsWith('/design');
-
-    // 3. Auth Redirection Logic
-    const url = request.nextUrl.clone();
-
-    // IF USER IS LOGGED IN
-    if (user) {
-      if (isLoginRoute) {
-        url.pathname = '/profile';
-        return NextResponse.redirect(url);
+      // IF USER IS NOT LOGGED IN
+      else {
+        if (isProfileRoute) {
+          url.pathname = '/login';
+          return NextResponse.redirect(url);
+        }
       }
-    }
-    // IF USER IS NOT LOGGED IN
-    else {
-      if (isProfileRoute) {
-        url.pathname = '/login';
-        return NextResponse.redirect(url);
-      }
-    }
 
-    // 4. Protect Admin Routes
-    if (isAdminRoute) {
-      if (!user) {
+      // Protect Admin Routes
+      if (isAdminRoute) {
+        if (!user) {
+          return NextResponse.redirect(new URL('/login', request.url));
+        }
+
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError) {
+          console.error('[Middleware] Profile Fetch Error:', profileError.message);
+        }
+
+        if (!profile || profile.role !== 'admin') {
+          return NextResponse.redirect(new URL('/', request.url));
+        }
+      }
+    } catch (e) {
+      console.error('[Middleware] Supabase Client Error:', e);
+      // Fail closed if Supabase fails on a protected route
+      if (isAdminRoute || isProfileRoute) {
         return NextResponse.redirect(new URL('/login', request.url));
       }
-
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-      if (profileError) {
-        console.error('[Middleware] Profile Fetch Error:', profileError.message);
-      }
-
-      if (!profile || profile.role !== 'admin') {
-        return NextResponse.redirect(new URL('/', request.url));
-      }
-    }
-  } catch (e) {
-    console.error('[Middleware] Supabase Client Error:', e);
-    // Fail closed if Supabase fails
-    const isProfileRoute = request.nextUrl.pathname.startsWith('/profile');
-    const isAdminRoute = request.nextUrl.pathname.startsWith('/admin') || request.nextUrl.pathname.startsWith('/design');
-    if (isAdminRoute || isProfileRoute) {
-      return NextResponse.redirect(new URL('/login', request.url));
     }
   }
 
@@ -141,6 +146,7 @@ export async function middleware(request: NextRequest) {
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), browsing-topics=()');
 
   // Content Security Policy

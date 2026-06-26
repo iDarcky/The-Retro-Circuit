@@ -2,18 +2,34 @@
 
 import { createClient } from '../../lib/supabase/server';
 import { createAdminClient } from '../../lib/supabase/admin';
+import { formRateLimit, getIp } from '../../lib/rate-limit';
 import { Resend } from 'resend';
+import { z } from 'zod';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+const emailSchema = z.string().trim().toLowerCase().email().max(254);
+
 export async function subscribeEmail(email: string, source: string): Promise<{ success: boolean; message: string }> {
-    if (!email || !email.includes('@')) {
+    // Validate input server-side (don't trust the client form).
+    const parsed = emailSchema.safeParse(email);
+    if (!parsed.success) {
         return { success: false, message: 'Please enter a valid email address.' };
+    }
+    const normalizedEmail = parsed.data;
+
+    // Rate limit by IP to prevent mass-subscription abuse (this endpoint uses the
+    // service-role admin client internally, so it must be throttled).
+    if (process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL) {
+        const ip = await getIp();
+        const { success } = await formRateLimit.limit(ip);
+        if (!success) {
+            return { success: false, message: 'Too many requests. Please try again later.' };
+        }
     }
 
     try {
         const supabase = await createClient();
-        const normalizedEmail = email.toLowerCase().trim();
 
         // Insert new subscriber
         const { error } = await supabase

@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "../../lib/supabase/server";
+import { requireAdmin } from "../../lib/auth/require-admin";
 import { supabaseAnon } from "../../lib/supabase/anon";
 import { RoadmapFeature, Release } from "../../lib/types/domain";
 import { siteConfig } from "../../config/site";
@@ -38,7 +39,7 @@ export async function fetchRoadmapItems() {
 }
 
 export async function createRoadmapItem(item: Omit<RoadmapFeature, 'id' | 'created_at' | 'updated_at'>) {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   const cleanItem = {
     ...item,
@@ -64,7 +65,7 @@ export async function createRoadmapItem(item: Omit<RoadmapFeature, 'id' | 'creat
 }
 
 export async function updateRoadmapItem(id: string, updates: Partial<RoadmapFeature>) {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   const cleanUpdates = {
     ...updates,
@@ -91,7 +92,7 @@ export async function updateRoadmapItem(id: string, updates: Partial<RoadmapFeat
 }
 
 export async function deleteRoadmapItem(id: string) {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
   const { error } = await supabase
     .from('roadmap_features')
     .delete()
@@ -180,7 +181,7 @@ export async function fetchLatestVersion() {
 }
 
 export async function createRelease(release: Omit<Release, 'id' | 'created_at' | 'updated_at'>) {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   const cleanRelease = {
     ...release,
@@ -209,7 +210,7 @@ export async function createRelease(release: Omit<Release, 'id' | 'created_at' |
 }
 
 export async function updateRelease(id: string, updates: Partial<Release>) {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   const cleanUpdates = {
     ...updates,
@@ -239,7 +240,7 @@ export async function updateRelease(id: string, updates: Partial<Release>) {
 }
 
 export async function deleteRelease(id: string) {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
   const { error } = await supabase
     .from('releases')
     .delete()

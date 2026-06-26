@@ -1,11 +1,9 @@
 import { createBrowserClient } from '@supabase/ssr';
+import { getSupabaseUrl, getSupabaseAnonKey } from './env';
 
 export function createClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
-
   return createBrowserClient(
-    supabaseUrl,
-    supabaseKey
+    getSupabaseUrl(),
+    getSupabaseAnonKey()
   );
 }

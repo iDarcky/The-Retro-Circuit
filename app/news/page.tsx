@@ -8,7 +8,9 @@ import { fetchActiveSignals } from '../actions/signals';
 import { fetchAllReviews } from '../actions/reviews';
 import { fetchAllNews } from '../actions/news';
 
-export const revalidate = false;
+// ISR: regenerate at most every 5 minutes; admin mutations also revalidate on-demand
+// via revalidatePath('/news'). Reads use the stateless anon client so this stays static.
+export const revalidate = 300;
 
 export const metadata: Metadata = {
    title: 'Transmission Feed | The Retro Circuit',

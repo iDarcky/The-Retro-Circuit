@@ -1,12 +1,14 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { requireAdmin } from '@/lib/auth/require-admin';
+import { supabaseAnon } from '@/lib/supabase/anon';
 import { revalidatePath } from 'next/cache';
 import { Signal, SignalType } from '@/lib/types/news';
 import { submitToIndexNow } from '@/lib/indexnow';
 
 export async function createSignal(content: string, type: SignalType) {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
 const { data: newSignal, error } = await supabase
     .from('signals')
@@ -34,7 +36,7 @@ const { data: newSignal, error } = await supabase
 }
 
 export async function toggleSignalStatus(id: string, isActive: boolean) {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
 const { error } = await supabase
     .from('signals')
@@ -72,7 +74,9 @@ export async function fetchAllSignals(): Promise<Signal[]> {
 }
 
 export async function fetchActiveSignals(): Promise<Signal[]> {
-  const supabase = await createClient();
+  // Public read via the stateless anon client (no cookies) so /news stays static/ISR.
+  // RLS exposes only active signals to anon, which matches this query.
+  const supabase = supabaseAnon;
 
   const { data, error } = await supabase
     .from('signals')

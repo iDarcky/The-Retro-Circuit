@@ -1,10 +1,10 @@
 "use server";
 
-import { createClient } from "../../lib/supabase/server";
+import { requireAdmin } from "../../lib/auth/require-admin";
 import { submitToIndexNow } from "../../lib/indexnow";
 import { supabaseAnon } from "../../lib/supabase/anon";
 import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant, VariantInputProfile } from "../../lib/types";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 
 // Helper: Normalize Variant (Unwrap 1:1 relations that Supabase returns as arrays)
 function normalizeVariant(v: any): any {
@@ -73,8 +73,11 @@ export const fetchAllConsoles = async (includeHidden: boolean = false): Promise<
     }
 };
 
-export const fetchVaultConsoles = async (): Promise<ConsoleDetails[]> => {
-    try {
+// Cached so the multiple public pages reading it (/consoles) are served from the data
+// cache instead of hitting Supabase per request. Invalidated on console mutations via
+// revalidateTag('consoles').
+const getCachedVaultConsoles = unstable_cache(
+    async (): Promise<ConsoleDetails[]> => {
         const supabase = supabaseAnon;
         // Optimized query: Excludes heavy 'emulation_profiles' and 'variant_input_profile'
         // Only fetches core console data, manufacturer, and variant specs needed for list view filtering
@@ -94,6 +97,14 @@ export const fetchVaultConsoles = async (): Promise<ConsoleDetails[]> => {
         }
 
         return normalizeConsoleList(data);
+    },
+    ['vault-consoles'],
+    { tags: ['consoles'], revalidate: 3600 }
+);
+
+export const fetchVaultConsoles = async (): Promise<ConsoleDetails[]> => {
+    try {
+        return await getCachedVaultConsoles();
     } catch (e: any) {
         console.error('[API] Fetch Vault Consoles Exception:', e);
         return [];
@@ -297,7 +308,7 @@ export const addConsole = async (
     consoleData: Omit<ConsoleDetails, 'id' | 'manufacturer' | 'specs' | 'variants'>
 ): Promise<{ success: boolean, message?: string, id?: string }> => {
     try {
-        const supabase = await createClient();
+        const supabase = await requireAdmin();
 
         const { data: newConsole, error: consoleError } = await supabase.from('consoles').insert([consoleData]).select('id, status, slug, manufacturer:manufacturer_id(slug)').single();
         if (consoleError) {
@@ -313,6 +324,9 @@ export const addConsole = async (
             }
         }
 
+        // Invalidate the cached vault list + counts so the new console surfaces.
+        revalidateTag('consoles', { expire: 0 });
+
         return { success: true, id: newConsole.id };
 
     } catch (e: any) {
@@ -326,7 +340,7 @@ export const updateConsole = async (
     consoleData: Partial<ConsoleDetails>
 ): Promise<{ success: boolean, message?: string }> => {
     try {
-        const supabase = await createClient();
+        const supabase = await requireAdmin();
 
         // Remove joined fields that are not columns in the consoles table
         const { manufacturer, variants, specs, ...cleanData } = consoleData as any;
@@ -367,6 +381,9 @@ export const updateConsole = async (
             }
         }
 
+        // Invalidate the cached vault list + counts.
+        revalidateTag('consoles', { expire: 0 });
+
         return { success: true };
 
 
@@ -377,7 +394,7 @@ export const updateConsole = async (
 
 export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>): Promise<{ success: boolean, message?: string }> => {
     try {
-        const supabase = await createClient();
+        const supabase = await requireAdmin();
         const { variant_input_profile, emulation_profile, ...mainVariantData } = variantData;
 
         const { data: newVariant, error: variantError } = await supabase
@@ -428,6 +445,9 @@ export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>)
             }
         }
 
+        // Variant specs feed the vault list + counts.
+        revalidateTag('consoles', { expire: 0 });
+
         return { success: true };
     } catch (e: any) {
         return { success: false, message: e.message };
@@ -436,7 +456,7 @@ export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>)
 
 export const updateConsoleVariant = async (id: string, variantData: Partial<ConsoleVariant>): Promise<{ success: boolean, message?: string }> => {
     try {
-        const supabase = await createClient();
+        const supabase = await requireAdmin();
         const { variant_input_profile, ...mainVariantData } = variantData;
 
         const { error: variantError } = await supabase.from('console_variants').update(mainVariantData).eq('id', id);
@@ -460,6 +480,9 @@ export const updateConsoleVariant = async (id: string, variantData: Partial<Cons
             revalidatePath(`/consoles/${(updatedVariant?.consoles as any).slug}`);
         }
 
+        // Variant specs feed the vault list + counts.
+        revalidateTag('consoles', { expire: 0 });
+
         return { success: true };
     } catch (e: any) {
         return { success: false, message: e.message };
@@ -468,7 +491,7 @@ export const updateConsoleVariant = async (id: string, variantData: Partial<Cons
 
 export const deleteConsole = async (id: string): Promise<{ success: boolean, message?: string }> => {
     try {
-        const supabase = await createClient();
+        const supabase = await requireAdmin();
 
         // 1. Check status
         const { data: consoleData, error: fetchError } = await supabase.from('consoles').select('status').eq('id', id).single();
@@ -482,14 +505,16 @@ export const deleteConsole = async (id: string): Promise<{ success: boolean, mes
         const { error: deleteError } = await supabase.from('consoles').delete().eq('id', id);
         if (deleteError) return { success: false, message: deleteError.message };
 
+        revalidateTag('consoles', { expire: 0 });
+
         return { success: true };
     } catch (e: any) {
         return { success: false, message: e.message };
     }
 }
 
-export const fetchConsoleAndVariantCounts = async (): Promise<{ consoles: number, variants: number }> => {
-    try {
+const getCachedConsoleAndVariantCounts = unstable_cache(
+    async (): Promise<{ consoles: number, variants: number }> => {
         const supabase = supabaseAnon;
 
         // Count published consoles
@@ -510,7 +535,14 @@ export const fetchConsoleAndVariantCounts = async (): Promise<{ consoles: number
         if (variantError) throw variantError;
 
         return { consoles: consoleCount || 0, variants: variantCount || 0 };
+    },
+    ['console-variant-counts'],
+    { tags: ['consoles'], revalidate: 3600 }
+);
 
+export const fetchConsoleAndVariantCounts = async (): Promise<{ consoles: number, variants: number }> => {
+    try {
+        return await getCachedConsoleAndVariantCounts();
     } catch (e: any) {
         console.error('[API] Fetch Counts Exception:', e);
         return { consoles: 0, variants: 0 };
