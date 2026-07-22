@@ -205,15 +205,21 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                     <div className="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24">
 
                         {/* Logo Container */}
-                        <div className="w-full aspect-video bg-black/40 border-t border-b border-[var(--brand-color)] flex items-center justify-center p-8 relative overflow-hidden group shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+                        <div className="w-full aspect-video bg-black/40 border-t border-b border-[var(--brand-color)] flex items-center justify-center p-8 relative overflow-hidden group">
                             <div className="absolute inset-0 bg-gradient-to-tr from-[var(--brand-color)]/10 to-transparent opacity-50"></div>
                             {profile.image_url ? (
-                                <Image
-                                    src={profile.image_url}
-                                    alt={profile.name}
-                                    fill
-                                    className="object-contain p-6 drop-shadow-2xl relative z-10"
-                                />
+                                // Light plate so solid-black brand logos stay visible on the dark hero
+                                <div className="relative z-10 w-[80%] h-[80%] bg-white/90 rounded-sm p-4">
+                                    <div className="relative w-full h-full">
+                                        <Image
+                                            src={profile.image_url}
+                                            alt={profile.name}
+                                            fill
+                                            sizes="(max-width: 1024px) 90vw, 30vw"
+                                            className="object-contain"
+                                        />
+                                    </div>
+                                </div>
                             ) : (
                                 <span className="font-pixel text-4xl text-white/20">?</span>
                             )}

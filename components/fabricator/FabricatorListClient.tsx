@@ -121,18 +121,21 @@ export default function FabricatorListClient({ manufacturers }: Props) {
                                     <Link
                                         href={`/fabricators/${manufacturer.slug}`}
                                         key={manufacturer.id}
-                                        className="group relative flex flex-col bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-emerald-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10 rounded-xl overflow-hidden"
+                                        className="group relative flex flex-col bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-emerald-500/50 transition-all duration-300 hover:-translate-y-1 rounded-xl overflow-hidden"
                                     >
                                         <div className="aspect-square p-8 flex items-center justify-center relative bg-gradient-to-b from-transparent to-black/20">
                                             {manufacturer.image_url ? (
-                                                <div className="relative w-full h-full transition-transform duration-500 group-hover:scale-110">
-                                                    <Image
-                                                        src={manufacturer.image_url}
-                                                        alt={manufacturer.name}
-                                                        fill
-                                                        className="object-contain drop-shadow-xl"
-                                                        sizes="(max-width: 768px) 50vw, 20vw"
-                                                    />
+                                                <div className="w-full h-full transition-transform duration-500 group-hover:scale-110 bg-white/90 rounded-sm p-4">
+                                                    {/* Light plate so solid-black brand logos stay visible on the dark card */}
+                                                    <div className="relative w-full h-full">
+                                                        <Image
+                                                            src={manufacturer.image_url}
+                                                            alt={manufacturer.name}
+                                                            fill
+                                                            className="object-contain"
+                                                            sizes="(max-width: 768px) 50vw, 20vw"
+                                                        />
+                                                    </div>
                                                 </div>
                                             ) : (
                                                 <div className="text-zinc-700 font-mono text-xl font-bold">{manufacturer.name.charAt(0)}</div>
@@ -162,13 +165,17 @@ export default function FabricatorListClient({ manufacturers }: Props) {
                                         <div className="flex flex-row h-24">
                                             <div className="w-24 bg-zinc-900/50 relative flex items-center justify-center p-4 border-r border-zinc-800 shrink-0">
                                                 {manufacturer.image_url ? (
-                                                    <div className="relative w-full h-full">
-                                                        <Image
-                                                            src={manufacturer.image_url}
-                                                            alt={manufacturer.name}
-                                                            fill
-                                                            className="object-contain group-hover:scale-105 transition-transform"
-                                                        />
+                                                    <div className="w-full h-full bg-white/90 rounded-sm p-2 group-hover:scale-105 transition-transform">
+                                                        {/* Light plate so solid-black brand logos stay visible on the dark card */}
+                                                        <div className="relative w-full h-full">
+                                                            <Image
+                                                                src={manufacturer.image_url}
+                                                                alt={manufacturer.name}
+                                                                fill
+                                                                sizes="96px"
+                                                                className="object-contain"
+                                                            />
+                                                        </div>
                                                     </div>
                                                 ) : (
                                                     <span className="font-pixel text-zinc-700 text-xl">{manufacturer.name.charAt(0)}</span>
