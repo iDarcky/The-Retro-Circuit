@@ -273,11 +273,15 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                                             <Link href={`/consoles/${consoleItem.slug}`} key={consoleItem.id} className="group border border-white/10 bg-black/40 p-3 hover:border-[var(--brand-color)] hover:bg-white/[0.02] transition-colors flex flex-col">
                                                 <div className="aspect-video bg-white/5 border border-white/5 mb-3 p-2 flex items-center justify-center relative overflow-hidden group-hover:bg-white/10 transition-colors">
                                                     {imageUrl ? (
-                                                        <img
-                                                            src={imageUrl.startsWith('http') ? imageUrl : `/${imageUrl.replace(/^\//, '')}`}
-                                                            alt={consoleItem.name}
-                                                            className="w-full h-full object-contain filter drop-shadow-lg group-hover:scale-110 transition-transform duration-500"
-                                                        />
+                                                        <div className="relative w-full h-full">
+                                                            <Image
+                                                                src={imageUrl.startsWith('http') ? imageUrl : `/${imageUrl.replace(/^\//, '')}`}
+                                                                alt={consoleItem.name}
+                                                                fill
+                                                                sizes="(max-width: 768px) 50vw, 25vw"
+                                                                className="object-contain filter drop-shadow-lg group-hover:scale-110 transition-transform duration-500"
+                                                            />
+                                                        </div>
                                                     ) : (
                                                         <span className="font-pixel text-zinc-600">?</span>
                                                     )}
@@ -554,7 +558,9 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
                                         <div className="flex flex-row h-32">
                                             <div className="w-1/3 bg-zinc-900/50 relative flex items-center justify-center p-2 border-r border-zinc-800">
                                                 {console.image_url ? (
-                                                    <img src={console.image_url} alt={console.name} className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform" />
+                                                    <div className="relative w-full h-full">
+                                                        <Image src={console.image_url} alt={console.name} fill sizes="(max-width: 768px) 33vw, 15vw" className="object-contain group-hover:scale-105 transition-transform" />
+                                                    </div>
                                                 ) : (
                                                     <span className="font-pixel text-zinc-700 text-xl">?</span>
                                                 )}

@@ -389,7 +389,9 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                                                 <div className="flex flex-row h-32">
                                                     <div className="w-1/3 bg-zinc-900/50 relative flex items-center justify-center p-2 border-r border-zinc-800">
                                                         {console.image_url ? (
-                                                            <img src={console.image_url} alt={console.name} className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform" />
+                                                            <div className="relative w-full h-full">
+                                                                <Image src={console.image_url} alt={console.name} fill sizes="(max-width: 768px) 33vw, 15vw" className="object-contain group-hover:scale-105 transition-transform" />
+                                                            </div>
                                                         ) : (
                                                             <span className="font-pixel text-zinc-700 text-xl">?</span>
                                                         )}
