@@ -103,19 +103,22 @@ export const fetchVaultConsoles = async (): Promise<ConsoleDetails[]> => {
 export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: number = 1, limit: number = 20): Promise<{ data: ConsoleDetails[], count: number }> => {
     try {
         const supabase = supabaseAnon;
-        // Public search always enforces published status
+        // Public search always enforces published status.
+        // The date filter and release-date sort operate on the *default variant's* release_date,
+        // which lives on console_variants (not the consoles row), so they can't be expressed in a
+        // single parent query. Instead we fetch the full set matching the column-level filters
+        // (manufacturer / form factor), then filter + sort + paginate in memory. This keeps the
+        // returned `count` consistent with the rows actually returned. The dataset is small
+        // (~dozens of consoles), so this is cheap.
         let query = supabase.from('consoles')
-            .select('*, manufacturer:manufacturer(*), variants:console_variants(*, variant_input_profile(*))', { count: 'exact' })
+            .select('*, manufacturer:manufacturer(*), variants:console_variants(*, variant_input_profile(*))')
             .eq('status', 'published');
 
         if (filters.manufacturer_id) query = query.eq('manufacturer_id', filters.manufacturer_id);
 
         if (filters.form_factors.length > 0) query = query.in('form_factor', filters.form_factors);
 
-        const from = (page - 1) * limit;
-        const to = from + limit - 1;
-
-        const { data, count, error } = await query.order('name', { ascending: true }).range(from, to);
+        const { data, error } = await query.order('name', { ascending: true });
 
         if (error) {
             console.error('[API] fetchConsolesFiltered DB Error:', error.message);
@@ -124,7 +127,7 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
 
         let normalizedData = normalizeConsoleList(data);
 
-        // IN-MEMORY SORTING & FILTERING
+        // Apply the year filter on the default variant's release date.
         if (filters.minYear > 1970 || filters.maxYear < new Date().getFullYear()) {
             normalizedData = normalizedData.filter((item: any) => {
                 const dateStr = item.specs?.release_date;
@@ -133,13 +136,19 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
             });
         }
 
+        // Sort newest-first by release date across the whole filtered set.
         normalizedData.sort((a: any, b: any) => {
             const dateA = a.specs?.release_date ? new Date(a.specs.release_date).getTime() : 0;
             const dateB = b.specs?.release_date ? new Date(b.specs.release_date).getTime() : 0;
             return dateB - dateA;
         });
 
-        return { data: normalizedData as ConsoleDetails[], count: count || 0 };
+        // Count reflects the fully-filtered set, then paginate.
+        const count = normalizedData.length;
+        const from = (page - 1) * limit;
+        const paginated = normalizedData.slice(from, from + limit);
+
+        return { data: paginated as ConsoleDetails[], count };
 
     } catch (e) {
         console.error('[API] Fetch Consoles Exception:', e);
