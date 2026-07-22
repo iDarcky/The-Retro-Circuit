@@ -10,10 +10,13 @@ export default function FinderTestPage() {
     return (
         <main className="min-h-screen bg-bg-primary text-text-primary pt-24 pb-12">
             <div className="container mx-auto px-4 max-w-4xl">
-                <h1 className="text-4xl font-pixel text-white mb-4 text-center">FINDER_</h1>
-                <div className="mb-8 p-4 bg-orange-500/10 border border-orange-500/30 text-center font-mono text-sm text-orange-400">
-                    The finder is still a work in progress - have fun
-                </div>
+                <h1 className="text-4xl font-pixel text-white mb-4 text-center flex items-center justify-center gap-3">
+                    FINDER_
+                    <span className="font-mono text-[10px] px-2 py-0.5 border border-orange-500/30 text-orange-400 uppercase tracking-widest align-middle">Beta</span>
+                </h1>
+                <p className="mb-8 text-center font-mono text-xs text-gray-500">
+                    Answer a few questions and we&apos;ll match you to a handheld. Fresh feature — tell us if a match feels off.
+                </p>
                 <FinderFlow />
             </div>
         </main>
