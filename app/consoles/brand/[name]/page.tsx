@@ -1,5 +1,7 @@
 import Link from 'next/link';
-import { createClient } from '../../../../lib/supabase/server';
+import Image from 'next/image';
+import { supabaseAnon } from '../../../../lib/supabase/anon';
+import { fetchManufacturers } from '../../../../app/actions/manufacturers';
 import { ConsoleDetails } from '../../../../lib/types';
 import { getBrandTheme } from '../../../../data/static';
 import { formatReleaseDate } from '../../../../lib/utils/date-formatter';
@@ -8,14 +10,23 @@ type Props = {
   params: Promise<{ name: string }>
 };
 
+export const revalidate = false;
+
+export async function generateStaticParams() {
+    const manufacturers = await fetchManufacturers();
+    return manufacturers
+        .filter((m: any) => m.slug)
+        .map((m: any) => ({ name: m.slug as string }));
+}
+
 export async function generateMetadata(props: Props) {
     const params = await props.params;
-    const supabase = await createClient();
+    const supabase = supabaseAnon;
     const { data: profile } = await supabase
         .from('manufacturer')
         .select('name')
         .eq('slug', params.name)
-        .single();
+        .maybeSingle();
         
     const titleName = profile?.name || decodeURIComponent(params.name);
     
@@ -30,15 +41,15 @@ export async function generateMetadata(props: Props) {
 
 export default async function ManufacturerDetailPage(props: Props) {
     const params = await props.params;
-    const supabase = await createClient();
-    const slug = params.name; 
+    const supabase = supabaseAnon;
+    const slug = params.name;
 
     // 1. Fetch Profile
     const { data: profile } = await supabase
         .from('manufacturer')
         .select('*')
         .eq('slug', slug)
-        .single();
+        .maybeSingle();
     
     // 2. Fetch Consoles
     let consoles: ConsoleDetails[] = [];
@@ -81,7 +92,7 @@ export default async function ManufacturerDetailPage(props: Props) {
                         <div className="flex items-center gap-4 mt-4">
                             {profile.image_url && (
                                 <div className="bg-black/20 p-2 border border-gray-700 rounded md:hidden">
-                                     <img src={profile.image_url} className="h-12 w-auto object-contain" />
+                                     <Image src={profile.image_url} alt={`${profile.name} logo`} width={96} height={48} className="h-12 w-auto object-contain" />
                                 </div>
                             )}
                             <h1 className={`text-3xl sm:text-4xl md:text-6xl font-pixel ${themeColorClass} opacity-90 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] break-words leading-tight`}>
@@ -98,7 +109,7 @@ export default async function ManufacturerDetailPage(props: Props) {
 
                     <div className="flex flex-row md:flex-col items-center md:items-end justify-between w-full md:w-auto gap-4 md:gap-2">
                         {profile.image_url && (
-                            <img src={profile.image_url} className="hidden md:block h-20 lg:h-24 w-auto object-contain mb-4" />
+                            <Image src={profile.image_url} alt={`${profile.name} logo`} width={192} height={96} className="hidden md:block h-20 lg:h-24 w-auto object-contain mb-4" />
                         )}
                         <div className="flex flex-col md:items-end">
                             <div className="font-mono text-gray-500 text-[10px] uppercase">FOUNDED</div>
@@ -151,7 +162,7 @@ export default async function ManufacturerDetailPage(props: Props) {
                             >
                                 <div className="h-32 bg-black/40 flex items-center justify-center p-4 relative">
                                     {console.image_url ? (
-                                        <img src={console.image_url} className="max-h-full object-contain" />
+                                        <Image src={console.image_url} alt={`${console.name}`} fill sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 25vw" className="object-contain p-4" />
                                     ) : (
                                         <span className="font-pixel text-gray-700 text-2xl">?</span>
                                     )}
