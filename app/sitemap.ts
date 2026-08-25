@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { supabaseAnon } from '../lib/supabase/anon';
+import { BEST_OF_COLLECTIONS } from '../lib/bestof/collections';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Use the anonymous server client for sitemap generation
@@ -14,12 +15,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/fabricators`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
     { url: `${baseUrl}/arena`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
     { url: `${baseUrl}/news`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.7 },
+    { url: `${baseUrl}/best`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
     { url: `${baseUrl}/roadmap`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.5 },
     { url: `${baseUrl}/about`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
     { url: `${baseUrl}/credits`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
     { url: `${baseUrl}/privacy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
     { url: `${baseUrl}/terms`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
   ];
+
+  // Buying-guide landing pages — high-value SEO surfaces.
+  BEST_OF_COLLECTIONS.forEach((collection) => {
+    routes.push({
+      url: `${baseUrl}/best/${collection.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    });
+  });
 
   try {
     // 2. Dynamic Consoles
