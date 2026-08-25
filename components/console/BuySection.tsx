@@ -1,4 +1,6 @@
 import BuyButton from './BuyButton';
+import { getAmazonSearchUrl } from '../../lib/affiliate';
+import AffiliateLink from './AffiliateLink';
 
 interface BuySectionProps {
     asin?: string | null;
@@ -7,11 +9,7 @@ interface BuySectionProps {
 }
 
 export default function BuySection({ asin, searchQuery }: BuySectionProps) {
-    // Affiliate tag is fixed — never alter this string.
-    const AFFILIATE_TAG = 'theretrocircu-20';
-    const searchUrl = searchQuery
-        ? `https://www.amazon.com/s?k=${encodeURIComponent(searchQuery)}&tag=${AFFILIATE_TAG}`
-        : null;
+    const searchUrl = searchQuery ? getAmazonSearchUrl(searchQuery) : null;
 
     return (
         <div className="border border-white/10 p-6 bg-white/[0.01]">
@@ -21,7 +19,7 @@ export default function BuySection({ asin, searchQuery }: BuySectionProps) {
 
             <div className="space-y-4">
                 {asin ? (
-                    <BuyButton asin={asin} />
+                    <BuyButton asin={asin} productName={searchQuery} />
                 ) : searchUrl ? (
                     // No direct listing yet — fall back to an affiliate search so the buy path
                     // still works (and still earns) instead of showing a dead placeholder.
@@ -29,10 +27,11 @@ export default function BuySection({ asin, searchQuery }: BuySectionProps) {
                         <p className="text-xs text-gray-500 font-mono tracking-widest text-left">
                             As an Amazon Associate I earn from qualifying purchases.
                         </p>
-                        <a
+                        <AffiliateLink
                             href={searchUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            productName={searchQuery || 'unknown'}
+                            linkType="search"
+                            placement="console_detail"
                             className="group flex items-center justify-between p-4 border border-dashed border-orange-500/50 bg-orange-500/[0.02] hover:bg-orange-500/[0.05] hover:border-orange-500 transition-colors w-full"
                         >
                             <div className="flex flex-col gap-1 text-left">
@@ -42,7 +41,7 @@ export default function BuySection({ asin, searchQuery }: BuySectionProps) {
                             <div className="whitespace-nowrap shrink-0 text-[10px] font-mono text-orange-500/80 uppercase px-2 py-1 bg-orange-500/5 border border-orange-500/20 group-hover:bg-orange-500/20 group-hover:text-orange-400 group-hover:border-orange-500/40 transition-colors">
                                 [ EXTERNAL ]
                             </div>
-                        </a>
+                        </AffiliateLink>
                     </div>
                 ) : (
                     <p className="text-[10px] font-mono text-gray-600 text-center uppercase tracking-wider py-2">

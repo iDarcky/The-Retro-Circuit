@@ -193,6 +193,19 @@ export interface ConsoleVariant {
   gpu_teraflops?: number;
 
   os?: string;
+  /** Structured OS family for reliable filtering; `os` stays the display string. */
+  os_family?: 'android' | 'linux' | 'steamos' | 'windows' | 'proprietary' | 'other' | null;
+  /** Version portion only, e.g. "13" for Android 13. */
+  os_version?: string | null;
+  /** Full SoC/chipset name, e.g. "Snapdragon 8 Gen 2". */
+  soc?: string | null;
+  /** Structured architecture; cpu_architecture stays free-text detail. */
+  cpu_arch?: 'arm64' | 'arm32' | 'x86_64' | 'other' | null;
+  /** Vulkan version — key for Android emulator performance. */
+  vulkan_support?: string | null;
+  gpu_driver?: string | null;
+  /** Synthetic benchmark (AnTuTu) for cross-chip ranking. */
+  benchmark_score?: number | null;
   ram_mb?: number;
   ram_type?: string;
   ram_speed_mhz?: number;

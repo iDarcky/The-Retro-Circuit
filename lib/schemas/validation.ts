@@ -111,6 +111,13 @@ export const ConsoleVariantSchema = z.object({
   gpu_teraflops: safeNumber,
 
   os: safeString,
+  os_family: safeString,
+  os_version: safeString,
+  soc: safeString,
+  cpu_arch: safeString,
+  vulkan_support: safeString,
+  gpu_driver: safeString,
+  benchmark_score: safeNumber,
 
   // Memory
   ram_mb: safeNumber,
