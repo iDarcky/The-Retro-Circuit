@@ -25,7 +25,9 @@ export default async function AdminConsolesPage() {
         const [consolesData, manufacturersData] = await Promise.all([
             supabase
                 .from('consoles')
-                .select('id, name, slug, status, updated_at, manufacturer:manufacturer(name)')
+                // image_url + variant specs drive the readiness indicators in the index
+                // (a console can't be published without an image, and is thin without a variant).
+                .select('id, name, slug, status, updated_at, image_url, device_category, manufacturer:manufacturer(name), variants:console_variants(id, price_launch_usd, image_url)')
                 .order('name'),
             fetchManufacturers()
         ]);
