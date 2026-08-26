@@ -39,7 +39,7 @@ export default async function LandingPage({ version }: LandingPageProps) {
         <div className="absolute inset-0 z-0">
           {/* Base Image (Sharp) */}
           <Image
-            src="/gameboy_color.png"
+            src="/gameboy_color.webp"
             alt="Background"
             fill
             className="object-cover opacity-40 [mask-image:linear-gradient(to_right,rgba(0,0,0,1)_0%,rgba(0,0,0,0.5)_100%)]"
