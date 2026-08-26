@@ -13,6 +13,7 @@ import { VariantSelector } from '../../components/arena/VariantSelector';
 import { GlanceComparison } from '../../components/arena/GlanceComparison';
 import { ArenaStickyHeader } from '../../components/arena/ArenaStickyHeader';
 import { ArenaRivals } from '../../components/arena/ArenaRivals';
+import ArenaBuyBar from '../../components/arena/ArenaBuyBar';
 import { ChevronDown, ChevronUp, Swords } from 'lucide-react';
 import { SwissHeader } from '../../components/ui/SwissHeader';
 
@@ -381,6 +382,11 @@ export default function ArenaComparisonClient({
                                     </div>
                                 </div>
                             </div>
+
+                            <ArenaBuyBar
+                                a={{ details: selectionA.details, variant: selectionA.selectedVariant }}
+                                b={{ details: selectionB.details, variant: selectionB.selectedVariant }}
+                            />
 
                             <ArenaRivals
                                 currentA={selectionA.details?.slug}

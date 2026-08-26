@@ -682,3 +682,72 @@ export const deleteConsoleImage = async (
         return { success: false, message: e.message };
     }
 };
+
+export interface AsinRow {
+    variant_id: string;
+    variant_name: string | null;
+    amazon_asin: string | null;
+    console_slug: string;
+    console_name: string;
+    brand: string | null;
+    status: string;
+}
+
+/** Admin: every variant with its ASIN, published devices first — the backfill worklist. */
+export const fetchAsinWorklist = async (): Promise<AsinRow[]> => {
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from('console_variants')
+            .select('id, variant_name, amazon_asin, consoles!inner(slug, name, status, manufacturer:manufacturer_id(name))')
+            .order('variant_name');
+
+        if (error) { console.error('[API] fetchAsinWorklist:', error.message); return []; }
+
+        return (data || []).map((v: any) => ({
+            variant_id: v.id,
+            variant_name: v.variant_name,
+            amazon_asin: v.amazon_asin,
+            console_slug: v.consoles?.slug,
+            console_name: v.consoles?.name,
+            brand: v.consoles?.manufacturer?.name ?? null,
+            status: v.consoles?.status,
+        }));
+    } catch (e: any) {
+        console.error('[API] fetchAsinWorklist exception:', e?.message);
+        return [];
+    }
+};
+
+/** Admin: set or clear a variant's Amazon ASIN. */
+export const setVariantAsin = async (
+    variantId: string,
+    asin: string | null
+): Promise<{ success: boolean; message?: string }> => {
+    const clean = asin?.trim().toUpperCase() || null;
+    // Amazon ASINs are 10 alphanumeric characters. Rejecting anything else here stops a
+    // pasted URL or partial code from silently producing a dead product link.
+    if (clean && !/^[A-Z0-9]{10}$/.test(clean)) {
+        return { success: false, message: 'ASIN must be exactly 10 letters or digits.' };
+    }
+    try {
+        const supabase = await createClient();
+        const { error } = await supabase
+            .from('console_variants')
+            .update({ amazon_asin: clean })
+            .eq('id', variantId);
+        if (error) return { success: false, message: error.message };
+
+        const { data: v } = await supabase
+            .from('console_variants')
+            .select('consoles!inner(slug, status)')
+            .eq('id', variantId)
+            .maybeSingle();
+        const c: any = (v as any)?.consoles;
+        if (c?.status === 'published' && c.slug) revalidatePath(`/consoles/${c.slug}`);
+
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, message: e.message };
+    }
+};

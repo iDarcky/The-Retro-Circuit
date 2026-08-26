@@ -9,7 +9,7 @@ interface AffiliateLinkProps {
     /** 'product' = direct ASIN link, 'search' = Amazon search fallback. */
     linkType: 'product' | 'search';
     /** Where the click happened, so we can compare converting surfaces. */
-    placement: 'console_detail' | 'finder_winner' | 'finder_alternative' | 'best_of';
+    placement: 'console_detail' | 'finder_winner' | 'finder_alternative' | 'best_of' | 'arena_a' | 'arena_b';
     className?: string;
     children: ReactNode;
 }
