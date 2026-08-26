@@ -2,7 +2,7 @@
 
 ## Project Overview
 Retro handheld gaming device comparison engine. Solo PM project, shipped via AI agents.
-Pre-alpha v0.5.5 · ~66 consoles · 136 variants · Live at theretrocircuit.com
+Pre-alpha v0.5.5 · 212 consoles (66 published, ~140 draft) · 273 variants · 50 brands · Live at theretrocircuit.com
 
 ---
 
@@ -67,8 +67,20 @@ pnpm lint     # ESLint
 ## Data Architecture
 - `Manufacturer` → many `Consoles` → many `Console_Variants` → `Emulation_Profiles`
 - Server actions: `app/actions/` (consoles.ts, manufacturers.ts, search.ts, etc.)
-- ISR on console and manufacturer pages
 - Supabase returns 1:1 relations as arrays — normalization helpers unwrap them (see `app/actions/consoles.ts`)
+- Specs live on the **variant**, not the console. `device_category` (`emulation` | `pc_gaming` | `fpga` | `legacy`) separates Android/Chinese handhelds from OEM devices and PC handhelds.
+- Structured platform fields on `console_variants`: `os_family` (enum), `os_version`, `soc`, `cpu_arch` (enum), `vulkan_support`, `gpu_driver`, `benchmark_score`. Free-text `os` / `cpu_architecture` are kept as display strings — **filter on the structured columns**, the free text has typos (`"Andorid 13"`).
+- `emulation_profiles` rows are created by a **DB trigger** when a variant is inserted. Data-modifying CTEs can't see the trigger's row (same snapshot) — write emulation data in a **separate statement**.
+
+## Rendering (keep compute low)
+- Public pages are static/SSG with `revalidate = false` (on-demand only). There is no time-based ISR.
+- Cacheability is decided by the Supabase client: `anon.ts` is SSG-safe; `server.ts` reads cookies and **forces the route dynamic**. Never import the server client into a public page.
+- Only `/admin/*`, `/profile`, `/unsubscribe` should be dynamic (`ƒ`). Verify with the `pnpm build` route table.
+- Middleware is scoped to `/admin`, `/profile`, `/login`, `/design`. Security headers + CSP are set in `next.config.mjs` `headers()` so they still apply everywhere.
+
+## Bulk data import
+- `scripts/import-consoles.ts` — JSON → consoles/variants/emulation (validates first, `--dry-run`, imports as **draft**).
+- `scripts/xlsx-to-import-json.py` / `-v2.py` — spreadsheet converters. Read the emulation column mapping from the sheet's own headers/cell comments; sheet layouts differ between versions. Excel silently turns aspect ratios like `16:9` into times (`16:09:00`).
 
 ---
 
@@ -81,26 +93,30 @@ pnpm lint     # ESLint
 | `docs/CLAUDEAUDIT.md` | 18KB product/code audit (March 2026) |
 | `docs/PENDING_FEATURES.md` | Prioritized feature backlog |
 | `docs/ROUTES.md` | Route documentation with payloads |
+| `lib/bestof/collections.ts` | "Best Of" buying guides — filter+rank functions over live data, drive `/best/*` |
 
 ---
 
 ## Auth & Security
 - Middleware protects `/admin` (role check) and `/profile` (auth required)
 - Admin writes protected at DB level via RLS policies
-- Rate limiting: 300 req/min via Upstash Redis
+- Rate limiting: 300 req/min via Upstash Redis — **only on the matched (auth-gated) routes**, not public pages
+- Security headers + CSP are applied globally in `next.config.mjs` `headers()`
 
 ---
 
 ## Known Issues / Active TODOs
 - `Button` still used in most admin components — being phased out for `SwissButton`
-- Affiliate buy links show `[NO LIVE DATA FEEDS]` — revenue mechanism not yet wired
-- Fabricators page has invisible logos (black-on-black for some brands)
-- Finder quiz is labelled "work in progress"
+- **~140 imported consoles sit in `draft`; almost all lack an image**, which blocks publishing. Use the admin index gap filters (READY / NO IMAGE / NO VARIANT / NO PRICE) to find work.
+- Only ~13 of 273 variants have an `amazon_asin`; the rest fall back to affiliate *search* links, which convert worse. Backfilling ASINs is the top revenue task.
+- Consoles have no written intro / "system analysis". Spec-derived summaries can be generated from the emulation matrix; **opinionated copy must be human-written** — do not mass-generate device reviews.
+- `eslint-config-next` pinned at 14 (v16 needs an ESLint 9 flat-config migration).
 
 ---
 
 ## HARD RULES — NEVER CHANGE
-- **Affiliate tag is `theretrocircu-20`** — never alter this string
+- **Affiliate tag is `theretrocircu-20`** — never alter this string. Build links via `lib/affiliate.ts`.
 - **`images.unoptimized: true` in `next.config.mjs`** — intentional, do not remove
 - **80+ redirect entries in `next.config.mjs`** — never delete any existing redirect
 - **Always back up Supabase before any database migration**
+- **Public pages must use `fetchPublicManufacturers()`**, not `fetchManufacturers()` — the latter includes brands whose consoles are all drafts and would render empty brand pages. Admin correctly uses the unfiltered version.
