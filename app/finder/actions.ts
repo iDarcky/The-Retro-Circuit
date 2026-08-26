@@ -16,15 +16,78 @@ export interface FinderResultConsole {
     release_date?: string | null;
     price?: number | null;
 
+    /** Direct affiliate link when the default variant has an ASIN. */
+    amazon_asin?: string | null;
+
     // Match Metadata
     match_label?: string;
     match_reason?: string;
+    /** Stable winner flag — do not infer the winner from match_label text. */
+    is_winner?: boolean;
 
     // Scoring Debug/Display
     _score: number;
     _badges: string[];
     _breakdown?: ScoreBreakdown; // Optional for debug
     _relaxed_features?: string[]; // Log relaxed requirements
+}
+
+
+/**
+ * Build a personalised "why we picked this" explanation from the score breakdown and the
+ * user's own answers, instead of a single generic sentence shared by every device.
+ * Ranked by which category actually drove the score.
+ */
+function buildMatchReason(
+    result: { name: string; price?: number | null; form_factor?: string | null; _breakdown?: ScoreBreakdown; _badges: string[] },
+    inputs: { profile: string | null; budgetBand: string | null; targetTier: string | null; portabilityPref: string | null; formFactorPref: string | null },
+    variant: 'best' | 'performance' | 'upgrade' | 'runnerup'
+): string {
+    const bd = result._breakdown;
+    const reasons: string[] = [];
+
+    const TIER_LABEL: Record<string, string> = {
+        '8bit': '8- and 16-bit classics',
+        '32bit': 'PS1/N64-era games',
+        '2000s': 'PSP and DS libraries',
+        '6thgen': 'PS2 and GameCube',
+        'modern': 'modern, demanding systems'
+    };
+
+    if (bd) {
+        // Lead with whichever dimension scored highest — that is genuinely why it won.
+        const dims: Array<[string, number]> = [
+            [`it handles ${TIER_LABEL[inputs.targetTier || ''] || 'your target systems'} well`, bd.tierFit],
+            ['it has headroom to spare on raw power', bd.powerCeiling],
+            ['it is easy to pick up and play with no setup work', bd.ease],
+            ['it is genuinely portable at this size and weight', bd.portability],
+            ['it is strong value for the money', bd.value],
+            ['it covers a wide library of systems', bd.library],
+        ];
+        dims.sort((a, b) => b[1] - a[1]);
+        reasons.push(dims[0][0]);
+        if (dims[1][1] >= 0.6) reasons.push(dims[1][0]);
+    }
+
+    if (inputs.formFactorPref && inputs.formFactorPref !== 'surprise' && result.form_factor) {
+        if (result.form_factor.toLowerCase() === inputs.formFactorPref.toLowerCase()) {
+            reasons.push(`it is the ${result.form_factor.toLowerCase()} shape you asked for`);
+        }
+    }
+
+    const prefix =
+        variant === 'performance' ? 'Most power per dollar in your range' :
+        variant === 'upgrade' ? 'Worth stretching for' :
+        variant === 'runnerup' ? 'A close second' :
+        'Your best overall match';
+
+    if (reasons.length === 0) return `${prefix} based on your answers.`;
+
+    const body = reasons.length === 1
+        ? reasons[0]
+        : `${reasons.slice(0, -1).join(', ')} and ${reasons[reasons.length - 1]}`;
+
+    return `${prefix}: ${body}.`;
 }
 
 export async function getFinderResults(
@@ -113,6 +176,7 @@ export async function getFinderResults(
         const scoredConsoles: FinderResultConsole[] = filteredConsoles.map((consoleItem) => {
             const scoreData = calculateConsoleScore(consoleItem, inputs);
             const price = (consoleItem.specs as any)?.price_launch_usd || null;
+            const asin = (consoleItem.specs as any)?.amazon_asin || null;
             // Extract formatted release date or just return the date string if available
             const releaseDate = (consoleItem.specs as any)?.release_date || null;
 
@@ -126,12 +190,14 @@ export async function getFinderResults(
                 // release_year: consoleItem.release_year, // REMOVED
                 release_date: releaseDate,
                 price: price,
+                amazon_asin: asin,
                 _score: scoreData.total,
                 _badges: scoreData.badges,
                 _breakdown: scoreData,
                 _relaxed_features: relaxedFeatures.length > 0 ? relaxedFeatures : undefined,
                 match_label: undefined,
-                match_reason: undefined
+                match_reason: undefined,
+                is_winner: false
             };
         });
 
@@ -169,7 +235,8 @@ export async function getFinderResults(
 
         if (bestMatch) {
             bestMatch.match_label = "Best Match";
-            bestMatch.match_reason = "Matches your preferences best across all categories.";
+            bestMatch.is_winner = true;
+            bestMatch.match_reason = buildMatchReason(bestMatch, inputs, 'best');
             finalSelection.push(bestMatch);
             pickedIds.add(bestMatch.id);
         }
@@ -190,7 +257,7 @@ export async function getFinderResults(
 
         if (perfPick) {
             perfPick.match_label = "Best Performance for Budget";
-            perfPick.match_reason = "Maximizes power and compatibility within your price range, prioritizing performance over features.";
+            perfPick.match_reason = buildMatchReason(perfPick, inputs, 'performance');
             finalSelection.push(perfPick);
             pickedIds.add(perfPick.id);
         }
@@ -236,7 +303,7 @@ export async function getFinderResults(
                     candidates.sort((a, b) => (b._breakdown?.powerCeiling || 0) - (a._breakdown?.powerCeiling || 0));
                     upgradePick = candidates[0];
                     upgradePick.match_label = "Upgrade Pick (+$50)";
-                    upgradePick.match_reason = "Slightly over budget, but offers significantly more power or compatibility.";
+                    upgradePick.match_reason = buildMatchReason(upgradePick, inputs, 'upgrade');
                 }
             }
 
@@ -248,7 +315,7 @@ export async function getFinderResults(
                 remaining.sort((a, b) => b._score - a._score);
                 const runnerUp = remaining[0];
                 runnerUp.match_label = "Runner Up";
-                runnerUp.match_reason = "A strong alternative that nearly matched your top pick.";
+                runnerUp.match_reason = buildMatchReason(runnerUp, inputs, 'runnerup');
                 finalSelection.push(runnerUp);
                 pickedIds.add(runnerUp.id);
             }

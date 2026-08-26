@@ -137,38 +137,20 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 5. Security Headers
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), browsing-topics=()');
-
-  // Content Security Policy
-  const isDev = process.env.NODE_ENV === 'development';
-  const cspHeader = `
-    default-src 'self';
-    script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''};
-    style-src 'self' 'unsafe-inline';
-    img-src 'self' blob: data: https:;
-    font-src 'self' data:;
-    connect-src 'self' ${supabaseUrl};
-    object-src 'none';
-    base-uri 'self';
-    form-action 'self';
-    frame-ancestors 'none';
-    block-all-mixed-content;
-    upgrade-insecure-requests;
-  `
-    .replace(/\s{2,}/g, ' ')
-    .trim();
-
-  response.headers.set('Content-Security-Policy', cspHeader);
-
+  // NOTE: Security headers + CSP are now set globally in next.config.mjs `headers()` so they
+  // apply to every route (including fully-static, CDN-served pages) without invoking middleware.
   return response;
 }
 
+// Scope middleware to auth-gated routes only. Static/public pages skip the Edge Middleware
+// invocation entirely (no Supabase auth round-trip, no Redis rate-limit call), so they can be
+// served straight from the CDN. Rate limiting and session refresh still run on gated routes;
+// public form submissions have their own rate limiting (see lib/rate-limit).
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/admin/:path*',
+    '/profile/:path*',
+    '/login',
+    '/design/:path*',
   ],
 };

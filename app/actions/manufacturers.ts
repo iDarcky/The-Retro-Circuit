@@ -16,6 +16,45 @@ export const fetchManufacturers = async (): Promise<Manufacturer[]> => {
     }
 };
 
+/**
+ * Manufacturers that have at least one PUBLISHED console.
+ *
+ * Public surfaces must use this rather than fetchManufacturers(): the admin list
+ * intentionally contains brands whose devices are still drafts (e.g. freshly
+ * imported ones), and those would otherwise render as empty brand pages and pad
+ * the fabricators grid with logo-less entries.
+ *
+ * Self-healing: a brand appears the moment one of its consoles is published.
+ */
+export const fetchPublicManufacturers = async (): Promise<Manufacturer[]> => {
+    try {
+        const supabase = supabaseAnon;
+
+        const { data: published, error: pubError } = await supabase
+            .from('consoles')
+            .select('manufacturer_id')
+            .eq('status', 'published')
+            .not('manufacturer_id', 'is', null);
+
+        if (pubError) throw pubError;
+
+        const ids = Array.from(new Set((published || []).map((c: any) => c.manufacturer_id)));
+        if (ids.length === 0) return [];
+
+        const { data, error } = await supabase
+            .from('manufacturer')
+            .select('*')
+            .in('id', ids)
+            .order('name');
+
+        if (error) throw error;
+        return data as Manufacturer[];
+    } catch (e) {
+        console.error('[API] fetchPublicManufacturers:', e);
+        return [];
+    }
+};
+
 export const getManufacturerBySlug = async (slug: string): Promise<Manufacturer | null> => {
     try {
         const supabase = supabaseAnon;

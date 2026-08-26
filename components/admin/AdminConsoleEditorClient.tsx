@@ -130,10 +130,12 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                  </div>
             </div>
 
-            {/* Variant Modal */}
+            {/* Variant editor — full screen: the spec form is long and benefits from the
+                extra width/height, and a stray backdrop click can't discard the form. */}
             <Modal
                 isOpen={isVariantModalOpen}
                 onClose={() => setIsVariantModalOpen(false)}
+                fullScreen
                 title={editingVariant ? `EDIT SPECS: ${editingVariant.variant_name}` : "DEFINE NEW HARDWARE SPECS"}
             >
                 <VariantForm

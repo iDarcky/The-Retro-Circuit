@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { notFound } from 'next/navigation';
 import { fetchConsoleBySlug } from '../../../app/actions';
 import { fetchConsoleList } from '../../../app/actions/consoles';
@@ -17,7 +18,9 @@ type Props = {
   params: Promise<{ slug: string }>
 };
 
-async function resolveConsoleSlug(rawSlug: string): Promise<{ data: ConsoleDetails | null }> {
+// Memoized per-request so generateMetadata and the page body share a single DB fetch
+// for the same slug instead of querying twice.
+const resolveConsoleSlug = cache(async (rawSlug: string): Promise<{ data: ConsoleDetails | null }> => {
   try {
     const exactMatch = await fetchConsoleBySlug(rawSlug, false);
     if (exactMatch && exactMatch.data) {
@@ -28,7 +31,7 @@ async function resolveConsoleSlug(rawSlug: string): Promise<{ data: ConsoleDetai
     console.error("[resolveConsoleSlug] Error:", error);
     return { data: null };
   }
-}
+});
 
 export async function generateMetadata(props: Props) {
   try {

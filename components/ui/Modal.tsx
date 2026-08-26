@@ -8,9 +8,16 @@ interface ModalProps {
     onClose: () => void;
     title: string;
     children: React.ReactNode;
+    /**
+     * Fill the whole viewport instead of a centred dialog. Use for long data-entry forms
+     * (e.g. the variant spec editor) where the extra width and height matter.
+     * Full-screen modals also ignore backdrop clicks so a stray click can't discard a
+     * half-filled form.
+     */
+    fullScreen?: boolean;
 }
 
-export default function Modal({ isOpen, onClose, title, children }: ModalProps) {
+export default function Modal({ isOpen, onClose, title, children, fullScreen = false }: ModalProps) {
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -39,11 +46,15 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
 
     return createPortal(
         <div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fadeIn p-4"
-            onClick={onClose}
+            className={`fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fadeIn ${fullScreen ? '' : 'p-4'}`}
+            onClick={fullScreen ? undefined : onClose}
         >
             <div
-                className="w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-bg-primary border-2 border-secondary shadow-[0_0_30px_rgba(0,255,157,0.1)] flex flex-col relative animate-slideUp"
+                className={
+                    fullScreen
+                        ? 'w-full h-full bg-bg-primary border-0 flex flex-col relative animate-fadeIn'
+                        : 'w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-bg-primary border-2 border-secondary shadow-[0_0_30px_rgba(0,255,157,0.1)] flex flex-col relative animate-slideUp'
+                }
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
@@ -61,8 +72,8 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
                 </div>
 
                 {/* Content */}
-                <div className="p-6 overflow-y-auto">
-                    {children}
+                <div className={fullScreen ? 'flex-1 overflow-y-auto p-6 md:p-8' : 'p-6 overflow-y-auto'}>
+                    {fullScreen ? <div className="max-w-[1600px] mx-auto">{children}</div> : children}
                 </div>
             </div>
         </div>,

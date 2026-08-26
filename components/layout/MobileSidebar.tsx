@@ -92,10 +92,11 @@ export const MobileSidebar: FC<MobileSidebarProps> = ({ isOpen, onClose, openSea
            {/* NAVIGATION ITEMS: Huge Typography Grid */}
            <SidebarItem to="/" label="CONTROL ROOM" exact index={1} />
            <SidebarItem to="/consoles" label="CONSOLES" index={2} />
-           <SidebarItem to="/fabricators" label="FABRICATORS" index={3} />
-           <SidebarItem to="/finder" label="FINDER" index={4} />
-           <SidebarItem to="/arena" label="VS MODE" index={5} />
-           <SidebarItem to="/news" label="NEWS" index={6} />
+           <SidebarItem to="/best" label="BEST OF" index={3} />
+           <SidebarItem to="/fabricators" label="FABRICATORS" index={4} />
+           <SidebarItem to="/finder" label="FINDER" index={5} />
+           <SidebarItem to="/arena" label="VS MODE" index={6} />
+           <SidebarItem to="/news" label="NEWS" index={7} />
         </nav>
       </aside>
     </>

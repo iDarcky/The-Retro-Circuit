@@ -1,23 +1,11 @@
-import { fetchManufacturers, fetchVaultConsoles } from '../../app/actions';
+import { fetchPublicManufacturers, fetchVaultConsoles } from '../../app/actions';
+import { fetchConsoleAndVariantCounts } from '../../app/actions/consoles';
 import ConsoleVaultClient from '../../components/console/ConsoleVaultClient';
-import { createClient } from '../../lib/supabase/server';
 
 export async function generateMetadata() {
-  const supabase = await createClient();
-
-  // Get count of published consoles
-  const { count: consoleCount } = await supabase
-    .from('consoles')
-    .select('*', { count: 'exact', head: true })
-    .eq('status', 'published');
-
-  // Get count of variants for published consoles
-  // This is a bit tricky to do with just count and filtering joined tables on Supabase without a custom RPC.
-  // Since we already fetch all consoles below anyway, we could just do it there, but we want it in metadata.
-  // Let's do a basic fetch for variant count
-  const { count: variantCount } = await supabase
-    .from('console_variants')
-    .select('*', { count: 'exact', head: true });
+  // Use the anonymous client (via the shared action) so this page stays fully static.
+  // Reading cookies here (server client) would silently force the whole route dynamic.
+  const { consoles: consoleCount, variants: variantCount } = await fetchConsoleAndVariantCounts();
 
   const numConsoles = consoleCount || 64;
   const numVariants = variantCount || 133;
@@ -38,7 +26,7 @@ export default async function ConsoleVaultPage() {
 
   try {
     [manufacturers, allConsoles] = await Promise.all([
-      fetchManufacturers(),
+      fetchPublicManufacturers(),
       fetchVaultConsoles()
     ]);
   } catch (error) {

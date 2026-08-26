@@ -12,23 +12,27 @@ import { AnalyticsWrapper } from "../components/privacy/AnalyticsWrapper";
 import { siteConfig } from "../config/site";
 import { getSystemVersion } from "./actions/roadmap";
 
-// Load fonts via Next.js to prevent Layout Shift
+// Load fonts via Next.js to prevent Layout Shift. `display: 'swap'` on every family keeps text
+// visible during font load (consistent behavior across the pixel/mono/tech faces).
 const pressStart = Press_Start_2P({
   weight: "400",
   subsets: ["latin"],
+  display: 'swap',
   variable: '--font-press-start'
 });
 
-// Replaced Share_Tech_Mono with JetBrains_Mono as requested
 const jetBrainsMono = JetBrains_Mono({
   weight: ["400", "700"],
   subsets: ["latin"],
+  display: 'swap',
   variable: '--font-mono'
 });
 
+// Still in use via the `font-tech` utility (SpecField, RetroStatusBar).
 const shareTechMono = Share_Tech_Mono({
   weight: "400",
   subsets: ["latin"],
+  display: 'swap',
   variable: '--font-share-tech'
 });
 

@@ -5,8 +5,8 @@ import { SignalFeed } from '@/components/news/SignalFeed';
 import { ReviewGrid } from '@/components/news/ReviewGrid';
 import { NewsFeed } from '@/components/news/NewsFeed';
 import { fetchActiveSignals } from '../actions/signals';
-import { fetchAllReviews } from '../actions/reviews';
-import { fetchAllNews } from '../actions/news';
+import { fetchPublicReviews } from '../actions/reviews';
+import { fetchPublicNews } from '../actions/news';
 
 export const revalidate = false;
 
@@ -23,8 +23,8 @@ export const metadata: Metadata = {
 export default async function NewsPage() {
    const [activeSignals, reviews, newsItems] = await Promise.all([
       fetchActiveSignals(),
-      fetchAllReviews(),
-      fetchAllNews()
+      fetchPublicReviews(),
+      fetchPublicNews()
    ]);
 
    const jsonLd = {

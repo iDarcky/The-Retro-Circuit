@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, type Dispatch, type SetStateAction } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { fetchConsoleList, fetchConsoleBySlug } from '../../app/actions';
 import { ConsoleDetails, ConsoleVariant } from '../../lib/types';
 import { METRICS } from '../../lib/config/arena-metrics';
@@ -204,7 +205,9 @@ export default function ArenaComparisonClient({
                                     >
                                         <div className="relative w-24 h-24 md:w-full md:h-64 flex-shrink-0 bg-black/40 md:bg-transparent border border-blue-500/10 md:border-0 p-4 transition-transform group-hover:scale-105 duration-500 shadow-inner md:shadow-none rounded-lg md:rounded-none">
                                             {(selectionA.selectedVariant?.image_url || selectionA.details.image_url) ? (
-                                                <img src={selectionA.selectedVariant?.image_url || selectionA.details.image_url} alt={selectionA.details.name} className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(37,99,235,0.4)]" />
+                                                <div className="relative w-full h-full">
+                                                    <Image src={(selectionA.selectedVariant?.image_url || selectionA.details.image_url) as string} alt={selectionA.details.name} fill sizes="(max-width: 768px) 96px, 40vw" className="object-contain drop-shadow-[0_0_15px_rgba(37,99,235,0.4)]" />
+                                                </div>
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-blue-500 opacity-50 font-pixel text-[8px] md:text-xs">NO IMG</div>
                                             )}
@@ -270,7 +273,9 @@ export default function ArenaComparisonClient({
                                     >
                                         <div className="relative w-24 h-24 md:w-full md:h-64 flex-shrink-0 bg-black/40 md:bg-transparent border border-red-500/10 md:border-0 p-4 transition-transform group-hover:scale-105 duration-500 shadow-inner md:shadow-none rounded-lg md:rounded-none">
                                             {(selectionB.selectedVariant?.image_url || selectionB.details.image_url) ? (
-                                                <img src={selectionB.selectedVariant?.image_url || selectionB.details.image_url} alt={selectionB.details.name} className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(220,38,38,0.4)]" />
+                                                <div className="relative w-full h-full">
+                                                    <Image src={(selectionB.selectedVariant?.image_url || selectionB.details.image_url) as string} alt={selectionB.details.name} fill sizes="(max-width: 768px) 96px, 40vw" className="object-contain drop-shadow-[0_0_15px_rgba(220,38,38,0.4)]" />
+                                                </div>
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-red-500 opacity-50 font-pixel text-[8px] md:text-xs">NO IMG</div>
                                             )}

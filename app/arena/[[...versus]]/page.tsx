@@ -1,7 +1,7 @@
 export const revalidate = false;
 export const dynamic = 'force-static';
 
-import { createClient } from '../../../lib/supabase/server';
+import { supabaseAnon } from '../../../lib/supabase/anon';
 import ArenaComparisonClient from '../../../components/arena/ArenaComparisonClient';
 
 // Quick inline normalize for server
@@ -78,7 +78,7 @@ export default async function ArenaVersusPage({ params }: { params: Promise<{ ve
         return <ArenaComparisonClient />;
     }
 
-    const supabase = await createClient();
+    const supabase = supabaseAnon;
     const parts = versus[0].split('-vs-');
 
     const resolveSlug = async (supabase: any, raw: string) => {

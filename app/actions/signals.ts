@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { supabaseAnon } from '@/lib/supabase/anon';
 import { revalidatePath } from 'next/cache';
 import { Signal, SignalType } from '@/lib/types/news';
 import { submitToIndexNow } from '@/lib/indexnow';
@@ -72,7 +73,8 @@ export async function fetchAllSignals(): Promise<Signal[]> {
 }
 
 export async function fetchActiveSignals(): Promise<Signal[]> {
-  const supabase = await createClient();
+  // Public read: use the anonymous client so /news stays fully static (no cookies → no forced dynamic).
+  const supabase = supabaseAnon;
 
   const { data, error } = await supabase
     .from('signals')

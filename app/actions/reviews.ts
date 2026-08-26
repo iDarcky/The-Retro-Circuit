@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { supabaseAnon } from '@/lib/supabase/anon';
 import { revalidatePath } from 'next/cache';
 import { Review } from '@/lib/types/news';
 import { formRateLimit, getIp } from '@/lib/rate-limit';
@@ -75,6 +76,32 @@ export async function fetchAllReviews(): Promise<Review[]> {
 
   // Flatten the result to match the expected Review interface
   const data = rawData.map((review: any) => {
+    const { consoles, ...rest } = review;
+    return {
+      ...rest,
+      console_name: consoles?.name || rest.console_name,
+      console_slug: consoles?.slug || rest.console_slug,
+    };
+  });
+
+  return data as Review[];
+}
+
+// Public read for the /news page. Uses the anonymous client (no cookies) so the page can be
+// statically rendered and served from the CDN, and only returns published reviews.
+export async function fetchPublicReviews(): Promise<Review[]> {
+  const { data: rawData, error } = await supabaseAnon
+    .from('reviews')
+    .select('*, consoles!inner(name, slug)')
+    .eq('status', 'published')
+    .order('published_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching public reviews:', error);
+    return [];
+  }
+
+  const data = (rawData || []).map((review: any) => {
     const { consoles, ...rest } = review;
     return {
       ...rest,

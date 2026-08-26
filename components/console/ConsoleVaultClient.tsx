@@ -346,7 +346,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                                             <Link
                                                 href={`/consoles/${console.slug}`}
                                                 key={console.id}
-                                                className="group relative flex flex-col bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-violet-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-violet-500/10 rounded-xl overflow-hidden"
+                                                className="group relative flex flex-col bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-violet-500/50 transition-all duration-300 hover:-translate-y-1 rounded-xl overflow-hidden"
                                             >
                                                 <div className="aspect-square p-6 flex items-center justify-center relative bg-gradient-to-b from-transparent to-black/20">
                                                     {console.image_url ? (
@@ -389,7 +389,9 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
                                                 <div className="flex flex-row h-32">
                                                     <div className="w-1/3 bg-zinc-900/50 relative flex items-center justify-center p-2 border-r border-zinc-800">
                                                         {console.image_url ? (
-                                                            <img src={console.image_url} alt={console.name} className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform" />
+                                                            <div className="relative w-full h-full">
+                                                                <Image src={console.image_url} alt={console.name} fill sizes="(max-width: 768px) 33vw, 15vw" className="object-contain group-hover:scale-105 transition-transform" />
+                                                            </div>
                                                         ) : (
                                                             <span className="font-pixel text-zinc-700 text-xl">?</span>
                                                         )}

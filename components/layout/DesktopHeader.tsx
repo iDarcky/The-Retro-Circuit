@@ -11,6 +11,7 @@ export default function DesktopHeader() {
 
   const navItems = [
     { name: 'CONSOLES', path: '/consoles' },
+    { name: 'BEST OF', path: '/best' },
     { name: 'FABRICATORS', path: '/fabricators' },
     { name: 'VS MODE', path: '/arena' },
     { name: 'NEWS', path: '/news' },

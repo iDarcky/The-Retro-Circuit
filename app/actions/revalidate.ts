@@ -24,10 +24,17 @@ export async function purgeCache(path?: string) {
   }
 
   // 3. Perform Action
-  console.log(`[Cache] Purging: ${path || 'Global Layout (All)'}`);
+  console.log(`[Cache] Purging: ${path || 'Primary public routes'}`);
   if (path) {
     revalidatePath(path)
   } else {
-    revalidatePath('/', 'layout') // Nuke the entire site cache to ensure fresh data everywhere
+    // Targeted refresh of the primary public listing surfaces instead of nuking the entire
+    // site cache on every admin save. Entity detail pages (/consoles/[slug],
+    // /fabricators/[slug]) are revalidated by their own create/update actions, and the
+    // footer version is handled by the 'system-version' tag.
+    revalidatePath('/')
+    revalidatePath('/consoles')
+    revalidatePath('/fabricators')
+    revalidatePath('/arena')
   }
 }

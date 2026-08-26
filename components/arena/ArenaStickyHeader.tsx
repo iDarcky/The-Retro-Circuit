@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { ConsoleDetails, ConsoleVariant } from '../../lib/types';
 
 interface ArenaStickyHeaderProps {
@@ -40,10 +41,12 @@ export const ArenaStickyHeader = ({ selectionA, selectionB, onReset }: ArenaStic
                         <div className="flex items-center gap-3 min-w-0">
                             <div className="w-10 h-10 bg-white/5 border border-white/10 flex-shrink-0 relative overflow-hidden hidden sm:block">
                                 {(selectionA.selectedVariant?.image_url || selectionA.details.image_url) ? (
-                                    <img 
-                                        src={selectionA.selectedVariant?.image_url || selectionA.details.image_url} 
-                                        alt={selectionA.details.name} 
-                                        className="w-full h-full object-contain p-1"
+                                    <Image
+                                        src={(selectionA.selectedVariant?.image_url || selectionA.details.image_url) as string}
+                                        alt={selectionA.details.name}
+                                        fill
+                                        sizes="40px"
+                                        className="object-contain p-1"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-[8px] font-mono text-white/20">IMG</div>
@@ -82,10 +85,12 @@ export const ArenaStickyHeader = ({ selectionA, selectionB, onReset }: ArenaStic
                             </div>
                             <div className="w-10 h-10 bg-white/5 border border-white/10 flex-shrink-0 relative overflow-hidden hidden sm:block">
                                 {(selectionB.selectedVariant?.image_url || selectionB.details.image_url) ? (
-                                    <img 
-                                        src={selectionB.selectedVariant?.image_url || selectionB.details.image_url} 
-                                        alt={selectionB.details.name} 
-                                        className="w-full h-full object-contain p-1"
+                                    <Image
+                                        src={(selectionB.selectedVariant?.image_url || selectionB.details.image_url) as string}
+                                        alt={selectionB.details.name}
+                                        fill
+                                        sizes="40px"
+                                        className="object-contain p-1"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-[8px] font-mono text-white/20">IMG</div>

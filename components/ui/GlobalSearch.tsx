@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect, useRef, type FC, type ChangeEvent } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSearch } from './SearchContext';
 import { searchDatabase } from '../../app/actions';
@@ -164,7 +165,7 @@ const GlobalSearch: FC = () => {
                                     `}>
                                         <div className="absolute inset-0 w-full h-full bg-[url('/retro-grid.png')] opacity-[0.05] pointer-events-none mix-blend-overlay"></div>
                                         {res.image ? (
-                                            <img src={res.image} className="w-full h-full object-cover opacity-80 group-hover:opacity-100" />
+                                            <Image src={res.image} alt={res.title} fill sizes="48px" className="object-cover opacity-80 group-hover:opacity-100" />
                                         ) : (
                                             <div className="text-[9px] text-text-muted font-pixel">IMG</div>
                                         )}

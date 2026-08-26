@@ -42,9 +42,13 @@ export default function NotFound() {
       <h2 className="font-pixel text-2xl text-accent mb-8 tracking-widest animate-[neon-pulse_3s_ease-in-out_infinite]">SIGNAL LOST</h2>
       
       {/* Terminal Log Output */}
-      <div className="p-6 border-2 border-border-normal bg-black/80 mb-10 w-full max-w-md shadow-[0_0_20px_rgba(0,0,0,0.5)] relative overflow-hidden">
-        
-        <div className="font-mono text-sm text-secondary space-y-2 text-left relative z-10 min-h-[140px]">
+      <div
+        role="status"
+        aria-live="polite"
+        className="p-6 border-2 border-border-normal bg-black/80 mb-10 w-full max-w-md relative overflow-hidden"
+      >
+
+        <div className="font-mono text-sm text-emerald-400 space-y-2 text-left relative z-10 min-h-[140px]">
             {logs.map((log, i) => (
                 <div key={i} className="animate-fadeIn">
                     {log}

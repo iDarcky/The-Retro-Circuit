@@ -53,8 +53,18 @@ export const VARIANT_FORM_GROUPS = [
     {
         title: "SILICON CORE",
         fields: [
-            { label: 'OS / Firmware', key: 'os', type: 'text', required: false },
+            { label: 'OS / Firmware (display text)', key: 'os', type: 'text', required: false },
             { label: 'UI Skin', key: 'ui_skin', type: 'text', required: false },
+
+            // Structured platform fields — these drive filtering/comparison. The free-text
+            // `os` above stays as the human-readable display string.
+            { label: 'OS Family', key: 'os_family', type: 'select', required: false, width: 'third',
+              options: ['android', 'linux', 'steamos', 'windows', 'proprietary', 'other'] },
+            { label: 'OS Version (e.g. 13)', key: 'os_version', type: 'text', required: false, width: 'third' },
+            { label: 'CPU Arch', key: 'cpu_arch', type: 'select', required: false, width: 'third',
+              options: ['arm64', 'arm32', 'x86_64', 'other'] },
+
+            { label: 'SoC / Chipset (e.g. Snapdragon 8 Gen 2)', key: 'soc', type: 'text', required: false, width: 'full' },
             
             { label: 'CPU Model', key: 'cpu_model', type: 'text', required: false, width: 'third' },
             { label: 'CPU Architecture', key: 'cpu_architecture', type: 'text', required: false, width: 'third' },
@@ -72,6 +82,9 @@ export const VARIANT_FORM_GROUPS = [
             
             { label: 'GPU Clock (MHz)', key: 'gpu_clock_mhz', type: 'number', required: false, width: 'third' },
             { label: 'GPU Teraflops', key: 'gpu_teraflops', type: 'number', required: false, step: '0.01', width: 'third' },
+            { label: 'Vulkan Support (e.g. 1.3)', key: 'vulkan_support', type: 'text', required: false, width: 'third' },
+            { label: 'GPU Driver / Turnip', key: 'gpu_driver', type: 'text', required: false, width: 'third' },
+            { label: 'Benchmark (AnTuTu)', key: 'benchmark_score', type: 'number', required: false, width: 'third' },
         ]
     },
     {

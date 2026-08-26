@@ -6,6 +6,9 @@ import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import SwissButton from '@/components/console/swiss/SwissButton';
 import { getFinderResults, FinderResultConsole } from '../../app/finder/actions';
+import { getBuyUrl } from '../../lib/affiliate';
+import AffiliateLink from '../console/AffiliateLink';
+import FinderEmailCapture from './FinderEmailCapture';
 
 interface FinderResultsProps {
   onRestart: () => void;
@@ -60,8 +63,10 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
     );
   }
 
-  // Identify the Winner and Alternatives
-  const winner = results.find(r => r.match_label === 'WINNER') || results[0];
+  // Identify the Winner and Alternatives.
+  // Use the explicit is_winner flag — match_label is display text and must not be
+  // relied on for logic (it never equalled 'WINNER', so this always fell through).
+  const winner = results.find(r => r.is_winner) || results[0];
   const alternatives = results.filter(r => r.id !== winner.id);
 
 
@@ -144,11 +149,27 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                   VIEW DETAILS
                 </SwissButton>
               </Link>
-              <a href="#" target="_blank" rel="noopener noreferrer" className="flex-1">
-                <SwissButton variant="primary" className="w-full py-4 text-sm font-pixel">
-                  BUY NOW
-                </SwissButton>
-              </a>
+              {(() => {
+                const buyUrl = getBuyUrl({
+                  asin: winner.amazon_asin,
+                  name: winner.name,
+                  manufacturer: winner.manufacturer?.name,
+                });
+                if (!buyUrl) return null;
+                return (
+                  <AffiliateLink
+                    href={buyUrl}
+                    productName={winner.name}
+                    linkType={winner.amazon_asin ? 'product' : 'search'}
+                    placement="finder_winner"
+                    className="flex-1"
+                  >
+                    <SwissButton variant="primary" className="w-full py-4 text-sm font-pixel">
+                      {winner.amazon_asin ? 'BUY NOW' : 'FIND ON AMAZON'}
+                    </SwissButton>
+                  </AffiliateLink>
+                );
+              })()}
             </div>
           </div>
         </div>
@@ -219,17 +240,41 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                   </Link>
 
                   {/* BUY BUTTON */}
-                  <a href="#" target="_blank" rel="noopener noreferrer" className="w-full">
-                    <button className="w-full py-3 bg-white text-black text-xs font-mono font-bold uppercase hover:bg-zinc-200 transition-all">
-                      BUY NOW
-                    </button>
-                  </a>
+                  {(() => {
+                    const altBuyUrl = getBuyUrl({
+                      asin: consoleItem.amazon_asin,
+                      name: consoleItem.name,
+                      manufacturer: consoleItem.manufacturer?.name,
+                    });
+                    if (!altBuyUrl) return null;
+                    return (
+                      <AffiliateLink
+                        href={altBuyUrl}
+                        productName={consoleItem.name}
+                        linkType={consoleItem.amazon_asin ? 'product' : 'search'}
+                        placement="finder_alternative"
+                        className="w-full"
+                      >
+                        <button className="w-full py-3 bg-white text-black text-xs font-mono font-bold uppercase hover:bg-zinc-200 transition-all">
+                          {consoleItem.amazon_asin ? 'BUY NOW' : 'FIND ON AMAZON'}
+                        </button>
+                      </AffiliateLink>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
           ))}
         </div>
       )}
+
+      {/* Affiliate disclosure — required by the Amazon Associates programme */}
+      <p className="text-center text-[10px] font-mono text-zinc-600 mb-12">
+        As an Amazon Associate I earn from qualifying purchases.
+      </p>
+
+      {/* Capture intent at the highest-intent moment in the funnel */}
+      <FinderEmailCapture />
 
       <div className="flex justify-center border-t border-white/10 pt-12">
         <button onClick={onRestart} className="flex items-center text-zinc-500 hover:text-white font-mono text-sm tracking-widest transition-colors py-4 px-6 uppercase">

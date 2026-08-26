@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { supabaseAnon } from '@/lib/supabase/anon';
 import { revalidatePath } from 'next/cache';
 import { NewsItem } from '@/lib/types/news';
 import { submitToIndexNow } from '@/lib/indexnow';
@@ -62,6 +63,23 @@ export async function fetchAllNews(): Promise<NewsItem[]> {
 
   if (error) {
     console.error('Error fetching news:', error);
+    return [];
+  }
+
+  return data as NewsItem[];
+}
+
+// Public read for the /news page. Uses the anonymous client (no cookies) so the page can be
+// statically rendered and served from the CDN, and only returns published items.
+export async function fetchPublicNews(): Promise<NewsItem[]> {
+  const { data, error } = await supabaseAnon
+    .from('news')
+    .select('*')
+    .eq('status', 'published')
+    .order('published_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching public news:', error);
     return [];
   }
 
