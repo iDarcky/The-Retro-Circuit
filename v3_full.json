@@ -684,6 +684,269 @@
   ]
  },
  {
+  "name": "Smart Pro S",
+  "manufacturer": "Trimui",
+  "slug": "trimui-smart-pro-s",
+  "form_factor": "Horizontal",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$075 - $100",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2025-12-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 90,
+    "os": "Linux",
+    "os_family": "linux",
+    "soc": "Allwinner A523",
+    "cpu_model": "Cortex-A55",
+    "cpu_cores": 8,
+    "cpu_threads": 8,
+    "cpu_clock_max_mhz": 2000,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm64",
+    "gpu_model": "Mali-G57 MC1-2EE",
+    "gpu_cores": 2,
+    "gpu_clock_mhz": 744,
+    "ram_mb": 1024,
+    "screen_size_inch": 4.96,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 1280,
+    "screen_resolution_y": 720,
+    "ppi": 296,
+    "aspect_ratio": "16:9",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 5000,
+    "cooling_solution": "Heatsink Fan Ventilation cutouts",
+    "ports": "USB-C x2 Top & Bottom facing",
+    "storage_gb": 8,
+    "storage_type": "eMMC",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "wifi_specs": "WiFi 6",
+    "bluetooth_specs": "Bluetooth 5.4",
+    "audio_tech": "3.5mm Headphone Bottom facing",
+    "audio_speakers": "Dual Stereo Rear facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "sensors": "Microphone",
+    "has_microphone": true,
+    "performance_grade": "1/5",
+    "weight_g": 256,
+    "body_material": "Plastic",
+    "available_colors": "Black, White, Gray, Red, Yellow, Green",
+    "width_mm": 187.4,
+    "height_mm": 79.8,
+    "depth_mm": 17.2,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 2,
+     "stick_tech": "TMR",
+     "stick_clicks": true,
+     "stick_layout": "Lower",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Vertical",
+     "system_buttons_text": "Home, Power, Volume +-, Menu, Function Switch",
+     "input_notes": "Dedicated Buttons | Menu | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Perfect",
+     "n64_state": "Great",
+     "dreamcast_state": "Great",
+     "psp_state": "Great",
+     "saturn_state": "Great",
+     "gamecube_state": "Struggles",
+     "x3ds_state": "Playable",
+     "wii_state": "Struggles",
+     "ps2_state": "Struggles",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=FvJ7QP6iId4",
+    "label": "Retro Game Corps",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=Fw0HXpfpI4c",
+    "label": "TRIMUI",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=E_1FvuX6lko",
+    "label": "Tech Dweeb",
+    "sort_order": 3
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.trimuistore.com/products/trimui-smart-pro-s-handheld-game-console",
+    "label": "Trimui Store",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://trimui.net/products/trimui-smart-pro-s-handheld",
+    "label": "Trimui.net",
+    "sort_order": 1
+   },
+   {
+    "kind": "vendor",
+    "url": "https://mechdiy.com/products/trimui-smart-pro-s-retro-handheld-game-console?variant=41858917466197",
+    "label": "MechDIY",
+    "sort_order": 2
+   },
+   {
+    "kind": "vendor",
+    "url": "https://gogamegeek.com/products/trimui-smart-pro-s-portable-handheld-retro-game-console-4-96-inch",
+    "label": "GoGameGeek",
+    "sort_order": 3
+   },
+   {
+    "kind": "vendor",
+    "url": "https://powkiddy.com/products/trimui-smart-pro-s-pre-orders",
+    "label": "PowKiddy",
+    "sort_order": 4
+   }
+  ]
+ },
+ {
+  "name": "Mini Flip",
+  "manufacturer": "Miyoo",
+  "slug": "miyoo-mini-flip",
+  "form_factor": "Clamshell",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$050 - $75",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2025-10-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 60,
+    "os": "Onion OS",
+    "os_family": "proprietary",
+    "soc": "SigmaStar SSD202D",
+    "cpu_model": "Cortex-A7",
+    "cpu_cores": 2,
+    "cpu_threads": 2,
+    "cpu_clock_max_mhz": 1600,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm32",
+    "gpu_model": "\"2D Graphics Accelerator\"",
+    "gpu_cores": 1,
+    "ram_mb": 128,
+    "screen_size_inch": 2.8,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 750,
+    "screen_resolution_y": 560,
+    "ppi": 334,
+    "aspect_ratio": "4:3",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 2500,
+    "ports": "USB-C Top facing",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "audio_speakers": "Single Mono Front facing",
+    "performance_grade": "3.5/5",
+    "body_material": "Plastic",
+    "available_colors": "White, Pink, Yellow, Gray",
+    "width_mm": 66.5,
+    "height_mm": 67.8,
+    "depth_mm": 24.3,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 0,
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Horizontal",
+     "system_buttons_text": "Menu, Power, Volume +-",
+     "input_notes": "Dedicated Buttons | Menu | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Great",
+     "n64_state": "Unplayable",
+     "dreamcast_state": "Unplayable",
+     "psp_state": "Unplayable",
+     "saturn_state": "Unplayable",
+     "gamecube_state": "Unplayable",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES FX and 3D PS1 almost all full sped, DS mostly playable"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=WYeC5WJv_zg",
+    "label": "Retro Game Corps",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=usE0Siwuxq8",
+    "label": "Miyoo",
+    "sort_order": 2
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.reddit.com/r/SBCGaming/comments/1lst33b/miyoo_flip_mini_prototype/",
+    "label": "Reddit Pics",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=NOzbJ3DlM2E",
+    "label": "𝙉𝙄𝙏𝕋ℝ𝐗",
+    "sort_order": 4
+   },
+   {
+    "kind": "vendor",
+    "url": "https://lomiyoo.com/products/miyoo-mini-flip",
+    "label": "Miyoo",
+    "sort_order": 0
+   }
+  ]
+ },
+ {
   "name": "Action Pi 兀",
   "manufacturer": "Helegaly",
   "slug": "helegaly-action-pi",
@@ -1072,6 +1335,127 @@
     "url": "https://www.banggood.com/Powkiddy-V90S-64G-Retro-Flip-Handheld-Game-Console-3_5-Inch-IPS-8000+-Games-3000mAh-Foldable-Open-Source-Linux-System-Portable-Game-Player-Console-p-2034787.html?cur_warehouse=CN&ID=6287845&rmmds=search",
     "label": "Banggood",
     "sort_order": 2
+   }
+  ]
+ },
+ {
+  "name": "RG34XXSP",
+  "manufacturer": "Anbernic",
+  "slug": "anbernic-rg34xxsp",
+  "form_factor": "Clamshell",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$050 - $75",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2025-05-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 67,
+    "os": "Linux",
+    "os_family": "linux",
+    "soc": "Allwinner H700",
+    "cpu_model": "Cortex-A53",
+    "cpu_cores": 4,
+    "cpu_threads": 4,
+    "cpu_clock_max_mhz": 1500,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm64",
+    "gpu_model": "Mali-G31 MP2",
+    "gpu_cores": 2,
+    "gpu_clock_mhz": 650,
+    "ram_mb": 2048,
+    "screen_size_inch": 3.4,
+    "display_type": "IPS",
+    "refresh_rate_hz": 110,
+    "screen_resolution_x": 720,
+    "screen_resolution_y": 480,
+    "ppi": 254,
+    "aspect_ratio": "3:2",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 3300,
+    "ports": "USB-C Top facing",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "Dual MicroSD",
+    "wifi_specs": "WiFi 5",
+    "bluetooth_specs": "Bluetooth 4.2",
+    "video_out": "Mini HDMI Top facing",
+    "audio_tech": "3.5mm Headphone Bottom facing",
+    "audio_speakers": "Single Mono Front facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "sensors": "Hall switch lid closure",
+    "performance_grade": "5/5",
+    "weight_g": 178,
+    "body_material": "Plastic",
+    "available_colors": "Black, Gray, Yellow, Indigo, Metallic Blue",
+    "width_mm": 82.0,
+    "height_mm": 83.0,
+    "depth_mm": 25.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 2,
+     "stick_clicks": true,
+     "stick_layout": "Lower",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Horizontal",
+     "system_buttons_text": "Menu, Power, Reset, Volume +-",
+     "input_notes": "Dedicated Buttons | Menu | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Great",
+     "n64_state": "Great",
+     "dreamcast_state": "Great",
+     "psp_state": "Playable",
+     "saturn_state": "Struggles",
+     "gamecube_state": "Struggles",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES FX & 3D PS1 (60 FPS), N64 and Dreamcast mostly playable, PSP somewhat playable, Saturn barely playable"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=uHXYfooOsGA",
+    "label": "ETA Prime",
+    "sort_order": 2
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=lR8S9X1e3F4",
+    "label": "Tech Dweeb",
+    "sort_order": 3
+   },
+   {
+    "kind": "vendor",
+    "url": "https://anbernic.com/products/rg34xxsp",
+    "label": "Anbernic",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.us/item/3256807141646140.html",
+    "label": "Aliexpress",
+    "sort_order": 1
    }
   ]
  },
@@ -2383,6 +2767,151 @@
   ]
  },
  {
+  "name": "Flip",
+  "manufacturer": "Miyoo",
+  "slug": "miyoo-flip",
+  "form_factor": "Clamshell",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$075 - $100",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2024-12-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 78,
+    "os": "Linux (Tina)",
+    "os_family": "linux",
+    "soc": "RockChip RK3566",
+    "cpu_model": "Cortex-A55",
+    "cpu_cores": 4,
+    "cpu_threads": 4,
+    "cpu_clock_max_mhz": 2000,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm64",
+    "gpu_model": "Mali-G52 2EE",
+    "gpu_cores": 2,
+    "gpu_clock_mhz": 850,
+    "ram_mb": 1024,
+    "screen_size_inch": 3.5,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 640,
+    "screen_resolution_y": 480,
+    "ppi": 228,
+    "aspect_ratio": "4:3",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 3000,
+    "ports": "USB-C x2 Top & Bottom facing",
+    "storage_gb": 0.12,
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "Dual MicroSD",
+    "wifi_specs": "WiFi 5",
+    "bluetooth_specs": "Bluetooth 5.2",
+    "video_out": "Mini HDMI Top facing",
+    "audio_tech": "3.5mm Headphone Bottom facing",
+    "audio_speakers": "Single Mono Front facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "performance_grade": "5.5/5",
+    "weight_g": 165,
+    "body_material": "Plastic",
+    "available_colors": "Yellow, White, Black, Gray",
+    "width_mm": 82.0,
+    "height_mm": 80.0,
+    "depth_mm": 20.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 2,
+     "stick_clicks": true,
+     "stick_layout": "Lower",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Horizontal",
+     "system_buttons_text": "Menu, Power, Reset, Volume +-",
+     "input_notes": "Dedicated Buttons | Menu | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Perfect",
+     "n64_state": "Great",
+     "dreamcast_state": "Great",
+     "psp_state": "Playable",
+     "saturn_state": "Playable",
+     "gamecube_state": "Struggles",
+     "x3ds_state": "Struggles",
+     "wii_state": "Unplayable",
+     "ps2_state": "Struggles",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "N64, PSP & Dreamcast mostly playable but not all full speed"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://youtu.be/aCh0fIlqJ-w?si=I_4XLXw1AnghaUrJ",
+    "label": "Tech Dweeb",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=M10MOTxxbsQ",
+    "label": "Retro Handhelds",
+    "sort_order": 2
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=nVgCvilpb80&pp=ygUKbWl5b28gZmxpcA%3D%3D",
+    "label": "RetroBreeze",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=Bxt6AT8_G9E",
+    "label": "Retro Core",
+    "sort_order": 4
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.amazon.com/dp/B0DNFCMJL3",
+    "label": "Amazon",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://aliexpress.com/item/1005008262657479.html",
+    "label": "Aliexpress",
+    "sort_order": 1
+   },
+   {
+    "kind": "vendor",
+    "url": "https://toretro.com/products/miyoo-flip-retro-handheld-game-console",
+    "label": "To Retro",
+    "sort_order": 2
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.lomiyoo.com/",
+    "label": "Miyoo",
+    "sort_order": 3
+   }
+  ]
+ },
+ {
   "name": "RG34XX",
   "manufacturer": "Anbernic",
   "slug": "anbernic-rg34xx",
@@ -2722,6 +3251,131 @@
     "url": "https://www.aliexpress.us/item/3256807885960684.html",
     "label": "Aliexpress 2",
     "sort_order": 1
+   }
+  ]
+ },
+ {
+  "name": "Smart Brick",
+  "manufacturer": "Trimui",
+  "slug": "trimui-smart-brick",
+  "form_factor": "Vertical",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$075 - $100",
+  "description": "RGB Light on back and 2 front buttons",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2024-11-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 80,
+    "os": "Linux (Tina)",
+    "os_family": "linux",
+    "soc": "Allwinner A133 Plus",
+    "cpu_model": "Cortex-A53",
+    "cpu_cores": 4,
+    "cpu_threads": 4,
+    "cpu_clock_max_mhz": 2000,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm64",
+    "gpu_model": "PowerVR GE8300",
+    "gpu_cores": 1,
+    "gpu_clock_mhz": 660,
+    "ram_mb": 1024,
+    "screen_size_inch": 3.2,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 1024,
+    "screen_resolution_y": 768,
+    "ppi": 400,
+    "aspect_ratio": "4:3",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 3000,
+    "ports": "USB-C x2 Top & Bottom facing",
+    "storage_gb": 8,
+    "storage_type": "eMMC",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "wifi_specs": "WiFi 4",
+    "bluetooth_specs": "Bluetooth 2.1",
+    "audio_tech": "3.5mm Headphone Bottom facing",
+    "audio_speakers": "Dual Stereo Front facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "performance_grade": "5.25/5",
+    "weight_g": 159,
+    "body_material": "Plastic",
+    "available_colors": "Plastic: Black, White, Red, Purple Metal: Gunmetal Gray, Rose Gold, Fluorescent Green",
+    "width_mm": 73.2,
+    "height_mm": 109.9,
+    "depth_mm": 19.9,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 0,
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Shelf",
+     "system_buttons_text": "Menu, Power, 3 function buttons, Reset, Volume +-",
+     "input_notes": "Dedicated Buttons | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Great",
+     "n64_state": "Great",
+     "dreamcast_state": "Great",
+     "psp_state": "Playable",
+     "saturn_state": "Playable",
+     "gamecube_state": "Struggles",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "N64, PSP & Dreamcast playable but not all at full speed"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=VzL7PEUW1xQ",
+    "label": "Wicked Gamer & Collector",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=6M-Bf4j24As",
+    "label": "Sonic Love",
+    "sort_order": 4
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.gogamegeek.com/Latest-Trimui-Brick-Handheld-Game-Console-3-2-inch-Presale-p2570586.html?sscid=91k8_12i9uv&",
+    "label": "Go Game Geek",
+    "sort_order": 1
+   },
+   {
+    "kind": "vendor",
+    "url": "https://mechdiy.com/products/trimui-brick-retro-handheld-game-console",
+    "label": "MechDIY",
+    "sort_order": 2
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.keepretro.com/products/trimui-brick-handheld",
+    "label": "Keep Retro",
+    "sort_order": 3
    }
   ]
  },
@@ -3711,6 +4365,144 @@
   ]
  },
  {
+  "name": "RG40XXV",
+  "manufacturer": "Anbernic",
+  "slug": "anbernic-rg40xxv",
+  "form_factor": "Vertical",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$050 - $75",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2024-08-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 60,
+    "os": "Linux",
+    "os_family": "linux",
+    "soc": "Allwinner H700",
+    "cpu_model": "Cortex-A53",
+    "cpu_cores": 4,
+    "cpu_threads": 4,
+    "cpu_clock_max_mhz": 1500,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm64",
+    "gpu_model": "Mali-G31 MP2",
+    "gpu_cores": 2,
+    "gpu_clock_mhz": 650,
+    "ram_mb": 1024,
+    "screen_size_inch": 4.0,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 640,
+    "screen_resolution_y": 480,
+    "ppi": 200,
+    "aspect_ratio": "4:3",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 3200,
+    "ports": "USB-C Bottom facing",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "Dual MicroSD",
+    "wifi_specs": "WiFi 5",
+    "bluetooth_specs": "Bluetooth 4.2",
+    "video_out": "Mini HDMI Top facing",
+    "audio_tech": "3.5mm Headphone Bottom facing",
+    "audio_speakers": "Single Mono Front facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "performance_grade": "5/5",
+    "weight_g": 217,
+    "body_material": "Plastic",
+    "available_colors": "White, Transparent Black, Indigo",
+    "width_mm": 92.0,
+    "height_mm": 139.0,
+    "depth_mm": 22.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 1,
+     "stick_clicks": true,
+     "stick_layout": "Lower",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Shelf",
+     "system_buttons_text": "Menu, Power, Reset, Volume +-",
+     "input_notes": "Dedicated Buttons | Menu | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Great",
+     "n64_state": "Great",
+     "dreamcast_state": "Great",
+     "psp_state": "Playable",
+     "saturn_state": "Struggles",
+     "gamecube_state": "Struggles",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES FX & 3D PS1 (60 FPS), N64 and Dreamcast mostly playable, PSP somewhat playable, Saturn barely playable"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=ECe4Lak58fY",
+    "label": "Retro Game Corps",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=pTTOozBELhM",
+    "label": "ETA Prime",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=tIrvj_s5afI",
+    "label": "The Phawx",
+    "sort_order": 2
+   },
+   {
+    "kind": "video_review",
+    "url": "https://youtu.be/j32bq2sodbQ?si=raklpu4_lwVwdeXl",
+    "label": "Tech Dweeb",
+    "sort_order": 4
+   },
+   {
+    "kind": "written_review",
+    "url": "https://retrohandhelds.gg/anbernic-rg40xxv-first-impressions/",
+    "label": "Retro Handhelds",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://anbernic.com/products/rg-40xxv",
+    "label": "Anbernic",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.us/item/3256807394475211.html",
+    "label": "Aliexpress",
+    "sort_order": 1
+   }
+  ]
+ },
+ {
   "name": "K36",
   "manufacturer": "KinHank",
   "slug": "kinhank-k36",
@@ -4684,6 +5476,140 @@
   ]
  },
  {
+  "name": "RG35XX SP",
+  "manufacturer": "Anbernic",
+  "slug": "anbernic-rg35xx-sp",
+  "form_factor": "Clamshell",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$050 - $75",
+  "cons": [
+   "Firm buttons, battery issues"
+  ],
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2024-05-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 65,
+    "os": "Linux",
+    "os_family": "linux",
+    "soc": "Allwinner H700",
+    "cpu_model": "Cortex-A53",
+    "cpu_cores": 4,
+    "cpu_threads": 4,
+    "cpu_clock_max_mhz": 1500,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm64",
+    "gpu_model": "Mali-G31 MP2",
+    "gpu_cores": 2,
+    "gpu_clock_mhz": 650,
+    "ram_mb": 1024,
+    "screen_size_inch": 3.5,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 640,
+    "screen_resolution_y": 480,
+    "ppi": 228,
+    "aspect_ratio": "4:3",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 3300,
+    "ports": "USB-C Top facing",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "Dual MicroSD",
+    "wifi_specs": "WiFi 5",
+    "bluetooth_specs": "Bluetooth 4.2",
+    "video_out": "Mini HDMI Top facing",
+    "audio_tech": "3.5mm Headphone Bottom facing",
+    "audio_speakers": "Single Mono Front facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "sensors": "Hall magnetic screen closure switch",
+    "performance_grade": "5/5",
+    "weight_g": 197,
+    "body_material": "Plastic",
+    "available_colors": "Gray, Silver, Transparent Blue, Transparent Black, Transparent Clear, Transparent Green, Transparent Red",
+    "width_mm": 89.0,
+    "height_mm": 85.0,
+    "depth_mm": 27.3,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 0,
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Horizontal",
+     "system_buttons_text": "Menu, Power, Reset, Volume +-",
+     "input_notes": "Dedicated Buttons | Button Combination | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Great",
+     "n64_state": "Great",
+     "dreamcast_state": "Great",
+     "psp_state": "Playable",
+     "saturn_state": "Struggles",
+     "gamecube_state": "Struggles",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES FX & 3D PS1 (60 FPS), N64 and Dreamcast mostly playable, PSP somewhat playable, Saturn barely playable"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=kkNup7HTlNU",
+    "label": "The Phawx",
+    "sort_order": 2
+   },
+   {
+    "kind": "video_review",
+    "url": "https://youtu.be/BdIFrgLbe0Y",
+    "label": "Taki Udon",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=iXHDbC_MiUk",
+    "label": "Retro Tech Dad",
+    "sort_order": 4
+   },
+   {
+    "kind": "vendor",
+    "url": "https://anbernic.com/products/rg35xxsp",
+    "label": "Anbernic",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.us/item/3256806437742047.html",
+    "label": "Aliexpress",
+    "sort_order": 1
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.ebay.com/itm/315364768550",
+    "label": "Ebay",
+    "sort_order": 2
+   }
+  ]
+ },
+ {
   "name": "A30 / 282",
   "manufacturer": "Miyoo",
   "slug": "miyoo-a30-282",
@@ -4920,6 +5846,134 @@
     "url": "https://www.youtube.com/watch?v=sNq48fDQPrc",
     "label": "Wicked Gamer & Collector",
     "sort_order": 1
+   }
+  ]
+ },
+ {
+  "name": "RG28XX",
+  "manufacturer": "Anbernic",
+  "slug": "anbernic-rg28xx",
+  "form_factor": "Horizontal",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$0 - $50",
+  "pros": [
+   "Good pivot on dpad, minimal false diagonals, headphone jack"
+  ],
+  "cons": [
+   "Tiny face buttons, rotated screen, dim screen can't be seen outside in the sun, bad viewing angles on screen, no WiFi"
+  ],
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2024-04-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 48,
+    "os": "Linux",
+    "os_family": "linux",
+    "soc": "Allwinner H700",
+    "cpu_model": "Cortex-A53",
+    "cpu_cores": 4,
+    "cpu_threads": 4,
+    "cpu_clock_max_mhz": 1500,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm64",
+    "gpu_model": "Mali-G31 MP2",
+    "gpu_cores": 2,
+    "gpu_clock_mhz": 650,
+    "ram_mb": 1024,
+    "screen_size_inch": 2.83,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 640,
+    "screen_resolution_y": 480,
+    "ppi": 285,
+    "aspect_ratio": "4:3",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 3100,
+    "ports": "USB-C Top facing",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "Dual MicroSD",
+    "video_out": "Mini HDMI Top facing",
+    "audio_tech": "3.5mm Headphone Bottom facing",
+    "audio_speakers": "Single Mono Front facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "performance_grade": "5/5",
+    "weight_g": 123,
+    "body_material": "Plastic",
+    "available_colors": "Beige White, Black Transparent, Gray, Orange",
+    "width_mm": 125.0,
+    "height_mm": 56.5,
+    "depth_mm": 16.5,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 0,
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Horizontal",
+     "system_buttons_text": "Menu, Reset, Power, Volume +-",
+     "input_notes": "Dedicated Buttons | Button Combination | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Great",
+     "n64_state": "Great",
+     "dreamcast_state": "Great",
+     "psp_state": "Playable",
+     "saturn_state": "Struggles",
+     "gamecube_state": "Struggles",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES FX & 3D PS1 (60 FPS), N64 and Dreamcast mostly playable, PSP somewhat playable, Saturn barely playable"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=WcKsti3iy7U",
+    "label": "Retro Game Corps",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=3FmTaNIuI3Y",
+    "label": "ETA Prime",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://youtu.be/flMfiyWLXE0?si=svCjuT9uEUtoxQVA",
+    "label": "The Phawx",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=WB4kOh5GzVc",
+    "label": "Tech Dweeb",
+    "sort_order": 4
+   },
+   {
+    "kind": "vendor",
+    "url": "https://anbernic.com/products/rg28xx",
+    "label": "Anbernic",
+    "sort_order": 0
    }
   ]
  },
@@ -5658,6 +6712,138 @@
   ]
  },
  {
+  "name": "RG35XXH",
+  "manufacturer": "Anbernic",
+  "slug": "anbernic-rg35xxh",
+  "form_factor": "Horizontal",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$050 - $75",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2024-01-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 68,
+    "os": "Linux",
+    "os_family": "linux",
+    "soc": "Allwinner H700",
+    "cpu_model": "Cortex-A53",
+    "cpu_cores": 4,
+    "cpu_threads": 4,
+    "cpu_clock_max_mhz": 1500,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm64",
+    "gpu_model": "Mali-G31 MP2",
+    "gpu_cores": 2,
+    "gpu_clock_mhz": 650,
+    "ram_mb": 1024,
+    "screen_size_inch": 3.5,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 640,
+    "screen_resolution_y": 480,
+    "ppi": 228,
+    "aspect_ratio": "4:3",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 3300,
+    "ports": "USB-C x2 Top facing",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "Dual MicroSD",
+    "wifi_specs": "WiFi 5",
+    "bluetooth_specs": "Bluetooth 4.2",
+    "video_out": "Mini HDMI Top facing",
+    "audio_tech": "3.5mm Headphone Top facing",
+    "audio_speakers": "Dual Stereo Bottom facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "performance_grade": "5/5",
+    "weight_g": 180,
+    "body_material": "Plastic",
+    "available_colors": "Black, Transparent Clear, Transparent Purple",
+    "width_mm": 145.0,
+    "height_mm": 69.0,
+    "depth_mm": 16.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 2,
+     "stick_clicks": true,
+     "stick_layout": "Lower",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Horizontal",
+     "system_buttons_text": "Power, Reset, Volume +-",
+     "input_notes": "Dedicated Buttons | Button Combination | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Great",
+     "n64_state": "Great",
+     "dreamcast_state": "Great",
+     "psp_state": "Playable",
+     "saturn_state": "Struggles",
+     "gamecube_state": "Struggles",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES FX & 3D PS1 (60 FPS), N64 and Dreamcast mostly playable, PSP somewhat playable, Saturn barely playable"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=mOpU8KVfCK4",
+    "label": "ETA Prime",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=NSwTcgS1j0M",
+    "label": "The Phawx",
+    "sort_order": 2
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=eLvYKi-P59Y",
+    "label": "Sonic Love",
+    "sort_order": 4
+   },
+   {
+    "kind": "vendor",
+    "url": "https://anbernic.com/products/rg35xx-h",
+    "label": "Anbernic",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.us/item/3256806215088559.html",
+    "label": "Aliexpress",
+    "sort_order": 1
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.gogamegeek.com/Without-Roms-Latest-Anbernic-RG35XX-H-Retro-Handheld-Game-Console-Horizontal-Version-p2452754.html",
+    "label": "GoGameGeek",
+    "sort_order": 2
+   }
+  ]
+ },
+ {
   "name": "M18 / R43 Pro",
   "manufacturer": "SJGAM",
   "slug": "sjgam-m18-r43-pro",
@@ -6041,6 +7227,130 @@
   ]
  },
  {
+  "name": "RG35XX Plus",
+  "manufacturer": "Anbernic",
+  "slug": "anbernic-rg35xx-plus",
+  "form_factor": "Vertical",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$050 - $75",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2023-11-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 64,
+    "os": "Linux",
+    "os_family": "linux",
+    "soc": "Allwinner H700",
+    "cpu_model": "Cortex-A53",
+    "cpu_cores": 4,
+    "cpu_threads": 4,
+    "cpu_clock_max_mhz": 1500,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm64",
+    "gpu_model": "Mali-G31 MP2",
+    "gpu_cores": 2,
+    "gpu_clock_mhz": 650,
+    "ram_mb": 1024,
+    "screen_size_inch": 3.5,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 640,
+    "screen_resolution_y": 480,
+    "ppi": 228,
+    "aspect_ratio": "4:3",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 3300,
+    "ports": "USB-C Bottom facing",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "Dual MicroSD",
+    "wifi_specs": "WiFi 5",
+    "bluetooth_specs": "Bluetooth 4.2",
+    "video_out": "Mini HDMI Top facing",
+    "audio_tech": "3.5mm Headphone Bottom facing",
+    "audio_speakers": "Single Mono Front facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "performance_grade": "5/5",
+    "weight_g": 186,
+    "body_material": "Plastic",
+    "available_colors": "Gray, White, Transparent Black",
+    "width_mm": 81.0,
+    "height_mm": 117.0,
+    "depth_mm": 22.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 0,
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Shelf",
+     "system_buttons_text": "Menu, Power, Reset, Volume +-",
+     "input_notes": "Dedicated Buttons | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Great",
+     "n64_state": "Great",
+     "dreamcast_state": "Great",
+     "psp_state": "Playable",
+     "saturn_state": "Struggles",
+     "gamecube_state": "Struggles",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES FX & 3D PS1 (60 FPS), N64 and Dreamcast mostly playable, PSP somewhat playable, Saturn barely playable"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=yEr_Pjsb_iQ",
+    "label": "Retro Game Corps",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=VJ9Mh0Vwiqs",
+    "label": "ETA Prime",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=w4_Z46w9n3g",
+    "label": "Taki Udon",
+    "sort_order": 2
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=na31poJOqAI",
+    "label": "The Phawx",
+    "sort_order": 3
+   },
+   {
+    "kind": "vendor",
+    "url": "https://anbernic.com/products/rg35xx-plus",
+    "label": "Anbernic",
+    "sort_order": 0
+   }
+  ]
+ },
+ {
   "name": "RG ARC-S",
   "manufacturer": "Anbernic",
   "slug": "anbernic-rg-arc-s",
@@ -6173,6 +7483,127 @@
     "url": "https://www.ebay.com/itm/314947771622",
     "label": "Ebay",
     "sort_order": 1
+   }
+  ]
+ },
+ {
+  "name": "Steam Deck OLED",
+  "manufacturer": "Valve",
+  "slug": "valve-steam-deck-oled",
+  "form_factor": "Horizontal",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$400 - $700",
+  "description": "Dock (sold separately) has: DisplayPort 1.4, HDMI 2.0, Ethernet, USB-A 3.1, 2x USB-A 2.0. Size comparison pic with other Windows handhelds",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2023-11-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 549,
+    "os": "SteamOS 3.0 (Arch Linux), Windows 11, etc",
+    "os_family": "windows",
+    "os_version": "3.0",
+    "soc": "AMD Sephiroth",
+    "cpu_model": "AMD Zen 2",
+    "cpu_cores": 4,
+    "cpu_threads": 8,
+    "cpu_clock_max_mhz": 3500,
+    "cpu_architecture": "x86-64",
+    "cpu_arch": "x86_64",
+    "gpu_model": "AMD RDNA 2",
+    "gpu_clock_mhz": 1600,
+    "ram_mb": 16384,
+    "screen_size_inch": 7.4,
+    "display_type": "OLED",
+    "refresh_rate_hz": 90,
+    "screen_resolution_x": 1280,
+    "screen_resolution_y": 800,
+    "ppi": 203,
+    "aspect_ratio": "16:10",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 50,
+    "cooling_solution": "Heatsink Fan Ventilation cutouts",
+    "ports": "USB-C Top facing",
+    "storage_gb": 512,
+    "storage_type": "NVMe SSD",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "wifi_specs": "WiFi 6E",
+    "bluetooth_specs": "Bluetooth 5.3",
+    "video_out": "USB-C video out",
+    "audio_tech": "3.5mm Headphone, USB-C out, Bluetooth audio",
+    "audio_speakers": "Dual Stereo Front facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "sensors": "Dual microphones, ambient light sensor, 6-axis gyroscope",
+    "has_microphone": true,
+    "gyro": true,
+    "performance_grade": "🔥🔥½",
+    "weight_g": 640,
+    "body_material": "Plastic",
+    "available_colors": "Black, White (Limited)",
+    "width_mm": 298.0,
+    "height_mm": 117.0,
+    "depth_mm": 50.0,
+    "touchscreen": true,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "face_button_count": 4,
+     "stick_count": 2,
+     "stick_clicks": true,
+     "stick_layout": "Upper",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Analog",
+     "trigger_layout": "Vertical",
+     "system_buttons_text": "4x assignable grip buttons (on back), View, Options, Steam, Quick Access, Volume +-, Power",
+     "has_gyro": true,
+     "input_notes": "Dedicated Buttons | Menu | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Perfect",
+     "n64_state": "Perfect",
+     "dreamcast_state": "Perfect",
+     "psp_state": "Perfect",
+     "saturn_state": "Perfect",
+     "gamecube_state": "Perfect",
+     "x3ds_state": "Perfect",
+     "wii_state": "Perfect",
+     "ps2_state": "Perfect",
+     "switch_state": "Great",
+     "wii_u": "Perfect",
+     "ps3_state": "Playable",
+     "summary_text": "PSP, Gamecube & Wii full speed, PS2 playable"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=7FKJODmcdiM&pp=ygUPc3RlYW0gZGVjayBvbGVk",
+    "label": "Dave2D",
+    "sort_order": 0
+   },
+   {
+    "kind": "written_review",
+    "url": "https://www.theverge.com/23951655/steam-deck-oled-review",
+    "label": "The Verge",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://store.steampowered.com/sale/steamdeck_2023",
+    "label": "Valve",
+    "sort_order": 0
    }
   ]
  },
@@ -6318,6 +7749,134 @@
     "url": "https://www.aliexpress.us/item/3256806281502665.html",
     "label": "Aliexpress 2",
     "sort_order": 3
+   }
+  ]
+ },
+ {
+  "name": "Smart Pro",
+  "manufacturer": "Trimui",
+  "slug": "trimui-smart-pro",
+  "form_factor": "Horizontal",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$075 - $100",
+  "description": "LED analog rings",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2023-11-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 80,
+    "os": "Linux (Tina)",
+    "os_family": "linux",
+    "soc": "Allwinner A133 Plus",
+    "cpu_model": "Cortex-A53",
+    "cpu_cores": 4,
+    "cpu_threads": 4,
+    "cpu_clock_max_mhz": 2000,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm64",
+    "gpu_model": "PowerVR GE8300",
+    "gpu_cores": 1,
+    "gpu_clock_mhz": 660,
+    "ram_mb": 1024,
+    "screen_size_inch": 4.96,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 1280,
+    "screen_resolution_y": 720,
+    "ppi": 296,
+    "aspect_ratio": "16:9",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 5000,
+    "ports": "USB-C x2 Top & Bottom facing",
+    "storage_gb": 8,
+    "storage_type": "eMMC",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "wifi_specs": "WiFi 5",
+    "audio_tech": "3.5mm Headphone Bottom facing",
+    "audio_speakers": "Dual Stereo Rear facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "sensors": "Microphone",
+    "has_microphone": true,
+    "performance_grade": "5.25/5",
+    "weight_g": 231,
+    "body_material": "Plastic",
+    "available_colors": "White, Gray, Black",
+    "width_mm": 188.0,
+    "height_mm": 80.0,
+    "depth_mm": 17.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 2,
+     "stick_clicks": true,
+     "stick_layout": "Lower",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Vertical",
+     "system_buttons_text": "Sleep, Volume +-, Menu, Function Switch",
+     "input_notes": "Dedicated Buttons | Menu | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Great",
+     "n64_state": "Great",
+     "dreamcast_state": "Great",
+     "psp_state": "Playable",
+     "saturn_state": "Playable",
+     "gamecube_state": "Struggles",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "N64, PSP & Dreamcast playable but not all at full speed"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=WtJjzU5HKaw",
+    "label": "Taki Udon",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://mechdiy.com/collections/trimui/products/trimui-smart-pro-retro-handheld-game-console",
+    "label": "MechDIY",
+    "sort_order": 1
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.gogamegeek.com/Preorder-Trimui-Smart-Pro-Handheld-Game-Console-with-Built-in-Games-p2332993.html?variant=3514595",
+    "label": "GoGameGeek",
+    "sort_order": 2
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.amazon.com/dp/B0CLXX5PTV?th=1",
+    "label": "Amazon",
+    "sort_order": 3
+   },
+   {
+    "kind": "vendor",
+    "url": "https://powkiddy.com/products/pre-sale-trimui-smart-pro-console",
+    "label": "PowKiddy",
+    "sort_order": 4
    }
   ]
  },
@@ -6565,6 +8124,131 @@
     "url": "https://www.aliexpress.us/item/3256805845546894.html",
     "label": "Aliexpress 2",
     "sort_order": 1
+   }
+  ]
+ },
+ {
+  "name": "RGB30",
+  "manufacturer": "Powkiddy",
+  "slug": "powkiddy-rgb30",
+  "form_factor": "Horizontal",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$075 - $100",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2023-09-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 90,
+    "os": "Linux (JELOS)",
+    "os_family": "linux",
+    "soc": "RockChip RK3566",
+    "cpu_model": "Cortex-A55",
+    "cpu_cores": 4,
+    "cpu_threads": 4,
+    "cpu_clock_max_mhz": 1800,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm64",
+    "gpu_model": "Mali-G52 2EE",
+    "gpu_cores": 2,
+    "gpu_clock_mhz": 850,
+    "ram_mb": 1024,
+    "screen_size_inch": 4.0,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 720,
+    "screen_resolution_y": 720,
+    "ppi": 254,
+    "aspect_ratio": "1:1",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 4100,
+    "ports": "USB-C x2 Bottom facing",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "Dual MicroSD",
+    "wifi_specs": "WiFi 5",
+    "bluetooth_specs": "Bluetooth",
+    "video_out": "Mini HDMI Top facing",
+    "audio_tech": "3.5mm Headphone Bottom facing",
+    "audio_speakers": "Dual Stereo Front facing",
+    "has_headphone_jack": true,
+    "performance_grade": "5.5/5",
+    "weight_g": 207,
+    "body_material": "Plastic",
+    "available_colors": "White, Black, Blue, Yellow, Red, Green, Purple",
+    "width_mm": 145.0,
+    "height_mm": 86.5,
+    "depth_mm": 18.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 2,
+     "stick_clicks": true,
+     "stick_layout": "Lower",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Horizontal",
+     "system_buttons_text": "Power, Reset, Volume +-",
+     "input_notes": "Dedicated Buttons | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Perfect",
+     "n64_state": "Great",
+     "dreamcast_state": "Great",
+     "psp_state": "Playable",
+     "saturn_state": "Playable",
+     "gamecube_state": "Struggles",
+     "x3ds_state": "Struggles",
+     "wii_state": "Unplayable",
+     "ps2_state": "Struggles",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "N64, PSP & Dreamcast mostly playable but not all full speed"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=Tf4k6f8fgbY",
+    "label": "Taki Udon",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=YNaiPSv1AKo",
+    "label": "Wicked Gamer & Collector",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=y1Xywj1qoRg",
+    "label": "ETA Prime",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=IAxPop-QK_Y",
+    "label": "The Phawx",
+    "sort_order": 4
+   },
+   {
+    "kind": "vendor",
+    "url": "https://powkiddy.com/products/pre-sale-powkiddy-rgb30-rk3566-handheld-game-console-built-in-wifi",
+    "label": "PowKiddy",
+    "sort_order": 0
    }
   ]
  },
@@ -7543,6 +9227,247 @@
   ]
  },
  {
+  "name": "SF2000",
+  "manufacturer": "Data Frog",
+  "slug": "data-frog-sf2000",
+  "form_factor": "Horizontal",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$0 - $50",
+  "pros": [
+   "Extremely low price"
+  ],
+  "cons": [
+   "Screen tearing, buttons can get stuck"
+  ],
+  "description": "Can swap in original SNES controller dpad, ABXY buttons, and membranes",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2023-04-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 24,
+    "os": "Multicore Firmware",
+    "os_family": "proprietary",
+    "soc": "Hi-Chip Semiconductor B210",
+    "cpu_model": "MIPS24KEc",
+    "cpu_cores": 1,
+    "cpu_threads": 1,
+    "cpu_clock_max_mhz": 918,
+    "cpu_architecture": "MIPS",
+    "cpu_arch": "other",
+    "gpu_model": "Mali-400 MP2 (Estimate)",
+    "gpu_cores": 2,
+    "ram_mb": 128,
+    "screen_size_inch": 2.8,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 320,
+    "screen_resolution_y": 240,
+    "ppi": 142,
+    "aspect_ratio": "4:3",
+    "screen_lens": "Plastic",
+    "battery_capacity_mah": 1500,
+    "ports": "USB-C Bottom facing",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "other_connectivity": "2.4 GHz antenna for wireless controllers",
+    "video_out": "AV Out",
+    "audio_speakers": "Single Mono Rear facing",
+    "haptics": false,
+    "performance_grade": "1.75/5",
+    "body_material": "Plastic",
+    "available_colors": "Gray, Green, Red, Cyan, Black",
+    "width_mm": 166.0,
+    "height_mm": 69.0,
+    "depth_mm": 32.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 1,
+     "stick_clicks": false,
+     "stick_layout": "Lower",
+     "bumper_tech": "Digital",
+     "input_notes": "Wheel | Switch"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Great",
+     "snes_state": "Playable",
+     "ps1_state": "Unplayable",
+     "nds_state": "Unplayable",
+     "n64_state": "Unplayable",
+     "dreamcast_state": "Unplayable",
+     "psp_state": "Unplayable",
+     "saturn_state": "Unplayable",
+     "gamecube_state": "Unplayable",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "GBA mostly runs fine, some non-FX SNES runs ok but can be laggy"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=rNMuXsYF6F4",
+    "label": "Sonic Love",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=0jm9dwPKTcY",
+    "label": "Retro Handhelds",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=ImqGsC0NZ6M",
+    "label": "Taki Udon",
+    "sort_order": 2
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=_VxK63sT2hk",
+    "label": "Retro Game Corps",
+    "sort_order": 3
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.us/item/3256805175678169.html",
+    "label": "Aliexpress",
+    "sort_order": 0
+   }
+  ]
+ },
+ {
+  "name": "Win 4",
+  "manufacturer": "GPD",
+  "slug": "gpd-win-4",
+  "form_factor": "Horizontal",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$700 - $2000",
+  "pros": [
+   "\"Native\" landscape display (portrait screen but hardware rotated, not software)"
+  ],
+  "cons": [
+   "No hall joysticks (ALPS instead)"
+  ],
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2023-03-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 799,
+    "os": "Windows",
+    "os_family": "windows",
+    "soc": "AMD Ryzen 7 6800U",
+    "cpu_model": "AMD Zen 3+",
+    "cpu_cores": 8,
+    "cpu_threads": 16,
+    "cpu_clock_max_mhz": 4700,
+    "cpu_architecture": "x86-64",
+    "cpu_arch": "x86_64",
+    "gpu_model": "AMD Radeon 680M",
+    "gpu_clock_mhz": 2200,
+    "ram_mb": 16384,
+    "screen_size_inch": 6.0,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 1920,
+    "screen_resolution_y": 1080,
+    "ppi": 367,
+    "aspect_ratio": "16:9",
+    "battery_capacity_mah": 45,
+    "cooling_solution": "Heatsink Fan Ventilation cutouts",
+    "ports": "USB-C x2 Top & Bottom facing",
+    "storage_gb": 512,
+    "storage_type": "NVMe SSD",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "wifi_specs": "WiFi 6",
+    "bluetooth_specs": "Bluetooth 5.2",
+    "other_connectivity": "4G LTE (optional), USB-A",
+    "video_out": "USB-C video out Top facing",
+    "audio_tech": "3.5mm Headphone Top facing",
+    "audio_speakers": "Dual Stereo Front facing",
+    "has_headphone_jack": true,
+    "sensors": "Gyroscope, Fingerprint reader, Optical Mouse sensor, Microphone",
+    "has_microphone": true,
+    "gyro": true,
+    "performance_grade": "🔥🔥",
+    "weight_g": 566,
+    "body_material": "Plastic",
+    "available_colors": "Black, White",
+    "touchscreen": true,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Lower",
+     "face_button_count": 4,
+     "stick_count": 2,
+     "stick_clicks": true,
+     "stick_layout": "Upper",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Analog",
+     "trigger_layout": "Vertical",
+     "system_buttons_text": "Power, Volume +-, 2 rear function buttons, QWERTY keyboard (physical keys), Mouse/Gamepad switch, Fingerprint reader, Optical Mouse sensor",
+     "has_gyro": true,
+     "input_notes": "Dedicated Buttons | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Perfect",
+     "n64_state": "Perfect",
+     "dreamcast_state": "Perfect",
+     "psp_state": "Perfect",
+     "saturn_state": "Perfect",
+     "gamecube_state": "Perfect",
+     "x3ds_state": "Perfect",
+     "wii_state": "Perfect",
+     "ps2_state": "Perfect",
+     "switch_state": "Great",
+     "wii_u": "Perfect",
+     "ps3_state": "Great",
+     "summary_text": "Gamecube, Wii, 3DS, PS2 almost all full speed. Wii U & Switch mostly playable"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "written_review",
+    "url": "https://liliputing.com/gpd-win-4-handheld-gaming-pc-will-feature-ryzen-7-6800u-and-a-6-inch-display-that-slides-up/",
+    "label": "Liliputing",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.indiegogo.com/projects/gpd-win-4-smallest-6800u-handheld-console",
+    "label": "Indiegogo",
+    "sort_order": 0
+   }
+  ]
+ },
+ {
   "name": "RK2023",
   "manufacturer": "Powkiddy",
   "slug": "powkiddy-rk2023",
@@ -7669,6 +9594,150 @@
     "url": "https://www.aliexpress.us/item/3256805130226288.html",
     "label": "Aliexpress",
     "sort_order": 1
+   }
+  ]
+ },
+ {
+  "name": "Mini Plus",
+  "manufacturer": "Miyoo",
+  "slug": "miyoo-mini-plus",
+  "form_factor": "Vertical",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$050 - $75",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2023-03-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 70,
+    "os": "Linux (OnionOS, MinUI)",
+    "os_family": "linux",
+    "soc": "SigmaStar SSD202D",
+    "cpu_model": "Cortex-A7",
+    "cpu_cores": 2,
+    "cpu_threads": 2,
+    "cpu_clock_max_mhz": 1200,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm32",
+    "gpu_model": "\"2D Graphics Accelerator\"",
+    "ram_mb": 128,
+    "screen_size_inch": 3.5,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 640,
+    "screen_resolution_y": 480,
+    "ppi": 228,
+    "aspect_ratio": "4:3",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 3000,
+    "ports": "USB-C Bottom facing",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "wifi_specs": "WiFi",
+    "audio_tech": "3.5mm Headphone Bottom facing",
+    "audio_speakers": "Single Mono Front facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "performance_grade": "3.5/5",
+    "weight_g": 162,
+    "body_material": "Plastic",
+    "available_colors": "White, Retro Gray, Transparent Purple, Transparent Black",
+    "width_mm": 78.5,
+    "height_mm": 108.0,
+    "depth_mm": 22.3,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 0,
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Shelf",
+     "system_buttons_text": "Menu, Power, Volume +-",
+     "input_notes": "Dedicated Buttons | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Great",
+     "n64_state": "Unplayable",
+     "dreamcast_state": "Unplayable",
+     "psp_state": "Unplayable",
+     "saturn_state": "Unplayable",
+     "gamecube_state": "Unplayable",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES & PS1 almost all full speed except for slight lag on a few FX chip SNES games and 3D PS1 games"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=aGckVVBmkxg",
+    "label": "ETA Prime",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=yTZuJkopmLg",
+    "label": "Sonic Love",
+    "sort_order": 2
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=BVFUhqtTxIA",
+    "label": "Wicked Gamer & Collector",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=uI2p4PwduIU",
+    "label": "DroiX",
+    "sort_order": 4
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.com/item/1005005215387485.html",
+    "label": "Aliexpress",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.keepretro.com/products/miyoo-mini-plus",
+    "label": "KeepRetro.com",
+    "sort_order": 1
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.gogamegeek.com/Latest-Miyoo-Mini-Plus-5000-Games-Handheld-Game-Console-Retro-Gaming-System-3-5-Inch-Transparent-Black-32G-p2207875.html",
+    "label": "GoGameGeek",
+    "sort_order": 2
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.amazon.com/Miyoo-Handheld-Console-Portable-Supports/dp/B0DBQBMW76/ref=sr_1_6",
+    "label": "Amazon",
+    "sort_order": 3
+   },
+   {
+    "kind": "vendor",
+    "url": "https://powkiddy.com/products/miyoo-mini-plus-portable-retro-handheld-game-console-mini-ips-screen-linux-system-childrens-gift",
+    "label": "PowKiddy",
+    "sort_order": 4
    }
   ]
  },
@@ -9353,6 +11422,127 @@
   ]
  },
  {
+  "name": "Steam Deck",
+  "manufacturer": "Valve",
+  "slug": "valve-steam-deck",
+  "form_factor": "Horizontal",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$400 - $700",
+  "description": "Dock (sold separately) has: DisplayPort 1.4, HDMI 2.0, Ethernet, USB-A 3.1, 2x USB-A 2.0. Size comparison pic with other Windows handhelds",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2022-02-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 399,
+    "os": "SteamOS 3.0 (Arch Linux), Windows 11, etc",
+    "os_family": "windows",
+    "os_version": "3.0",
+    "soc": "AMD Aerith / Van Gogh",
+    "cpu_model": "AMD Zen 2",
+    "cpu_cores": 4,
+    "cpu_threads": 8,
+    "cpu_clock_max_mhz": 3500,
+    "cpu_architecture": "x86-64",
+    "cpu_arch": "x86_64",
+    "gpu_model": "AMD RDNA 2",
+    "gpu_clock_mhz": 1600,
+    "ram_mb": 16384,
+    "screen_size_inch": 7.0,
+    "display_type": "LCD Touchscreen",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 1280,
+    "screen_resolution_y": 800,
+    "ppi": 215,
+    "aspect_ratio": "16:10",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 40,
+    "cooling_solution": "Heatsink Fan Ventilation cutouts",
+    "ports": "USB-C Top facing",
+    "storage_gb": 64,
+    "storage_type": "eMMC",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "wifi_specs": "WiFi 5",
+    "bluetooth_specs": "Bluetooth 5.0",
+    "video_out": "USB-C video out",
+    "audio_tech": "3.5mm Headphone, USB-C out, Bluetooth audio",
+    "audio_speakers": "Dual Stereo Front facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "sensors": "Dual microphones, ambient light sensor, 6-axis gyroscope",
+    "has_microphone": true,
+    "gyro": true,
+    "performance_grade": "🔥🔥½",
+    "weight_g": 674,
+    "body_material": "Plastic",
+    "available_colors": "Black",
+    "width_mm": 298.0,
+    "height_mm": 117.0,
+    "depth_mm": 49.0,
+    "touchscreen": true,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "face_button_count": 4,
+     "stick_count": 2,
+     "stick_clicks": true,
+     "stick_layout": "Upper",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Analog",
+     "trigger_layout": "Vertical",
+     "system_buttons_text": "4x assignable grip buttons (on back), View, Options, Steam, Quick Access, Volume +-, Power",
+     "has_gyro": true,
+     "input_notes": "Dedicated Buttons | Menu | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Perfect",
+     "n64_state": "Perfect",
+     "dreamcast_state": "Perfect",
+     "psp_state": "Perfect",
+     "saturn_state": "Perfect",
+     "gamecube_state": "Perfect",
+     "x3ds_state": "Perfect",
+     "wii_state": "Perfect",
+     "ps2_state": "Perfect",
+     "switch_state": "Great",
+     "wii_u": "Perfect",
+     "ps3_state": "Struggles",
+     "summary_text": "PSP, Gamecube & Wii full speed, PS2 playable"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "written_review",
+    "url": "https://www.pcgamer.com/developers-praise-the-steam-deck-it-just-works-for-real/",
+    "label": "PC Gamer",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://store.steampowered.com/steamdeck",
+    "label": "Valve",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.amazon.com/Valve-V004281-30-Steam-Deck-64/dp/B0BFC555RF/ref=sr_1_6",
+    "label": "Amazon",
+    "sort_order": 1
+   }
+  ]
+ },
+ {
   "name": "X39",
   "manufacturer": "Powkiddy",
   "slug": "powkiddy-x39",
@@ -10003,6 +12193,144 @@
   ]
  },
  {
+  "name": "Mini",
+  "manufacturer": "Miyoo",
+  "slug": "miyoo-mini",
+  "form_factor": "Vertical",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$050 - $75",
+  "pros": [
+   "\"Amazing screen. Pocket sized. Great for 1 handed play on turn based games.\" - Cormz Zilla"
+  ],
+  "cons": [
+   "\"No real time clock (need to use mod for Pokemon etc). Fragile screen. Ergonomics of small size are awkward for some people.\" - Cormz Zilla"
+  ],
+  "description": "Screen Resolution of Miyoo Mini v4 is 750 x 560. Highest stable OC of the CPU is 1600 MHz.",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2021-12-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 52,
+    "os": "Onion OS, MinUI",
+    "os_family": "proprietary",
+    "soc": "SigmaStar SSD202D",
+    "cpu_model": "Cortex-A7",
+    "cpu_cores": 2,
+    "cpu_threads": 2,
+    "cpu_clock_max_mhz": 1600,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm32",
+    "gpu_model": "\"2D Graphics Accelerator\"",
+    "ram_mb": 128,
+    "screen_size_inch": 2.8,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 640,
+    "screen_resolution_y": 480,
+    "ppi": 285,
+    "aspect_ratio": "4:3",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 2000,
+    "ports": "USB-C",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "audio_tech": "3.5mm Headphone",
+    "audio_speakers": "Single Mono Front facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "performance_grade": "3.5/5",
+    "weight_g": 106,
+    "body_material": "Plastic",
+    "available_colors": "White, Retro Gray, Transparent Blue, Transparent Black",
+    "width_mm": 65.0,
+    "height_mm": 93.5,
+    "depth_mm": 18.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Lower",
+     "face_button_count": 4,
+     "stick_count": 0,
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Horizontal",
+     "system_buttons_text": "Menu",
+     "input_notes": "Wheel | Menu | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Great",
+     "n64_state": "Unplayable",
+     "dreamcast_state": "Unplayable",
+     "psp_state": "Unplayable",
+     "saturn_state": "Unplayable",
+     "gamecube_state": "Unplayable",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES & PS1 almost all full speed except for slight lag on a few FX chip SNES games and 3D PS1 games"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=sGbHedrq-3Q",
+    "label": "RGHandhelds",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=_TkB2Zjc4zk",
+    "label": "The Phawx",
+    "sort_order": 4
+   },
+   {
+    "kind": "written_review",
+    "url": "https://obscurehandhelds.com/2021/12/great-but-flawed-the-miyoo-mini-review/",
+    "label": "Obscure Handhelds",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.com/item/1005003611677275.html",
+    "label": "Aliexpress",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.keepretro.com/products/miyoo-mini",
+    "label": "KeepRetro.com",
+    "sort_order": 1
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.amazon.com/dp/B09N3MGYGR/ref=cm_sw_em_r_mt_dp_37BZHEZB8RVS3M0B0K7P",
+    "label": "Amazon",
+    "sort_order": 2
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.geekbuying.com/item/Miyoo-Mini-32GB-Handheld-Game-Console-Grey--497359.html",
+    "label": "GeekBuying",
+    "sort_order": 3
+   }
+  ]
+ },
+ {
   "name": "A30",
   "manufacturer": "Powkiddy",
   "slug": "powkiddy-a30",
@@ -10401,6 +12729,153 @@
     "url": "https://www.aliexpress.com/item/1005003337289121.html",
     "label": "Aliexpress",
     "sort_order": 1
+   }
+  ]
+ },
+ {
+  "name": "RG351MP",
+  "manufacturer": "Anbernic",
+  "slug": "anbernic-rg351mp",
+  "form_factor": "Horizontal",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$100 - $150",
+  "cons": [
+   "No internal WiFi, reported issues of sound distortion over half volume (only on stock OS)"
+  ],
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2021-09-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 147,
+    "os": "EmuELEC, 351ELEC, ArkOS, Batocera, Lakka, 351Droid (Lineage 18.1 / Android 11)",
+    "os_family": "android",
+    "os_version": "351",
+    "soc": "RockChip RK3326",
+    "cpu_model": "Cortex-A35",
+    "cpu_cores": 4,
+    "cpu_threads": 4,
+    "cpu_clock_max_mhz": 1500,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm64",
+    "gpu_model": "Mali-G31 MP2",
+    "gpu_cores": 2,
+    "gpu_clock_mhz": 650,
+    "ram_mb": 1024,
+    "screen_size_inch": 3.5,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 640,
+    "screen_resolution_y": 480,
+    "ppi": 228,
+    "aspect_ratio": "4:3",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 3500,
+    "cooling_solution": "Heatsink Metal case passive",
+    "ports": "USB-C x2",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "Dual MicroSD",
+    "other_connectivity": "USB-C OTG, 5 GHz WiFi support with USB dongle",
+    "audio_tech": "3.5mm Headphone",
+    "audio_speakers": "Dual Stereo Bottom facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "performance_grade": "4.5/5",
+    "weight_g": 271,
+    "body_material": "Metal (Aluminum)",
+    "available_colors": "Ocean Blue, Matte Black, Mint Green",
+    "width_mm": 145.0,
+    "height_mm": 73.0,
+    "depth_mm": 18.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 2,
+     "stick_clicks": true,
+     "stick_layout": "Lower",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Horizontal",
+     "system_buttons_text": "Power, Reset, Volume +-",
+     "input_notes": "Dedicated Buttons | Button Combination | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Great",
+     "n64_state": "Playable",
+     "dreamcast_state": "Playable",
+     "psp_state": "Playable",
+     "saturn_state": "Struggles",
+     "gamecube_state": "Unplayable",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES FX & 3D PS1 (60 FPS), 2D PSP mostly playable but 3D PSP needs frameskip, N64 & Dreamcast mostly playable for easier to emulate games"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=XaFzaQRXAns",
+    "label": "Taki Udon",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=AX-AyuVi-T0",
+    "label": "The Phawx",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=F350L92NoBA",
+    "label": "Wicked Gamer & Collector",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=g4MSr2DikRI",
+    "label": "MashTec",
+    "sort_order": 4
+   },
+   {
+    "kind": "vendor",
+    "url": "https://anbernic.com/products/anbernic-new-rg351mp-retro-games-built",
+    "label": "Anbernic",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.ebay.com/itm/313674955400",
+    "label": "Ebay",
+    "sort_order": 2
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.banggood.com/ANBERNIC-RG351MP-16GB-Retro-Handheld-Game-Console-RK3326-1_5GHz-Linux-System-for-PSP-NDS-PS1-N64-MD-openbor-Game-Player-Wifi-Online-Sparring-p-1894845.html?cur_warehouse=CN&ID=6287830",
+    "label": "Banggood",
+    "sort_order": 3
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.amazon.com/Dosnura-RG351MP-Handheld-External-Function/dp/B09FLN2LJX/",
+    "label": "Amazon",
+    "sort_order": 4
    }
   ]
  },
@@ -11274,6 +13749,157 @@
   ]
  },
  {
+  "name": "RG351V",
+  "manufacturer": "Anbernic",
+  "slug": "anbernic-rg351v",
+  "form_factor": "Vertical",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$100 - $150",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2021-03-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 109,
+    "os": "EmuELEC, 351ELEC, ArkOS, 351Droid (Lineage 18.1 / Android 11)",
+    "os_family": "android",
+    "os_version": "351",
+    "soc": "RockChip RK3326",
+    "cpu_model": "Cortex-A35",
+    "cpu_cores": 4,
+    "cpu_threads": 4,
+    "cpu_clock_max_mhz": 1500,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm64",
+    "gpu_model": "Mali-G31 MP2",
+    "gpu_cores": 2,
+    "gpu_clock_mhz": 650,
+    "ram_mb": 1024,
+    "screen_size_inch": 3.5,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 640,
+    "screen_resolution_y": 480,
+    "ppi": 228,
+    "aspect_ratio": "4:3",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 3900,
+    "cooling_solution": "Heatsink",
+    "ports": "USB-C x2",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "Dual MicroSD",
+    "wifi_specs": "WiFi",
+    "other_connectivity": "Dual USB-C OTG",
+    "audio_tech": "3.5mm Headphone",
+    "audio_speakers": "Single Mono Front facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "performance_grade": "4.5/5",
+    "weight_g": 230,
+    "body_material": "Plastic",
+    "available_colors": "Woodgrain, Gray, Transparent Black",
+    "width_mm": 94.0,
+    "height_mm": 140.0,
+    "depth_mm": 26.8,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 1,
+     "stick_clicks": true,
+     "stick_layout": "Lower",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Horizontal",
+     "system_buttons_text": "Power, Reset, Volume +-, Function Button",
+     "input_notes": "Dedicated Buttons | Button Combination | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Great",
+     "n64_state": "Playable",
+     "dreamcast_state": "Playable",
+     "psp_state": "Playable",
+     "saturn_state": "Struggles",
+     "gamecube_state": "Unplayable",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES FX & 3D PS1 (60 FPS), 2D PSP mostly playable but 3D PSP needs frameskip, N64 & Dreamcast mostly playable for easier to emulate games"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://youtu.be/vqeXysZFVDI",
+    "label": "Taki Udon",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=LJdSWVt7IbQ",
+    "label": "The Phawx",
+    "sort_order": 2
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=Y3JThEQXizc",
+    "label": "JohnRiggs",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=7FceE1W77BA",
+    "label": "8 Bit Flashback",
+    "sort_order": 4
+   },
+   {
+    "kind": "written_review",
+    "url": "https://retrododo.com/rg351v/",
+    "label": "Retro Dodo",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.anbernic.com/engappliance_sel_one?eng_ApplianceVo.eac_id=70",
+    "label": "Anbernic",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://retromimi.com/products/rg351v",
+    "label": "Retromimi",
+    "sort_order": 2
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.amazon.com/Petforu-Handheld-Preinstalled-Console-3-5-Inch/dp/B08XNTX9J9/ref=sr_1_1?dchild=1&keywords=rg351v&qid=1614607292&s=toys-and-games&sr=1-1",
+    "label": "Amazon",
+    "sort_order": 3
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.ebay.com/itm/Anbernic-RG351V-Retro-Game-Console-Handheld-Video-Game-Player-2400-Games-/313446600966",
+    "label": "Ebay",
+    "sort_order": 4
+   }
+  ]
+ },
+ {
   "name": "GKD Mini",
   "manufacturer": "Game Kiddy",
   "slug": "game-kiddy-gkd-mini",
@@ -11692,6 +14318,154 @@
     "url": "https://rpishop.cz/odroid-go/3391-673-odroid-go-super.html",
     "label": "RPiShop.cz",
     "sort_order": 2
+   }
+  ]
+ },
+ {
+  "name": "RG351M",
+  "manufacturer": "Anbernic",
+  "slug": "anbernic-rg351m",
+  "form_factor": "Horizontal",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$100 - $150",
+  "cons": [
+   "USB based controls, has trouble reconnecting the controller after waking from sleep in non Retroarch emulators, has a bug where the controller can disconnect at around 30% - 40% battery remaining"
+  ],
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2021-01-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 140,
+    "os": "EmuELEC, 351ELEC, ArkOS, Batocera, Lakka, 351Droid (Lineage 18.1 / Android 11)",
+    "os_family": "android",
+    "os_version": "351",
+    "soc": "RockChip RK3326",
+    "cpu_model": "Cortex-A35",
+    "cpu_cores": 4,
+    "cpu_threads": 4,
+    "cpu_clock_max_mhz": 1500,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm64",
+    "gpu_model": "Mali-G31 MP2",
+    "gpu_cores": 2,
+    "gpu_clock_mhz": 650,
+    "ram_mb": 1024,
+    "screen_size_inch": 3.5,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 320,
+    "screen_resolution_y": 480,
+    "ppi": 164,
+    "aspect_ratio": "3:2",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 3500,
+    "cooling_solution": "Heatsink Metal case passive",
+    "ports": "USB-C x2",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "wifi_specs": "WiFi",
+    "other_connectivity": "Dual USB-C OTG",
+    "audio_tech": "3.5mm Headphone",
+    "audio_speakers": "Dual Stereo Bottom facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "performance_grade": "4.5/5",
+    "weight_g": 271,
+    "body_material": "Metal (Aluminum)",
+    "available_colors": "Aluminum shell: Space Gray, Matte Black",
+    "width_mm": 151.5,
+    "height_mm": 70.0,
+    "depth_mm": 18.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 2,
+     "stick_clicks": true,
+     "stick_layout": "Lower",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Horizontal",
+     "system_buttons_text": "Power, Reset",
+     "input_notes": "Wheel | Button Combination | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Great",
+     "n64_state": "Playable",
+     "dreamcast_state": "Playable",
+     "psp_state": "Playable",
+     "saturn_state": "Struggles",
+     "gamecube_state": "Unplayable",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES FX & 3D PS1 (60 FPS), 2D PSP mostly playable but 3D PSP needs frameskip, N64 & Dreamcast mostly playable for easier to emulate games"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=9HLkBKhwFMU",
+    "label": "Taki Udon",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=dv_1ebc1pN0",
+    "label": "The Phawx",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=p2Tbn1hCJgE",
+    "label": "My Retro Life",
+    "sort_order": 4
+   },
+   {
+    "kind": "written_review",
+    "url": "https://retrododo.com/RG351M/",
+    "label": "Retro Dodo",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.anbernic.com/engappliance_sel_one?eng_ApplianceVo.eac_id=68",
+    "label": "Anbernic",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://retromimi.com/products/rg351m",
+    "label": "Retromimi",
+    "sort_order": 2
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.amazon.com/s?k=RG351M",
+    "label": "Amazon",
+    "sort_order": 3
+   },
+   {
+    "kind": "vendor",
+    "url": "https://whatskogame.com/collections/handheld-game-console/products/new-rg351m-retro-game-handhelds-aluminium-alloy-housing-64gb",
+    "label": "Whatskogame.com",
+    "sort_order": 4
    }
   ]
  },
@@ -13042,6 +15816,143 @@
   ]
  },
  {
+  "name": "RG351P",
+  "manufacturer": "Anbernic",
+  "slug": "anbernic-rg351p",
+  "form_factor": "Horizontal",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$075 - $100",
+  "cons": [
+   "USB based controls, has trouble reconnecting the controller after waking from sleep in non Retroarch emulators, has a bug where the controller can disconnect at around 30% - 40% battery remaining"
+  ],
+  "description": "Anbernic aliexpress store sent out a message that there is an issue on the first batch models of a buzzing noise produced while WiFi is on. They were unable to fix this problem so they will remove internal WiFi on later models, but you should still be able to use an external WiFi USB dongle. There have also been reports of input lag, but Anbernic dev TonyJih says that has been fixed.",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2020-09-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 99,
+    "os": "EmuELEC, 351ELEC, ArkOS, Batocera, Lakka, 351Droid (Lineage 18.1 / Android 11)",
+    "os_family": "android",
+    "os_version": "351",
+    "soc": "RockChip RK3326",
+    "cpu_model": "Cortex-A35",
+    "cpu_cores": 4,
+    "cpu_threads": 4,
+    "cpu_clock_max_mhz": 1500,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm64",
+    "gpu_model": "Mali-G31 MP2",
+    "gpu_cores": 2,
+    "gpu_clock_mhz": 650,
+    "ram_mb": 1024,
+    "screen_size_inch": 3.5,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 320,
+    "screen_resolution_y": 480,
+    "ppi": 164,
+    "aspect_ratio": "3:2",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 3500,
+    "cooling_solution": "Heatsink",
+    "ports": "USB-C x2",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "wifi_specs": "WiFi (internal only on 1st batch, all following batches require external WiFi dongle)",
+    "other_connectivity": "Dual USB-C OTG",
+    "audio_tech": "3.5mm Headphone",
+    "audio_speakers": "Dual Stereo Bottom facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "performance_grade": "4.5/5",
+    "weight_g": 189,
+    "body_material": "Plastic",
+    "available_colors": "Dark Gray, White, GBA Indigo",
+    "width_mm": 151.5,
+    "height_mm": 70.0,
+    "depth_mm": 18.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 2,
+     "stick_clicks": true,
+     "stick_layout": "Lower",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Horizontal",
+     "system_buttons_text": "Power, Reset",
+     "input_notes": "Wheel | Button Combination | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Great",
+     "n64_state": "Playable",
+     "dreamcast_state": "Playable",
+     "psp_state": "Playable",
+     "saturn_state": "Struggles",
+     "gamecube_state": "Unplayable",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES FX & 3D PS1 (60 FPS), 2D PSP mostly playable but 3D PSP needs frameskip, N64 & Dreamcast mostly playable for easier to emulate games"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=eZVXgI-U98k",
+    "label": "Tech Summit",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=h0pbX1x8sO8",
+    "label": "Restalgia",
+    "sort_order": 4
+   },
+   {
+    "kind": "written_review",
+    "url": "https://retrododo.com/rg351p/",
+    "label": "Retro Dodo",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.amazon.com/s?k=Anbernic+RG351P",
+    "label": "Amazon",
+    "sort_order": 2
+   },
+   {
+    "kind": "vendor",
+    "url": "https://retromimi.com/collections/handhelds/products/rg351p",
+    "label": "Retromimi",
+    "sort_order": 3
+   },
+   {
+    "kind": "vendor",
+    "url": "https://whatskogame.com/products/new-rg351p-retro-game-handhelds",
+    "label": "Whatskogame.com",
+    "sort_order": 4
+   }
+  ]
+ },
+ {
   "name": "Z-Pocket Game Pro",
   "manufacturer": "Game Kiddy",
   "slug": "game-kiddy-z-pocket-game-pro",
@@ -13737,6 +16648,161 @@
     "url": "https://www.aliexpress.com/item/1005003043894646.html",
     "label": "Aliexpress",
     "sort_order": 0
+   }
+  ]
+ },
+ {
+  "name": "RG350P",
+  "manufacturer": "Anbernic",
+  "slug": "anbernic-rg350p",
+  "form_factor": "Horizontal",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$075 - $100",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2020-07-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 90,
+    "os": "OpenDingux",
+    "os_family": "proprietary",
+    "soc": "Ingenic JZ4770",
+    "cpu_model": "XBurst",
+    "cpu_cores": 2,
+    "cpu_threads": 2,
+    "cpu_clock_max_mhz": 1000,
+    "cpu_architecture": "MIPS",
+    "cpu_arch": "other",
+    "gpu_model": "Vivante GC860",
+    "gpu_clock_mhz": 575,
+    "ram_mb": 512,
+    "screen_size_inch": 3.5,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 320,
+    "screen_resolution_y": 240,
+    "ppi": 114,
+    "aspect_ratio": "4:3",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 2500,
+    "ports": "USB-C x2",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "Dual MicroSD",
+    "wifi_specs": "WiFi support with USB dongle",
+    "other_connectivity": "USB OTG",
+    "video_out": "Mini HDMI",
+    "audio_tech": "3.5mm Headphone",
+    "audio_speakers": "Dual Stereo Bottom facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "performance_grade": "3/5",
+    "weight_g": 177,
+    "body_material": "Plastic",
+    "available_colors": "Black, Transparent Black, Black/Orange",
+    "width_mm": 145.0,
+    "height_mm": 73.0,
+    "depth_mm": 18.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 2,
+     "stick_clicks": true,
+     "stick_layout": "Lower",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Horizontal",
+     "system_buttons_text": "Power, Reset, Volume +-",
+     "input_notes": "Dedicated Buttons | Button Combination | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Great",
+     "ps1_state": "Great",
+     "nds_state": "Unplayable",
+     "n64_state": "Struggles",
+     "dreamcast_state": "Unplayable",
+     "psp_state": "Unplayable",
+     "saturn_state": "Unplayable",
+     "gamecube_state": "Unplayable",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES & PS1 almost all full speed except for slight lag on a few FX chip SNES games and 3D PS1 games"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=of9sTvMoZdk",
+    "label": "Taki Udon",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=HJEbIrkE8O8",
+    "label": "Wicked Gamer & Collector",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=KhLaXZgu2MA",
+    "label": "Madlittlepixel",
+    "sort_order": 2
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=cRyTOM-Yq_8",
+    "label": "Retro Core",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=aSKRAq0zC2w",
+    "label": "Retro Dodo",
+    "sort_order": 4
+   },
+   {
+    "kind": "written_review",
+    "url": "https://obscurehandhelds.com/2020/07/the-anbernic-rg350p-comes-as-no-surprise/",
+    "label": "Obscure Handhelds",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://anbernic.com/products/anbernic-rg350p-retro-game-upgrade-version-64bit-emulator-video-game-consoles-handheld-game-players-rg350p-ps1-rg350-hdmi-compat",
+    "label": "Anbernic",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.com/item/4001243937639.html",
+    "label": "Aliexpress (Official Store)",
+    "sort_order": 1
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.com/wholesale?&SearchText=Anbernic+rg350P",
+    "label": "Aliexpress",
+    "sort_order": 2
+   },
+   {
+    "kind": "vendor",
+    "url": "https://retromimi.com/collections/handhelds/products/rg350p?aff=18",
+    "label": "Retromimi",
+    "sort_order": 3
    }
   ]
  },
@@ -14847,6 +17913,168 @@
   ]
  },
  {
+  "name": "RG350M",
+  "manufacturer": "Anbernic",
+  "slug": "anbernic-rg350m",
+  "form_factor": "Horizontal",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$100 - $150",
+  "pros": [
+   "Best control layout, good build quality"
+  ],
+  "cons": [
+   "Price, battery life less than original RG350 due to higher res screen, warm colored screen"
+  ],
+  "description": "Currently only available in aluminum shell for $130. HDMI out is now working",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2020-03-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 130,
+    "os": "OpenDingux, Rogue, RetroArch",
+    "os_family": "proprietary",
+    "soc": "Ingenic JZ4770",
+    "cpu_model": "XBurst",
+    "cpu_cores": 2,
+    "cpu_threads": 2,
+    "cpu_clock_max_mhz": 1000,
+    "cpu_architecture": "MIPS",
+    "cpu_arch": "other",
+    "gpu_model": "Vivante GC860",
+    "gpu_clock_mhz": 575,
+    "ram_mb": 512,
+    "screen_size_inch": 3.5,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 640,
+    "screen_resolution_y": 480,
+    "ppi": 228,
+    "aspect_ratio": "4:3",
+    "screen_lens": "Tempered Glass (OCA Laminated)",
+    "battery_capacity_mah": 2500,
+    "ports": "USB-C x2",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "Dual MicroSD",
+    "wifi_specs": "WiFi support with USB dongle",
+    "other_connectivity": "USB OTG",
+    "video_out": "Mini HDMI",
+    "audio_tech": "3.5mm Headphone",
+    "audio_speakers": "Dual Stereo Bottom facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "performance_grade": "3/5",
+    "weight_g": 263,
+    "body_material": "Metal (Aluminum)",
+    "available_colors": "Aluminum shell: Space Grey, Space Silver, Rose Gold, Black",
+    "width_mm": 145.0,
+    "height_mm": 73.0,
+    "depth_mm": 18.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 2,
+     "stick_clicks": true,
+     "stick_layout": "Lower",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Horizontal",
+     "system_buttons_text": "L3/R3, Power, Reset, Volume +-",
+     "input_notes": "Dedicated Buttons | Button Combination | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Great",
+     "ps1_state": "Great",
+     "nds_state": "Unplayable",
+     "n64_state": "Struggles",
+     "dreamcast_state": "Unplayable",
+     "psp_state": "Unplayable",
+     "saturn_state": "Unplayable",
+     "gamecube_state": "Unplayable",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES & PS1 almost all full speed except for slight lag on a few FX chip SNES games and 3D PS1 games"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://youtu.be/ntEM20Ah1_k",
+    "label": "Taki Udon",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=LTIej2ee4tc",
+    "label": "The Phawx",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=4DvxE16J0W4",
+    "label": "Wicked Gamer & Collector",
+    "sort_order": 2
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=ww7eN4xxkqw",
+    "label": "8 Bit Flashback",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=hJpf_F2gHSI",
+    "label": "Retro Dodo",
+    "sort_order": 4
+   },
+   {
+    "kind": "written_review",
+    "url": "https://obscurehandhelds.com/2020/07/the-anbernic-rg350m-review/",
+    "label": "Obscure Handhelds",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.com/item/4000378864089.html",
+    "label": "Aliexpress (Official Store)",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://retromimi.com/products/rg350-upgrade-rg350m-aluminum-alloy-shell",
+    "label": "Retromimi",
+    "sort_order": 1
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.com/item/4000824644600.html",
+    "label": "Aliexpress",
+    "sort_order": 2
+   },
+   {
+    "kind": "vendor",
+    "url": "https://droix.net/product/anbernic-rg350m/",
+    "label": "Droix.net",
+    "sort_order": 3
+   }
+  ]
+ },
+ {
   "name": "Odroid Go Advance",
   "manufacturer": "HardKernel",
   "slug": "hardkernel-odroid-go-advance",
@@ -15689,6 +18917,157 @@
   ]
  },
  {
+  "name": "Retrostone 2",
+  "manufacturer": "8BCraft",
+  "slug": "8bcraft-retrostone-2",
+  "form_factor": "Vertical",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$150 - $200",
+  "pros": [
+   "Lots of USB ports for local coop,",
+   "highly customisable, HDMI, IPS screen improved over 1st Retrostone"
+  ],
+  "cons": [
+   "CPU is outdated compared to 1st Retrostone"
+  ],
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2019-12-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 157,
+    "os": "Linux - RetrorangePi",
+    "os_family": "linux",
+    "soc": "Allwinner A20",
+    "cpu_model": "Cortex-A7",
+    "cpu_cores": 2,
+    "cpu_threads": 2,
+    "cpu_clock_max_mhz": 1000,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm32",
+    "gpu_model": "Mali-400 MP2",
+    "gpu_cores": 2,
+    "gpu_clock_mhz": 500,
+    "ram_mb": 1024,
+    "screen_size_inch": 3.5,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 640,
+    "screen_resolution_y": 480,
+    "ppi": 228,
+    "aspect_ratio": "4:3",
+    "screen_lens": "Plastic (normal model), Glass (pro model)",
+    "battery_capacity_mah": 4000,
+    "ports": "Micro USB",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "wifi_specs": "WiFi",
+    "bluetooth_specs": "Bluetooth",
+    "other_connectivity": "USB x3, Ethernet",
+    "video_out": "HDMI",
+    "audio_tech": "3.5mm Headphone",
+    "audio_speakers": "Single Mono Front facing",
+    "has_headphone_jack": true,
+    "haptics": false,
+    "performance_grade": "4/5",
+    "weight_g": 300,
+    "body_material": "Plastic",
+    "available_colors": "Grey, Transparent Blue",
+    "width_mm": 130.0,
+    "height_mm": 90.0,
+    "depth_mm": 25.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 1,
+     "stick_clicks": false,
+     "stick_layout": "Lower",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "system_buttons_text": "GPIO x2, Power",
+     "input_notes": "Wheel | Menu, Dedicated Button | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Playable",
+     "n64_state": "Playable",
+     "dreamcast_state": "Playable",
+     "psp_state": "Struggles",
+     "saturn_state": "Struggles",
+     "gamecube_state": "Unplayable",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES FX & 3D PS1 (60 FPS), N64 & NDS (playable but can be laggy)"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=e5iP7bgPuQI",
+    "label": "Restalgia",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=u1APIjks52U",
+    "label": "MarkWattsVLG",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=ysF_4xbISGM",
+    "label": "Arcade Shenanigans",
+    "sort_order": 2
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=_BjsJUTshGI",
+    "label": "Retro Handhelds",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=3EFCRY-uA3I",
+    "label": "Wicked Gamer & Collector",
+    "sort_order": 4
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.8bcraft.com/product/retrostone2/",
+    "label": "8BCraft.com",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.kickstarter.com/projects/583173617/retrostone-2-ultimate-retrogaming-console/description",
+    "label": "Kickstarter",
+    "sort_order": 1
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.kickstarter.com/projects/583173617/retrostone-2-joystick-version-retrogaming-console?ref=project_link",
+    "label": "Kickstarter (Joystick model)",
+    "sort_order": 2
+   }
+  ]
+ },
+ {
   "name": "X19",
   "manufacturer": "Powkiddy",
   "slug": "powkiddy-x19",
@@ -15815,6 +19194,174 @@
     "url": "https://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20191112163938&SearchText=powkiddy+x19",
     "label": "Aliexpress",
     "sort_order": 0
+   }
+  ]
+ },
+ {
+  "name": "RG350",
+  "manufacturer": "Anbernic",
+  "slug": "anbernic-rg350",
+  "form_factor": "Horizontal",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$075 - $100",
+  "pros": [
+   "Dual analogs, L2/R2, good build quality, USB OTG, can be played vertically (tate mode)"
+  ],
+  "cons": [
+   "Uncomfortable d-pad placement, thumb can accidentally hit right analog stick when pressing B button, no easy access to internal microSD or battery"
+  ],
+  "description": "HDMI out is now working",
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2019-09-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 80,
+    "os": "OpenDingux, Rogue, RetroArch",
+    "os_family": "proprietary",
+    "soc": "Ingenic JZ4770",
+    "cpu_model": "XBurst",
+    "cpu_cores": 2,
+    "cpu_threads": 2,
+    "cpu_clock_max_mhz": 1000,
+    "cpu_architecture": "MIPS",
+    "cpu_arch": "other",
+    "gpu_model": "Vivante GC860",
+    "gpu_clock_mhz": 575,
+    "ram_mb": 512,
+    "screen_size_inch": 3.5,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 320,
+    "screen_resolution_y": 240,
+    "ppi": 114,
+    "aspect_ratio": "4:3",
+    "screen_lens": "Tempered Glass (Not OCA Laminated)",
+    "battery_capacity_mah": 2500,
+    "ports": "USB-C x2",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "wifi_specs": "WiFi support with USB dongle",
+    "other_connectivity": "USB OTG",
+    "video_out": "Mini HDMI",
+    "audio_tech": "3.5mm Headphone",
+    "audio_speakers": "Dual Stereo Bottom facing",
+    "has_headphone_jack": true,
+    "haptics": true,
+    "performance_grade": "3/5",
+    "weight_g": 181,
+    "body_material": "Plastic",
+    "available_colors": "Black/Orange, DMG Grey, Transparent Black, Transparent White, Aluminum metal ($130)",
+    "width_mm": 145.0,
+    "height_mm": 73.0,
+    "depth_mm": 20.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Lower",
+     "face_button_count": 4,
+     "stick_count": 2,
+     "stick_clicks": true,
+     "stick_layout": "Upper",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Horizontal",
+     "system_buttons_text": "L3/R3, Power, Reset, Volume +-",
+     "input_notes": "Dedicated Buttons | Button Combination | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Great",
+     "ps1_state": "Great",
+     "nds_state": "Unplayable",
+     "n64_state": "Struggles",
+     "dreamcast_state": "Unplayable",
+     "psp_state": "Unplayable",
+     "saturn_state": "Unplayable",
+     "gamecube_state": "Unplayable",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES & PS1 almost all full speed except for slight lag on a few FX chip SNES games and 3D PS1 games"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=nzRXx534qHE",
+    "label": "Taki Udon",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=d5Fv07OmdNk",
+    "label": "Wicked Gamer & Collector",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=Uslv0NpQ8yE",
+    "label": "Madlittlepixel",
+    "sort_order": 2
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=-TXgMNDB6jc",
+    "label": "Retro Dodo",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=AA3kHHXFfCE",
+    "label": "The Portly Gamer",
+    "sort_order": 4
+   },
+   {
+    "kind": "written_review",
+    "url": "https://obscurehandhelds.com/2019/10/rg350-review-the-best-open-source-handheld-under-90/",
+    "label": "Obscure Handhelds",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.com/item/4000112234837.html",
+    "label": "Aliexpress",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.com/item/1005002197275923.html",
+    "label": "Aliexpress",
+    "sort_order": 1
+   },
+   {
+    "kind": "vendor",
+    "url": "https://retromimi.com/collections/handhelds/products/retro-game-350-rg350-game-console",
+    "label": "Retromimi",
+    "sort_order": 2
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.amazon.com/s?k=RG350&dc&ref=a9_asc_1",
+    "label": "Amazon",
+    "sort_order": 3
+   },
+   {
+    "kind": "vendor",
+    "url": "https://retrogamepi.com/products/retro-game-rg350-video-handheld-game-console",
+    "label": "Retrogamepi.com",
+    "sort_order": 4
    }
   ]
  },
@@ -16819,6 +20366,157 @@
   ]
  },
  {
+  "name": "RetroGame RS-97 (Anniversary Edition / IPS Screen Model)",
+  "manufacturer": "Anbernic",
+  "slug": "anbernic-retrogame-rs-97-anniversary-edition-ips-screen-model",
+  "form_factor": "Horizontal",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$050 - $75",
+  "pros": [
+   "Only RS-97 with IPS screen"
+  ],
+  "cons": [
+   "Exposed LCD, not true analog (d-pad mirror)"
+  ],
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2019-06-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 60,
+    "os": "RetroFW",
+    "os_family": "proprietary",
+    "soc": "Ingenic JZ4760B",
+    "cpu_model": "XBurst",
+    "cpu_cores": 1,
+    "cpu_threads": 1,
+    "cpu_clock_max_mhz": 740,
+    "cpu_architecture": "MIPS",
+    "cpu_arch": "other",
+    "gpu_model": "Vivante GC200",
+    "gpu_clock_mhz": 375,
+    "ram_mb": 128,
+    "screen_size_inch": 3.0,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 320,
+    "screen_resolution_y": 480,
+    "ppi": 133,
+    "aspect_ratio": "4:3",
+    "screen_lens": "None (Protector only)",
+    "battery_capacity_mah": 1800,
+    "ports": "Mini USB",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "video_out": "AV Out",
+    "audio_tech": "3.5mm Headphone",
+    "audio_speakers": "Single Mono Front facing",
+    "has_headphone_jack": true,
+    "haptics": false,
+    "performance_grade": "2.5/5",
+    "weight_g": 142,
+    "body_material": "Plastic",
+    "available_colors": "Transparent Blue, Transparent Black, Transparent White",
+    "width_mm": 144.0,
+    "height_mm": 64.0,
+    "depth_mm": 19.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 1,
+     "stick_clicks": false,
+     "stick_layout": "Lower",
+     "bumper_tech": "Digital",
+     "system_buttons_text": "Brightness, Power, Reset",
+     "input_notes": "Wheel | Dedicated Button | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Great",
+     "snes_state": "Playable",
+     "ps1_state": "Playable",
+     "nds_state": "Unplayable",
+     "n64_state": "Unplayable",
+     "dreamcast_state": "Unplayable",
+     "psp_state": "Unplayable",
+     "saturn_state": "Unplayable",
+     "gamecube_state": "Unplayable",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "Most SNES runs at 60 FPS but lags with FX & Mode 7 games, most 2D PS1 runs fine (not all at full 60 FPS) but lags with 3D games"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=-0NhVfm1TTs",
+    "label": "Wicked Gamer & Collector",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=HbvHdfOhS6I",
+    "label": "DIYGameModz",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=EMeZoA05qL8",
+    "label": "Great Scott Games",
+    "sort_order": 2
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=GRPAS99PPdU",
+    "label": "Anbernic",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=V7xqu6YGFUQ",
+    "label": "Retro Core",
+    "sort_order": 4
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.com/item/33045526824.html",
+    "label": "Aliexpress",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.com/item/4000036177783.html",
+    "label": "Aliexpress",
+    "sort_order": 1
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.com/item/4000260900722.html",
+    "label": "Aliexpress",
+    "sort_order": 2
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.amazon.com/MJKJ-Handheld-Console-OpenDingux-Portable/dp/B07Y87122L/",
+    "label": "Amazon",
+    "sort_order": 3
+   }
+  ]
+ },
+ {
   "name": "RG300",
   "manufacturer": "Anbernic",
   "slug": "anbernic-rg300",
@@ -17388,6 +21086,154 @@
     "url": "https://retromimi.com/products/ldk-game-console-white",
     "label": "Retromimi",
     "sort_order": 1
+   }
+  ]
+ },
+ {
+  "name": "Pi-Boy XL",
+  "manufacturer": "1UP",
+  "slug": "1up-pi-boy-xl",
+  "form_factor": "Vertical",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$150 - $200",
+  "pros": [
+   "Modular, pre-assembled"
+  ],
+  "cons": [
+   "Bulky, heavy, separated d-pad"
+  ],
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2019-04-01",
+    "release_date_precision": "month",
+    "price_avg_usd": 175,
+    "os": "Linux (RetroPie)",
+    "os_family": "linux",
+    "soc": "Broadcom BCM2837B0",
+    "cpu_model": "Cortex-A53",
+    "cpu_cores": 4,
+    "cpu_threads": 4,
+    "cpu_clock_max_mhz": 1400,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm64",
+    "gpu_model": "Broadcom VideoCore IV",
+    "gpu_clock_mhz": 300,
+    "ram_mb": 1024,
+    "screen_size_inch": 3.5,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 480,
+    "screen_resolution_y": 320,
+    "ppi": 164,
+    "aspect_ratio": "3:2",
+    "screen_lens": "Acrylic",
+    "battery_capacity_mah": 9000,
+    "ports": "Micro USB",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "wifi_specs": "WiFi",
+    "bluetooth_specs": "Bluetooth",
+    "other_connectivity": "USB x3, Ethernet",
+    "video_out": "HDMI",
+    "audio_tech": "3.5mm Headphone",
+    "audio_speakers": "Dual Stereo Front facing",
+    "has_headphone_jack": true,
+    "haptics": false,
+    "performance_grade": "4/5",
+    "weight_g": 500,
+    "body_material": "Plastic",
+    "available_colors": "Transparent",
+    "width_mm": 157.0,
+    "height_mm": 99.0,
+    "depth_mm": 35.0,
+    "input_profile": {
+     "dpad_placement": "Lower",
+     "face_button_count": 6,
+     "stick_count": 1,
+     "stick_clicks": false,
+     "stick_layout": "Upper",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "system_buttons_text": "Fan Switch, Screen Function Keys",
+     "input_notes": "Wheel | Menu | Switch"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Playable",
+     "n64_state": "Playable",
+     "dreamcast_state": "Playable",
+     "psp_state": "Struggles",
+     "saturn_state": "Struggles",
+     "gamecube_state": "Unplayable",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES FX & 3D PS1 (60 FPS), N64 & NDS (playable but can be laggy)"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=q5PnvKvZbsM",
+    "label": "Retro Dodo",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=HseO4TKRiVk",
+    "label": "Gamehead Nes",
+    "sort_order": 2
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=-Ikc__VIYiY",
+    "label": "Civicminded Lesyk",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=fv0uyLgaPeg",
+    "label": "GBZ Mods",
+    "sort_order": 4
+   },
+   {
+    "kind": "written_review",
+    "url": "https://retrododo.com/gameboy-1up/",
+    "label": "Retro Dodo",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.com/item/32956318391.html",
+    "label": "Aliexpress",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://retrogamepi.com/products/1up-pi-boy-3-5-inch-raspberry-pi-3b-handheld-game-player-with-10000-games",
+    "label": "Retrogamepi.com",
+    "sort_order": 1
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.amazon.com/s?k=1UP+Pi-Boy+XL",
+    "label": "Amazon",
+    "sort_order": 2
    }
   ]
  },
@@ -18212,6 +22058,539 @@
   ]
  },
  {
+  "name": "RetroGame RS-97 Plus",
+  "manufacturer": "Anbernic",
+  "slug": "anbernic-retrogame-rs-97-plus",
+  "form_factor": "Horizontal",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$0 - $50",
+  "cons": [
+   "Exposed LCD, not true analog (d-pad mirror)"
+  ],
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2018-01-01",
+    "release_date_precision": "year",
+    "price_avg_usd": 50,
+    "os": "RetroFW",
+    "os_family": "proprietary",
+    "soc": "Ingenic JZ4760B",
+    "cpu_model": "XBurst",
+    "cpu_cores": 1,
+    "cpu_threads": 1,
+    "cpu_clock_max_mhz": 740,
+    "cpu_architecture": "MIPS",
+    "cpu_arch": "other",
+    "gpu_model": "Vivante GC200",
+    "gpu_clock_mhz": 375,
+    "ram_mb": 128,
+    "screen_size_inch": 3.0,
+    "display_type": "TFT",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 320,
+    "screen_resolution_y": 480,
+    "ppi": 133,
+    "aspect_ratio": "4:3",
+    "screen_lens": "None (Protector only)",
+    "battery_capacity_mah": 1800,
+    "ports": "Mini USB",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "video_out": "AV Out",
+    "audio_tech": "3.5mm Headphone",
+    "audio_speakers": "Single Mono Front facing",
+    "has_headphone_jack": true,
+    "haptics": false,
+    "performance_grade": "2.5/5",
+    "weight_g": 142,
+    "body_material": "Plastic",
+    "available_colors": "Transparent Black",
+    "width_mm": 144.0,
+    "height_mm": 64.0,
+    "depth_mm": 19.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 1,
+     "stick_clicks": false,
+     "stick_layout": "Lower",
+     "bumper_tech": "Digital",
+     "system_buttons_text": "Brightness, Power, Reset",
+     "input_notes": "Wheel | Dedicated Button | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Great",
+     "snes_state": "Playable",
+     "ps1_state": "Playable",
+     "nds_state": "Unplayable",
+     "n64_state": "Unplayable",
+     "dreamcast_state": "Unplayable",
+     "psp_state": "Unplayable",
+     "saturn_state": "Unplayable",
+     "gamecube_state": "Unplayable",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "Most SNES runs at 60 FPS but lags with FX & Mode 7 games, most 2D PS1 runs fine (not all at full 60 FPS) but lags with 3D games"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=iEN1KVdslbk",
+    "label": "Retro Core",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=u2pJBgj6QcE",
+    "label": "Wicked Gamer & Collector",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=DUPZiwt3v70",
+    "label": "The Phawx",
+    "sort_order": 2
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=XHZDKJz-5xY",
+    "label": "무적풍화륜",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=Eh1g9wU7wio",
+    "label": "Pato Amarelo",
+    "sort_order": 4
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.com/item/4001227008847.html",
+    "label": "Aliexpress",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.com/item/33048708501.html",
+    "label": "Aliexpress",
+    "sort_order": 1
+   }
+  ]
+ },
+ {
+  "name": "Retrostone 1",
+  "manufacturer": "8BCraft",
+  "slug": "8bcraft-retrostone-1",
+  "form_factor": "Vertical",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$150 - $200",
+  "cons": [
+   "Bad screen quality"
+  ],
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2018-01-01",
+    "release_date_precision": "year",
+    "price_avg_usd": 157,
+    "os": "Linux - RetrorangePi",
+    "os_family": "linux",
+    "soc": "Allwinner H3",
+    "cpu_model": "Cortex-A7",
+    "cpu_cores": 4,
+    "cpu_threads": 4,
+    "cpu_clock_max_mhz": 1200,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm32",
+    "gpu_model": "Mali-400 MP2",
+    "gpu_cores": 2,
+    "gpu_clock_mhz": 500,
+    "ram_mb": 1024,
+    "screen_size_inch": 3.5,
+    "display_type": "Analog TFT",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 320,
+    "screen_resolution_y": 240,
+    "ppi": 114,
+    "aspect_ratio": "4:3",
+    "screen_lens": "None (Protector only)",
+    "battery_capacity_mah": 3000,
+    "ports": "Micro USB",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "other_connectivity": "Ethernet, USB x4",
+    "video_out": "HDMI",
+    "audio_tech": "3.5mm Headphone",
+    "audio_speakers": "Single Mono Front facing",
+    "has_headphone_jack": true,
+    "haptics": false,
+    "performance_grade": "4.25/5",
+    "weight_g": 300,
+    "body_material": "Plastic",
+    "available_colors": "Grey, Transparent Blue, Transparent Red, Metal",
+    "width_mm": 130.0,
+    "height_mm": 90.0,
+    "depth_mm": 25.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 0,
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "system_buttons_text": "LCD Controls, 4 optional GPIO buttons",
+     "input_notes": "Wheel | Dedicated Buttons | Switch"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Playable",
+     "n64_state": "Great",
+     "dreamcast_state": "Playable",
+     "psp_state": "Struggles",
+     "saturn_state": "Struggles",
+     "gamecube_state": "Unplayable",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES FX & 3D PS1 (60 FPS), N64 & NDS (playable but can be laggy)"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=0424p-Nh1uk",
+    "label": "Wicked Gamer & Collector",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=B_uQ-QWWjwo",
+    "label": "Supreme Retro Gaming",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=midAf4IVvIg",
+    "label": "The Retro Future",
+    "sort_order": 2
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=LgLqqToDxsA",
+    "label": "Madlittlepixel",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=mrRTraPUsOM",
+    "label": "Mupple",
+    "sort_order": 4
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.8bcraft.com/product/retrostone/",
+    "label": "8BCraft",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.kickstarter.com/projects/583173617/retrostone-ultimate-retrogaming-console",
+    "label": "Kickstarter",
+    "sort_order": 1
+   }
+  ]
+ },
+ {
+  "name": "Pi-Boy Micro",
+  "manufacturer": "1UP",
+  "slug": "1up-pi-boy-micro",
+  "form_factor": "Vertical",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$150 - $200",
+  "cons": [
+   "Bulky"
+  ],
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2018-01-01",
+    "release_date_precision": "year",
+    "price_avg_usd": 165,
+    "os": "Linux (RetroPie)",
+    "os_family": "linux",
+    "soc": "Broadcom BCM2837",
+    "cpu_model": "Cortex-A53",
+    "cpu_cores": 4,
+    "cpu_threads": 4,
+    "cpu_clock_max_mhz": 1200,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm64",
+    "gpu_model": "Broadcom VideoCore IV",
+    "gpu_clock_mhz": 300,
+    "ram_mb": 1024,
+    "screen_size_inch": 2.2,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 320,
+    "screen_resolution_y": 240,
+    "ppi": 181,
+    "aspect_ratio": "4:3",
+    "screen_lens": "Acrylic",
+    "battery_capacity_mah": 3000,
+    "ports": "Micro USB x2",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "wifi_specs": "WiFi",
+    "bluetooth_specs": "Bluetooth",
+    "other_connectivity": "USB x4, Ethernet",
+    "video_out": "HDMI",
+    "audio_tech": "3.5mm Headphone",
+    "audio_speakers": "Single Mono On side",
+    "has_headphone_jack": true,
+    "haptics": false,
+    "performance_grade": "4/5",
+    "weight_g": 300,
+    "body_material": "Plastic",
+    "available_colors": "Transparent, Black, Brushed Metal",
+    "width_mm": 98.0,
+    "height_mm": 66.0,
+    "depth_mm": 32.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 1,
+     "stick_clicks": false,
+     "stick_layout": "Lower",
+     "bumper_tech": "Digital",
+     "input_notes": "Wheel | Menu | Switch"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Playable",
+     "n64_state": "Playable",
+     "dreamcast_state": "Playable",
+     "psp_state": "Struggles",
+     "saturn_state": "Struggles",
+     "gamecube_state": "Unplayable",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES FX & 3D PS1 (60 FPS), N64 & NDS (playable but can be laggy)"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=dfW6g-lTjoI",
+    "label": "Sooyil",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=gVVeT9sudi0",
+    "label": "1UP",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=cs6KsbmDKsw",
+    "label": "GBZ Mods",
+    "sort_order": 3
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.com/item/32907177064.html",
+    "label": "Aliexpress",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.com/item/32962185967.html",
+    "label": "Aliexpress",
+    "sort_order": 1
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.qoo10.com/item/1UP-PIX-DIY-RASPBERRY-KITS/617871938",
+    "label": "Qoo10",
+    "sort_order": 2
+   }
+  ]
+ },
+ {
+  "name": "PiX Portable",
+  "manufacturer": "1UP",
+  "slug": "1up-pix-portable",
+  "form_factor": "Horizontal",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$150 - $200",
+  "cons": [
+   "Bulky"
+  ],
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2018-01-01",
+    "release_date_precision": "year",
+    "price_avg_usd": 175,
+    "os": "Linux (RetroPie)",
+    "os_family": "linux",
+    "soc": "Broadcom BCM2837",
+    "cpu_model": "Cortex-A53",
+    "cpu_cores": 4,
+    "cpu_threads": 4,
+    "cpu_clock_max_mhz": 1200,
+    "cpu_architecture": "ARM",
+    "cpu_arch": "arm64",
+    "gpu_model": "Broadcom VideoCore IV",
+    "gpu_clock_mhz": 300,
+    "ram_mb": 1024,
+    "screen_size_inch": 2.8,
+    "display_type": "IPS",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 640,
+    "screen_resolution_y": 480,
+    "ppi": 285,
+    "aspect_ratio": "4:3",
+    "screen_lens": "Acrylic",
+    "battery_capacity_mah": 4000,
+    "ports": "Micro USB x2",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "wifi_specs": "WiFi",
+    "bluetooth_specs": "Bluetooth",
+    "other_connectivity": "USB x4, Ethernet",
+    "video_out": "HDMI",
+    "audio_tech": "3.5mm Headphone",
+    "audio_speakers": "Dual Stereo Bottom facing",
+    "has_headphone_jack": true,
+    "haptics": false,
+    "performance_grade": "4/5",
+    "weight_g": 350,
+    "body_material": "Plastic",
+    "available_colors": "Transparent, Brushed Metal",
+    "width_mm": 130.0,
+    "height_mm": 65.0,
+    "depth_mm": 32.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 1,
+     "stick_clicks": false,
+     "stick_layout": "Lower",
+     "bumper_tech": "Digital",
+     "trigger_tech": "Digital",
+     "trigger_layout": "Horizontal",
+     "input_notes": "Menu | Menu | Switch"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Perfect",
+     "snes_state": "Perfect",
+     "ps1_state": "Perfect",
+     "nds_state": "Playable",
+     "n64_state": "Playable",
+     "dreamcast_state": "Playable",
+     "psp_state": "Struggles",
+     "saturn_state": "Struggles",
+     "gamecube_state": "Unplayable",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "SNES FX & 3D PS1 (60 FPS), N64 & NDS (playable but can be laggy)"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=5FPix8tMNdM",
+    "label": "Wicked Gamer & Collector",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=mNOTKeVHr64",
+    "label": "Yujie Yan",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=21imkPBt-88",
+    "label": "Dee Kay",
+    "sort_order": 2
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.com/item/32985752381.html",
+    "label": "Aliexpress",
+    "sort_order": 0
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.com/item/32921889113.html",
+    "label": "Aliexpress",
+    "sort_order": 1
+   }
+  ]
+ },
+ {
   "name": "Freeplay CM3 / Zero",
   "manufacturer": "Freeplaytech",
   "slug": "freeplaytech-freeplay-cm3-zero",
@@ -18349,6 +22728,134 @@
     "url": "https://www.retromodding.com/collections/freeplaytechs-freeplay-zero-cm3",
     "label": "Retromodding.com",
     "sort_order": 1
+   }
+  ]
+ },
+ {
+  "name": "RetroGame RS-97",
+  "manufacturer": "Anbernic",
+  "slug": "anbernic-retrogame-rs-97",
+  "form_factor": "Horizontal",
+  "device_category": "emulation",
+  "status": "draft",
+  "release_status": "released",
+  "price_tier": "$0 - $50",
+  "cons": [
+   "Exposed LCD"
+  ],
+  "variants": [
+   {
+    "variant_name": "Base",
+    "is_default": true,
+    "release_date": "2017-01-01",
+    "release_date_precision": "year",
+    "price_avg_usd": 45,
+    "os": "RetroFW",
+    "os_family": "proprietary",
+    "soc": "Ingenic JZ4760",
+    "cpu_model": "XBurst",
+    "cpu_cores": 1,
+    "cpu_threads": 1,
+    "cpu_clock_max_mhz": 600,
+    "cpu_architecture": "MIPS",
+    "cpu_arch": "other",
+    "gpu_model": "Vivante GC200",
+    "gpu_clock_mhz": 375,
+    "ram_mb": 128,
+    "screen_size_inch": 3.0,
+    "display_type": "TFT",
+    "refresh_rate_hz": 60,
+    "screen_resolution_x": 320,
+    "screen_resolution_y": 480,
+    "ppi": 133,
+    "aspect_ratio": "4:3",
+    "screen_lens": "None (Protector only)",
+    "battery_capacity_mah": 700,
+    "ports": "Mini USB",
+    "storage_type": "MicroSD",
+    "storage_expandable": true,
+    "microsd_type": "MicroSD",
+    "video_out": "AV Out",
+    "audio_tech": "3.5mm Headphone",
+    "audio_speakers": "Single Mono Front facing",
+    "has_headphone_jack": true,
+    "haptics": false,
+    "performance_grade": "2.5/5",
+    "weight_g": 142,
+    "body_material": "Plastic",
+    "available_colors": "Transparent Black, White",
+    "width_mm": 144.0,
+    "height_mm": 64.0,
+    "depth_mm": 19.0,
+    "input_profile": {
+     "dpad_shape": "Cross",
+     "dpad_placement": "Upper",
+     "face_button_count": 4,
+     "stick_count": 0,
+     "bumper_tech": "Digital",
+     "system_buttons_text": "Brightness, Power, Reset",
+     "input_notes": "Wheel | Dedicated Button | Button"
+    },
+    "emulation": {
+     "gb_state": "Perfect",
+     "gbc_state": "Perfect",
+     "nes_state": "Perfect",
+     "genesis_state": "Perfect",
+     "gba_state": "Great",
+     "snes_state": "Playable",
+     "ps1_state": "Playable",
+     "nds_state": "Unplayable",
+     "n64_state": "Unplayable",
+     "dreamcast_state": "Unplayable",
+     "psp_state": "Unplayable",
+     "saturn_state": "Unplayable",
+     "gamecube_state": "Unplayable",
+     "x3ds_state": "Unplayable",
+     "wii_state": "Unplayable",
+     "ps2_state": "Unplayable",
+     "switch_state": "Unplayable",
+     "wii_u": "Unplayable",
+     "ps3_state": "Unplayable",
+     "summary_text": "Most SNES runs at 60 FPS but lags with FX & Mode 7 games, most 2D PS1 runs fine (not all at full 60 FPS) but lags with 3D games"
+    }
+   }
+  ],
+  "links": [
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=vnh3FLoKzR4",
+    "label": "Retro Core",
+    "sort_order": 0
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=SEsXfDNw6Ro",
+    "label": "Retr0rob",
+    "sort_order": 1
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=YDjHqVM3wpA",
+    "label": "Wicked Gamer & Collector",
+    "sort_order": 2
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=FHLZZaidbQk",
+    "label": "The Phawx",
+    "sort_order": 3
+   },
+   {
+    "kind": "video_review",
+    "url": "https://www.youtube.com/watch?v=z7VDmiIdAlU",
+    "label": "KenVersus",
+    "sort_order": 4
+   },
+   {
+    "kind": "vendor",
+    "url": "https://www.aliexpress.com/item/32920226578.html",
+    "label": "Aliexpress",
+    "sort_order": 0
    }
   ]
  },

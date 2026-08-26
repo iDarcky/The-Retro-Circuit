@@ -62,7 +62,16 @@ interface InputVariant {
   variant_name?: string;
   is_default?: boolean;
   emulation?: Record<string, string>;
+  /** Buttons and controls — these belong on variant_input_profile, not console_variants. */
+  input_profile?: Record<string, unknown>;
   [key: string]: unknown;
+}
+
+interface InputLink {
+  kind: string;
+  url: string;
+  label?: string;
+  sort_order?: number;
 }
 
 interface InputConsole {
@@ -70,14 +79,24 @@ interface InputConsole {
   manufacturer: string;
   slug?: string;
   variants?: InputVariant[];
+  links?: InputLink[];
   [key: string]: unknown;
 }
 
+/** Insert a console's review and vendor links. Replaces any existing set. */
+async function writeLinks(supabase: any, consoleId: string, links: InputLink[], slug: string) {
+  if (!links.length) return;
+  await supabase.from('console_links').delete().eq('console_id', consoleId);
+  const { error } = await supabase
+    .from('console_links')
+    .insert(links.map((l) => ({ ...l, console_id: consoleId })));
+  if (error) console.error(`  ! links failed for ${slug}: ${error.message}`);
+}
 
-/** Insert a console's variants and their emulation profiles. */
+/** Insert a console's variants, their emulation profiles and their input profiles. */
 async function writeVariants(supabase: any, consoleId: string, variants: InputVariant[], slug: string) {
   for (const v of variants) {
-    const { emulation, ...variantFields } = v;
+    const { emulation, input_profile, ...variantFields } = v;
     const { data: newVariant, error: vErr } = await supabase
       .from('console_variants')
       .insert([{ ...variantFields, console_id: consoleId }])
@@ -87,6 +106,14 @@ async function writeVariants(supabase: any, consoleId: string, variants: InputVa
     if (vErr || !newVariant) {
       console.error(`  ! variant failed for ${slug}: ${vErr?.message}`);
       continue;
+    }
+
+    if (input_profile && Object.keys(input_profile).length) {
+      // Same trigger story as emulation_profiles — the row already exists.
+      const { error: iErr } = await supabase
+        .from('variant_input_profile')
+        .upsert({ ...input_profile, variant_id: newVariant.id }, { onConflict: 'variant_id' });
+      if (iErr) console.error(`  ! input profile failed for ${slug}: ${iErr.message}`);
     }
 
     if (emulation && Object.keys(emulation).length) {
@@ -171,12 +198,13 @@ async function main() {
       }
 
       await writeVariants(supabase, existing.id, item.variants || [], slug);
+      await writeLinks(supabase, existing.id, item.links || [], slug);
       console.log(`  ~ backfilled ${slug} (${(item.variants || []).length} variant(s))`);
       backfilled++;
       continue;
     }
 
-    const { variants, manufacturer: _m, ...consoleFields } = item;
+    const { variants, links, manufacturer: _m, ...consoleFields } = item;
     const payload = {
       ...consoleFields,
       slug,
@@ -203,6 +231,7 @@ async function main() {
     }
 
     await writeVariants(supabase, newConsole.id, variants || [], slug);
+    await writeLinks(supabase, newConsole.id, links || [], slug);
 
     console.log(`  + created ${slug} (${(variants || []).length} variant(s))`);
     created++;
