@@ -73,6 +73,33 @@ interface InputConsole {
   [key: string]: unknown;
 }
 
+
+/** Insert a console's variants and their emulation profiles. */
+async function writeVariants(supabase: any, consoleId: string, variants: InputVariant[], slug: string) {
+  for (const v of variants) {
+    const { emulation, ...variantFields } = v;
+    const { data: newVariant, error: vErr } = await supabase
+      .from('console_variants')
+      .insert([{ ...variantFields, console_id: consoleId }])
+      .select('id')
+      .single();
+
+    if (vErr || !newVariant) {
+      console.error(`  ! variant failed for ${slug}: ${vErr?.message}`);
+      continue;
+    }
+
+    if (emulation && Object.keys(emulation).length) {
+      // A DB trigger already created the profile row for this variant, so upsert on
+      // variant_id rather than insert.
+      const { error: eErr } = await supabase
+        .from('emulation_profiles')
+        .upsert({ ...emulation, variant_id: newVariant.id }, { onConflict: 'variant_id' });
+      if (eErr) console.error(`  ! emulation profile failed for ${slug}: ${eErr.message}`);
+    }
+  }
+}
+
 async function main() {
   const [, , file, ...flags] = process.argv;
   const dryRun = flags.includes('--dry-run');
@@ -115,6 +142,7 @@ async function main() {
 
   let created = 0;
   let skipped = 0;
+  let backfilled = 0;
 
   for (const item of items) {
     const manufacturer = findManufacturer(item.manufacturer)!;
@@ -122,8 +150,29 @@ async function main() {
 
     const { data: existing } = await supabase.from('consoles').select('id').eq('slug', slug).maybeSingle();
     if (existing) {
-      console.log(`  = skip ${slug} (already exists)`);
-      skipped++;
+      // A console can exist while its variants do not — an interrupted run, or rows created
+      // ahead of their specs. Skipping outright made the import unresumable and left the
+      // console rendering an empty spec table, so backfill the variants instead.
+      const { count } = await supabase
+        .from('console_variants')
+        .select('id', { count: 'exact', head: true })
+        .eq('console_id', existing.id);
+
+      if (count && count > 0) {
+        console.log(`  = skip ${slug} (already complete)`);
+        skipped++;
+        continue;
+      }
+
+      if (dryRun) {
+        console.log(`  ~ would backfill ${slug} (${(item.variants || []).length} variant(s))`);
+        backfilled++;
+        continue;
+      }
+
+      await writeVariants(supabase, existing.id, item.variants || [], slug);
+      console.log(`  ~ backfilled ${slug} (${(item.variants || []).length} variant(s))`);
+      backfilled++;
       continue;
     }
 
@@ -153,34 +202,14 @@ async function main() {
       continue;
     }
 
-    for (const v of variants || []) {
-      const { emulation, ...variantFields } = v;
-      const { data: newVariant, error: vErr } = await supabase
-        .from('console_variants')
-        .insert([{ ...variantFields, console_id: newConsole.id }])
-        .select('id')
-        .single();
-
-      if (vErr || !newVariant) {
-        console.error(`  ! variant failed for ${slug}: ${vErr?.message}`);
-        continue;
-      }
-
-      if (emulation && Object.keys(emulation).length) {
-        // The DB trigger creates a row per variant, so upsert on variant_id.
-        const { error: eErr } = await supabase
-          .from('emulation_profiles')
-          .upsert({ ...emulation, variant_id: newVariant.id }, { onConflict: 'variant_id' });
-        if (eErr) console.error(`  ! emulation profile failed for ${slug}: ${eErr.message}`);
-      }
-    }
+    await writeVariants(supabase, newConsole.id, variants || [], slug);
 
     console.log(`  + created ${slug} (${(variants || []).length} variant(s))`);
     created++;
   }
 
-  console.log(`\nDone. ${created} created, ${skipped} skipped.`);
-  if (!dryRun && created > 0) {
+  console.log(`\nDone. ${created} created, ${backfilled} backfilled, ${skipped} skipped.`);
+  if (!dryRun && (created > 0 || backfilled > 0)) {
     console.log('Imported consoles are in DRAFT — review in /admin/consoles, then publish.');
   }
 }
