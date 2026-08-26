@@ -7,6 +7,7 @@ import { addConsole as createConsole, updateConsole, deleteConsole } from '../..
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
 import ImageUpload from '../ui/ImageUpload';
+import ConsoleGalleryManager from './ConsoleGalleryManager';
 import { CONSOLE_FORM_FIELDS } from '../../lib/config/constants';
 import { SwissDropdown } from '../ui/SwissDropdown';
 
@@ -274,6 +275,15 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
                     )}
                 </div>
             </div>
+
+            {isEditMode && initialData?.id && (
+                <div className="pt-6 border-t border-border-normal">
+                    <h3 className="font-mono text-xs uppercase tracking-widest text-gray-400 mb-4">
+                        Gallery
+                    </h3>
+                    <ConsoleGalleryManager consoleId={initialData.id} />
+                </div>
+            )}
 
             <div className="flex justify-between items-center pt-6 border-t border-border-normal">
                 {isEditMode && formData.status === 'draft' ? (

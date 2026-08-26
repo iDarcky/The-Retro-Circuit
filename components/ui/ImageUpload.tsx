@@ -2,6 +2,7 @@
 
 import { useState, useRef, type ChangeEvent, type DragEvent, type KeyboardEvent, type FC } from 'react';
 import { supabase } from '../../lib/supabase/singleton';
+import { resizeImageFile } from '../../lib/image-resize';
 
 interface ImageUploadProps {
   value?: string;
@@ -23,13 +24,20 @@ const ImageUpload: FC<ImageUploadProps> = ({ value, onChange, disabled, classNam
 
     try {
       setIsUploading(true);
-      
-      const fileExt = file.name.split('.').pop();
+
+      // Shrink before upload: stored bytes are served as-is (images.unoptimized).
+      const { file: optimized } = await resizeImageFile(file);
+
+      const fileExt = optimized.name.split('.').pop();
       const fileName = `public/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('hardware-images')
-        .upload(fileName, file, { cacheControl: '3600', upsert: false });
+        .upload(fileName, optimized, {
+          cacheControl: '31536000',
+          upsert: false,
+          contentType: optimized.type,
+        });
 
       if (uploadError) throw uploadError;
 

@@ -1,7 +1,8 @@
 import { cache } from 'react';
 import { notFound } from 'next/navigation';
 import { fetchConsoleBySlug } from '../../../app/actions';
-import { fetchConsoleList } from '../../../app/actions/consoles';
+import { fetchConsoleList, fetchConsoleImages } from '../../../app/actions/consoles';
+import ConsoleGallery from '../../../components/console/ConsoleGallery';
 import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
 import { ConsoleDetails } from '../../../lib/types';
 
@@ -129,6 +130,9 @@ export default async function ConsoleSpecsPage(props: Props) {
     notFound();
   }
 
+  // [] until the console_images migration is applied, so this is a no-op before then.
+  const galleryImages = await fetchConsoleImages((consoleData as any).id);
+
   // Generate JSON-LD Product Schema
   const mfgName = consoleData.manufacturer?.name || '';
   const fullName = mfgName ? `${mfgName} ${consoleData.name}` : consoleData.name;
@@ -159,7 +163,9 @@ export default async function ConsoleSpecsPage(props: Props) {
     '@type': 'Product',
     name: fullName,
     url: `https://theretrocircuit.com/consoles/${slug}`,
-    image: consoleData.image_url || 'https://theretrocircuit.com/logo.png',
+    image: [consoleData.image_url, ...galleryImages.map((g) => g.url)].filter(Boolean).length
+      ? [consoleData.image_url, ...galleryImages.map((g) => g.url)].filter(Boolean)
+      : ['https://theretrocircuit.com/og-v2.png'],
     description: consoleData.description || `Full specs, variants, and pricing for the ${fullName}.`,
     brand: {
       '@type': 'Brand',
@@ -194,6 +200,12 @@ export default async function ConsoleSpecsPage(props: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <ConsoleDetailView consoleData={consoleData} />
+      {galleryImages.length > 0 && (
+        <div className="max-w-[1800px] mx-auto w-full px-6 md:px-12 pb-12">
+          <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">GALLERY</h2>
+          <ConsoleGallery images={galleryImages} deviceName={fullName} />
+        </div>
+      )}
     </>
   );
 }
