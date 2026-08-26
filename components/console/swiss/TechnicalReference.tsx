@@ -156,15 +156,23 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
             {hasData(SECTIONS.SILICON, mergedSpecs) && (
                 <SpecSection title="Silicon Architecture" colorClass="text-orange-500 border-orange-500/20">
                     <SpecRow label="OS / Firmware" value={mergedSpecs.os} />
+                    <SpecRow label="OS Family" value={mergedSpecs.os_family} />
+                    <SpecRow label="OS Version" value={mergedSpecs.os_version} />
+                    <SpecRow label="Performance Rating" value={mergedSpecs.performance_grade} />
                     <SpecRow label="UI Skin" value={mergedSpecs.ui_skin} />
                     <SpecRow label="Model No" value={mergedSpecs.model_no} />
+                    <SpecRow label="SoC / Chipset" value={mergedSpecs.soc} />
                     <SpecRow label="CPU Model" value={mergedSpecs.cpu_model} />
+                    <SpecRow label="CPU Arch" value={mergedSpecs.cpu_arch} />
                     <SpecRow label="Architecture" value={mergedSpecs.cpu_architecture} />
                     <SpecRow label="Process Node" value={mergedSpecs.cpu_process_node} />
                     <SpecRow label="CPU Cores" value={mergedSpecs.cpu_cores} />
                     <SpecRow label="CPU Threads" value={mergedSpecs.cpu_threads} />
                     <SpecRow label="CPU Clock" value={cpuClockData.value} unit={cpuClockData.unit} />
                     <SpecRow label="GPU Model" value={mergedSpecs.gpu_model} />
+                    <SpecRow label="GPU Driver" value={mergedSpecs.gpu_driver} />
+                    <SpecRow label="Vulkan" value={mergedSpecs.vulkan_support} />
+                    <SpecRow label="Benchmark" value={mergedSpecs.benchmark_score} />
                     <SpecRow label="GPU Arch" value={mergedSpecs.gpu_architecture} />
                     <SpecRow label="GPU Cores" value={mergedSpecs.gpu_cores} />
                     <SpecRow label="Compute Units" value={mergedSpecs.gpu_compute_units} />
@@ -181,6 +189,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                     <SpecRow label="RAM Speed" value={mergedSpecs.ram_speed_mhz} unit="MHz" />
                     <SpecRow label="Storage" value={mergedSpecs.storage_gb} unit="GB" />
                     <SpecRow label="Storage Type" value={mergedSpecs.storage_type} />
+                    <SpecRow label="MicroSD" value={mergedSpecs.microsd_type} />
                     <SpecRow label="Expandable" value={mergedSpecs.storage_expandable ? 'YES' : 'NO'} />
                 </SpecSection>
             )}
@@ -197,6 +206,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                     <SpecRow label="Touchscreen" value={mergedSpecs.touchscreen ? 'YES' : 'NO'} />
                     <SpecRow label="Aspect Ratio" value={mergedSpecs.aspect_ratio} />
                     <SpecRow label="PPI" value={mergedSpecs.ppi} />
+                    <SpecRow label="Screen Lens" value={mergedSpecs.screen_lens} />
                     {mergedSpecs.second_screen_size && (
                         <>
                              {viewMode === 'grid' && <div className="py-2 border-b border-white/10 text-[10px] font-mono text-gray-500 uppercase mt-2">Secondary Display</div>}
@@ -268,6 +278,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                     <SpecRow label="Battery Energy" value={mergedSpecs.battery_capacity_wh} unit="Wh" />
                     <SpecRow label="Type" value={mergedSpecs.battery_type} />
                     <SpecRow label="Charging" value={mergedSpecs.charging_speed_w} unit="W" />
+                    <SpecRow label="Charging Tech" value={mergedSpecs.charging_tech} />
                     <SpecRow label="TDP" value={mergedSpecs.tdp_wattage} unit="W" />
                     <SpecRow label="Cooling" value={mergedSpecs.cooling_solution} />
                     <SpecRow label="Dimensions" value={getDimString()} unit="mm" />
@@ -281,6 +292,8 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
             {hasData(SECTIONS.AUDIO, mergedSpecs) && (
                 <SpecSection title="Audio & Extras" colorClass="text-pink-500 border-pink-500/20">
                     <SpecRow label="Speakers" value={mergedSpecs.audio_speakers} />
+                    <SpecRow label="Audio Output" value={mergedSpecs.audio_tech} />
+                    <SpecRow label="Sensors" value={mergedSpecs.sensors} />
                     <SpecRow label="Headphone Jack" value={mergedSpecs.has_headphone_jack ? 'YES' : 'NO'} />
                     <SpecRow label="Microphone" value={mergedSpecs.has_microphone ? 'YES' : 'NO'} />
                     <SpecRow label="Biometrics" value={mergedSpecs.biometrics} />

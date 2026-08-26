@@ -18,12 +18,14 @@ import VariantComparisonTable from './swiss/VariantComparisonTable';
 import SimilarConsoles from './swiss/SimilarConsoles';
 
 interface ConsoleDetailViewProps {
+    /** Extra shots from console_images; empty until a console has a gallery. */
+    galleryImages?: { id: string; url: string; alt_text: string | null; kind: string | null }[];
   consoleData: ConsoleDetails;
 }
 
 // --- MAIN COMPONENT ---
 
-const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
+const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryImages = [] }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
     
@@ -89,6 +91,14 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
     const currentVariant = variants.find(v => v.id === selectedVariantId);
     const currentImage = getConsoleImage({ console: consoleData, variant: currentVariant });
 
+    // Cover shot first, then any gallery images. One entry means no carousel chrome.
+    const heroShots = [
+        ...(currentImage ? [{ id: 'cover', url: currentImage, alt_text: consoleData.name, kind: 'cover' }] : []),
+        ...galleryImages,
+    ];
+    const [heroIndex, setHeroIndex] = useState(0);
+    const activeShot = heroShots[Math.min(heroIndex, Math.max(heroShots.length - 1, 0))];
+
     const emulationProfile = mergedSpecs.emulation_profile || (mergedSpecs as any).emulation_profiles;
 
     return (
@@ -118,23 +128,50 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData }) => {
                         <div className="relative w-full aspect-video bg-black/50 border border-white/10 flex items-center justify-center overflow-hidden group">
                             {/* Technical Markings */}
                             <div className="absolute top-4 left-4 text-[10px] font-mono text-white/30 tracking-widest">FIG. 01 // {consoleData.name.toUpperCase()}</div>
-                            <div className="absolute bottom-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">SCALE 1:1</div>
                             <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">
                                 {consoleData.form_factor?.toUpperCase() || 'SYSTEM'}
                             </div>
 
                             {/* Image */}
-                            {currentImage ? (
+                            {activeShot ? (
+                                // eslint-disable-next-line @next/next/no-img-element
                                 <img
-                                    src={currentImage}
-                                    alt={consoleData.name}
-                                    className="max-w-[80%] max-h-[80%] object-contain drop-shadow-2xl transition-transform duration-700 ease-out group-hover:scale-105"
-                                    key={currentImage}
+                                    src={activeShot.url}
+                                    alt={activeShot.alt_text || consoleData.name}
+                                    className="max-w-[80%] max-h-[80%] object-contain transition-transform duration-700 ease-out group-hover:scale-105"
+                                    key={activeShot.url}
                                 />
                             ) : (
                                 <div className="text-zinc-700 font-pixel text-2xl">NO SIGNAL</div>
                             )}
+
+                            {heroShots.length > 1 && (
+                                <div className="absolute bottom-4 left-4 text-[10px] font-mono text-white/30 tracking-widest">
+                                    {String(heroIndex + 1).padStart(2, '0')} / {String(heroShots.length).padStart(2, '0')}
+                                </div>
+                            )}
                         </div>
+
+                        {heroShots.length > 1 && (
+                            <ul className="grid grid-cols-5 gap-3">
+                                {heroShots.map((shot, i) => (
+                                    <li key={shot.id}>
+                                        <button
+                                            type="button"
+                                            onClick={() => setHeroIndex(i)}
+                                            aria-current={i === heroIndex}
+                                            aria-label={shot.alt_text || `View ${shot.kind || 'image'} of ${consoleData.name}`}
+                                            className={`relative flex aspect-video w-full items-center justify-center overflow-hidden border bg-black/50 transition-colors ${
+                                                i === heroIndex ? 'border-violet-500' : 'border-white/10 hover:border-white/40'
+                                            }`}
+                                        >
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img src={shot.url} alt="" className="max-h-[80%] max-w-[80%] object-contain" />
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </div>
 
                     {/* BRIEFING (Right - Span 4) */}
