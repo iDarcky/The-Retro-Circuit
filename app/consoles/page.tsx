@@ -1,6 +1,7 @@
 import { fetchPublicManufacturers, fetchVaultConsoles } from '../../app/actions';
 import { fetchConsoleAndVariantCounts } from '../../app/actions/consoles';
 import ConsoleVaultClient from '../../components/console/ConsoleVaultClient';
+import ConsoleLinkIndex from '../../components/console/ConsoleLinkIndex';
 
 export async function generateMetadata() {
   // Use the anonymous client (via the shared action) so this page stays fully static.
@@ -34,5 +35,10 @@ export default async function ConsoleVaultPage() {
     // Fallback is empty arrays, allowing build to complete
   }
 
-  return <ConsoleVaultClient initialManufacturers={manufacturers} initialConsoles={allConsoles} />;
+  return (
+    <>
+      <ConsoleVaultClient initialManufacturers={manufacturers} initialConsoles={allConsoles} />
+      <ConsoleLinkIndex consoles={allConsoles} />
+    </>
+  );
 }
