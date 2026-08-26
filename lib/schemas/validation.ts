@@ -6,6 +6,17 @@ const safeString = z.any().transform(val => {
   return String(val);
 });
 
+/**
+ * Postgres enum columns reject '' — only a real label or NULL is valid. safeString
+ * coerces empty input to '', which made every save fail once an enum field was left
+ * blank, so enum-backed fields use this instead.
+ */
+const safeEnum = <T extends readonly [string, ...string[]]>(values: T) =>
+  z.preprocess(
+    (val) => (val === '' || val === null || val === undefined ? null : val),
+    z.enum(values).nullable().optional()
+  );
+
 const safeNumber = z.preprocess((val) => {
   if (val === '' || val === null || val === undefined) return undefined;
   const n = Number(val);
@@ -111,10 +122,10 @@ export const ConsoleVariantSchema = z.object({
   gpu_teraflops: safeNumber,
 
   os: safeString,
-  os_family: safeString,
+  os_family: safeEnum(['android', 'linux', 'steamos', 'windows', 'proprietary', 'other'] as const),
   os_version: safeString,
   soc: safeString,
-  cpu_arch: safeString,
+  cpu_arch: safeEnum(['arm64', 'arm32', 'x86_64', 'other'] as const),
   vulkan_support: safeString,
   gpu_driver: safeString,
   benchmark_score: safeNumber,
