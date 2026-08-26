@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { supabaseAnon } from '../lib/supabase/anon';
 import { BEST_OF_COLLECTIONS } from '../lib/bestof/collections';
+import { fetchPublicManufacturers } from './actions/manufacturers';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Use the anonymous server client for sitemap generation
@@ -35,7 +36,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     // 2. Dynamic Consoles
-    const { data: consoles } = await supabase.from('consoles').select('slug, updated_at, manufacturer:manufacturer(slug, name)');
+    const { data: consoles } = await supabase
+      .from('consoles')
+      .select('slug, updated_at, manufacturer:manufacturer(slug, name)')
+      .eq('status', 'published');
     if (consoles) {
       consoles.forEach((item: any) => {
         routes.push({
@@ -47,8 +51,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     }
 
-    // 3. Dynamic Fabricators
-    const { data: fabricators } = await supabase.from('manufacturer').select('slug');
+    // 3. Dynamic Fabricators — published-only, per the public-pages rule in CLAUDE.md.
+    const fabricators = await fetchPublicManufacturers();
     if (fabricators) {
       fabricators.forEach((item: any) => {
         routes.push({

@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "indexnow:resubmit": "tsx scripts/resubmit-indexnow.ts"
+    "indexnow:resubmit": "tsx scripts/resubmit-indexnow.ts",
+    "gsc:report": "tsx scripts/gsc-report.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",
