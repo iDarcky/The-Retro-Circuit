@@ -6,6 +6,33 @@ import { supabaseAnon } from "../../lib/supabase/anon";
 import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant, VariantInputProfile } from "../../lib/types";
 import { revalidatePath } from "next/cache";
 
+/**
+ * Refresh every cached surface a console appears on, then tell IndexNow.
+ *
+ * Public pages are `revalidate = false`, so nothing regenerates on a timer — a newly
+ * published console stays invisible until each surface is explicitly invalidated.
+ * `/sitemap.xml` matters most: it is how Google discovers the URL at all. IndexNow
+ * only reaches Bing/Yandex, so without this a publish never reaches Google until the
+ * next deploy.
+ */
+async function revalidateConsoleSurfaces(slug?: string | null, manufacturerSlug?: string | null) {
+    if (!slug) return;
+
+    revalidatePath('/sitemap.xml');
+    revalidatePath('/');
+    revalidatePath('/consoles');
+    revalidatePath(`/consoles/${slug}`);
+    if (manufacturerSlug) {
+        revalidatePath('/fabricators');
+        revalidatePath(`/fabricators/${manufacturerSlug}`);
+    }
+
+    const base = 'https://theretrocircuit.com';
+    const urls = [`${base}/consoles/${slug}`, `${base}/consoles`, `${base}/sitemap.xml`];
+    if (manufacturerSlug) urls.push(`${base}/fabricators/${manufacturerSlug}`);
+    await submitToIndexNow(urls);
+}
+
 // Helper: Normalize Variant (Unwrap 1:1 relations that Supabase returns as arrays)
 function normalizeVariant(v: any): any {
     if (!v) return v;
@@ -316,10 +343,7 @@ export const addConsole = async (
         if (!newConsole) return { success: false, message: "No data returned from insert" };
 
         if (newConsole.status === 'published' && newConsole.slug) {
-            if (newConsole.slug) {
-                 const url = `https://theretrocircuit.com/consoles/${newConsole.slug}`;
-                 submitToIndexNow([url]);
-            }
+            await revalidateConsoleSurfaces(newConsole.slug, (newConsole.manufacturer as any)?.slug);
         }
 
         return { success: true, id: newConsole.id };
@@ -359,21 +383,24 @@ export const updateConsole = async (
         const { error } = await supabase.from("consoles").update(cleanData).eq("id", id);
         if (error) return { success: false, message: error.message };
 
-        // We need to fetch the console_id to get its slug for invalidation
-        // Actually the code below looks wrong because it tries to query console_variants by console_id=id.
-        // Let's preserve original behaviour:
-        const { data: updatedVariant } = await supabase.from('console_variants').select('console_id, consoles(slug, manufacturer:manufacturer(slug, name))').eq('id', id).single();
-        if ((updatedVariant?.consoles as any)?.slug) {
-            revalidatePath(`/consoles/${(updatedVariant?.consoles as any).slug}`);
-        }
+        // `id` is a console id, so look the console up directly. The previous version
+        // queried console_variants by this id, which never matched a row — meaning no
+        // update ever revalidated anything.
+        const { data: updated } = await supabase
+            .from('consoles')
+            .select('slug, manufacturer:manufacturer_id(slug)')
+            .eq('id', id)
+            .maybeSingle();
 
-        // Trigger IndexNow if newly published
-        if (isPublishing && previousStatus !== 'published' && consoleSlugInfo) {
-            const cSlug = consoleSlugInfo.slug || cleanData.slug;
-            if (cSlug) {
-                const url = `https://theretrocircuit.com/consoles/${cSlug}`;
-                submitToIndexNow([url]);
-            }
+        const cSlug = updated?.slug || consoleSlugInfo?.slug || cleanData.slug;
+        const mSlug = (updated?.manufacturer as any)?.slug
+            || (consoleSlugInfo?.manufacturer as any)?.slug;
+
+        // On a publish this is what puts the URL into the sitemap Google reads.
+        if (isPublishing && previousStatus !== 'published') {
+            await revalidateConsoleSurfaces(cSlug, mSlug);
+        } else if (cSlug) {
+            revalidatePath(`/consoles/${cSlug}`);
         }
 
         return { success: true };
