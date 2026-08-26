@@ -70,7 +70,11 @@ function normalizeConsoleList(data: any[] | null): ConsoleDetails[] {
 
 export const fetchAllConsoles = async (includeHidden: boolean = false): Promise<ConsoleDetails[]> => {
     try {
-        const supabase = supabaseAnon;
+        // Draft/archived rows are no longer readable by the anon role (RLS is
+        // published-only), so an includeHidden read must go through the cookie-aware
+        // client as the signed-in admin. includeHidden=false keeps supabaseAnon, which
+        // is what allows the public pages to stay statically generated.
+        const supabase = includeHidden ? await createClient() : supabaseAnon;
         let query = supabase
             .from('consoles')
             .select(`
@@ -184,7 +188,9 @@ export const fetchConsolesFiltered = async (filters: ConsoleFilterState, page: n
 };
 
 export const fetchConsoleList = async (includeHidden: boolean = false): Promise<{ name: string, slug: string, id: string, status?: string, updated_at?: string, manufacturer?: { name: string, slug: string } }[]> => {
-    const supabase = supabaseAnon;
+    // See fetchAllConsoles: hidden rows require the authenticated client under the
+    // published-only RLS policy; the anon path stays SSG-safe.
+    const supabase = includeHidden ? await createClient() : supabaseAnon;
     // Updated to include manufacturer name for better searchability in Arena
     let query = supabase.from('consoles').select('id, name, slug, status, updated_at, manufacturer(name, slug)').order('name');
 
@@ -209,7 +215,11 @@ export const fetchConsoleList = async (includeHidden: boolean = false): Promise<
 
 export const fetchConsoleBySlug = async (slug: string, includeHidden: boolean = false): Promise<{ data: ConsoleDetails | null, error: any }> => {
     try {
-        const supabase = supabaseAnon;
+        // Draft/archived rows are no longer readable by the anon role (RLS is
+        // published-only), so an includeHidden read must go through the cookie-aware
+        // client as the signed-in admin. includeHidden=false keeps supabaseAnon, which
+        // is what allows the public pages to stay statically generated.
+        const supabase = includeHidden ? await createClient() : supabaseAnon;
         let query = supabase
             .from('consoles')
             .select(`
