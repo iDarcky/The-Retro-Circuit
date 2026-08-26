@@ -1,4 +1,4 @@
-import { fetchManufacturers, fetchVaultConsoles } from '../../app/actions';
+import { fetchPublicManufacturers, fetchVaultConsoles } from '../../app/actions';
 import { fetchConsoleAndVariantCounts } from '../../app/actions/consoles';
 import ConsoleVaultClient from '../../components/console/ConsoleVaultClient';
 
@@ -26,7 +26,7 @@ export default async function ConsoleVaultPage() {
 
   try {
     [manufacturers, allConsoles] = await Promise.all([
-      fetchManufacturers(),
+      fetchPublicManufacturers(),
       fetchVaultConsoles()
     ]);
   } catch (error) {

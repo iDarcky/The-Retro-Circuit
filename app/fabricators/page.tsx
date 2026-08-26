@@ -1,4 +1,4 @@
-import { fetchManufacturers } from '../../app/actions';
+import { fetchPublicManufacturers } from '../../app/actions/manufacturers';
 import FabricatorListClient from '../../components/fabricator/FabricatorListClient';
 
 export const revalidate = false;
@@ -12,7 +12,7 @@ export default async function FabricatorsPage() {
   let manufacturers: any[] = [];
 
   try {
-    manufacturers = await fetchManufacturers();
+    manufacturers = await fetchPublicManufacturers();
   } catch (error) {
     console.warn('Build Warning: Failed to fetch manufacturers. Returning empty state.', error);
   }

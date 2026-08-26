@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { supabaseAnon } from '../../../../lib/supabase/anon';
-import { fetchManufacturers } from '../../../../app/actions/manufacturers';
+import { fetchPublicManufacturers } from '../../../../app/actions/manufacturers';
 import { ConsoleDetails } from '../../../../lib/types';
 import { getBrandTheme } from '../../../../data/static';
 import { formatReleaseDate } from '../../../../lib/utils/date-formatter';
@@ -13,7 +13,7 @@ type Props = {
 export const revalidate = false;
 
 export async function generateStaticParams() {
-    const manufacturers = await fetchManufacturers();
+    const manufacturers = await fetchPublicManufacturers();
     return manufacturers
         .filter((m: any) => m.slug)
         .map((m: any) => ({ name: m.slug as string }));
