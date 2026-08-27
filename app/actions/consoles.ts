@@ -33,6 +33,45 @@ async function revalidateConsoleSurfaces(slug?: string | null, manufacturerSlug?
     await submitToIndexNow(urls);
 }
 
+/**
+ * Strip joined relations out of a payload bound for `consoles`.
+ *
+ * The admin form seeds its state with the whole object returned by `fetchConsoleBySlug`
+ * — joins included — and posts all of it back. PostgREST rejects the write with
+ * "Could not find the 'x' column of 'consoles' in the schema cache", which blocks *every*
+ * console edit, not just the field being changed. Adding `links:console_links(*)` to that
+ * select did exactly this.
+ *
+ * A blacklist of relation names alone is what failed: it has to be updated by hand every
+ * time a join is added, and forgetting takes the whole admin down. So also drop anything
+ * shaped like a relation — an object, or an array of objects. No `consoles` column is
+ * jsonb, and `pros`/`cons` are text[], so nothing legitimate matches that test.
+ */
+const CONSOLE_RELATION_KEYS = ['manufacturer', 'variants', 'specs', 'links', 'gallery', 'images'];
+
+function stripConsoleRelations<T extends Record<string, any>>(payload: T): Partial<T> {
+    const clean: Record<string, any> = {};
+    const dropped: string[] = [];
+
+    for (const [key, value] of Object.entries(payload)) {
+        const isRelationName = CONSOLE_RELATION_KEYS.includes(key);
+        const isEmbeddedRow =
+            (value !== null && typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date)) ||
+            (Array.isArray(value) && value.some((v) => v !== null && typeof v === 'object'));
+
+        if (isRelationName || isEmbeddedRow) {
+            dropped.push(key);
+            continue;
+        }
+        clean[key] = value;
+    }
+
+    if (dropped.length && process.env.NODE_ENV !== 'production') {
+        console.debug('stripConsoleRelations dropped:', dropped.join(', '));
+    }
+    return clean as Partial<T>;
+}
+
 // Helper: Normalize Variant (Unwrap 1:1 relations that Supabase returns as arrays)
 function normalizeVariant(v: any): any {
     if (!v) return v;
@@ -358,7 +397,11 @@ export const addConsole = async (
     try {
         const supabase = await createClient();
 
-        const { data: newConsole, error: consoleError } = await supabase.from('consoles').insert([consoleData]).select('id, status, slug, manufacturer:manufacturer_id(slug)').single();
+        // Same guard as updateConsole: the form posts its whole state, and "duplicate this
+        // console" seeds that state from a fetched row complete with joins.
+        const insertData = stripConsoleRelations(consoleData as any);
+
+        const { data: newConsole, error: consoleError } = await supabase.from('consoles').insert([insertData]).select('id, status, slug, manufacturer:manufacturer_id(slug)').single();
         if (consoleError) {
             console.error('SUPABASE CONSOLE INSERT ERROR:', consoleError.code, consoleError.message, consoleError.details);
             return { success: false, message: consoleError.message || "Failed to create console record" };
@@ -385,7 +428,7 @@ export const updateConsole = async (
         const supabase = await createClient();
 
         // Remove joined fields that are not columns in the consoles table
-        const { manufacturer, variants, specs, ...cleanData } = consoleData as any;
+        const cleanData = stripConsoleRelations(consoleData as any) as any;
 
 
         // Check if status is being updated to 'published'
