@@ -111,7 +111,7 @@ Pairs people actually search: `odin 2 mini vs odin 3`, `ayaneo pocket s vs odin 
 - [ ] Coverage: has "Discovered — currently not indexed" fallen from 58?
 - [ ] Non-brand clicks vs the 17 baseline
 - [ ] Publish 10–15 more consoles, chosen by search demand not alphabetically
-- [ ] Backfill the last 50 `soc` values by hand (463 of 513 are filled)
+- [ ] Backfill the last 27 `soc` values by hand (486 of 513 are filled)
 
 ---
 
@@ -119,7 +119,7 @@ Pairs people actually search: `odin 2 mini vs odin 3`, `ayaneo pocket s vs odin 
 
 **The blocker is not traffic, it's that the buy button is a search link.**
 
-Only 13 of 273 variants have an `amazon_asin`. Of the six devices carrying 76% of
+Only 13 of 513 variants have an `amazon_asin`. Of the six devices carrying 76% of
 demand, exactly one has an ASIN. Everyone else lands on `getAmazonSearchUrl()` — a
 search results page. Amazon only pays on a qualifying sale, and search links convert
 far worse than direct product links.
@@ -142,11 +142,12 @@ Vercel **Pro** plan — the dashboard says so explicitly. On Hobby those calls a
 discarded, so there is no measurement of how many people click buy. Either upgrade or
 add a lightweight own-side counter.
 
-**The 1,332 imported vendor links do NOT carry our tag.** They are raw URLs in
-`console_links`; only `lib/affiliate.ts` applies `theretrocircu-20`. Any component
-rendering a `console_links` row of `kind='vendor'` that points at Amazon earns nothing
-on that click. Route those through `getBuyUrl` — this is a bigger surface than the 13
-ASINs, and it is a code change rather than data entry.
+**The 1,332 imported vendor links are stored raw and carry no tag** — only
+`lib/affiliate.ts` applies `theretrocircu-20`. Nothing rendered them at all until
+2026-08-27; `components/console/ConsoleLinks.tsx` now does, rebuilding every Amazon URL
+through `getBuyUrl` (ASIN extracted from `/dp/` when present, tagged search otherwise).
+**Any future surface that renders these rows must do the same** — printing `link.url`
+directly sends the visitor to Amazon untagged.
 
 **The source spreadsheet's links pointed at other people's affiliate accounts.** On
 import they carried an Amazon `tag=retrodeadfred-20`, `s.click.aliexpress` shortlinks,
@@ -166,10 +167,7 @@ without a picture. Everything else on this list is smaller than this one.
 
 **22 consoles still have no variant** — they appear in neither spreadsheet, so the
 import could not fill them (18 draft, 4 archived): the Anbernic RG-351/RG-405 line,
-`rg-rotate`, 1UP (3), 8BCraft (2), Acer Nitro Blaze (2), and the four Ayn Loki models.
-
-**2 published consoles have no default variant** — the page shows whichever variant the
-DB returns first: `ayaneo-pocket-evo`, `valve-steam-deck`.
+`anbernic-rg-rotate`, 1UP (3), 8BCraft (2), Acer Nitro Blaze (2), and the four Ayn Loki models.
 
 **9 published consoles have no description.**
 
@@ -179,14 +177,16 @@ clamped to `5/5` so nothing impossible renders — **check the source sheet and 
 The source `.xlsx` files are no longer in the working directory; they need re-uploading
 to verify.
 
-**50 of 513 variants still need `soc` by hand** — the ones where `cpu_model` holds a CPU
-core ("Cortex-A53") rather than a chipset. Down from 273 missing.
+**27 of 513 variants still need `soc` by hand** — the ones where `cpu_model` is empty or
+holds a bare CPU core ("Cortex-A7", "Tensilica LX6") rather than a chipset. Down from 273.
 
 **The `_tech` input columns are empty** — `dpad_tech`, `face_button_tech`, `bumper_tech`,
 `trigger_tech` want membrane/microswitch/hall, which the spreadsheet does not record.
 Only `stick_tech` is populated.
 
-**`rg-rotate`** is the only slug missing its brand prefix. Rename while still a draft.
+~~**`rg-rotate`** missing its brand prefix~~ — renamed to `anbernic-rg-rotate` while still
+a draft, so no live URL broke and no redirect entry was needed. Every slug now carries its
+brand prefix.
 
 ---
 

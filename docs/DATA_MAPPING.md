@@ -40,14 +40,14 @@ Columns are 1-indexed as they appear in `handhelds_v3.xlsx` / `v4`.
 | 35–40 | Screen size / type / refresh / resolution / PPI / aspect | `screen_size_inch`, `display_type`, `refresh_rate_hz`, `screen_resolution_x/y`, `ppi`, `aspect_ratio` |
 | 42 | Battery | `battery_capacity_mah` (ARM devices) **or** `battery_capacity_wh` (x86 devices — see Known problems) |
 | 43 | Cooling | `cooling_solution` |
-| 50 | Storage | `storage_type` — **see Known problems** |
-| 51 | Connectivity | `other_connectivity` — **see Known problems** |
+| 50 | Storage | `storage_gb` + `storage_type` + `storage_expandable` + `microsd_type` (split by the v5 converter) |
+| 51 | Connectivity | split across `wifi_specs` + `bluetooth_specs` + `other_connectivity` |
 | 52 | Video Output | `video_out` |
 | 60 | Dimensions | `width_mm`, `height_mm`, `depth_mm` |
 | 61 | Weight | `weight_g` |
 | 62 | Shell Material | `body_material` |
 | 63 | Colors | `available_colors` |
-| 70 | Price (average) | `price_launch_usd` — **misnamed, see Known problems** |
+| 70 | Price (average) | `price_avg_usd` (**not** `price_launch_usd` — see Known problems) |
 
 ### Controls — where each sheet value actually lands
 
@@ -133,10 +133,10 @@ shortlinks, Impact Radius `irclickid` on Best Buy, Banggood `custlinkid`, and sh
 codes. Publishing those hands our outbound clicks to someone else's account, so the tracking
 was removed and the bare product URLs kept. **Re-check this on any future import.**
 
-**Amazon vendor links in `console_links` do not carry our tag.** They are raw URLs; only
-`lib/affiliate.ts` applies `theretrocircu-20`. Anything rendering a `console_links` row of
-kind `vendor` that points at Amazon should route through `getBuyUrl` or the click earns
-nothing.
+**Amazon vendor links in `console_links` are stored raw and carry no tag.** This is
+deliberate — the tag belongs to the rendering layer, not the data. `ConsoleLinks.tsx`
+rebuilds them through `getBuyUrl`. Anything else that renders these rows must do the
+same, or the click earns nothing.
 
 **`price_avg_usd` is the average, not launch.** The sheet column is "Price (average)" and
 now imports to `price_avg_usd`. `price_launch_usd` still exists and means what it says —
