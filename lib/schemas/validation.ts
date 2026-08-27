@@ -60,6 +60,8 @@ export const ConsoleSchema = z.object({
 
   // Status
   status: safeString,
+  // Postgres enum — safeEnum, not safeString, so a blank select does not reject the save.
+  release_status: safeEnum(['released', 'upcoming', 'rumoured', 'discontinued']),
   is_featured: safeBoolean,
 });
 

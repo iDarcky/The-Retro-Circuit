@@ -16,6 +16,7 @@ import TechnicalReference from './swiss/TechnicalReference';
 import SwissModal from './swiss/SwissModal';
 import VariantComparisonTable from './swiss/VariantComparisonTable';
 import SimilarConsoles from './swiss/SimilarConsoles';
+import ConsoleLinks from './ConsoleLinks';
 
 interface ConsoleDetailViewProps {
     /** Extra shots from console_images; empty until a console has a gallery. */
@@ -237,7 +238,18 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                      <TechnicalReference mergedSpecs={mergedSpecs} viewMode={techViewMode as 'grid' | 'table' | 'ribbon'} />
                 </section>
 
-                {/* ROW 4: SIMILAR CONSOLES */}
+                {/* ROW 4: LINKS — reviews and retail */}
+                {consoleData.links && consoleData.links.length > 0 && (
+                    <section id="links" className="border-t border-white/10 pt-8 mt-12">
+                        <ConsoleLinks
+                            links={consoleData.links}
+                            productName={consoleData.name}
+                            manufacturerName={consoleData.manufacturer?.name}
+                        />
+                    </section>
+                )}
+
+                {/* ROW 5: SIMILAR CONSOLES */}
                 <section id="similar" className="border-t border-white/10 pt-8 mt-12">
                      <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">SIMILAR HARDWARE</h2>
                      <SimilarConsoles currentConsole={consoleData} />

@@ -176,6 +176,25 @@ export default function ConsoleIdentitySection({
                         <h1 className="font-pixel text-4xl md:text-6xl lg:text-6xl text-white uppercase leading-none tracking-tighter break-words">
                             {consoleData.name}
                         </h1>
+                        {/* Only flag the non-obvious states — "released" is the default and
+                            badging every shipping device would be noise. */}
+                        {consoleData.release_status && consoleData.release_status !== 'released' && (
+                            <span
+                                className={`w-fit mt-1 px-2 py-1 font-mono text-[10px] uppercase tracking-widest border ${
+                                    consoleData.release_status === 'upcoming'
+                                        ? 'text-orange-500 border-orange-500/40 bg-orange-500/[0.06]'
+                                        : consoleData.release_status === 'rumoured'
+                                          ? 'text-violet-500 border-violet-500/40 bg-violet-500/[0.06]'
+                                          : 'text-gray-500 border-white/15 bg-white/[0.03]'
+                                }`}
+                            >
+                                {consoleData.release_status === 'upcoming'
+                                    ? 'Not yet released'
+                                    : consoleData.release_status === 'rumoured'
+                                      ? 'Rumoured'
+                                      : 'Discontinued'}
+                            </span>
+                        )}
                     </div>
 
                     {/* CONTROLS */}

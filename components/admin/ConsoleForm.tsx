@@ -23,6 +23,7 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
     const [formData, setFormData] = useState<Partial<ConsoleDetails>>(initialData || {
         status: 'draft',
         device_category: 'emulation',
+        release_status: 'released',
         has_cartridge_slot: false,
         manufacturer_id: '', // Ensure default is empty string, not undefined
     });
@@ -243,6 +244,24 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
                                         { label: 'PC GAMING HANDHELD', value: 'pc_gaming' },
                                         { label: 'FPGA HANDHELD', value: 'fpga' },
                                         { label: 'ORIGINAL HARDWARE', value: 'legacy' }
+                                    ]}
+                                    labelPrefix="" inverted={false}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="text-[10px] mb-1 block uppercase text-gray-500 tracking-wider">Release Status</label>
+                            <div className="relative">
+                                <SwissDropdown
+                                    className="w-full"
+                                    buttonClassName="bg-bg-primary border border-border-normal p-3 outline-none text-white font-mono text-sm cursor-pointer hover:border-white transition-colors focus:border-white h-[46px] flex justify-between items-center"
+                                    value={formData.release_status || 'released'}
+                                    onChange={(val) => handleInputChange('release_status', val)}
+                                    options={[
+                                        { label: 'RELEASED', value: 'released' },
+                                        { label: 'UPCOMING (NOT OUT YET)', value: 'upcoming' },
+                                        { label: 'RUMOURED', value: 'rumoured' },
+                                        { label: 'DISCONTINUED', value: 'discontinued' }
                                     ]}
                                     labelPrefix="" inverted={false}
                                 />

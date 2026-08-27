@@ -280,11 +280,34 @@ export interface ConsoleVariant {
 
 export type ContentStatus = 'draft' | 'review' | 'published' | 'archived';
 
+/** Editorial state of the console page vs. the device's own lifecycle — the two differ:
+ *  a `published` page can describe an `upcoming` device. */
+export type ReleaseStatus = 'released' | 'upcoming' | 'rumoured' | 'discontinued';
+
+export type ConsoleLinkKind = 'video_review' | 'written_review' | 'vendor' | 'official' | 'other';
+
+/**
+ * An outbound link for a console — a review, or a place to buy it.
+ *
+ * `url` is stored RAW and carries no affiliate tag. Anything rendering a `vendor` link
+ * that points at Amazon must route it through `getBuyUrl` in lib/affiliate.ts, or the
+ * click earns nothing.
+ */
+export interface ConsoleLink {
+  id: string;
+  console_id: string;
+  kind: ConsoleLinkKind;
+  url: string;
+  label: string | null;
+  sort_order: number | null;
+}
+
 export interface ConsoleDetails {
   id: string;
   manufacturer_id: string;
   name: string;
   slug: string;
+  links?: ConsoleLink[];
   description?: string;
   image_url?: string;
   og_icon_url?: string;
@@ -304,6 +327,8 @@ export interface ConsoleDetails {
   community_score?: number | null;
 
   status?: ContentStatus;
+  /** Where the device is in its life: shipping, announced, rumoured, or dead. */
+  release_status?: ReleaseStatus | null;
   is_featured?: boolean;
 }
 

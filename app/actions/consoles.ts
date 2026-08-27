@@ -225,7 +225,8 @@ export const fetchConsoleBySlug = async (slug: string, includeHidden: boolean = 
             .select(`
                 *,
                 manufacturer:manufacturer(*),
-                variants:console_variants(*, emulation_profiles(*), variant_input_profile(*)), og_icon_url
+                variants:console_variants(*, emulation_profiles(*), variant_input_profile(*)),
+                links:console_links(*), og_icon_url
             `)
             .eq('slug', slug);
 
