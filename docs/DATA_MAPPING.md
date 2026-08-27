@@ -38,7 +38,7 @@ Columns are 1-indexed as they appear in `handhelds_v3.xlsx` / `v4`.
 | 31–33 | GPU / cores / clock | `gpu_model`, `gpu_cores`, `gpu_clock_mhz` |
 | 34 | RAM | `ram_mb` |
 | 35–40 | Screen size / type / refresh / resolution / PPI / aspect | `screen_size_inch`, `display_type`, `refresh_rate_hz`, `screen_resolution_x/y`, `ppi`, `aspect_ratio` |
-| 42 | Battery | `battery_capacity_mah` |
+| 42 | Battery | `battery_capacity_mah` (ARM devices) **or** `battery_capacity_wh` (x86 devices — see Known problems) |
 | 43 | Cooling | `cooling_solution` |
 | 50 | Storage | `storage_type` — **see Known problems** |
 | 51 | Connectivity | `other_connectivity` — **see Known problems** |
@@ -49,62 +49,99 @@ Columns are 1-indexed as they appear in `handhelds_v3.xlsx` / `v4`.
 | 63 | Colors | `available_colors` |
 | 70 | Price (average) | `price_launch_usd` — **misnamed, see Known problems** |
 
-### Dropped by the import — target column exists
+### Controls — where each sheet value actually lands
 
-These were simply never mapped. The database is ready for them.
+Now imported. The sheet's vocabulary is **not** the database's, and two columns do not go
+where their sheet name suggests. `scripts/gen_import_chunks.py` holds the translation table
+(`IPMAP`); this is the same mapping in prose.
 
-| Col | Sheet header | Should go to |
+| Sheet value | Column | Stored as |
 |---|---|---|
-| 44 | D-Pad | `variant_input_profile.dpad_tech` + `dpad_shape` |
-| 45 | Analogs | `variant_input_profile.stick_count` + `stick_tech` + `stick_layout` |
-| 46 | Face Buttons | `variant_input_profile.face_button_count` + `face_button_tech` |
-| 47 | Shoulder Buttons | `variant_input_profile.bumper_tech` + `trigger_tech` + `trigger_layout` |
-| 48 | Extra Buttons | `variant_input_profile.back_button_count` + `system_buttons_text` |
+| D-Pad shape `Cross` / `Disc` | `dpad_shape` | `cross` / `disc` |
+| D-Pad placement `Upper` / `Lower` / `Middle` | `dpad_placement` | `top` / `bottom` / `center` |
+| Analog `Hall` / `TMR` / `ALPS` | `stick_tech` | `hall` / `tmr` / `potentiometer` |
+| Analog placement `Upper` / `Lower` | **`stick_placement`** | `top` / `bottom` |
+| Shoulder `Digital` / `Analog` | **`bumper_type`** / **`trigger_type`** | `digital` / `analog` |
+| Trigger layout `Horizontal` / `Vertical` / `Shelf` | `trigger_layout` | `inline` / `stacked` / `shelf` |
+
+Two traps worth stating outright:
+
+- The sheet's **"stick layout"** column holds `Upper`/`Lower` — that is *where the sticks
+  sit*, so it goes to `stick_placement`. The database's `stick_layout` means
+  symmetric/asymmetric (the DualShock-vs-Xbox distinction) and is a different fact.
+- The sheet's **"bumper tech" / "trigger tech"** columns hold `Digital`/`Analog` — that is a
+  *type*, not a technology, so they go to `bumper_type` / `trigger_type`. The `_tech`
+  columns are for membrane/microswitch/hall and stay empty until someone fills them in.
+
+| Col | Sheet header | Goes to |
+|---|---|---|
+| 44 | D-Pad | `variant_input_profile.dpad_shape` + `dpad_placement` |
+| 45 | Analogs | `variant_input_profile.stick_count` + `stick_tech` + `stick_placement` |
+| 46 | Face Buttons | `variant_input_profile.face_button_count` |
+| 47 | Shoulder Buttons | `variant_input_profile.bumper_type` + `trigger_type` + `trigger_layout` |
+| 48 | Extra Buttons | `variant_input_profile.system_buttons_text` + `input_notes` |
 | 49 | Charge Port | `console_variants.ports` |
 | 53 | Audio Output | `console_variants.audio_tech` |
 | 54 | Speaker | `console_variants.audio_speakers` |
 | 55 | Rumble | `console_variants.haptics` |
 | 56 | Sensors | `console_variants.gyro` (+ new field, see below) |
 
-### Dropped — no target column yet
+### Previously dropped — now imported
+
+| Col | Sheet header | Goes to |
+|---|---|---|
+| 6 | Performance Rating | `console_variants.performance_grade` — **see Known problems** |
+| 41 | Screen Lens | `console_variants.screen_lens` |
+| 57–59 | Volume / Brightness / Power Control | `variant_input_profile.system_buttons_text` + `input_notes` |
+| 64–68 | Video Review ×5 | `console_links` (`kind='video_review'`) |
+| 69 | Written Review | `console_links` (`kind='written_review'`) |
+| 72–76 | Vendor Link ×5 | `console_links` (`kind='vendor'`) |
+
+A single `console_links(console_id, kind, url, label, sort_order)` table covers columns
+64–68, 69 and 72–76 — eleven sheet columns, one table. 1,332 rows across 238 consoles.
+The links live behind cell *hyperlinks*, not cell text, so the converter reads
+`cell.hyperlink.target` rather than the visible label.
+
+### Still dropped — no target column yet
 
 | Col | Sheet header | Suggested home |
 |---|---|---|
-| 6 | Performance Rating | new `console_variants.performance_grade` |
-| 41 | Screen Lens | new `console_variants.screen_lens` |
-| 57–59 | Volume / Brightness / Power Control | `variant_input_profile.system_buttons_text` |
-| 64–68 | Video Review ×5 | new `console_links` table (`kind='video_review'`) |
-| 69 | Written Review | same table, `kind='written_review'` |
 | 71 | Pricing Category | new `consoles.price_tier` |
-| 72–76 | Vendor Link ×5 | same table, `kind='vendor'` |
 | 77 / 78 | Pros / Cons | new `consoles.pros` / `cons` (text[]) |
 | 79 | Emulation Limit | `emulation_profiles.summary_text` |
 | 80 | Notes | `consoles.description` if empty, else a `notes` column |
-
-A single `console_links(console_id, kind, url, label, sort_order)` table covers columns
-64–68, 69 and 72–76 — eleven sheet columns, one table.
 
 ---
 
 ## Known problems in the current data
 
-**Storage is one free-text blob.** Column 50 ("Internal 8 GB eMMC, Dual External MicroSD")
-went entirely into `storage_type`, even though `storage_gb` and `storage_expandable`
-exist. It needs parsing into: base capacity, storage type, expandable yes/no, and a new
-`microsd_type` field for UHS-I / UHS-II.
+**`performance_grade` may be on the wrong scale.** The converter's `stars()` assumes the
+sheet's rating is out of 5 and emits `"N/5"`. 25 devices came out above their own
+denominator (`5.25/5`, `5.5/5`), so either the sheet's scale runs past 5 or `stars()`
+over-counts a glyph. They were clamped to `5/5` so no page shows an impossible score —
+**check the source sheet and rescale properly.** The v4 (Windows) sheet uses 🔥 instead of
+⭐; those were converted to the same `N/5` string so one column carries one scale.
 
-**WiFi and Bluetooth are lumped together.** Column 51 went into `other_connectivity`,
-but `wifi_specs` and `bluetooth_specs` are separate columns. "WiFi 5, Bluetooth 4.2"
-should split across both.
+**Battery: two different units in one column.** ARM handhelds are spec'd in mAh, x86 ones
+in watt-hours, and both landed in `battery_capacity_mah` — an 80Wh ROG Ally X rendered as
+"80 mAh". Wh values now live in `battery_capacity_wh`. Values of `2`/`3` (cell *counts*)
+and `18650` (a cell *format*) were cleared, as none is a capacity.
 
-**`price_launch_usd` holds an average price.** The sheet column is "Price (average)".
-Either rename the column to `price_avg_usd`, or add it alongside and keep launch price
-for what it says. Affiliate copy currently implies launch price.
+**Third-party affiliate links were stripped on import.** The source sheet's vendor URLs
+carried other people's publisher IDs — an Amazon `tag=retrodeadfred-20`, `s.click.aliexpress`
+shortlinks, Impact Radius `irclickid` on Best Buy, Banggood `custlinkid`, and shop `aff=`
+codes. Publishing those hands our outbound clicks to someone else's account, so the tracking
+was removed and the bare product URLs kept. **Re-check this on any future import.**
 
-**`cpu_architecture` vs `cpu_arch`.** The first is free text from the sheet ("ARM",
-"x86-64"). The second is a strict enum (`arm64`, `arm32`, `x86_64`, `other`) used for
-filtering, and is not populated by the import. Rough mapping: ARM 64-bit → `arm64`,
-older ARM → `arm32`, anything x86 → `x86_64`, MIPS/Xtensa/RISC-V → `other`.
+**Amazon vendor links in `console_links` do not carry our tag.** They are raw URLs; only
+`lib/affiliate.ts` applies `theretrocircu-20`. Anything rendering a `console_links` row of
+kind `vendor` that points at Amazon should route through `getBuyUrl` or the click earns
+nothing.
+
+**`price_avg_usd` is the average, not launch.** The sheet column is "Price (average)" and
+now imports to `price_avg_usd`. `price_launch_usd` still exists and means what it says —
+don't mix them in affiliate copy. Sheet values of `1` were "TBA" placeholders and were
+cleared.
 
 **Dual-screen fields are unused.** `second_screen_size`, `second_screen_resolution_x/y`,
 `second_screen_touch`, `second_screen_ppi`, `second_screen_refresh_rate` all exist and
@@ -113,3 +150,11 @@ are empty — including on the Anbernic RG DS, where the second screen is the po
 **`soc` was 0 of 273 filled** until a partial backfill on 2026-08-26 (226 filled from
 `cpu_model` where the value was clearly a chipset). 47 rows still need it by hand —
 those are the ones where `cpu_model` holds a CPU core ("Cortex-A53") rather than an SoC.
+
+**The `_tech` input columns are empty.** `dpad_tech`, `face_button_tech`, `bumper_tech`,
+`trigger_tech` are for membrane/microswitch/hall. The sheet has no such column, so they
+stay blank; only `stick_tech` is populated (from the Hall/TMR/ALPS column).
+
+**22 consoles still have no variant.** They pre-date these spreadsheets and appear in
+neither (18 draft, 4 archived) — mostly Anbernic RG-351/RG-405, 1UP, 8BCraft, Acer Nitro
+Blaze and the Ayn Loki line.

@@ -148,29 +148,31 @@ export const VARIANT_FORM_GROUPS = [
             // DPAD
             { subHeader: 'D-pad', width: 'full' },
             { label: 'Shape', key: 'dpad_shape', type: 'select', required: false, width: 'third', options: ['cross', 'disc', 'segmented', 'unknown'] },
-            { label: 'Tech', key: 'dpad_tech', type: 'select', required: false, width: 'third', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'potentiometer', 'spring', 'optical', 'unknown'] },
+            { label: 'Tech', key: 'dpad_tech', type: 'select', required: false, width: 'third', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'tmr', 'potentiometer', 'spring', 'optical', 'unknown'] },
             { label: 'Placement', key: 'dpad_placement', type: 'select', required: false, width: 'third', options: ['left', 'right', 'center', 'top', 'bottom', 'unknown'] },
 
             // PRIMARY INPUTS
             { subHeader: 'Core Controls', width: 'full' },
             { label: 'Face Btn Count', key: 'face_button_count', type: 'select', required: false, width: 'third', options: ['2', '4', '6'] },
-            { label: 'Face Btn Tech', key: 'face_button_tech', type: 'select', required: false, width: 'third', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'potentiometer', 'spring', 'optical', 'unknown'] },
+            { label: 'Face Btn Tech', key: 'face_button_tech', type: 'select', required: false, width: 'third', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'tmr', 'potentiometer', 'spring', 'optical', 'unknown'] },
             { label: 'Label Scheme', key: 'face_label_scheme', type: 'select', required: false, width: 'third', options: ['nintendo', 'xbox', 'playstation', 'generic', 'unknown'] },
 
             // STICKS
             { subHeader: 'Analog Sticks', width: 'full' },
             { label: 'Stick Count', key: 'stick_count', type: 'select', required: false, width: 'quarter', options: ['0', '1', '2'] },
             { label: 'Layout', key: 'stick_layout', type: 'select', required: false, width: 'quarter', options: ['symmetric', 'asymmetric', 'centered', 'unknown'] },
-            { label: 'Stick Tech', key: 'stick_tech', type: 'select', required: false, width: 'quarter', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'potentiometer', 'spring', 'optical', 'unknown'] },
+            { label: 'Placement', key: 'stick_placement', type: 'select', required: false, width: 'quarter', options: ['left', 'right', 'center', 'top', 'bottom', 'unknown'] },
+            { label: 'Stick Tech', key: 'stick_tech', type: 'select', required: false, width: 'quarter', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'tmr', 'potentiometer', 'spring', 'optical', 'unknown'] },
             { label: 'Cap Style', key: 'stick_cap', type: 'select', required: false, width: 'quarter', options: ['concave', 'convex', 'flat', 'domed', 'textured', 'unknown'] },
             { label: 'L3/R3 Clicks?', key: 'stick_clicks', type: 'checkbox', required: false, width: 'full' },
 
             // TRIGGERS
             { subHeader: 'Shoulders & Triggers', width: 'full' },
-            { label: 'Bumper Tech', key: 'bumper_tech', type: 'select', required: false, width: 'quarter', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'potentiometer', 'spring', 'optical', 'unknown'] },
-            { label: 'Trigger Tech', key: 'trigger_tech', type: 'select', required: false, width: 'quarter', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'potentiometer', 'spring', 'optical', 'unknown'] },
+            { label: 'Bumper Tech', key: 'bumper_tech', type: 'select', required: false, width: 'quarter', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'tmr', 'potentiometer', 'spring', 'optical', 'unknown'] },
+            { label: 'Bumper Type', key: 'bumper_type', type: 'select', required: false, width: 'quarter', options: ['digital', 'analog', 'unknown'] },
+            { label: 'Trigger Tech', key: 'trigger_tech', type: 'select', required: false, width: 'quarter', options: ['membrane', 'microswitch', 'mechanical', 'hall', 'tmr', 'potentiometer', 'spring', 'optical', 'unknown'] },
             { label: 'Trigger Type', key: 'trigger_type', type: 'select', required: false, width: 'quarter', options: ['digital', 'analog', 'unknown'] },
-            { label: 'Layout', key: 'trigger_layout', type: 'select', required: false, width: 'quarter', options: ['inline', 'stacked', 'unknown'] },
+            { label: 'Layout', key: 'trigger_layout', type: 'select', required: false, width: 'quarter', options: ['inline', 'stacked', 'shelf', 'unknown'] },
 
             // EXTRAS
             { subHeader: 'Additional Inputs', width: 'full' },

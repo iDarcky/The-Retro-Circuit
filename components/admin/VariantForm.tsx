@@ -291,8 +291,8 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         const inputProfileKeys = [
             'dpad_tech', 'dpad_shape', 'dpad_placement',
             'face_button_count', 'face_button_tech', 'face_label_scheme',
-            'stick_count', 'stick_tech', 'stick_layout', 'stick_clicks', 'stick_cap',
-            'bumper_tech', 'trigger_tech', 'trigger_type', 'trigger_layout',
+            'stick_count', 'stick_tech', 'stick_layout', 'stick_placement', 'stick_clicks', 'stick_cap',
+            'bumper_tech', 'bumper_type', 'trigger_tech', 'trigger_type', 'trigger_layout',
             'back_button_count', 'has_gyro', 'has_keyboard',
             'system_button_set', 'system_buttons_text', 'touchpad_count', 'touchpad_clickable',
             'input_confidence', 'input_notes'

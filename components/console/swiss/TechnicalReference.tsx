@@ -235,12 +235,14 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                             <SpecRow label="Face Labels" value={formatInputEnum('rc_label_scheme', mergedSpecs.variant_input_profile.face_label_scheme)} />
                             <SpecRow label="Sticks" value={mergedSpecs.variant_input_profile.stick_count} />
                             <SpecRow label="Stick Layout" value={formatInputEnum('rc_stick_layout', mergedSpecs.variant_input_profile.stick_layout)} />
+                            <SpecRow label="Stick Pos" value={formatInputEnum('rc_placement', mergedSpecs.variant_input_profile.stick_placement)} />
                             <SpecRow label="Stick Tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.stick_tech)} />
                             <SpecRow label="Stick Clicks" value={mergedSpecs.variant_input_profile.stick_clicks ? 'YES' : 'NO'} />
                             <SpecRow label="Stick Cap" value={formatInputEnum('rc_stick_cap', mergedSpecs.variant_input_profile.stick_cap)} />
                             <SpecRow label="Triggers" value={formatInputEnum('rc_trigger_type', mergedSpecs.variant_input_profile.trigger_type)} />
                             <SpecRow label="Trigger Tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.trigger_tech)} />
                             <SpecRow label="Trigger Layout" value={formatInputEnum('rc_trigger_layout', mergedSpecs.variant_input_profile.trigger_layout)} />
+                            <SpecRow label="Bumpers" value={formatInputEnum('rc_trigger_type', mergedSpecs.variant_input_profile.bumper_type)} />
                             <SpecRow label="Bumper Tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.bumper_tech)} />
                             <SpecRow label="Back Buttons" value={mergedSpecs.variant_input_profile.back_button_count} />
                             <SpecRow label="System Buttons" value={formatInputEnum('rc_system_button_set', mergedSpecs.variant_input_profile.system_button_set)} />

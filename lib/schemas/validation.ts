@@ -63,31 +63,40 @@ export const ConsoleSchema = z.object({
   is_featured: safeBoolean,
 });
 
+// Every column below except the counts, booleans and free text is a Postgres enum, so all
+// of them need safeEnum for the same reason cpu_arch did — leaving one blank in the admin
+// otherwise submits '' and the whole save is rejected.
+const BUTTON_TECH = ['membrane', 'microswitch', 'mechanical', 'hall', 'tmr', 'potentiometer', 'spring', 'optical', 'unknown'] as const;
+const PLACEMENT = ['left', 'right', 'center', 'top', 'bottom', 'unknown'] as const;
+const TRIGGER_TYPE = ['digital', 'analog', 'unknown'] as const;
+
 export const VariantInputProfileSchema = z.object({
-  dpad_tech: safeString,
-  dpad_shape: safeString,
-  dpad_placement: safeString,
+  dpad_tech: safeEnum(BUTTON_TECH),
+  dpad_shape: safeEnum(['cross', 'disc', 'segmented', 'unknown']),
+  dpad_placement: safeEnum(PLACEMENT),
   face_button_count: safeNumber,
-  face_button_tech: safeString,
-  face_label_scheme: safeString,
+  face_button_tech: safeEnum(BUTTON_TECH),
+  face_label_scheme: safeEnum(['nintendo', 'xbox', 'playstation', 'generic', 'unknown']),
   stick_count: safeNumber,
-  stick_tech: safeString,
-  stick_layout: safeString,
+  stick_tech: safeEnum(BUTTON_TECH),
+  stick_layout: safeEnum(['symmetric', 'asymmetric', 'centered', 'unknown']),
+  stick_placement: safeEnum(PLACEMENT),
   stick_clicks: safeBoolean,
-  stick_cap: safeString,
-  bumper_tech: safeString,
-  trigger_tech: safeString,
-  trigger_type: safeString,
-  trigger_layout: safeString,
+  stick_cap: safeEnum(['concave', 'convex', 'flat', 'domed', 'textured', 'unknown']),
+  bumper_tech: safeEnum(BUTTON_TECH),
+  bumper_type: safeEnum(TRIGGER_TYPE),
+  trigger_tech: safeEnum(BUTTON_TECH),
+  trigger_type: safeEnum(TRIGGER_TYPE),
+  trigger_layout: safeEnum(['inline', 'stacked', 'shelf', 'unknown']),
   back_button_count: safeNumber,
   has_gyro: safeBoolean,
   has_keyboard: safeBoolean,
   // keyboard_type: safeString, - Removed
-  system_button_set: safeString,
+  system_button_set: safeEnum(['minimal', 'standard', 'extended', 'unknown']),
   system_buttons_text: safeString,
   touchpad_count: safeNumber,
   touchpad_clickable: safeBoolean,
-  input_confidence: safeString,
+  input_confidence: safeEnum(['confirmed', 'inferred', 'unknown']),
   input_notes: safeString,
 });
 

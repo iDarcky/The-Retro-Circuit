@@ -119,15 +119,15 @@ export interface EmulationProfile {
 }
 
 // --- New Input Enums ---
-export type RcButtonTech = 'membrane' | 'microswitch' | 'mechanical' | 'hall' | 'potentiometer' | 'spring' | 'optical' | 'unknown';
+export type RcButtonTech = 'membrane' | 'microswitch' | 'mechanical' | 'hall' | 'tmr' | 'potentiometer' | 'spring' | 'optical' | 'unknown';
 export type RcDpadShape = 'cross' | 'disc' | 'segmented' | 'unknown';
-export type RcPlacement = 'left' | 'right' | 'center' | 'unknown';
+export type RcPlacement = 'left' | 'right' | 'center' | 'top' | 'bottom' | 'unknown';
 // RcFaceLayout removed
 export type RcLabelScheme = 'nintendo' | 'xbox' | 'playstation' | 'generic' | 'unknown';
 export type RcStickLayout = 'symmetric' | 'asymmetric' | 'centered' | 'unknown';
 export type RcStickCap = 'concave' | 'convex' | 'flat' | 'domed' | 'textured' | 'unknown';
 export type RcTriggerType = 'digital' | 'analog' | 'unknown';
-export type RcTriggerLayout = 'inline' | 'stacked' | 'unknown';
+export type RcTriggerLayout = 'inline' | 'stacked' | 'shelf' | 'unknown';
 // RcKeyboardType removed
 export type RcSystemButtonSet = 'minimal' | 'standard' | 'extended' | 'unknown';
 export type RcConfidence = 'confirmed' | 'inferred' | 'unknown';
@@ -143,9 +143,13 @@ export interface VariantInputProfile {
   stick_count: number | null; // check ((stick_count = any (array[0, 1, 2])))
   stick_tech: RcButtonTech | null;
   stick_layout: RcStickLayout | null;
+  /** Where the sticks sit relative to the d-pad. Distinct from stick_layout (symmetry). */
+  stick_placement: RcPlacement | null;
   stick_clicks: boolean | null;
   stick_cap: RcStickCap | null;
   bumper_tech: RcButtonTech | null;
+  /** Digital vs analog bumpers — mirrors trigger_type. bumper_tech stays the build column. */
+  bumper_type: RcTriggerType | null;
   trigger_tech: RcButtonTech | null;
   trigger_type: RcTriggerType | null;
   trigger_layout: RcTriggerLayout | null;

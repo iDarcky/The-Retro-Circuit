@@ -6,6 +6,7 @@ export const INPUT_ENUM_LABELS: Record<string, Record<string, string>> = {
         'microswitch': 'Microswitch',
         'mechanical': 'Mechanical',
         'hall': 'Hall',
+        'tmr': 'TMR',
         'potentiometer': 'Potentiometer',
         'spring': 'Spring',
         'optical': 'Optical',
@@ -54,6 +55,7 @@ export const INPUT_ENUM_LABELS: Record<string, Record<string, string>> = {
     rc_trigger_layout: {
         'inline': 'Inline',
         'stacked': 'Stacked',
+        'shelf': 'Shelf',
         'unknown': 'Unknown',
     },
     rc_system_button_set: {
