@@ -267,9 +267,10 @@ export const getConsoleById = async (id: string): Promise<ConsoleDetails | null>
     }
 };
 
+/** Admin-only lookup by id — cookie-aware for the same draft-visibility reason as below. */
 export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs | null> => {
     try {
-        const supabase = supabaseAnon;
+        const supabase = await createClient();
         const { data } = await supabase
             .from('console_variants')
             .select('*, variant_input_profile(*), emulation_profiles(*)')
@@ -292,9 +293,17 @@ export const getConsoleSpecs = async (consoleId: string): Promise<ConsoleSpecs |
     }
 };
 
+/**
+ * Admin-only: every variant of a console, used to offer an existing variant as the starting
+ * template for a new one.
+ *
+ * Must use the cookie-aware client. RLS only lets `anon` see variants whose console is
+ * PUBLISHED, so on a draft console the anon client returns an empty list — which looked
+ * exactly like "this console has no variants" and silently removed the template picker.
+ */
 export const getVariantsByConsole = async (consoleId: string): Promise<ConsoleVariant[]> => {
     try {
-        const supabase = supabaseAnon;
+        const supabase = await createClient();
         const { data, error } = await supabase
             .from('console_variants')
             .select('*, variant_input_profile(*), emulation_profiles(*)')
@@ -302,14 +311,17 @@ export const getVariantsByConsole = async (consoleId: string): Promise<ConsoleVa
             .order('is_default', { ascending: false });
         if (error) throw error;
         return (data || []).map(normalizeVariant) as ConsoleVariant[];
-    } catch {
+    } catch (err) {
+        // Swallowing this is what hid the RLS denial in the first place.
+        console.error(`getVariantsByConsole(${consoleId}) failed:`, err);
         return [];
     }
 };
 
+/** Admin-only lookup by id — cookie-aware for the same draft-visibility reason as above. */
 export const getVariantById = async (variantId: string): Promise<ConsoleVariant | null> => {
     try {
-        const supabase = supabaseAnon;
+        const supabase = await createClient();
         const { data, error } = await supabase
             .from('console_variants')
             .select('*, variant_input_profile(*), emulation_profiles(*)')
