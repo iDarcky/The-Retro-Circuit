@@ -2,8 +2,9 @@
 
 Reference doc for the September search push. Written 2026-08-26 from Google Search
 Console (6-month export + 1–23 Aug), Vercel Analytics, and the live database.
-**Updated 2026-08-27** after the v3/v4 import — catalogue counts and the gaps list below
-are current as of then; the search metrics are still the 1–23 Aug snapshot.
+**Updated 2026-08-27** after the v3/v4 import, the merge to `main` and the Vercel
+production-branch fix. Catalogue counts and the gaps list are current as of then; the
+search metrics are still the 1–23 Aug snapshot.
 
 Companion pages (same content, nicer to read):
 - Runbook: https://claude.ai/code/artifact/5244fe2b-4528-4217-9fa9-77cc08dff3cb
@@ -28,7 +29,7 @@ Average position 14.9 is the honest number: page two.
 
 **Catalogue as of 2026-08-27:** 457 consoles (70 published, 387 draft), 513 variants,
 240 input profiles, 1,332 review/vendor links. The constraint has moved: it is no longer
-missing data, it is missing images and an undeployed branch.
+missing data, it is missing images.
 
 ### Where the clicks come from
 
@@ -80,21 +81,27 @@ Doubling non-brand is what compounds. Brand clicks plateau; content clicks don't
 
 ## Weekly plan
 
-### Week 1 (1–7 Sep) — ship and import
-- [x] ~~Import v3 + v4~~ — **done 2026-08-27.** 513 variants, 240 input profiles,
-      1,332 review/vendor links. Went through the database connection rather than
-      `import-consoles.ts`, because the egress proxy blocks `*.supabase.co` from the shell.
-- [ ] **Merge and deploy branch `claude/google-search-console-access-fl4qme`** ← still the gate
-- [ ] Resubmit sitemap in Search Console
-- [ ] Add images to drafts so they can be published (see gaps — this is now the bottleneck)
+### Week 1 — ship and import ✅ DONE 2026-08-27, ahead of September
+- [x] Import v3 + v4 — 513 variants, 240 input profiles, 1,332 review/vendor links
+- [x] Merge to `main` (22 commits)
+- [x] **Vercel production branch fixed** — it pointed at a `production` branch that no
+      longer exists, so every push to `main` built as a *preview*. The live site had been
+      serving a stale deployment and nothing shipped, silently. Now set to `main`.
+- [x] Sitemap resubmitted in Search Console
 
-Until the deploy lands, publishing a console still fails to update the sitemap, so
-every other week's work stays invisible to Google. **The data is already in Supabase but
-the code to render it is not deployed** — that mismatch is why the admin looks unchanged.
+The deploy misconfiguration was the real Week 1 blocker, not the import. Worth remembering
+as a failure mode: a green build is not the same as a live deploy.
 
-### Week 2 (8–14 Sep) — the six devices
+Publishing now updates the sitemap by itself — `updateConsole` calls
+`revalidateConsoleSurfaces()`, which revalidates `/sitemap.xml` and pings IndexNow. The
+sitemap only needs submitting once.
+
+### Week 2 — the six devices
 - [ ] One good image each for the six above
-- [ ] **Add Amazon ASINs to all six** (see Revenue below — this is the revenue blocker)
+- [ ] **Give all six a buy path** at `/admin/buy-links`. Not ASINs: of 238 consoles with
+      vendor links only 33 reach Amazon, behind AliExpress (82), other retailers (82),
+      brand-direct (68) and crowdfunding (51). All six of these devices currently have
+      *no buy path at all* — as do 63 of the 70 published consoles.
 - [ ] Write the missing description for Retroid Pocket G2 (146 impressions, empty field)
 - [ ] Publish, then confirm they appear in the sitemap within a day
 
@@ -117,17 +124,32 @@ Pairs people actually search: `odin 2 mini vs odin 3`, `ayaneo pocket s vs odin 
 
 ## Revenue — 3 affiliate sales by year end
 
-**The blocker is not traffic, it's that the buy button is a search link.**
+**The blocker is not traffic — it is that most pages have nothing to click.**
+**63 of 70 published consoles have no buy path at all**: no ASIN, no vendor link.
 
-Only 13 of 513 variants have an `amazon_asin`. Of the six devices carrying 76% of
-demand, exactly one has an ASIN. Everyone else lands on `getAmazonSearchUrl()` — a
-search results page. Amazon only pays on a qualifying sale, and search links convert
-far worse than direct product links.
+An earlier draft of this doc called the ASIN backfill the top revenue task. That was
+wrong, and the channel data says so. Grouping the 1,332 imported vendor links:
+
+| Channel | Consoles |
+|---|---|
+| AliExpress | 82 |
+| Other retailers | 82 |
+| Brand direct | 68 |
+| Crowdfunding | 51 |
+| **Amazon** | **33** |
+| eBay | 23 |
+
+Amazon is the second-smallest channel. Most of these devices are never sold there —
+the Retroid Pocket 6 among them — so an Amazon search for one returns unrelated
+products. That was the live behaviour until 2026-08-27; `BuySection` now prefers a real
+vendor and only falls back to a search when nothing else is known.
 
 Priority order:
-1. **ASINs on the six devices** — highest-demand pages, cheapest fix
-2. Then the next ~20 by search demand
-3. Only then worry about traffic volume
+1. **A buy path on the published 70** — `/admin/buy-links`, sorted worst-first. This is
+   the only revenue work that touches current traffic.
+2. **Investigate the AliExpress affiliate programme.** It covers the largest channel
+   here; Amazon Associates may simply be the wrong primary programme for this category.
+3. ASINs where a device genuinely is on Amazon.
 
 **Two things to verify in the Associates dashboard:**
 - Amazon withdraws an application that hasn't produced **3 qualifying sales within

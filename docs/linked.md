@@ -55,7 +55,7 @@ Check it out here: [Link to theretrocircuit.com]
 
 ## Post 3: The "How I Built It" (Use on Thursday/Friday)
 **Goal:** Share the technical/product journey. This appeals to your professional network and drives secondary traffic.
-**Media:** A screenshot of your `NEW_ROADMAP.md` file, a messy architecture diagram, or a picture of your code editor.
+**Media:** A screenshot of your `docs/ROADMAP.md` file, a messy architecture diagram, or a picture of your code editor.
 
 Shipping **The Retro Circuit** this week taught me a massive lesson about Product Management: Scope creep is terrifying when *you* are the sole developer. 😅
 

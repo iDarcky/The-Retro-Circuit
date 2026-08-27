@@ -151,3 +151,50 @@ This document organizes all pending features, improvements, and ideas into funct
 ### 🟢 Nice to Have
 - [ ] **Internationalization (i18n) Readiness**: Scaffold the project with `next-intl` to support future Brazilian/SEA markets without a full rewrite.
 - [ ] **Living Design System**: Create a hidden `/design` route that displays all buttons, badges, and typestyles to ensure "Swiss" consistency.
+
+---
+
+## 9. Finder Engine
+*Merged from the former `FINDERIDEAS.md`. Scoring behaviour itself is documented in
+`docs/FINDER_RESULTS.md`.*
+
+### 🟡 Must Have
+- [ ] **Absolute dealbreakers**: the quiz treats almost everything as a weighting multiplier. Add a "must-have" step (HDMI out, hall-effect sticks) that drops non-matching consoles to a `0.0` tier-fit rather than merely down-weighting them.
+- [ ] **Contradiction catching**: a user can pick "Modern PC Gaming (Steam)" then "Under $60" and get a confusing 8-bit result. Warn between questions instead of silently rescoring.
+- [ ] **"Why we picked this" explainer**: replace "95% match" with a sentence naming the specific reason, drawn from the score matrix.
+
+### 🟢 Nice to Have
+- [ ] **Aspect-ratio preference**: ask which systems they will actually play, then boost consoles whose `aspect_ratio` genuinely suits them — 1:1 is superb for Pico-8 and poor for PSP.
+- [ ] **Feedback loop**: track which recommendation people actually click. If the engine ranks Odin 2 first but users pick the Retroid, the value multiplier for that persona is wrong.
+
+---
+
+## 10. Accessibility
+*From the March 2026 parallel audit — the only role the main audit did not cover.*
+
+### 🟡 Must Have
+- [ ] **Keyboard navigation**: the `ConsoleSearch` dropdown cannot be driven by keyboard. Arrow keys to move, Enter to select.
+- [ ] **Visible focus ring**: `outline-none` in `ConsoleSearch` removes the native ring without replacing it.
+- [ ] **Screen-reader labels**: icon-only buttons (VS, social) need `aria-label`.
+
+### 🟢 Nice to Have
+- [ ] **Contrast pass**: `text-zinc-500` on black is borderline for WCAG AA.
+- [ ] **Reduced motion**: wrap marquee and pulse animations in `prefers-reduced-motion`.
+
+---
+
+## 11. Legal, Mobile & Operations
+*Also from the March 2026 parallel audit. Items already shipped are omitted — the affiliate
+disclosure, terms page and rate limiting all exist now.*
+
+### 🟡 Must Have
+- [ ] **Cookie consent**: required before AdSense, and before analytics in the EU.
+- [ ] **Image rights**: confirm console images are press-kit or fair use; add a takedown contact.
+- [ ] **Error monitoring**: no Sentry or equivalent — client-side crashes in the Arena and Finder are currently invisible.
+- [ ] **Verify Supabase PITR** is enabled on production.
+
+### 🟢 Nice to Have
+- [ ] **Install prompt** for Android (the manifest already exists).
+- [ ] **Swipe between consoles** in the Arena on touch devices.
+- [ ] **Report an error** button on every spec sheet — enthusiasts genuinely enjoy correcting data, and it is free QA.
+- [ ] **Save-Data awareness**: serve lower-resolution images when `navigator.connection.saveData` is set.

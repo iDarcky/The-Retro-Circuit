@@ -85,14 +85,19 @@ pnpm lint     # ESLint
 ---
 
 ## Key Docs
+`docs/README.md` is the index — start there. The set was consolidated 20 → 12 files on
+2026-08-27; that file records what was removed and where its content went.
+
 | File | Purpose |
 |------|---------|
-| `DESIGNAUDIT.md` | UI inconsistency tracker vs Swiss system |
-| `FINDERIDEAS.md` | Finder feature backlog |
-| `docs/DESIGN.md` | Full design system spec |
-| `docs/CLAUDEAUDIT.md` | 18KB product/code audit (March 2026) |
-| `docs/PENDING_FEATURES.md` | Prioritized feature backlog |
+| `docs/SEPTEMBER_PLAYBOOK.md` | **The live plan.** Search data, weekly tasks, revenue blockers, verified data gaps |
+| `docs/PENDING_FEATURES.md` | Prioritized feature backlog (now includes the Finder, accessibility and legal/mobile items) |
+| `docs/DATA_MAPPING.md` | Spreadsheet → database column mapping, and the traps |
 | `docs/ROUTES.md` | Route documentation with payloads |
+| `docs/DESIGN.md` | Full design system spec — **in force** |
+| `docs/BRAND.md` | Brand Guidelines v2.0.0 tokens — **not yet adopted**, conflicts with the hard rules below |
+| `DESIGNAUDIT.md` | UI inconsistency tracker vs Swiss system |
+| `docs/CLAUDEAUDIT.md` | Product/code audit (March 2026) — historical snapshot |
 | `lib/bestof/collections.ts` | "Best Of" buying guides — filter+rank functions over live data, drive `/best/*` |
 
 ---

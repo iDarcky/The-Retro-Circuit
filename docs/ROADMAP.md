@@ -1,8 +1,26 @@
 # Project Roadmap & Changelog
 
-Generated on: 2/27/2026
+Generated on: 3/5/2026
 
 ## Changelog
+
+### vPre-Alpha 0.5.5 - 3/4/2026
+**LinkedIn Update**
+> Fixing a lot of bugs for the LinkedIn soft launch, including a V2 of the finder, a console page rework and many more.
+
+- [x] **Console page redesign**
+- [x] **VS page rework**
+- [x] **Finder rework V2**
+- [x] **Landing Page VS fix**
+- [x] **Dark Mode Integrity**
+- [x] **Rate Limiting (API Protection)**
+- [x] **Living Design System**
+- [x] **Multiple arena pages**
+- [x] **Homepage Finder Text correction**
+- [x] **Logo clickable **
+- [x] **Revamp about page**
+- [x] **Revamp terms and Privacy**
+- [x] **Similar consoles**
 
 ### vPre-Alpha 0.5.4 - 2/27/2026
 **Search Update**
@@ -48,31 +66,25 @@ Generated on: 2/27/2026
 ### In Progress
 
 #### Critical
-- [ ] **Console page redesign**
-  - Redesign the Console page.
-- [ ] **Finder rework**
-  - Rework the finder so that the questions are taken into consideration.
+- [ ] **Nav Pill Icons**
+  - Change the icons of the nav pill on mobile to the new one, and change the links to home, console vault, vs and news
 
-- [ ] **VS page rework**
-  - Rework the VS page to make it fit the swiss design language as well to make the data there readable. 
+#### Must Have
+- [ ] **indexnow**
+  - Add indexnow
+
+#### Nice to Have
+- [ ] **Light mode**
+  - Add Light mode to the website.
 
 ### Planned
 
 #### Critical
-- [ ] **Logo clickable ** (Target: 2/23/2026)
-  - Make the top right logo clickable, not just the text
-- [ ] **Living Design System**
-  - Create a hidden /design route that displays all buttons, badges, and typestyles to ensure "Swiss" consistency.
-- [ ] **Liability Disclaimer Page**
-  - Create a clear Terms/Disclaimer page stating "The Retro Circuit is not responsible for hardware damage from overclocking/modding", and any other things that are needed for the disclaimer, terms poage.
-- [ ] **Rate Limiting (API Protection)**
-  - Implement upstash/ratelimit or similar on search and form endpoints to prevent abuse and DoS.
-- [ ] **Dark Mode Integrity**
-  - Ensure class="dark" is enforced and no white flashes occur on load.
-- [ ] **Similar consoles**
-  - Add a "Similar Consoles" section at the bottom of Detail Views.
+- [ ] **Add support for decimal for score**
+  - Add support for decimal for the score.
 - [ ] **Upcoming**
   - Add an option to set the time to upcoming for the consoles.
+
 - [ ] **Legal Disclosures**
   - Add "Amazon Associate" and other affiliate disclosures to the Footer.
 - [ ] **Affiliate Integration**
@@ -81,12 +93,11 @@ Generated on: 2/27/2026
   - Add more fields in regards to the 2nd screen. Panel type, etc
 - [ ] **Add GHz to GPU Speed**
   - Add the possibility to convert to GHz to the GPU Clock Speed 
-- [ ] **Nav Pill Icons**
-  - Change the icons of the nav pill on mobile to the new one, and change the links to home, console vault, vs and news
-- [ ] **Landing Page VS fix**
-  - Fix the starting of VS from the landing page.
 
 #### Must Have
+- [ ] **Variant price**
+  - Keep into consideration the variant price when sorting by price?
+
 - [ ] **Command Palette**
   - (Cmd+K): Implement a global command menu for power users to navigate Consoles, VS Mode, and Settings instantly.
 - [ ] **Environment Variable Validation**
@@ -127,6 +138,10 @@ Generated on: 2/27/2026
   - Fix the header for the console page. 
 
 #### Nice to Have
+- [ ] **Spreadsheet arena**
+  - Implement a spreadsheet mode for the arena to compare up to 10 consoles at a time.
+- [ ] **Spreadsheet mode**
+  - Implement a spreadsheet mode for the console view
 - [ ] **Internationalization (i18n) Readiness**
   - Scaffold the project with next-intl to support future Brazilian/SEA markets without a full rewrite.
 - [ ] **Haptics**
@@ -149,6 +164,8 @@ Generated on: 2/27/2026
   - Render a static SVG outline of a common object (Credit Card, iPhone) next to the console outline using width_mm.
 - [ ] **3+ Device Comparison**
   - Expand /arena to support side-by-side comparison of 3-4 devices (currently limited to 2). Update routing to /arena/[...slugs].
+
+
 - [ ] **"Finder" to Email Capture**
   - At the end of a search/finder result, offer to email updates when better options release.
 - [ ] **"Simple Mode" Toggle**
