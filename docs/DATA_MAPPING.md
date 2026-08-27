@@ -143,13 +143,15 @@ now imports to `price_avg_usd`. `price_launch_usd` still exists and means what i
 don't mix them in affiliate copy. Sheet values of `1` were "TBA" placeholders and were
 cleared.
 
-**Dual-screen fields are unused.** `second_screen_size`, `second_screen_resolution_x/y`,
-`second_screen_touch`, `second_screen_ppi`, `second_screen_refresh_rate` all exist and
-are empty — including on the Anbernic RG DS, where the second screen is the point.
-
 **`soc` was 0 of 273 filled** until a partial backfill on 2026-08-26 (226 filled from
 `cpu_model` where the value was clearly a chipset). 47 rows still need it by hand —
 those are the ones where `cpu_model` holds a CPU core ("Cortex-A53") rather than an SoC.
+
+**Dual-boot devices flatten to one `os_family`.** 54 variants list two systems in the
+free-text `os` ("Linux (Steam OS) / Windows 11", "Android 10 / Linux"). `os_family` is a
+single enum and holds the *primary* shipping OS, which is the right call — but it means
+no filter can answer "which devices dual-boot". If that becomes a Finder facet it needs
+its own boolean; do not split one device into two variants for it.
 
 **The `_tech` input columns are empty.** `dpad_tech`, `face_button_tech`, `bumper_tech`,
 `trigger_tech` are for membrane/microswitch/hall. The sheet has no such column, so they
