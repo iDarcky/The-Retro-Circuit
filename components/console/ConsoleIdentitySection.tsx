@@ -173,9 +173,22 @@ export default function ConsoleIdentitySection({
                                 {fabName}
                             </Link>
                         )}
-                        <h1 className="font-pixel text-4xl md:text-6xl lg:text-6xl text-white uppercase leading-none tracking-tighter break-words">
-                            {consoleData.name}
-                        </h1>
+                        <div className="flex items-center gap-4">
+                            {/* The pixel cover is the device's identity mark, so it sits with the
+                                name. It is deliberately not part of the photo carousel. */}
+                            {consoleData.image_url && (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                    src={consoleData.image_url}
+                                    alt=""
+                                    aria-hidden="true"
+                                    className="hidden md:block h-14 w-14 shrink-0 object-contain [image-rendering:pixelated]"
+                                />
+                            )}
+                            <h1 className="font-pixel text-4xl md:text-6xl lg:text-6xl text-white uppercase leading-none tracking-tighter break-words">
+                                {consoleData.name}
+                            </h1>
+                        </div>
                         {/* Only flag the non-obvious states — "released" is the default and
                             badging every shipping device would be noise. */}
                         {consoleData.release_status && consoleData.release_status !== 'released' && (

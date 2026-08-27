@@ -92,11 +92,18 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
     const currentVariant = variants.find(v => v.id === selectedVariantId);
     const currentImage = getConsoleImage({ console: consoleData, variant: currentVariant });
 
-    // Cover shot first, then any gallery images. One entry means no carousel chrome.
-    const heroShots = [
-        ...(currentImage ? [{ id: 'cover', url: currentImage, alt_text: consoleData.name, kind: 'cover' }] : []),
-        ...galleryImages,
-    ];
+    // The carousel is real photographs only. `currentImage` is the pixel-art cover — an
+    // identity mark rather than a picture of the device — so it renders as an icon beside
+    // the name instead of as a slide.
+    //
+    // Almost no console has photos yet, so when there are none the pixel art still fills
+    // the hero as a single static image; otherwise those pages would read "NO SIGNAL".
+    const heroShots = galleryImages.length
+        ? galleryImages
+        : currentImage
+          ? [{ id: 'cover', url: currentImage, alt_text: consoleData.name, kind: 'cover' }]
+          : [];
+    const isPixelFallback = galleryImages.length === 0 && !!currentImage;
     const [heroIndex, setHeroIndex] = useState(0);
     const activeShot = heroShots[Math.min(heroIndex, Math.max(heroShots.length - 1, 0))];
 
@@ -139,7 +146,10 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                                 <img
                                     src={activeShot.url}
                                     alt={activeShot.alt_text || consoleData.name}
-                                    className="max-w-[80%] max-h-[80%] object-contain transition-transform duration-700 ease-out group-hover:scale-105"
+                                    // Pixel art is small and must stay crisp; photos scale smoothly.
+                                    className={`max-w-[80%] max-h-[80%] object-contain transition-transform duration-700 ease-out group-hover:scale-105 ${
+                                        isPixelFallback ? '[image-rendering:pixelated]' : ''
+                                    }`}
                                     key={activeShot.url}
                                 />
                             ) : (
@@ -211,6 +221,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                         <BuySection
                             asin={currentVariant?.amazon_asin || null}
                             searchQuery={[consoleData.manufacturer?.name, consoleData.name].filter(Boolean).join(' ')}
+                            vendorLinks={(consoleData.links || []).filter((l) => l.kind === 'vendor')}
                         />
                     </section>
                 </div>
