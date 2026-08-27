@@ -91,6 +91,41 @@ export default function AdminHubClient() {
                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent -translate-y-full group-hover:translate-y-full transition-transform duration-700 ease-in-out pointer-events-none"></div>
                 </Link>
 
+                {/* MONETISATION — both worklists existed but were unreachable from here. */}
+                <Link href="/admin/buy-links" className="group relative block h-64 bg-bg-secondary border border-border-normal overflow-hidden hover:border-white transition-colors">
+                    <div className="absolute top-4 left-4 z-10">
+                        <span className="font-mono text-xs text-gray-500 group-hover:text-white transition-colors">03 // REVENUE</span>
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <h2 className="font-pixel text-3xl text-gray-700 group-hover:text-white transition-colors duration-300 text-center">
+                            BUY<br/>LINKS
+                        </h2>
+                    </div>
+                    <div className="absolute bottom-4 right-4">
+                        <span className="font-mono text-[10px] text-gray-600 group-hover:text-primary transition-colors">
+                            [PAGES WITH NO BUY PATH]
+                        </span>
+                    </div>
+                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent -translate-y-full group-hover:translate-y-full transition-transform duration-700 ease-in-out pointer-events-none"></div>
+                </Link>
+
+                <Link href="/admin/asins" className="group relative block h-64 bg-bg-secondary border border-border-normal overflow-hidden hover:border-white transition-colors">
+                    <div className="absolute top-4 left-4 z-10">
+                        <span className="font-mono text-xs text-gray-500 group-hover:text-white transition-colors">03 // REVENUE</span>
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <h2 className="font-pixel text-3xl text-gray-700 group-hover:text-white transition-colors duration-300">
+                            ASINS
+                        </h2>
+                    </div>
+                    <div className="absolute bottom-4 right-4">
+                        <span className="font-mono text-[10px] text-gray-600 group-hover:text-primary transition-colors">
+                            [AMAZON BACKFILL]
+                        </span>
+                    </div>
+                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent -translate-y-full group-hover:translate-y-full transition-transform duration-700 ease-in-out pointer-events-none"></div>
+                </Link>
+
                 {/* 4. DESIGN SYSTEM */}
                 <Link href="/design" className="group relative block h-64 bg-bg-secondary border border-border-normal overflow-hidden hover:border-white transition-colors">
                     <div className="absolute top-4 left-4 z-10">

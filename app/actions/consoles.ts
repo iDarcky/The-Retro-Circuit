@@ -764,3 +764,107 @@ export const setVariantAsin = async (
         return { success: false, message: e.message };
     }
 };
+
+// --- Buy-link worklist -------------------------------------------------------------
+
+export interface BuyLinkRow {
+    console_id: string;
+    slug: string;
+    name: string;
+    brand: string | null;
+    status: string;
+    has_asin: boolean;
+    vendor_count: number;
+}
+
+/**
+ * Admin: published consoles first, worst-off first — the ones with no buy path at all.
+ *
+ * The spreadsheet import attached 1,332 vendor links, but every one landed on a DRAFT
+ * console. None of the published pages gained a buy path from it, so this list is how the
+ * live pages get one.
+ */
+export const fetchBuyLinkWorklist = async (): Promise<BuyLinkRow[]> => {
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from('consoles')
+            .select(`id, slug, name, status,
+                     manufacturer:manufacturer_id(name),
+                     console_links(id, kind),
+                     console_variants(amazon_asin)`);
+
+        if (error) { console.error('[API] fetchBuyLinkWorklist:', error.message); return []; }
+
+        const rows: BuyLinkRow[] = (data || []).map((c: any) => ({
+            console_id: c.id,
+            slug: c.slug,
+            name: c.name,
+            brand: c.manufacturer?.name ?? null,
+            status: c.status,
+            has_asin: (c.console_variants || []).some((v: any) => !!v.amazon_asin),
+            vendor_count: (c.console_links || []).filter((l: any) => l.kind === 'vendor').length,
+        }));
+
+        // Published-and-empty is the only group costing money today; everything else follows.
+        const rank = (r: BuyLinkRow) =>
+            r.status === 'published' && !r.has_asin && r.vendor_count === 0 ? 0
+            : r.status === 'published' ? 1
+            : 2;
+        return rows.sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name));
+    } catch (e: any) {
+        console.error('[API] fetchBuyLinkWorklist exception:', e?.message);
+        return [];
+    }
+};
+
+/** Admin: attach a vendor link to a console. */
+export const addConsoleVendorLink = async (
+    consoleId: string,
+    url: string,
+    label: string
+): Promise<{ success: boolean; message?: string }> => {
+    const clean = url.trim();
+    if (!/^https?:\/\/\S+$/i.test(clean)) {
+        return { success: false, message: 'Enter a full http(s) URL.' };
+    }
+    // The sheets arrived carrying other people's affiliate IDs. Refuse to store one rather
+    // than silently hand our outbound clicks to somebody else's account.
+    if (/[?&](tag|aff|affiliate_id|clickid|irclickid|custlinkid|pubid|publisher)=/i.test(clean)
+        || /(s\.click\.aliexpress|rover\.ebay|affiliate-transfer|amzn\.to)/i.test(clean)) {
+        return {
+            success: false,
+            message: 'That URL carries affiliate tracking. Paste the plain product URL — the site adds our own tag.',
+        };
+    }
+
+    try {
+        const supabase = await createClient();
+        const { data: last } = await supabase
+            .from('console_links')
+            .select('sort_order')
+            .eq('console_id', consoleId)
+            .order('sort_order', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+        const { error } = await supabase.from('console_links').insert([{
+            console_id: consoleId,
+            kind: 'vendor',
+            url: clean,
+            label: label.trim() || null,
+            sort_order: (last?.sort_order ?? -1) + 1,
+        }]);
+        if (error) return { success: false, message: error.message };
+
+        const { data: c } = await supabase
+            .from('consoles')
+            .select('slug, status')
+            .eq('id', consoleId)
+            .maybeSingle();
+        if (c?.status === 'published' && c.slug) revalidatePath(`/consoles/${c.slug}`);
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, message: e.message };
+    }
+};
