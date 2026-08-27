@@ -2,6 +2,8 @@
 
 Reference doc for the September search push. Written 2026-08-26 from Google Search
 Console (6-month export + 1–23 Aug), Vercel Analytics, and the live database.
+**Updated 2026-08-27** after the v3/v4 import — catalogue counts and the gaps list below
+are current as of then; the search metrics are still the 1–23 Aug snapshot.
 
 Companion pages (same content, nicer to read):
 - Runbook: https://claude.ai/code/artifact/5244fe2b-4528-4217-9fa9-77cc08dff3cb
@@ -23,6 +25,10 @@ queries** ("retro circuits", "retrocircuits", "retro circuit", "retro circuits g
 Strip those out and the whole content-driven performance is **~17 clicks/month**.
 
 Average position 14.9 is the honest number: page two.
+
+**Catalogue as of 2026-08-27:** 457 consoles (70 published, 387 draft), 513 variants,
+240 input profiles, 1,332 review/vendor links. The constraint has moved: it is no longer
+missing data, it is missing images and an undeployed branch.
 
 ### Where the clicks come from
 
@@ -75,13 +81,16 @@ Doubling non-brand is what compounds. Brand clicks plateau; content clicks don't
 ## Weekly plan
 
 ### Week 1 (1–7 Sep) — ship and import
-- [ ] Merge and deploy branch `claude/google-search-console-access-fl4qme`
-- [ ] `npx tsx scripts/import-consoles.ts v3_import.json` then `v4_import.json`
+- [x] ~~Import v3 + v4~~ — **done 2026-08-27.** 513 variants, 240 input profiles,
+      1,332 review/vendor links. Went through the database connection rather than
+      `import-consoles.ts`, because the egress proxy blocks `*.supabase.co` from the shell.
+- [ ] **Merge and deploy branch `claude/google-search-console-access-fl4qme`** ← still the gate
 - [ ] Resubmit sitemap in Search Console
-- [ ] Fix the 12 consoles with no variant (list below)
+- [ ] Add images to drafts so they can be published (see gaps — this is now the bottleneck)
 
 Until the deploy lands, publishing a console still fails to update the sitemap, so
-every other week's work stays invisible to Google.
+every other week's work stays invisible to Google. **The data is already in Supabase but
+the code to render it is not deployed** — that mismatch is why the admin looks unchanged.
 
 ### Week 2 (8–14 Sep) — the six devices
 - [ ] One good image each for the six above
@@ -102,7 +111,7 @@ Pairs people actually search: `odin 2 mini vs odin 3`, `ayaneo pocket s vs odin 
 - [ ] Coverage: has "Discovered — currently not indexed" fallen from 58?
 - [ ] Non-brand clicks vs the 17 baseline
 - [ ] Publish 10–15 more consoles, chosen by search demand not alphabetically
-- [ ] Backfill `soc` on existing variants (currently 0 of 136 filled)
+- [ ] Backfill the last 50 `soc` values by hand (463 of 513 are filled)
 
 ---
 
@@ -133,25 +142,49 @@ Vercel **Pro** plan — the dashboard says so explicitly. On Hobby those calls a
 discarded, so there is no measurement of how many people click buy. Either upgrade or
 add a lightweight own-side counter.
 
+**The 1,332 imported vendor links do NOT carry our tag.** They are raw URLs in
+`console_links`; only `lib/affiliate.ts` applies `theretrocircu-20`. Any component
+rendering a `console_links` row of `kind='vendor'` that points at Amazon earns nothing
+on that click. Route those through `getBuyUrl` — this is a bigger surface than the 13
+ASINs, and it is a code change rather than data entry.
+
+**The source spreadsheet's links pointed at other people's affiliate accounts.** On
+import they carried an Amazon `tag=retrodeadfred-20`, `s.click.aliexpress` shortlinks,
+Impact Radius `irclickid` on Best Buy (`loc=Retro Game Corps`), Banggood `custlinkid`
+and shop `aff=` codes. Left in, every one of those clicks would have paid a competitor.
+The tracking was stripped and the bare product URLs kept — **re-check this on any future
+import**, since the sheets are maintained by someone else.
+
 ---
 
-## Known data gaps (verified 2026-08-26)
+## Known data gaps (verified 2026-08-27, post-import)
 
-**12 consoles with no variant** — render an empty spec table:
+**386 of 387 drafts have no image.** This is now the single biggest blocker — the
+catalogue went 212 → 457 consoles, but only **70 are published**. Specs, buttons,
+emulation grades and buy links are all in place for the rest; they cannot go live
+without a picture. Everything else on this list is smaller than this one.
 
-`anbernic-rg-350p`, `anbernic-rg-351m`, `anbernic-rg-351mp`, `anbernic-rg-351p`,
-`anbernic-rg-351v`, `anbernic-rg-405m`, `anbernic-rg-405v`, `rg-rotate` (draft)
-`ayn-loki`, `ayn-loki-max`, `ayn-loki-mini-pro`, `ayn-loki-zero` (archived)
+**22 consoles still have no variant** — they appear in neither spreadsheet, so the
+import could not fill them (18 draft, 4 archived): the Anbernic RG-351/RG-405 line,
+`rg-rotate`, 1UP (3), 8BCraft (2), Acer Nitro Blaze (2), and the four Ayn Loki models.
 
-**2 published consoles with no default variant** — the page shows whichever variant
-the DB returns first: `ayaneo-pocket-evo`, `valve-steam-deck`
+**2 published consoles have no default variant** — the page shows whichever variant the
+DB returns first: `ayaneo-pocket-evo`, `valve-steam-deck`.
 
-**6 variants with no emulation profile** — blank emulation matrix:
-`analogue-pocket` (Base, published), `valve-steam-deck` (OLED, published),
-`asus-rog-ally` (Base, Z1 Extreme — archived), `nintendo-switch` (V2, OLED — archived)
+**9 published consoles have no description.**
 
-**`soc` is 0 of 136 filled.** CLAUDE.md says to filter on the structured column; it is
-empty, so those filters do nothing. The chipset data is in free-text `cpu_model`.
+**`performance_grade` may be on the wrong scale.** 25 devices scored above their own
+denominator (`5.5/5`) because the converter assumes the sheet rates out of 5. They are
+clamped to `5/5` so nothing impossible renders — **check the source sheet and rescale.**
+The source `.xlsx` files are no longer in the working directory; they need re-uploading
+to verify.
+
+**50 of 513 variants still need `soc` by hand** — the ones where `cpu_model` holds a CPU
+core ("Cortex-A53") rather than a chipset. Down from 273 missing.
+
+**The `_tech` input columns are empty** — `dpad_tech`, `face_button_tech`, `bumper_tech`,
+`trigger_tech` want membrane/microswitch/hall, which the spreadsheet does not record.
+Only `stick_tech` is populated.
 
 **`rg-rotate`** is the only slug missing its brand prefix. Rename while still a draft.
 

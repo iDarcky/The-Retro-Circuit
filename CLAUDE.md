@@ -2,7 +2,7 @@
 
 ## Project Overview
 Retro handheld gaming device comparison engine. Solo PM project, shipped via AI agents.
-Pre-alpha v0.5.5 · 212 consoles (66 published, ~140 draft) · 273 variants · 50 brands · Live at theretrocircuit.com
+Pre-alpha v0.5.5 · 457 consoles (70 published, 387 draft) · 513 variants · 99 brands · Live at theretrocircuit.com
 
 ---
 
@@ -107,8 +107,9 @@ pnpm lint     # ESLint
 
 ## Known Issues / Active TODOs
 - `Button` still used in most admin components — being phased out for `SwissButton`
-- **~140 imported consoles sit in `draft`; almost all lack an image**, which blocks publishing. Use the admin index gap filters (READY / NO IMAGE / NO VARIANT / NO PRICE) to find work.
-- Only ~13 of 273 variants have an `amazon_asin`; the rest fall back to affiliate *search* links, which convert worse. Backfilling ASINs is the top revenue task.
+- **386 of 387 drafts lack an image**, which blocks publishing. This is the single biggest bottleneck — specs, buttons and emulation grades are already filled in for them. Use the admin index gap filters (READY / NO IMAGE / NO VARIANT / NO PRICE) to find work.
+- Only 13 of 513 variants have an `amazon_asin`; the rest fall back to affiliate *search* links, which convert worse. Backfilling ASINs is the top revenue task.
+- The 1,332 imported `console_links` rows are **raw URLs and carry no affiliate tag** — only `lib/affiliate.ts` applies `theretrocircu-20`. Rendering a `kind='vendor'` Amazon link directly earns nothing; route it through `getBuyUrl`.
 - Consoles have no written intro / "system analysis". Spec-derived summaries can be generated from the emulation matrix; **opinionated copy must be human-written** — do not mass-generate device reviews.
 - `eslint-config-next` pinned at 14 (v16 needs an ESLint 9 flat-config migration).
 
