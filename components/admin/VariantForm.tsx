@@ -19,6 +19,33 @@ interface VariantFormProps {
     onError: (msg: string) => void;
 }
 
+// Columns stored in MHz that the form offers GHz/MHz entry for.
+const SECOND_SCREEN_KEYS = [
+    'second_screen_size', 'second_screen_resolution_x', 'second_screen_resolution_y',
+    'second_screen_refresh_rate', 'second_screen_nits', 'second_screen_touch',
+] as const;
+
+const CLOCK_FIELD_KEYS = ['cpu_clock_min_mhz', 'cpu_clock_max_mhz', 'gpu_clock_mhz'] as const;
+
+const DATE_PATTERNS = {
+    year: /^\d{4}$/,
+    month: /^\d{4}-(0[1-9]|1[0-2])$/,
+    day: /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/,
+} as const;
+
+const DATE_HINTS = {
+    year: 'Enter a 4-digit year, e.g. 2026.',
+    month: 'Pick a year and a month.',
+    day: 'Enter a real calendar date (YYYY-MM-DD).',
+} as const;
+
+const MONTH_OPTIONS = [
+    { value: '', label: '-- Month --' },
+    ...['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December']
+        .map((label, i) => ({ value: String(i + 1).padStart(2, '0'), label })),
+];
+
 const ChevronDown = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>;
 
 export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedConsoleId, initialData, onSuccess, onError }) => {
@@ -36,12 +63,16 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     const [pendingEmulationData, setPendingEmulationData] = useState<any>(null);
 
     const [ramInput, setRamInput] = useState<{ value: string | number, unit: 'GB' | 'MB' }>({ value: '', unit: 'GB' });
-    const [cpuMinInput, setCpuMinInput] = useState<{ value: string | number, unit: 'GHz' | 'MHz' }>({ value: '', unit: 'GHz' });
-    const [cpuMaxInput, setCpuMaxInput] = useState<{ value: string | number, unit: 'GHz' | 'MHz' }>({ value: '', unit: 'GHz' });
+    // Keyed by column name so any clock field (CPU min/max, GPU) gets the same
+    // GHz/MHz entry without another pair of hardcoded state slots.
+    type ClockInput = { value: string | number, unit: 'GHz' | 'MHz' };
+    const [clockInputs, setClockInputs] = useState<Record<string, ClockInput>>({});
 
     // Date Logic
     const [datePrecision, setDatePrecision] = useState<'year' | 'month' | 'day' | ''>('');
     const [dateValue, setDateValue] = useState<string>(''); // YYYY, YYYY-MM, or YYYY-MM-DD
+    const [dateError, setDateError] = useState<string>('');
+    const [showSecondScreen, setShowSecondScreen] = useState(false);
 
     const handleInputChange = useCallback((key: string, value: any) => {
         setFormData(prev => ({ ...prev, [key]: value }));
@@ -67,6 +98,10 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             }
 
             setFormData(flattenedData);
+            setShowSecondScreen(SECOND_SCREEN_KEYS.some(k => {
+                const v = (flattenedData as any)[k];
+                return v !== null && v !== undefined && v !== '';
+            }));
             const mb = Number(initialData.ram_mb);
             if (!isNaN(mb) && mb > 0) {
                 if (mb >= 1024 && mb % 1024 === 0) {
@@ -76,18 +111,17 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 }
             }
 
-            // CPU Clock Init
-            const initClock = (mhz: number, setter: any) => {
+            // Clock init — show GHz when the stored MHz divides cleanly, else MHz.
+            const nextClocks: Record<string, ClockInput> = {};
+            for (const key of CLOCK_FIELD_KEYS) {
+                const mhz = Number((initialData as any)[key]);
                 if (!isNaN(mhz) && mhz > 0) {
-                    if (mhz >= 1000 && mhz % 100 === 0) {
-                        setter({ value: mhz / 1000, unit: 'GHz' });
-                    } else {
-                        setter({ value: mhz, unit: 'MHz' });
-                    }
+                    nextClocks[key] = (mhz >= 1000 && mhz % 100 === 0)
+                        ? { value: mhz / 1000, unit: 'GHz' }
+                        : { value: mhz, unit: 'MHz' };
                 }
-            };
-            initClock(Number(initialData.cpu_clock_min_mhz), setCpuMinInput);
-            initClock(Number(initialData.cpu_clock_max_mhz), setCpuMaxInput);
+            }
+            setClockInputs(nextClocks);
 
             // Date Init
             if (initialData.release_date_precision) {
@@ -116,49 +150,65 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         }
     };
 
-    const handleCpuClockChange = (type: 'min' | 'max', newVal: string | number, newUnit: 'GHz' | 'MHz') => {
-        const setter = type === 'min' ? setCpuMinInput : setCpuMaxInput;
-        const key = type === 'min' ? 'cpu_clock_min_mhz' : 'cpu_clock_max_mhz';
-
-        setter({ value: newVal, unit: newUnit });
+    const handleClockChange = (key: string, newVal: string | number, newUnit: 'GHz' | 'MHz') => {
+        setClockInputs(prev => ({ ...prev, [key]: { value: newVal, unit: newUnit } }));
 
         const val = Number(newVal);
         if (!isNaN(val) && val > 0) {
-            const mhz = newUnit === 'GHz' ? Math.round(val * 1000) : val;
-            handleInputChange(key, mhz);
+            handleInputChange(key, newUnit === 'GHz' ? Math.round(val * 1000) : val);
         } else {
             handleInputChange(key, null);
         }
     };
 
-    // Date Handler
+    // Date Handler.
+    //
+    // Validate the shape rather than the string length. A length check let
+    // "09-2026" (a MM-YYYY typed into a browser that has no <input type="month">
+    // and falls back to a text box) through as a valid month, and the resulting
+    // "09-2026-01" reached Postgres as a date. Future dates are fine — an
+    // unreleased device is expected to have one.
     useEffect(() => {
         if (!datePrecision || !dateValue) {
+            setDateError('');
             handleInputChange('release_date', null);
             handleInputChange('release_date_precision', null);
             handleInputChange('release_year', null);
             return;
         }
 
-        let fullDate = null;
-        let yearVal = null;
-
-        if (datePrecision === 'year' && dateValue.length === 4) {
-            fullDate = `${dateValue}-01-01`;
-            yearVal = parseInt(dateValue);
-        } else if (datePrecision === 'month' && dateValue.length === 7) {
-            fullDate = `${dateValue}-01`;
-            yearVal = parseInt(dateValue.split('-')[0]);
-        } else if (datePrecision === 'day' && dateValue.length === 10) {
-            fullDate = dateValue;
-            yearVal = parseInt(dateValue.split('-')[0]);
+        const match = dateValue.match(DATE_PATTERNS[datePrecision]);
+        if (!match) {
+            setDateError(DATE_HINTS[datePrecision]);
+            handleInputChange('release_date', null);
+            handleInputChange('release_date_precision', null);
+            handleInputChange('release_year', null);
+            return;
         }
 
-        if (fullDate) {
-            handleInputChange('release_date', fullDate);
-            handleInputChange('release_date_precision', datePrecision);
-            handleInputChange('release_year', yearVal);
+        // A real calendar day, so 2026-02-31 is rejected rather than rolled over.
+        if (datePrecision === 'day') {
+            const [y, m, d] = dateValue.split('-').map(Number);
+            const probe = new Date(Date.UTC(y, m - 1, d));
+            if (probe.getUTCMonth() !== m - 1 || probe.getUTCDate() !== d) {
+                setDateError(DATE_HINTS.day);
+                handleInputChange('release_date', null);
+                handleInputChange('release_date_precision', null);
+                handleInputChange('release_year', null);
+                return;
+            }
         }
+
+        setDateError('');
+        const year = dateValue.slice(0, 4);
+        const fullDate =
+            datePrecision === 'year' ? `${year}-01-01`
+            : datePrecision === 'month' ? `${dateValue}-01`
+            : dateValue;
+
+        handleInputChange('release_date', fullDate);
+        handleInputChange('release_date_precision', datePrecision);
+        handleInputChange('release_year', parseInt(year, 10));
     }, [datePrecision, dateValue, handleInputChange]);
 
 
@@ -195,7 +245,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     }, [formData.screen_size_inch, formData.screen_resolution_x, formData.screen_resolution_y]);
 
     useEffect(() => {
-        const size = parseFloat(formData.second_screen_size_inch);
+        const size = parseFloat(formData.second_screen_size);
         const w = parseFloat(formData.second_screen_resolution_x);
         const h = parseFloat(formData.second_screen_resolution_y);
         if (!isNaN(size) && size > 0 && !isNaN(w) && w > 0 && !isNaN(h) && h > 0) {
@@ -208,7 +258,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 return { ...prev, second_screen_ppi: ppi, second_screen_aspect_ratio: ratio };
             });
         }
-    }, [formData.second_screen_size_inch, formData.second_screen_resolution_x, formData.second_screen_resolution_y]);
+    }, [formData.second_screen_size, formData.second_screen_resolution_x, formData.second_screen_resolution_y]);
 
     const toggleSection = (title: string) => {
         setOpenSections(prev => ({ ...prev, [title]: !prev[title] }));
@@ -257,6 +307,21 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             } else {
                 setRamInput({ value: '', unit: 'GB' });
             }
+
+            const nextClocks: Record<string, ClockInput> = {};
+            for (const key of CLOCK_FIELD_KEYS) {
+                const mhz = Number((template as any)[key]);
+                if (!isNaN(mhz) && mhz > 0) {
+                    nextClocks[key] = (mhz >= 1000 && mhz % 100 === 0)
+                        ? { value: mhz / 1000, unit: 'GHz' }
+                        : { value: mhz, unit: 'MHz' };
+                }
+            }
+            setClockInputs(nextClocks);
+            setShowSecondScreen(SECOND_SCREEN_KEYS.some(k => {
+                const v = (template as any)[k];
+                return v !== null && v !== undefined && v !== '';
+            }));
         }
     };
 
@@ -294,7 +359,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             'stick_count', 'stick_tech', 'stick_layout', 'stick_placement', 'stick_clicks', 'stick_cap',
             'bumper_tech', 'bumper_type', 'trigger_tech', 'trigger_type', 'trigger_layout',
             'back_button_count', 'has_gyro', 'has_keyboard',
-            'system_button_set', 'system_buttons_text', 'touchpad_count', 'touchpad_clickable',
+            'system_buttons_text', 'touchpad_count', 'touchpad_clickable',
             'input_confidence', 'input_notes'
         ];
 
@@ -438,42 +503,108 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
                                             const error = field.key ? fieldErrors[field.key as keyof typeof fieldErrors] : undefined;
 
-                                            if (field.type === 'custom_date') {
+                                            if (field.optionalGroup === 'second_screen' && !showSecondScreen) return null;
+
+                                            if (field.type === 'custom_second_screen_toggle') {
                                                 return (
-                                                    <div key="date-input" className={`${colSpan} grid grid-cols-2 gap-4`}>
-                                                        <div>
-                                                            <label className="text-[10px] mb-1 block uppercase text-gray-500">Date Precision</label>
-                                                            <SwissDropdown
-                                                                className="w-full"
-                                                                buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center"
-                                                                value={datePrecision}
-                                                                onChange={(val) => {
-                                                                    setDatePrecision(val as any);
-                                                                    setDateValue("");
-                                                                }}
-                                                                options={[
-                                                                    { value: "", label: "-- None --" },
-                                                                    { value: "year", label: "Year Only" },
-                                                                    { value: "month", label: "Month + Year" },
-                                                                    { value: "day", label: "Exact Day" }
-                                                                ]}
-                                                                labelPrefix="" inverted={false}
-                                                            />
-                                                        </div>
-                                                        {datePrecision && (
+                                                    <div key="second-screen-toggle" className="md:col-span-12 mt-2 pt-4 border-t border-white/10">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowSecondScreen(v => !v)}
+                                                            className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-widest text-gray-400 hover:text-white transition-colors"
+                                                        >
+                                                            <span className={`w-4 h-4 border flex items-center justify-center ${showSecondScreen ? 'bg-secondary border-secondary' : 'border-gray-600'}`}>
+                                                                {showSecondScreen && <span className="w-2 h-2 bg-black" />}
+                                                            </span>
+                                                            Has a second screen
+                                                        </button>
+                                                        {!showSecondScreen && (
+                                                            <div className="text-[9px] text-gray-600 mt-1 font-mono">// 9 of 514 devices do — leave this off for the rest</div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            }
+
+                                            if (field.type === 'custom_date') {
+                                                // Year and month are explicit controls rather than <input type="month">,
+                                                // which Safari does not implement and silently renders as a text box.
+                                                const dateInputClass = `w-full bg-black border p-3 outline-none text-white font-mono text-sm h-[46px] ${dateError ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`;
+                                                const yearPart = dateValue.slice(0, 4);
+                                                const monthPart = dateValue.slice(5, 7);
+
+                                                const setYear = (y: string) => {
+                                                    const clean = y.replace(/\D/g, '').slice(0, 4);
+                                                    setDateValue(datePrecision === 'month' ? (monthPart ? `${clean}-${monthPart}` : clean) : clean);
+                                                };
+                                                const setMonth = (m: string) => {
+                                                    setDateValue(m ? `${yearPart}-${m}` : yearPart);
+                                                };
+
+                                                return (
+                                                    <div key="date-input" className={`${colSpan}`}>
+                                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                             <div>
-                                                                <label className="text-[10px] mb-1 block uppercase text-gray-500">
-                                                                    {datePrecision === 'year' ? 'Year (YYYY)' : datePrecision === 'month' ? 'Month (YYYY-MM)' : 'Date'}
-                                                                </label>
-                                                                <input
-                                                                    type={datePrecision === 'year' ? 'number' : datePrecision === 'month' ? 'month' : 'date'}
-                                                                    className="w-full bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm"
-                                                                    value={dateValue}
-                                                                    onChange={(e) => setDateValue(e.target.value)}
-                                                                    placeholder={datePrecision === 'year' ? 'YYYY' : ''}
+                                                                <label className="text-[10px] mb-1 block uppercase text-gray-500">Date Precision</label>
+                                                                <SwissDropdown
+                                                                    className="w-full"
+                                                                    buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center"
+                                                                    value={datePrecision}
+                                                                    onChange={(val) => {
+                                                                        setDatePrecision(val as any);
+                                                                        setDateValue("");
+                                                                    }}
+                                                                    options={[
+                                                                        { value: "", label: "-- None --" },
+                                                                        { value: "year", label: "Year Only" },
+                                                                        { value: "month", label: "Month + Year" },
+                                                                        { value: "day", label: "Exact Day" }
+                                                                    ]}
+                                                                    labelPrefix="" inverted={false}
                                                                 />
                                                             </div>
-                                                        )}
+
+                                                            {(datePrecision === 'year' || datePrecision === 'month') && (
+                                                                <div>
+                                                                    <label className="text-[10px] mb-1 block uppercase text-gray-500">Year</label>
+                                                                    <input
+                                                                        type="text"
+                                                                        inputMode="numeric"
+                                                                        maxLength={4}
+                                                                        className={dateInputClass}
+                                                                        value={yearPart}
+                                                                        onChange={(e) => setYear(e.target.value)}
+                                                                        placeholder="YYYY"
+                                                                    />
+                                                                </div>
+                                                            )}
+
+                                                            {datePrecision === 'month' && (
+                                                                <div>
+                                                                    <label className="text-[10px] mb-1 block uppercase text-gray-500">Month</label>
+                                                                    <SwissDropdown
+                                                                        className="w-full"
+                                                                        buttonClassName={`bg-black border p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center ${dateError ? 'border-accent' : 'border-gray-700'}`}
+                                                                        value={monthPart}
+                                                                        onChange={(val) => setMonth(val as string)}
+                                                                        options={MONTH_OPTIONS}
+                                                                        labelPrefix="" inverted={false}
+                                                                    />
+                                                                </div>
+                                                            )}
+
+                                                            {datePrecision === 'day' && (
+                                                                <div className="md:col-span-2">
+                                                                    <label className="text-[10px] mb-1 block uppercase text-gray-500">Date</label>
+                                                                    <input
+                                                                        type="date"
+                                                                        className={dateInputClass}
+                                                                        value={dateValue}
+                                                                        onChange={(e) => setDateValue(e.target.value)}
+                                                                    />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        {dateError && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold">! {dateError}</div>}
                                                     </div>
                                                 );
                                             }
@@ -491,21 +622,22 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                                                 );
                                             }
 
-                                            if (field.type === 'custom_cpu_clock') {
-                                                const isMax = field.key === 'cpu_clock_max_mhz';
-                                                const inputState = isMax ? cpuMaxInput : cpuMinInput;
+                                            if (field.type === 'custom_clock') {
+                                                const inputState = clockInputs[field.key] || { value: '', unit: 'GHz' as const };
                                                 return (
                                                     <div key={field.key || `field-${fieldIdx}`} className={`${colSpan}`}>
                                                         <label className={`text-[10px] mb-1 block uppercase ${error ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
                                                         <div className="flex gap-2">
                                                             <input
                                                                 type="number"
+                                                                step="any"
                                                                 className={`flex-1 border p-3 outline-none font-mono text-sm bg-black text-white ${error ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`}
                                                                 value={inputState.value}
-                                                                onChange={(e) => handleCpuClockChange(isMax ? 'max' : 'min', e.target.value, inputState.unit)}
+                                                                onChange={(e) => handleClockChange(field.key, e.target.value, inputState.unit)}
                                                             />
-                                                            <SwissDropdown value={inputState.unit} onChange={(val) => handleCpuClockChange(isMax ? 'max' : 'min', inputState.value, val as 'GHz' | 'MHz')} options={[{label: 'GHz', value: 'GHz'}, {label: 'MHz', value: 'MHz'}]} className="w-24" buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center" labelPrefix="" inverted={false} />
+                                                            <SwissDropdown value={inputState.unit} onChange={(val) => handleClockChange(field.key, inputState.value, val as 'GHz' | 'MHz')} options={[{label: 'GHz', value: 'GHz'}, {label: 'MHz', value: 'MHz'}]} className="w-24" buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center" labelPrefix="" inverted={false} />
                                                         </div>
+                                                        {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
                                                         {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
                                                     </div>
                                                 );

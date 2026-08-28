@@ -47,7 +47,7 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
     };
 
     return (
-        <div className="w-full max-w-7xl mx-auto p-4 animate-fadeIn">
+        <div className="w-full max-w-[1600px] mx-auto p-4 animate-fadeIn">
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b-2 border-border-normal pb-6 gap-4">
                 <div>

@@ -43,11 +43,11 @@ export const VARIANT_FORM_GROUPS = [
         fields: [
             { label: 'Variant Name (e.g. "OLED Model")', key: 'variant_name', type: 'text', required: false, width: 'full' },
             { label: 'Release Date', key: 'release_date', type: 'custom_date', required: false, width: 'full' },
-            { label: 'Launch Price ($)', key: 'price_launch_usd', type: 'number', required: false },
-            { label: 'Amazon ASIN', key: 'amazon_asin', type: 'text', required: false },
-            { label: 'Is Default/Base Model?', key: 'is_default', type: 'checkbox', required: false },
-            { label: 'Model No.', key: 'model_no', type: 'text', required: false },
-            { label: 'Image URL', key: 'image_url', type: 'url', required: false, width: 'full' },
+            { label: 'Launch Price — MSRP at release ($)', key: 'price_launch_usd', type: 'number', required: false, width: 'third' },
+            { label: 'Street Price — typical today ($)', key: 'price_avg_usd', type: 'number', required: false, width: 'third', note: 'Preferred for display and Best Of ranking.' },
+            { label: 'Amazon ASIN', key: 'amazon_asin', type: 'text', required: false, width: 'third' },
+            { label: 'Model No.', key: 'model_no', type: 'text', required: false, width: 'half' },
+            { label: 'Is Default/Base Model?', key: 'is_default', type: 'checkbox', required: false, width: 'half' },
         ]
     },
     {
@@ -72,19 +72,20 @@ export const VARIANT_FORM_GROUPS = [
 
             { label: 'CPU Cores', key: 'cpu_cores', type: 'number', required: false, width: 'third' },
             { label: 'CPU Threads', key: 'cpu_threads', type: 'number', required: false, width: 'third' },
-            { label: 'CPU Clock Min', key: 'cpu_clock_min_mhz', type: 'custom_cpu_clock', required: false, width: 'third' },
-            { label: 'CPU Clock Max', key: 'cpu_clock_max_mhz', type: 'custom_cpu_clock', required: false, width: 'third' },
+            { label: 'CPU Clock Min', key: 'cpu_clock_min_mhz', type: 'custom_clock', required: false, width: 'third' },
+            { label: 'CPU Clock Max', key: 'cpu_clock_max_mhz', type: 'custom_clock', required: false, width: 'third' },
             
             { label: 'GPU Model', key: 'gpu_model', type: 'text', required: false, width: 'third' },
             { label: 'GPU Architecture', key: 'gpu_architecture', type: 'text', required: false, width: 'third' },
             { label: 'CUs / Execution Units', key: 'gpu_compute_units', type: 'text', required: false, width: 'third' },
             { label: 'GPU Cores', key: 'gpu_cores', type: 'number', required: false, width: 'third' },
             
-            { label: 'GPU Clock (MHz)', key: 'gpu_clock_mhz', type: 'number', required: false, width: 'third' },
+            { label: 'GPU Clock', key: 'gpu_clock_mhz', type: 'custom_clock', required: false, width: 'third' },
             { label: 'GPU Teraflops', key: 'gpu_teraflops', type: 'number', required: false, step: '0.01', width: 'third' },
             { label: 'Vulkan Support (e.g. 1.3)', key: 'vulkan_support', type: 'text', required: false, width: 'third' },
             { label: 'GPU Driver / Turnip', key: 'gpu_driver', type: 'text', required: false, width: 'third' },
             { label: 'Benchmark (AnTuTu)', key: 'benchmark_score', type: 'number', required: false, width: 'third' },
+            { label: 'Performance Rating', key: 'performance_grade', type: 'text', required: false, width: 'third' },
         ]
     },
     {
@@ -103,7 +104,8 @@ export const VARIANT_FORM_GROUPS = [
             
             { label: 'Base Capacity (GB)', key: 'storage_gb', type: 'number', required: false, width: 'third' },
             { label: 'Storage Type (e.g. UFS 3.1)', key: 'storage_type', type: 'text', required: false, width: 'third' },
-            { label: 'MicroSD Slot?', key: 'storage_expandable', type: 'checkbox', required: false, width: 'third' },
+            { label: 'Expandable Storage?', key: 'storage_expandable', type: 'checkbox', required: false, width: 'third' },
+            { label: 'Card Slot', key: 'microsd_type', type: 'text', required: false, width: 'third', note: 'e.g. MicroSD, Dual MicroSD' },
         ]
     },
     {
@@ -127,19 +129,24 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Refresh Rate (Hz)', key: 'refresh_rate_hz', type: 'number', required: false, width: 'third' },
             { label: 'Brightness (nits)', key: 'brightness_nits', type: 'number', required: false, width: 'third' },
 
-            { label: 'Display Tech (VRR etc)', key: 'display_tech', type: 'text', required: false, width: 'half' },
-            { label: 'Touchscreen?', key: 'touchscreen', type: 'checkbox', required: false, width: 'half' },
+            { label: 'Display Tech (VRR, contrast, sRGB)', key: 'display_tech', type: 'text', required: false, width: 'third' },
+            { label: 'Screen Lens', key: 'screen_lens', type: 'text', required: false, width: 'third', note: 'e.g. Tempered Glass (OCA Laminated)' },
+            { label: 'Touchscreen?', key: 'touchscreen', type: 'checkbox', required: false, width: 'third' },
 
-            { label: '2nd Screen Size (inch)', key: 'second_screen_size', type: 'number', required: false, step: '0.1', width: 'third' },
-            { label: '2nd Res X', key: 'second_screen_resolution_x', type: 'number', required: false, width: 'third' },
-            { label: '2nd Res Y', key: 'second_screen_resolution_y', type: 'number', required: false, width: 'third' },
+            // Only 9 of 514 variants have a second screen, so the block stays folded
+            // away until this toggle is on (it opens itself when data is present).
+            { type: 'custom_second_screen_toggle', key: '__second_screen_toggle', width: 'full' },
 
-            { label: '2nd Aspect Ratio', key: 'second_screen_aspect_ratio', type: 'text', required: false, width: 'half', visualStyle: 'computed', note: 'Auto-calculated' },
-            { label: '2nd Pixel Density (PPI)', key: 'second_screen_ppi', type: 'number', required: false, width: 'half', visualStyle: 'computed', note: 'Auto-calculated' },
+            { label: '2nd Screen Size (inch)', key: 'second_screen_size', type: 'number', required: false, step: '0.1', width: 'third', optionalGroup: 'second_screen' },
+            { label: '2nd Res X', key: 'second_screen_resolution_x', type: 'number', required: false, width: 'third', optionalGroup: 'second_screen' },
+            { label: '2nd Res Y', key: 'second_screen_resolution_y', type: 'number', required: false, width: 'third', optionalGroup: 'second_screen' },
 
-            { label: '2nd Refresh Rate (Hz)', key: 'second_screen_refresh_rate', type: 'number', required: false, width: 'third' },
-            { label: '2nd Brightness (nits)', key: 'second_screen_nits', type: 'number', required: false, width: 'third' },
-            { label: '2nd Touch?', key: 'second_screen_touch', type: 'checkbox', required: false, width: 'third' },
+            { label: '2nd Aspect Ratio', key: 'second_screen_aspect_ratio', type: 'text', required: false, width: 'half', visualStyle: 'computed', note: 'Auto-calculated', optionalGroup: 'second_screen' },
+            { label: '2nd Pixel Density (PPI)', key: 'second_screen_ppi', type: 'number', required: false, width: 'half', visualStyle: 'computed', note: 'Auto-calculated', optionalGroup: 'second_screen' },
+
+            { label: '2nd Refresh Rate (Hz)', key: 'second_screen_refresh_rate', type: 'number', required: false, width: 'third', optionalGroup: 'second_screen' },
+            { label: '2nd Brightness (nits)', key: 'second_screen_nits', type: 'number', required: false, width: 'third', optionalGroup: 'second_screen' },
+            { label: '2nd Touch?', key: 'second_screen_touch', type: 'checkbox', required: false, width: 'third', optionalGroup: 'second_screen' },
         ]
     },
     {
@@ -181,13 +188,10 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Touchpad Click?', key: 'touchpad_clickable', type: 'checkbox', required: false, width: 'quarter' },
             { label: 'Gyro?', key: 'has_gyro', type: 'checkbox', required: false, width: 'quarter' },
 
-            { label: 'System Btns', key: 'system_button_set', type: 'select', required: false, width: 'third', options: ['minimal', 'standard', 'extended', 'unknown'] },
-            { label: 'Sys Btn Text', key: 'system_buttons_text', type: 'text', required: false, width: 'two-thirds', note: 'e.g. Start, Select, Home, Share' },
+            { label: 'System Buttons', key: 'system_buttons_text', type: 'text', required: false, width: 'two-thirds', note: 'e.g. Start, Select, Home, Share' },
+            { label: 'Has Keyboard?', key: 'has_keyboard', type: 'checkbox', required: false, width: 'third' },
 
-            { label: 'Has Keyboard?', key: 'has_keyboard', type: 'checkbox', required: false, width: 'half' },
-            // Removed keyboard_type
-
-            { label: 'Confidence', key: 'input_confidence', type: 'select', required: true, width: 'full', options: ['confirmed', 'inferred', 'unknown'] },
+            { label: 'Confidence', key: 'input_confidence', type: 'select', required: false, width: 'full', options: ['confirmed', 'inferred', 'unknown'] },
             { label: 'Notes', key: 'input_notes', type: 'textarea', required: false, width: 'full' },
         ]
     },
@@ -237,6 +241,7 @@ export const VARIANT_FORM_GROUPS = [
 
             { label: 'Biometrics', key: 'biometrics', type: 'text', required: false, width: 'half', note: 'Fingerprint Sensor, Face Unlock...' },
             { label: 'Camera Specs', key: 'camera_specs', type: 'text', required: false, width: 'half', note: '2MP Front...' },
+            { label: 'Sensors', key: 'sensors', type: 'text', required: false, width: 'full', note: 'Ambient light, accelerometer... (gyro and fingerprint have their own fields)' },
         ]
     }
 ];

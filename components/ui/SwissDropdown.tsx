@@ -67,7 +67,7 @@ export function SwissDropdown<T extends string | number>({
                 `}
             >
                 <div className="flex items-center gap-2 truncate">
-                    {!compact && <ArrowUpDown size={14} className="shrink-0" />}
+                    {!compact && showPrefix && <ArrowUpDown size={14} className="shrink-0" />}
                     {showPrefix ? (
                         <>
                             <span className="hidden md:inline truncate">{labelPrefix}: {selectedLabel}</span>

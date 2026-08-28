@@ -113,6 +113,7 @@ export const ConsoleVariantSchema = z.object({
   release_date_precision: z.enum(['year', 'month', 'day']).nullable().optional(),
   model_no: safeString,
   price_launch_usd: safeNumber,
+  price_avg_usd: safeNumber,
   amazon_asin: safeString.nullable().optional(),
   image_url: safeString,
 
@@ -140,6 +141,7 @@ export const ConsoleVariantSchema = z.object({
   vulkan_support: safeString,
   gpu_driver: safeString,
   benchmark_score: safeNumber,
+  performance_grade: safeString,
 
   // Memory
   ram_mb: safeNumber,
@@ -149,6 +151,7 @@ export const ConsoleVariantSchema = z.object({
   storage_gb: safeNumber,
   storage_type: safeString,
   storage_expandable: safeBoolean,
+  microsd_type: safeString,
 
   // Display
   screen_size_inch: safeNumber,
@@ -161,6 +164,7 @@ export const ConsoleVariantSchema = z.object({
   aspect_ratio: safeString,
   ppi: safeNumber,
   touchscreen: safeBoolean,
+  screen_lens: safeString,
 
   second_screen_size: safeNumber,
   second_screen_resolution_x: safeNumber,
@@ -190,6 +194,7 @@ export const ConsoleVariantSchema = z.object({
   has_microphone: safeBoolean,
   camera_specs: safeString,
   biometrics: safeString,
+  sensors: safeString,
 
   // IO & Connectivity
   ports: safeString,

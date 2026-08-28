@@ -178,6 +178,7 @@ export interface ConsoleVariant {
   release_date_precision?: 'year' | 'month' | 'day' | null;
   model_no?: string;
   price_launch_usd?: number;
+  price_avg_usd?: number;
   image_url?: string;
   og_icon_url?: string;
 
@@ -194,6 +195,7 @@ export interface ConsoleVariant {
   gpu_cores?: number;
   gpu_compute_units?: string;
   gpu_clock_mhz?: number;
+  performance_grade?: string | null;
   gpu_teraflops?: number;
 
   os?: string;
@@ -228,6 +230,9 @@ export interface ConsoleVariant {
   ppi?: number;
   touchscreen?: boolean;
 
+  microsd_type?: string | null;
+  screen_lens?: string | null;
+  sensors?: string | null;
   second_screen_size?: number;
   second_screen_resolution_x?: number;
   second_screen_resolution_y?: number;

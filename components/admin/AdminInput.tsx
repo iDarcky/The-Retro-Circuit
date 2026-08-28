@@ -32,7 +32,9 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
     const isComputed = field.visualStyle === 'computed';
     const computedBg = isComputed ? 'bg-bg-secondary text-gray-500 cursor-not-allowed opacity-75' : 'bg-bg-primary text-white';
     
-    const baseInputClasses = `w-full bg-bg-primary border p-3 font-mono text-sm outline-none transition-all duration-200 uppercase placeholder:text-gray-700`;
+    // No `uppercase` here: it is text-transform only, so the box would show caps while
+    // storing whatever was typed — there was no way to tell which case was saved.
+    const baseInputClasses = `w-full bg-bg-primary border p-3 font-mono text-sm outline-none transition-all duration-200 placeholder:text-gray-700`;
 
     if (type === 'color') {
         return (

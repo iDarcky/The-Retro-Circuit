@@ -91,6 +91,25 @@ const SpecSection = ({ title, children, colorClass = "text-orange-500 border-ora
     );
 };
 
+// `os_family` + `os_version` are the structured truth; `os` is the display
+// string. Where `os` adds nothing over the two ("Android 13"), prefer the
+// structured pair — but keep `os` when it carries a distro or a dual boot
+// ("Linux (RetroPie)", "Windows 11 / SteamOS", "OpenDingux").
+const formatOs = (specs: any): string | null => {
+    const family = specs.os_family ? String(specs.os_family) : '';
+    const version = specs.os_version ? String(specs.os_version) : '';
+    const free = specs.os ? String(specs.os).trim() : '';
+
+    const structured = [family, version].filter(Boolean).join(' ');
+    if (!free) return structured || null;
+    if (!structured) return free;
+
+    const norm = (v: string) => v.toLowerCase().replace(/[^a-z0-9]/g, '');
+    return norm(free) === norm(structured)
+        ? free.charAt(0).toUpperCase() + free.slice(1)
+        : free;
+};
+
 const hasData = (keys: string[], specs: any): boolean => {
     if (!specs) return false;
     return keys.some(key => {
@@ -141,10 +160,10 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
     };
 
     const SECTIONS = {
-        SILICON: ['os', 'ui_skin', 'model_no', 'cpu_model', 'cpu_architecture', 'cpu_process_node', 'cpu_cores', 'cpu_threads', 'cpu_clock_max_mhz', 'gpu_model', 'gpu_architecture', 'gpu_cores', 'gpu_compute_units', 'gpu_clock_mhz', 'gpu_teraflops'],
+        SILICON: ['os', 'os_family', 'ui_skin', 'model_no', 'soc', 'cpu_model', 'cpu_architecture', 'cpu_process_node', 'cpu_cores', 'cpu_threads', 'cpu_clock_max_mhz', 'gpu_model', 'gpu_architecture', 'gpu_cores', 'gpu_compute_units', 'gpu_clock_mhz', 'gpu_teraflops'],
         MEMORY: ['ram_mb', 'ram_type', 'ram_speed_mhz', 'storage_gb', 'storage_type', 'storage_expandable'],
         DISPLAY: ['screen_size_inch', 'screen_resolution_x', 'display_type', 'display_tech', 'refresh_rate_hz', 'brightness_nits', 'touchscreen', 'aspect_ratio', 'ppi', 'second_screen_size', 'second_screen_touch', 'second_screen_ppi', 'second_screen_aspect_ratio', 'second_screen_refresh_rate', 'second_screen_nits'],
-        INPUT: ['variant_input_profile', 'input_layout', 'dpad_mechanism', 'thumbstick_mechanism', 'trigger_mechanism', 'haptics'],
+        INPUT: ['variant_input_profile'],
         CONNECTIVITY: ['wifi_specs', 'bluetooth_specs', 'other_connectivity', 'cellular_connectivity', 'video_out', 'ports'],
         POWER: ['battery_capacity_mah', 'battery_capacity_wh', 'battery_type', 'charging_speed_w', 'tdp_wattage', 'charging_tech', 'cooling_solution', 'width_mm', 'weight_g', 'body_material', 'available_colors'],
         AUDIO: ['audio_speakers', 'has_headphone_jack', 'has_microphone', 'biometrics', 'camera_specs']
@@ -155,9 +174,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
             {/* SILICON CORE */}
             {hasData(SECTIONS.SILICON, mergedSpecs) && (
                 <SpecSection title="Silicon Architecture" colorClass="text-orange-500 border-orange-500/20">
-                    <SpecRow label="OS / Firmware" value={mergedSpecs.os} />
-                    <SpecRow label="OS Family" value={mergedSpecs.os_family} />
-                    <SpecRow label="OS Version" value={mergedSpecs.os_version} />
+                    <SpecRow label="OS / Firmware" value={formatOs(mergedSpecs)} />
                     <SpecRow label="Performance Rating" value={mergedSpecs.performance_grade} />
                     <SpecRow label="UI Skin" value={mergedSpecs.ui_skin} />
                     <SpecRow label="Model No" value={mergedSpecs.model_no} />
@@ -189,7 +206,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                     <SpecRow label="RAM Speed" value={mergedSpecs.ram_speed_mhz} unit="MHz" />
                     <SpecRow label="Storage" value={mergedSpecs.storage_gb} unit="GB" />
                     <SpecRow label="Storage Type" value={mergedSpecs.storage_type} />
-                    <SpecRow label="MicroSD" value={mergedSpecs.microsd_type} />
+                    <SpecRow label="Card Slot" value={mergedSpecs.microsd_type} />
                     <SpecRow label="Expandable" value={mergedSpecs.storage_expandable ? 'YES' : 'NO'} />
                 </SpecSection>
             )}
@@ -257,7 +274,6 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                     ) : (
                         <div className="text-xs font-mono text-gray-600 py-2 px-4">[ NO INPUT DATA ]</div>
                     )}
-                     <SpecRow label="Haptics" value={mergedSpecs.haptics ? 'YES' : null} />
                 </SpecSection>
             )}
 
