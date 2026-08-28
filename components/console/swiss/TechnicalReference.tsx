@@ -246,24 +246,33 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
     };
 
     const SECTIONS = {
-        SILICON: ['os', 'os_family', 'ui_skin', 'model_no', 'soc', 'cpu_model', 'cpu_architecture', 'cpu_process_node', 'cpu_cores', 'cpu_threads', 'cpu_clock_max_mhz', 'gpu_model', 'gpu_architecture', 'gpu_cores', 'gpu_compute_units', 'gpu_clock_mhz', 'gpu_teraflops'],
+        // Section order and membership mirror VARIANT_FORM_GROUPS one for one, so a field
+        // you fill in under a heading in the admin appears under the same heading here.
+        PLATFORM: ['os', 'os_family', 'os_version', 'ui_skin', 'model_no'],
+        SILICON: ['soc', 'soc_vendor', 'soc_name', 'cpu_model', 'cpu_clusters', 'cpu_architecture', 'cpu_process_node', 'cpu_cores', 'cpu_threads', 'cpu_clock_max_mhz', 'gpu_model', 'gpu_vendor', 'gpu_name', 'gpu_architecture', 'gpu_cores', 'gpu_compute_units', 'gpu_clock_mhz', 'gpu_teraflops', 'benchmark_score', 'performance_grade'],
         MEMORY: ['ram_mb', 'ram_type', 'ram_speed_mhz', 'storage_gb', 'storage_type', 'storage_expandable'],
         DISPLAY: ['screen_size_inch', 'screen_resolution_x', 'display_type', 'display_tech', 'refresh_rate_hz', 'brightness_nits', 'touchscreen', 'aspect_ratio', 'ppi', 'second_screen_size', 'second_screen_touch', 'second_screen_ppi', 'second_screen_aspect_ratio', 'second_screen_refresh_rate', 'second_screen_nits'],
         INPUT: ['variant_input_profile'],
         CONNECTIVITY: ['wifi_specs', 'bluetooth_specs', 'other_connectivity', 'cellular_connectivity', 'video_out'],
-        POWER: ['battery_capacity_mah', 'battery_capacity_wh', 'battery_type', 'charging_speed_w', 'tdp_wattage', 'charging_tech', 'charge_port', 'cooling_solution', 'cooling_type', 'width_mm', 'weight_g', 'body_material', 'available_colors', 'ports'],
+        POWER: ['battery_capacity_mah', 'battery_capacity_wh', 'battery_type', 'charging_speed_w', 'tdp_wattage', 'charging_tech', 'charge_port', 'cooling_solution', 'cooling_type'],
+        CHASSIS: ['width_mm', 'height_mm', 'depth_mm', 'weight_g', 'body_material', 'available_colors', 'ports'],
         AUDIO: ['audio_speakers', 'speaker_config', 'has_headphone_jack', 'has_microphone', 'biometrics', 'camera_specs', 'sensors']
     };
 
     const content = (
         <TechViewContext.Provider value={viewMode}>
-            {/* SILICON CORE */}
-            {hasData(SECTIONS.SILICON, mergedSpecs) && (
-                <SpecSection title="Silicon Architecture" colorClass="text-orange-500 border-orange-500/20">
+            {/* PLATFORM / OS */}
+            {hasData(SECTIONS.PLATFORM, mergedSpecs) && (
+                <SpecSection title="Platform" colorClass="text-orange-500 border-orange-500/20">
                     <SpecRow label="OS / Firmware" value={formatOs(mergedSpecs)} />
-                    <SpecRow label="Performance Rating" value={mergedSpecs.performance_grade} />
                     <SpecRow label="UI Skin" value={mergedSpecs.ui_skin} />
                     <SpecRow label="Model No" value={mergedSpecs.model_no} />
+                </SpecSection>
+            )}
+
+            {/* SILICON */}
+            {hasData(SECTIONS.SILICON, mergedSpecs) && (
+                <SpecSection title="Silicon" colorClass="text-orange-500 border-orange-500/20">
                     <SpecRow label="SoC / Chipset" value={formatSoc(mergedSpecs)} />
                     <SpecRow label="CPU" value={formatClusters(mergedSpecs.cpu_clusters) ?? mergedSpecs.cpu_model} />
                     <SpecRow label="CPU Arch" value={mergedSpecs.cpu_arch} />
@@ -275,12 +284,13 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                     <SpecRow label="GPU" value={formatGpu(mergedSpecs)} />
                     <SpecRow label="GPU Driver" value={mergedSpecs.gpu_driver} />
                     <SpecRow label="Vulkan" value={mergedSpecs.vulkan_support} />
-                    <SpecRow label="Benchmark" value={mergedSpecs.benchmark_score} />
                     <SpecRow label="GPU Arch" value={mergedSpecs.gpu_architecture} />
                     <SpecRow label="GPU Cores" value={mergedSpecs.gpu_cores} />
                     <SpecRow label="Compute Units" value={mergedSpecs.gpu_compute_units} />
                     <SpecRow label="GPU Clock" value={mergedSpecs.gpu_clock_mhz} unit="MHz" />
                     <SpecRow label="GPU Perf" value={mergedSpecs.gpu_teraflops} unit="TFLOPS" />
+                    <SpecRow label="Benchmark" value={mergedSpecs.benchmark_score} />
+                    <SpecRow label="Performance Rating" value={mergedSpecs.performance_grade} />
                 </SpecSection>
             )}
 
@@ -299,7 +309,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
 
             {/* DISPLAY */}
             {hasData(SECTIONS.DISPLAY, mergedSpecs) && (
-                <SpecSection title="Display Matrix" colorClass="text-cyan-500 border-cyan-500/20">
+                <SpecSection title="Display" colorClass="text-cyan-500 border-cyan-500/20">
                     <SpecRow label="Size" value={mergedSpecs.screen_size_inch} unit='"' />
                     <SpecRow label="Resolution" value={`${mergedSpecs.screen_resolution_x} x ${mergedSpecs.screen_resolution_y}`} />
                     <SpecRow label="Panel Type" value={mergedSpecs.display_type} />
@@ -330,7 +340,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
 
             {/* INPUT */}
             {hasData(SECTIONS.INPUT, mergedSpecs) && (
-                <SpecSection title="Input Interface" colorClass="text-violet-500 border-violet-500/20">
+                <SpecSection title="Input" colorClass="text-violet-500 border-violet-500/20">
                     {mergedSpecs.variant_input_profile ? (
                         <>
                             <SpecRow label="D-Pad Shape" value={formatInputEnum('rc_dpad_shape', mergedSpecs.variant_input_profile.dpad_shape)} />
@@ -379,7 +389,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
 
             {/* POWER & CHASSIS */}
             {hasData(SECTIONS.POWER, mergedSpecs) && (
-                <SpecSection title="Power & Chassis" colorClass="text-emerald-500 border-emerald-500/20">
+                <SpecSection title="Power & Thermals" colorClass="text-emerald-500 border-emerald-500/20">
                     <SpecRow label="Battery Cap" value={mergedSpecs.battery_capacity_mah} unit="mAh" />
                     <SpecRow label="Battery Energy" value={mergedSpecs.battery_capacity_wh} unit="Wh" />
                     <SpecRow label="Type" value={mergedSpecs.battery_type} />
@@ -388,6 +398,12 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                     <SpecRow label="Charging Tech" value={mergedSpecs.charging_tech} />
                     <SpecRow label="TDP" value={mergedSpecs.tdp_wattage} unit="W" />
                     <SpecRow label="Cooling" value={formatCooling(mergedSpecs)} />
+                </SpecSection>
+            )}
+
+            {/* CHASSIS */}
+            {hasData(SECTIONS.CHASSIS, mergedSpecs) && (
+                <SpecSection title="Chassis" colorClass="text-emerald-500 border-emerald-500/20">
                     <SpecRow label="Dimensions" value={getDimString()} unit="mm" />
                     <SpecRow label="Weight" value={mergedSpecs.weight_g} unit="g" />
                     <SpecRow label="Material" value={mergedSpecs.body_material} />
@@ -398,7 +414,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
 
             {/* AUDIO & EXTRAS */}
             {hasData(SECTIONS.AUDIO, mergedSpecs) && (
-                <SpecSection title="Audio & Extras" colorClass="text-pink-500 border-pink-500/20">
+                <SpecSection title="Audio & Sensors" colorClass="text-pink-500 border-pink-500/20">
                     <SpecRow label="Speakers" value={formatSpeakers(mergedSpecs)} />
                     <SpecRow label="Audio Output" value={mergedSpecs.audio_tech} />
                     <SpecRow label="Sensors" value={mergedSpecs.sensors} />

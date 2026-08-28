@@ -146,6 +146,8 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                                 <img
                                     src={activeShot.url}
                                     alt={activeShot.alt_text || consoleData.name}
+                                    fetchPriority={heroIndex === 0 ? 'high' : 'auto'}
+                                    decoding="async"
                                     // Pixel art is small and must stay crisp; photos scale smoothly.
                                     className={`max-w-[80%] max-h-[80%] object-contain transition-transform duration-700 ease-out group-hover:scale-105 ${
                                         isPixelFallback ? '[image-rendering:pixelated]' : ''
@@ -177,7 +179,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                                             }`}
                                         >
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img src={shot.url} alt="" className="max-h-[80%] max-w-[80%] object-contain" />
+                                            <img src={shot.url} alt="" loading="lazy" decoding="async" className="max-h-[80%] max-w-[80%] object-contain" />
                                         </button>
                                     </li>
                                 ))}
