@@ -3,15 +3,15 @@
 import { useState, useEffect, type FC, useMemo, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ConsoleDetails, ConsoleSpecs, ConsoleVariant } from '../../lib/types';
-import ConsoleIdentitySection from './ConsoleIdentitySection';
+import { SwissDropdown } from '../ui/SwissDropdown';
+import ConsoleHero from './swiss/ConsoleHero';
+import ConsoleTabs from './swiss/ConsoleTabs';
 import PlayabilityMatrix from './PlayabilityMatrix';
 import BuySection from './BuySection';
 import { getConsoleImage } from '../../lib/utils';
-import EmulationSummary from './EmulationSummary';
 
 // Swiss Design Components
 import SystemAnalysis from './swiss/SystemAnalysis';
-import CombinedMetrics from './swiss/CombinedMetrics';
 import TechnicalReference from './swiss/TechnicalReference';
 import SwissModal from './swiss/SwissModal';
 import VariantComparisonTable from './swiss/VariantComparisonTable';
@@ -105,131 +105,75 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
           : [];
     const isPixelFallback = galleryImages.length === 0 && !!currentImage;
     const [heroIndex, setHeroIndex] = useState(0);
-    const activeShot = heroShots[Math.min(heroIndex, Math.max(heroShots.length - 1, 0))];
 
     const emulationProfile = mergedSpecs.emulation_profile || (mergedSpecs as any).emulation_profiles;
+
+    const compareUrl = `/arena/${consoleData.slug}${currentVariant?.slug ? `-${currentVariant.slug}` : ''}-vs-select`;
+
+    const [shareCopied, setShareCopied] = useState(false);
+    const handleShare = () => {
+        navigator.clipboard?.writeText(window.location.href).then(() => {
+            setShareCopied(true);
+            setTimeout(() => setShareCopied(false), 1600);
+        }).catch(() => {});
+    };
+
+    const TABS = [
+        { id: 'tech', label: 'Tech' },
+        { id: 'playability', label: 'Playability' },
+        { id: 'analysis', label: 'Analysis' },
+        { id: 'buy', label: 'Buy' },
+        { id: 'similar', label: 'Similar' },
+    ];
 
     return (
         <div className="w-full min-h-screen bg-[#09090b] text-white selection:bg-orange-500/30 selection:text-white pb-20">
 
-             {/* SECTION I: IDENTITY & HEADER */}
-             <ConsoleIdentitySection
-                console={consoleData}
-                manufacturer={consoleData.manufacturer || null}
-                variants={variants}
-                selectedVariantId={selectedVariantId}
-                onVariantChange={(slug) => {
-                     const v = variants.find(v => v.slug === slug);
-                     if (v) handleVariantChange(v.id);
-                }}
-                onCompareVariants={() => setIsVariantModalOpen(true)}
+             {/* FOLD: the device, the price, the tier, the two actions. */}
+             <ConsoleHero
+                consoleData={consoleData}
+                specs={mergedSpecs}
+                variant={currentVariant}
+                profile={emulationProfile}
+                shots={heroShots}
+                heroIndex={heroIndex}
+                onHeroIndex={setHeroIndex}
+                isPixelFallback={isPixelFallback}
+                compareUrl={compareUrl}
+                onShare={handleShare}
+                shareCopied={shareCopied}
+                onEmulationDetails={() => setIsEmulationModalOpen(true)}
              />
 
-             {/* MAIN CONTENT GRID */}
-             <main className="max-w-[1600px] mx-auto px-4 md:px-8 mt-8 space-y-8 animate-fadeIn">
-
-                {/* ROW 1: VISUALS + BRIEFING */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
-                    {/* VISUALS (Left - Span 8) */}
-                    <div className="lg:col-span-8 flex flex-col gap-4">
-                        <div className="relative w-full aspect-video bg-black/50 border border-white/10 flex items-center justify-center overflow-hidden group">
-                            {/* Technical Markings */}
-                            <div className="absolute top-4 left-4 text-[10px] font-mono text-white/30 tracking-widest">FIG. 01 // {consoleData.name.toUpperCase()}</div>
-                            <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">
-                                {consoleData.form_factor?.toUpperCase() || 'SYSTEM'}
-                            </div>
-
-                            {/* Image */}
-                            {activeShot ? (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img
-                                    src={activeShot.url}
-                                    alt={activeShot.alt_text || consoleData.name}
-                                    fetchPriority={heroIndex === 0 ? 'high' : 'auto'}
-                                    decoding="async"
-                                    // Pixel art is small and must stay crisp; photos scale smoothly.
-                                    className={`max-w-[80%] max-h-[80%] object-contain transition-transform duration-700 ease-out group-hover:scale-105 ${
-                                        isPixelFallback ? '[image-rendering:pixelated]' : ''
-                                    }`}
-                                    key={activeShot.url}
-                                />
-                            ) : (
-                                <div className="text-zinc-700 font-pixel text-2xl">NO SIGNAL</div>
-                            )}
-
-                            {heroShots.length > 1 && (
-                                <div className="absolute bottom-4 left-4 text-[10px] font-mono text-white/30 tracking-widest">
-                                    {String(heroIndex + 1).padStart(2, '0')} / {String(heroShots.length).padStart(2, '0')}
-                                </div>
-                            )}
-                        </div>
-
-                        {heroShots.length > 1 && (
-                            <ul className="grid grid-cols-5 gap-3">
-                                {heroShots.map((shot, i) => (
-                                    <li key={shot.id}>
-                                        <button
-                                            type="button"
-                                            onClick={() => setHeroIndex(i)}
-                                            aria-current={i === heroIndex}
-                                            aria-label={shot.alt_text || `View ${shot.kind || 'image'} of ${consoleData.name}`}
-                                            className={`relative flex aspect-video w-full items-center justify-center overflow-hidden border bg-black/50 transition-colors ${
-                                                i === heroIndex ? 'border-violet-500' : 'border-white/10 hover:border-white/40'
-                                            }`}
-                                        >
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img src={shot.url} alt="" loading="lazy" decoding="async" className="max-h-[80%] max-w-[80%] object-contain" />
-                                        </button>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
-
-                    {/* BRIEFING (Right - Span 4) */}
-                    <div className="lg:col-span-4 flex flex-col h-full border-t border-white/10 lg:border-t-0 lg:border-l lg:pl-8 pt-8 lg:pt-0">
-                        
-                        {/* COMBINED METRICS & EMULATION SUMMARY */}
-                        <div className="space-y-8">
-                            <div>
-                                <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">KEY METRICS</h2>
-                                <CombinedMetrics
-                                    console={consoleData}
-                                    specs={mergedSpecs}
-                                    releaseDate={currentVariant?.release_date || null}
-                                />
-                            </div>
-
-                            {/* EMULATION SCORE CARD (Moved Here) */}
-                            <EmulationSummary
-                                profile={emulationProfile}
-                                onClick={() => setIsEmulationModalOpen(true)}
-                            />
-                        </div>
-                    </div>
+             {/* Variant switch and comparison, only where there is a choice to make. */}
+             {variants.length > 1 && (
+                <div className="max-w-[1600px] mx-auto px-4 md:px-8 mt-6 flex flex-wrap items-center gap-3">
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-gray-500">Variant</span>
+                    <SwissDropdown
+                        value={selectedVariantId}
+                        onChange={(val) => handleVariantChange(String(val))}
+                        options={variants.map(v => ({ label: v.variant_name || 'Base', value: v.id }))}
+                        labelPrefix=""
+                        inverted={false}
+                        className="min-w-[190px]"
+                        buttonClassName="bg-black border border-white/15 px-3 py-2 text-white font-mono text-xs h-[38px] flex justify-between items-center hover:border-white transition-colors"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setIsVariantModalOpen(true)}
+                        className="px-3 py-2 border border-white/15 text-gray-400 hover:border-white hover:text-white
+                                   font-mono text-[10px] uppercase tracking-widest transition-colors h-[38px]"
+                    >
+                        Compare {variants.length} variants
+                    </button>
                 </div>
+             )}
 
-                {/* ROW 2: ANALYSIS & LOGISTICS (Rearranged) */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 border-t border-white/10 pt-8">
-                    {/* System Analysis (Span 8) */}
-                    <section className="lg:col-span-8">
-                        <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">SYSTEM ANALYSIS</h2>
-                        <SystemAnalysis description={consoleData.description || ''} />
-                    </section>
+             <ConsoleTabs tabs={TABS} />
 
-                    {/* Acquisition (Span 4) */}
-                    <section id="buy" className="lg:col-span-4">
-                        <BuySection
-                            asin={currentVariant?.amazon_asin || null}
-                            searchQuery={[consoleData.manufacturer?.name, consoleData.name].filter(Boolean).join(' ')}
-                            vendorLinks={(consoleData.links || []).filter((l) => l.kind === 'vendor')}
-                        />
-                    </section>
-                </div>
-
-                {/* ROW 3: TECHNICAL REFERENCE */}
-                <section id="tech" className="border-t border-white/10 pt-8">
+             <main className="max-w-[1600px] mx-auto px-4 md:px-8 mt-10 space-y-8 animate-fadeIn">
+                {/* TECH */}
+                <section id="tech" className="scroll-mt-32">
                      <div className="flex items-center justify-between mb-6">
                          <h2 className="font-pixel text-sm text-orange-500 uppercase tracking-widest">FULL SPECIFICATIONS</h2>
                          <div className="flex flex-wrap font-mono text-[10px] md:text-xs gap-2 md:gap-4 text-gray-500">
@@ -251,6 +195,28 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                      <TechnicalReference mergedSpecs={mergedSpecs} viewMode={techViewMode as 'grid' | 'table' | 'ribbon'} />
                 </section>
 
+                {/* PLAYABILITY */}
+                <section id="playability" className="border-t border-white/10 pt-8 scroll-mt-32">
+                    <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">PLAYABILITY</h2>
+                    <PlayabilityMatrix profile={emulationProfile} />
+                </section>
+
+                {/* ANALYSIS + ACQUISITION */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 border-t border-white/10 pt-8">
+                    <section id="analysis" className="lg:col-span-8 scroll-mt-32">
+                        <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">SYSTEM ANALYSIS</h2>
+                        <SystemAnalysis description={consoleData.description || ''} />
+                    </section>
+
+                    <section id="buy" className="lg:col-span-4 scroll-mt-32">
+                        <BuySection
+                            asin={currentVariant?.amazon_asin || null}
+                            searchQuery={[consoleData.manufacturer?.name, consoleData.name].filter(Boolean).join(' ')}
+                            vendorLinks={(consoleData.links || []).filter((l) => l.kind === 'vendor')}
+                        />
+                    </section>
+                </div>
+
                 {/* ROW 4: LINKS — reviews and retail */}
                 {consoleData.links && consoleData.links.length > 0 && (
                     <section id="links" className="border-t border-white/10 pt-8 mt-12">
@@ -263,7 +229,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                 )}
 
                 {/* ROW 5: SIMILAR CONSOLES */}
-                <section id="similar" className="border-t border-white/10 pt-8 mt-12">
+                <section id="similar" className="border-t border-white/10 pt-8 mt-12 scroll-mt-32">
                      <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">SIMILAR HARDWARE</h2>
                      <SimilarConsoles currentConsole={consoleData} />
                 </section>

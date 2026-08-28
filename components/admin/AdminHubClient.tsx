@@ -11,17 +11,39 @@ import { markConsoleReleased, type AdminDashboard, type WorklistRow } from '../.
  * number and the work it names are one click apart. The old navigation cards moved
  * to a strip at the bottom — still one click, but no longer the whole page. */
 
-const NAV = [
-    { href: '/admin/consoles', label: 'Consoles', hint: 'Index' },
-    { href: '/admin/fabricators', label: 'Fabricators', hint: 'Brands' },
-    { href: '/admin/asins', label: 'ASINs', hint: 'Worklist' },
-    { href: '/admin/buy-links', label: 'Buy links', hint: 'Worklist' },
-    { href: '/admin/reviews', label: 'Reviews', hint: 'Editorial' },
-    { href: '/admin/news', label: 'News', hint: 'Editorial' },
-    { href: '/admin/signals', label: 'Signals', hint: 'Editorial' },
-    { href: '/admin/roadmap', label: 'Roadmap', hint: 'Planning' },
-    { href: '/admin/broadcast', label: 'Broadcast', hint: 'Email' },
-    { href: '/design', label: 'Design system', hint: 'Reference' },
+/* Everything the admin can reach, grouped by what it is for. The hub is the map:
+ * no page should be findable only by remembering its URL. */
+const NAV_GROUPS: { group: string; items: { href: string; label: string; hint: string }[] }[] = [
+    {
+        group: 'Catalogue',
+        items: [
+            { href: '/admin/consoles', label: 'Consoles', hint: 'Index & editor' },
+            { href: '/admin/fabricators', label: 'Fabricators', hint: 'Brands & profiles' },
+        ],
+    },
+    {
+        group: 'Revenue',
+        items: [
+            { href: '/admin/asins', label: 'ASINs', hint: 'Link products' },
+            { href: '/admin/buy-links', label: 'Buy links', hint: 'Published, no path' },
+        ],
+    },
+    {
+        group: 'Editorial',
+        items: [
+            { href: '/admin/reviews', label: 'Reviews', hint: 'Written verdicts' },
+            { href: '/admin/news', label: 'News', hint: 'Posts' },
+            { href: '/admin/signals', label: 'Signals', hint: 'Short updates' },
+        ],
+    },
+    {
+        group: 'Product',
+        items: [
+            { href: '/admin/roadmap', label: 'Roadmap', hint: 'Features & releases' },
+            { href: '/admin/broadcast', label: 'Broadcast', hint: 'Subscriber email' },
+            { href: '/design', label: 'Design system', hint: 'Tokens & components' },
+        ],
+    },
 ];
 
 function Tile({ n, label, sub, href, tone = 'plain' }: {
@@ -153,8 +175,33 @@ export default function AdminHubClient({ data }: { data: AdminDashboard }) {
                     href="/admin#release-passed" tone="blocking" />
             </div>
 
+            {/* Sections — the whole admin, one click away ---------------------------- */}
+            <div className="mb-12">
+                <div className="font-mono text-[10px] tracking-[0.2em] uppercase text-gray-600 mb-4">Sections</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                    {NAV_GROUPS.map(g => (
+                        <div key={g.group}>
+                            <div className="font-mono text-[9px] tracking-[0.18em] uppercase text-primary pb-2 mb-3 border-b border-border-subtle">
+                                {g.group}
+                            </div>
+                            <div className="grid gap-px bg-border-subtle border border-border-subtle">
+                                {g.items.map(item => (
+                                    <Link key={item.href} href={item.href}
+                                        className="bg-bg-primary px-4 py-3 hover:bg-white/[0.04] transition-colors group">
+                                        <div className="font-mono text-xs text-gray-200 group-hover:text-white transition-colors">
+                                            {item.label}
+                                        </div>
+                                        <div className="font-mono text-[9px] uppercase tracking-widest text-gray-600 mt-1">{item.hint}</div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
             {/* Worklists ------------------------------------------------------------ */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-12">
                 <div className="lg:col-span-2 space-y-6">
                     <Panel title="Ready to publish" count={gaps.READY}>
                         {ready.length === 0 ? (
@@ -228,21 +275,6 @@ export default function AdminHubClient({ data }: { data: AdminDashboard }) {
                 </div>
             </div>
 
-            {/* Everything else ------------------------------------------------------ */}
-            <div className="border-t border-border-normal pt-6 pb-12">
-                <div className="font-mono text-[10px] tracking-[0.2em] uppercase text-gray-600 mb-4">Sections</div>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-px bg-border-subtle border border-border-subtle">
-                    {NAV.map(item => (
-                        <Link key={item.href} href={item.href}
-                            className="bg-bg-primary px-4 py-4 hover:bg-white/[0.04] transition-colors group">
-                            <div className="font-mono text-[11px] text-gray-300 group-hover:text-white transition-colors">
-                                {item.label}
-                            </div>
-                            <div className="font-mono text-[9px] uppercase tracking-widest text-gray-600 mt-1">{item.hint}</div>
-                        </Link>
-                    ))}
-                </div>
-            </div>
         </div>
     );
 }
