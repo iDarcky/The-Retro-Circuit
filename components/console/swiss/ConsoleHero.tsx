@@ -9,6 +9,8 @@ import { getBuyUrl } from '../../../lib/affiliate';
 import { circuitScore, percentileOf, scorePerDollar } from '../../../lib/scoring/circuit-score';
 import CircuitScoreCard, { PriceCard } from './CircuitScoreCard';
 import type { CatalogueStats } from '../../../app/actions/scoring';
+import { buildVerdict, buildTags } from '../../../lib/scoring/verdict';
+import { MIN_POPULATION_FOR_RANK } from '../../../lib/scoring/circuit-score';
 
 /* The console page is where the buy / no-buy call gets made, so the fold carries the
  * four things that decide it: the device, what it costs, what it can emulate, and the
@@ -52,11 +54,12 @@ function topTier(profile?: EmulationProfile | null) {
     return null;
 }
 
-const Chip: FC<{ children: React.ReactNode; tone?: 'violet' | 'cyan' | 'orange' | 'plain' }> = ({ children, tone = 'plain' }) => {
+const Chip: FC<{ children: React.ReactNode; tone?: 'violet' | 'cyan' | 'orange' | 'emerald' | 'plain' }> = ({ children, tone = 'plain' }) => {
     const tones = {
         violet: 'text-violet-400 border-violet-500/40',
         cyan: 'text-cyan-400 border-cyan-500/40',
         orange: 'text-orange-500 border-orange-500/50',
+        emerald: 'text-emerald-400 border-emerald-500/40',
         plain: 'text-gray-400 border-white/15',
     };
     return (
@@ -83,11 +86,6 @@ const ConsoleHero: FC<Props> = ({
     // does not need both columns populated — which no variant currently is.
     const price = street ?? launch;
 
-    const res = specs.screen_resolution_y ? `${specs.screen_resolution_y}p` : null;
-    const screen = [specs.screen_size_inch ? `${specs.screen_size_inch}"` : null, res].filter(Boolean).join(' · ');
-    const os = [specs.os_family, specs.os_version].filter(Boolean).join(' ') || specs.os;
-    const year = variant?.release_date ? variant.release_date.slice(0, 4) : null;
-    const isNew = year ? Number(year) >= new Date().getFullYear() - 1 : false;
 
     /* Circuit Score and its standing. Every rank is drawn from the same reach tier, and
      * suppressed entirely when that tier holds too few published devices to mean
@@ -102,6 +100,29 @@ const ConsoleHero: FC<Props> = ({
         ? percentileOf(price, tierStats.prices) : null;
     const valuePercentile = score && price && tierStats?.values.length
         ? percentileOf(scorePerDollar(score.score, price) ?? 0, tierStats.values) : null;
+
+    const rankable = tierSize >= MIN_POPULATION_FOR_RANK;
+
+    const verdict = buildVerdict({
+        profile,
+        reach: score?.reach ?? null,
+        formFactor: consoleData.form_factor,
+        pricePercentile,
+        tierSize,
+        rankable,
+    });
+
+    const tags = buildTags({
+        deviceCategory: consoleData.device_category,
+        formFactor: consoleData.form_factor,
+        screenInch: specs.screen_size_inch,
+        screenResY: specs.screen_resolution_y,
+        osFamily: specs.os_family,
+        osVersion: specs.os_version,
+        osText: specs.os,
+        releaseDate: variant?.release_date,
+        weightG: specs.weight_g,
+    });
 
     const buyUrl = getBuyUrl({
         asin: variant?.amazon_asin,
@@ -190,27 +211,20 @@ const ConsoleHero: FC<Props> = ({
                     {brand && (
                         <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-gray-500 mb-2">{brand}</div>
                     )}
-                    <h1 className="font-pixel text-3xl md:text-5xl text-white uppercase leading-none tracking-tighter break-words">
+                    {/* The cursor is the brand's own mark — the logo is RETRO CIRCUIT_. A rule
+                        underneath it would be a second, generic device saying the same thing. */}
+                    <h1 className="font-pixel text-3xl md:text-5xl text-white uppercase leading-none tracking-tighter break-words mb-5">
                         {consoleData.name}
-                        <span className="text-violet-500">_</span>
+                        <span className="text-violet-500 motion-safe:animate-pulse">_</span>
                     </h1>
-                    <div className="w-24 h-0.5 bg-violet-500 mt-4 mb-5" aria-hidden="true" />
 
                     <div className="flex flex-wrap gap-2 mb-6">
-                        {consoleData.device_category && (
-                            <Chip tone="violet">
-                                <span className="w-1.5 h-1.5 bg-violet-500 inline-block" aria-hidden="true" />
-                                {String(consoleData.device_category).replace('_', ' ')}
+                        {tags.map(t => (
+                            <Chip key={t.label} tone={t.tone}>
+                                {t.dot && <span className="w-1.5 h-1.5 bg-current inline-block" aria-hidden="true" />}
+                                {t.label}
                             </Chip>
-                        )}
-                        {year && (
-                            <Chip tone={isNew ? 'cyan' : 'plain'}>
-                                {isNew && <span className="w-1.5 h-1.5 bg-cyan-400 inline-block" aria-hidden="true" />}
-                                {isNew ? `New · ${year}` : year}
-                            </Chip>
-                        )}
-                        {screen && <Chip tone="orange">{screen}</Chip>}
-                        {os && <Chip>{os}</Chip>}
+                        ))}
                     </div>
 
                     {/* The two numbers the decision turns on, each with where it stands. */}
@@ -237,6 +251,15 @@ const ConsoleHero: FC<Props> = ({
                             </div>
                         )}
                     </div>
+
+                    {verdict && (
+                        <div className="border-l-[3px] border-violet-500 bg-violet-500/[0.07] px-4 py-3 mb-5">
+                            <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-violet-300 mb-2">
+                                The short version
+                            </div>
+                            <p className="font-mono text-[13px] text-gray-200 leading-relaxed m-0">{verdict}</p>
+                        </div>
+                    )}
 
                     {/* Comparing devices is what the site is for, so it is the primary action. */}
                     <div className="flex flex-wrap items-stretch gap-2">

@@ -7,6 +7,9 @@ import { SwissDropdown } from '../ui/SwissDropdown';
 import ConsoleHero from './swiss/ConsoleHero';
 import type { CatalogueStats } from '../../app/actions/scoring';
 import ConsoleTabs from './swiss/ConsoleTabs';
+import PlayabilityTiers from './swiss/PlayabilityTiers';
+import TierComparison from './swiss/TierComparison';
+import { circuitScore, percentileOf } from '../../lib/scoring/circuit-score';
 import PlayabilityMatrix from './PlayabilityMatrix';
 import BuySection from './BuySection';
 import { getConsoleImage } from '../../lib/utils';
@@ -122,12 +125,23 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
     };
 
     const TABS = [
-        { id: 'tech', label: 'Tech' },
         { id: 'playability', label: 'Playability' },
+        { id: 'compare', label: 'Compare' },
         { id: 'analysis', label: 'Analysis' },
+        { id: 'tech', label: 'Specification' },
         { id: 'buy', label: 'Buy' },
         { id: 'similar', label: 'Similar' },
     ];
+
+    // Recomputed here so the comparison strip can stand on its own; the hero does the
+    // same arithmetic for its cards. Both read the one formula in lib/scoring.
+    const heroScore = circuitScore(
+        emulationProfile,
+        consoleData.setup_ease_score,
+        consoleData.community_score,
+    );
+    const heroTierStats = heroScore && catalogueStats ? catalogueStats[heroScore.reach] : undefined;
+    const heroPrice = currentVariant?.price_avg_usd ?? currentVariant?.price_launch_usd ?? null;
 
     return (
         <div className="w-full min-h-screen bg-[#09090b] text-white selection:bg-orange-500/30 selection:text-white pb-20">
@@ -176,8 +190,32 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
              <ConsoleTabs tabs={TABS} />
 
              <main className="max-w-[1600px] mx-auto px-4 md:px-8 mt-10 space-y-8 animate-fadeIn">
-                {/* TECH */}
-                <section id="tech" className="scroll-mt-32">
+                {/* PLAYABILITY — the site's one unique asset, so it leads. */}
+                <section id="playability" className="scroll-mt-32">
+                    <PlayabilityTiers profile={emulationProfile} />
+                </section>
+
+                {/* COMPARE */}
+                {heroScore && (
+                    <section id="compare" className="border-t border-white/10 pt-8 scroll-mt-32">
+                        <TierComparison
+                            reach={heroScore.reach}
+                            stats={heroTierStats}
+                            price={heroPrice ? Number(heroPrice) : null}
+                            pricePercentile={heroPrice && heroTierStats?.prices.length
+                                ? percentileOf(Number(heroPrice), heroTierStats.prices) : null}
+                            score={heroScore.score}
+                            scorePercentile={heroTierStats?.scores.length
+                                ? percentileOf(heroScore.score, heroTierStats.scores) : null}
+                            batteryMah={mergedSpecs.battery_capacity_mah}
+                            batteryWh={mergedSpecs.battery_capacity_wh}
+                            batteryPercentile={null}
+                        />
+                    </section>
+                )}
+
+                {/* SPECIFICATION */}
+                <section id="tech" className="border-t border-white/10 pt-8 scroll-mt-32">
                      <div className="flex items-center justify-between mb-6">
                          <h2 className="font-pixel text-sm text-orange-500 uppercase tracking-widest">FULL SPECIFICATIONS</h2>
                          <div className="flex flex-wrap font-mono text-[10px] md:text-xs gap-2 md:gap-4 text-gray-500">
@@ -197,12 +235,6 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                      </div>
                      <hr className="border-t border-white/10 mb-8" />
                      <TechnicalReference mergedSpecs={mergedSpecs} viewMode={techViewMode as 'grid' | 'table' | 'ribbon'} />
-                </section>
-
-                {/* PLAYABILITY */}
-                <section id="playability" className="border-t border-white/10 pt-8 scroll-mt-32">
-                    <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">PLAYABILITY</h2>
-                    <PlayabilityMatrix profile={emulationProfile} />
                 </section>
 
                 {/* ANALYSIS + ACQUISITION */}
