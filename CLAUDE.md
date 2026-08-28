@@ -69,7 +69,10 @@ pnpm lint     # ESLint
 - Server actions: `app/actions/` (consoles.ts, manufacturers.ts, search.ts, etc.)
 - Supabase returns 1:1 relations as arrays — normalization helpers unwrap them (see `app/actions/consoles.ts`)
 - Specs live on the **variant**, not the console. `device_category` (`emulation` | `pc_gaming` | `fpga` | `legacy`) separates Android/Chinese handhelds from OEM devices and PC handhelds.
-- Structured platform fields on `console_variants`: `os_family` (enum), `os_version`, `soc`, `cpu_arch` (enum), `vulkan_support`, `gpu_driver`, `benchmark_score`. Free-text `os` / `cpu_architecture` are kept as display strings — **filter on the structured columns**, the free text has typos (`"Andorid 13"`).
+- Structured platform fields on `console_variants`: `os_family` (enum), `os_version`, `soc_vendor` / `soc_name` / `soc_gen`, `gpu_vendor` / `gpu_name`, `cpu_arch` (enum), `vulkan_support`, `gpu_driver`, `benchmark_score`. Free-text `os` / `cpu_architecture` / `soc` / `gpu_model` are kept as display strings — **filter on the structured columns**, the free text has typos (`"Andorid 13"`).
+- More structured columns replaced imported free text (Aug 2026): `cooling_type` + `cooling_fan_count` + `cooling_*` booleans, `speaker_count` / `speaker_config` / `speaker_placement`, `charge_port*`, `expansion_slot_count` / `expansion_card_type` / `expansion_speed_class`, `lens_material` / `lens_laminated`. The originals (`cooling_solution`, `audio_speakers`, `microsd_type`, `screen_lens`) survive as fallbacks and are dropped by `20260828170000_drop_legacy_input_columns.sql.pending`.
+- `cpu_clusters` is a jsonb array — `[{count, core, clock_mhz, uarch_year}]`, fastest first. Rendered one line per cluster. Compare generation before clock: 2 GHz Gen 8 beats 3 GHz Gen 1.
+- **A new variant column must be added to `ConsoleVariantSchema` in `lib/schemas/validation.ts`.** `safeParse` strips anything the schema does not name, so a column missing from it can never be written by the admin form — five columns were silently unwritable this way.
 - `emulation_profiles` rows are created by a **DB trigger** when a variant is inserted. Data-modifying CTEs can't see the trigger's row (same snapshot) — write emulation data in a **separate statement**.
 
 ## Rendering (keep compute low)
@@ -112,8 +115,10 @@ pnpm lint     # ESLint
 
 ## Known Issues / Active TODOs
 - `Button` still used in most admin components — being phased out for `SwissButton`
-- **386 of 387 drafts lack an image**, which blocks publishing. This is the single biggest bottleneck — specs, buttons and emulation grades are already filled in for them. Use the admin index gap filters (READY / NO IMAGE / NO VARIANT / NO PRICE) to find work.
-- Only 13 of 513 variants have an `amazon_asin`; the rest fall back to affiliate *search* links, which convert worse. Backfilling ASINs is the top revenue task.
+- 14 legacy input columns on `console_variants` (`dpad_mechanism`, `thumbstick_*`, `trigger_mechanism`, `haptics`, `gyro`, …) are superseded by `variant_input_profile` and read by nothing. The drop is staged in `supabase/migrations/*.sql.pending` — back up first, then rename to `.sql`.
+- **383 of 385 drafts lack an image**, which blocks publishing — only 1 draft is currently publishable. This is the single biggest bottleneck; specs, buttons and emulation grades are already filled in. `/admin` counts the gaps and links into the filtered index (`?status=DRAFT&gap=NO_IMAGE`).
+- Only 13 of 514 variants have an `amazon_asin`; the rest fall back to affiliate *search* links, which convert worse. Backfilling ASINs is the top revenue task.
+- `release_status` is flipped by hand from the `/admin` "Release date passed" panel, not automatically: public pages are `revalidate = false`, so a silent status change would not reach the site until a rebuild.
 - The 1,332 imported `console_links` rows are **raw URLs and carry no affiliate tag** — only `lib/affiliate.ts` applies `theretrocircu-20`. Rendering a `kind='vendor'` Amazon link directly earns nothing; route it through `getBuyUrl`.
 - Consoles have no written intro / "system analysis". Spec-derived summaries can be generated from the emulation matrix; **opinionated copy must be human-written** — do not mass-generate device reviews.
 - `eslint-config-next` pinned at 14 (v16 needs an ESLint 9 flat-config migration).

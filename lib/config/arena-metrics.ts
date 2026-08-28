@@ -57,6 +57,7 @@ export const METRICS: ComparisonMetric[] = [
     { label: 'Storage', key: 'storage_gb', type: 'number', unit: ' GB' },
     { label: 'Storage Type', key: 'storage_type', type: 'string' },
     { label: 'Expandable', key: 'storage_expandable', type: 'boolean' },
+    { label: 'Card Type', key: 'expansion_card_type', type: 'string' },
 
     // --- POWER ---
     { label: 'Battery Capacity', key: 'battery_capacity_mah', type: 'number', unit: ' mAh' },
@@ -70,9 +71,11 @@ export const METRICS: ComparisonMetric[] = [
     { label: 'Cellular', key: 'cellular_connectivity', type: 'boolean' },
     { label: 'Video Output', key: 'video_out', type: 'string' },
     { label: 'Ports', key: 'ports', type: 'string' },
+    { label: 'Charge Port', key: 'charge_port', type: 'string' },
     
     // --- AUDIO & MISC ---
     { label: 'Speakers', key: 'audio_speakers', type: 'string' },
+    { label: 'Speaker Config', key: 'speaker_config', type: 'string' },
     { label: 'Audio Tech', key: 'audio_tech', type: 'string' },
     { label: 'Headphone Jack', key: 'has_headphone_jack', type: 'boolean' },
     { label: 'Microphone', key: 'has_microphone', type: 'boolean' },
@@ -104,6 +107,6 @@ export const METRICS: ComparisonMetric[] = [
     { label: 'Thickness (mm)', key: 'depth_mm', type: 'number' },
     { label: 'Weight', key: 'weight_g', type: 'number', unit: 'g', lowerIsBetter: true },
     { label: 'Body Material', key: 'body_material', type: 'string' },
-    { label: 'Cooling', key: 'cooling_solution', type: 'string' },
+    { label: 'Cooling', key: 'cooling_type', type: 'string' },
     { label: 'Colors', key: 'available_colors', type: 'string' },
 ];

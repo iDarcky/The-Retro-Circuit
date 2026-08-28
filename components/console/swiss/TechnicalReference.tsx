@@ -95,6 +95,92 @@ const SpecSection = ({ title, children, colorClass = "text-orange-500 border-ora
 // string. Where `os` adds nothing over the two ("Android 13"), prefer the
 // structured pair — but keep `os` when it carries a distro or a dual boot
 // ("Linux (RetroPie)", "Windows 11 / SteamOS", "OpenDingux").
+// Clusters render one line each. "Cortex-A76 / Cortex-A55  2x / 6x" interleaved two
+// facts and read as neither.
+const formatClusters = (clusters: any): React.ReactNode | null => {
+    if (!Array.isArray(clusters) || clusters.length === 0) return null;
+    const lines = clusters
+        .filter(c => c && (c.core || c.count))
+        .map((c, i) => {
+            const head = [c.count ? `${c.count} \u00d7` : null, c.core].filter(Boolean).join(' ');
+            const clock = c.clock_mhz
+                ? (c.clock_mhz >= 1000 ? `${(c.clock_mhz / 1000).toFixed(2).replace(/\.?0+$/, '')} GHz` : `${c.clock_mhz} MHz`)
+                : null;
+            return (
+                <span key={i} className="block">
+                    {head}
+                    {clock && <em className="not-italic text-gray-500"> @ {clock}</em>}
+                </span>
+            );
+        });
+    return lines.length > 0 ? <>{lines}</> : null;
+};
+
+const TITLE_CASE: Record<string, string> = {
+    passive: 'Passive', active: 'Active', hybrid: 'Hybrid',
+    mono: 'Mono', stereo: 'Stereo', surround: 'Surround',
+    front: 'Front-facing', bottom: 'Bottom-firing', rear: 'Rear-facing',
+    top: 'Top-firing', side: 'Side-firing', front_side: 'Front & side', internal: 'Internal',
+    usb_c: 'USB-C', micro_usb: 'Micro USB', mini_usb: 'Mini USB',
+    barrel_dc: 'DC barrel', proprietary: 'Proprietary', none: 'None',
+    microsd: 'microSD', sd: 'SD', memory_stick: 'Memory Stick', cfexpress: 'CFexpress',
+    tempered_glass: 'Tempered glass', gorilla_glass: 'Gorilla Glass', plastic: 'Plastic',
+    multiple: 'Multiple', back: 'Back',
+};
+const label = (v: any): string | null => (v ? (TITLE_CASE[String(v)] ?? String(v)) : null);
+
+// "Active — 1 fan, heatpipe, vents" out of the structured columns, falling back to the
+// original free text for rows the backfill could not read.
+const formatCooling = (s: any): string | null => {
+    if (!s.cooling_type) return s.cooling_solution || null;
+    const parts: string[] = [];
+    if (s.cooling_fan_count > 0) parts.push(`${s.cooling_fan_count} fan${s.cooling_fan_count > 1 ? 's' : ''}`);
+    if (s.cooling_vapor_chamber) parts.push('vapor chamber');
+    if (s.cooling_heatpipe) parts.push('heatpipe');
+    if (s.cooling_heatsink) parts.push('heatsink');
+    if (s.cooling_vents) parts.push('vents');
+    return parts.length > 0 ? `${label(s.cooling_type)} \u2014 ${parts.join(', ')}` : label(s.cooling_type);
+};
+
+// "2 \u00d7 stereo, front-facing" — one standard phrasing for what was 48 spellings.
+const formatSpeakers = (s: any): string | null => {
+    if (!s.speaker_config && !s.speaker_count) return s.audio_speakers || null;
+    const head = [s.speaker_count ? `${s.speaker_count} \u00d7` : null, label(s.speaker_config)?.toLowerCase()]
+        .filter(Boolean).join(' ');
+    const place = label(s.speaker_placement)?.toLowerCase();
+    return [head || null, place].filter(Boolean).join(', ') || null;
+};
+
+const formatChargePort = (s: any): string | null => {
+    if (!s.charge_port) return null;
+    const head = s.charge_port_count > 1 ? `${s.charge_port_count} \u00d7 ${label(s.charge_port)}` : label(s.charge_port);
+    const pos = s.charge_port_position ? `${label(s.charge_port_position)?.toLowerCase()}` : null;
+    return [head, pos].filter(Boolean).join(', ');
+};
+
+const formatExpansion = (s: any): string | null => {
+    if (!s.expansion_card_type) return s.microsd_type || null;
+    const head = s.expansion_slot_count > 1
+        ? `${s.expansion_slot_count} \u00d7 ${label(s.expansion_card_type)}`
+        : label(s.expansion_card_type);
+    return [head, s.expansion_speed_class].filter(Boolean).join(' \u00b7 ');
+};
+
+const formatLens = (s: any): string | null => {
+    if (!s.lens_material) return s.screen_lens || null;
+    return s.lens_laminated ? `${label(s.lens_material)} (OCA laminated)` : label(s.lens_material);
+};
+
+const formatSoc = (s: any): string | null => {
+    const built = [s.soc_vendor, s.soc_name, s.soc_gen].filter(Boolean).join(' ');
+    return built || s.soc || null;
+};
+
+const formatGpu = (s: any): string | null => {
+    const built = [s.gpu_vendor, s.gpu_name].filter(Boolean).join(' ');
+    return built || s.gpu_model || null;
+};
+
 const formatOs = (specs: any): string | null => {
     const family = specs.os_family ? String(specs.os_family) : '';
     const version = specs.os_version ? String(specs.os_version) : '';
@@ -164,9 +250,9 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
         MEMORY: ['ram_mb', 'ram_type', 'ram_speed_mhz', 'storage_gb', 'storage_type', 'storage_expandable'],
         DISPLAY: ['screen_size_inch', 'screen_resolution_x', 'display_type', 'display_tech', 'refresh_rate_hz', 'brightness_nits', 'touchscreen', 'aspect_ratio', 'ppi', 'second_screen_size', 'second_screen_touch', 'second_screen_ppi', 'second_screen_aspect_ratio', 'second_screen_refresh_rate', 'second_screen_nits'],
         INPUT: ['variant_input_profile'],
-        CONNECTIVITY: ['wifi_specs', 'bluetooth_specs', 'other_connectivity', 'cellular_connectivity', 'video_out', 'ports'],
-        POWER: ['battery_capacity_mah', 'battery_capacity_wh', 'battery_type', 'charging_speed_w', 'tdp_wattage', 'charging_tech', 'cooling_solution', 'width_mm', 'weight_g', 'body_material', 'available_colors'],
-        AUDIO: ['audio_speakers', 'has_headphone_jack', 'has_microphone', 'biometrics', 'camera_specs']
+        CONNECTIVITY: ['wifi_specs', 'bluetooth_specs', 'other_connectivity', 'cellular_connectivity', 'video_out'],
+        POWER: ['battery_capacity_mah', 'battery_capacity_wh', 'battery_type', 'charging_speed_w', 'tdp_wattage', 'charging_tech', 'charge_port', 'cooling_solution', 'cooling_type', 'width_mm', 'weight_g', 'body_material', 'available_colors', 'ports'],
+        AUDIO: ['audio_speakers', 'speaker_config', 'has_headphone_jack', 'has_microphone', 'biometrics', 'camera_specs', 'sensors']
     };
 
     const content = (
@@ -178,15 +264,15 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                     <SpecRow label="Performance Rating" value={mergedSpecs.performance_grade} />
                     <SpecRow label="UI Skin" value={mergedSpecs.ui_skin} />
                     <SpecRow label="Model No" value={mergedSpecs.model_no} />
-                    <SpecRow label="SoC / Chipset" value={mergedSpecs.soc} />
-                    <SpecRow label="CPU Model" value={mergedSpecs.cpu_model} />
+                    <SpecRow label="SoC / Chipset" value={formatSoc(mergedSpecs)} />
+                    <SpecRow label="CPU" value={formatClusters(mergedSpecs.cpu_clusters) ?? mergedSpecs.cpu_model} />
                     <SpecRow label="CPU Arch" value={mergedSpecs.cpu_arch} />
                     <SpecRow label="Architecture" value={mergedSpecs.cpu_architecture} />
                     <SpecRow label="Process Node" value={mergedSpecs.cpu_process_node} />
                     <SpecRow label="CPU Cores" value={mergedSpecs.cpu_cores} />
                     <SpecRow label="CPU Threads" value={mergedSpecs.cpu_threads} />
                     <SpecRow label="CPU Clock" value={cpuClockData.value} unit={cpuClockData.unit} />
-                    <SpecRow label="GPU Model" value={mergedSpecs.gpu_model} />
+                    <SpecRow label="GPU" value={formatGpu(mergedSpecs)} />
                     <SpecRow label="GPU Driver" value={mergedSpecs.gpu_driver} />
                     <SpecRow label="Vulkan" value={mergedSpecs.vulkan_support} />
                     <SpecRow label="Benchmark" value={mergedSpecs.benchmark_score} />
@@ -206,8 +292,8 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                     <SpecRow label="RAM Speed" value={mergedSpecs.ram_speed_mhz} unit="MHz" />
                     <SpecRow label="Storage" value={mergedSpecs.storage_gb} unit="GB" />
                     <SpecRow label="Storage Type" value={mergedSpecs.storage_type} />
-                    <SpecRow label="Card Slot" value={mergedSpecs.microsd_type} />
                     <SpecRow label="Expandable" value={mergedSpecs.storage_expandable ? 'YES' : 'NO'} />
+                    <SpecRow label="Card Slot" value={formatExpansion(mergedSpecs)} />
                 </SpecSection>
             )}
 
@@ -223,12 +309,15 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                     <SpecRow label="Touchscreen" value={mergedSpecs.touchscreen ? 'YES' : 'NO'} />
                     <SpecRow label="Aspect Ratio" value={mergedSpecs.aspect_ratio} />
                     <SpecRow label="PPI" value={mergedSpecs.ppi} />
-                    <SpecRow label="Screen Lens" value={mergedSpecs.screen_lens} />
+                    <SpecRow label="Screen Lens" value={formatLens(mergedSpecs)} />
                     {mergedSpecs.second_screen_size && (
                         <>
                              {viewMode === 'grid' && <div className="py-2 border-b border-white/10 text-[10px] font-mono text-gray-500 uppercase mt-2">Secondary Display</div>}
                              <SpecRow label="Size 2" value={mergedSpecs.second_screen_size} unit='"' />
                              <SpecRow label="Res 2" value={`${mergedSpecs.second_screen_resolution_x} x ${mergedSpecs.second_screen_resolution_y}`} />
+                             <SpecRow label="Panel 2" value={mergedSpecs.second_screen_display_type} />
+                             <SpecRow label="Technology 2" value={mergedSpecs.second_screen_tech} />
+                             <SpecRow label="Lens 2" value={mergedSpecs.second_screen_lens} />
                              <SpecRow label="Touch 2" value={mergedSpecs.second_screen_touch ? 'YES' : 'NO'} />
                              <SpecRow label="Aspect Ratio 2" value={mergedSpecs.second_screen_aspect_ratio} />
                              <SpecRow label="PPI 2" value={mergedSpecs.second_screen_ppi} />
@@ -284,7 +373,6 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                     <SpecRow label="Bluetooth" value={mergedSpecs.bluetooth_specs} />
                     <SpecRow label="Cellular" value={mergedSpecs.cellular_connectivity ? 'YES' : 'NO'} />
                     <SpecRow label="Video Out" value={mergedSpecs.video_out} />
-                    <SpecRow label="Ports" value={mergedSpecs.ports} />
                     <SpecRow label="Other" value={mergedSpecs.other_connectivity} />
                 </SpecSection>
             )}
@@ -295,21 +383,23 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                     <SpecRow label="Battery Cap" value={mergedSpecs.battery_capacity_mah} unit="mAh" />
                     <SpecRow label="Battery Energy" value={mergedSpecs.battery_capacity_wh} unit="Wh" />
                     <SpecRow label="Type" value={mergedSpecs.battery_type} />
+                    <SpecRow label="Charge Port" value={formatChargePort(mergedSpecs)} />
                     <SpecRow label="Charging" value={mergedSpecs.charging_speed_w} unit="W" />
                     <SpecRow label="Charging Tech" value={mergedSpecs.charging_tech} />
                     <SpecRow label="TDP" value={mergedSpecs.tdp_wattage} unit="W" />
-                    <SpecRow label="Cooling" value={mergedSpecs.cooling_solution} />
+                    <SpecRow label="Cooling" value={formatCooling(mergedSpecs)} />
                     <SpecRow label="Dimensions" value={getDimString()} unit="mm" />
                     <SpecRow label="Weight" value={mergedSpecs.weight_g} unit="g" />
                     <SpecRow label="Material" value={mergedSpecs.body_material} />
                     <SpecRow label="Colors" value={formatColors(mergedSpecs.available_colors)} />
+                    <SpecRow label="Ports" value={mergedSpecs.ports} />
                 </SpecSection>
             )}
 
             {/* AUDIO & EXTRAS */}
             {hasData(SECTIONS.AUDIO, mergedSpecs) && (
                 <SpecSection title="Audio & Extras" colorClass="text-pink-500 border-pink-500/20">
-                    <SpecRow label="Speakers" value={mergedSpecs.audio_speakers} />
+                    <SpecRow label="Speakers" value={formatSpeakers(mergedSpecs)} />
                     <SpecRow label="Audio Output" value={mergedSpecs.audio_tech} />
                     <SpecRow label="Sensors" value={mergedSpecs.sensors} />
                     <SpecRow label="Headphone Jack" value={mergedSpecs.has_headphone_jack ? 'YES' : 'NO'} />

@@ -233,6 +233,40 @@ export interface ConsoleVariant {
   microsd_type?: string | null;
   screen_lens?: string | null;
   sensors?: string | null;
+  // Batch B — structured replacements for the imported free text.
+  soc_vendor?: string | null;
+  soc_name?: string | null;
+  soc_gen?: string | null;
+  gpu_vendor?: string | null;
+  gpu_name?: string | null;
+  cpu_clusters?: CpuCluster[] | null;
+
+  cooling_type?: 'passive' | 'active' | 'hybrid' | null;
+  cooling_fan_count?: number | null;
+  cooling_heatsink?: boolean | null;
+  cooling_heatpipe?: boolean | null;
+  cooling_vapor_chamber?: boolean | null;
+  cooling_vents?: boolean | null;
+
+  speaker_count?: number | null;
+  speaker_config?: 'mono' | 'stereo' | 'surround' | null;
+  speaker_placement?: 'front' | 'bottom' | 'rear' | 'top' | 'side' | 'front_side' | 'internal' | null;
+
+  charge_port?: 'usb_c' | 'micro_usb' | 'mini_usb' | 'barrel_dc' | 'proprietary' | 'none' | null;
+  charge_port_count?: number | null;
+  charge_port_position?: 'top' | 'bottom' | 'side' | 'back' | 'multiple' | null;
+
+  expansion_slot_count?: number | null;
+  expansion_card_type?: 'microsd' | 'sd' | 'memory_stick' | 'cfexpress' | 'proprietary' | null;
+  expansion_speed_class?: string | null;
+
+  lens_material?: 'tempered_glass' | 'gorilla_glass' | 'plastic' | 'none' | null;
+  lens_laminated?: boolean | null;
+
+  second_screen_display_type?: string | null;
+  second_screen_tech?: string | null;
+  second_screen_lens?: string | null;
+
   second_screen_size?: number;
   second_screen_resolution_x?: number;
   second_screen_resolution_y?: number;
@@ -287,6 +321,15 @@ export type ContentStatus = 'draft' | 'review' | 'published' | 'archived';
 
 /** Editorial state of the console page vs. the device's own lifecycle — the two differ:
  *  a `published` page can describe an `upcoming` device. */
+/** One big/little core cluster. `uarch_year` is the architecture's release year:
+ *  clock speed only compares meaningfully within a generation. */
+export interface CpuCluster {
+  count?: number | null;
+  core?: string | null;
+  clock_mhz?: number | null;
+  uarch_year?: number | null;
+}
+
 export type ReleaseStatus = 'released' | 'upcoming' | 'rumoured' | 'discontinued';
 
 export type ConsoleLinkKind = 'video_review' | 'written_review' | 'vendor' | 'official' | 'other';

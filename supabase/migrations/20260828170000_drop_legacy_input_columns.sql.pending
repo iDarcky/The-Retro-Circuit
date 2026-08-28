@@ -1,0 +1,51 @@
+-- Batch B, part 2 of 2: drop the input columns that variant_input_profile replaced.
+--
+-- NOT YET APPLIED. Renamed with a .pending suffix on purpose so a migration run does
+-- not pick it up. Back up the database, confirm the app no longer reads any column
+-- below, then rename to .sql and apply.
+--
+-- These 14 columns are written by nothing and, as of the Batch A commit, read by
+-- nothing: TechnicalReference's INPUT section used to name five of them in its
+-- hasData() check and render `haptics`, both now removed. Everything they held lives
+-- in public.variant_input_profile, which has a row for all 514 variants.
+--
+-- Verify before applying:
+--   grep -rn 'dpad_mechanism\|thumbstick_mechanism\|thumbstick_layout\|thumbstick_cap\|
+--             trigger_mechanism\|bumper_mechanism\|action_button_mechanism\|
+--             shoulder_layout\|input_layout\|has_back_buttons\|has_stick_clicks\|
+--             other_buttons\|haptics\|\bgyro\b' --include=*.ts --include=*.tsx .
+--   (`gyro` must not match `has_gyro`, which is the live input-profile column.)
+--
+-- variant_inputs_legacy already holds a copy of this data; keep that table until the
+-- drop has been in production for a release or two.
+
+alter table public.console_variants
+  drop column if exists dpad_mechanism,
+  drop column if exists action_button_mechanism,
+  drop column if exists thumbstick_mechanism,
+  drop column if exists thumbstick_layout,
+  drop column if exists thumbstick_cap,
+  drop column if exists trigger_mechanism,
+  drop column if exists bumper_mechanism,
+  drop column if exists shoulder_layout,
+  drop column if exists input_layout,
+  drop column if exists has_back_buttons,
+  drop column if exists has_stick_clicks,
+  drop column if exists other_buttons,
+  drop column if exists haptics,
+  drop column if exists gyro;
+
+-- Superseded by the structured columns from part 1. Drop only once the admin has been
+-- writing the replacements for long enough that you trust them.
+--   cooling_solution -> cooling_type + cooling_fan_count + cooling_* booleans
+--   audio_speakers   -> speaker_count + speaker_config + speaker_placement
+--   microsd_type     -> expansion_slot_count + expansion_card_type + expansion_speed_class
+--   screen_lens      -> lens_material + lens_laminated
+--   system_button_set (variant_input_profile) -> system_buttons_text
+--
+-- alter table public.console_variants
+--   drop column if exists cooling_solution,
+--   drop column if exists audio_speakers,
+--   drop column if exists microsd_type,
+--   drop column if exists screen_lens;
+-- alter table public.variant_input_profile drop column if exists system_button_set;

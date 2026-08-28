@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { timeAgo } from '@/lib/utils/date-formatter';
@@ -42,17 +43,26 @@ function getGaps(c: AdminConsoleRow): string[] {
     const hasImage = Boolean(c.image_url) || variants.some((v) => v.image_url);
     if (!hasImage) gaps.push('IMAGE');
     if (variants.length === 0) gaps.push('VARIANT');
-    else if (!variants.some((v) => typeof v.price_launch_usd === 'number' && v.price_launch_usd > 0)) gaps.push('PRICE');
+    else if (!variants.some((v) => (v.price_launch_usd ?? 0) > 0 || ((v as any).price_avg_usd ?? 0) > 0)) gaps.push('PRICE');
     return gaps;
 }
 
 export default function ConsoleIndexClient({ initialConsoles, initialManufacturers }: ConsoleIndexClientProps) {
     const router = useRouter();
+    // The admin hub links straight to a gap: /admin/consoles?status=DRAFT&gap=NO_IMAGE.
+    const params = useSearchParams();
+    const statusParam = (params.get('status') || '').toUpperCase();
+    const gapParam = (params.get('gap') || '').toUpperCase();
+    const initialStatus = (['ALL', 'DRAFT', 'REVIEW', 'PUBLISHED', 'ARCHIVED'] as const)
+        .find(v => v === statusParam) ?? 'ALL';
+    const initialGap = (['ALL', 'NO_IMAGE', 'NO_VARIANT', 'NO_PRICE', 'READY'] as const)
+        .find(v => v === gapParam) ?? 'ALL';
+
     const [consoles, setConsoles] = useState(initialConsoles);
-    const [filter, setFilter] = useState<'ALL' | 'DRAFT' | 'REVIEW' | 'PUBLISHED' | 'ARCHIVED'>('ALL');
+    const [filter, setFilter] = useState<'ALL' | 'DRAFT' | 'REVIEW' | 'PUBLISHED' | 'ARCHIVED'>(initialStatus);
     const [search, setSearch] = useState('');
     const [brand, setBrand] = useState('ALL');
-    const [gap, setGap] = useState<GapKey>('ALL');
+    const [gap, setGap] = useState<GapKey>(initialGap);
     const [sort, setSort] = useState<SortKey>('NAME');
 
     // Modal State

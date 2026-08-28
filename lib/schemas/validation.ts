@@ -102,6 +102,16 @@ export const VariantInputProfileSchema = z.object({
   input_notes: safeString,
 });
 
+// One entry per big/little core cluster, ordered fastest first. `uarch_year` is the
+// architecture's release year — the only honest way to compare a 3 GHz old core against
+// a 2 GHz new one, since clock alone says nothing across generations.
+export const CpuClusterSchema = z.object({
+  count: z.coerce.number().int().min(1).max(64).nullable().optional(),
+  core: z.string().max(120).nullable().optional(),
+  clock_mhz: z.coerce.number().int().min(1).max(10000).nullable().optional(),
+  uarch_year: z.coerce.number().int().min(1990).max(2100).nullable().optional(),
+});
+
 export const ConsoleVariantSchema = z.object({
   id: z.string().optional(),
   console_id: safeString,
@@ -174,6 +184,40 @@ export const ConsoleVariantSchema = z.object({
   second_screen_aspect_ratio: safeString,
   second_screen_refresh_rate: safeNumber,
   second_screen_nits: safeNumber,
+
+  // --- Batch B: structured replacements for the imported free text ----------
+  soc_vendor: safeString,
+  soc_name: safeString,
+  soc_gen: safeString,
+  gpu_vendor: safeString,
+  gpu_name: safeString,
+  cpu_clusters: CpuClusterSchema.array().nullable().optional(),
+
+  cooling_type: safeEnum(['passive', 'active', 'hybrid'] as const),
+  cooling_fan_count: safeNumber,
+  cooling_heatsink: safeBoolean,
+  cooling_heatpipe: safeBoolean,
+  cooling_vapor_chamber: safeBoolean,
+  cooling_vents: safeBoolean,
+
+  speaker_count: safeNumber,
+  speaker_config: safeEnum(['mono', 'stereo', 'surround'] as const),
+  speaker_placement: safeEnum(['front', 'bottom', 'rear', 'top', 'side', 'front_side', 'internal'] as const),
+
+  charge_port: safeEnum(['usb_c', 'micro_usb', 'mini_usb', 'barrel_dc', 'proprietary', 'none'] as const),
+  charge_port_count: safeNumber,
+  charge_port_position: safeEnum(['top', 'bottom', 'side', 'back', 'multiple'] as const),
+
+  expansion_slot_count: safeNumber,
+  expansion_card_type: safeEnum(['microsd', 'sd', 'memory_stick', 'cfexpress', 'proprietary'] as const),
+  expansion_speed_class: safeString,
+
+  lens_material: safeEnum(['tempered_glass', 'gorilla_glass', 'plastic', 'none'] as const),
+  lens_laminated: safeBoolean,
+
+  second_screen_display_type: safeString,
+  second_screen_tech: safeString,
+  second_screen_lens: safeString,
 
   // Power & Chassis
   battery_capacity_mah: safeNumber,

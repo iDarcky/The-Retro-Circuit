@@ -20,6 +20,16 @@ interface VariantFormProps {
 }
 
 // Columns stored in MHz that the form offers GHz/MHz entry for.
+// Fields tagged with `subGroup` render as side-by-side columns rather than one long
+// stack; a `{ subHeader, column: true }` entry declares the column and its order.
+const buildSubColumns = (fields: any[]): { title: string, fields: any[] }[] => {
+    const order: string[] = [];
+    for (const f of fields) if (f.subHeader && f.column) order.push(f.subHeader);
+    return order
+        .map(title => ({ title, fields: fields.filter(f => f.subGroup === title) }))
+        .filter(col => col.fields.length > 0);
+};
+
 const SECOND_SCREEN_KEYS = [
     'second_screen_size', 'second_screen_resolution_x', 'second_screen_resolution_y',
     'second_screen_refresh_rate', 'second_screen_nits', 'second_screen_touch',
@@ -149,6 +159,22 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             handleInputChange('ram_mb', 0);
         }
     };
+
+    // CPU clusters live in formData as a plain array; the repeater edits it in place.
+    const clusters: any[] = Array.isArray(formData.cpu_clusters) ? formData.cpu_clusters : [];
+
+    const setClusters = (next: any[]) => {
+        handleInputChange('cpu_clusters', next.length > 0 ? next : null);
+    };
+    const updateCluster = (i: number, key: string, raw: string) => {
+        const next = clusters.map((c, idx) => idx !== i ? c : {
+            ...c,
+            [key]: key === 'core' ? raw : (raw === '' ? null : Number(raw)),
+        });
+        setClusters(next);
+    };
+    const addCluster = () => setClusters([...clusters, { count: null, core: '', clock_mhz: null, uarch_year: null }]);
+    const removeCluster = (i: number) => setClusters(clusters.filter((_, idx) => idx !== i));
 
     const handleClockChange = (key: string, newVal: string | number, newUnit: 'GHz' | 'MHz') => {
         setClockInputs(prev => ({ ...prev, [key]: { value: newVal, unit: newUnit } }));
@@ -454,6 +480,209 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         }
     };
 
+    // One field. `inColumn` fields are stacked inside a sub-column and take no grid span.
+    const renderField = (field: any, fieldIdx: number, inColumn: boolean) => {
+        let colSpan = 'md:col-span-6';
+        if (field.width === 'full') colSpan = 'md:col-span-12';
+        if (field.width === 'third') colSpan = 'md:col-span-4';
+        if (field.width === 'quarter') colSpan = 'md:col-span-3';
+        if (field.width === 'half') colSpan = 'md:col-span-6';
+        if (field.width === 'two-thirds') colSpan = 'md:col-span-8';
+        if (field.width === 'sixth') colSpan = 'md:col-span-2';
+        if (inColumn) colSpan = '';
+
+        const key = field.key || `field-${fieldIdx}`;
+        const error = field.key ? fieldErrors[field.key as keyof typeof fieldErrors] : undefined;
+
+        if (field.optionalGroup === 'second_screen' && !showSecondScreen) return null;
+
+        if (field.type === 'custom_second_screen_toggle') {
+            return (
+                <div key="second-screen-toggle" className="md:col-span-12 mt-2 pt-4 border-t border-white/10">
+                    <button
+                        type="button"
+                        onClick={() => setShowSecondScreen(v => !v)}
+                        className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-widest text-gray-400 hover:text-white transition-colors"
+                    >
+                        <span className={`w-4 h-4 border flex items-center justify-center ${showSecondScreen ? 'bg-secondary border-secondary' : 'border-gray-600'}`}>
+                            {showSecondScreen && <span className="w-2 h-2 bg-black" />}
+                        </span>
+                        Has a second screen
+                    </button>
+                    {!showSecondScreen && (
+                        <div className="text-[9px] text-gray-600 mt-1 font-mono">// 9 of 514 devices do — leave this off for the rest</div>
+                    )}
+                </div>
+            );
+        }
+
+        if (field.type === 'custom_cpu_clusters') {
+            // One row per big/little cluster. Rendered one line each on the console page,
+            // instead of the old "Cortex-A76 / Cortex-A55  2x / 6x" interleaving.
+            const cellClass = 'border border-gray-700 bg-black text-white font-mono text-xs p-2 outline-none focus:border-secondary w-full';
+            return (
+                <div key={key} className={colSpan}>
+                    <label className="text-[10px] mb-2 block uppercase tracking-wider text-gray-500">{field.label}</label>
+                    {clusters.length === 0 && (
+                        <div className="text-[9px] text-gray-600 font-mono mb-2">// no clusters yet</div>
+                    )}
+                    <div className="space-y-1.5">
+                        {clusters.map((c: any, i: number) => (
+                            <div key={i} className="grid grid-cols-[52px_1fr_84px_70px_30px] gap-1.5 items-center">
+                                <input type="number" min="1" className={cellClass} placeholder="2" aria-label={`Cluster ${i + 1} core count`}
+                                    value={c.count ?? ''} onChange={(e) => updateCluster(i, 'count', e.target.value)} />
+                                <input type="text" className={cellClass} placeholder="Cortex-A78" aria-label={`Cluster ${i + 1} core name`}
+                                    value={c.core ?? ''} onChange={(e) => updateCluster(i, 'core', e.target.value)} />
+                                <input type="number" className={cellClass} placeholder="MHz" aria-label={`Cluster ${i + 1} clock in MHz`}
+                                    value={c.clock_mhz ?? ''} onChange={(e) => updateCluster(i, 'clock_mhz', e.target.value)} />
+                                <input type="number" className={cellClass} placeholder="Year" aria-label={`Cluster ${i + 1} architecture year`}
+                                    value={c.uarch_year ?? ''} onChange={(e) => updateCluster(i, 'uarch_year', e.target.value)} />
+                                <button type="button" onClick={() => removeCluster(i)} aria-label={`Remove cluster ${i + 1}`}
+                                    className="border border-gray-700 text-gray-500 hover:border-accent hover:text-accent font-mono text-xs h-[34px]">×</button>
+                            </div>
+                        ))}
+                    </div>
+                    <button type="button" onClick={addCluster}
+                        className="mt-2 font-mono text-[9px] uppercase tracking-widest text-secondary hover:text-white transition-colors">
+                        + Add cluster
+                    </button>
+                    <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">
+                        // count · core · MHz · architecture year. Fastest cluster first.
+                    </div>
+                </div>
+            );
+        }
+
+        if (field.type === 'custom_date') {
+            // Year and month are explicit controls rather than <input type="month">,
+            // which Safari does not implement and silently renders as a text box.
+            const dateInputClass = `w-full bg-black border p-3 outline-none text-white font-mono text-sm h-[46px] ${dateError ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`;
+            const yearPart = dateValue.slice(0, 4);
+            const monthPart = dateValue.slice(5, 7);
+
+            const setYear = (y: string) => {
+                const clean = y.replace(/\D/g, '').slice(0, 4);
+                setDateValue(datePrecision === 'month' ? (monthPart ? `${clean}-${monthPart}` : clean) : clean);
+            };
+            const setMonth = (m: string) => setDateValue(m ? `${yearPart}-${m}` : yearPart);
+
+            return (
+                <div key="date-input" className={colSpan}>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label className="text-[10px] mb-1 block uppercase text-gray-500">Date Precision</label>
+                            <SwissDropdown
+                                className="w-full"
+                                buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center"
+                                value={datePrecision}
+                                onChange={(val) => { setDatePrecision(val as any); setDateValue(""); }}
+                                options={[
+                                    { value: "", label: "-- None --" },
+                                    { value: "year", label: "Year Only" },
+                                    { value: "month", label: "Month + Year" },
+                                    { value: "day", label: "Exact Day" }
+                                ]}
+                                labelPrefix="" inverted={false}
+                            />
+                        </div>
+
+                        {(datePrecision === 'year' || datePrecision === 'month') && (
+                            <div>
+                                <label className="text-[10px] mb-1 block uppercase text-gray-500">Year</label>
+                                <input type="text" inputMode="numeric" maxLength={4} className={dateInputClass}
+                                    value={yearPart} onChange={(e) => setYear(e.target.value)} placeholder="YYYY" />
+                            </div>
+                        )}
+
+                        {datePrecision === 'month' && (
+                            <div>
+                                <label className="text-[10px] mb-1 block uppercase text-gray-500">Month</label>
+                                <SwissDropdown
+                                    className="w-full"
+                                    buttonClassName={`bg-black border p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center ${dateError ? 'border-accent' : 'border-gray-700'}`}
+                                    value={monthPart}
+                                    onChange={(val) => setMonth(val as string)}
+                                    options={MONTH_OPTIONS}
+                                    labelPrefix="" inverted={false}
+                                />
+                            </div>
+                        )}
+
+                        {datePrecision === 'day' && (
+                            <div className="md:col-span-2">
+                                <label className="text-[10px] mb-1 block uppercase text-gray-500">Date</label>
+                                <input type="date" className={dateInputClass} value={dateValue}
+                                    onChange={(e) => setDateValue(e.target.value)} />
+                            </div>
+                        )}
+                    </div>
+                    {dateError && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold">! {dateError}</div>}
+                </div>
+            );
+        }
+
+        if (field.type === 'custom_ram') {
+            return (
+                <div key={key} className={colSpan}>
+                    <label className={`text-[10px] mb-1 block uppercase ${error ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
+                    <div className="flex gap-2">
+                        <input type="number" className={`flex-1 border p-3 outline-none font-mono text-sm bg-black text-white ${error ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`}
+                            value={ramInput.value} onChange={(e) => handleRamChange(e.target.value, ramInput.unit)} />
+                        <SwissDropdown value={ramInput.unit} onChange={(val) => handleRamChange(ramInput.value, val as 'GB' | 'MB')}
+                            options={[{ label: 'GB', value: 'GB' }, { label: 'MB', value: 'MB' }]} className="w-24"
+                            buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center"
+                            labelPrefix="" inverted={false} />
+                    </div>
+                    {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
+                </div>
+            );
+        }
+
+        if (field.type === 'custom_clock') {
+            const inputState = clockInputs[field.key] || { value: '', unit: 'GHz' as const };
+            return (
+                <div key={key} className={colSpan}>
+                    <label className={`text-[10px] mb-1 block uppercase ${error ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
+                    <div className="flex gap-2">
+                        <input type="number" step="any" className={`flex-1 border p-3 outline-none font-mono text-sm bg-black text-white ${error ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`}
+                            value={inputState.value} onChange={(e) => handleClockChange(field.key, e.target.value, inputState.unit)} />
+                        <SwissDropdown value={inputState.unit} onChange={(val) => handleClockChange(field.key, inputState.value, val as 'GHz' | 'MHz')}
+                            options={[{ label: 'GHz', value: 'GHz' }, { label: 'MHz', value: 'MHz' }]} className="w-24"
+                            buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center"
+                            labelPrefix="" inverted={false} />
+                    </div>
+                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
+                    {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
+                </div>
+            );
+        }
+
+        // A subHeader without `column` is a plain full-width divider in the flat layout.
+        if (!field.key && field.subHeader) {
+            return (
+                <div key={`sub-${fieldIdx}`} className="md:col-span-12 mt-2 mb-1 border-b border-gray-800 pb-1">
+                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{field.subHeader}</span>
+                </div>
+            );
+        }
+        if (!field.key) return null;
+
+        if (field.type === 'url' || field.key.includes('image_url')) {
+            return (
+                <div key={key} className={colSpan}>
+                    <label className={`text-[10px] mb-2 block uppercase ${error ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
+                    <ImageUpload value={formData[field.key]} onChange={(url) => handleInputChange(field.key, url)} />
+                </div>
+            );
+        }
+
+        return (
+            <div key={key} className={colSpan}>
+                <AdminInput field={field} value={formData[field.key]} onChange={handleInputChange} error={error} />
+            </div>
+        );
+    };
+
     return (
         <div className="space-y-6">
             <div className={`border-l-4 p-5 mb-6 bg-black/40 shadow-md ${isEditMode ? 'border-secondary' : 'border-accent'}`}>
@@ -484,179 +713,36 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 <div className="space-y-4">
                     {VARIANT_FORM_GROUPS.map((group, idx) => {
                         const isOpen = openSections[group.title];
-                        const hasError = group.fields.some(f => f.key && fieldErrors[f.key as keyof typeof fieldErrors]);
+                        const hasError = group.fields.some((f: any) => f.key && fieldErrors[f.key as keyof typeof fieldErrors]);
+                        const columns = buildSubColumns(group.fields);
+                        const flat = (group.fields as any[]).filter(f => !f.subGroup && !(f.subHeader && f.column));
+
                         return (
                             <div key={idx} className={`bg-black/40 border-l-4 ${hasError ? 'border-accent' : 'border-secondary'} shadow-lg`}>
                                 <button type="button" onClick={() => toggleSection(group.title)} className={`w-full flex justify-between items-center p-4 text-left font-mono uppercase tracking-widest text-sm ${isOpen ? 'text-white bg-white/5 font-bold' : 'text-gray-400 hover:text-white'}`}>
                                     <span>{group.title}</span><div className={`${isOpen ? 'rotate-180 text-secondary' : 'text-gray-600'}`}><ChevronDown /></div>
                                 </button>
                                 {isOpen && (
-                                    <div className="p-6 grid grid-cols-1 md:grid-cols-12 gap-6 border-t border-white/5">
-                                        {group.fields.map((field: any, fieldIdx: number) => {
-                                            let colSpan = 'md:col-span-6';
-                                            if (field.width === 'full') colSpan = 'md:col-span-12';
-                                            if (field.width === 'third') colSpan = 'md:col-span-4';
-                                            if (field.width === 'quarter') colSpan = 'md:col-span-3';
-                                            if (field.width === 'half') colSpan = 'md:col-span-6';
-                                            if (field.width === 'two-thirds') colSpan = 'md:col-span-8';
-                                            if (field.width === 'sixth') colSpan = 'md:col-span-2';
-
-                                            const error = field.key ? fieldErrors[field.key as keyof typeof fieldErrors] : undefined;
-
-                                            if (field.optionalGroup === 'second_screen' && !showSecondScreen) return null;
-
-                                            if (field.type === 'custom_second_screen_toggle') {
-                                                return (
-                                                    <div key="second-screen-toggle" className="md:col-span-12 mt-2 pt-4 border-t border-white/10">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setShowSecondScreen(v => !v)}
-                                                            className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-widest text-gray-400 hover:text-white transition-colors"
-                                                        >
-                                                            <span className={`w-4 h-4 border flex items-center justify-center ${showSecondScreen ? 'bg-secondary border-secondary' : 'border-gray-600'}`}>
-                                                                {showSecondScreen && <span className="w-2 h-2 bg-black" />}
-                                                            </span>
-                                                            Has a second screen
-                                                        </button>
-                                                        {!showSecondScreen && (
-                                                            <div className="text-[9px] text-gray-600 mt-1 font-mono">// 9 of 514 devices do — leave this off for the rest</div>
-                                                        )}
-                                                    </div>
-                                                );
-                                            }
-
-                                            if (field.type === 'custom_date') {
-                                                // Year and month are explicit controls rather than <input type="month">,
-                                                // which Safari does not implement and silently renders as a text box.
-                                                const dateInputClass = `w-full bg-black border p-3 outline-none text-white font-mono text-sm h-[46px] ${dateError ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`;
-                                                const yearPart = dateValue.slice(0, 4);
-                                                const monthPart = dateValue.slice(5, 7);
-
-                                                const setYear = (y: string) => {
-                                                    const clean = y.replace(/\D/g, '').slice(0, 4);
-                                                    setDateValue(datePrecision === 'month' ? (monthPart ? `${clean}-${monthPart}` : clean) : clean);
-                                                };
-                                                const setMonth = (m: string) => {
-                                                    setDateValue(m ? `${yearPart}-${m}` : yearPart);
-                                                };
-
-                                                return (
-                                                    <div key="date-input" className={`${colSpan}`}>
-                                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                            <div>
-                                                                <label className="text-[10px] mb-1 block uppercase text-gray-500">Date Precision</label>
-                                                                <SwissDropdown
-                                                                    className="w-full"
-                                                                    buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center"
-                                                                    value={datePrecision}
-                                                                    onChange={(val) => {
-                                                                        setDatePrecision(val as any);
-                                                                        setDateValue("");
-                                                                    }}
-                                                                    options={[
-                                                                        { value: "", label: "-- None --" },
-                                                                        { value: "year", label: "Year Only" },
-                                                                        { value: "month", label: "Month + Year" },
-                                                                        { value: "day", label: "Exact Day" }
-                                                                    ]}
-                                                                    labelPrefix="" inverted={false}
-                                                                />
-                                                            </div>
-
-                                                            {(datePrecision === 'year' || datePrecision === 'month') && (
-                                                                <div>
-                                                                    <label className="text-[10px] mb-1 block uppercase text-gray-500">Year</label>
-                                                                    <input
-                                                                        type="text"
-                                                                        inputMode="numeric"
-                                                                        maxLength={4}
-                                                                        className={dateInputClass}
-                                                                        value={yearPart}
-                                                                        onChange={(e) => setYear(e.target.value)}
-                                                                        placeholder="YYYY"
-                                                                    />
-                                                                </div>
-                                                            )}
-
-                                                            {datePrecision === 'month' && (
-                                                                <div>
-                                                                    <label className="text-[10px] mb-1 block uppercase text-gray-500">Month</label>
-                                                                    <SwissDropdown
-                                                                        className="w-full"
-                                                                        buttonClassName={`bg-black border p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center ${dateError ? 'border-accent' : 'border-gray-700'}`}
-                                                                        value={monthPart}
-                                                                        onChange={(val) => setMonth(val as string)}
-                                                                        options={MONTH_OPTIONS}
-                                                                        labelPrefix="" inverted={false}
-                                                                    />
-                                                                </div>
-                                                            )}
-
-                                                            {datePrecision === 'day' && (
-                                                                <div className="md:col-span-2">
-                                                                    <label className="text-[10px] mb-1 block uppercase text-gray-500">Date</label>
-                                                                    <input
-                                                                        type="date"
-                                                                        className={dateInputClass}
-                                                                        value={dateValue}
-                                                                        onChange={(e) => setDateValue(e.target.value)}
-                                                                    />
-                                                                </div>
-                                                            )}
+                                    <div className="border-t border-white/5">
+                                        {columns.length > 0 && (
+                                            <div className="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-8">
+                                                {columns.map(col => (
+                                                    <div key={col.title}>
+                                                        <div className="font-mono text-[9.5px] tracking-[0.18em] uppercase text-secondary pb-2 mb-4 border-b border-white/10">
+                                                            {col.title}
                                                         </div>
-                                                        {dateError && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold">! {dateError}</div>}
-                                                    </div>
-                                                );
-                                            }
-
-                                            if (field.type === 'custom_ram') {
-                                                return (
-                                                    <div key={field.key || `field-${fieldIdx}`} className={`${colSpan}`}>
-                                                        <label className={`text-[10px] mb-1 block uppercase ${error ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
-                                                        <div className="flex gap-2">
-                                                            <input type="number" className={`flex-1 border p-3 outline-none font-mono text-sm bg-black text-white ${error ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`} value={ramInput.value} onChange={(e) => handleRamChange(e.target.value, ramInput.unit)} />
-                                                            <SwissDropdown value={ramInput.unit} onChange={(val) => handleRamChange(ramInput.value, val as 'GB' | 'MB')} options={[{label: 'GB', value: 'GB'}, {label: 'MB', value: 'MB'}]} className="w-24" buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center" labelPrefix="" inverted={false} />
+                                                        <div className="space-y-4">
+                                                            {col.fields.map((f, i) => renderField(f, i, true))}
                                                         </div>
-                                                        {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
                                                     </div>
-                                                );
-                                            }
-
-                                            if (field.type === 'custom_clock') {
-                                                const inputState = clockInputs[field.key] || { value: '', unit: 'GHz' as const };
-                                                return (
-                                                    <div key={field.key || `field-${fieldIdx}`} className={`${colSpan}`}>
-                                                        <label className={`text-[10px] mb-1 block uppercase ${error ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
-                                                        <div className="flex gap-2">
-                                                            <input
-                                                                type="number"
-                                                                step="any"
-                                                                className={`flex-1 border p-3 outline-none font-mono text-sm bg-black text-white ${error ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`}
-                                                                value={inputState.value}
-                                                                onChange={(e) => handleClockChange(field.key, e.target.value, inputState.unit)}
-                                                            />
-                                                            <SwissDropdown value={inputState.unit} onChange={(val) => handleClockChange(field.key, inputState.value, val as 'GHz' | 'MHz')} options={[{label: 'GHz', value: 'GHz'}, {label: 'MHz', value: 'MHz'}]} className="w-24" buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center" labelPrefix="" inverted={false} />
-                                                        </div>
-                                                        {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
-                                                        {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
-                                                    </div>
-                                                );
-                                            }
-
-                                            return (
-                                                <div key={field.key || `field-${fieldIdx}`} className={`${colSpan}`}>
-                                                    {field.subHeader && <div className="col-span-12 mt-2 mb-3 border-b border-gray-800 pb-1"><span className="text-[10px] text-gray-500 font-bold uppercase">{field.subHeader}</span></div>}
-                                                    {field.key && (field.type === 'url' || (field.key && field.key.includes('image_url')) ? (
-                                                        <div>
-                                                            <label className={`text-[10px] mb-2 block uppercase ${error ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
-                                                            <ImageUpload value={field.key ? formData[field.key] : ''} onChange={(url) => handleInputChange(field.key, url)} />
-                                                        </div>
-                                                    ) : (
-                                                        <AdminInput field={field} value={field.key ? formData[field.key] : ''} onChange={handleInputChange} error={error} />
-                                                    ))}
-                                                </div>
-                                            );
-                                        })}
+                                                ))}
+                                            </div>
+                                        )}
+                                        {flat.length > 0 && (
+                                            <div className={`px-6 pb-6 grid grid-cols-1 md:grid-cols-12 gap-6 ${columns.length > 0 ? 'pt-6 border-t border-white/5' : 'pt-6'}`}>
+                                                {flat.map((f, i) => renderField(f, i, false))}
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
