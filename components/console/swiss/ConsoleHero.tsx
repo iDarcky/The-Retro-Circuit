@@ -6,6 +6,9 @@ import { Share2 } from 'lucide-react';
 import { ConsoleDetails, ConsoleSpecs, ConsoleVariant, EmulationProfile } from '../../../lib/types';
 import { SYSTEM_TIERS } from '../../../lib/config/emulation';
 import { getBuyUrl } from '../../../lib/affiliate';
+import { circuitScore, percentileOf, scorePerDollar } from '../../../lib/scoring/circuit-score';
+import CircuitScoreCard, { PriceCard } from './CircuitScoreCard';
+import type { CatalogueStats } from '../../../app/actions/scoring';
 
 /* The console page is where the buy / no-buy call gets made, so the fold carries the
  * four things that decide it: the device, what it costs, what it can emulate, and the
@@ -30,6 +33,7 @@ interface Props {
     onShare: () => void;
     shareCopied: boolean;
     onEmulationDetails: () => void;
+    catalogueStats?: CatalogueStats;
 }
 
 /** Highest tier with at least one playable system, plus the systems that qualified. */
@@ -64,7 +68,7 @@ const Chip: FC<{ children: React.ReactNode; tone?: 'violet' | 'cyan' | 'orange' 
 
 const ConsoleHero: FC<Props> = ({
     consoleData, specs, variant, profile, shots, heroIndex, onHeroIndex,
-    isPixelFallback, compareUrl, onShare, shareCopied, onEmulationDetails,
+    isPixelFallback, compareUrl, onShare, shareCopied, onEmulationDetails, catalogueStats,
 }) => {
     const brand = consoleData.manufacturer?.name;
     const brandSlug = consoleData.manufacturer?.slug;
@@ -74,16 +78,30 @@ const ConsoleHero: FC<Props> = ({
     // Street price is the one to show; launch price is the reference it is measured against.
     const street = variant?.price_avg_usd ?? null;
     const launch = variant?.price_launch_usd ?? null;
+    // Street price where it exists, launch price otherwise. The old "vs MSRP" delta is
+    // gone: the price card now ranks against the tier, which is the more useful read and
+    // does not need both columns populated — which no variant currently is.
     const price = street ?? launch;
-    // Both are populated on no variant today (the importer wrote one, the form the other),
-    // so this delta stays hidden until they overlap rather than showing a fake 0%.
-    const delta = street && launch && launch > 0 ? Math.round(((street - launch) / launch) * 100) : null;
 
     const res = specs.screen_resolution_y ? `${specs.screen_resolution_y}p` : null;
     const screen = [specs.screen_size_inch ? `${specs.screen_size_inch}"` : null, res].filter(Boolean).join(' · ');
     const os = [specs.os_family, specs.os_version].filter(Boolean).join(' ') || specs.os;
     const year = variant?.release_date ? variant.release_date.slice(0, 4) : null;
     const isNew = year ? Number(year) >= new Date().getFullYear() - 1 : false;
+
+    /* Circuit Score and its standing. Every rank is drawn from the same reach tier, and
+     * suppressed entirely when that tier holds too few published devices to mean
+     * anything — a percentile over three samples is decoration, not information. */
+    const score = circuitScore(profile, consoleData.setup_ease_score, consoleData.community_score);
+    const tierStats = score && catalogueStats ? catalogueStats[score.reach] : undefined;
+    const tierSize = tierStats?.scores.length ?? 0;
+
+    const scorePercentile = score && tierStats?.scores.length
+        ? percentileOf(score.score, tierStats.scores) : null;
+    const pricePercentile = price && tierStats?.prices.length
+        ? percentileOf(price, tierStats.prices) : null;
+    const valuePercentile = score && price && tierStats?.values.length
+        ? percentileOf(scorePerDollar(score.score, price) ?? 0, tierStats.values) : null;
 
     const buyUrl = getBuyUrl({
         asin: variant?.amazon_asin,
@@ -195,35 +213,29 @@ const ConsoleHero: FC<Props> = ({
                         {os && <Chip>{os}</Chip>}
                     </div>
 
-                    {/* The two numbers the decision turns on, side by side. */}
-                    <div className="grid grid-cols-2 gap-3 mb-5">
-                        <div className="border border-white/10 bg-white/[0.02] p-4">
-                            <div className="font-mono text-[9px] uppercase tracking-widest text-gray-500 mb-2">Price</div>
-                            {price ? (
-                                <>
-                                    <div className="font-pixel text-2xl md:text-3xl text-emerald-400 leading-none">${price}</div>
-                                    {delta !== null && delta !== 0 && (
-                                        <div className="font-mono text-[10px] text-gray-500 mt-2">
-                                            {delta < 0 ? '↓' : '↑'} {Math.abs(delta)}% vs MSRP
-                                        </div>
-                                    )}
-                                </>
-                            ) : (
-                                <div className="font-pixel text-lg text-gray-600 leading-none">—</div>
-                            )}
-                        </div>
-
-                        <div className="border border-white/10 bg-white/[0.02] p-4">
-                            <div className="font-mono text-[9px] uppercase tracking-widest text-gray-500 mb-2">Emulation Tier</div>
-                            {tier ? (
-                                <>
-                                    <div className="font-pixel text-2xl md:text-3xl text-violet-400 leading-none">T{tier.n}</div>
-                                    <div className="font-mono text-[10px] text-gray-500 mt-2 uppercase">{tier.title}</div>
-                                </>
-                            ) : (
+                    {/* The two numbers the decision turns on, each with where it stands. */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+                        <PriceCard
+                            price={price ?? null}
+                            percentile={pricePercentile}
+                            tierSize={tierSize}
+                            medianPrice={tierStats?.medianPrice ?? null}
+                            valuePercentile={valuePercentile}
+                        />
+                        {score ? (
+                            <CircuitScoreCard
+                                score={score}
+                                percentile={scorePercentile}
+                                tierSize={tierSize}
+                                medianScore={tierStats?.medianScore ?? null}
+                            />
+                        ) : (
+                            <div className="border border-white/10 bg-white/[0.02] p-4">
+                                <div className="font-mono text-[9px] uppercase tracking-widest text-gray-500 mb-3">Circuit Score</div>
                                 <div className="font-pixel text-lg text-gray-600 leading-none">Untested</div>
-                            )}
-                        </div>
+                                <div className="font-mono text-[10px] text-gray-500 mt-3">No graded emulation profile yet</div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Comparing devices is what the site is for, so it is the primary action. */}

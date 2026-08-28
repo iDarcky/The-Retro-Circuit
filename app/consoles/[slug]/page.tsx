@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { fetchConsoleBySlug } from '../../../app/actions';
 import { fetchConsoleList, fetchConsoleImages } from '../../../app/actions/consoles';
 import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
+import { fetchCatalogueStats } from '../../actions/scoring';
 import { ConsoleDetails } from '../../../lib/types';
 
 export const revalidate = false;
@@ -132,6 +133,10 @@ export default async function ConsoleSpecsPage(props: Props) {
   // [] until the console_images migration is applied, so this is a no-op before then.
   const galleryImages = await fetchConsoleImages((consoleData as any).id);
 
+  // Catalogue-wide distributions for the Circuit Score standings. Anon client, so the
+  // page stays static and the comparison set is what a visitor can actually browse.
+  const catalogueStats = await fetchCatalogueStats();
+
   // Generate JSON-LD Product Schema
   const mfgName = consoleData.manufacturer?.name || '';
   const fullName = mfgName ? `${mfgName} ${consoleData.name}` : consoleData.name;
@@ -200,7 +205,7 @@ export default async function ConsoleSpecsPage(props: Props) {
       />
       {/* Gallery feeds the hero frame directly — a separate section below the fold
           duplicated the cover shot and buried the extra angles. */}
-      <ConsoleDetailView consoleData={consoleData} galleryImages={galleryImages} />
+      <ConsoleDetailView consoleData={consoleData} galleryImages={galleryImages} catalogueStats={catalogueStats} />
     </>
   );
 }

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ConsoleDetails, ConsoleSpecs, ConsoleVariant } from '../../lib/types';
 import { SwissDropdown } from '../ui/SwissDropdown';
 import ConsoleHero from './swiss/ConsoleHero';
+import type { CatalogueStats } from '../../app/actions/scoring';
 import ConsoleTabs from './swiss/ConsoleTabs';
 import PlayabilityMatrix from './PlayabilityMatrix';
 import BuySection from './BuySection';
@@ -21,12 +22,14 @@ import ConsoleLinks from './ConsoleLinks';
 interface ConsoleDetailViewProps {
     /** Extra shots from console_images; empty until a console has a gallery. */
     galleryImages?: { id: string; url: string; alt_text: string | null; kind: string | null }[];
+    /** Per-tier score and price distributions, for the standings. */
+    catalogueStats?: CatalogueStats;
   consoleData: ConsoleDetails;
 }
 
 // --- MAIN COMPONENT ---
 
-const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryImages = [] }) => {
+const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryImages = [], catalogueStats }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
     
@@ -143,6 +146,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                 onShare={handleShare}
                 shareCopied={shareCopied}
                 onEmulationDetails={() => setIsEmulationModalOpen(true)}
+                catalogueStats={catalogueStats}
              />
 
              {/* Variant switch and comparison, only where there is a choice to make. */}
