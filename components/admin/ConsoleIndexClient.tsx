@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { bulkSetConsoleStatus } from '../../app/actions/dashboard';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { timeAgo } from '@/lib/utils/date-formatter';
@@ -21,7 +22,7 @@ interface AdminConsoleRow {
     image_url?: string | null;
     device_category?: string | null;
     manufacturer?: { name: string } | null;
-    variants?: { id: string; price_launch_usd?: number | null; image_url?: string | null }[] | null;
+    variants?: { id: string; price_launch_usd?: number | null; price_avg_usd?: number | null; image_url?: string | null; cpu_model?: string | null; soc_name?: string | null; soc?: string | null }[] | null;
 }
 
 interface ConsoleIndexClientProps {
@@ -47,6 +48,22 @@ function getGaps(c: AdminConsoleRow): string[] {
     return gaps;
 }
 
+/* Five publish conditions, in the order they usually get filled in. The index shows
+ * them as a meter so you can tell "one field away" from "nothing entered" without
+ * opening the record. */
+function completeness(c: AdminConsoleRow): { done: number; total: number } {
+    const variants = c.variants || [];
+    const v = variants[0] as any;
+    const checks = [
+        Boolean(c.name && c.slug),
+        variants.length > 0,
+        Boolean(v?.cpu_model || v?.soc_name || v?.soc),
+        (v?.price_launch_usd ?? 0) > 0 || (v?.price_avg_usd ?? 0) > 0,
+        Boolean(c.image_url) || variants.some((x) => x.image_url),
+    ];
+    return { done: checks.filter(Boolean).length, total: checks.length };
+}
+
 export default function ConsoleIndexClient({ initialConsoles, initialManufacturers }: ConsoleIndexClientProps) {
     const router = useRouter();
     // The admin hub links straight to a gap: /admin/consoles?status=DRAFT&gap=NO_IMAGE.
@@ -66,6 +83,8 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
     const [sort, setSort] = useState<SortKey>('NAME');
 
     // Modal State
+    const [selected, setSelected] = useState<Set<string>>(new Set());
+    const [bulkBusy, setBulkBusy] = useState(false);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [createError, _setCreateError] = useState<string | null>(null);
 
@@ -137,6 +156,40 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
         }
     });
 
+
+    // Selection follows the visible rows: "select all" means all of this filter, not
+    // all 462, and changing the filter drops anything no longer on screen.
+    const visibleIds = filteredConsoles.map(c => c.id);
+    const selectedVisible = visibleIds.filter(id => selected.has(id));
+    const allVisibleSelected = visibleIds.length > 0 && selectedVisible.length === visibleIds.length;
+
+    const toggleRow = (id: string) => setSelected(prev => {
+        const next = new Set(prev);
+        if (next.has(id)) next.delete(id); else next.add(id);
+        return next;
+    });
+    const toggleAllVisible = () => setSelected(prev => {
+        const next = new Set(prev);
+        if (allVisibleSelected) visibleIds.forEach(id => next.delete(id));
+        else visibleIds.forEach(id => next.add(id));
+        return next;
+    });
+
+    const runBulk = async (status: 'draft' | 'review' | 'published' | 'archived') => {
+        const ids = selectedVisible;
+        if (ids.length === 0) return;
+        if (status === 'published' || status === 'archived') {
+            const verb = status === 'published' ? 'Publish' : 'Archive';
+            if (!confirm(`${verb} ${ids.length} console${ids.length > 1 ? 's' : ''}?`)) return;
+        }
+        setBulkBusy(true);
+        const res = await bulkSetConsoleStatus(ids, status);
+        setBulkBusy(false);
+        if (!res.success && res.message) alert(res.message);
+        else if (res.failed.length > 0) alert(`${res.updated} updated, ${res.failed.length} failed.`);
+        setSelected(new Set());
+        router.refresh();
+    };
 
     const handleDelete = async (id: string, name: string) => {
         if (confirm(`PERMANENTLY DELETE "${name}"?\n\nThis console is in DRAFT and can be safely removed.`)) {
@@ -268,16 +321,46 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                 )}
             </p>
 
+            {/* Bulk bar — inverted so it is unmistakably a mode, not another filter. */}
+            {selectedVisible.length > 0 && (
+                <div className="flex flex-wrap items-center gap-3 px-4 py-3 mb-3 bg-white text-black font-mono text-[10px] uppercase tracking-widest">
+                    <span className="font-bold">{selectedVisible.length} selected</span>
+                    <button type="button" disabled={bulkBusy} onClick={() => runBulk('published')}
+                        className="px-3 py-1.5 bg-black text-white hover:bg-zinc-800 disabled:opacity-40 transition-colors">
+                        {bulkBusy ? 'Working…' : 'Publish'}
+                    </button>
+                    <button type="button" disabled={bulkBusy} onClick={() => runBulk('draft')}
+                        className="px-3 py-1.5 border border-black hover:bg-black hover:text-white disabled:opacity-40 transition-colors">
+                        Back to draft
+                    </button>
+                    <button type="button" disabled={bulkBusy} onClick={() => runBulk('archived')}
+                        className="px-3 py-1.5 border border-black hover:bg-black hover:text-white disabled:opacity-40 transition-colors">
+                        Archive
+                    </button>
+                    <button type="button" onClick={() => setSelected(new Set())}
+                        className="ml-auto underline underline-offset-2">Clear</button>
+                </div>
+            )}
+
             {/* Table */}
             <div className="bg-bg-primary border border-border-normal shadow-lg overflow-hidden relative">
                  <div className="overflow-x-auto relative z-10">
                     <table className="w-full text-left font-mono text-sm">
                         <thead>
                             <tr className="border-b border-gray-800 bg-black/50 text-gray-500 text-xs uppercase tracking-widest">
-                                <th className="p-4 w-16">ID</th>
+                                <th className="p-4 w-10">
+                                    <input
+                                        type="checkbox"
+                                        checked={allVisibleSelected}
+                                        onChange={toggleAllVisible}
+                                        aria-label="Select all visible consoles"
+                                        className="w-3.5 h-3.5 accent-white cursor-pointer align-middle"
+                                    />
+                                </th>
                                 <th className="p-4">Console Name</th>
                                 <th className="p-4">Manufacturer</th>
                                 <th className="p-4">Status</th>
+                                <th className="p-4 w-28">Complete</th>
                                 <th className="p-4">Missing</th>
                                 <th className="p-4">Last Updated</th>
                                 <th className="p-4 text-right">Actions</th>
@@ -290,7 +373,15 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                                     onClick={() => router.push(`/admin/consoles/${console.slug}`)}
                                     className="border-b border-gray-800 hover:bg-white/5 transition-colors group cursor-pointer"
                                 >
-                                    <td className="p-4 text-gray-600 font-xs truncate max-w-[50px]">{console.id.substring(0,4)}</td>
+                                    <td className="p-4" onClick={(e) => e.stopPropagation()}>
+                                        <input
+                                            type="checkbox"
+                                            checked={selected.has(console.id)}
+                                            onChange={() => toggleRow(console.id)}
+                                            aria-label={`Select ${console.name}`}
+                                            className="w-3.5 h-3.5 accent-white cursor-pointer align-middle"
+                                        />
+                                    </td>
                                     <td className="p-4 font-bold text-white group-hover:text-secondary">
                                         {console.name}
                                         <div className="text-[10px] text-gray-500 font-normal mt-1 lowercase opacity-50">{console.slug}</div>
@@ -307,6 +398,23 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                                         }`}>
                                             {console.status || 'DRAFT'}
                                         </span>
+                                    </td>
+                                    <td className="p-4">
+                                        {(() => {
+                                            const { done, total } = completeness(console);
+                                            return (
+                                                <span className="flex items-center gap-2" title={`${done} of ${total} conditions met`}>
+                                                    <span className="flex gap-0.5" aria-hidden="true">
+                                                        {Array.from({ length: total }, (_, i) => (
+                                                            <span key={i} className={`w-2 h-2 ${
+                                                                i < done ? (done === total ? 'bg-secondary' : 'bg-amber-500') : 'bg-gray-800'
+                                                            }`} />
+                                                        ))}
+                                                    </span>
+                                                    <span className="text-[10px] text-gray-600 tabular-nums">{done}/{total}</span>
+                                                </span>
+                                            );
+                                        })()}
                                     </td>
                                     <td className="p-4">
                                         {(() => {

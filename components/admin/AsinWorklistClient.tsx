@@ -45,12 +45,41 @@ export default function AsinWorklistClient({ rows }: { rows: AsinRow[] }) {
         });
     };
 
+    /* Keyboard path: Enter saves and moves to the next row, Escape reverts the field.
+     * At 501 rows the difference between four seconds and fifteen is an afternoon. */
+    const focusRow = (index: number) => {
+        const next = visible[index];
+        if (!next) return;
+        const el = document.querySelector<HTMLInputElement>(`input[data-asin-row="${next.variant_id}"]`);
+        el?.focus();
+        el?.select();
+    };
+
+    const onFieldKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, r: AsinRow, index: number) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            save(r);
+            focusRow(index + 1);
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            const el = e.currentTarget;
+            el.value = r.amazon_asin || '';
+            setDrafts((d) => ({ ...d, [r.variant_id]: r.amazon_asin || '' }));
+            el.blur();
+        }
+    };
+
     return (
         <div className="flex flex-col gap-6">
             <div className="flex flex-wrap gap-6 border border-white/10 p-4">
                 <Stat label="Missing" value={counts.missing} tone="rose" />
                 <Stat label="Published & missing" value={counts.publishedMissing} tone="orange" />
                 <Stat label="Have an ASIN" value={counts.has} tone="green" />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4 font-mono text-[10px] uppercase tracking-widest text-gray-500">
+                <span><kbd className="border border-white/15 px-1.5 py-0.5">Enter</kbd> save &amp; next row</span>
+                <span><kbd className="border border-white/15 px-1.5 py-0.5">Esc</kbd> revert</span>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
@@ -83,7 +112,7 @@ export default function AsinWorklistClient({ rows }: { rows: AsinRow[] }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {visible.map((r) => {
+                        {visible.map((r, rowIndex) => {
                             const state = saved[r.variant_id];
                             return (
                                 <tr key={r.variant_id} className="border-b border-white/5">
@@ -105,8 +134,11 @@ export default function AsinWorklistClient({ rows }: { rows: AsinRow[] }) {
                                     </td>
                                     <td className="px-4 py-3">
                                         <input
+                                            data-asin-row={r.variant_id}
                                             defaultValue={r.amazon_asin || ''}
                                             onChange={(e) => setDrafts((d) => ({ ...d, [r.variant_id]: e.target.value }))}
+                                            onKeyDown={(e) => onFieldKeyDown(e, r, rowIndex)}
+                                            aria-label={`Amazon ASIN for ${r.console_name} ${r.variant_name || ''}`}
                                             placeholder="B0XXXXXXXX"
                                             maxLength={10}
                                             className="w-36 bg-transparent border border-white/10 px-2 py-1 font-mono text-xs uppercase text-white placeholder:text-gray-700 focus:outline-none focus:border-violet-500"

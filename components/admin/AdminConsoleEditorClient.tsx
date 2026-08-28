@@ -81,6 +81,46 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                 </div>
             )}
 
+            {/* What stands between this draft and published, stated rather than inferred. */}
+            {consoleData.status !== 'published' && (() => {
+                const variants = consoleData.variants || [];
+                const hasImage = Boolean(consoleData.image_url) || variants.some((v: any) => v.image_url);
+                const hasPrice = variants.some((v: any) => (v.price_launch_usd ?? 0) > 0 || (v.price_avg_usd ?? 0) > 0);
+                const blockers = [
+                    !hasImage && 'No image',
+                    variants.length === 0 && 'No variant',
+                    variants.length > 0 && !hasPrice && 'No price',
+                ].filter(Boolean) as string[];
+
+                return (
+                    <div className={`flex flex-wrap items-center gap-4 p-4 mb-6 border-l-[3px] ${
+                        blockers.length === 0
+                            ? 'border-l-secondary bg-secondary/[0.06]'
+                            : 'border-l-primary bg-primary/[0.07]'
+                    }`}>
+                        <span className={`font-mono text-[10px] uppercase tracking-widest font-bold ${
+                            blockers.length === 0 ? 'text-secondary' : 'text-primary'
+                        }`}>
+                            {blockers.length === 0 ? 'Ready to publish' : 'Blocking publish'}
+                        </span>
+                        <span className="flex flex-wrap gap-2">
+                            {blockers.length === 0 ? (
+                                <span className="font-mono text-[10px] uppercase tracking-widest text-gray-400">
+                                    Set status to Published above
+                                </span>
+                            ) : blockers.map(b => (
+                                <span key={b} className="font-mono text-[9px] uppercase tracking-widest border border-primary/50 text-primary px-2 py-1">
+                                    {b}
+                                </span>
+                            ))}
+                        </span>
+                        <span className="ml-auto font-mono text-[9px] uppercase tracking-widest text-gray-600">
+                            {variants.length} variant{variants.length === 1 ? '' : 's'}
+                        </span>
+                    </div>
+                );
+            })()}
+
             {/* Editor Area */}
             <div className="bg-bg-primary border border-border-normal p-6 shadow-lg relative mb-12">
                  <div className="relative z-10">
@@ -109,8 +149,31 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                                          {variant.variant_name}
                                          {variant.is_default && <span className="ml-2 text-[10px] bg-secondary text-black px-1.5 py-0.5 font-mono">DEFAULT</span>}
                                      </div>
-                                     <div className="text-xs font-mono text-gray-500">
-                                         Released: {variant.release_date || 'TBA'}
+                                     <div className="text-xs font-mono text-gray-500 flex flex-wrap items-center gap-3">
+                                         <span>Released: {variant.release_date || 'TBA'}</span>
+                                         {(() => {
+                                             const v = variant as any;
+                                             const checks = [
+                                                 Boolean(v.soc_name || v.soc || v.cpu_model),
+                                                 Boolean(v.ram_mb),
+                                                 Boolean(v.screen_size_inch),
+                                                 (v.price_launch_usd ?? 0) > 0 || (v.price_avg_usd ?? 0) > 0,
+                                                 Boolean(v.emulation_profile || v.emulation_profiles),
+                                             ];
+                                             const done = checks.filter(Boolean).length;
+                                             return (
+                                                 <span className="flex items-center gap-2" title={`${done} of ${checks.length} spec groups filled`}>
+                                                     <span className="flex gap-0.5" aria-hidden="true">
+                                                         {checks.map((ok, i) => (
+                                                             <span key={i} className={`w-2 h-2 ${
+                                                                 ok ? (done === checks.length ? 'bg-secondary' : 'bg-amber-500') : 'bg-gray-800'
+                                                             }`} />
+                                                         ))}
+                                                     </span>
+                                                     <span className="tabular-nums text-gray-600">{done}/{checks.length}</span>
+                                                 </span>
+                                             );
+                                         })()}
                                      </div>
                                  </div>
                                  <Button

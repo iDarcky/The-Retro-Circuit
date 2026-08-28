@@ -11,9 +11,11 @@ import { deleteManufacturer } from '@/app/actions';
 
 interface FabricatorClientProps {
     initialManufacturers: Manufacturer[];
+    /** consoles per brand, keyed by manufacturer id. */
+    counts?: Record<string, { total: number; published: number }>;
 }
 
-export default function FabricatorClient({ initialManufacturers }: FabricatorClientProps) {
+export default function FabricatorClient({ initialManufacturers, counts = {} }: FabricatorClientProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [manufacturers, setManufacturers] = useState(initialManufacturers);
@@ -137,6 +139,36 @@ export default function FabricatorClient({ initialManufacturers }: FabricatorCli
                                 <img src={manu.image_url} alt={manu.name} className="w-8 h-8 object-contain opacity-50 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0" />
                             )}
                         </div>
+
+                        {(() => {
+                            const c = counts[manu.id] || { total: 0, published: 0 };
+                            const hidden = c.total > 0 && c.published === 0;
+                            return (
+                                <div className="relative z-10 flex flex-wrap items-center gap-2 mb-3">
+                                    <span className="text-[9px] font-mono uppercase tracking-widest text-gray-500 border border-border-normal px-2 py-1">
+                                        {c.total} console{c.total === 1 ? '' : 's'}
+                                    </span>
+                                    {c.published > 0 && (
+                                        <span className="text-[9px] font-mono uppercase tracking-widest text-secondary border border-secondary/40 bg-secondary/5 px-2 py-1">
+                                            {c.published} live
+                                        </span>
+                                    )}
+                                    {hidden && (
+                                        <span
+                                            className="text-[9px] font-mono uppercase tracking-widest text-primary border border-primary/50 bg-primary/5 px-2 py-1"
+                                            title="fetchPublicManufacturers() hides brands with no published console, so this brand has no public page."
+                                        >
+                                            Page hidden — all drafts
+                                        </span>
+                                    )}
+                                    {c.total === 0 && (
+                                        <span className="text-[9px] font-mono uppercase tracking-widest text-gray-600 border border-border-normal px-2 py-1">
+                                            No consoles
+                                        </span>
+                                    )}
+                                </div>
+                            );
+                        })()}
 
                         <div className="mt-auto relative z-10 flex justify-between items-center border-t border-border-normal pt-4">
                             <span className="text-[9px] font-mono text-gray-600 group-hover:text-gray-400">ID: {manu.id.substring(0,6)}</span>

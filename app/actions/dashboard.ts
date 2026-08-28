@@ -186,3 +186,36 @@ export async function markConsoleReleased(id: string): Promise<{ success: boolea
         return { success: false, message: e?.message ?? 'Update failed.' };
     }
 }
+
+/** Publish several consoles at once from the index. Each goes through updateConsole so
+ *  the publish path — sitemap revalidation, IndexNow — runs exactly as it does for one. */
+export async function bulkSetConsoleStatus(
+    ids: string[],
+    status: 'draft' | 'review' | 'published' | 'archived',
+): Promise<{ success: boolean; updated: number; failed: string[]; message?: string }> {
+    const failed: string[] = [];
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        const { data: profile } = await supabase
+            .from('profiles').select('role').eq('id', user?.id ?? '').single();
+        if (profile?.role !== 'admin') return { success: false, updated: 0, failed: ids, message: 'Not authorised.' };
+
+        // Sequential rather than parallel: each publish revalidates paths and may ping
+        // IndexNow, and a burst of those is worse than a slightly slower loop.
+        const { updateConsole } = await import('./consoles');
+        let updated = 0;
+        for (const id of ids) {
+            const res = await updateConsole(id, { status } as any);
+            if (res.success) updated += 1; else failed.push(id);
+        }
+
+        const { revalidatePath } = await import('next/cache');
+        revalidatePath('/admin');
+        revalidatePath('/admin/consoles');
+
+        return { success: failed.length === 0, updated, failed };
+    } catch (e: any) {
+        return { success: false, updated: 0, failed: ids, message: e?.message ?? 'Bulk update failed.' };
+    }
+}
