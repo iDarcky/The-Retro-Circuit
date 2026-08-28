@@ -690,7 +690,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 <p className="text-xs text-gray-400 mt-2 font-mono">{isEditMode ? `Modifying Variant ID: ${initialData?.id}` : 'Define hardware capabilities. Create multiple variants (Pro, Slim, etc.) for a console.'}</p>
             </div>
 
-            <form className="space-y-6">
+            <form autoComplete="off" data-form-type="other" className="space-y-6">
                 <div className="mb-8 space-y-6 bg-black/20 p-6 border border-border-normal">
                     <div>
                         <label className={`text-[10px] mb-2 block uppercase font-bold ${fieldErrors.console_id ? 'text-accent' : 'text-gray-500'}`}>Target Console Folder</label>

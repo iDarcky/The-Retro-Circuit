@@ -49,3 +49,18 @@ alter table public.console_variants
 --   drop column if exists microsd_type,
 --   drop column if exists screen_lens;
 -- alter table public.variant_input_profile drop column if exists system_button_set;
+
+-- ---------------------------------------------------------------------------
+-- Added 2026-08-28: consoles.setup_ease is an orphan.
+--
+-- The app has always used `setup_ease_score` (smallint, 1-5) — the admin form,
+-- ConsoleSchema, ConsoleDetails and lib/finder/scoring.ts all name that column, and
+-- it holds 73 rows of real data. The Aug 2026 catalogue_field_expansion migration
+-- then added `setup_ease numeric(3,1)` for the same concept; because the name
+-- differed, ADD COLUMN IF NOT EXISTS did not recognise the existing column and
+-- created a second one. It has never been written or read, and holds 0 rows.
+--
+-- Left as a duplicate it is a trap: the next person to query "setup ease" has a
+-- coin-flip chance of reading the empty one.
+--
+-- alter table public.consoles drop column if exists setup_ease;

@@ -122,7 +122,7 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="w-full animate-fadeIn space-y-8">
+        <form onSubmit={handleSubmit} autoComplete="off" data-form-type="other" className="w-full animate-fadeIn space-y-8">
             <div className="flex justify-between items-center border-b border-border-normal pb-4">
                 <div>
                     <h2 className="text-xl font-pixel text-white uppercase tracking-widest flex items-center gap-3">

@@ -200,7 +200,7 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} autoComplete="off" data-form-type="other" className="space-y-6">
             {isSuccess && (
                 <div className="bg-secondary/10 border border-secondary text-secondary p-4 text-center font-bold animate-pulse shadow-[0_0_10px_rgba(0,255,157,0.2)] uppercase tracking-wider">
                     {isEditMode ? 'FABRICATOR DATA UPDATED.' : 'FABRICATOR REGISTERED. READY FOR NEXT ENTRY.'}

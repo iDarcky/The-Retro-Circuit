@@ -57,7 +57,13 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                     </div>
                     <input
                         id={field.key}
+                        name={field.key}
                         type="text"
+                        autoComplete="off"
+                        data-form-type="other"
+                        data-lpignore="true"
+                        data-1p-ignore
+                        data-bwignore
                         className={`flex-1 ${baseInputClasses} ${borderColor}`}
                         value={val}
                         placeholder="#RRGGBB"
@@ -77,6 +83,12 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                 <label htmlFor={field.key} className={`text-[10px] mb-1 block uppercase tracking-wider ${labelColor}`}>{field.label}</label>
                 <textarea 
                     id={field.key}
+                    name={field.key}
+                    autoComplete="off"
+                    data-form-type="other"
+                    data-lpignore="true"
+                    data-1p-ignore
+                    data-bwignore
                     className={`w-full bg-bg-primary border p-3 h-24 outline-none font-mono text-sm ${borderColor} transition-colors placeholder:text-gray-700`}
                     value={val}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => onChange(field.key, e.target.value)}
@@ -150,7 +162,13 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
             <label htmlFor={field.key} className={`text-[10px] mb-1 block uppercase tracking-wider ${labelColor}`}>{field.label}</label>
             <input 
                 id={field.key}
+                name={field.key}
                 type={type}
+                autoComplete="off"
+                data-form-type="other"
+                data-lpignore="true"
+                data-1p-ignore
+                data-bwignore
                 className={`${baseInputClasses} ${borderColor} ${computedBg}`}
                 value={val}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(field.key, e.target.value)}
