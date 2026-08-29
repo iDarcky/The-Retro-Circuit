@@ -13,6 +13,11 @@ interface TechnicalReferenceProps {
 }
 
 
+/* Tri-state, not two. `bool ? 'YES' : 'NO'` printed NO for every column nobody has filled
+ * in yet, which is the same lie as an empty emulation cell reading "unplayable". Returning
+ * null lets SpecRow drop the row entirely. */
+const yesNo = (v: boolean | null | undefined) => (v === null || v === undefined ? null : v ? 'YES' : 'NO');
+
 const SpecRow = ({ label, value, unit }: { label: string, value: string | number | undefined | null | React.ReactNode, unit?: string | null }) => {
     const viewMode = useContext(TechViewContext);
     if (value === undefined || value === null || value === '') return null;
@@ -353,7 +358,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                             <SpecRow label="Stick Layout" value={formatInputEnum('rc_stick_layout', mergedSpecs.variant_input_profile.stick_layout)} />
                             <SpecRow label="Stick Pos" value={formatInputEnum('rc_placement', mergedSpecs.variant_input_profile.stick_placement)} />
                             <SpecRow label="Stick Tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.stick_tech)} />
-                            <SpecRow label="Stick Clicks" value={mergedSpecs.variant_input_profile.stick_clicks ? 'YES' : 'NO'} />
+                            <SpecRow label="Stick Clicks" value={yesNo(mergedSpecs.variant_input_profile.stick_clicks)} />
                             <SpecRow label="Stick Cap" value={formatInputEnum('rc_stick_cap', mergedSpecs.variant_input_profile.stick_cap)} />
                             <SpecRow label="Triggers" value={formatInputEnum('rc_trigger_type', mergedSpecs.variant_input_profile.trigger_type)} />
                             <SpecRow label="Trigger Tech" value={formatInputEnum('rc_button_tech', mergedSpecs.variant_input_profile.trigger_tech)} />
@@ -363,10 +368,11 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                             <SpecRow label="Back Buttons" value={mergedSpecs.variant_input_profile.back_button_count} />
                             <SpecRow label="System Buttons" value={formatInputEnum('rc_system_button_set', mergedSpecs.variant_input_profile.system_button_set)} />
                             <SpecRow label="System Labels" value={mergedSpecs.variant_input_profile.system_buttons_text} />
-                            <SpecRow label="Gyro" value={mergedSpecs.variant_input_profile.has_gyro ? 'YES' : 'NO'} />
+                            <SpecRow label="Gyro" value={yesNo(mergedSpecs.variant_input_profile.has_gyro)} />
+                            <SpecRow label="Rumble" value={yesNo(mergedSpecs.variant_input_profile.has_rumble)} />
                             <SpecRow label="Touchpads" value={mergedSpecs.variant_input_profile.touchpad_count} />
-                            <SpecRow label="Pad Clicks" value={mergedSpecs.variant_input_profile.touchpad_clickable ? 'YES' : 'NO'} />
-                            <SpecRow label="Keyboard" value={mergedSpecs.variant_input_profile.has_keyboard ? 'YES' : 'NO'} />
+                            <SpecRow label="Pad Clicks" value={yesNo(mergedSpecs.variant_input_profile.touchpad_clickable)} />
+                            <SpecRow label="Keyboard" value={yesNo(mergedSpecs.variant_input_profile.has_keyboard)} />
                             <SpecRow label="Confidence" value={formatInputEnum('rc_confidence', mergedSpecs.variant_input_profile.input_confidence)} />
                             {mergedSpecs.variant_input_profile.input_notes && <SpecRow label="Input Notes" value={mergedSpecs.variant_input_profile.input_notes} />}
                         </>

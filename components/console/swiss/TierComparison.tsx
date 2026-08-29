@@ -86,7 +86,14 @@ const TierComparison: FC<{
     // multi-cell PC handhelds.
     const battery = batteryWh ? `${batteryWh} Wh` : batteryMah ? `${batteryMah} mAh` : null;
     if (battery && batteryPercentile !== null) {
-        rows.push({ label: 'Battery', value: battery, percentile: batteryPercentile, tone: 'cyan' });
+        const med = batteryWh ? stats?.medianBatteryWh : stats?.medianBatteryMah;
+        rows.push({
+            label: 'Battery',
+            value: battery,
+            percentile: batteryPercentile,
+            detail: med ? `median ${med} ${batteryWh ? 'Wh' : 'mAh'}` : null,
+            tone: 'cyan',
+        });
     }
 
     if (rows.length === 0) return null;

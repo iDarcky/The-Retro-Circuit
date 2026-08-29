@@ -198,6 +198,11 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Touchpads', key: 'touchpad_count', type: 'select', required: false, subGroup: 'Extras', options: ['0', '1', '2'] },
             { label: 'Touchpad Click?', key: 'touchpad_clickable', type: 'checkbox', required: false, subGroup: 'Extras' },
             { label: 'Has Keyboard?', key: 'has_keyboard', type: 'checkbox', required: false, subGroup: 'Extras' },
+            { label: 'Rumble / Vibration?', key: 'has_rumble', type: 'checkbox', required: false, subGroup: 'Extras',
+              note: 'Force feedback you feel. Not the same thing as the gyroscope under Audio & Sensors.' },
+            { label: 'System Button Set', key: 'system_button_set', type: 'select', required: false, subGroup: 'Extras',
+              options: ['minimal', 'standard', 'extended', 'unknown'],
+              note: 'minimal = Start/Select · standard = + Home · extended = + Function/Turbo' },
             { label: 'System Buttons', key: 'system_buttons_text', type: 'text', required: false, subGroup: 'Extras', note: 'e.g. Start, Select, Home' },
 
             { label: 'Confidence', key: 'input_confidence', type: 'select', required: false, width: 'third', options: ['confirmed', 'inferred', 'unknown'] },
@@ -273,7 +278,7 @@ export const VARIANT_FORM_GROUPS = [
 
             { subHeader: 'Sensors', column: true },
             { label: 'Gyroscope?', key: 'has_gyro', type: 'checkbox', required: false, subGroup: 'Sensors',
-              note: 'Motion sensing, not a control — lives here, not under Input.' },
+              note: 'Motion sensing only. Rumble is a separate field, under Input > Extras.' },
             { label: 'Biometrics', key: 'biometrics', type: 'text', required: false, subGroup: 'Sensors', note: 'Fingerprint, Face Unlock...' },
             { label: 'Camera Specs', key: 'camera_specs', type: 'text', required: false, subGroup: 'Sensors', note: '2MP Front...' },
             { label: 'Other Sensors', key: 'sensors', type: 'text', required: false, subGroup: 'Sensors',

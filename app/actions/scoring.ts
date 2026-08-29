@@ -24,8 +24,14 @@ export interface TierStats {
     prices: number[];
     /** Score-per-$100 for every priced device in this tier, ascending. */
     values: number[];
+    /** Battery capacities, ascending. Kept apart because Wh and mAh are different
+     *  scales — pooling them would rank a 50 Wh PC handheld below a 5000 mAh phone chip. */
+    batteriesMah: number[];
+    batteriesWh: number[];
     medianPrice: number | null;
     medianScore: number | null;
+    medianBatteryMah: number | null;
+    medianBatteryWh: number | null;
 }
 
 export type CatalogueStats = Record<number, TierStats>;
@@ -37,7 +43,8 @@ const median = (sorted: number[]): number | null => {
 };
 
 const EMPTY_TIER = (tier: number): TierStats => ({
-    tier, scores: [], prices: [], values: [], medianPrice: null, medianScore: null,
+    tier, scores: [], prices: [], values: [], batteriesMah: [], batteriesWh: [],
+    medianPrice: null, medianScore: null, medianBatteryMah: null, medianBatteryWh: null,
 });
 
 export async function fetchCatalogueStats(): Promise<CatalogueStats> {
@@ -48,6 +55,7 @@ export async function fetchCatalogueStats(): Promise<CatalogueStats> {
             .from('console_variants')
             .select(`
                 id, price_launch_usd, price_avg_usd,
+                battery_capacity_mah, battery_capacity_wh,
                 emulation_profiles(*),
                 console:consoles!inner(status, setup_ease_score, community_score)
             `)
@@ -73,6 +81,9 @@ export async function fetchCatalogueStats(): Promise<CatalogueStats> {
                 const v = scorePerDollar(cs.score, Number(price));
                 if (v !== null) bucket.values.push(v);
             }
+
+            if (row.battery_capacity_wh > 0) bucket.batteriesWh.push(Number(row.battery_capacity_wh));
+            if (row.battery_capacity_mah > 0) bucket.batteriesMah.push(Number(row.battery_capacity_mah));
         }
 
         for (const tier of Object.keys(stats).map(Number)) {
@@ -80,8 +91,12 @@ export async function fetchCatalogueStats(): Promise<CatalogueStats> {
             b.scores.sort((a, z) => a - z);
             b.prices.sort((a, z) => a - z);
             b.values.sort((a, z) => a - z);
+            b.batteriesMah.sort((a, z) => a - z);
+            b.batteriesWh.sort((a, z) => a - z);
             b.medianScore = median(b.scores);
             b.medianPrice = median(b.prices);
+            b.medianBatteryMah = median(b.batteriesMah);
+            b.medianBatteryWh = median(b.batteriesWh);
         }
 
         return stats;

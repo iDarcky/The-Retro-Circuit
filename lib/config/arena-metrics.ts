@@ -99,7 +99,7 @@ export const METRICS: ComparisonMetric[] = [
 
     { label: 'Back Buttons', key: 'back_button_count', type: 'number', path: ['variant_input_profile', 'back_button_count'] },
     { label: 'Gyroscope', key: 'has_gyro', type: 'boolean', path: ['variant_input_profile', 'has_gyro'] },
-    { label: 'Haptics', key: 'haptics', type: 'string' }, // Kept on root variant for now per schema
+    { label: 'Rumble', key: 'has_rumble', type: 'boolean', path: ['variant_input_profile', 'has_rumble'] },
 
     // --- PHYSICAL ---
     { label: 'Width (mm)', key: 'width_mm', type: 'number' },

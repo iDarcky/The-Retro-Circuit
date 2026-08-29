@@ -209,7 +209,14 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                                 ? percentileOf(heroScore.score, heroTierStats.scores) : null}
                             batteryMah={mergedSpecs.battery_capacity_mah}
                             batteryWh={mergedSpecs.battery_capacity_wh}
-                            batteryPercentile={null}
+                            batteryPercentile={
+                                // Rank against the population that shares this device's unit.
+                                mergedSpecs.battery_capacity_wh && heroTierStats?.batteriesWh.length
+                                    ? percentileOf(Number(mergedSpecs.battery_capacity_wh), heroTierStats.batteriesWh)
+                                    : mergedSpecs.battery_capacity_mah && heroTierStats?.batteriesMah.length
+                                        ? percentileOf(Number(mergedSpecs.battery_capacity_mah), heroTierStats.batteriesMah)
+                                        : null
+                            }
                         />
                     </section>
                 )}

@@ -5,7 +5,7 @@ import { useState, type FormEvent, type FC, useEffect, type ChangeEvent, useCall
 import { useRouter } from 'next/navigation';
 import { addConsoleVariant, updateConsoleVariant, getVariantsByConsole } from '../../app/actions';
 import { purgeCache } from '../../app/actions/revalidate';
-import { ConsoleVariantSchema, VARIANT_FORM_GROUPS, ConsoleVariant } from '../../lib/types';
+import { ConsoleVariantSchema, VariantInputProfileSchema, VARIANT_FORM_GROUPS, ConsoleVariant } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
 import ImageUpload from '../ui/ImageUpload';
@@ -34,6 +34,13 @@ const SECOND_SCREEN_KEYS = [
     'second_screen_size', 'second_screen_resolution_x', 'second_screen_resolution_y',
     'second_screen_refresh_rate', 'second_screen_nits', 'second_screen_touch',
 ] as const;
+
+// Which submitted keys belong to `variant_input_profile` rather than `console_variants`.
+// Derived from the schema, never hand-listed: the two tables are merged into one form and
+// one Zod object, so a key missing from this set is silently posted to console_variants and
+// the save dies with "Could not find the 'x' column of 'console_variants'". That is exactly
+// how `system_button_set` broke the editor.
+const INPUT_PROFILE_KEYS = Object.keys(VariantInputProfileSchema.shape);
 
 const CLOCK_FIELD_KEYS = ['cpu_clock_min_mhz', 'cpu_clock_max_mhz', 'gpu_clock_mhz'] as const;
 
@@ -379,22 +386,13 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
         // Structure data for API: Separate Variant vs Input Profile
         const validData = result.data as any;
-        const inputProfileKeys = [
-            'dpad_tech', 'dpad_shape', 'dpad_placement',
-            'face_button_count', 'face_button_tech', 'face_label_scheme',
-            'stick_count', 'stick_tech', 'stick_layout', 'stick_placement', 'stick_clicks', 'stick_cap',
-            'bumper_tech', 'bumper_type', 'trigger_tech', 'trigger_type', 'trigger_layout',
-            'back_button_count', 'has_gyro', 'has_keyboard',
-            'system_buttons_text', 'touchpad_count', 'touchpad_clickable',
-            'input_confidence', 'input_notes'
-        ];
 
         const variantPayload: any = {};
         const inputProfilePayload: any = {};
 
         // 1. Process Input Profile Fields (Strict Iteration)
         // We iterate over the whitelist to ensure EVERY field is sent, even if undefined in validData
-        inputProfileKeys.forEach(key => {
+        INPUT_PROFILE_KEYS.forEach(key => {
             let val = validData[key];
 
             // Convert undefined, null, or empty string to explicit NULL
@@ -413,7 +411,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         // 2. Process Remaining Variant Fields
         // Iterate over validData keys that are NOT in the input profile list
         Object.keys(validData).forEach(key => {
-            if (!inputProfileKeys.includes(key)) {
+            if (!INPUT_PROFILE_KEYS.includes(key)) {
                 variantPayload[key] = validData[key];
             }
         });

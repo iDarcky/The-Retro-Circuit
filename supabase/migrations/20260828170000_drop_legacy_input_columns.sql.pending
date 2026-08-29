@@ -18,6 +18,12 @@
 --
 -- variant_inputs_legacy already holds a copy of this data; keep that table until the
 -- drop has been in production for a release or two.
+--
+-- 2026-08-29: `haptics` was NOT dead. It held 226 rows of rumble data typed as strings
+-- ('true'/'True'/'Yes' and 'false'), plus four rows where the system-button list had been
+-- pasted into it. 20260829120000_split_rumble_from_gyro.sql moved all of that into
+-- variant_input_profile.has_rumble (and system_buttons_text for the four), so the drop
+-- below is now safe. Do not drop it on a database that has not run that migration.
 
 alter table public.console_variants
   drop column if exists dpad_mechanism,
@@ -41,14 +47,16 @@ alter table public.console_variants
 --   audio_speakers   -> speaker_count + speaker_config + speaker_placement
 --   microsd_type     -> expansion_slot_count + expansion_card_type + expansion_speed_class
 --   screen_lens      -> lens_material + lens_laminated
---   system_button_set (variant_input_profile) -> system_buttons_text
+--
+-- system_button_set is NO LONGER a drop candidate: it was only empty (3 of 514) because
+-- the admin form had no field for it while the console page rendered it. The field exists
+-- now, so it is a column waiting on data entry, not a dead one.
 --
 -- alter table public.console_variants
 --   drop column if exists cooling_solution,
 --   drop column if exists audio_speakers,
 --   drop column if exists microsd_type,
 --   drop column if exists screen_lens;
--- alter table public.variant_input_profile drop column if exists system_button_set;
 
 -- ---------------------------------------------------------------------------
 -- Added 2026-08-28: consoles.setup_ease is an orphan.

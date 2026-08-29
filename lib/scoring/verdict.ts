@@ -3,7 +3,7 @@ import type { EmulationProfile } from '../types';
 
 /* THE SHORT VERSION
  *
- *   [position] [form factor] that [top capability][ — but weakness]
+ *   [position] [form factor] that [top capability][, though weakness]
  *
  * Generated from rank, never written. It states a position in the catalogue and a
  * measured capability; it never expresses a preference, because opinionated copy has
@@ -13,8 +13,26 @@ import type { EmulationProfile } from '../types';
  * marketing; one that concedes something reads as a review. It is drawn from the same
  * grades as the praise, so it can never contradict them.
  *
- * Returns null when price or grades are missing — a half-built sentence is worse than
- * no sentence. */
+ * Returns null when price or grades are missing: a half-built sentence is worse than
+ * no sentence.
+ *
+ * NO EM DASHES. Enforced by noEmDash() below rather than left to the template, so a
+ * later edit cannot quietly reintroduce one. Em and en dashes read as machine-written
+ * and are the single clearest tell that a line was generated. */
+
+/**
+ * Strip em and en dashes from generated copy.
+ *
+ * " — x" and " – x" become ", x"; a bare dash between words becomes a comma. Runs on
+ * every verdict, so the rule holds no matter how the template is edited later.
+ */
+export function noEmDash(text: string): string {
+    return text
+        .replace(/\s*[—–]\s*/g, ', ')
+        .replace(/,\s*,/g, ',')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
 
 /** Strongest true claim about where the price sits, cheapest first. */
 function positionPhrase(pricePercentile: number | null, rankable: boolean): string | null {
@@ -45,7 +63,7 @@ function topCapability(profile: EmulationProfile): string[] {
 
 /**
  * The most notable thing it cannot do: the highest-tier system graded Struggles.
- * Deliberately not Unplayable — nobody expects a £90 handheld to run Switch, so calling
+ * Deliberately not Unplayable: nobody expects a cheap handheld to run Switch, so calling
  * that out is noise. A system that *almost* works is the useful warning.
  */
 function notableWeakness(profile: EmulationProfile, reach: number): string | null {
@@ -86,7 +104,9 @@ export function buildVerdict(opts: {
     const runs = caps.length === 2 ? `${caps[0]} and ${caps[1]}` : caps[0];
     const weakness = notableWeakness(profile, reach);
 
-    return `${subject} that runs ${runs} playably${weakness ? ` — though ${weakness} struggles` : ''}.`;
+    return noEmDash(
+        `${subject} that runs ${runs} playably${weakness ? `, though ${weakness} struggles` : ''}.`,
+    );
 }
 
 /* TAGS

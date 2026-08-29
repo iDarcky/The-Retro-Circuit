@@ -154,7 +154,10 @@ export interface VariantInputProfile {
   trigger_type: RcTriggerType | null;
   trigger_layout: RcTriggerLayout | null;
   back_button_count: number | null; // check ((back_button_count = any (array[0, 2, 4])))
+  /** Motion sensing. Rumble is has_rumble; the two are unrelated hardware. */
   has_gyro: boolean | null;
+  /** Vibration / force feedback. Backfilled from the free-text `haptics` column. */
+  has_rumble: boolean | null;
   has_keyboard: boolean | null;
   // keyboard_type: RcKeyboardType | null; - Removed
   system_button_set: RcSystemButtonSet | null;

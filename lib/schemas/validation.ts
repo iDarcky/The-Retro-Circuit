@@ -92,6 +92,7 @@ export const VariantInputProfileSchema = z.object({
   trigger_layout: safeEnum(['inline', 'stacked', 'shelf', 'unknown']),
   back_button_count: safeNumber,
   has_gyro: safeBoolean,
+  has_rumble: safeBoolean,
   has_keyboard: safeBoolean,
   // keyboard_type: safeString, - Removed
   system_button_set: safeEnum(['minimal', 'standard', 'extended', 'unknown']),
