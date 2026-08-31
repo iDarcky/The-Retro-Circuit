@@ -79,7 +79,7 @@ export default function VariantComparisonTable({ variants, baseSpecs }: VariantC
             <table className="w-full text-left border-collapse min-w-[800px]">
                 <thead>
                     <tr className="border-b border-white/20">
-                        <th className="p-4 w-[200px] bg-[#09090b] sticky left-0 z-10 font-pixel text-xs text-orange-500 uppercase tracking-widest border-r border-white/10">
+                        <th className="p-4 w-[200px] bg-[#09090b] sticky left-0 z-10 font-pixel text-xs text-violet-400 uppercase tracking-widest border-r border-white/10">
                             Specification
                         </th>
                         {fullVariants.map(v => (

@@ -55,7 +55,7 @@ const SpecRow = ({ label, value, unit }: { label: string, value: string | number
 };
 
 
-const SpecSection = ({ title, children, colorClass = "text-orange-500 border-orange-500/20" }: { title: string, children: React.ReactNode, colorClass?: string }) => {
+const SpecSection = ({ title, children, colorClass = "text-violet-400 border-violet-500/20" }: { title: string, children: React.ReactNode, colorClass?: string }) => {
     const viewMode = useContext(TechViewContext);
 
     if (viewMode === 'ribbon') {
@@ -271,7 +271,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
         <TechViewContext.Provider value={viewMode}>
             {/* PLATFORM / OS */}
             {hasData(SECTIONS.PLATFORM, mergedSpecs) && (
-                <SpecSection title="Platform" colorClass="text-orange-500 border-orange-500/20">
+                <SpecSection title="Platform" colorClass="text-violet-400 border-violet-500/20">
                     <SpecRow label="OS / Firmware" value={formatOs(mergedSpecs)} />
                     <SpecRow label="UI Skin" value={mergedSpecs.ui_skin} />
                     <SpecRow label="Model No" value={mergedSpecs.model_no} />
@@ -280,7 +280,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
 
             {/* SILICON */}
             {hasData(SECTIONS.SILICON, mergedSpecs) && (
-                <SpecSection title="Silicon" colorClass="text-orange-500 border-orange-500/20">
+                <SpecSection title="Silicon" colorClass="text-violet-400 border-violet-500/20">
                     <SpecRow label="SoC / Chipset" value={formatSoc(mergedSpecs)} />
                     <SpecRow label="CPU" value={formatClusters(mergedSpecs.cpu_clusters) ?? mergedSpecs.cpu_model} />
                     <SpecRow label="CPU Arch" value={mergedSpecs.cpu_arch} />

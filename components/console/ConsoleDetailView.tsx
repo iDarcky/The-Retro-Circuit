@@ -3,11 +3,12 @@
 import { useState, useEffect, type FC, useMemo, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ConsoleDetails, ConsoleSpecs, ConsoleVariant } from '../../lib/types';
-import { SwissDropdown } from '../ui/SwissDropdown';
 import ConsoleHero from './swiss/ConsoleHero';
 import type { CatalogueStats } from '../../app/actions/scoring';
 import ConsoleTabs from './swiss/ConsoleTabs';
 import PlayabilityTiers from './swiss/PlayabilityTiers';
+import Section from './swiss/Section';
+import VariantGuide from './swiss/VariantGuide';
 import TierComparison from './swiss/TierComparison';
 import { circuitScore, percentileOf } from '../../lib/scoring/circuit-score';
 import PlayabilityMatrix from './PlayabilityMatrix';
@@ -125,6 +126,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
     };
 
     const TABS = [
+        ...(variants.length > 1 ? [{ id: 'configurations', label: 'Configurations' }] : []),
         { id: 'playability', label: 'Playability' },
         { id: 'compare', label: 'Compare' },
         { id: 'analysis', label: 'Analysis' },
@@ -163,41 +165,54 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                 catalogueStats={catalogueStats}
              />
 
-             {/* Variant switch and comparison, only where there is a choice to make. */}
-             {variants.length > 1 && (
-                <div className="max-w-[1600px] mx-auto px-4 md:px-8 mt-6 flex flex-wrap items-center gap-3">
-                    <span className="font-mono text-[10px] uppercase tracking-widest text-gray-500">Variant</span>
-                    <SwissDropdown
-                        value={selectedVariantId}
-                        onChange={(val) => handleVariantChange(String(val))}
-                        options={variants.map(v => ({ label: v.variant_name || 'Base', value: v.id }))}
-                        labelPrefix=""
-                        inverted={false}
-                        className="min-w-[190px]"
-                        buttonClassName="bg-black border border-white/15 px-3 py-2 text-white font-mono text-xs h-[38px] flex justify-between items-center hover:border-white transition-colors"
-                    />
-                    <button
-                        type="button"
-                        onClick={() => setIsVariantModalOpen(true)}
-                        className="px-3 py-2 border border-white/15 text-gray-400 hover:border-white hover:text-white
-                                   font-mono text-[10px] uppercase tracking-widest transition-colors h-[38px]"
-                    >
-                        Compare {variants.length} variants
-                    </button>
-                </div>
-             )}
-
              <ConsoleTabs tabs={TABS} />
 
-             <main className="max-w-[1600px] mx-auto px-4 md:px-8 mt-10 space-y-8 animate-fadeIn">
-                {/* PLAYABILITY — the site's one unique asset, so it leads. */}
-                <section id="playability" className="scroll-mt-32">
+             <main className="max-w-[1600px] mx-auto px-4 md:px-8 mt-10 animate-fadeIn">
+
+                {/* CONFIGURATIONS — the question only this site can answer, so it leads
+                    on any device that ships in more than one. */}
+                {variants.length > 1 && (
+                    <Section
+                        id="configurations"
+                        first
+                        eyebrow={`${variants.length} configurations of this device`}
+                        title="WHICH ONE TO BUY"
+                        actions={
+                            <button
+                                type="button"
+                                onClick={() => setIsVariantModalOpen(true)}
+                                className="px-3 py-2 border border-white/15 text-gray-400 hover:border-white hover:text-white
+                                           font-mono text-[10px] uppercase tracking-widest transition-colors"
+                            >
+                                Full spec table
+                            </button>
+                        }
+                    >
+                        <VariantGuide
+                            variants={variants}
+                            selectedId={selectedVariantId}
+                            onSelect={handleVariantChange}
+                        />
+                    </Section>
+                )}
+
+                {/* PLAYABILITY — the site's one unique asset. */}
+                <Section
+                    id="playability"
+                    first={variants.length <= 1}
+                    eyebrow="Measured per system, not estimated"
+                    title="PLAYABILITY"
+                >
                     <PlayabilityTiers profile={emulationProfile} />
-                </section>
+                </Section>
 
                 {/* COMPARE */}
                 {heroScore && (
-                    <section id="compare" className="border-t border-white/10 pt-8 scroll-mt-32">
+                    <Section
+                        id="compare"
+                        eyebrow={`Against other tier ${heroScore.reach} devices`}
+                        title="HOW IT STANDS"
+                    >
                         <TierComparison
                             reach={heroScore.reach}
                             stats={heroTierStats}
@@ -218,40 +233,46 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                                         : null
                             }
                         />
-                    </section>
+                    </Section>
                 )}
 
                 {/* SPECIFICATION */}
-                <section id="tech" className="border-t border-white/10 pt-8 scroll-mt-32">
-                     <div className="flex items-center justify-between mb-6">
-                         <h2 className="font-pixel text-sm text-orange-500 uppercase tracking-widest">FULL SPECIFICATIONS</h2>
-                         <div className="flex flex-wrap font-mono text-[10px] md:text-xs gap-2 md:gap-4 text-gray-500">
-                             <button
-                                onClick={() => setTechViewMode('grid')}
-                                className={`transition-colors hover:text-white pb-1 ${techViewMode === 'grid' ? 'text-white border-b border-orange-500' : ''}`}
-                             >[ GRID ]</button>
-                             <button
-                                onClick={() => setTechViewMode('table')}
-                                className={`transition-colors hover:text-white pb-1 ${techViewMode === 'table' ? 'text-white border-b border-orange-500' : ''}`}
-                             >[ TABLE ]</button>
-                             <button
-                                onClick={() => setTechViewMode('ribbon')}
-                                className={`transition-colors hover:text-white pb-1 ${techViewMode === 'ribbon' ? 'text-white border-b border-orange-500' : ''}`}
-                             >[ RIBBON ]</button>
-                         </div>
-                     </div>
-                     <hr className="border-t border-white/10 mb-8" />
+                <Section
+                    id="tech"
+                    eyebrow="Every recorded field for this configuration"
+                    title="FULL SPECIFICATIONS"
+                    actions={
+                        <div className="flex gap-px" role="group" aria-label="Specification layout">
+                            {(['grid', 'table', 'ribbon'] as const).map(mode => (
+                                <button
+                                    key={mode}
+                                    type="button"
+                                    onClick={() => setTechViewMode(mode)}
+                                    aria-pressed={techViewMode === mode}
+                                    className={`px-2.5 py-1.5 border font-mono text-[9px] uppercase tracking-wider transition-colors ${
+                                        techViewMode === mode
+                                            ? 'border-white text-white'
+                                            : 'border-white/10 text-gray-500 hover:text-white hover:border-white/40'
+                                    }`}
+                                >
+                                    {mode}
+                                </button>
+                            ))}
+                        </div>
+                    }
+                >
                      <TechnicalReference mergedSpecs={mergedSpecs} viewMode={techViewMode as 'grid' | 'table' | 'ribbon'} />
-                </section>
+                </Section>
 
                 {/* ANALYSIS + ACQUISITION */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 border-t border-white/10 pt-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 border-t border-white/10 pt-10 mt-10">
                     <section id="analysis" className="lg:col-span-8 scroll-mt-32">
-                        <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">SYSTEM ANALYSIS</h2>
+                        <h2 className="font-pixel text-[13px] md:text-sm text-violet-400 mb-6 uppercase tracking-widest">SYSTEM ANALYSIS</h2>
                         <SystemAnalysis description={consoleData.description || ''} />
                     </section>
 
                     <section id="buy" className="lg:col-span-4 scroll-mt-32">
+                        <h2 className="font-pixel text-[13px] md:text-sm text-violet-400 mb-6 uppercase tracking-widest">WHERE TO BUY</h2>
                         <BuySection
                             asin={currentVariant?.amazon_asin || null}
                             searchQuery={[consoleData.manufacturer?.name, consoleData.name].filter(Boolean).join(' ')}
@@ -262,20 +283,19 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
 
                 {/* ROW 4: LINKS — reviews and retail */}
                 {consoleData.links && consoleData.links.length > 0 && (
-                    <section id="links" className="border-t border-white/10 pt-8 mt-12">
+                    <Section id="links" eyebrow="Reviews and retail" title="ELSEWHERE">
                         <ConsoleLinks
                             links={consoleData.links}
                             productName={consoleData.name}
                             manufacturerName={consoleData.manufacturer?.name}
                         />
-                    </section>
+                    </Section>
                 )}
 
                 {/* ROW 5: SIMILAR CONSOLES */}
-                <section id="similar" className="border-t border-white/10 pt-8 mt-12 scroll-mt-32">
-                     <h2 className="font-pixel text-sm text-orange-500 mb-6 uppercase tracking-widest">SIMILAR HARDWARE</h2>
+                <Section id="similar" eyebrow="Same tier, comparable price" title="SIMILAR HARDWARE">
                      <SimilarConsoles currentConsole={consoleData} />
-                </section>
+                </Section>
 
              </main>
 

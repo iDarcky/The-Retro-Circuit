@@ -10,7 +10,7 @@ interface CombinedMetricsProps {
 
 const MetricCell = ({ label, value, unit }: { label: string, value: string | number | undefined, unit?: string }) => {
     return (
-        <div className="flex flex-col gap-1 p-4 border border-white/10 hover:border-orange-500/50 transition-colors bg-white/[0.02]">
+        <div className="flex flex-col gap-1 p-4 border border-white/10 hover:border-violet-500/50 transition-colors bg-white/[0.02]">
             <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">{label}</span>
             <div className="font-pixel text-lg text-white truncate">
                 {value ? (

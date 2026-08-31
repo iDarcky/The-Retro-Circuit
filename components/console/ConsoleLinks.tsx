@@ -67,7 +67,7 @@ export default function ConsoleLinks({ links, productName, manufacturerName }: C
                                             productName={productName || label}
                                             linkType={asin ? 'product' : 'search'}
                                             placement="console_detail"
-                                            className="block p-3 border border-orange-500/30 bg-orange-500/[0.02] hover:bg-orange-500/[0.06] hover:border-orange-500 transition-colors font-mono text-[11px] text-orange-400 uppercase tracking-wider truncate"
+                                            className="block p-3 border border-violet-500/30 bg-violet-500/[0.03] hover:bg-violet-500/[0.08] hover:border-violet-500 transition-colors font-mono text-[11px] text-violet-300 uppercase tracking-wider truncate"
                                         >
                                             {label}
                                         </AffiliateLink>
