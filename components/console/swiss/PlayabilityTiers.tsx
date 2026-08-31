@@ -65,7 +65,7 @@ const PlayabilityTiers: FC<{ profile?: EmulationProfile | null }> = ({ profile }
                             aria-pressed={filter === f.key}
                             className={`px-2.5 py-1.5 border font-mono text-[9px] uppercase tracking-wider transition-colors ${
                                 filter === f.key
-                                    ? 'border-white text-white'
+                                    ? 'border-white bg-white text-black'
                                     : 'border-white/10 text-gray-500 hover:text-white hover:border-white/40'
                             }`}
                         >
@@ -101,7 +101,7 @@ const PlayabilityTiers: FC<{ profile?: EmulationProfile | null }> = ({ profile }
                                             {[1, 2, 3, 4, 5].map(n => (
                                                 <span
                                                     key={n}
-                                                    className={`h-1.5 flex-1 ${n <= value ? GRADE_CLASS[value] : 'bg-white/10'}`}
+                                                    className={`h-1.5 flex-1 ${n <= value ? GRADE_CLASS[value] : 'rc-track'}`}
                                                 />
                                             ))}
                                         </div>

@@ -107,3 +107,44 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   CONSOLE PAGE
+   Tokens the console mockup uses that the Tailwind scale has no equivalent for.
+
+   Two rule weights is the important one. The mockup separates --rc-hair (cell
+   borders, .09) from --rc-rule (section divisions, .18); the page shipped with a
+   single white/10 everywhere, which is why it read flat and undifferentiated
+   next to the mockup no matter how the sections were laid out.
+
+   --rc-raised is the empty half of a bar. white/10 was too bright and made every
+   meter look half full.
+   --------------------------------------------------------------------------- */
+:root {
+  --rc-ground: #09090b;
+  --rc-panel:  #101014;
+  --rc-raised: #17171d;
+  --rc-hair:   rgba(255, 255, 255, 0.09);
+  --rc-rule:   rgba(255, 255, 255, 0.18);
+}
+
+/* Section divisions: the heavier of the two rules. */
+.rc-rule-top { border-top: 1px solid var(--rc-rule); }
+
+/* Empty track behind a bar or band meter. */
+.rc-track { background: var(--rc-raised); }
+
+/* Cell inside a hairline grid. Painted, not translucent, so stacked cells do not
+   compound into a lighter block the way bg-white/[0.02] does. */
+.rc-cell { background: var(--rc-ground); }
+.rc-panel { background: var(--rc-panel); }
+
+/* The image bed. Diagonal hatch plus a soft violet wash, so the device has
+   something to sit on instead of floating in a flat box. The hatch is the single
+   most recognisable thing in the mockup and the page shipped without it. */
+.rc-bed {
+  background:
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.028) 0 2px, transparent 2px 9px),
+    radial-gradient(120% 90% at 50% 40%, rgba(139, 92, 246, 0.10), transparent 62%),
+    var(--rc-panel);
+}

@@ -32,7 +32,7 @@ const TONE = {
 const Bands: FC<{ band: number; fill: string }> = ({ band, fill }) => (
     <div className="flex gap-1 mt-3" aria-hidden="true">
         {[1, 2, 3, 4].map(n => (
-            <span key={n} className={`h-1.5 flex-1 ${n <= band ? fill : 'bg-white/10'}`} />
+            <span key={n} className={`h-1.5 flex-1 ${n <= band ? fill : 'rc-track'}`} />
         ))}
     </div>
 );
@@ -109,12 +109,12 @@ const TierComparison: FC<{
                 </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-white/10 border border-white/10">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-[var(--rc-hair)] border border-white/10">
                 {rows.map(row => {
                     const band = bandOf(row.percentile!);
                     const tone = TONE[row.tone];
                     return (
-                        <div key={row.label} className="bg-[#09090b] p-4">
+                        <div key={row.label} className="rc-cell p-4">
                             <div className="font-mono text-[9px] uppercase tracking-widest text-gray-500 mb-2">
                                 {row.label}
                             </div>

@@ -83,7 +83,7 @@ const VariantGuide: FC<{
                 <table className="w-full border-collapse min-w-[520px]">
                     <thead>
                         <tr>
-                            <th className="sticky left-0 z-10 bg-[#0d0d10] text-left align-bottom p-3 border-b border-r border-white/10 w-[110px]">
+                            <th className="rc-panel sticky left-0 z-10 text-left align-bottom p-3 border-b border-r border-white/10 w-[110px]">
                                 <span className="font-mono text-[9px] uppercase tracking-widest text-gray-500">Configuration</span>
                             </th>
                             {ordered.map(v => {
@@ -121,7 +121,7 @@ const VariantGuide: FC<{
                             const baseVal = values[0];
                             return (
                                 <tr key={r.key}>
-                                    <th scope="row" className="sticky left-0 z-10 bg-[#0d0d10] text-left p-3 border-b border-r border-white/10 font-mono text-[10px] uppercase tracking-wider text-gray-500 font-normal">
+                                    <th scope="row" className="rc-panel sticky left-0 z-10 text-left p-3 border-b border-r border-white/10 font-mono text-[10px] uppercase tracking-wider text-gray-500 font-normal">
                                         {r.label}
                                     </th>
                                     {values.map((val, i) => (

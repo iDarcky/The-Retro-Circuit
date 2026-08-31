@@ -251,7 +251,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                                     aria-pressed={techViewMode === mode}
                                     className={`px-2.5 py-1.5 border font-mono text-[9px] uppercase tracking-wider transition-colors ${
                                         techViewMode === mode
-                                            ? 'border-white text-white'
+                                            ? 'border-white bg-white text-black'
                                             : 'border-white/10 text-gray-500 hover:text-white hover:border-white/40'
                                     }`}
                                 >
@@ -265,14 +265,14 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                 </Section>
 
                 {/* ANALYSIS + ACQUISITION */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 border-t border-white/10 pt-10 mt-10">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 rc-rule-top pt-[18px] mt-20">
                     <section id="analysis" className="lg:col-span-8 scroll-mt-32">
-                        <h2 className="font-pixel text-[13px] md:text-sm text-violet-400 mb-6 uppercase tracking-widest">SYSTEM ANALYSIS</h2>
+                        <h2 className="font-pixel text-[13px] md:text-[15px] text-violet-500 mb-6 uppercase tracking-widest">SYSTEM ANALYSIS</h2>
                         <SystemAnalysis description={consoleData.description || ''} />
                     </section>
 
                     <section id="buy" className="lg:col-span-4 scroll-mt-32">
-                        <h2 className="font-pixel text-[13px] md:text-sm text-violet-400 mb-6 uppercase tracking-widest">WHERE TO BUY</h2>
+                        <h2 className="font-pixel text-[13px] md:text-[15px] text-violet-500 mb-6 uppercase tracking-widest">WHERE TO BUY</h2>
                         <BuySection
                             asin={currentVariant?.amazon_asin || null}
                             searchQuery={[consoleData.manufacturer?.name, consoleData.name].filter(Boolean).join(' ')}

@@ -157,7 +157,7 @@ const ConsoleHero: FC<Props> = ({
 
                 {/* ---- IMAGE ---------------------------------------------------- */}
                 <div className="lg:col-span-7">
-                    <div className="relative w-full aspect-[4/3] md:aspect-video border border-white/10 bg-black/40 flex items-center justify-center overflow-hidden">
+                    <div className="rc-bed relative w-full aspect-[4/3] md:aspect-video border border-white/10 flex items-center justify-center overflow-hidden">
                         <span className="absolute top-3 left-3 font-mono text-[10px] tracking-widest text-white/25">FIG. 01</span>
                         <span className="absolute top-3 right-3 font-mono text-[10px] tracking-widest text-white/25 flex items-center gap-1.5">
                             <span className="w-1.5 h-1.5 bg-violet-500 inline-block" aria-hidden="true" />

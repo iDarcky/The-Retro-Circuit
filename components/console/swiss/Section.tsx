@@ -31,7 +31,7 @@ interface SectionProps {
 const Section: FC<SectionProps> = ({ id, title, eyebrow, actions, first = false, children }) => (
     <section
         id={id}
-        className={`scroll-mt-32 ${first ? '' : 'border-t border-white/10 pt-10 mt-10'}`}
+        className={`scroll-mt-32 ${first ? '' : 'rc-rule-top pt-[18px] mt-20'}`}
     >
         <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 mb-6">
             <div>
@@ -40,7 +40,7 @@ const Section: FC<SectionProps> = ({ id, title, eyebrow, actions, first = false,
                         {eyebrow}
                     </div>
                 )}
-                <h2 className="font-pixel text-[13px] md:text-sm text-violet-400 uppercase tracking-widest">
+                <h2 className="font-pixel text-[13px] md:text-[15px] text-violet-500 uppercase tracking-widest">
                     {title}
                 </h2>
             </div>
