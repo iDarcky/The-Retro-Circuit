@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 import { supabaseAnon } from '../lib/supabase/anon';
 import { BEST_OF_COLLECTIONS } from '../lib/bestof/collections';
 import { fetchPublicManufacturers } from './actions/manufacturers';
+import { fetchArenaPairs } from '../lib/arena/pairs';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Use the anonymous server client for sitemap generation
@@ -63,6 +64,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         });
       });
     }
+
+    // 4. Arena comparisons.
+    // These carry ~70% of non-brand clicks and were absent from the sitemap entirely,
+    // so the best-performing page type was discoverable only through internal links.
+    const arenaPairs = await fetchArenaPairs();
+    arenaPairs.forEach((pair) => {
+      routes.push({
+        url: `${baseUrl}/arena/${pair}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly',
+        priority: 0.7,
+      });
+    });
 
     // NOTE: /news/{id} and /news/reviews/{id} are intentionally omitted — those routes do not
     // exist (news and reviews render inline on /news), so emitting them produced 404 URLs.

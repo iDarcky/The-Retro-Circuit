@@ -4,6 +4,7 @@ import { fetchConsoleBySlug } from '../../../app/actions';
 import { fetchConsoleList, fetchConsoleImages } from '../../../app/actions/consoles';
 import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
 import { fetchCatalogueStats } from '../../actions/scoring';
+import { circuitScore } from '../../../lib/scoring/circuit-score';
 import { ConsoleDetails } from '../../../lib/types';
 
 export const revalidate = false;
@@ -141,12 +142,19 @@ export default async function ConsoleSpecsPage(props: Props) {
   const mfgName = consoleData.manufacturer?.name || '';
   const fullName = mfgName ? `${mfgName} ${consoleData.name}` : consoleData.name;
 
+  // A device with four configurations at four prices is misrepresented by one number,
+  // so collect the range and emit AggregateOffer rather than Offer.
   let minPrice = Infinity;
+  let maxPrice = 0;
+  let offerCount = 0;
   let hasAsin = false;
   if (consoleData.variants && Array.isArray(consoleData.variants)) {
     consoleData.variants.forEach((v) => {
-      if (v.price_launch_usd && v.price_launch_usd > 0 && v.price_launch_usd < minPrice) {
-        minPrice = v.price_launch_usd;
+      const price = (v as any).price_avg_usd || v.price_launch_usd || 0;
+      if (price > 0) {
+        offerCount += 1;
+        if (price < minPrice) minPrice = price;
+        if (price > maxPrice) maxPrice = price;
       }
       if (v.amazon_asin) {
         hasAsin = true;
@@ -156,11 +164,24 @@ export default async function ConsoleSpecsPage(props: Props) {
 
   const hasPrice = minPrice !== Infinity;
 
-  // Determine if the device has a future release date (for PreOrder status)
   const defaultVariant = consoleData.variants?.find((v) => v.is_default) || consoleData.variants?.[0];
   const isFutureRelease = defaultVariant?.release_date
     ? new Date(defaultVariant.release_date) > new Date()
     : false;
+
+  /* Availability comes from release_status, not from whether we happen to hold an ASIN.
+   *
+   * Deriving it from the ASIN marked 66 of 73 published consoles as Discontinued, because
+   * only 7 had one. Google will not show price or availability rich results for a
+   * discontinued product, so the catalogue was telling search it was dead. release_status
+   * is hand-maintained in the admin and already holds the real answer. */
+  const releaseStatus = (consoleData as any).release_status || 'released';
+  const availability =
+    releaseStatus === 'discontinued' ? 'https://schema.org/Discontinued'
+    : releaseStatus === 'upcoming' || releaseStatus === 'rumoured' || isFutureRelease ? 'https://schema.org/PreOrder'
+    : hasAsin ? 'https://schema.org/InStock'
+    // Released, but we know of no seller. Honest, and not the same as discontinued.
+    : 'https://schema.org/LimitedAvailability';
 
   const jsonLd: any = {
     '@context': 'https://schema.org',
@@ -177,31 +198,88 @@ export default async function ConsoleSpecsPage(props: Props) {
     }
   };
 
-  // Always include offers when price exists — Google requires offers, review, or aggregateRating
-  // Use correct availability: InStock (has ASIN), PreOrder (future release), Discontinued (otherwise)
+  // Google needs offers, review or aggregateRating for a Product to be eligible.
   if (hasPrice) {
     const firstAsin = consoleData.variants?.find((v) => v.amazon_asin)?.amazon_asin;
-    const availability = hasAsin
-      ? 'https://schema.org/InStock'
-      : isFutureRelease
-        ? 'https://schema.org/PreOrder'
-        : 'https://schema.org/Discontinued';
-    jsonLd.offers = {
-      '@type': 'Offer',
-      price: minPrice.toString(),
-      priceCurrency: 'USD',
-      availability,
-      url: firstAsin
-        ? `https://www.amazon.com/dp/${firstAsin}?tag=theretrocircu-20`
-        : `https://theretrocircuit.com/consoles/${slug}`
-    };
+    const offerUrl = firstAsin
+      ? `https://www.amazon.com/dp/${firstAsin}?tag=theretrocircu-20`
+      : `https://theretrocircuit.com/consoles/${slug}`;
+
+    jsonLd.offers = offerCount > 1 && maxPrice > minPrice
+      ? {
+          '@type': 'AggregateOffer',
+          lowPrice: minPrice.toString(),
+          highPrice: maxPrice.toString(),
+          offerCount,
+          priceCurrency: 'USD',
+          availability,
+          url: offerUrl,
+        }
+      : {
+          '@type': 'Offer',
+          price: minPrice.toString(),
+          priceCurrency: 'USD',
+          availability,
+          url: offerUrl,
+        };
   }
+
+  /* The Circuit Score as an editorial Review.
+   *
+   * A self-assigned aggregateRating on your own product page breaks Google's guidelines.
+   * An editorial Review authored by the publisher does not, and that is exactly what the
+   * Circuit Score is: a documented, reproducible rating we publish on the page itself.
+   * Only emitted when the device is actually graded, so it never invents a rating. */
+  const scoredVariant = consoleData.variants?.find((v: any) => v.emulation_profile || v.emulation_profiles);
+  if (scoredVariant) {
+    const profile = (scoredVariant as any).emulation_profile
+      || (Array.isArray((scoredVariant as any).emulation_profiles)
+        ? (scoredVariant as any).emulation_profiles[0]
+        : (scoredVariant as any).emulation_profiles);
+    const cs = circuitScore(
+      profile,
+      (consoleData as any).setup_ease_score,
+      (consoleData as any).community_score,
+    );
+    if (cs) {
+      jsonLd.review = {
+        '@type': 'Review',
+        author: { '@type': 'Organization', name: 'The Retro Circuit' },
+        reviewRating: {
+          '@type': 'Rating',
+          // Circuit Score is 0-100; schema.org ratings read better on a 5-point scale.
+          ratingValue: (cs.score / 20).toFixed(1),
+          bestRating: '5',
+          worstRating: '0',
+        },
+        reviewBody: consoleData.description
+          || `Circuit Score ${cs.score}/100, from measured emulation performance up to tier ${cs.reach}.`,
+      };
+    }
+  }
+
+  // Breadcrumbs change how the URL renders in results, and cost nothing.
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Consoles', item: 'https://theretrocircuit.com/consoles' },
+      ...(consoleData.manufacturer?.slug
+        ? [{ '@type': 'ListItem', position: 2, name: mfgName, item: `https://theretrocircuit.com/fabricators/${consoleData.manufacturer.slug}` }]
+        : []),
+      { '@type': 'ListItem', position: consoleData.manufacturer?.slug ? 3 : 2, name: fullName, item: `https://theretrocircuit.com/consoles/${slug}` },
+    ],
+  };
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
       {/* Gallery feeds the hero frame directly — a separate section below the fold
           duplicated the cover shot and buried the extra angles. */}

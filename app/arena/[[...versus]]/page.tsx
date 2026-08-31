@@ -1,8 +1,22 @@
 export const revalidate = false;
 export const dynamic = 'force-static';
+// Pairs outside the generated list still render on first request and are then cached.
+export const dynamicParams = true;
 
 import { supabaseAnon } from '../../../lib/supabase/anon';
+import { fetchArenaPairs } from '../../../lib/arena/pairs';
 import ArenaComparisonClient from '../../../components/arena/ArenaComparisonClient';
+
+/* Build the comparison pages instead of waiting for a visitor to ask for one.
+ *
+ * Without this the HTML did not exist until first request, so Google could only find a
+ * comparison through an internal link from the finder or the homepage compare box. This
+ * is the page type carrying most of the site's non-brand clicks. */
+export async function generateStaticParams() {
+    const pairs = await fetchArenaPairs();
+    // The bare hub, then one entry per pair.
+    return [{ versus: [] as string[] }, ...pairs.map(pair => ({ versus: [pair] }))];
+}
 
 // Quick inline normalize for server
 function normalizeVariant(v: any): any {
