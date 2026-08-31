@@ -27,3 +27,67 @@ export function getBuyUrl(opts: { asin?: string | null; name?: string | null; ma
   const query = [opts.manufacturer, opts.name].filter(Boolean).join(' ').trim();
   return query ? getAmazonSearchUrl(query) : null;
 }
+
+/** Where a buy button should actually point, and how confident that link is. */
+export interface BuyTarget {
+  url: string;
+  /** Retailer name for the button label, e.g. "Amazon", "AliExpress". */
+  vendor: string;
+  /**
+   * `direct` is a known listing for this exact device, `search` is a query we hope
+   * lands on it. The two deserve different visual weight: a search that returns
+   * unrelated products is worse than an honest "no seller known".
+   */
+  confidence: 'direct' | 'search';
+}
+
+const VENDOR_LABELS: [RegExp, string][] = [
+  [/amazon\./i, 'Amazon'],
+  [/aliexpress\./i, 'AliExpress'],
+  [/litnxt\./i, 'LITNXT'],
+  [/droix\./i, 'DROIX'],
+  [/ebay\./i, 'eBay'],
+  [/banggood\./i, 'Banggood'],
+];
+
+const vendorName = (url: string): string => {
+  for (const [re, label] of VENDOR_LABELS) if (re.test(url)) return label;
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return 'retailer';
+  }
+};
+
+/**
+ * Pick the single best place to send a buyer.
+ *
+ * Order matters commercially. A real vendor listing beats an Amazon search, because
+ * most of these devices are not sold on Amazon at all and a search for one returns
+ * unrelated products. Amazon links are always rebuilt through getBuyUrl so the
+ * affiliate tag is applied: the imported console_links rows carry no tag, and
+ * rendering one directly earns nothing.
+ */
+export function pickBuyTarget(opts: {
+  asin?: string | null;
+  name?: string | null;
+  manufacturer?: string | null;
+  links?: { kind?: string | null; url?: string | null; label?: string | null }[] | null;
+}): BuyTarget | null {
+  if (opts.asin) {
+    return { url: getAmazonProductUrl(opts.asin), vendor: 'Amazon', confidence: 'direct' };
+  }
+
+  const vendors = (opts.links || []).filter(l => l.kind === 'vendor' && l.url);
+  if (vendors.length > 0) {
+    // Prefer a non-Amazon listing: if we had an Amazon product we would have an ASIN.
+    const pick = vendors.find(l => !/amazon\./i.test(l.url!)) ?? vendors[0];
+    const url = /amazon\./i.test(pick.url!)
+      ? getBuyUrl({ name: opts.name, manufacturer: opts.manufacturer }) ?? pick.url!
+      : pick.url!;
+    return { url, vendor: vendorName(url), confidence: 'direct' };
+  }
+
+  const search = getBuyUrl({ name: opts.name, manufacturer: opts.manufacturer });
+  return search ? { url: search, vendor: 'Amazon', confidence: 'search' } : null;
+}

@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ConsoleDetails } from '../../../lib/types';
 import { fetchVaultConsoles } from '../../../app/actions';
-import SwissButton from './SwissButton';
 
 interface SimilarConsolesProps {
     currentConsole: ConsoleDetails;
@@ -79,7 +78,7 @@ export default function SimilarConsoles({ currentConsole }: SimilarConsolesProps
                 const topPicks = scoredConsoles
                     .filter(c => c._similarityScore > 0)
                     .sort((a, b) => b._similarityScore - a._similarityScore)
-                    .slice(0, 3);
+                    .slice(0, 4);  // four fits the 4-up grid; three left a gap
 
                 setSimilarConsoles(topPicks);
             } catch (err) {
@@ -107,11 +106,14 @@ export default function SimilarConsoles({ currentConsole }: SimilarConsolesProps
 
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        /* Small, dense cards. These were 192px-tall image wells with 24px padding and two
+         * full-width buttons each, so three of them ran longer than the specification
+         * section they follow. An alternative is a glance, not a landing page: the whole
+         * card is the link, and the comparison is a hairline row underneath. */
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--rc-hair)] border border-white/10">
             {similarConsoles.map(consoleItem => {
                 const displayPrice = (consoleItem as any)._displayPrice;
 
-                // Construct proper image URL logic
                 let imageUrl = consoleItem.image_url;
                 if (!imageUrl && consoleItem.variants && consoleItem.variants.length > 0) {
                     const defaultVar = consoleItem.variants.find(v => v.is_default) || consoleItem.variants[0];
@@ -119,58 +121,47 @@ export default function SimilarConsoles({ currentConsole }: SimilarConsolesProps
                 }
 
                 return (
-                    <div key={consoleItem.id} className="border border-white/10 bg-white/[0.02] p-6 flex flex-col relative group hover:border-white/30 transition-colors">
-                        <div className="absolute top-0 right-0 bg-white/10 text-zinc-300 font-mono text-[10px] px-3 py-1 uppercase tracking-wider">
-                            SIMILAR MATCH
-                        </div>
-
-                        <div className="h-48 bg-black/20 flex items-center justify-center mb-6 p-4 border border-white/5 relative">
-                            {imageUrl ? (
-                                <Image
-                                    src={imageUrl.startsWith('http') ? imageUrl : `/${imageUrl.replace(/^\//, '')}`}
-                                    alt={consoleItem.name}
-                                    fill
-                                    className="object-contain drop-shadow-lg opacity-80 group-hover:opacity-100 transition-opacity p-4"
-                                />
-                            ) : (
-                                <span className="font-pixel text-4xl text-zinc-800">?</span>
-                            )}
-                        </div>
-
-                        <div className="flex-1 flex flex-col">
-                            <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-1">
-                                {consoleItem.manufacturer?.name || 'UNKNOWN'}
+                    <div key={consoleItem.id} className="rc-cell group">
+                        <Link href={`/consoles/${consoleItem.slug}`} className="block p-3 hover:bg-white/[0.03] transition-colors">
+                            <div className="rc-bed relative aspect-[4/3] flex items-center justify-center border border-white/[0.07] mb-3">
+                                {imageUrl ? (
+                                    <Image
+                                        src={imageUrl.startsWith('http') ? imageUrl : `/${imageUrl.replace(/^\//, '')}`}
+                                        alt={consoleItem.name}
+                                        fill
+                                        sizes="(max-width: 1024px) 45vw, 22vw"
+                                        className="object-contain p-3 opacity-85 group-hover:opacity-100 transition-opacity"
+                                    />
+                                ) : (
+                                    <span className="font-pixel text-2xl text-zinc-800">?</span>
+                                )}
                             </div>
-                            <h4 className="text-xl font-bold text-white mb-4 leading-tight">
+
+                            <div className="font-mono text-[9px] uppercase tracking-widest text-gray-600 truncate">
+                                {consoleItem.manufacturer?.name || 'Unknown'}
+                            </div>
+                            <div className="font-mono text-[12.5px] text-white truncate mt-0.5 group-hover:text-violet-300 transition-colors">
                                 {consoleItem.name}
-                            </h4>
-
-                            <div className="grid grid-cols-2 gap-2 mb-6 font-mono text-[10px] text-zinc-500">
-                                <div className="bg-white/[0.02] p-2 text-center border border-white/5">
-                                    <span className="block text-white mb-0.5">{displayPrice > 0 ? `$${displayPrice}` : 'N/A'}</span>
-                                    PRICE
-                                </div>
-                                <div className="bg-white/[0.02] p-2 text-center border border-white/5">
-                                    <span className="block text-white mb-0.5">{consoleItem.form_factor?.toUpperCase() || 'N/A'}</span>
-                                    FORM
-                                </div>
                             </div>
-
-                            <div className="mt-auto flex flex-col gap-3">
-                                <Link href={`/consoles/${consoleItem.slug}`} className="w-full">
-                                    <SwissButton variant="orange" className="w-full text-xs">
-                                        VIEW DETAILS
-                                    </SwissButton>
-                                </Link>
-
-                                {/* COMPARE BUTTON */}
-                                <Link href={`/arena/${currentConsole.slug}-vs-${consoleItem.slug}`} className="w-full">
-                                    <button className="w-full py-3 border border-white/20 text-zinc-400 text-xs font-mono uppercase hover:bg-white hover:text-black hover:border-white transition-all">
-                                        COMPARE VS {currentConsole.name.toUpperCase()}
-                                    </button>
-                                </Link>
+                            <div className="flex items-baseline justify-between gap-2 mt-2">
+                                <span className="font-mono text-[13px] font-bold text-emerald-400 tabular-nums">
+                                    {displayPrice > 0 ? `$${displayPrice}` : <span className="text-gray-700">&mdash;</span>}
+                                </span>
+                                {consoleItem.form_factor && (
+                                    <span className="font-mono text-[9px] uppercase tracking-wider text-gray-600 truncate">
+                                        {consoleItem.form_factor}
+                                    </span>
+                                )}
                             </div>
-                        </div>
+                        </Link>
+
+                        <Link
+                            href={`/arena/${currentConsole.slug}-vs-${consoleItem.slug}`}
+                            className="block border-t border-white/[0.07] px-3 py-2 font-mono text-[9px] uppercase
+                                       tracking-widest text-gray-600 hover:bg-white hover:text-black transition-colors"
+                        >
+                            Compare &rarr;
+                        </Link>
                     </div>
                 );
             })}

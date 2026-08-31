@@ -4,8 +4,7 @@ import { type FC } from 'react';
 import Link from 'next/link';
 import { Share2 } from 'lucide-react';
 import { ConsoleDetails, ConsoleSpecs, ConsoleVariant, EmulationProfile } from '../../../lib/types';
-import { SYSTEM_TIERS } from '../../../lib/config/emulation';
-import { getBuyUrl } from '../../../lib/affiliate';
+import { pickBuyTarget } from '../../../lib/affiliate';
 import { circuitScore, percentileOf, scorePerDollar } from '../../../lib/scoring/circuit-score';
 import CircuitScoreCard, { PriceCard } from './CircuitScoreCard';
 import type { CatalogueStats } from '../../../app/actions/scoring';
@@ -34,25 +33,18 @@ interface Props {
     compareUrl: string;
     onShare: () => void;
     shareCopied: boolean;
-    onEmulationDetails: () => void;
     catalogueStats?: CatalogueStats;
+    /**
+     * Rendered under the image, in the left column.
+     *
+     * The image box is short and the identity column is tall, so at anything under about
+     * 1400px the fold was a small photo with a large empty rectangle beneath it. Prose is
+     * the right thing to fill that with: it is the one block whose height can absorb
+     * whatever the column has spare.
+     */
+    belowImage?: React.ReactNode;
 }
 
-/** Highest tier with at least one playable system, plus the systems that qualified. */
-function topTier(profile?: EmulationProfile | null) {
-    if (!profile) return null;
-    for (let i = SYSTEM_TIERS.length - 1; i >= 0; i--) {
-        const tier = SYSTEM_TIERS[i];
-        const playable = tier.systems.filter(sys => {
-            const s = (profile as any)[sys.key];
-            return s === 'Playable' || s === 'Great' || s === 'Perfect';
-        });
-        if (playable.length > 0) {
-            return { n: i + 1, title: tier.title.replace(/^TIER \d+:\s*/, ''), systems: playable.map(s => s.label) };
-        }
-    }
-    return null;
-}
 
 const Chip: FC<{ children: React.ReactNode; tone?: 'violet' | 'cyan' | 'orange' | 'emerald' | 'plain' }> = ({ children, tone = 'plain' }) => {
     const tones = {
@@ -71,12 +63,11 @@ const Chip: FC<{ children: React.ReactNode; tone?: 'violet' | 'cyan' | 'orange' 
 
 const ConsoleHero: FC<Props> = ({
     consoleData, specs, variant, profile, shots, heroIndex, onHeroIndex,
-    isPixelFallback, compareUrl, onShare, shareCopied, onEmulationDetails, catalogueStats,
+    isPixelFallback, compareUrl, onShare, shareCopied, catalogueStats, belowImage,
 }) => {
     const brand = consoleData.manufacturer?.name;
     const brandSlug = consoleData.manufacturer?.slug;
     const shot = shots[Math.min(heroIndex, Math.max(shots.length - 1, 0))];
-    const tier = topTier(profile);
 
     // Street price is the one to show; launch price is the reference it is measured against.
     const street = variant?.price_avg_usd ?? null;
@@ -124,18 +115,16 @@ const ConsoleHero: FC<Props> = ({
         weightG: specs.weight_g,
     });
 
-    const buyUrl = getBuyUrl({
+    /* A button that says "Check Price" and silently runs an Amazon search for a device
+     * Amazon does not stock is worse than no button. Name the retailer, show the price we
+     * hold, and mark a search as a search. */
+    const buy = pickBuyTarget({
         asin: variant?.amazon_asin,
         name: consoleData.name,
         manufacturer: brand,
+        links: (consoleData as any).links,
     });
 
-    const specCards = [
-        { k: 'CPU', v: specs.soc_name || specs.cpu_model, sub: [specs.soc_vendor, specs.soc_gen].filter(Boolean).join(' ') || specs.cpu_architecture },
-        { k: 'GPU', v: specs.gpu_name || specs.gpu_model, sub: specs.gpu_clock_mhz ? `${(specs.gpu_clock_mhz / 1000).toFixed(2).replace(/\.?0+$/, '')} GHz` : specs.gpu_vendor },
-        { k: 'RAM', v: specs.ram_mb ? (specs.ram_mb >= 1024 ? `${Math.round(specs.ram_mb / 1024)} GB` : `${specs.ram_mb} MB`) : null, sub: specs.ram_type },
-        { k: 'Storage', v: specs.storage_gb ? `${specs.storage_gb} GB` : null, sub: specs.storage_expandable ? '+ microSD' : specs.storage_type },
-    ].filter(c => c.v);
 
     return (
         <div className="max-w-[1600px] mx-auto px-4 md:px-8 pt-6">
@@ -204,6 +193,8 @@ const ConsoleHero: FC<Props> = ({
                             ))}
                         </ul>
                     )}
+
+                    {belowImage && <div className="mt-6">{belowImage}</div>}
                 </div>
 
                 {/* ---- IDENTITY & DECISION -------------------------------------- */}
@@ -270,15 +261,24 @@ const ConsoleHero: FC<Props> = ({
                         >
                             Add to Arena
                         </Link>
-                        {buyUrl && (
+                        {buy && (
                             <a
-                                href={buyUrl}
+                                href={buy.url}
                                 target="_blank"
                                 rel="noopener noreferrer sponsored"
-                                className="flex-1 min-w-[130px] flex items-center justify-center px-4 py-3 border border-cyan-500/60 text-cyan-400
-                                           hover:bg-cyan-500 hover:text-black font-mono text-[11px] uppercase tracking-widest transition-colors"
+                                className={`flex-1 min-w-[150px] flex flex-col items-center justify-center px-4 py-2.5 font-mono
+                                            text-[11px] uppercase tracking-widest transition-colors ${
+                                    buy.confidence === 'direct'
+                                        ? 'border border-cyan-500/60 text-cyan-400 hover:bg-cyan-500 hover:text-black'
+                                        : 'border border-dashed border-orange-500/50 text-orange-400 hover:bg-orange-500 hover:text-black'
+                                }`}
                             >
-                                Check Price
+                                <span>
+                                    {buy.confidence === 'direct' ? `Buy on ${buy.vendor}` : `Search ${buy.vendor}`}
+                                </span>
+                                <span className="text-[9px] tracking-wider opacity-70 normal-case mt-0.5">
+                                    {price ? `from $${price}` : buy.confidence === 'direct' ? 'live listing' : 'no direct listing yet'}
+                                </span>
                             </a>
                         )}
                         <button
@@ -298,43 +298,6 @@ const ConsoleHero: FC<Props> = ({
                 </div>
             </div>
 
-            {/* ---- SPEC CARDS ---------------------------------------------------- */}
-            {specCards.length > 0 && (
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-8">
-                    {specCards.map(c => (
-                        <div key={c.k} className="border border-white/10 bg-white/[0.02] p-4 hover:bg-white/[0.04] transition-colors">
-                            <div className="font-mono text-[9px] uppercase tracking-widest text-gray-500 mb-2 flex items-center gap-1.5">
-                                <span className="w-1 h-1 bg-cyan-500 inline-block" aria-hidden="true" />
-                                {c.k}
-                            </div>
-                            <div className="font-mono text-sm md:text-base text-white truncate" title={String(c.v)}>{c.v}</div>
-                            {c.sub && <div className="font-mono text-[10px] text-gray-500 mt-1 truncate">{c.sub}</div>}
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {/* ---- EMULATION BANNER ---------------------------------------------- */}
-            {tier && (
-                <button
-                    type="button"
-                    onClick={onEmulationDetails}
-                    className="w-full mt-3 border border-violet-500/40 bg-violet-500/[0.07] hover:bg-violet-500/[0.12] transition-colors
-                               px-4 py-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-left"
-                >
-                    <span className="font-mono text-[10px] uppercase tracking-widest text-violet-300">Emulation</span>
-                    <span className="font-pixel text-lg text-violet-400 leading-none">T{tier.n}</span>
-                    <span className="font-mono text-[11px] text-gray-400 uppercase tracking-wider">
-                        {tier.title} · {tier.systems.slice(0, 4).join(', ')}
-                    </span>
-                    <span className="flex gap-1 ml-auto" aria-hidden="true">
-                        {[1, 2, 3, 4, 5].map(n => (
-                            <span key={n} className={`w-4 h-3 ${n <= tier.n ? (n === tier.n ? 'bg-cyan-400' : 'bg-violet-500') : 'bg-white/10'}`} />
-                        ))}
-                    </span>
-                    <span className="font-mono text-[10px] uppercase tracking-widest text-violet-300">Details →</span>
-                </button>
-            )}
         </div>
     );
 };

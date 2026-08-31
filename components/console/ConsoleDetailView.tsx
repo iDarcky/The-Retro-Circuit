@@ -7,12 +7,13 @@ import ConsoleHero from './swiss/ConsoleHero';
 import type { CatalogueStats } from '../../app/actions/scoring';
 import ConsoleTabs from './swiss/ConsoleTabs';
 import PlayabilityTiers from './swiss/PlayabilityTiers';
+import { pickBuyTarget } from '../../lib/affiliate';
 import Section from './swiss/Section';
+import ConsoleStickyHeader from './swiss/ConsoleStickyHeader';
 import VariantGuide from './swiss/VariantGuide';
 import TierComparison from './swiss/TierComparison';
 import { circuitScore, percentileOf } from '../../lib/scoring/circuit-score';
 import PlayabilityMatrix from './PlayabilityMatrix';
-import BuySection from './BuySection';
 import { getConsoleImage } from '../../lib/utils';
 
 // Swiss Design Components
@@ -128,10 +129,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
     const TABS = [
         ...(variants.length > 1 ? [{ id: 'configurations', label: 'Configurations' }] : []),
         { id: 'playability', label: 'Playability' },
-        { id: 'compare', label: 'Compare' },
-        { id: 'analysis', label: 'Analysis' },
         { id: 'tech', label: 'Specification' },
-        { id: 'buy', label: 'Buy' },
         { id: 'similar', label: 'Similar' },
     ];
 
@@ -144,9 +142,26 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
     );
     const heroTierStats = heroScore && catalogueStats ? catalogueStats[heroScore.reach] : undefined;
     const heroPrice = currentVariant?.price_avg_usd ?? currentVariant?.price_launch_usd ?? null;
+    const stickyBuy = pickBuyTarget({
+        asin: currentVariant?.amazon_asin,
+        name: consoleData.name,
+        manufacturer: consoleData.manufacturer?.name,
+        links: consoleData.links,
+    });
 
     return (
         <div className="w-full min-h-screen bg-[#09090b] text-white selection:bg-orange-500/30 selection:text-white pb-20">
+
+             <ConsoleStickyHeader
+                name={consoleData.name}
+                brand={consoleData.manufacturer?.name}
+                variantName={variants.length > 1 ? currentVariant?.variant_name : null}
+                price={heroPrice ? Number(heroPrice) : null}
+                score={heroScore?.score ?? null}
+                compareUrl={compareUrl}
+                buyUrl={stickyBuy?.url}
+                buyLabel={stickyBuy?.confidence === 'direct' ? `Buy on ${stickyBuy.vendor}` : 'Check price'}
+             />
 
              {/* FOLD: the device, the price, the tier, the two actions. */}
              <ConsoleHero
@@ -161,8 +176,15 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                 compareUrl={compareUrl}
                 onShare={handleShare}
                 shareCopied={shareCopied}
-                onEmulationDetails={() => setIsEmulationModalOpen(true)}
                 catalogueStats={catalogueStats}
+                belowImage={consoleData.description ? (
+                    <div id="analysis" className="scroll-mt-32 border-t border-white/10 pt-5">
+                        <h2 className="font-mono text-[9.5px] uppercase tracking-[0.2em] text-gray-500 mb-3">
+                            System analysis
+                        </h2>
+                        <SystemAnalysis description={consoleData.description} />
+                    </div>
+                ) : null}
              />
 
              <ConsoleTabs tabs={TABS} />
@@ -206,36 +228,6 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                     <PlayabilityTiers profile={emulationProfile} />
                 </Section>
 
-                {/* COMPARE */}
-                {heroScore && (
-                    <Section
-                        id="compare"
-                        eyebrow={`Against other tier ${heroScore.reach} devices`}
-                        title="HOW IT STANDS"
-                    >
-                        <TierComparison
-                            reach={heroScore.reach}
-                            stats={heroTierStats}
-                            price={heroPrice ? Number(heroPrice) : null}
-                            pricePercentile={heroPrice && heroTierStats?.prices.length
-                                ? percentileOf(Number(heroPrice), heroTierStats.prices) : null}
-                            score={heroScore.score}
-                            scorePercentile={heroTierStats?.scores.length
-                                ? percentileOf(heroScore.score, heroTierStats.scores) : null}
-                            batteryMah={mergedSpecs.battery_capacity_mah}
-                            batteryWh={mergedSpecs.battery_capacity_wh}
-                            batteryPercentile={
-                                // Rank against the population that shares this device's unit.
-                                mergedSpecs.battery_capacity_wh && heroTierStats?.batteriesWh.length
-                                    ? percentileOf(Number(mergedSpecs.battery_capacity_wh), heroTierStats.batteriesWh)
-                                    : mergedSpecs.battery_capacity_mah && heroTierStats?.batteriesMah.length
-                                        ? percentileOf(Number(mergedSpecs.battery_capacity_mah), heroTierStats.batteriesMah)
-                                        : null
-                            }
-                        />
-                    </Section>
-                )}
-
                 {/* SPECIFICATION */}
                 <Section
                     id="tech"
@@ -264,23 +256,6 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                      <TechnicalReference mergedSpecs={mergedSpecs} viewMode={techViewMode as 'grid' | 'table' | 'ribbon'} />
                 </Section>
 
-                {/* ANALYSIS + ACQUISITION */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 rc-rule-top pt-[18px] mt-20">
-                    <section id="analysis" className="lg:col-span-8 scroll-mt-32">
-                        <h2 className="font-pixel text-[13px] md:text-[15px] text-violet-500 mb-6 uppercase tracking-widest">SYSTEM ANALYSIS</h2>
-                        <SystemAnalysis description={consoleData.description || ''} />
-                    </section>
-
-                    <section id="buy" className="lg:col-span-4 scroll-mt-32">
-                        <h2 className="font-pixel text-[13px] md:text-[15px] text-violet-500 mb-6 uppercase tracking-widest">WHERE TO BUY</h2>
-                        <BuySection
-                            asin={currentVariant?.amazon_asin || null}
-                            searchQuery={[consoleData.manufacturer?.name, consoleData.name].filter(Boolean).join(' ')}
-                            vendorLinks={(consoleData.links || []).filter((l) => l.kind === 'vendor')}
-                        />
-                    </section>
-                </div>
-
                 {/* ROW 4: LINKS — reviews and retail */}
                 {consoleData.links && consoleData.links.length > 0 && (
                     <Section id="links" eyebrow="Reviews and retail" title="ELSEWHERE">
@@ -293,7 +268,37 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                 )}
 
                 {/* ROW 5: SIMILAR CONSOLES */}
-                <Section id="similar" eyebrow="Same tier, comparable price" title="SIMILAR HARDWARE">
+                {/* Where it stands and what else to look at are the same question, so
+                    they are one section rather than two the reader has to join up. */}
+                <Section
+                    id="similar"
+                    eyebrow={heroScore ? `Ranked against tier ${heroScore.reach}` : 'Comparable devices'}
+                    title="HOW IT STANDS"
+                >
+                     {heroScore && (
+                         <div className="mb-10">
+                             <TierComparison
+                             reach={heroScore.reach}
+                             stats={heroTierStats}
+                             price={heroPrice ? Number(heroPrice) : null}
+                             pricePercentile={heroPrice && heroTierStats?.prices.length
+                                 ? percentileOf(Number(heroPrice), heroTierStats.prices) : null}
+                             score={heroScore.score}
+                             scorePercentile={heroTierStats?.scores.length
+                                 ? percentileOf(heroScore.score, heroTierStats.scores) : null}
+                             batteryMah={mergedSpecs.battery_capacity_mah}
+                             batteryWh={mergedSpecs.battery_capacity_wh}
+                             batteryPercentile={
+                                 // Rank against the population that shares this device's unit.
+                                 mergedSpecs.battery_capacity_wh && heroTierStats?.batteriesWh.length
+                                     ? percentileOf(Number(mergedSpecs.battery_capacity_wh), heroTierStats.batteriesWh)
+                                     : mergedSpecs.battery_capacity_mah && heroTierStats?.batteriesMah.length
+                                         ? percentileOf(Number(mergedSpecs.battery_capacity_mah), heroTierStats.batteriesMah)
+                                         : null
+                             }
+                        />
+                         </div>
+                     )}
                      <SimilarConsoles currentConsole={consoleData} />
                 </Section>
 

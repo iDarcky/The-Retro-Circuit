@@ -90,21 +90,21 @@ const VariantGuide: FC<{
                                 const price = priceOf(v);
                                 const isSel = v.id === selectedId;
                                 return (
-                                    <th key={v.id} className={`p-3 text-left align-bottom border-b border-r border-white/10 last:border-r-0 ${isSel ? 'bg-violet-500/[0.08]' : ''}`}>
+                                    <th key={v.id} className={`p-0 text-left align-bottom border-b border-r border-white/10 last:border-r-0 ${isSel ? 'bg-white' : ''}`}>
                                         <button
                                             type="button"
                                             onClick={() => onSelect?.(v.id)}
-                                            className="text-left group"
+                                            className="w-full text-left group p-3 transition-colors hover:bg-white/[0.04]"
                                             aria-pressed={isSel}
                                         >
-                                            <span className={`block font-mono text-[11px] mb-1 transition-colors ${isSel ? 'text-violet-300' : 'text-gray-400 group-hover:text-white'}`}>
+                                            <span className={`block font-mono text-[10px] uppercase tracking-wider mb-1 transition-colors ${isSel ? 'text-black/60' : 'text-gray-500 group-hover:text-gray-300'}`}>
                                                 {v.variant_name || 'Base'}
                                             </span>
-                                            <span className={`block font-mono text-base font-bold tabular-nums ${isSel ? 'text-white' : 'text-gray-300'}`}>
+                                            <span className={`block font-mono text-[17px] font-bold tabular-nums ${isSel ? 'text-black' : 'text-white'}`}>
                                                 {price ? `$${price}` : '--'}
                                             </span>
                                             {price && base && price > base && (
-                                                <span className="block font-mono text-[9.5px] text-emerald-400 mt-0.5 tabular-nums">
+                                                <span className={`block font-mono text-[9.5px] mt-0.5 tabular-nums ${isSel ? 'text-black/60' : 'text-emerald-400'}`}>
                                                     +${price - base}
                                                 </span>
                                             )}
@@ -128,7 +128,7 @@ const VariantGuide: FC<{
                                         <td
                                             key={ordered[i].id}
                                             className={`p-3 border-b border-r border-white/10 last:border-r-0 font-mono text-xs tabular-nums ${
-                                                ordered[i].id === selectedId ? 'bg-violet-500/[0.05]' : ''
+                                                ordered[i].id === selectedId ? 'bg-white/[0.06]' : ''
                                             } ${val && val !== baseVal ? 'text-white' : 'text-gray-500'}`}
                                         >
                                             {val || <span className="text-gray-700">&mdash;</span>}
