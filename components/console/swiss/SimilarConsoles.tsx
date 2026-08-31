@@ -123,17 +123,17 @@ export default function SimilarConsoles({ currentConsole }: SimilarConsolesProps
                 return (
                     <div key={consoleItem.id} className="rc-cell group">
                         <Link href={`/consoles/${consoleItem.slug}`} className="block p-3 hover:bg-white/[0.03] transition-colors">
-                            <div className="rc-bed relative aspect-[4/3] flex items-center justify-center border border-white/[0.07] mb-3">
+                            <div className="rc-bed relative h-[74px] flex items-center justify-center border border-white/[0.07] mb-2.5">
                                 {imageUrl ? (
                                     <Image
                                         src={imageUrl.startsWith('http') ? imageUrl : `/${imageUrl.replace(/^\//, '')}`}
                                         alt={consoleItem.name}
                                         fill
-                                        sizes="(max-width: 1024px) 45vw, 22vw"
-                                        className="object-contain p-3 opacity-85 group-hover:opacity-100 transition-opacity"
+                                        sizes="140px"
+                                        className="object-contain p-2 opacity-85 group-hover:opacity-100 transition-opacity"
                                     />
                                 ) : (
-                                    <span className="font-pixel text-2xl text-zinc-800">?</span>
+                                    <span className="font-pixel text-lg text-zinc-800">?</span>
                                 )}
                             </div>
 

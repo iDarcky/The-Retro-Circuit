@@ -7,6 +7,7 @@ import { ConsoleDetails, ConsoleSpecs, ConsoleVariant, EmulationProfile } from '
 import { pickBuyTarget } from '../../../lib/affiliate';
 import { circuitScore, percentileOf, scorePerDollar } from '../../../lib/scoring/circuit-score';
 import CircuitScoreCard, { PriceCard } from './CircuitScoreCard';
+import AffiliateDisclosure from './AffiliateDisclosure';
 import type { CatalogueStats } from '../../../app/actions/scoring';
 import { buildVerdict, buildTags } from '../../../lib/scoring/verdict';
 import { MIN_POPULATION_FOR_RANK } from '../../../lib/scoring/circuit-score';
@@ -130,23 +131,34 @@ const ConsoleHero: FC<Props> = ({
         <div className="max-w-[1600px] mx-auto px-4 md:px-8 pt-6">
 
             {/* Breadcrumb — the brand carries the product, so it is a real link. */}
-            <nav aria-label="Breadcrumb" className="font-mono text-[10px] uppercase tracking-widest text-gray-600 mb-6">
-                <Link href="/consoles" className="hover:text-white transition-colors">Vault_</Link>
-                {brand && brandSlug && (
-                    <>
-                        <span className="mx-2 text-gray-700">/</span>
-                        <Link href={`/fabricators/${brandSlug}`} className="hover:text-white transition-colors">{brand}</Link>
-                    </>
-                )}
-                <span className="mx-2 text-gray-700">/</span>
-                <span className="text-gray-400">{consoleData.name}</span>
+            <nav aria-label="Breadcrumb" className="mb-6">
+                <ol className="flex flex-wrap items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em]">
+                    <li>
+                        <Link href="/consoles" className="text-gray-500 hover:text-white transition-colors">Vault</Link>
+                    </li>
+                    {brand && brandSlug && (
+                        <li className="flex items-center gap-1.5">
+                            <span className="text-gray-700" aria-hidden="true">&rsaquo;</span>
+                            <Link
+                                href={`/fabricators/${brandSlug}`}
+                                className="text-gray-500 hover:text-violet-300 transition-colors"
+                            >
+                                {brand}
+                            </Link>
+                        </li>
+                    )}
+                    <li className="flex items-center gap-1.5" aria-current="page">
+                        <span className="text-gray-700" aria-hidden="true">&rsaquo;</span>
+                        <span className="text-gray-300">{consoleData.name}</span>
+                    </li>
+                </ol>
             </nav>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
 
                 {/* ---- IMAGE ---------------------------------------------------- */}
                 <div className="lg:col-span-7">
-                    <div className="rc-bed relative w-full aspect-[4/3] md:aspect-video border border-white/10 flex items-center justify-center overflow-hidden">
+                    <div className="rc-bed relative w-full aspect-[4/3] border border-white/10 flex items-center justify-center overflow-hidden">
                         <span className="absolute top-3 left-3 font-mono text-[10px] tracking-widest text-white/25">FIG. 01</span>
                         <span className="absolute top-3 right-3 font-mono text-[10px] tracking-widest text-white/25 flex items-center gap-1.5">
                             <span className="w-1.5 h-1.5 bg-violet-500 inline-block" aria-hidden="true" />
@@ -161,7 +173,7 @@ const ConsoleHero: FC<Props> = ({
                                 alt={shot.alt_text || consoleData.name}
                                 fetchPriority={heroIndex === 0 ? 'high' : 'auto'}
                                 decoding="async"
-                                className={`max-w-[78%] max-h-[78%] object-contain ${isPixelFallback ? '[image-rendering:pixelated]' : ''}`}
+                                className={`max-w-[82%] max-h-[82%] object-contain ${isPixelFallback ? '[image-rendering:pixelated]' : ''}`}
                             />
                         ) : (
                             <span className="font-pixel text-xl text-zinc-700">NO SIGNAL</span>
@@ -194,13 +206,25 @@ const ConsoleHero: FC<Props> = ({
                         </ul>
                     )}
 
-                    {belowImage && <div className="mt-6">{belowImage}</div>}
                 </div>
 
                 {/* ---- IDENTITY & DECISION -------------------------------------- */}
                 <div className="lg:col-span-5">
                     {brand && (
-                        <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-gray-500 mb-2">{brand}</div>
+                        brandSlug ? (
+                            <Link
+                                href={`/fabricators/${brandSlug}`}
+                                className="group inline-flex items-baseline gap-2 mb-2.5 font-mono text-[15px] uppercase
+                                           tracking-[0.16em] text-gray-400 hover:text-violet-300 transition-colors"
+                            >
+                                {brand}
+                                <span className="font-mono text-[10px] text-gray-700 group-hover:text-violet-400 transition-colors">
+                                    All models &rarr;
+                                </span>
+                            </Link>
+                        ) : (
+                            <div className="font-mono text-[15px] uppercase tracking-[0.16em] text-gray-400 mb-2.5">{brand}</div>
+                        )
                     )}
                     {/* The cursor is the brand's own mark — the logo is RETRO CIRCUIT_. A rule
                         underneath it would be a second, generic device saying the same thing. */}
@@ -295,9 +319,18 @@ const ConsoleHero: FC<Props> = ({
                             )}
                         </button>
                     </div>
+
+                    {buy && <AffiliateDisclosure className="mt-3" />}
                 </div>
             </div>
 
+            {/* Below the grid, not inside the image cell.
+             *
+             * In the cell it was 7 columns wide with the identity column beside it already
+             * finished, so the right five columns sat blank next to the prose. Full width
+             * still reads as "under the photo", because the photo is the top-left of the
+             * grid it follows. */}
+            {belowImage}
         </div>
     );
 };

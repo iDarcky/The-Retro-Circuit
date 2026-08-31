@@ -1,6 +1,7 @@
 import type { ConsoleLink } from '../../lib/types';
 import { getBuyUrl } from '../../lib/affiliate';
 import AffiliateLink from './AffiliateLink';
+import AffiliateDisclosure from './swiss/AffiliateDisclosure';
 
 interface ConsoleLinksProps {
     links?: ConsoleLink[] | null;
@@ -118,6 +119,7 @@ export default function ConsoleLinks({ links, productName, manufacturerName }: C
                     </ul>
                 </section>
             )}
+            <AffiliateDisclosure className="mt-4" />
         </div>
     );
 }

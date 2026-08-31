@@ -12,10 +12,32 @@ interface Props {
     tabs: TabDef[];
     /** Sits under the site header when the bar sticks. Matches the header height. */
     offsetClass?: string;
+    /* Identity, revealed inside this same bar once the fold scrolls away.
+     *
+     * This was briefly a second fixed bar of its own, which pinned to the same offset as
+     * the tabs and collided with them, leaving an empty band under the site header. One
+     * bar that gains the device name is both the fix and the better design: it costs no
+     * extra vertical space on a page that is already long. */
+    device?: {
+        name: string;
+        brand?: string | null;
+        variantName?: string | null;
+        price?: number | null;
+        buyUrl?: string | null;
+        buyLabel?: string;
+    };
 }
 
-const ConsoleTabs: FC<Props> = ({ tabs, offsetClass = 'top-[48px] md:top-[64px]' }) => {
+const ConsoleTabs: FC<Props> = ({ tabs, offsetClass = 'top-[48px] md:top-[64px]', device }) => {
     const [active, setActive] = useState(tabs[0]?.id);
+    const [scrolled, setScrolled] = useState(false);
+
+    useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 420);
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
 
     useEffect(() => {
         const sections = tabs
@@ -48,8 +70,24 @@ const ConsoleTabs: FC<Props> = ({ tabs, offsetClass = 'top-[48px] md:top-[64px]'
 
     return (
         <div className={`sticky ${offsetClass} z-30 bg-[#09090b]/95 backdrop-blur-md border-b border-white/10 mt-10`}>
-            <div className="max-w-[1600px] mx-auto px-4 md:px-8 flex items-center justify-between gap-4">
-                <nav className="flex items-center gap-1 overflow-x-auto" aria-label="Console sections">
+            <div className="max-w-[1600px] mx-auto px-4 md:px-8 flex items-center gap-4">
+                {device && (
+                    <div
+                        className={`hidden md:flex items-baseline gap-2.5 min-w-0 shrink-0 overflow-hidden transition-all duration-200
+                                    motion-reduce:transition-none ${scrolled ? 'max-w-[420px] opacity-100 mr-2' : 'max-w-0 opacity-0'}`}
+                        aria-hidden={!scrolled}
+                    >
+                        <span className="font-mono text-[12.5px] text-white truncate">{device.name}</span>
+                        {device.variantName && (
+                            <span className="font-mono text-[9.5px] uppercase tracking-wider text-violet-400 shrink-0">
+                                {device.variantName}
+                            </span>
+                        )}
+                        <span className="w-px h-4 bg-white/15 shrink-0" aria-hidden="true" />
+                    </div>
+                )}
+
+                <nav className="flex items-center gap-1 overflow-x-auto min-w-0" aria-label="Console sections">
                     {tabs.map(t => (
                         <button
                             key={t.id}
@@ -66,9 +104,26 @@ const ConsoleTabs: FC<Props> = ({ tabs, offsetClass = 'top-[48px] md:top-[64px]'
                         </button>
                     ))}
                 </nav>
-                <span className="hidden lg:block font-mono text-[10px] uppercase tracking-widest text-gray-600 shrink-0">
-                    Scroll for specs ↓
-                </span>
+                <div className="ml-auto flex items-center gap-3 shrink-0">
+                    {device?.price && scrolled && (
+                        <span className="font-mono text-[13px] font-bold text-emerald-400 tabular-nums">${device.price}</span>
+                    )}
+                    {device?.buyUrl && scrolled ? (
+                        <a
+                            href={device.buyUrl}
+                            target="_blank"
+                            rel="noopener noreferrer sponsored"
+                            className="flex items-center px-3 py-1.5 bg-violet-600 hover:bg-violet-500 text-white
+                                       font-mono text-[10px] uppercase tracking-widest transition-colors"
+                        >
+                            {device.buyLabel || 'Check price'}
+                        </a>
+                    ) : (
+                        <span className="hidden lg:block font-mono text-[10px] uppercase tracking-widest text-gray-600">
+                            Scroll for specs ↓
+                        </span>
+                    )}
+                </div>
             </div>
         </div>
     );

@@ -9,7 +9,6 @@ import ConsoleTabs from './swiss/ConsoleTabs';
 import PlayabilityTiers from './swiss/PlayabilityTiers';
 import { pickBuyTarget } from '../../lib/affiliate';
 import Section from './swiss/Section';
-import ConsoleStickyHeader from './swiss/ConsoleStickyHeader';
 import VariantGuide from './swiss/VariantGuide';
 import TierComparison from './swiss/TierComparison';
 import { circuitScore, percentileOf } from '../../lib/scoring/circuit-score';
@@ -152,17 +151,6 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
     return (
         <div className="w-full min-h-screen bg-[#09090b] text-white selection:bg-orange-500/30 selection:text-white pb-20">
 
-             <ConsoleStickyHeader
-                name={consoleData.name}
-                brand={consoleData.manufacturer?.name}
-                variantName={variants.length > 1 ? currentVariant?.variant_name : null}
-                price={heroPrice ? Number(heroPrice) : null}
-                score={heroScore?.score ?? null}
-                compareUrl={compareUrl}
-                buyUrl={stickyBuy?.url}
-                buyLabel={stickyBuy?.confidence === 'direct' ? `Buy on ${stickyBuy.vendor}` : 'Check price'}
-             />
-
              {/* FOLD: the device, the price, the tier, the two actions. */}
              <ConsoleHero
                 consoleData={consoleData}
@@ -178,16 +166,26 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                 shareCopied={shareCopied}
                 catalogueStats={catalogueStats}
                 belowImage={consoleData.description ? (
-                    <div id="analysis" className="scroll-mt-32 border-t border-white/10 pt-5">
-                        <h2 className="font-mono text-[9.5px] uppercase tracking-[0.2em] text-gray-500 mb-3">
-                            System analysis
+                    <div id="analysis" className="scroll-mt-32 rc-rule-top pt-[18px] mt-10">
+                        <h2 className="font-pixel text-[13px] md:text-[15px] text-violet-500 uppercase tracking-widest mb-5">
+                            System Analysis
                         </h2>
                         <SystemAnalysis description={consoleData.description} />
                     </div>
                 ) : null}
              />
 
-             <ConsoleTabs tabs={TABS} />
+             <ConsoleTabs
+                tabs={TABS}
+                device={{
+                    name: consoleData.name,
+                    brand: consoleData.manufacturer?.name,
+                    variantName: variants.length > 1 ? currentVariant?.variant_name : null,
+                    price: heroPrice ? Number(heroPrice) : null,
+                    buyUrl: stickyBuy?.url,
+                    buyLabel: stickyBuy?.confidence === 'direct' ? `Buy on ${stickyBuy.vendor}` : 'Check price',
+                }}
+             />
 
              <main className="max-w-[1600px] mx-auto px-4 md:px-8 mt-10 animate-fadeIn">
 
