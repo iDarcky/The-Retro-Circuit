@@ -316,6 +316,20 @@ export interface ConsoleVariant {
   depth_mm?: number;
   ui_skin?: string;
 
+  // Added Aug 2026 after a hand pass over the catalogue found these unrepresentable.
+  /** Every position a charge port appears in. Supersedes charge_port_position. */
+  charge_port_positions?: string[] | null;
+  /** Base internal storage in MB. storage_gb cannot hold 512 MB or 2 TB. */
+  storage_mb?: number | null;
+  headphone_jack_position?: 'top' | 'bottom' | 'left' | 'right' | 'back' | null;
+  /** Base GPU clock. gpu_clock_mhz is the max / boost figure. */
+  gpu_clock_min_mhz?: number | null;
+  /** Removable battery pack, as on the Miyoo Mini. Null means nobody has checked. */
+  battery_swappable?: boolean | null;
+  /** Second bootable OS where the device ships or officially supports dual boot. */
+  os_secondary_family?: 'android' | 'linux' | 'steamos' | 'windows' | 'proprietary' | 'other' | null;
+  os_secondary_version?: string | null;
+
   emulation_profile?: EmulationProfile | null;
   variant_input_profile?: VariantInputProfile | null;
 }

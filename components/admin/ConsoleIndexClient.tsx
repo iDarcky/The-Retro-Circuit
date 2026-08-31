@@ -21,8 +21,9 @@ interface AdminConsoleRow {
     updated_at?: string;
     image_url?: string | null;
     device_category?: string | null;
+    release_status?: string | null;
     manufacturer?: { name: string } | null;
-    variants?: { id: string; price_launch_usd?: number | null; price_avg_usd?: number | null; image_url?: string | null; cpu_model?: string | null; soc_name?: string | null; soc?: string | null }[] | null;
+    variants?: { id: string; price_launch_usd?: number | null; price_avg_usd?: number | null; image_url?: string | null; cpu_model?: string | null; soc_name?: string | null; soc?: string | null; release_date?: string | null }[] | null;
 }
 
 interface ConsoleIndexClientProps {
@@ -30,7 +31,7 @@ interface ConsoleIndexClientProps {
     initialManufacturers: Manufacturer[];
 }
 
-type SortKey = 'NAME' | 'UPDATED' | 'BRAND' | 'READINESS';
+type SortKey = 'NAME' | 'UPDATED' | 'BRAND' | 'READINESS' | 'YEAR';
 type GapKey = 'ALL' | 'NO_IMAGE' | 'NO_VARIANT' | 'NO_PRICE' | 'READY';
 
 /**
@@ -64,6 +65,20 @@ function completeness(c: AdminConsoleRow): { done: number; total: number } {
     return { done: checks.filter(Boolean).length, total: checks.length };
 }
 
+/** Earliest dated variant. The console itself carries no date. */
+function releaseYear(c: AdminConsoleRow): string | null {
+    const dates = (c.variants || []).map(v => v.release_date).filter(Boolean) as string[];
+    if (dates.length === 0) return null;
+    return dates.sort()[0].slice(0, 4);
+}
+
+const RELEASE_TONE: Record<string, string> = {
+    released: 'text-gray-400 border-gray-700',
+    upcoming: 'text-cyan-400 border-cyan-500/40',
+    rumoured: 'text-violet-400 border-violet-500/40',
+    discontinued: 'text-orange-400 border-orange-500/40',
+};
+
 export default function ConsoleIndexClient({ initialConsoles, initialManufacturers }: ConsoleIndexClientProps) {
     const router = useRouter();
     // The admin hub links straight to a gap: /admin/consoles?status=DRAFT&gap=NO_IMAGE.
@@ -77,10 +92,13 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
 
     const [consoles, setConsoles] = useState(initialConsoles);
     const [filter, setFilter] = useState<'ALL' | 'DRAFT' | 'REVIEW' | 'PUBLISHED' | 'ARCHIVED'>(initialStatus);
-    const [search, setSearch] = useState('');
-    const [brand, setBrand] = useState('ALL');
+    const [search, setSearch] = useState(params.get('q') || '');
+    const [brand, setBrand] = useState(params.get('brand') || 'ALL');
     const [gap, setGap] = useState<GapKey>(initialGap);
-    const [sort, setSort] = useState<SortKey>('NAME');
+    const [sort, setSort] = useState<SortKey>(
+        (['NAME', 'UPDATED', 'BRAND', 'READINESS', 'YEAR'] as const).find(v => v === (params.get('sort') || '').toUpperCase()) ?? 'NAME'
+    );
+    const [release, setRelease] = useState<string>((params.get('release') || 'ALL').toLowerCase() === 'all' ? 'ALL' : (params.get('release') || 'ALL').toLowerCase());
 
     // Modal State
     const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -92,6 +110,24 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
     useEffect(() => {
         setConsoles(initialConsoles);
     }, [initialConsoles]);
+
+    /* Mirror the filters into the URL.
+     *
+     * They used to live only in component state, so opening a console and pressing Back
+     * dropped you at the unfiltered top of 462 rows and you had to re-find your place.
+     * replace() rather than push() keeps one history entry per filter change instead of
+     * one per keystroke, and the reader above seeds state from the same params. */
+    useEffect(() => {
+        const q = new URLSearchParams();
+        if (filter !== 'ALL') q.set('status', filter);
+        if (gap !== 'ALL') q.set('gap', gap);
+        if (brand !== 'ALL') q.set('brand', brand);
+        if (release !== 'ALL') q.set('release', release);
+        if (sort !== 'NAME') q.set('sort', sort);
+        if (search.trim()) q.set('q', search.trim());
+        const qs = q.toString();
+        router.replace(qs ? `/admin/consoles?${qs}` : '/admin/consoles', { scroll: false });
+    }, [filter, gap, brand, release, sort, search, router]);
 
     const counts = {
         ALL: consoles.length,
@@ -140,7 +176,9 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
             gap === 'NO_VARIANT' ? gaps.includes('VARIANT') :
             gaps.includes('PRICE');
 
-        return matchesSearch && matchesFilter && matchesBrand && matchesGap;
+        const matchesRelease = release === 'ALL' || (c.release_status || 'released') === release;
+
+        return matchesSearch && matchesFilter && matchesBrand && matchesGap && matchesRelease;
     }).sort((a, b) => {
         switch (sort) {
             case 'UPDATED':
@@ -151,6 +189,14 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
             case 'READINESS':
                 // Most incomplete first — that is the work queue.
                 return getGaps(b).length - getGaps(a).length || a.name.localeCompare(b.name);
+            case 'YEAR': {
+                // Newest first; undated sinks rather than sorting as year zero.
+                const ya = releaseYear(a), yb = releaseYear(b);
+                if (!ya && !yb) return a.name.localeCompare(b.name);
+                if (!ya) return 1;
+                if (!yb) return -1;
+                return yb.localeCompare(ya) || a.name.localeCompare(b.name);
+            }
             default:
                 return a.name.localeCompare(b.name);
         }
@@ -294,6 +340,20 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                         ))}
                     </select>
 
+                    <label className="sr-only" htmlFor="release-filter">Filter by release status</label>
+                    <select
+                        id="release-filter"
+                        value={release}
+                        onChange={(e) => setRelease(e.target.value)}
+                        className="bg-black border border-gray-700 text-white font-mono text-xs px-3 py-2 focus:border-secondary outline-none uppercase"
+                    >
+                        <option value="ALL">ALL RELEASE STATES</option>
+                        <option value="released">RELEASED</option>
+                        <option value="upcoming">UPCOMING</option>
+                        <option value="rumoured">RUMOURED</option>
+                        <option value="discontinued">DISCONTINUED</option>
+                    </select>
+
                     <label className="sr-only" htmlFor="sort-order">Sort order</label>
                     <select
                         id="sort-order"
@@ -305,15 +365,16 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                         <option value="UPDATED">SORT: RECENTLY UPDATED</option>
                         <option value="BRAND">SORT: BRAND</option>
                         <option value="READINESS">SORT: LEAST COMPLETE</option>
+                        <option value="YEAR">SORT: NEWEST FIRST</option>
                     </select>
                 </div>
             </div>
 
             <p className="font-mono text-[10px] text-gray-500 mb-4 tracking-widest uppercase">
                 Showing {filteredConsoles.length} of {consoles.length}
-                {(brand !== 'ALL' || gap !== 'ALL' || search) && (
+                {(brand !== 'ALL' || gap !== 'ALL' || release !== 'ALL' || search) && (
                     <button
-                        onClick={() => { setBrand('ALL'); setGap('ALL'); setSearch(''); }}
+                        onClick={() => { setBrand('ALL'); setGap('ALL'); setRelease('ALL'); setSearch(''); }}
                         className="ml-3 text-gray-400 underline underline-offset-2 hover:text-white"
                     >
                         clear filters
@@ -360,6 +421,8 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                                 <th className="p-4">Console Name</th>
                                 <th className="p-4">Manufacturer</th>
                                 <th className="p-4">Status</th>
+                                <th className="p-4">Release</th>
+                                <th className="p-4 w-16">Year</th>
                                 <th className="p-4 w-28">Complete</th>
                                 <th className="p-4">Missing</th>
                                 <th className="p-4">Last Updated</th>
@@ -398,6 +461,14 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                                         }`}>
                                             {console.status || 'DRAFT'}
                                         </span>
+                                    </td>
+                                    <td className="p-4">
+                                        <span className={`text-[10px] px-2 py-1 border uppercase tracking-wider ${RELEASE_TONE[console.release_status || 'released'] || RELEASE_TONE.released}`}>
+                                            {console.release_status || 'released'}
+                                        </span>
+                                    </td>
+                                    <td className="p-4 text-gray-400 tabular-nums">
+                                        {releaseYear(console) || <span className="text-gray-700">&mdash;</span>}
                                     </td>
                                     <td className="p-4">
                                         {(() => {

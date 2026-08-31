@@ -25,6 +25,28 @@ const safeNumber = z.preprocess((val) => {
 
 const safeBoolean = z.preprocess((val) => val === true || val === 'true', z.boolean().default(false));
 
+/**
+ * Boolean that can be genuinely unknown.
+ *
+ * safeBoolean coerces anything that is not true to `false`, so every save of a variant
+ * rewrites "nobody has checked" as "this device does not have it". That is fine for a
+ * checkbox nobody leaves ambiguous and wrong for hardware facts we are still collecting,
+ * so those use this and render as a three-way select rather than a checkbox.
+ */
+const safeTriBoolean = z.preprocess((val) => {
+  if (val === '' || val === null || val === undefined || val === 'unknown') return null;
+  if (val === true || val === 'true') return true;
+  if (val === false || val === 'false') return false;
+  return null;
+}, z.boolean().nullable().optional());
+
+/** Postgres text[] from the multi-select. Empty selection stores NULL, not []. */
+const safeStringArray = z.preprocess((val) => {
+  if (!Array.isArray(val)) return val === '' || val == null ? null : [String(val)];
+  const out = val.map(String).filter(Boolean);
+  return out.length ? out : null;
+}, z.array(z.string()).nullable().optional());
+
 export const ManufacturerSchema = z.object({
   id: z.string().optional(),
   name: safeString,
@@ -91,8 +113,8 @@ export const VariantInputProfileSchema = z.object({
   trigger_type: safeEnum(TRIGGER_TYPE),
   trigger_layout: safeEnum(['inline', 'stacked', 'shelf', 'unknown']),
   back_button_count: safeNumber,
-  has_gyro: safeBoolean,
-  has_rumble: safeBoolean,
+  has_gyro: safeTriBoolean,
+  has_rumble: safeTriBoolean,
   has_keyboard: safeBoolean,
   // keyboard_type: safeString, - Removed
   system_button_set: safeEnum(['minimal', 'standard', 'extended', 'unknown']),
@@ -142,11 +164,14 @@ export const ConsoleVariantSchema = z.object({
   gpu_cores: safeNumber,
   gpu_compute_units: safeString,
   gpu_clock_mhz: safeNumber,
+  gpu_clock_min_mhz: safeNumber,
   gpu_teraflops: safeNumber,
 
   os: safeString,
   os_family: safeEnum(['android', 'linux', 'steamos', 'windows', 'proprietary', 'other'] as const),
   os_version: safeString,
+  os_secondary_family: safeEnum(['android', 'linux', 'steamos', 'windows', 'proprietary', 'other'] as const),
+  os_secondary_version: safeString,
   soc: safeString,
   cpu_arch: safeEnum(['arm64', 'arm32', 'x86_64', 'other'] as const),
   vulkan_support: safeString,
@@ -160,6 +185,7 @@ export const ConsoleVariantSchema = z.object({
   ram_speed_mhz: safeNumber,
 
   storage_gb: safeNumber,
+  storage_mb: safeNumber,
   storage_type: safeString,
   storage_expandable: safeBoolean,
   microsd_type: safeString,
@@ -208,6 +234,7 @@ export const ConsoleVariantSchema = z.object({
   charge_port: safeEnum(['usb_c', 'micro_usb', 'mini_usb', 'barrel_dc', 'proprietary', 'none'] as const),
   charge_port_count: safeNumber,
   charge_port_position: safeEnum(['top', 'bottom', 'side', 'back', 'multiple'] as const),
+  charge_port_positions: safeStringArray,
 
   expansion_slot_count: safeNumber,
   expansion_card_type: safeEnum(['microsd', 'sd', 'memory_stick', 'cfexpress', 'proprietary'] as const),
@@ -224,6 +251,7 @@ export const ConsoleVariantSchema = z.object({
   battery_capacity_mah: safeNumber,
   battery_capacity_wh: safeNumber,
   battery_type: safeString,
+  battery_swappable: safeTriBoolean,
   charging_speed_w: safeNumber,
   charging_tech: safeString,
   tdp_wattage: safeNumber,
@@ -236,6 +264,7 @@ export const ConsoleVariantSchema = z.object({
   audio_speakers: safeString,
   audio_tech: safeString,
   has_headphone_jack: safeBoolean,
+  headphone_jack_position: safeEnum(['top', 'bottom', 'left', 'right', 'back'] as const),
   has_microphone: safeBoolean,
   camera_specs: safeString,
   biometrics: safeString,

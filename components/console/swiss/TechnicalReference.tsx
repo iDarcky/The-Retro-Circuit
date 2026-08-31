@@ -243,6 +243,9 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
         return { value: formatNum(max || min || 0), unit };
     };
     const cpuClockData = formatCpuClock(mergedSpecs.cpu_clock_min_mhz, mergedSpecs.cpu_clock_max_mhz);
+    // Same treatment as the CPU: a 1050 MHz part reads as 1.05 GHz everywhere else on
+    // the page, and the hero already formatted it that way.
+    const gpuClockData = formatCpuClock(mergedSpecs.gpu_clock_min_mhz ?? undefined, mergedSpecs.gpu_clock_mhz ?? undefined);
 
     const formatColors = (colors: string | string[] | undefined) => {
         if (!colors) return null;
@@ -254,7 +257,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
         // Section order and membership mirror VARIANT_FORM_GROUPS one for one, so a field
         // you fill in under a heading in the admin appears under the same heading here.
         PLATFORM: ['os', 'os_family', 'os_version', 'ui_skin', 'model_no'],
-        SILICON: ['soc', 'soc_vendor', 'soc_name', 'cpu_model', 'cpu_clusters', 'cpu_architecture', 'cpu_process_node', 'cpu_cores', 'cpu_threads', 'cpu_clock_max_mhz', 'gpu_model', 'gpu_vendor', 'gpu_name', 'gpu_architecture', 'gpu_cores', 'gpu_compute_units', 'gpu_clock_mhz', 'gpu_teraflops', 'benchmark_score', 'performance_grade'],
+        SILICON: ['soc', 'soc_vendor', 'soc_name', 'cpu_model', 'cpu_clusters', 'cpu_architecture', 'cpu_process_node', 'cpu_cores', 'cpu_threads', 'cpu_clock_max_mhz', 'gpu_model', 'gpu_vendor', 'gpu_name', 'gpu_architecture', 'gpu_cores', 'gpu_compute_units', 'gpu_clock_min_mhz', 'gpu_clock_mhz', 'gpu_teraflops', 'benchmark_score', 'performance_grade'],
         MEMORY: ['ram_mb', 'ram_type', 'ram_speed_mhz', 'storage_gb', 'storage_type', 'storage_expandable'],
         DISPLAY: ['screen_size_inch', 'screen_resolution_x', 'display_type', 'display_tech', 'refresh_rate_hz', 'brightness_nits', 'touchscreen', 'aspect_ratio', 'ppi', 'second_screen_size', 'second_screen_touch', 'second_screen_ppi', 'second_screen_aspect_ratio', 'second_screen_refresh_rate', 'second_screen_nits'],
         INPUT: ['variant_input_profile'],
@@ -292,7 +295,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                     <SpecRow label="GPU Arch" value={mergedSpecs.gpu_architecture} />
                     <SpecRow label="GPU Cores" value={mergedSpecs.gpu_cores} />
                     <SpecRow label="Compute Units" value={mergedSpecs.gpu_compute_units} />
-                    <SpecRow label="GPU Clock" value={mergedSpecs.gpu_clock_mhz} unit="MHz" />
+                    <SpecRow label="GPU Clock" value={gpuClockData.value} unit={gpuClockData.unit} />
                     <SpecRow label="GPU Perf" value={mergedSpecs.gpu_teraflops} unit="TFLOPS" />
                     <SpecRow label="Benchmark" value={mergedSpecs.benchmark_score} />
                     <SpecRow label="Performance Rating" value={mergedSpecs.performance_grade} />

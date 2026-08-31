@@ -23,7 +23,7 @@ export interface WorklistRow {
 export interface AdminDashboard {
     totals: { consoles: number; published: number; draft: number; variants: number };
     gaps: Record<GapKey, number>;
-    revenue: { variantsWithAsin: number; variantsTotal: number; publishedWithoutBuyPath: number };
+    revenue: { variantsWithAsin: number; variantsTotal: number; publishedWithoutBuyPath: number; discontinuedExcluded: number };
     ready: WorklistRow[];
     imageOnly: WorklistRow[];
     releasePassed: WorklistRow[];
@@ -73,7 +73,7 @@ const toRow = (c: Row, gaps: string[]): WorklistRow => ({
 const EMPTY: AdminDashboard = {
     totals: { consoles: 0, published: 0, draft: 0, variants: 0 },
     gaps: { NO_IMAGE: 0, NO_VARIANT: 0, NO_PRICE: 0, READY: 0, RELEASE_PASSED: 0 },
-    revenue: { variantsWithAsin: 0, variantsTotal: 0, publishedWithoutBuyPath: 0 },
+    revenue: { variantsWithAsin: 0, variantsTotal: 0, publishedWithoutBuyPath: 0, discontinuedExcluded: 0 },
     ready: [],
     imageOnly: [],
     releasePassed: [],
@@ -99,7 +99,9 @@ export async function fetchAdminDashboard(): Promise<AdminDashboard> {
 
         const totals = { consoles: rows.length, published: 0, draft: 0, variants: 0 };
         const gaps: Record<GapKey, number> = { NO_IMAGE: 0, NO_VARIANT: 0, NO_PRICE: 0, READY: 0, RELEASE_PASSED: 0 };
-        const revenue = { variantsWithAsin: 0, variantsTotal: 0, publishedWithoutBuyPath: 0 };
+        // Discontinued hardware has nowhere to link to, so counting it as a missing
+        // buy path just inflates the number with work that cannot be done.
+        const revenue = { variantsWithAsin: 0, variantsTotal: 0, publishedWithoutBuyPath: 0, discontinuedExcluded: 0 };
 
         const ready: WorklistRow[] = [];
         const imageOnly: WorklistRow[] = [];
@@ -107,14 +109,21 @@ export async function fetchAdminDashboard(): Promise<AdminDashboard> {
 
         for (const c of rows) {
             const variants = c.variants || [];
+            const isDiscontinued = c.release_status === 'discontinued';
             totals.variants += variants.length;
-            revenue.variantsTotal += variants.length;
-            revenue.variantsWithAsin += variants.filter(v => v.amazon_asin).length;
+            if (!isDiscontinued) {
+                revenue.variantsTotal += variants.length;
+                revenue.variantsWithAsin += variants.filter(v => v.amazon_asin).length;
+            }
 
             const isPublished = c.status === 'published';
             if (isPublished) {
                 totals.published += 1;
-                if (!variants.some(v => v.amazon_asin)) revenue.publishedWithoutBuyPath += 1;
+                if (isDiscontinued) {
+                    revenue.discontinuedExcluded += 1;
+                } else if (!variants.some(v => v.amazon_asin)) {
+                    revenue.publishedWithoutBuyPath += 1;
+                }
             }
 
             // An Upcoming console whose earliest dated variant has shipped. Surfaced

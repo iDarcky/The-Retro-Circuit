@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ConsoleDetails, Manufacturer, ConsoleVariant } from '@/lib/types';
+import { deleteConsoleVariant } from '@/app/actions';
 import { ConsoleForm } from '@/components/admin/ConsoleForm';
 import { VariantForm } from '@/components/admin/VariantForm';
 import Button from '@/components/ui/Button';
@@ -32,6 +33,19 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
         setEditingVariant(null);
         setVariantError(null);
         setIsVariantModalOpen(true);
+    };
+
+    const [deletingId, setDeletingId] = useState<string | null>(null);
+
+    const handleDeleteVariant = async (variant: ConsoleVariant) => {
+        const name = variant.variant_name || 'this variant';
+        if (!window.confirm(`Delete "${name}"? Its specs, input profile and emulation grades go with it. This cannot be undone.`)) return;
+        setDeletingId(variant.id);
+        setVariantError(null);
+        const res = await deleteConsoleVariant(variant.id);
+        setDeletingId(null);
+        if (res.success) router.refresh();
+        else setVariantError(res.message || 'Delete failed.');
     };
 
     const handleOpenEditVariant = (variant: ConsoleVariant) => {
@@ -176,13 +190,24 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                                          })()}
                                      </div>
                                  </div>
-                                 <Button
-                                    variant="secondary"
-                                    className="text-xs border-gray-600 text-gray-400 hover:border-white hover:text-white"
-                                    onClick={() => handleOpenEditVariant(variant)}
-                                 >
-                                     EDIT SPECS
-                                 </Button>
+                                 <div className="flex items-center gap-2 shrink-0">
+                                     <Button
+                                        variant="secondary"
+                                        className="text-xs border-gray-600 text-gray-400 hover:border-white hover:text-white"
+                                        onClick={() => handleOpenEditVariant(variant)}
+                                     >
+                                         EDIT SPECS
+                                     </Button>
+                                     <button
+                                        type="button"
+                                        disabled={deletingId === variant.id}
+                                        onClick={() => handleDeleteVariant(variant)}
+                                        title="Delete this variant"
+                                        className="px-3 py-2 border border-rose-500/30 text-rose-400 font-mono text-xs uppercase tracking-wider hover:bg-rose-500 hover:text-black hover:border-rose-500 transition-colors disabled:opacity-40"
+                                     >
+                                         {deletingId === variant.id ? '...' : 'DELETE'}
+                                     </button>
+                                 </div>
                              </div>
                          ))
                      ) : (

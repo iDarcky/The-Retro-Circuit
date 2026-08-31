@@ -27,7 +27,7 @@ export default async function AdminConsolesPage() {
                 .from('consoles')
                 // image_url + variant specs drive the readiness indicators in the index
                 // (a console can't be published without an image, and is thin without a variant).
-                .select('id, name, slug, status, updated_at, image_url, device_category, manufacturer:manufacturer(name), variants:console_variants(id, price_launch_usd, price_avg_usd, image_url, cpu_model, soc_name, soc)')
+                .select('id, name, slug, status, updated_at, image_url, device_category, release_status, manufacturer:manufacturer(name), variants:console_variants(id, price_launch_usd, price_avg_usd, image_url, cpu_model, soc_name, soc, release_date)')
                 .order('name'),
             fetchManufacturers()
         ]);

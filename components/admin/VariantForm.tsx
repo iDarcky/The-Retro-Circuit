@@ -42,7 +42,7 @@ const SECOND_SCREEN_KEYS = [
 // how `system_button_set` broke the editor.
 const INPUT_PROFILE_KEYS = Object.keys(VariantInputProfileSchema.shape);
 
-const CLOCK_FIELD_KEYS = ['cpu_clock_min_mhz', 'cpu_clock_max_mhz', 'gpu_clock_mhz'] as const;
+const CLOCK_FIELD_KEYS = ['cpu_clock_min_mhz', 'cpu_clock_max_mhz', 'gpu_clock_min_mhz', 'gpu_clock_mhz'] as const;
 
 const DATE_PATTERNS = {
     year: /^\d{4}$/,
@@ -80,6 +80,8 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     const [pendingEmulationData, setPendingEmulationData] = useState<any>(null);
 
     const [ramInput, setRamInput] = useState<{ value: string | number, unit: 'GB' | 'MB' }>({ value: '', unit: 'GB' });
+    // Storage is stored in MB like RAM, so 512 MB and 2 TB both fit in one column.
+    const [storageInput, setStorageInput] = useState<{ value: string | number, unit: 'MB' | 'GB' | 'TB' }>({ value: '', unit: 'GB' });
     // Keyed by column name so any clock field (CPU min/max, GPU) gets the same
     // GHz/MHz entry without another pair of hardcoded state slots.
     type ClockInput = { value: string | number, unit: 'GHz' | 'MHz' };
@@ -128,13 +130,20 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 }
             }
 
+            const smb = Number((initialData as any).storage_mb);
+            if (!isNaN(smb) && smb > 0) {
+                if (smb % (1024 * 1024) === 0) setStorageInput({ value: smb / (1024 * 1024), unit: 'TB' });
+                else if (smb % 1024 === 0) setStorageInput({ value: smb / 1024, unit: 'GB' });
+                else setStorageInput({ value: smb, unit: 'MB' });
+            }
+
             // Clock init — show GHz when the stored MHz divides cleanly, else MHz.
             const nextClocks: Record<string, ClockInput> = {};
             for (const key of CLOCK_FIELD_KEYS) {
                 const mhz = Number((initialData as any)[key]);
                 if (!isNaN(mhz) && mhz > 0) {
-                    nextClocks[key] = (mhz >= 1000 && mhz % 100 === 0)
-                        ? { value: mhz / 1000, unit: 'GHz' }
+                    nextClocks[key] = mhz >= 1000
+                        ? { value: Number((mhz / 1000).toFixed(3)), unit: 'GHz' }
                         : { value: mhz, unit: 'MHz' };
                 }
             }
@@ -183,10 +192,20 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     const addCluster = () => setClusters([...clusters, { count: null, core: '', clock_mhz: null, uarch_year: null }]);
     const removeCluster = (i: number) => setClusters(clusters.filter((_, idx) => idx !== i));
 
+    const STORAGE_MULT = { MB: 1, GB: 1024, TB: 1024 * 1024 } as const;
+
+    const handleStorageChange = (newVal: string | number, newUnit: 'MB' | 'GB' | 'TB') => {
+        setStorageInput({ value: newVal, unit: newUnit });
+        const val = Number(String(newVal).replace(',', '.'));
+        handleInputChange('storage_mb', !isNaN(val) && val > 0 ? Math.round(val * STORAGE_MULT[newUnit]) : null);
+    };
+
     const handleClockChange = (key: string, newVal: string | number, newUnit: 'GHz' | 'MHz') => {
         setClockInputs(prev => ({ ...prev, [key]: { value: newVal, unit: newUnit } }));
 
-        const val = Number(newVal);
+        // "1,05" is what a comma-decimal keyboard produces. Number() reads that as NaN
+        // and would silently blank the field, so normalise before parsing.
+        const val = Number(String(newVal).replace(',', '.'));
         if (!isNaN(val) && val > 0) {
             handleInputChange(key, newUnit === 'GHz' ? Math.round(val * 1000) : val);
         } else {
@@ -306,7 +325,11 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         if (!variantId) return;
         const template = existingVariants.find(v => v.id === variantId);
         if (template) {
-            const { id, variant_name, slug, is_default, price_launch_usd, model_no, ...specs } = template;
+            // Identity is per-variant and must not be copied. Everything else, release
+            // date and price included, describes the same hardware family and should
+            // carry over — retyping the release date on every configuration was the
+            // single most repetitive thing about adding a variant.
+            const { id, variant_name, slug, is_default, ...specs } = template;
 
             // Flatten specs (including Input Profile)
             const flattenedSpecs = { ...specs };
@@ -330,8 +353,25 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
 
             setFormData(prev => ({
                 ...flattenedSpecs, console_id: prev.console_id, variant_name: '', slug: '',
-                is_default: false, price_launch_usd: '', model_no: '', image_url: template.image_url
+                is_default: false, image_url: template.image_url
             }));
+
+            // The date and storage widgets hold their own state, so copying formData
+            // alone left them blank while the record underneath was populated.
+            if (template.release_date) {
+                const prec = (template.release_date_precision as any) || 'day';
+                setDatePrecision(prec);
+                setDateValue(String(template.release_date).slice(0, prec === 'year' ? 4 : prec === 'month' ? 7 : 10));
+                setDateError('');
+            }
+            const tsmb = Number((template as any).storage_mb);
+            if (!isNaN(tsmb) && tsmb > 0) {
+                if (tsmb % (1024 * 1024) === 0) setStorageInput({ value: tsmb / (1024 * 1024), unit: 'TB' });
+                else if (tsmb % 1024 === 0) setStorageInput({ value: tsmb / 1024, unit: 'GB' });
+                else setStorageInput({ value: tsmb, unit: 'MB' });
+            } else {
+                setStorageInput({ value: '', unit: 'GB' });
+            }
 
             const mb = Number(template.ram_mb);
             if (!isNaN(mb) && mb > 0) {
@@ -345,8 +385,8 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             for (const key of CLOCK_FIELD_KEYS) {
                 const mhz = Number((template as any)[key]);
                 if (!isNaN(mhz) && mhz > 0) {
-                    nextClocks[key] = (mhz >= 1000 && mhz % 100 === 0)
-                        ? { value: mhz / 1000, unit: 'GHz' }
+                    nextClocks[key] = mhz >= 1000
+                        ? { value: Number((mhz / 1000).toFixed(3)), unit: 'GHz' }
                         : { value: mhz, unit: 'MHz' };
                 }
             }
@@ -632,6 +672,70 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                             labelPrefix="" inverted={false} />
                     </div>
                     {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
+                </div>
+            );
+        }
+
+        if (field.hidden) return null;
+
+        if (field.type === 'tribool') {
+            // Three states, because "nobody has checked" is not "no". A checkbox here
+            // wrote false onto 288 unknown rumble rows the first time anyone saved.
+            const raw = formData[field.key];
+            const val = raw === true ? 'true' : raw === false ? 'false' : '';
+            return (
+                <div key={key} className={colSpan}>
+                    <label className={`text-[10px] mb-1 block uppercase ${error ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
+                    <SwissDropdown
+                        value={val}
+                        onChange={(v) => handleInputChange(field.key, v === '' ? null : v === 'true')}
+                        options={[{ label: 'Unknown', value: '' }, { label: 'Yes', value: 'true' }, { label: 'No', value: 'false' }]}
+                        buttonClassName="w-full bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center"
+                        labelPrefix="" inverted={false} />
+                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
+                </div>
+            );
+        }
+
+        if (field.type === 'multiselect') {
+            const current: string[] = Array.isArray(formData[field.key]) ? formData[field.key] : [];
+            const toggle = (opt: string) => {
+                const next = current.includes(opt) ? current.filter(o => o !== opt) : [...current, opt];
+                handleInputChange(field.key, next.length ? next : null);
+            };
+            return (
+                <div key={key} className={colSpan}>
+                    <label className={`text-[10px] mb-1 block uppercase ${error ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
+                    <div className="flex flex-wrap gap-px border border-gray-700 bg-black p-px">
+                        {(field.options || []).map((opt: string) => {
+                            const on = current.includes(opt);
+                            return (
+                                <button key={opt} type="button" onClick={() => toggle(opt)} aria-pressed={on}
+                                    className={`px-3 py-2 font-mono text-xs uppercase tracking-wider transition-colors ${on ? 'bg-white text-black' : 'text-gray-500 hover:text-white'}`}>
+                                    {opt}
+                                </button>
+                            );
+                        })}
+                    </div>
+                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
+                </div>
+            );
+        }
+
+        if (field.type === 'custom_storage') {
+            return (
+                <div key={key} className={colSpan}>
+                    <label className={`text-[10px] mb-1 block uppercase ${error ? 'text-accent' : 'text-gray-500'}`}>{field.label}</label>
+                    <div className="flex gap-2">
+                        <input type="number" step="any" className={`flex-1 border p-3 outline-none font-mono text-sm bg-black text-white ${error ? 'border-accent' : 'border-gray-700 focus:border-secondary'}`}
+                            value={storageInput.value} onChange={(e) => handleStorageChange(e.target.value, storageInput.unit)} />
+                        <SwissDropdown value={storageInput.unit}
+                            onChange={(v) => handleStorageChange(storageInput.value, v as 'MB' | 'GB' | 'TB')}
+                            options={[{ label: 'MB', value: 'MB' }, { label: 'GB', value: 'GB' }, { label: 'TB', value: 'TB' }]} className="w-24"
+                            buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center"
+                            labelPrefix="" inverted={false} />
+                    </div>
+                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
                 </div>
             );
         }

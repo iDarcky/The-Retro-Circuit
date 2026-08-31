@@ -568,6 +568,61 @@ export const updateConsoleVariant = async (id: string, variantData: Partial<Cons
     }
 };
 
+/**
+ * Delete one variant.
+ *
+ * Refuses to remove the last variant of a console: a console with no variant has no
+ * specs at all and renders as an empty page, which is worse than a stale one. Delete
+ * the console instead. `variant_input_profile` and `emulation_profiles` both cascade
+ * on the foreign key, so there is nothing else to clean up.
+ */
+export const deleteConsoleVariant = async (id: string): Promise<{ success: boolean, message?: string }> => {
+    try {
+        const supabase = await createClient();
+
+        const { data: variant, error: fetchError } = await supabase
+            .from('console_variants')
+            .select('console_id, variant_name, is_default')
+            .eq('id', id)
+            .single();
+        if (fetchError) return { success: false, message: fetchError.message };
+
+        const { count, error: countError } = await supabase
+            .from('console_variants')
+            .select('id', { count: 'exact', head: true })
+            .eq('console_id', variant.console_id);
+        if (countError) return { success: false, message: countError.message };
+        if ((count ?? 0) <= 1) {
+            return { success: false, message: 'This is the only variant. Delete the console instead.' };
+        }
+
+        const { error } = await supabase.from('console_variants').delete().eq('id', id);
+        if (error) return { success: false, message: error.message };
+
+        // Promote another variant so the console still has a default to render.
+        if (variant.is_default) {
+            const { data: next } = await supabase
+                .from('console_variants')
+                .select('id')
+                .eq('console_id', variant.console_id)
+                .order('created_at', { ascending: true })
+                .limit(1)
+                .maybeSingle();
+            if (next?.id) {
+                await supabase.from('console_variants').update({ is_default: true }).eq('id', next.id);
+            }
+        }
+
+        const { data: parent } = await supabase
+            .from('consoles').select('slug').eq('id', variant.console_id).maybeSingle();
+        if (parent?.slug) revalidatePath(`/consoles/${parent.slug}`);
+
+        return { success: true, message: `Deleted "${variant.variant_name}".` };
+    } catch (e: any) {
+        return { success: false, message: e.message };
+    }
+};
+
 export const deleteConsole = async (id: string): Promise<{ success: boolean, message?: string }> => {
     try {
         const supabase = await createClient();
