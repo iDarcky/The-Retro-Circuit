@@ -192,6 +192,9 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     const addCluster = () => setClusters([...clusters, { count: null, core: '', clock_mhz: null, uarch_year: null }]);
     const removeCluster = (i: number) => setClusters(clusters.filter((_, idx) => idx !== i));
 
+    // Sum of the cluster counts. Displayed in the widget and written on save.
+    const derivedCores = clusters.reduce((sum: number, c: any) => sum + (Number(c?.count) || 0), 0);
+
     const STORAGE_MULT = { MB: 1, GB: 1024, TB: 1024 * 1024 } as const;
 
     const handleStorageChange = (newVal: string | number, newUnit: 'MB' | 'GB' | 'TB') => {
@@ -427,6 +430,16 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         // Structure data for API: Separate Variant vs Input Profile
         const validData = result.data as any;
 
+        /* cpu_cores is the sum of the cluster counts, so it is derived rather than typed.
+         * Having both on the form meant three overlapping CPU fields and no rule about
+         * which one won. The clusters are the source of truth; this keeps the plain
+         * total available for sorting and for the comparison table. */
+        if (Array.isArray(validData.cpu_clusters) && validData.cpu_clusters.length > 0) {
+            const total = validData.cpu_clusters.reduce(
+                (sum: number, c: any) => sum + (Number(c?.count) || 0), 0);
+            if (total > 0) validData.cpu_cores = total;
+        }
+
         const variantPayload: any = {};
         const inputProfilePayload: any = {};
 
@@ -584,8 +597,14 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                         className="mt-2 font-mono text-[9px] uppercase tracking-widest text-secondary hover:text-white transition-colors">
                         + Add cluster
                     </button>
-                    <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">
-                        // count · core · MHz · architecture year. Fastest cluster first.
+                    <div className="text-[9px] text-gray-500 mt-2 font-mono tracking-tight leading-relaxed">
+                        // count · core · MHz · architecture year. Fastest cluster first.<br />
+                        // One row per cluster because &quot;8 cores&quot; hides the difference between
+                        1&times;X4 + 4&times;A720 + 3&times;A520 and eight A55s.<br />
+                        // Architecture year ranks above clock: 2 GHz on a 2023 core beats 3 GHz on a 2016 one.
+                        {derivedCores > 0 && (
+                            <><br />// Total cores: <span className="text-gray-300">{derivedCores}</span> (saved automatically)</>
+                        )}
                     </div>
                 </div>
             );

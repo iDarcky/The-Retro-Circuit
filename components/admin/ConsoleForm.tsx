@@ -6,6 +6,7 @@ import { ConsoleDetails, Manufacturer } from '../../lib/types';
 import { addConsole as createConsole, updateConsole, deleteConsole } from '../../app/actions/consoles';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
+import { buildSummary } from '../../lib/scoring/verdict';
 import ImageUpload from '../ui/ImageUpload';
 import ConsoleGalleryManager from './ConsoleGalleryManager';
 import { CONSOLE_FORM_FIELDS } from '../../lib/config/constants';
@@ -20,6 +21,53 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [isEditMode, setIsEditMode] = useState(!!initialData);
+    const [summaryNote, setSummaryNote] = useState<string | null>(null);
+
+    /* Draft a spec summary from the variants this console already has.
+     *
+     * 328 drafts are fully specced and graded but have no description, and a page with no
+     * unique text is a weak result however good the data is. This only states what the
+     * database records, so it is a first draft to edit rather than a finished review:
+     * opinionated copy still has to be written by hand. */
+    const generateSummary = () => {
+        const variants: any[] = (initialData as any)?.variants || [];
+        const def = variants.find((v: any) => v.is_default) || variants[0];
+        if (!def) {
+            setSummaryNote('No variant on this console yet, so there are no specs to summarise.');
+            return;
+        }
+        const prices = variants
+            .map((v: any) => v.price_avg_usd || v.price_launch_usd || 0)
+            .filter((p: number) => p > 0);
+        const profile = def.emulation_profile
+            || (Array.isArray(def.emulation_profiles) ? def.emulation_profiles[0] : def.emulation_profiles);
+
+        const text = buildSummary({
+            name: (formData as any).name || initialData?.name || '',
+            brand: (initialData as any)?.manufacturer?.name,
+            deviceCategory: (formData as any).device_category || def.device_category,
+            formFactor: (formData as any).form_factor,
+            releaseYear: def.release_date ? String(def.release_date).slice(0, 4) : null,
+            socName: def.soc_name, socVendor: def.soc_vendor,
+            cpuClusters: def.cpu_clusters,
+            ramMb: def.ram_mb,
+            screenInch: def.screen_size_inch,
+            screenResX: def.screen_resolution_x, screenResY: def.screen_resolution_y,
+            batteryMah: def.battery_capacity_mah, batteryWh: def.battery_capacity_wh,
+            osFamily: def.os_family,
+            priceLow: prices.length ? Math.min(...prices) : null,
+            priceHigh: prices.length ? Math.max(...prices) : null,
+            variantCount: variants.length,
+            profile,
+        });
+
+        if (!text) {
+            setSummaryNote('Not enough filled-in specs to write a useful summary yet.');
+            return;
+        }
+        handleInputChange('description', text);
+        setSummaryNote('Draft written from the specs. Edit it before publishing.');
+    };
     const [formData, setFormData] = useState<Partial<ConsoleDetails>>(initialData || {
         status: 'draft',
         device_category: 'emulation',
@@ -207,6 +255,40 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
                                 </label>
                                 <input type="text" className={`w-full border p-3 font-mono text-sm outline-none transition-colors ${isSlugLocked ? 'bg-bg-secondary border-border-normal text-gray-500 cursor-not-allowed opacity-75' : `bg-bg-primary text-white ${fieldErrors.slug ? 'border-accent' : 'border-border-normal focus:border-white'}`}`} value={(formData as any)[field.key] || ''} onChange={(e: ChangeEvent<HTMLInputElement>) => handleInputChange(field.key, e.target.value)} readOnly={isSlugLocked} />
                                 {fieldErrors.slug && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold">! {fieldErrors.slug}</div>}
+                            </div>
+                        );
+                    }
+                    if (field.key === 'description') {
+                        const current = ((formData as any).description || '').trim();
+                        return (
+                            <div key={field.key} className="col-span-1 md:col-span-2">
+                                <label className="text-[10px] mb-1 uppercase tracking-wider text-gray-500 flex justify-between items-center gap-3">
+                                    <span>{field.label}</span>
+                                    <button
+                                        type="button"
+                                        onClick={generateSummary}
+                                        className="font-mono text-[10px] uppercase tracking-wider border border-gray-700 text-gray-400 px-2 py-1 hover:border-white hover:text-white transition-colors"
+                                    >
+                                        {current ? 'Redraft from specs' : 'Draft from specs'}
+                                    </button>
+                                </label>
+                                <textarea
+                                    name="console-description"
+                                    autoComplete="off"
+                                    data-form-type="other"
+                                    rows={5}
+                                    className="w-full bg-bg-primary border border-border-normal text-white p-3 font-mono text-sm outline-none focus:border-white transition-colors"
+                                    value={(formData as any).description || ''}
+                                    onChange={(e) => { handleInputChange('description', e.target.value); setSummaryNote(null); }}
+                                />
+                                <div className="flex justify-between gap-3 mt-1">
+                                    <span className="text-[9px] font-mono text-gray-500">
+                                        {summaryNote || '// Spec-derived draft. Rewrite anything opinionated by hand.'}
+                                    </span>
+                                    <span className="text-[9px] font-mono text-gray-600 tabular-nums shrink-0">
+                                        {current ? `${current.split(/\s+/).length} words` : 'empty'}
+                                    </span>
+                                </div>
                             </div>
                         );
                     }

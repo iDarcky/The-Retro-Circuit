@@ -109,6 +109,156 @@ export function buildVerdict(opts: {
     );
 }
 
+/* THE SPEC SUMMARY
+ *
+ * 60 to 90 words of plain description, assembled from columns. This exists because 328
+ * drafts are fully specced and emulation-graded but have no description, and a page with
+ * no unique text is a weak search result no matter how good the data underneath is.
+ *
+ * It states only what the database records. No judgement, no recommendation, no adjectives
+ * that are not measurements, because opinionated copy has to be human-written. Treat the
+ * output as a first draft to edit, not a finished review.
+ *
+ * Returns null rather than a stub when there is too little to say.
+ */
+
+export interface SummaryInput {
+    name: string;
+    brand?: string | null;
+    deviceCategory?: string | null;
+    formFactor?: string | null;
+    releaseYear?: string | null;
+    socName?: string | null;
+    socVendor?: string | null;
+    cpuClusters?: { count?: number | null; core?: string | null; clock_mhz?: number | null }[] | null;
+    ramMb?: number | null;
+    screenInch?: number | null;
+    screenResX?: number | null;
+    screenResY?: number | null;
+    batteryMah?: number | null;
+    batteryWh?: number | null;
+    osFamily?: string | null;
+    priceLow?: number | null;
+    priceHigh?: number | null;
+    variantCount?: number;
+    profile?: EmulationProfile | null;
+}
+
+const CATEGORY_NOUN: Record<string, string> = {
+    emulation: 'emulation handheld',
+    pc_gaming: 'PC gaming handheld',
+    fpga: 'FPGA handheld',
+    legacy: 'handheld console',
+};
+
+/** "8 cores at up to 2.8 GHz" from the cluster rows. */
+function corePhrase(clusters?: SummaryInput['cpuClusters']): string | null {
+    if (!clusters || clusters.length === 0) return null;
+    const total = clusters.reduce((n, c) => n + (Number(c?.count) || 0), 0);
+    if (total <= 0) return null;
+    const top = Math.max(...clusters.map(c => Number(c?.clock_mhz) || 0));
+    const clock = top >= 1000 ? `${(top / 1000).toFixed(2).replace(/\.?0+$/, '')} GHz` : top > 0 ? `${top} MHz` : null;
+    return clock ? `${total} cores at up to ${clock}` : `${total} cores`;
+}
+
+/** Every system it runs playably, highest tier first, capped so the sentence stays readable. */
+function playableSystems(profile: EmulationProfile, limit: number): string[] {
+    const out: string[] = [];
+    for (let i = SYSTEM_TIERS.length - 1; i >= 0 && out.length < limit; i--) {
+        for (const sys of SYSTEM_TIERS[i].systems) {
+            const g = String((profile as any)[sys.key] ?? '');
+            if (g === 'Playable' || g === 'Great' || g === 'Perfect') {
+                out.push(sys.label);
+                if (out.length === limit) break;
+            }
+        }
+    }
+    return out;
+}
+
+/**
+ * "a AMD Van Gogh" and "a 8 inch display" are the tells that a sentence was assembled
+ * rather than written. Numerals go by how they are said, not how they are spelt: 8, 11
+ * and 18 take "an", every other leading digit takes "a".
+ */
+const article = (word: string): string => {
+    const w = word.trim();
+    if (/^(8|11|18)(\D|$)/.test(w)) return 'an';
+    if (/^\d/.test(w)) return 'a';
+    return /^[aeiou]/i.test(w) ? 'an' : 'a';
+};
+
+const list = (items: string[]): string =>
+    items.length <= 1 ? (items[0] ?? '') : `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`;
+
+export function buildSummary(o: SummaryInput): string | null {
+    const sentences: string[] = [];
+    const full = o.brand ? `${o.brand} ${o.name}` : o.name;
+    const noun = CATEGORY_NOUN[String(o.deviceCategory ?? '').toLowerCase()] || 'handheld';
+
+    // 1. What it is.
+    const form = String(o.formFactor ?? '').toLowerCase();
+    const opening = [
+        `The ${full} is a`,
+        o.releaseYear ? `${o.releaseYear}` : null,
+        form && form !== 'unknown' ? form : null,
+        noun,
+    ].filter(Boolean).join(' ');
+    const os = o.osFamily ? ` running ${o.osFamily === 'steamos' ? 'SteamOS' : o.osFamily.charAt(0).toUpperCase() + o.osFamily.slice(1)}` : '';
+    sentences.push(`${opening}${os}.`);
+
+    // 2. The hardware.
+    const hw: string[] = [];
+    const chip = [o.socVendor, o.socName].filter(Boolean).join(' ');
+    if (chip) hw.push(`${article(chip)} ${chip}`);
+    const cores = corePhrase(o.cpuClusters);
+    if (cores) hw.push(cores);
+    if (o.ramMb && o.ramMb > 0) {
+        hw.push(o.ramMb >= 1024 ? `${Math.round(o.ramMb / 1024)} GB of RAM` : `${o.ramMb} MB of RAM`);
+    }
+    const hasSilicon = Boolean(chip) || Boolean(cores);
+    if (hw.length > 0 && hasSilicon) sentences.push(`It is built around ${list(hw)}.`);
+
+    // 3. Screen and battery.
+    const body: string[] = [];
+    if (o.screenInch) {
+        const res = o.screenResX && o.screenResY ? ` ${o.screenResX} by ${o.screenResY}` : '';
+        body.push(`${article(String(o.screenInch))} ${o.screenInch} inch${res} display`);
+    }
+    if (o.batteryWh) body.push(`a ${o.batteryWh} Wh battery`);
+    else if (o.batteryMah) body.push(`a ${o.batteryMah} mAh battery`);
+    // Without silicon to lead on, the RAM joins the screen and battery in one clause.
+    const rest = hasSilicon ? body : [...hw, ...body];
+    if (rest.length > 0) sentences.push(`It has ${list(rest)}.`);
+
+    // 4. What it actually plays. The reason anyone reads the page.
+    if (o.profile) {
+        const runs = playableSystems(o.profile, 4);
+        const weak = notableWeakness(o.profile, SYSTEM_TIERS.length);
+        if (runs.length > 0) {
+            sentences.push(
+                `In testing it runs ${list(runs)} at playable speeds${weak ? `, while ${weak} struggles` : ''}.`,
+            );
+        }
+    }
+
+    // 5. What it costs, and how many ways you can buy it.
+    if (o.priceLow && o.priceLow > 0) {
+        const spread = o.priceHigh && o.priceHigh > o.priceLow;
+        const configs = (o.variantCount ?? 0) > 1 ? ` across ${o.variantCount} configurations` : '';
+        sentences.push(
+            spread
+                ? `Prices run from $${o.priceLow} to $${o.priceHigh}${configs}.`
+                : `It launched at $${o.priceLow}${configs}.`,
+        );
+    }
+
+    // A page needs more than a name and a price to be worth indexing.
+    if (sentences.length < 3) return null;
+
+    return noEmDash(sentences.join(' '));
+}
+
 /* TAGS
  *
  * Six, priority-ordered, dropped from the bottom when the data is missing. Four was too
