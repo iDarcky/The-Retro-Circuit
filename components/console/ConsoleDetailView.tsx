@@ -29,11 +29,13 @@ interface ConsoleDetailViewProps {
     /** Per-tier score and price distributions, for the standings. */
     catalogueStats?: CatalogueStats;
   consoleData: ConsoleDetails;
+    /** Newest still-sold device from this brand, for discontinued pages. */
+    successor?: { name: string; slug: string } | null;
 }
 
 // --- MAIN COMPONENT ---
 
-const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryImages = [], catalogueStats }) => {
+const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryImages = [], catalogueStats, successor }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
     
@@ -165,6 +167,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                 onShare={handleShare}
                 shareCopied={shareCopied}
                 catalogueStats={catalogueStats}
+                successor={successor}
                 belowImage={consoleData.description ? (
                     <div id="analysis" className="scroll-mt-32 rc-rule-top pt-[18px] mt-10">
                         <h2 className="font-pixel text-[13px] md:text-[15px] text-violet-500 uppercase tracking-widest mb-5">
@@ -179,6 +182,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                 tabs={TABS}
                 device={{
                     name: consoleData.name,
+                    imageUrl: heroShots[0]?.url ?? consoleData.image_url ?? null,
                     brand: consoleData.manufacturer?.name,
                     variantName: variants.length > 1 ? currentVariant?.variant_name : null,
                     price: heroPrice ? Number(heroPrice) : null,

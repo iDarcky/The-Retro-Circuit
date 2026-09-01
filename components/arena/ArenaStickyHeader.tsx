@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+
+import { useScrollRoot } from '../../lib/hooks/useScrollRoot';
 import Image from 'next/image';
 import { ConsoleDetails, ConsoleVariant } from '../../lib/types';
 
@@ -11,25 +12,18 @@ interface ArenaStickyHeaderProps {
 }
 
 export const ArenaStickyHeader = ({ selectionA, selectionB, onReset }: ArenaStickyHeaderProps) => {
-    const [isVisible, setIsVisible] = useState(false);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            const scrollY = window.scrollY;
-            // Show header after scrolling past the main hero section (approx 400px)
-            setIsVisible(scrollY > 400);
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    /* Watched window.scrollY, which never moves: the shell scrolls an inner div, so this
+     * header never appeared at all. See lib/hooks/useScrollRoot. */
+    const { ref: anchorRef, past: isVisible } = useScrollRoot(400);
 
     if (!selectionA.details || !selectionB.details) return null;
 
     return (
-        <div 
+        <div
+            ref={anchorRef}
             className={`
-                fixed top-0 left-0 right-0 z-50 transform transition-transform duration-300 ease-in-out
+                sticky top-0 z-50 transform transition-transform duration-300 ease-in-out
+                motion-reduce:transition-none
                 ${isVisible ? 'translate-y-0' : '-translate-y-full'}
             `}
         >

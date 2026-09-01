@@ -139,7 +139,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Pixel Density (PPI)', key: 'ppi', type: 'number', required: false, width: 'half', visualStyle: 'computed', note: 'Auto-calculated' },
 
             { label: 'Panel Type', key: 'display_type', type: 'select', required: false, width: 'third',
-              options: ['IPS LCD', 'OLED', 'AMOLED', 'TN LCD', 'Mini-LED', 'Micro-LED', 'TFT LCD'] },
+              options: ['IPS LCD', 'LTPS LCD', 'OLED', 'AMOLED', 'TN LCD', 'VA LCD', 'Mini-LED', 'Micro-LED', 'TFT LCD'] },
             { label: 'Refresh Rate (Hz)', key: 'refresh_rate_hz', type: 'number', required: false, width: 'third' },
             { label: 'Brightness (nits)', key: 'brightness_nits', type: 'number', required: false, width: 'third' },
 
@@ -161,7 +161,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: '2nd Pixel Density (PPI)', key: 'second_screen_ppi', type: 'number', required: false, width: 'half', visualStyle: 'computed', note: 'Auto-calculated', optionalGroup: 'second_screen' },
 
             { label: '2nd Panel Type', key: 'second_screen_display_type', type: 'select', required: false, width: 'third', optionalGroup: 'second_screen',
-              options: ['IPS LCD', 'OLED', 'AMOLED', 'TN LCD', 'Mini-LED', 'Micro-LED', 'TFT LCD'] },
+              options: ['IPS LCD', 'LTPS LCD', 'OLED', 'AMOLED', 'TN LCD', 'VA LCD', 'Mini-LED', 'Micro-LED', 'TFT LCD'] },
             { label: '2nd Refresh Rate (Hz)', key: 'second_screen_refresh_rate', type: 'number', required: false, width: 'third', optionalGroup: 'second_screen' },
             { label: '2nd Brightness (nits)', key: 'second_screen_nits', type: 'number', required: false, width: 'third', optionalGroup: 'second_screen' },
 

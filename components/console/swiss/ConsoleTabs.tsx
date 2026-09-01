@@ -19,6 +19,8 @@ interface Props {
      * extra vertical space on a page that is already long. */
     device?: {
         name: string;
+        /** Thumbnail for the bar. Same shot as the fold, so the two agree. */
+        imageUrl?: string | null;
         brand?: string | null;
         variantName?: string | null;
         price?: number | null;
@@ -77,6 +79,18 @@ const ConsoleTabs: FC<Props> = ({ tabs, device }) => {
                                     motion-reduce:transition-none ${scrolled ? 'max-w-[420px] opacity-100 mr-2' : 'max-w-0 opacity-0'}`}
                         aria-hidden={!scrolled}
                     >
+                        {device.imageUrl ? (
+                            /* eslint-disable-next-line @next/next/no-img-element */
+                            <img
+                                src={device.imageUrl}
+                                alt=""
+                                loading="lazy"
+                                decoding="async"
+                                className="rc-bed h-7 w-7 shrink-0 self-center border border-white/10 object-contain p-0.5"
+                            />
+                        ) : (
+                            <span className="rc-bed h-7 w-7 shrink-0 self-center border border-white/10" aria-hidden="true" />
+                        )}
                         <span className="font-mono text-[12.5px] text-white truncate">{device.name}</span>
                         {device.variantName && (
                             <span className="font-mono text-[9.5px] uppercase tracking-wider text-violet-400 shrink-0">

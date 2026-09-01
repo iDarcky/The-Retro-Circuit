@@ -39,7 +39,7 @@ export default function FabricatorListClient({ manufacturers }: Props) {
 
     // Scroll to top on page change
     useEffect(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        (document.querySelector<HTMLElement>('[data-scroll-root]') ?? window).scrollTo({ top: 0, behavior: 'smooth' });
     }, [page]);
 
     const totalPages = Math.ceil(filteredManufacturers.length / ITEMS_PER_PAGE);

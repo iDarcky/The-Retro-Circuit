@@ -966,3 +966,46 @@ export const addConsoleVendorLink = async (
         return { success: false, message: e.message };
     }
 };
+
+/**
+ * Newest still-sold device from the same brand.
+ *
+ * A discontinued console page has no buy path and nothing to click, which makes it a
+ * dead end for the reader and worth nothing commercially. This is what they actually
+ * came for: the model that replaced it. Anon client, so the page stays static.
+ */
+export const fetchSuccessor = async (
+    manufacturerId: string | null | undefined,
+    excludeConsoleId: string,
+): Promise<{ name: string; slug: string } | null> => {
+    if (!manufacturerId) return null;
+    try {
+        const { data, error } = await supabaseAnon
+            .from('consoles')
+            .select('name, slug, variants:console_variants(release_date)')
+            .eq('manufacturer_id', manufacturerId)
+            .eq('status', 'published')
+            .neq('id', excludeConsoleId)
+            .neq('release_status', 'discontinued');
+        if (error) throw error;
+
+        const dated = (data || []).map((c: any) => ({
+            name: c.name,
+            slug: c.slug,
+            released: (c.variants || [])
+                .map((v: any) => v.release_date)
+                .filter(Boolean)
+                .sort()
+                .slice(-1)[0] ?? '',
+        }));
+        if (dated.length === 0) return null;
+
+        // Newest first; undated sinks rather than winning on an empty string.
+        dated.sort((a, b) => (b.released || '').localeCompare(a.released || ''));
+        const best = dated[0];
+        return best ? { name: best.name, slug: best.slug } : null;
+    } catch (e: any) {
+        console.error('[API] fetchSuccessor error:', e?.message ?? e);
+        return null;
+    }
+};

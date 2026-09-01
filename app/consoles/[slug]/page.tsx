@@ -1,7 +1,7 @@
 import { cache } from 'react';
 import { notFound } from 'next/navigation';
 import { fetchConsoleBySlug } from '../../../app/actions';
-import { fetchConsoleList, fetchConsoleImages } from '../../../app/actions/consoles';
+import { fetchConsoleList, fetchConsoleImages, fetchSuccessor } from '../../../app/actions/consoles';
 import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
 import { fetchCatalogueStats } from '../../actions/scoring';
 import { circuitScore } from '../../../lib/scoring/circuit-score';
@@ -137,6 +137,11 @@ export default async function ConsoleSpecsPage(props: Props) {
   // Catalogue-wide distributions for the Circuit Score standings. Anon client, so the
   // page stays static and the comparison set is what a visitor can actually browse.
   const catalogueStats = await fetchCatalogueStats();
+
+  // Only looked up for discontinued devices, which are the only pages that need it.
+  const successor = (consoleData as any).release_status === 'discontinued'
+    ? await fetchSuccessor((consoleData as any).manufacturer_id, (consoleData as any).id)
+    : null;
 
   // Generate JSON-LD Product Schema
   const mfgName = consoleData.manufacturer?.name || '';
@@ -283,7 +288,7 @@ export default async function ConsoleSpecsPage(props: Props) {
       />
       {/* Gallery feeds the hero frame directly — a separate section below the fold
           duplicated the cover shot and buried the extra angles. */}
-      <ConsoleDetailView consoleData={consoleData} galleryImages={galleryImages} catalogueStats={catalogueStats} />
+      <ConsoleDetailView consoleData={consoleData} galleryImages={galleryImages} catalogueStats={catalogueStats} successor={successor} />
     </>
   );
 }

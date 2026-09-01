@@ -75,9 +75,10 @@ export default function FabricatorDetailClient({ profile, consoles }: Props) {
     // Scroll to top on page change
     useEffect(() => {
         // Only scroll if we are not at the top to avoid jarring jumps on initial load if navigated to anchor
-        if (window.scrollY > 500) {
-            window.scrollTo({ top: 500, behavior: 'smooth' }); // Scroll to roughly the list start
-        }
+        // The shell scrolls an inner div, so window.scrollTo is a no-op here.
+        const root = document.querySelector<HTMLElement>('[data-scroll-root]');
+        if (root && root.scrollTop > 500) root.scrollTo({ top: 500, behavior: 'smooth' });
+        else if (!root && window.scrollY > 500) window.scrollTo({ top: 500, behavior: 'smooth' });
     }, [page]);
 
     // Filter & Sort Logic

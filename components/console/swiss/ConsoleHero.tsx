@@ -35,6 +35,8 @@ interface Props {
     onShare: () => void;
     shareCopied: boolean;
     catalogueStats?: CatalogueStats;
+    /** Newest still-sold device from the same brand, shown when this one is discontinued. */
+    successor?: { name: string; slug: string } | null;
     /**
      * Rendered under the image, in the left column.
      *
@@ -64,7 +66,7 @@ const Chip: FC<{ children: React.ReactNode; tone?: 'violet' | 'cyan' | 'orange' 
 
 const ConsoleHero: FC<Props> = ({
     consoleData, specs, variant, profile, shots, heroIndex, onHeroIndex,
-    isPixelFallback, compareUrl, onShare, shareCopied, catalogueStats, belowImage,
+    isPixelFallback, compareUrl, onShare, shareCopied, catalogueStats, belowImage, successor,
 }) => {
     const brand = consoleData.manufacturer?.name;
     const brandSlug = consoleData.manufacturer?.slug;
@@ -126,7 +128,12 @@ const ConsoleHero: FC<Props> = ({
         ?? (specs.weight_g ? `${Math.round(Number(specs.weight_g))} g` : null)
         ?? (specs.body_material ? String(specs.body_material) : null);
 
-    const buy = pickBuyTarget({
+    /* A discontinued device has nowhere to buy it, and an affiliate link that leads to a
+     * dead listing or an unrelated search is worse than none. Say so, and point at the
+     * current generation instead, which is what the reader actually wants. */
+    const discontinued = (consoleData as any).release_status === 'discontinued';
+
+    const buy = discontinued ? null : pickBuyTarget({
         asin: variant?.amazon_asin,
         name: consoleData.name,
         manufacturer: brand,
@@ -296,6 +303,16 @@ const ConsoleHero: FC<Props> = ({
                         >
                             Add to Arena
                         </Link>
+                        {discontinued && (
+                            <div className="flex-1 min-w-[150px] flex flex-col items-center justify-center px-4 py-2.5
+                                            border border-dashed border-white/15 text-gray-500 font-mono text-[11px]
+                                            uppercase tracking-widest text-center">
+                                <span>Discontinued</span>
+                                <span className="text-[9px] tracking-wider opacity-70 normal-case mt-0.5">
+                                    no longer sold new
+                                </span>
+                            </div>
+                        )}
                         {buy && (
                             <a
                                 href={buy.url}
@@ -332,6 +349,25 @@ const ConsoleHero: FC<Props> = ({
                     </div>
 
                     {buy && <AffiliateDisclosure className="mt-3" />}
+                    {discontinued && successor && (
+                        <Link
+                            href={`/consoles/${successor.slug}`}
+                            className="group mt-3 flex items-center justify-between gap-3 border border-white/10 px-4 py-3
+                                       hover:border-violet-500/60 hover:bg-violet-500/[0.06] transition-colors"
+                        >
+                            <span className="min-w-0">
+                                <span className="block font-mono text-[9px] uppercase tracking-[0.2em] text-gray-500 mb-1">
+                                    Current model
+                                </span>
+                                <span className="block font-mono text-[12.5px] text-white truncate group-hover:text-violet-300 transition-colors">
+                                    {successor.name}
+                                </span>
+                            </span>
+                            <span className="font-mono text-[10px] uppercase tracking-widest text-violet-400 shrink-0">
+                                View &rarr;
+                            </span>
+                        </Link>
+                    )}
                 </div>
             </div>
 

@@ -53,7 +53,7 @@ const ConsoleVaultClient: FC<ConsoleVaultClientProps> = ({ initialManufacturers,
 
     // Scroll to top on page change
     useEffect(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        (document.querySelector<HTMLElement>('[data-scroll-root]') ?? window).scrollTo({ top: 0, behavior: 'smooth' });
     }, [page]);
 
     // Client-Side Filter Logic
