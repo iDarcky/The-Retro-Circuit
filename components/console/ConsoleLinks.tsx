@@ -36,10 +36,16 @@ function isAmazon(url: string): boolean {
  * we do not pass ranking signal to 100+ external domains from every console page.
  */
 export default function ConsoleLinks({ links, productName, manufacturerName }: ConsoleLinksProps) {
+    /* Review links are not rendered.
+     *
+     * The `video_review` and `written_review` rows came in with the spreadsheet import,
+     * point at other people's videos, and have no admin screen to curate or remove them
+     * one by one. Publishing an uncurated list of competitors on our own product pages
+     * is a decision, and it should be made deliberately in an editor rather than
+     * inherited from an import. The rows stay in console_links; nothing reads them. */
     if (!links?.length) return null;
 
     const sorted = [...links].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
-    const reviews = sorted.filter((l) => l.kind === 'video_review' || l.kind === 'written_review');
     const vendors = sorted.filter((l) => l.kind === 'vendor' || l.kind === 'official');
 
     return (
@@ -89,33 +95,6 @@ export default function ConsoleLinks({ links, productName, manufacturerName }: C
                                 </li>
                             );
                         })}
-                    </ul>
-                </section>
-            )}
-
-            {reviews.length > 0 && (
-                <section>
-                    <h3 className="font-pixel text-xs text-white uppercase tracking-widest mb-4 border-b border-white/10 pb-2">
-                        Reviews
-                    </h3>
-                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        {reviews.map((link) => (
-                            <li key={link.id}>
-                                <a
-                                    href={link.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer nofollow"
-                                    className="flex items-center justify-between gap-3 p-3 border border-white/10 hover:bg-white/[0.04] hover:border-cyan-500/40 transition-colors"
-                                >
-                                    <span className="font-mono text-[11px] text-gray-300 truncate">
-                                        {link.label || link.url}
-                                    </span>
-                                    <span className="shrink-0 font-mono text-[9px] text-cyan-500/70 uppercase tracking-wider">
-                                        {link.kind === 'video_review' ? 'Video' : 'Article'}
-                                    </span>
-                                </a>
-                            </li>
-                        ))}
                     </ul>
                 </section>
             )}

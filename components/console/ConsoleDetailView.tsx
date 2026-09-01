@@ -260,7 +260,10 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                 </Section>
 
                 {/* ROW 4: LINKS — reviews and retail */}
-                {consoleData.links && consoleData.links.length > 0 && (
+                {/* Guard on what ConsoleLinks will actually draw, not on the raw rows:
+                    a console whose only links are imported reviews would otherwise render
+                    an empty section with a heading. */}
+                {(consoleData.links ?? []).some(l => l.kind === 'vendor' || l.kind === 'official') && (
                     <Section id="links" eyebrow="Reviews and retail" title="ELSEWHERE">
                         <ConsoleLinks
                             links={consoleData.links}
