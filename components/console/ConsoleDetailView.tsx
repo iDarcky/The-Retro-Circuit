@@ -216,6 +216,7 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                             variants={variants}
                             selectedId={selectedVariantId}
                             onSelect={handleVariantChange}
+                            consoleSlug={consoleData.slug}
                         />
                     </Section>
                 )}

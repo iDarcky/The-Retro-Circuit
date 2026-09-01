@@ -5,6 +5,7 @@ export const dynamicParams = true;
 
 import { supabaseAnon } from '../../../lib/supabase/anon';
 import { fetchArenaPairs } from '../../../lib/arena/pairs';
+import { parseToken, splitVersus, buildArenaToken } from '../../../lib/arena/resolve';
 import ArenaComparisonClient from '../../../components/arena/ArenaComparisonClient';
 
 /* Build the comparison pages instead of waiting for a visitor to ask for one.
@@ -29,37 +30,55 @@ function normalizeVariant(v: any): any {
 export async function generateMetadata({ params }: { params: Promise<{ versus?: string[] }> }) {
     const { versus } = await params;
 
-    if (!versus || versus.length === 0) {
-        return { title: 'Arena VS | Compare Any Two Handhelds | The Retro Circuit', description: 'Pick any two retro handhelds and compare them head-to-head. Specs, performance, price, and emulation targets.' };
-    }
+    const hub = {
+        title: 'Arena VS | Compare Any Two Handhelds | The Retro Circuit',
+        description: 'Pick any two retro handhelds and compare them head-to-head. Specs, performance, price, and emulation targets.',
+    };
+    if (!versus || versus.length === 0) return hub;
 
-    const parts = versus[0].split('-vs-');
+    const parts = splitVersus(versus[0]);
+    if (!parts) return hub;
 
-    // Basic title if not fully parseable yet
-    if (parts.length !== 2) return { title: 'Arena VS | Compare Any Two Handhelds | The Retro Circuit', description: 'Pick any two retro handhelds and compare them head-to-head. Specs, performance, price, and emulation targets.' };
+    // Resolving here as well as in the page means a legacy hyphen URL canonicalises onto
+    // the `~` form rather than declaring itself canonical, so the two do not compete.
+    const { data: index } = await supabaseAnon
+        .from('consoles')
+        .select('slug, name, manufacturer:manufacturer(name)')
+        .eq('status', 'published');
+    const rows = (index ?? []) as any[];
+    const slugSet = new Set(rows.map(r => r.slug));
+    const nameOf = new Map(rows.map(r => {
+        const mfg = Array.isArray(r.manufacturer) ? r.manufacturer[0] : r.manufacturer;
+        return [r.slug, [mfg?.name, r.name].filter(Boolean).join(' ')];
+    }));
 
-    // Simply format the slugs for the title (capitalized)
-    const formatName = (s: string) => s.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-    const name1 = formatName(parts[0]);
-    const name2 = formatName(parts[1]);
+    const sides = parts.map(tok => {
+        const parsed = parseToken(tok, slugSet);
+        if (!parsed) return { token: tok, label: tok.replace(/[-~]/g, ' ').trim() };
+        const base = nameOf.get(parsed.consoleSlug) ?? parsed.consoleSlug.replace(/-/g, ' ');
+        // Configuration slugs are terse ("12256"), so they ride along in parentheses
+        // rather than being spelled out as if they were words.
+        const label = parsed.variantSlug ? `${base} (${parsed.variantSlug.replace(/-/g, ' ')})` : base;
+        return { token: buildArenaToken(parsed.consoleSlug, parsed.variantSlug), label };
+    });
 
+    const [a, b] = sides;
+    const sameDevice = parts.length === 2
+        && parseToken(parts[0], slugSet)?.consoleSlug === parseToken(parts[1], slugSet)?.consoleSlug;
 
-    const sortedSlugs = [parts[0], parts[1]].sort();
-    const canonicalPath = `/arena/${sortedSlugs[0]}-vs-${sortedSlugs[1]}`;
+    const title = sameDevice
+        ? `${a.label} vs ${b.label}: which configuration to buy | The Retro Circuit`
+        : `${a.label} vs ${b.label} | The Retro Circuit`;
+    const description = sameDevice
+        ? `Two configurations of the same device compared: what changes between ${a.label} and ${b.label}, and what the step costs.`
+        : `Head-to-head spec comparison: ${a.label} vs ${b.label}. Performance, price, and emulation targets.`;
 
     return {
-        // Now allowing indexing with canonical tag pointing to alphabetically sorted URL
-        title: `${name1} vs ${name2} | The Retro Circuit`,
-        description: `Head-to-head spec comparison: ${name1} vs ${name2}. Performance, price, and emulation targets.`,
-        alternates: {
-            canonical: canonicalPath,
-        },
-        openGraph: {
-            title: `${name1} vs ${name2} | The Retro Circuit Arena`,
-            description: `Head-to-head spec comparison: ${name1} vs ${name2}.`,
-        }
+        title,
+        description,
+        alternates: { canonical: `/arena/${[a.token, b.token].sort().join('-vs-')}` },
+        openGraph: { title, description },
     };
-
 }
 
 /**
@@ -93,90 +112,43 @@ export default async function ArenaVersusPage({ params }: { params: Promise<{ ve
     }
 
     const supabase = supabaseAnon;
-    const parts = versus[0].split('-vs-');
+    const parts = splitVersus(versus[0]) ?? [versus[0], ''];
 
-    const resolveSlug = async (supabase: any, raw: string) => {
-        if (!raw || raw === 'select') return { p: null, v: null, details: null, variant: null };
+    /* One index fetch, then pure parsing.
+     *
+     * This replaced three overlapping heuristics that each hit the database, the last of
+     * which walked hyphens right to left issuing a query per position. It was ambiguous
+     * as well as slow: `anbernic-rg-vita-pro` is both a console and the Vita's Pro
+     * configuration, and the console always won, so that configuration had no URL. See
+     * lib/arena/resolve.ts for why the separator is `~`.
+     */
+    const { data: index } = await supabase
+        .from('consoles')
+        .select('id, slug')
+        .eq('status', 'published');
+    const bySlug = new Map<string, string>((index ?? []).map((c: any) => [c.slug, c.id]));
+    const slugSet = new Set(bySlug.keys());
 
-        // --- Step 1: Lightweight lookup ---
-        const { data: lookupList } = await supabase
-            .from('consoles')
-            .select('id, slug, manufacturer:manufacturer(slug, name)');
+    const resolveSlug = async (_supabase: any, raw: string) => {
+        const parsed = parseToken(raw, slugSet);
+        if (!parsed) return { p: raw, v: null, details: null, variant: null };
 
-        if (lookupList) {
-            let matchedId: string | null = null;
-            let matchedVariantSlug: string | null = null;
+        const consoleId = bySlug.get(parsed.consoleSlug);
+        if (!consoleId) return { p: raw, v: null, details: null, variant: null };
 
-            for (const c of lookupList) {
-                const mfgSlug = (c.manufacturer as any)?.slug
-                    || ((c.manufacturer as any)?.name ? (c.manufacturer as any).name.toLowerCase().replace(/\s+/g, '-') : 'unknown');
-                const baseStr = `${mfgSlug}-${c.slug}`;
+        const fullConsole = await fetchFullConsole(supabase, consoleId);
+        if (!fullConsole) return { p: raw, v: null, details: null, variant: null };
 
-                if (raw === baseStr) {
-                    matchedId = c.id;
-                    break;
-                } else if (raw.startsWith(baseStr + '-')) {
-                    matchedId = c.id;
-                    matchedVariantSlug = raw.substring(baseStr.length + 1);
-                    break;
-                }
-            }
+        // An unknown variant slug falls back to the default rather than 404ing: the
+        // console is still the right page to show.
+        const variant = (parsed.variantSlug
+            ? fullConsole.variants?.find((v: any) => v.slug === parsed.variantSlug)
+            : null)
+            ?? fullConsole.variants?.find((v: any) => v.is_default)
+            ?? fullConsole.variants?.[0]
+            ?? null;
 
-            if (matchedId) {
-                const fullConsole = await fetchFullConsole(supabase, matchedId);
-                if (fullConsole) {
-                    let variantMatch = null;
-                    if (matchedVariantSlug) {
-                        variantMatch = fullConsole.variants?.find((v: any) => v.slug === matchedVariantSlug);
-                    }
-                    if (!variantMatch) {
-                        variantMatch = fullConsole.variants?.find((v: any) => v.is_default) || fullConsole.variants?.[0];
-                    }
-                    return { p: raw, v: matchedVariantSlug, details: fullConsole, variant: variantMatch || null };
-                }
-            }
-        }
-
-        // --- Step 2: Fallback — legacy direct slug match ---
-        const { data: legacyMatch } = await supabase
-            .from('consoles')
-            .select('id')
-            .eq('slug', raw)
-            .maybeSingle();
-
-        if (legacyMatch) {
-            const fullConsole = await fetchFullConsole(supabase, legacyMatch.id);
-            if (fullConsole) {
-                const defaultVar = fullConsole.variants?.find((v: any) => v.is_default) || fullConsole.variants?.[0];
-                return { p: raw, v: null, details: fullConsole, variant: defaultVar || null };
-            }
-        }
-
-        // --- Step 3: Fallback — legacy slug-variant split (walk hyphens) ---
-        let lastIndex = raw.lastIndexOf('-');
-        while (lastIndex > 0) {
-            const potentialConsole = raw.substring(0, lastIndex);
-            const potentialVariant = raw.substring(lastIndex + 1);
-
-            const { data: cMatch } = await supabase
-                .from('consoles')
-                .select('id')
-                .eq('slug', potentialConsole)
-                .maybeSingle();
-
-            if (cMatch) {
-                const fullConsole = await fetchFullConsole(supabase, cMatch.id);
-                if (fullConsole) {
-                    const vMatch = fullConsole.variants?.find((v: any) => v.slug === potentialVariant);
-                    if (vMatch) {
-                        return { p: potentialConsole, v: potentialVariant, details: fullConsole, variant: vMatch };
-                    }
-                }
-            }
-            lastIndex = raw.lastIndexOf('-', lastIndex - 1);
-        }
-
-        return { p: raw, v: null, details: null, variant: null };
+        return { p: parsed.consoleSlug, v: variant?.slug ?? null, details: fullConsole, variant };
     };
     const [r1, r2] = await Promise.all([
         parts[0] ? resolveSlug(supabase, parts[0]) : Promise.resolve(null),

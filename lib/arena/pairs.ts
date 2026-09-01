@@ -1,4 +1,5 @@
 import { supabaseAnon } from '../supabase/anon';
+import { buildArenaToken } from './resolve';
 
 /* Which comparison pages to build ahead of time.
  *
@@ -11,15 +12,20 @@ import { supabaseAnon } from '../supabase/anon';
  * nonsense ("Steam Deck vs SF2000") that would bury the useful ones in thin duplicates.
  * Four rules, each matching a way people actually shop:
  *
- *   1. Successive devices from one brand      "Pocket 5 vs Pocket 6"
- *   2. Any two recent devices from one brand  "Odin 2 Mini vs Odin 3"
- *   3. Cross-brand at a comparable price      "Pocket 6 vs Odin 3"
- *   4. Pairs named in Search Console
+ *   1. Configurations of one device           "Thor 8/128 vs Thor 12/256"
+ *   2. Successive devices from one brand      "Pocket 5 vs Pocket 6"
+ *   3. Any two recent devices from one brand  "Odin 2 Mini vs Odin 3"
+ *   4. Cross-brand at a comparable price      "Pocket 6 vs Odin 3"
+ *   5. Pairs named in Search Console
+ *
+ * Rule 1 is the one nobody else can answer. Retro Catalog lists the base model, or the
+ * Pro if there is one, so "which Thor should I buy" has no page anywhere. It goes first
+ * so it always survives the cap.
  *
  * Slugs are emitted alphabetically sorted, matching the canonical the page already sets.
  */
 
-/** Pairs the query data names outright. Kept first so they always survive the cap. */
+/** Pairs the query data names outright. Added first so they always survive the cap. */
 const SEARCHED_PAIRS: [string, string][] = [
     ['ayn-odin-2-mini', 'ayn-odin-3'],
     ['ayaneo-pocket-s-1080p', 'ayn-odin-3'],
@@ -35,11 +41,11 @@ const RECENT_PER_BRAND = 6;
 const PRICE_TOLERANCE = 0.3;
 /* Hard ceiling, so a growing catalogue cannot explode the build.
  *
- * At 76 published consoles the rules produce 459 pairs: 113 within-brand and 346
- * cross-brand. The cap is a safety valve for growth, not a quality filter, so it sits
- * above that. Insertion order is searched -> within-brand -> cross-brand, so if it ever
- * does bite it drops the weakest pairs first. */
-const MAX_PAIRS = 600;
+ * At 76 published consoles the rules produce roughly 550 pairs once configurations are
+ * included. The cap is a safety valve for growth, not a quality filter, so it sits above
+ * that. Insertion order is searched -> configurations -> within-brand -> cross-brand, so
+ * if it ever does bite it drops the weakest pairs first. */
+const MAX_PAIRS = 900;
 
 interface PairRow {
     slug: string;
@@ -57,9 +63,34 @@ export async function fetchArenaPairs(): Promise<string[]> {
     try {
         const { data, error } = await supabaseAnon
             .from('consoles')
-            .select('slug, manufacturer:manufacturer(name), variants:console_variants(price_launch_usd, price_avg_usd, release_date)')
+            .select('slug, manufacturer:manufacturer(name), variants:console_variants(slug, is_default, price_launch_usd, price_avg_usd, release_date)')
             .eq('status', 'published');
         if (error) throw error;
+
+        /* --- 1: configurations of the same device, cheapest first.
+         *
+         * Only where the variants carry slugs to address them with, and capped per
+         * device: a device with six configurations would otherwise contribute fifteen
+         * pages of diminishing value. Consecutive steps plus the full spread are the two
+         * comparisons a buyer actually makes. */
+        for (const c of (data || []) as any[]) {
+            const withSlugs = (c.variants || [])
+                .filter((v: any) => v.slug)
+                .map((v: any) => ({
+                    slug: v.slug,
+                    price: v.price_avg_usd || v.price_launch_usd || 0,
+                }))
+                .sort((a: any, b: any) => (a.price || Infinity) - (b.price || Infinity));
+            if (withSlugs.length < 2) continue;
+
+            const token = (v: any) => buildArenaToken(c.slug, v.slug);
+            for (let i = 0; i + 1 < withSlugs.length; i++) {
+                pairs.add(key(token(withSlugs[i]), token(withSlugs[i + 1])));
+            }
+            if (withSlugs.length > 2) {
+                pairs.add(key(token(withSlugs[0]), token(withSlugs[withSlugs.length - 1])));
+            }
+        }
 
         const rows: PairRow[] = (data || []).map((c: any) => {
             const variants = c.variants || [];
@@ -76,7 +107,7 @@ export async function fetchArenaPairs(): Promise<string[]> {
             };
         }).filter((r: PairRow) => Boolean(r.slug));
 
-        // --- 1 & 2: within a brand, newest first.
+        // --- 2 & 3: within a brand, newest first.
         const byBrand = new Map<string, PairRow[]>();
         for (const r of rows) {
             if (!byBrand.has(r.brand)) byBrand.set(r.brand, []);
@@ -101,7 +132,7 @@ export async function fetchArenaPairs(): Promise<string[]> {
             }
         }
 
-        // --- 3: cross-brand, but only where the price makes them genuine alternatives.
+        // --- 4: cross-brand, but only where the price makes them genuine alternatives.
         const priced = rows.filter(r => r.price && r.price > 0);
         for (let i = 0; i < priced.length; i++) {
             for (let j = i + 1; j < priced.length; j++) {

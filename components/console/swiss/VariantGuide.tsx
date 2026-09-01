@@ -1,6 +1,8 @@
 'use client';
 
 import { type FC } from 'react';
+import Link from 'next/link';
+import { buildArenaToken, buildArenaPath } from '../../../lib/arena/resolve';
 import type { ConsoleVariant } from '../../../lib/types';
 
 /* Which configuration to actually buy.
@@ -53,7 +55,9 @@ const VariantGuide: FC<{
     variants: ConsoleVariant[];
     selectedId?: string;
     onSelect?: (id: string) => void;
-}> = ({ variants, selectedId, onSelect }) => {
+    /** Needed to build the configuration comparison URLs. */
+    consoleSlug?: string;
+}> = ({ variants, selectedId, onSelect, consoleSlug }) => {
     if (!variants || variants.length < 2) return null;
 
     // Cheapest first, so the price steps read as upgrades rather than an arbitrary order.
@@ -67,6 +71,16 @@ const VariantGuide: FC<{
     });
 
     const base = priceOf(ordered[0]);
+
+    /* Consecutive pairs, cheapest upward: the comparison a buyer actually makes is
+     * "is the next one up worth it", not every combination against every other. */
+    const steps: [{ slug: string; name: string; price: number | null }, { slug: string; name: string; price: number | null }][] = [];
+    const addressable = ordered
+        .map(v => ({ slug: (v as any).slug as string | undefined, name: v.variant_name || 'Base', price: priceOf(v) }))
+        .filter((v): v is { slug: string; name: string; price: number | null } => Boolean(v.slug));
+    for (let i = 0; i + 1 < addressable.length; i++) {
+        steps.push([addressable[i], addressable[i + 1]]);
+    }
 
     if (rows.length === 0) {
         return (
@@ -144,6 +158,38 @@ const VariantGuide: FC<{
                 Only the specs that change between configurations are shown. Values in white
                 differ from the cheapest option. Pick one to update the rest of the page.
             </p>
+
+            {/* Each step up, as its own comparison page.
+             *
+             * These are the pages nothing else on the internet has: a competitor that
+             * lists the base model, or the Pro if there is one, cannot compare two
+             * configurations of the same device. The consecutive steps are the ones
+             * prebuilt in lib/arena/pairs.ts, so every link here lands on static HTML. */}
+            {consoleSlug && steps.length > 0 && (
+                <div className="mt-5">
+                    <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-gray-500 mb-2.5">
+                        Compare the steps
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        {steps.map(([a, b]) => (
+                            <Link
+                                key={`${a.slug}-${b.slug}`}
+                                href={buildArenaPath(
+                                    buildArenaToken(consoleSlug, a.slug),
+                                    buildArenaToken(consoleSlug, b.slug),
+                                )}
+                                className="flex items-center gap-2 border border-white/10 px-3 py-2 font-mono text-[10.5px]
+                                           text-gray-400 hover:border-violet-500/60 hover:text-violet-300 transition-colors"
+                            >
+                                <span>{a.name} vs {b.name}</span>
+                                {a.price && b.price && (
+                                    <span className="text-[9px] text-emerald-400 tabular-nums">+${b.price - a.price}</span>
+                                )}
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
