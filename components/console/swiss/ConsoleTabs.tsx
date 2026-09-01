@@ -10,8 +10,6 @@ export interface TabDef { id: string; label: string }
 
 interface Props {
     tabs: TabDef[];
-    /** Sits under the site header when the bar sticks. Matches the header height. */
-    offsetClass?: string;
     /* Identity, revealed inside this same bar once the fold scrolls away.
      *
      * This was briefly a second fixed bar of its own, which pinned to the same offset as
@@ -28,9 +26,30 @@ interface Props {
     };
 }
 
-const ConsoleTabs: FC<Props> = ({ tabs, offsetClass = 'top-[48px] md:top-[64px]', device }) => {
+const ConsoleTabs: FC<Props> = ({ tabs, device }) => {
     const [active, setActive] = useState(tabs[0]?.id);
     const [scrolled, setScrolled] = useState(false);
+
+    /* Stick directly beneath the site header, measured rather than guessed.
+     *
+     * This was a hardcoded top-[48px] md:top-[64px], which missed both headers by the
+     * 2px violet border and left page content visible in the seam. Measuring means it
+     * also survives anyone changing the header height later. Both headers are in the DOM
+     * with one hidden per breakpoint, so the taller of the two is the live one. */
+    const [headerH, setHeaderH] = useState(66);
+
+    useEffect(() => {
+        const measure = () => {
+            const els = Array.from(document.querySelectorAll<HTMLElement>('[data-site-header]'));
+            const h = Math.max(0, ...els.map(el => el.getBoundingClientRect().height));
+            if (h > 0) setHeaderH(Math.round(h));
+        };
+        measure();
+        const ro = new ResizeObserver(measure);
+        document.querySelectorAll('[data-site-header]').forEach(el => ro.observe(el));
+        window.addEventListener('resize', measure);
+        return () => { ro.disconnect(); window.removeEventListener('resize', measure); };
+    }, []);
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 420);
@@ -64,12 +83,16 @@ const ConsoleTabs: FC<Props> = ({ tabs, offsetClass = 'top-[48px] md:top-[64px]'
     const go = (id: string) => {
         const el = document.getElementById(id);
         if (!el) return;
-        const y = el.getBoundingClientRect().top + window.scrollY - 110;
+        // Clear the site header and this bar, plus a little breathing room.
+        const y = el.getBoundingClientRect().top + window.scrollY - (headerH + 60);
         window.scrollTo({ top: y, behavior: 'smooth' });
     };
 
     return (
-        <div className={`sticky ${offsetClass} z-30 bg-[#09090b]/95 backdrop-blur-md border-b border-white/10 mt-10`}>
+        <div
+            style={{ top: headerH }}
+            className="sticky z-30 bg-[#09090b] border-b border-white/10 mt-10"
+        >
             <div className="max-w-[1600px] mx-auto px-4 md:px-8 flex items-center gap-4">
                 {device && (
                     <div

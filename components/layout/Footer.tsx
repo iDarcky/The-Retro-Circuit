@@ -36,7 +36,13 @@ const Footer: FC<FooterProps> = ({ version }) => {
              The Retro Circuit
            </Link>
            <span className="text-[10px]">© {currentYear} All Rights Reserved.</span>
+           {/* Amazon specifies this sentence verbatim. The second one covers the other
+               retailers, which Amazon's wording does not. */}
            <span className="text-[10px]">As an Amazon Associate I earn from qualifying purchases.</span>
+           <span className="text-[10px] text-zinc-600">
+             Some other retailer links may also earn a commission. It never affects what we
+             list, how devices rank, or the specs we publish.
+           </span>
            <button
              onClick={reset}
              className="text-[10px] uppercase text-zinc-600 hover:text-zinc-400 transition-colors cursor-pointer text-left"

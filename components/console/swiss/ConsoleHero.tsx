@@ -119,6 +119,13 @@ const ConsoleHero: FC<Props> = ({
     /* A button that says "Check Price" and silently runs an Amazon search for a device
      * Amazon does not stock is worse than no button. Name the retailer, show the price we
      * hold, and mark a search as a search. */
+    const dims = [specs.width_mm, specs.height_mm, specs.depth_mm].every(Boolean)
+        ? `${specs.width_mm} x ${specs.height_mm} x ${specs.depth_mm} mm`
+        : null;
+    const cornerFact = dims
+        ?? (specs.weight_g ? `${Math.round(Number(specs.weight_g))} g` : null)
+        ?? (specs.body_material ? String(specs.body_material) : null);
+
     const buy = pickBuyTarget({
         asin: variant?.amazon_asin,
         name: consoleData.name,
@@ -182,7 +189,11 @@ const ConsoleHero: FC<Props> = ({
                         <span className="absolute bottom-3 left-3 font-mono text-[10px] tracking-widest text-white/25 uppercase">
                             {[consoleData.form_factor, specs.screen_size_inch ? `${specs.screen_size_inch}"` : null].filter(Boolean).join(' · ')}
                         </span>
-                        <span className="absolute bottom-3 right-3 font-mono text-[10px] tracking-widest text-white/25">SCALE 1:1</span>
+                        {cornerFact && (
+                            <span className="absolute bottom-3 right-3 font-mono text-[10px] tracking-widest text-white/25 uppercase">
+                                {cornerFact}
+                            </span>
+                        )}
                     </div>
 
                     {shots.length > 1 && (

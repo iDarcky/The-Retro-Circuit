@@ -18,7 +18,7 @@ export default function DesktopHeader() {
   ];
 
   return (
-    <div className="sticky top-0 z-50 flex flex-col bg-bg-primary border-b-2 border-violet-500">
+    <div data-site-header className="sticky top-0 z-50 flex flex-col bg-bg-primary border-b-2 border-violet-500">
       <nav className="hidden md:flex h-16 items-stretch divide-x divide-border-subtle">
 
           {/* LEFT: Logo - Grid Cell 1 */}
