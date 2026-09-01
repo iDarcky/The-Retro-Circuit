@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { addConsoleVariant, updateConsoleVariant, getVariantsByConsole } from '../../app/actions';
 import { purgeCache } from '../../app/actions/revalidate';
 import { ConsoleVariantSchema, VariantInputProfileSchema, VARIANT_FORM_GROUPS, ConsoleVariant } from '../../lib/types';
+import { SHEET_STEPS, SHEET_ELSEWHERE, SHEET_PREAMBLE_KEYS, sheetLeftovers } from '../../lib/config/sheet-order';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';
 import ImageUpload from '../ui/ImageUpload';
@@ -42,6 +43,16 @@ const SECOND_SCREEN_KEYS = [
 // how `system_button_set` broke the editor.
 const INPUT_PROFILE_KEYS = Object.keys(VariantInputProfileSchema.shape);
 
+/* Every field, by key, so the sheet layout can pull them in its own order without
+ * duplicating a single definition. Both layouts render the same objects. */
+const FIELDS_BY_KEY: Record<string, any> = Object.fromEntries(
+    (VARIANT_FORM_GROUPS as any[])
+        .flatMap(g => g.fields)
+        .filter((f: any) => f.key)
+        .map((f: any) => [f.key, f]),
+);
+const ALL_FIELD_KEYS = Object.keys(FIELDS_BY_KEY);
+
 const CLOCK_FIELD_KEYS = ['cpu_clock_min_mhz', 'cpu_clock_max_mhz', 'gpu_clock_min_mhz', 'gpu_clock_mhz'] as const;
 
 const DATE_PATTERNS = {
@@ -74,6 +85,10 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     const isEditMode = !!initialData;
     const [showEmulationForm, setShowEmulationForm] = useState(false);
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+    /* Two layouts over one form. Grouped is the default and organises by subsystem;
+     * sheet follows the import spreadsheet's column order so a row can be typed straight
+     * down without hunting between sections. Same fields, same state, same save. */
+    const [layout, setLayout] = useState<'grouped' | 'sheet'>('grouped');
 
     const [existingVariants, setExistingVariants] = useState<ConsoleVariant[]>([]);
     const [selectedTemplate, setSelectedTemplate] = useState<string>('');
@@ -831,7 +846,93 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     )}
                 </div>
 
-                <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-4">
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-gray-500 mr-1">Layout</span>
+                    {(['grouped', 'sheet'] as const).map(mode => (
+                        <button
+                            key={mode}
+                            type="button"
+                            onClick={() => setLayout(mode)}
+                            aria-pressed={layout === mode}
+                            className={`px-3 py-1.5 border font-mono text-[10px] uppercase tracking-wider transition-colors ${
+                                layout === mode
+                                    ? 'border-white bg-white text-black'
+                                    : 'border-gray-700 text-gray-500 hover:text-white hover:border-gray-500'
+                            }`}
+                        >
+                            {mode === 'grouped' ? 'By subsystem' : 'Sheet order'}
+                        </button>
+                    ))}
+                    {layout === 'sheet' && (
+                        <span className="font-mono text-[9px] text-gray-600 ml-2">
+                            // matches the import spreadsheet, left to right
+                        </span>
+                    )}
+                </div>
+
+                {layout === 'sheet' && (
+                    <div className="space-y-3">
+                        <div className="bg-black/40 border-l-4 border-secondary p-4">
+                            <div className="font-mono text-[10px] uppercase tracking-widest text-gray-400 mb-3">
+                                Identity <span className="text-gray-600">// no sheet column, but required</span>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                                {SHEET_PREAMBLE_KEYS.map((k, i) =>
+                                    FIELDS_BY_KEY[k] ? renderField(FIELDS_BY_KEY[k], i, false) : null)}
+                            </div>
+                        </div>
+
+                        {SHEET_STEPS.map((step, si) => {
+                            const fields = step.keys.map(k => FIELDS_BY_KEY[k]).filter(Boolean);
+                            if (fields.length === 0) return null;
+                            const stepError = step.keys.some(k => fieldErrors[k as keyof typeof fieldErrors]);
+                            return (
+                                <div key={step.column} className={`bg-black/40 border-l-4 ${stepError ? 'border-accent' : 'border-gray-800'} p-4`}>
+                                    <div className="flex items-baseline gap-3 mb-3">
+                                        <span className="font-mono text-[10px] text-gray-600 tabular-nums w-6 shrink-0">
+                                            {String(si + 1).padStart(2, '0')}
+                                        </span>
+                                        <span className="font-mono text-[11px] uppercase tracking-widest text-white">{step.column}</span>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 pl-9">
+                                        {fields.map((f, i) => renderField(f, i, false))}
+                                    </div>
+                                </div>
+                            );
+                        })}
+
+                        {/* Fields the sheet has no column for. Rendered rather than dropped:
+                            a layout that silently hides columns is how they stop being filled. */}
+                        <details className="bg-black/40 border-l-4 border-gray-800">
+                            <summary className="p-4 cursor-pointer font-mono text-[11px] uppercase tracking-widest text-gray-400 hover:text-white">
+                                Not in the sheet
+                                <span className="text-gray-600 ml-2 normal-case tracking-normal">
+                                    // {sheetLeftovers(ALL_FIELD_KEYS).length} more fields
+                                </span>
+                            </summary>
+                            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 pt-0">
+                                {sheetLeftovers(ALL_FIELD_KEYS).map((k, i) =>
+                                    FIELDS_BY_KEY[k] ? renderField(FIELDS_BY_KEY[k], i, false) : null)}
+                            </div>
+                        </details>
+
+                        <div className="border border-gray-800 p-4">
+                            <div className="font-mono text-[10px] uppercase tracking-widest text-gray-500 mb-2">
+                                Sheet columns that live elsewhere
+                            </div>
+                            <ul className="space-y-1">
+                                {SHEET_ELSEWHERE.map(e => (
+                                    <li key={e.column} className="font-mono text-[10px] text-gray-600 flex gap-3">
+                                        <span className="text-gray-500 w-44 shrink-0">{e.column}</span>
+                                        <span>{e.where}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                )}
+
+                <div className={`space-y-4 ${layout === 'sheet' ? 'hidden' : ''}`}>
                     {VARIANT_FORM_GROUPS.map((group, idx) => {
                         const isOpen = openSections[group.title];
                         const hasError = group.fields.some((f: any) => f.key && fieldErrors[f.key as keyof typeof fieldErrors]);

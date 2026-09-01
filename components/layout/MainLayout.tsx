@@ -44,7 +44,7 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       {/* MAIN CONTENT AREA */}
       <main className="flex-1 relative z-10 flex flex-col min-h-0">
         {/* Scrollable Content Container */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar bg-bg-primary/80 pb-24 md:pb-0 flex flex-col min-h-0">
+        <div data-scroll-root className="flex-1 overflow-y-auto custom-scrollbar bg-bg-primary/80 pb-24 md:pb-0 flex flex-col min-h-0">
              {children}
         </div>
 

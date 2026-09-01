@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, type FC } from 'react';
+import { useScrollRoot } from '../../../lib/hooks/useScrollRoot';
 
 /* The page had section anchors but rendered them as 9px grey text floating between the
  * title and the body — the navigation existed, it just wasn't visible as navigation.
@@ -28,35 +29,9 @@ interface Props {
 
 const ConsoleTabs: FC<Props> = ({ tabs, device }) => {
     const [active, setActive] = useState(tabs[0]?.id);
-    const [scrolled, setScrolled] = useState(false);
-
-    /* Stick directly beneath the site header, measured rather than guessed.
-     *
-     * This was a hardcoded top-[48px] md:top-[64px], which missed both headers by the
-     * 2px violet border and left page content visible in the seam. Measuring means it
-     * also survives anyone changing the header height later. Both headers are in the DOM
-     * with one hidden per breakpoint, so the taller of the two is the live one. */
-    const [headerH, setHeaderH] = useState(66);
-
-    useEffect(() => {
-        const measure = () => {
-            const els = Array.from(document.querySelectorAll<HTMLElement>('[data-site-header]'));
-            const h = Math.max(0, ...els.map(el => el.getBoundingClientRect().height));
-            if (h > 0) setHeaderH(Math.round(h));
-        };
-        measure();
-        const ro = new ResizeObserver(measure);
-        document.querySelectorAll('[data-site-header]').forEach(el => ro.observe(el));
-        window.addEventListener('resize', measure);
-        return () => { ro.disconnect(); window.removeEventListener('resize', measure); };
-    }, []);
-
-    useEffect(() => {
-        const onScroll = () => setScrolled(window.scrollY > 420);
-        onScroll();
-        window.addEventListener('scroll', onScroll, { passive: true });
-        return () => window.removeEventListener('scroll', onScroll);
-    }, []);
+    /* The shell scrolls an inner div, not the window, so window.scrollY never moves and
+     * this bar never revealed the device. See lib/hooks/useScrollRoot. */
+    const { ref: barRef, past: scrolled, scrollToEl, root: scrollRoot } = useScrollRoot(420);
 
     useEffect(() => {
         const sections = tabs
@@ -73,26 +48,28 @@ const ConsoleTabs: FC<Props> = ({ tabs, device }) => {
                     .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
                 if (visible) setActive(visible.target.id);
             },
-            { rootMargin: '-120px 0px -65% 0px', threshold: 0 }
+            // Observe against the scrolling container, not the viewport: with the shell
+            // scrolling an inner div the default root measures the wrong box.
+            { root: scrollRoot, rootMargin: '-120px 0px -65% 0px', threshold: 0 }
         );
 
         sections.forEach(s => observer.observe(s));
         return () => observer.disconnect();
-    }, [tabs]);
+    }, [tabs, scrollRoot]);
 
     const go = (id: string) => {
         const el = document.getElementById(id);
         if (!el) return;
-        // Clear the site header and this bar, plus a little breathing room.
-        const y = el.getBoundingClientRect().top + window.scrollY - (headerH + 60);
-        window.scrollTo({ top: y, behavior: 'smooth' });
+        // Clear this bar, plus a little breathing room. The site header is outside the
+        // scrolling container, so it does not enter the sum.
+        scrollToEl(el, (barRef.current?.offsetHeight ?? 52) + 16);
     };
 
     return (
-        <div
-            style={{ top: headerH }}
-            className="sticky z-30 bg-[#09090b] border-b border-white/10 mt-10"
-        >
+        /* top-0, not the header height. This bar lives inside the scrolling container,
+           which already starts below the site header; offsetting by the header pushed it
+           down and opened the gap it was meant to close. */
+        <div ref={barRef} className="sticky top-0 z-30 bg-[#09090b] border-b border-white/10 mt-10">
             <div className="max-w-[1600px] mx-auto px-4 md:px-8 flex items-center gap-4">
                 {device && (
                     <div
