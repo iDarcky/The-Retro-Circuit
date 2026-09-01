@@ -145,13 +145,13 @@ const ConsoleHero: FC<Props> = ({
         <div className="max-w-[1600px] mx-auto px-4 md:px-8 pt-6">
 
             {/* Breadcrumb — the brand carries the product, so it is a real link. */}
-            <nav aria-label="Breadcrumb" className="mb-6">
-                <ol className="flex flex-wrap items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em]">
-                    <li>
+            <nav aria-label="Breadcrumb" className="mb-4 md:mb-6">
+                <ol className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] overflow-hidden">
+                    <li className="shrink-0">
                         <Link href="/consoles" className="text-gray-500 hover:text-white transition-colors">Vault</Link>
                     </li>
                     {brand && brandSlug && (
-                        <li className="flex items-center gap-1.5">
+                        <li className="flex items-center gap-1.5 shrink-0">
                             <span className="text-gray-700" aria-hidden="true">&rsaquo;</span>
                             <Link
                                 href={`/fabricators/${brandSlug}`}
@@ -161,17 +161,19 @@ const ConsoleHero: FC<Props> = ({
                             </Link>
                         </li>
                     )}
-                    <li className="flex items-center gap-1.5" aria-current="page">
+                    {/* The name is right below in the h1, so on a phone the trail ends at the
+                        brand rather than wrapping to a second line to repeat it. */}
+                    <li className="hidden sm:flex items-center gap-1.5 min-w-0" aria-current="page">
                         <span className="text-gray-700" aria-hidden="true">&rsaquo;</span>
-                        <span className="text-gray-300">{consoleData.name}</span>
+                        <span className="text-gray-300 truncate">{consoleData.name}</span>
                     </li>
                 </ol>
             </nav>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-start">
 
-                {/* ---- IMAGE ---------------------------------------------------- */}
-                <div className="lg:col-span-7">
+                {/* ---- IMAGE ---- second on a phone, first on desktop ------------ */}
+                <div className="order-2 lg:order-none lg:col-start-1 lg:col-span-7 lg:row-start-1 lg:row-span-2">
                     <div className="rc-bed relative w-full aspect-[4/3] border border-white/10 flex items-center justify-center overflow-hidden">
                         <span className="absolute top-3 left-3 font-mono text-[10px] tracking-widest text-white/25">FIG. 01</span>
                         <span className="absolute top-3 right-3 font-mono text-[10px] tracking-widest text-white/25 flex items-center gap-1.5">
@@ -204,7 +206,7 @@ const ConsoleHero: FC<Props> = ({
                     </div>
 
                     {shots.length > 1 && (
-                        <ul className="mt-3 grid grid-cols-6 gap-2">
+                        <ul className="mt-2.5 grid grid-cols-4 sm:grid-cols-6 gap-1.5 sm:gap-2">
                             {shots.slice(0, 6).map((s, i) => (
                                 <li key={s.id}>
                                     <button
@@ -226,8 +228,8 @@ const ConsoleHero: FC<Props> = ({
 
                 </div>
 
-                {/* ---- IDENTITY & DECISION -------------------------------------- */}
-                <div className="lg:col-span-5">
+                {/* ---- IDENTITY ---- first on a phone: name before photo --------- */}
+                <div className="order-1 lg:order-none lg:col-start-8 lg:col-span-5 lg:row-start-1">
                     {brand && (
                         brandSlug ? (
                             <Link
@@ -246,12 +248,12 @@ const ConsoleHero: FC<Props> = ({
                     )}
                     {/* The cursor is the brand's own mark — the logo is RETRO CIRCUIT_. A rule
                         underneath it would be a second, generic device saying the same thing. */}
-                    <h1 className="font-pixel text-3xl md:text-5xl text-white uppercase leading-none tracking-tighter break-words mb-5">
+                    <h1 className="font-pixel text-2xl sm:text-3xl md:text-5xl text-white uppercase leading-none tracking-tighter break-words mb-4 md:mb-5">
                         {consoleData.name}
                         <span className="text-violet-500 motion-safe:animate-pulse">_</span>
                     </h1>
 
-                    <div className="flex flex-wrap gap-2 mb-6">
+                    <div className="flex flex-wrap gap-1.5 md:gap-2 mb-5 md:mb-6">
                         {tags.map(t => (
                             <Chip key={t.label} tone={t.tone}>
                                 {t.dot && <span className="w-1.5 h-1.5 bg-current inline-block" aria-hidden="true" />}
@@ -260,6 +262,10 @@ const ConsoleHero: FC<Props> = ({
                         ))}
                     </div>
 
+                </div>
+
+                {/* ---- DECISION ---- price, score, verdict, actions -------------- */}
+                <div className="order-3 lg:order-none lg:col-start-8 lg:col-span-5 lg:row-start-2">
                     {/* The two numbers the decision turns on, each with where it stands. */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
                         <PriceCard

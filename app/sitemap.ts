@@ -3,6 +3,7 @@ import { supabaseAnon } from '../lib/supabase/anon';
 import { BEST_OF_COLLECTIONS } from '../lib/bestof/collections';
 import { fetchPublicManufacturers } from './actions/manufacturers';
 import { fetchArenaPairs } from '../lib/arena/pairs';
+import { fetchAllFacetPaths } from '../lib/config/facets';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Use the anonymous server client for sitemap generation
@@ -75,6 +76,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: new Date(),
         changeFrequency: 'weekly',
         priority: 0.7,
+      });
+    });
+
+    // 5. Facet listings: /consoles/chip/..., /consoles/os/..., /consoles/vendor/...
+    // Generated from the data, so a new chipset gets a page the day a device ships with it.
+    const facetPaths = await fetchAllFacetPaths();
+    facetPaths.forEach(({ facet, value }) => {
+      routes.push({
+        url: `${baseUrl}/consoles/${facet}/${value}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly',
+        priority: 0.6,
       });
     });
 

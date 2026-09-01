@@ -96,7 +96,7 @@ export const VARIANT_FORM_GROUPS = [
 
             { subHeader: 'Platform', column: true },
             { label: 'SoC Vendor', key: 'soc_vendor', type: 'select', required: false, subGroup: 'Platform',
-              options: ['Qualcomm', 'MediaTek', 'Rockchip', 'Allwinner', 'AMD', 'Intel', 'Ingenic',
+              options: ['Qualcomm', 'MediaTek', 'Unisoc', 'Rockchip', 'Allwinner', 'AMD', 'Intel', 'Ingenic',
                         'Actions Semiconductor', 'SigmaStar', 'Broadcom', 'Samsung', 'Apple', 'NVIDIA', 'Other'] },
             { label: 'SoC Name', key: 'soc_name', type: 'text', required: false, subGroup: 'Platform', note: 'e.g. Snapdragon 8' },
             { label: 'Generation', key: 'soc_gen', type: 'text', required: false, subGroup: 'Platform',
