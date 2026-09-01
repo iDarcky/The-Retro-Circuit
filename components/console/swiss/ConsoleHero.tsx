@@ -172,8 +172,44 @@ const ConsoleHero: FC<Props> = ({
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-start">
 
-                {/* ---- IMAGE ---- second on a phone, first on desktop ------------ */}
-                <div className="order-2 lg:order-none lg:col-start-1 lg:col-span-7 lg:row-start-1 lg:row-span-2">
+                {/* ---- IDENTITY ---- first in the markup, and first on a phone ---- */}
+                <div className="lg:col-start-8 lg:col-span-5 lg:row-start-1">
+                    {brand && (
+                        brandSlug ? (
+                            <Link
+                                href={`/fabricators/${brandSlug}`}
+                                className="group inline-flex items-baseline gap-2 mb-2.5 font-mono text-[15px] uppercase
+                                           tracking-[0.16em] text-gray-400 hover:text-violet-300 transition-colors"
+                            >
+                                {brand}
+                                <span className="font-mono text-[10px] text-gray-700 group-hover:text-violet-400 transition-colors">
+                                    All models &rarr;
+                                </span>
+                            </Link>
+                        ) : (
+                            <div className="font-mono text-[15px] uppercase tracking-[0.16em] text-gray-400 mb-2.5">{brand}</div>
+                        )
+                    )}
+                    {/* The cursor is the brand's own mark — the logo is RETRO CIRCUIT_. A rule
+                        underneath it would be a second, generic device saying the same thing. */}
+                    <h1 className="font-pixel text-2xl sm:text-3xl md:text-5xl text-white uppercase leading-none tracking-tighter break-words mb-4 md:mb-5">
+                        {consoleData.name}
+                        <span className="text-violet-500 motion-safe:animate-pulse">_</span>
+                    </h1>
+
+                    <div className="flex flex-wrap gap-1.5 md:gap-2 mb-5 md:mb-6">
+                        {tags.map(t => (
+                            <Chip key={t.label} tone={t.tone}>
+                                {t.dot && <span className="w-1.5 h-1.5 bg-current inline-block" aria-hidden="true" />}
+                                {t.label}
+                            </Chip>
+                        ))}
+                    </div>
+
+                </div>
+
+                {/* ---- IMAGE ---- left column on desktop, via grid placement ------ */}
+                <div className="lg:col-start-1 lg:col-span-7 lg:row-start-1 lg:row-span-2">
                     <div className="rc-bed relative w-full aspect-[4/3] border border-white/10 flex items-center justify-center overflow-hidden">
                         <span className="absolute top-3 left-3 font-mono text-[10px] tracking-widest text-white/25">FIG. 01</span>
                         <span className="absolute top-3 right-3 font-mono text-[10px] tracking-widest text-white/25 flex items-center gap-1.5">
@@ -228,44 +264,8 @@ const ConsoleHero: FC<Props> = ({
 
                 </div>
 
-                {/* ---- IDENTITY ---- first on a phone: name before photo --------- */}
-                <div className="order-1 lg:order-none lg:col-start-8 lg:col-span-5 lg:row-start-1">
-                    {brand && (
-                        brandSlug ? (
-                            <Link
-                                href={`/fabricators/${brandSlug}`}
-                                className="group inline-flex items-baseline gap-2 mb-2.5 font-mono text-[15px] uppercase
-                                           tracking-[0.16em] text-gray-400 hover:text-violet-300 transition-colors"
-                            >
-                                {brand}
-                                <span className="font-mono text-[10px] text-gray-700 group-hover:text-violet-400 transition-colors">
-                                    All models &rarr;
-                                </span>
-                            </Link>
-                        ) : (
-                            <div className="font-mono text-[15px] uppercase tracking-[0.16em] text-gray-400 mb-2.5">{brand}</div>
-                        )
-                    )}
-                    {/* The cursor is the brand's own mark — the logo is RETRO CIRCUIT_. A rule
-                        underneath it would be a second, generic device saying the same thing. */}
-                    <h1 className="font-pixel text-2xl sm:text-3xl md:text-5xl text-white uppercase leading-none tracking-tighter break-words mb-4 md:mb-5">
-                        {consoleData.name}
-                        <span className="text-violet-500 motion-safe:animate-pulse">_</span>
-                    </h1>
-
-                    <div className="flex flex-wrap gap-1.5 md:gap-2 mb-5 md:mb-6">
-                        {tags.map(t => (
-                            <Chip key={t.label} tone={t.tone}>
-                                {t.dot && <span className="w-1.5 h-1.5 bg-current inline-block" aria-hidden="true" />}
-                                {t.label}
-                            </Chip>
-                        ))}
-                    </div>
-
-                </div>
-
                 {/* ---- DECISION ---- price, score, verdict, actions -------------- */}
-                <div className="order-3 lg:order-none lg:col-start-8 lg:col-span-5 lg:row-start-2">
+                <div className="lg:col-start-8 lg:col-span-5 lg:row-start-2">
                     {/* The two numbers the decision turns on, each with where it stands. */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
                         <PriceCard
