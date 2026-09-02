@@ -10,7 +10,7 @@
 
 import { createClient } from "../../lib/supabase/server";
 import { ConsoleVariant, VariantInputProfile } from "../../lib/types";
-import { normalizeVariant } from "../../lib/normalize";
+import { normalizeVariant, unwrapRelation } from "../../lib/normalize";
 import {
     revalidateConsoleContent,
     revalidateCatalogueCollections,
@@ -93,7 +93,7 @@ export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>)
                 // Specs live on the variant, so a new configuration changes the console's
                 // listing card and its ranking in every derived collection, not just its
                 // detail page.
-                revalidateConsoleContent(parentConsole.slug, (parentConsole.manufacturer as any)?.slug);
+                revalidateConsoleContent(parentConsole.slug, unwrapRelation<any>(parentConsole.manufacturer)?.slug);
                 revalidateCatalogueCollections();
             }
         }
@@ -131,7 +131,7 @@ export const updateConsoleVariant = async (id: string, variantData: Partial<Cons
             // This is the path most edits take — screen, chip, price and emulation grades
             // are all variant columns, and they feed the listing card, the OG image and
             // the ranked collections as well as the detail page.
-            revalidateConsoleContent(parentConsole.slug, parentConsole.manufacturer?.slug);
+            revalidateConsoleContent(parentConsole.slug, unwrapRelation<any>(parentConsole.manufacturer)?.slug);
             revalidateCatalogueCollections();
         }
 
@@ -189,7 +189,7 @@ export const deleteConsoleVariant = async (id: string): Promise<{ success: boole
         const { data: parent } = await supabase
             .from('consoles').select('slug, manufacturer:manufacturer(slug)').eq('id', variant.console_id).maybeSingle();
         if (parent?.slug) {
-            revalidateConsoleContent(parent.slug, (parent.manufacturer as any)?.slug);
+            revalidateConsoleContent(parent.slug, unwrapRelation<any>(parent.manufacturer)?.slug);
             revalidateCatalogueCollections();
         }
 

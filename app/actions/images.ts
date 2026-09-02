@@ -3,6 +3,7 @@
 /** The per-console image gallery behind the admin uploader. */
 
 import { createClient } from "../../lib/supabase/server";
+import { unwrapRelation } from "../../lib/normalize";
 import { supabaseAnon } from "../../lib/supabase/anon";
 import { revalidateConsoleContent } from "../../lib/revalidate-console";
 
@@ -94,7 +95,7 @@ export const addConsoleImage = async (
         // A gallery image can become the card image and the OG card, so refresh the
         // listing surfaces too, not just the detail page.
         if (c?.status === 'published' && c.slug) {
-            revalidateConsoleContent(c.slug, (c.manufacturer as any)?.slug);
+            revalidateConsoleContent(c.slug, unwrapRelation<any>(c.manufacturer)?.slug);
         }
         return { success: true };
     } catch (e: any) {
@@ -123,7 +124,7 @@ export const deleteConsoleImage = async (
                 .eq('id', img.console_id)
                 .maybeSingle();
             if (c?.status === 'published' && c.slug) {
-                revalidateConsoleContent(c.slug, (c.manufacturer as any)?.slug);
+                revalidateConsoleContent(c.slug, unwrapRelation<any>(c.manufacturer)?.slug);
             }
         }
         return { success: true };

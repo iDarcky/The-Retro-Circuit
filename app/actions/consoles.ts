@@ -12,7 +12,7 @@
 import { createClient } from "../../lib/supabase/server";
 import { supabaseAnon } from "../../lib/supabase/anon";
 import { ConsoleDetails } from "../../lib/types";
-import { normalizeConsoleList } from "../../lib/normalize";
+import { normalizeConsoleList, unwrapRelation } from "../../lib/normalize";
 import {
     revalidateConsoleContent,
     revalidateCatalogueCollections,
@@ -209,7 +209,7 @@ export const addConsole = async (
         if (!newConsole) return { success: false, message: "No data returned from insert" };
 
         if (newConsole.status === 'published' && newConsole.slug) {
-            await revalidateConsoleSurfaces(newConsole.slug, (newConsole.manufacturer as any)?.slug);
+            await revalidateConsoleSurfaces(newConsole.slug, unwrapRelation<any>(newConsole.manufacturer)?.slug);
         }
 
         return { success: true, id: newConsole.id };
@@ -259,8 +259,13 @@ export const updateConsole = async (
             .maybeSingle();
 
         const cSlug = updated?.slug || consoleSlugInfo?.slug || cleanData.slug;
-        const mSlug = (updated?.manufacturer as any)?.slug
-            || (consoleSlugInfo?.manufacturer as any)?.slug;
+        // PostgREST returns a joined relation as an object on some selects and a
+        // one-element array on others. Reading `.slug` straight off it yields undefined
+        // in the array case, and the only visible symptom is the brand page quietly not
+        // refreshing — which is exactly how a newly published console can appear on
+        // /consoles but never on /fabricators/<brand>.
+        const mSlug = unwrapRelation<any>(updated?.manufacturer)?.slug
+            || unwrapRelation<any>(consoleSlugInfo?.manufacturer)?.slug;
 
         // On a publish this is what puts the URL into the sitemap Google reads. On an
         // ordinary edit the sitemap is unchanged, but every surface that renders the
