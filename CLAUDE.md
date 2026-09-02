@@ -2,7 +2,7 @@
 
 ## Project Overview
 Retro handheld gaming device comparison engine. Solo PM project, shipped via AI agents.
-Pre-alpha v0.5.5 · 462 consoles (78 published, 379 draft) · 517 variants · 99 brands · Live at theretrocircuit.com
+Pre-alpha v0.5.5 · 462 consoles (85 published, 372 draft) · 519 variants · 99 brands · Live at theretrocircuit.com
 
 ---
 
@@ -133,8 +133,8 @@ pnpm lint     # ESLint
 
 ## Known Issues / Active TODOs
 - 14 legacy input columns on `console_variants` (`dpad_mechanism`, `thumbstick_*`, `trigger_mechanism`, `gyro`, …) are superseded by `variant_input_profile` and read by nothing. The drop is staged in `supabase/migrations/*.sql.pending` — back up first, then rename to `.sql`. `haptics` was pulled out of that drop: it held 226 real rows and became `has_rumble`.
-- **378 of 379 drafts lack an image**, which blocks publishing — only 1 draft is currently publishable. This is the single biggest bottleneck; specs, buttons and emulation grades are already filled in. `/admin` counts the gaps and links into the filtered index (`?status=DRAFT&gap=NO_IMAGE`).
-- 47 of 517 variants have an `amazon_asin`, and **52 of the 78 published consoles still have no buy path at all** (no ASIN, no approved vendor link). Amazon is not the main channel for these devices — see the playbook's channel table before assuming ASINs are the fix.
+- **370 of 372 drafts lack an image**, which blocks publishing — only 2 drafts are currently publishable. This is the single biggest bottleneck; specs, buttons and emulation grades are already filled in. `/admin` counts the gaps and links into the filtered index (`?status=DRAFT&gap=NO_IMAGE`).
+- 50 of 519 variants have an `amazon_asin`, and **41 of the 85 published consoles still have no buy path at all** (no ASIN, no approved vendor link; discontinued devices are excluded, as they need none). Amazon is not the main channel for these devices — see the playbook's channel table before assuming ASINs are the fix.
 - **Nothing imported is publicly visible until approved.** 0 of 1,332 `console_links` rows are approved, so no console currently renders a "Reviews and retail" section. 24 of those rows sit on published consoles, which is the short list worth triaging first.
 - `release_status` is flipped by hand from the `/admin` "Release date passed" panel, not automatically: public pages are `revalidate = false`, so a silent status change would not reach the site until a rebuild.
 - The 1,332 imported `console_links` rows are **raw URLs and carry no affiliate tag** — only `lib/affiliate.ts` applies `theretrocircu-20`. Rendering a `kind='vendor'` Amazon link directly earns nothing; route it through `getBuyUrl`.
