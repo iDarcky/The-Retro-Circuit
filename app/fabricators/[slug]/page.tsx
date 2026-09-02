@@ -62,7 +62,20 @@ export default async function FabricatorDetailPage(props: Props) {
 
     const { data, error } = await supabaseAnon
         .from('consoles')
-        .select('*, manufacturer:manufacturer(*), variants:console_variants(*)')
+        // Named columns, not `*`. The variant table is 112 columns wide and this page
+        // reads six of them, so `console_variants(*)` pulled roughly 60k discarded
+        // values per build across the catalogue. Narrowing a select breaks silently — a
+        // field just vanishes from the render — so this list is a superset of every
+        // property FabricatorDetailClient touches, checked by enumerating them: the
+        // component has no dynamic `variant[key]` access, so the surface is closed.
+        .select(`
+            id, name, slug, image_url, is_featured, form_factor, generation, release_date,
+            manufacturer:manufacturer(*),
+            variants:console_variants(
+                id, variant_name, is_default, image_url, display_type,
+                price_launch_usd, price_avg_usd, release_date, release_date_precision
+            )
+        `)
         .eq('manufacturer_id', profile.id)
         .eq('status', 'published');
 
