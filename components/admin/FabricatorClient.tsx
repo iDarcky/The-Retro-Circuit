@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { Manufacturer } from '@/lib/types';
 import SwissButton from '../console/swiss/SwissButton';
 import { ManufacturerForm } from '@/components/admin/ManufacturerForm';
@@ -87,10 +86,6 @@ export default function FabricatorClient({ initialManufacturers, counts = {} }: 
                         FABRICATORS
                     </h1>
                     <div className="flex gap-4 font-mono text-xs text-gray-500 uppercase tracking-widest">
-                        <Link href="/admin" className="hover:text-white hover:underline">
-                            &lt; ROOT TERMINAL
-                        </Link>
-                        <span>|</span>
                         <p>
                             {'//'} TOTAL ENTITIES: {manufacturers.length}
                         </p>

@@ -257,9 +257,6 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                         CONSOLE INDEX
                     </h1>
                     <div className="flex gap-4">
-                        <Link href="/admin" className="font-mono text-xs text-gray-500 hover:text-white hover:underline">
-                            &lt; ROOT TERMINAL
-                        </Link>
                         <p className="font-mono text-xs text-gray-500 tracking-widest">
                             {'//'} TOTAL RECORDS: {consoles.length}
                         </p>

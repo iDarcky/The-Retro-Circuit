@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
 
 export default function BroadcastHub() {
   return (
@@ -9,9 +8,6 @@ export default function BroadcastHub() {
       <header className="mb-12 pt-8 border-b border-white pb-6">
         <div className="flex justify-between items-end">
            <div>
-              <Link href="/admin" className="flex items-center gap-2 text-xs font-mono text-gray-500 hover:text-white transition-colors mb-4 uppercase tracking-widest">
-                 <ArrowLeft size={14} /> Return to Mainframe
-              </Link>
               <h1 className="text-4xl md:text-8xl font-pixel text-white leading-none tracking-tighter mix-blend-difference">
                  BROADCAST
               </h1>
