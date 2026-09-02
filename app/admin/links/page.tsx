@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '../../../lib/supabase/server';
-import { fetchLinkReview } from '../../actions/consoles';
+import { fetchLinkReview } from '../../actions/commerce';
 import LinkReviewClient from '../../../components/admin/LinkReviewClient';
 
 /* Triage for everything the spreadsheet import attached to a console.

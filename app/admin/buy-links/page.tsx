@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '../../../lib/supabase/server';
-import { fetchBuyLinkWorklist } from '../../actions/consoles';
+import { fetchBuyLinkWorklist } from '../../actions/commerce';
 import BuyLinkWorklistClient from '../../../components/admin/BuyLinkWorklistClient';
 
 export const dynamic = 'force-dynamic';

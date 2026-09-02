@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '../../../lib/supabase/server';
-import { fetchAsinWorklist } from '../../actions/consoles';
+import { fetchAsinWorklist } from '../../actions/commerce';
 import AsinWorklistClient from '../../../components/admin/AsinWorklistClient';
 
 export const dynamic = 'force-dynamic';

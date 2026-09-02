@@ -3,12 +3,8 @@
 import { useCallback, useEffect, useState, useTransition } from 'react';
 import ImageUpload from '../ui/ImageUpload';
 import SwissButton from '../console/swiss/SwissButton';
-import {
-    fetchConsoleImagesAdmin,
-    addConsoleImage,
-    deleteConsoleImage,
-    type ConsoleImage,
-} from '../../app/actions/consoles';
+import { type ConsoleImage } from '../../app/actions/images';
+import { fetchConsoleImagesAdmin, addConsoleImage, deleteConsoleImage } from '../../app/actions/images';
 
 const KINDS = ['front', 'back', 'side', 'ports', 'in_hand', 'screen', 'detail', 'other'];
 

@@ -3,8 +3,8 @@
 import { useState, useMemo, type FC } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { setLinkApproval, setConsoleLinksApproval } from '../../app/actions/consoles';
-import type { LinkReviewConsole } from '../../app/actions/consoles';
+import { setLinkApproval, setConsoleLinksApproval } from '../../app/actions/commerce';
+import type { LinkReviewConsole } from '../../app/actions/commerce';
 
 /* Triage for the 1,332 imported links.
  *
