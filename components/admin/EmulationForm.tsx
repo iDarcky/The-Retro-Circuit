@@ -6,65 +6,35 @@ import { supabase } from '../../lib/supabase/client';
 import { EmulationProfile } from '../../lib/types';
 import Button from '../ui/Button';
 import { SwissDropdown } from '../ui/SwissDropdown';
+import { SYSTEM_TIERS } from '../../lib/config/emulation';
 
 interface EmulationFormProps {
     variantId: string;
     onSave?: () => void;
 }
 
-// User Defined Tiers
-const SYSTEM_TIERS = [
-    {
-        title: 'Tier 1: Classic 2D',
-        systems: [
-            { key: 'nes_state', label: 'NES' },
-            { key: 'snes_state', label: 'SNES' },
-            { key: 'master_system', label: 'Sega Master System' },
-            { key: 'genesis_state', label: 'Genesis / Mega Drive' },
-            { key: 'gb_state', label: 'Game Boy' },
-            { key: 'gbc_state', label: 'Game Boy Color' },
-            { key: 'gba_state', label: 'Game Boy Advance' },
-        ]
-    },
-    {
-        title: 'Tier 2: Early 3D',
-        systems: [
-            { key: 'ps1_state', label: 'PlayStation' },
-            { key: 'n64_state', label: 'Nintendo 64' },
-            { key: 'saturn_state', label: 'Sega Saturn' },
-            { key: 'nds_state', label: 'Nintendo DS' },
-            { key: 'dreamcast_state', label: 'Dreamcast' }
-        ]
-    },
-    {
-        title: 'Tier 3: Advanced Handhelds',
-        systems: [
-            { key: 'psp_state', label: 'PlayStation Portable' },
-            { key: 'x3ds_state', label: 'Nintendo 3DS' },
-            { key: 'vita_state', label: 'PlayStation Vita' },
-        ]
-    },
-    {
-        title: 'Tier 4: Classic Home Consoles',
-        systems: [
-            { key: 'ps2_state', label: 'PlayStation 2' },
-            { key: 'gamecube_state', label: 'GameCube' },
-            { key: 'xbox', label: 'Xbox' },
-        ]
-    },
-    {
-        title: 'Tier 5: Modern & HD Systems',
-        systems: [
-            { key: 'wii_state', label: 'Wii' },
-            { key: 'wii_u', label: 'Wii U' },
-            { key: 'ps3_state', label: 'PlayStation 3' },
-            { key: 'xbox_360', label: 'Xbox 360' },
-            { key: 'switch_state', label: 'Nintendo Switch' },
-            // PC Games intentionally omitted from UI/DB as per latest instruction "ignore pc_games"
-        ]
-    }
-];
+/**
+ * The admin editor spells a few systems out more fully than the public grid does
+ * ("Genesis / Mega Drive" rather than "Genesis"). Only those differences live here —
+ * the set of systems and their order come from SYSTEM_TIERS, so adding a console
+ * generation cannot leave the data-entry form one system behind the site.
+ */
+const ADMIN_LABELS: Record<string, string> = {
+    master_system: 'Sega Master System',
+    genesis_state: 'Genesis / Mega Drive',
+    gbc_state: 'Game Boy Color',
+    gba_state: 'Game Boy Advance',
+    n64_state: 'Nintendo 64',
+    saturn_state: 'Sega Saturn',
+    psp_state: 'PlayStation Portable',
+    x3ds_state: 'Nintendo 3DS',
+    vita_state: 'PlayStation Vita',
+    ps2_state: 'PlayStation 2',
+    ps3_state: 'PlayStation 3',
+    switch_state: 'Nintendo Switch',
+};
 
+const adminLabel = (key: string, fallback: string) => ADMIN_LABELS[key] ?? fallback;
 const RATINGS = ['N/A', 'Unplayable', 'Struggles', 'Playable', 'Great', 'Perfect'];
 
 const getColorForRating = (rating?: string) => {
@@ -134,7 +104,7 @@ export const EmulationForm: FC<EmulationFormProps> = ({ variantId, onSave }) => 
                             const currentValue = (profile as any)[sys.key] || 'N/A';
                             return (
                                 <div key={sys.key}>
-                                    <label className="block text-[10px] font-mono text-gray-500 uppercase mb-1">{sys.label}</label>
+                                    <label className="block text-[10px] font-mono text-gray-500 uppercase mb-1">{adminLabel(sys.key, sys.label)}</label>
                                     <SwissDropdown
                                     className="w-full"
                                     buttonClassName={`bg-black border border-gray-700 p-2 text-xs font-mono outline-none focus:border-secondary h-[34px] flex justify-between items-center ${getColorForRating(currentValue)}`}

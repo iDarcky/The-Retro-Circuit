@@ -75,4 +75,17 @@ export const SYSTEM_TIERS = [
             { key: 'switch_state', label: 'Switch' },
         ]
     }
-];
+] as const;
+
+/**
+ * Every emulation column, flattened, in tier order.
+ *
+ * `SYSTEM_TIERS` is the one definition of which systems exist. Deriving the key list
+ * from it — rather than retyping it — is what lets `SystemKey` below turn a missing
+ * entry into a compile error. The finder's weight table had drifted four systems
+ * behind this list (master_system, xbox, wii_u, xbox_360), so a device whose strength
+ * was Xbox 360 scored no library credit for it at all.
+ */
+export const SYSTEM_KEYS = SYSTEM_TIERS.flatMap(t => t.systems.map(s => s.key));
+
+export type SystemKey = typeof SYSTEM_TIERS[number]['systems'][number]['key'];

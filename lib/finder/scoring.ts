@@ -1,5 +1,6 @@
 
 import { ConsoleDetails } from '../types';
+import type { SystemKey } from '../config/emulation';
 
 export type ProfileType = 'nostalgia' | 'completionist' | 'performance' | 'onthego' | 'gift';
 
@@ -22,19 +23,32 @@ const PROFILE_WEIGHTS: Record<string, FinderWeights> = {
     default: { power: 20, portability: 20, ease: 20, value: 20, library: 20 }
 };
 
-// System Era Weights for Library/Power Calculation
-const SYSTEM_WEIGHTS: Record<string, number> = {
+// System Era Weights for Library/Power Calculation.
+//
+// Typed as Record<SystemKey, number>, so adding a system to SYSTEM_TIERS without
+// giving it a weight is a compile error. This table had silently fallen four systems
+// behind that list — master_system, xbox, wii_u and xbox_360 were absent, so a device
+// whose strength was one of them earned no library or power credit for it.
+//
+// The weights track emulation difficulty, which is finer-grained than the five display
+// tiers: wii and x3ds sit in the tiers' "Modern & HD" band but weigh 1.0 here because
+// they are markedly easier to run than ps3. The four added below follow the same rule —
+// master_system with the 8/16-bit set, xbox alongside its 6th-gen contemporaries, and
+// wii_u and xbox_360 with ps3, whose hardware generation they share.
+const SYSTEM_WEIGHTS: Record<SystemKey, number> = {
     // 8-16 bit -> 0.25
     nes_state: 0.25, snes_state: 0.25, gb_state: 0.25, gba_state: 0.25, genesis_state: 0.25, gbc_state: 0.25,
+    master_system: 0.25,
     // 32/64 bit -> 0.5
     ps1_state: 0.5, n64_state: 0.5, dreamcast_state: 0.5, saturn_state: 0.5,
     // Handheld 2000s -> 0.75
     psp_state: 0.75, nds_state: 0.75,
     // 6th gen -> 1.0
-    ps2_state: 1.0, gamecube_state: 1.0, wii_state: 1.0,
+    ps2_state: 1.0, gamecube_state: 1.0, wii_state: 1.0, xbox: 1.0,
     // Modern -> 1.25
     switch_state: 1.25, ps3_state: 1.25, x3ds_state: 1.0,
-    vita_state: 0.75
+    vita_state: 0.75,
+    wii_u: 1.25, xbox_360: 1.25
 };
 
 // --- NORMALIZATION CONSTANTS ---
