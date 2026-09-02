@@ -72,13 +72,15 @@ export function pickBuyTarget(opts: {
   asin?: string | null;
   name?: string | null;
   manufacturer?: string | null;
-  links?: { kind?: string | null; url?: string | null; label?: string | null }[] | null;
+  links?: { kind?: string | null; url?: string | null; label?: string | null; approved?: boolean | null }[] | null;
 }): BuyTarget | null {
   if (opts.asin) {
     return { url: getAmazonProductUrl(opts.asin), vendor: 'Amazon', confidence: 'direct' };
   }
 
-  const vendors = (opts.links || []).filter(l => l.kind === 'vendor' && l.url);
+  // Unapproved rows are import residue, not a chosen retailer, so they never become a
+  // buy destination. See the approval gate on console_links.
+  const vendors = (opts.links || []).filter(l => l.kind === 'vendor' && l.url && l.approved);
   if (vendors.length > 0) {
     // Prefer a non-Amazon listing: if we had an Amazon product we would have an ASIN.
     const pick = vendors.find(l => !/amazon\./i.test(l.url!)) ?? vendors[0];

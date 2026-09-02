@@ -36,17 +36,19 @@ function isAmazon(url: string): boolean {
  * we do not pass ranking signal to 100+ external domains from every console page.
  */
 export default function ConsoleLinks({ links, productName, manufacturerName }: ConsoleLinksProps) {
-    /* Review links are not rendered.
+    /* Only greenlit links are rendered.
      *
-     * The `video_review` and `written_review` rows came in with the spreadsheet import,
-     * point at other people's videos, and have no admin screen to curate or remove them
-     * one by one. Publishing an uncurated list of competitors on our own product pages
-     * is a decision, and it should be made deliberately in an editor rather than
-     * inherited from an import. The rows stay in console_links; nothing reads them. */
-    if (!links?.length) return null;
+     * Every row here arrived with a spreadsheet import and none of it was chosen, so an
+     * uncurated list of other people's videos was being published on our own product
+     * pages by inheritance. `approved` defaults to false, which means this section shows
+     * nothing until someone has been through /admin/links, and turns itself back on one
+     * link at a time as they do. */
+    const approved = (links ?? []).filter((l) => l.approved);
+    if (approved.length === 0) return null;
 
-    const sorted = [...links].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+    const sorted = [...approved].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
     const vendors = sorted.filter((l) => l.kind === 'vendor' || l.kind === 'official');
+    const reviews = sorted.filter((l) => l.kind === 'video_review' || l.kind === 'written_review');
 
     return (
         <div className="space-y-8">
@@ -95,6 +97,36 @@ export default function ConsoleLinks({ links, productName, manufacturerName }: C
                                 </li>
                             );
                         })}
+                    </ul>
+                </section>
+            )}
+
+            {reviews.length > 0 && (
+                <section>
+                    <h3 className="font-pixel text-xs text-white uppercase tracking-widest mb-4 border-b border-white/10 pb-2">
+                        Reviews elsewhere
+                    </h3>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {reviews.map((link) => (
+                            <li key={link.id}>
+                                {/* nofollow, because pointing a hundred consoles at other
+                                    people's channels should not pass ranking signal. */}
+                                <a
+                                    href={link.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer nofollow"
+                                    className="flex items-center justify-between gap-3 p-3 border border-white/10
+                                               hover:bg-white/[0.04] hover:border-white/30 transition-colors"
+                                >
+                                    <span className="font-mono text-[11px] text-gray-300 truncate">
+                                        {link.label || 'Review'}
+                                    </span>
+                                    <span className="font-mono text-[9px] uppercase tracking-widest text-gray-600 shrink-0">
+                                        {link.kind === 'video_review' ? 'Video' : 'Article'}
+                                    </span>
+                                </a>
+                            </li>
+                        ))}
                     </ul>
                 </section>
             )}

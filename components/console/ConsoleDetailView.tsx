@@ -260,10 +260,10 @@ const ConsoleDetailView: FC<ConsoleDetailViewProps> = ({ consoleData, galleryIma
                 </Section>
 
                 {/* ROW 4: LINKS — reviews and retail */}
-                {/* Guard on what ConsoleLinks will actually draw, not on the raw rows:
-                    a console whose only links are imported reviews would otherwise render
-                    an empty section with a heading. */}
-                {(consoleData.links ?? []).some(l => l.kind === 'vendor' || l.kind === 'official') && (
+                {/* Guard on approval, not on the raw rows. Nothing from the import is
+                    approved, so this section is absent until someone greenlights a link
+                    in /admin/links, and appears by itself once they do. */}
+                {(consoleData.links ?? []).some(l => l.approved) && (
                     <Section id="links" eyebrow="Reviews and retail" title="ELSEWHERE">
                         <ConsoleLinks
                             links={consoleData.links}

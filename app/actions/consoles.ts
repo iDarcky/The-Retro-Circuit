@@ -952,6 +952,10 @@ export const addConsoleVendorLink = async (
             url: clean,
             label: label.trim() || null,
             sort_order: (last?.sort_order ?? -1) + 1,
+            // Typed in by hand, so it is approved by the act of adding it. Only the
+            // spreadsheet import lands unapproved.
+            approved: true,
+            approved_at: new Date().toISOString(),
         }]);
         if (error) return { success: false, message: error.message };
 
@@ -1007,5 +1011,144 @@ export const fetchSuccessor = async (
     } catch (e: any) {
         console.error('[API] fetchSuccessor error:', e?.message ?? e);
         return null;
+    }
+};
+
+/* ---------------------------------------------------------------------------
+ * LINK REVIEW
+ *
+ * Every console_links row arrived with a spreadsheet import: 821 video reviews pointing
+ * at other people's channels, 433 vendor links, 78 written reviews. None of it was
+ * chosen. The public pages now render only what someone has greenlit, and this is where
+ * the greenlighting happens.
+ * ------------------------------------------------------------------------- */
+
+export interface LinkReviewRow {
+    id: string;
+    kind: string;
+    url: string;
+    label: string | null;
+    approved: boolean;
+    domain: string;
+}
+
+export interface LinkReviewConsole {
+    id: string;
+    name: string;
+    slug: string;
+    status: string;
+    brand: string;
+    links: LinkReviewRow[];
+    approvedCount: number;
+}
+
+const domainOf = (url: string): string => {
+    try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return '—'; }
+};
+
+/**
+ * Every console that has imported links, with the links themselves.
+ *
+ * Published consoles first, then most links: the pages that are live and showing nothing
+ * are the ones worth triaging first.
+ */
+export const fetchLinkReview = async (): Promise<LinkReviewConsole[]> => {
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from('consoles')
+            .select(`
+                id, name, slug, status,
+                manufacturer:manufacturer(name),
+                console_links(id, kind, url, label, approved, sort_order)
+            `)
+            .order('name');
+        if (error) throw error;
+
+        const rows: LinkReviewConsole[] = (data || [])
+            .map((c: any) => {
+                const mfg = Array.isArray(c.manufacturer) ? c.manufacturer[0] : c.manufacturer;
+                const links: LinkReviewRow[] = (c.console_links || [])
+                    .sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+                    .map((l: any) => ({
+                        id: l.id,
+                        kind: String(l.kind),
+                        url: l.url,
+                        label: l.label,
+                        approved: Boolean(l.approved),
+                        domain: domainOf(l.url),
+                    }));
+                return {
+                    id: c.id,
+                    name: c.name,
+                    slug: c.slug,
+                    status: c.status ?? 'draft',
+                    brand: mfg?.name ?? '',
+                    links,
+                    approvedCount: links.filter(l => l.approved).length,
+                };
+            })
+            .filter(c => c.links.length > 0);
+
+        const rank = (s: string) => (s === 'published' ? 0 : s === 'review' ? 1 : 2);
+        rows.sort((a, b) => rank(a.status) - rank(b.status) || b.links.length - a.links.length);
+        return rows;
+    } catch (e: any) {
+        console.error('[API] fetchLinkReview error:', e?.message ?? e);
+        return [];
+    }
+};
+
+/** Greenlight or pull one link. Revalidates the console page when it is live. */
+export const setLinkApproval = async (
+    linkId: string,
+    approved: boolean,
+): Promise<{ success: boolean; message?: string }> => {
+    try {
+        const supabase = await createClient();
+        const { data: link, error: fetchError } = await supabase
+            .from('console_links')
+            .select('console_id')
+            .eq('id', linkId)
+            .single();
+        if (fetchError) return { success: false, message: fetchError.message };
+
+        const { error } = await supabase
+            .from('console_links')
+            .update({ approved, approved_at: approved ? new Date().toISOString() : null })
+            .eq('id', linkId);
+        if (error) return { success: false, message: error.message };
+
+        const { data: c } = await supabase
+            .from('consoles').select('slug, status').eq('id', link.console_id).maybeSingle();
+        if (c?.status === 'published' && c.slug) revalidatePath(`/consoles/${c.slug}`);
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, message: e.message };
+    }
+};
+
+/** Approve or pull every link on one console at once. */
+export const setConsoleLinksApproval = async (
+    consoleId: string,
+    approved: boolean,
+    kind?: string,
+): Promise<{ success: boolean; message?: string }> => {
+    try {
+        const supabase = await createClient();
+        let q = supabase
+            .from('console_links')
+            .update({ approved, approved_at: approved ? new Date().toISOString() : null })
+            .eq('console_id', consoleId);
+        if (kind) q = q.eq('kind', kind);
+        const { error } = await q;
+        if (error) return { success: false, message: error.message };
+
+        const { data: c } = await supabase
+            .from('consoles').select('slug, status').eq('id', consoleId).maybeSingle();
+        if (c?.status === 'published' && c.slug) revalidatePath(`/consoles/${c.slug}`);
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, message: e.message };
     }
 };

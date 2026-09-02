@@ -365,6 +365,10 @@ export interface ConsoleLink {
   url: string;
   label: string | null;
   sort_order: number | null;
+  /* Nothing imported is published by default. The 1,332 rows that arrived with the
+   * spreadsheet were never chosen by anyone, so a link renders only once it has been
+   * greenlit in /admin/links. */
+  approved?: boolean;
 }
 
 export interface ConsoleDetails {

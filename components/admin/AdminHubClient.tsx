@@ -26,6 +26,7 @@ const NAV_GROUPS: { group: string; items: { href: string; label: string; hint: s
         items: [
             { href: '/admin/asins', label: 'ASINs', hint: 'Link products' },
             { href: '/admin/buy-links', label: 'Buy links', hint: 'Published, no path' },
+            { href: '/admin/links', label: 'Link review', hint: 'Imported, ungreenlit' },
         ],
     },
     {
