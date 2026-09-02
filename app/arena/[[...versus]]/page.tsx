@@ -6,6 +6,7 @@ export const dynamicParams = true;
 import { supabaseAnon } from '../../../lib/supabase/anon';
 import { fetchArenaPairs } from '../../../lib/arena/pairs';
 import { parseToken, splitVersus, buildArenaToken } from '../../../lib/arena/resolve';
+import { normalizeVariant, unwrapRelation } from '../../../lib/normalize';
 import ArenaComparisonClient from '../../../components/arena/ArenaComparisonClient';
 
 /* Build the comparison pages instead of waiting for a visitor to ask for one.
@@ -17,14 +18,6 @@ export async function generateStaticParams() {
     const pairs = await fetchArenaPairs();
     // The bare hub, then one entry per pair.
     return [{ versus: [] as string[] }, ...pairs.map(pair => ({ versus: [pair] }))];
-}
-
-// Quick inline normalize for server
-function normalizeVariant(v: any): any {
-    if (!v) return v;
-    if (Array.isArray(v.variant_input_profile)) { v.variant_input_profile = v.variant_input_profile[0] || null; }
-    if (Array.isArray(v.emulation_profiles)) { v.emulation_profile = v.emulation_profiles[0] || null; }
-    return v;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ versus?: string[] }> }) {
@@ -48,7 +41,7 @@ export async function generateMetadata({ params }: { params: Promise<{ versus?: 
     const rows = (index ?? []) as any[];
     const slugSet = new Set(rows.map(r => r.slug));
     const nameOf = new Map(rows.map(r => {
-        const mfg = Array.isArray(r.manufacturer) ? r.manufacturer[0] : r.manufacturer;
+        const mfg = unwrapRelation<any>(r.manufacturer);
         return [r.slug, [mfg?.name, r.name].filter(Boolean).join(' ')];
     }));
 

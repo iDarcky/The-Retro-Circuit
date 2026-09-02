@@ -2,6 +2,7 @@
 
 import { supabaseAnon } from "../../lib/supabase/anon";
 import { ConsoleDetails } from "../../lib/types";
+import { normalizeConsoleList } from "../../lib/normalize";
 
 export const fetchLatestConsoles = async (limit: number = 3): Promise<ConsoleDetails[]> => {
     try {
@@ -22,7 +23,7 @@ export const fetchLatestConsoles = async (limit: number = 3): Promise<ConsoleDet
             return [];
         }
 
-        return normalizeConsoles(data);
+        return normalizeConsoleList(data);
 
     } catch (e) {
         console.error('[API] Fetch Latest Consoles Exception:', e);
@@ -78,17 +79,3 @@ export const fetchRealWorldLatest = async (limit: number = 3): Promise<ConsoleDe
     }
 }
 
-function normalizeConsoles(data: any[] | null): ConsoleDetails[] {
-    return (data || []).map((item: any) => {
-        const variants = item.variants || [];
-        const defaultVariant = variants.find((v: any) => v.is_default) || variants[0];
-
-        if (defaultVariant) {
-            if (!item.image_url) item.image_url = defaultVariant.image_url;
-            item.specs = defaultVariant;
-        } else {
-            item.specs = {};
-        }
-        return item;
-    }) as ConsoleDetails[];
-}

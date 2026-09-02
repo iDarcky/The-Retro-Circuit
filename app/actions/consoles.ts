@@ -4,13 +4,53 @@ import { createClient } from "../../lib/supabase/server";
 import { submitToIndexNow } from "../../lib/indexnow";
 import { supabaseAnon } from "../../lib/supabase/anon";
 import { ConsoleDetails, ConsoleFilterState, ConsoleSpecs, ConsoleVariant, VariantInputProfile } from "../../lib/types";
+import { normalizeConsoleList, normalizeVariant } from "../../lib/normalize";
 import { revalidatePath } from "next/cache";
 
 /**
- * Refresh every cached surface a console appears on, then tell IndexNow.
+ * Refresh every cached surface that renders a console's *own* content.
  *
- * Public pages are `revalidate = false`, so nothing regenerates on a timer — a newly
- * published console stays invisible until each surface is explicitly invalidated.
+ * Public pages are `revalidate = false`, so nothing regenerates on a timer — an edit
+ * stays invisible until each surface is explicitly invalidated. This is the cheap set
+ * and it runs on every save, not just on publish: the previous version only refreshed
+ * the detail page unless the status flipped to `published`, so a spec or image change
+ * on an already-published console never reached `/consoles`, the homepage or the
+ * brand page.
+ *
+ * The OG card is its own route segment and has its own cache entry, so a changed
+ * image or name needs it invalidated separately or social previews stay stale.
+ */
+function revalidateConsoleContent(slug?: string | null, manufacturerSlug?: string | null) {
+    if (!slug) return;
+
+    revalidatePath(`/consoles/${slug}`);
+    revalidatePath(`/consoles/${slug}/opengraph-image`);
+    revalidatePath('/consoles');
+    revalidatePath('/');
+    if (manufacturerSlug) {
+        revalidatePath('/fabricators');
+        revalidatePath(`/fabricators/${manufacturerSlug}`);
+    }
+}
+
+/**
+ * Refresh the derived collections a console is ranked or grouped into.
+ *
+ * These enumerate the whole catalogue, so they are addressed by route pattern rather
+ * than by URL — one call marks every prebuilt instance stale and each regenerates
+ * lazily on its next request. That is why this is safe to call on an ordinary save:
+ * the cost lands on the next reader, not on the admin write.
+ */
+function revalidateCatalogueCollections() {
+    revalidatePath('/best/[slug]', 'page');
+    revalidatePath('/consoles/[facet]/[value]', 'page');
+    revalidatePath('/arena/[[...versus]]', 'page');
+}
+
+/**
+ * Everything above, plus the search-engine surfaces. Reserved for changes that alter
+ * which URLs exist — publish, unpublish, slug change, delete.
+ *
  * `/sitemap.xml` matters most: it is how Google discovers the URL at all. IndexNow
  * only reaches Bing/Yandex, so without this a publish never reaches Google until the
  * next deploy.
@@ -18,14 +58,9 @@ import { revalidatePath } from "next/cache";
 async function revalidateConsoleSurfaces(slug?: string | null, manufacturerSlug?: string | null) {
     if (!slug) return;
 
+    revalidateConsoleContent(slug, manufacturerSlug);
+    revalidateCatalogueCollections();
     revalidatePath('/sitemap.xml');
-    revalidatePath('/');
-    revalidatePath('/consoles');
-    revalidatePath(`/consoles/${slug}`);
-    if (manufacturerSlug) {
-        revalidatePath('/fabricators');
-        revalidatePath(`/fabricators/${manufacturerSlug}`);
-    }
 
     const base = 'https://theretrocircuit.com';
     const urls = [`${base}/consoles/${slug}`, `${base}/consoles`, `${base}/sitemap.xml`];
@@ -70,41 +105,6 @@ function stripConsoleRelations<T extends Record<string, any>>(payload: T): Parti
         console.debug('stripConsoleRelations dropped:', dropped.join(', '));
     }
     return clean as Partial<T>;
-}
-
-// Helper: Normalize Variant (Unwrap 1:1 relations that Supabase returns as arrays)
-function normalizeVariant(v: any): any {
-    if (!v) return v;
-    if (Array.isArray(v.variant_input_profile)) {
-        v.variant_input_profile = v.variant_input_profile[0] || null;
-    }
-    if (Array.isArray(v.emulation_profiles)) {
-        v.emulation_profile = v.emulation_profiles[0] || null;
-    }
-    return v;
-}
-
-// Helper: Normalize Console List (Apply variant normalization and defaults)
-function normalizeConsoleList(data: any[] | null): ConsoleDetails[] {
-    if (!data || !Array.isArray(data)) return []; // DEFENSIVE CHECK
-
-    return data.map((item: any) => {
-        if (!item) return null; // Skip invalid items
-
-        const variants = (item.variants || []).map(normalizeVariant);
-        item.variants = variants;
-
-        const defaultVariant = variants.find((v: any) => v.is_default) || variants[0];
-
-        if (defaultVariant) {
-            if (!item.image_url) item.image_url = defaultVariant.image_url;
-            item.specs = defaultVariant;
-        } else {
-            item.specs = {};
-        }
-
-        return item;
-    }).filter(Boolean) as ConsoleDetails[];
 }
 
 export const fetchAllConsoles = async (includeHidden: boolean = false): Promise<ConsoleDetails[]> => {
@@ -462,11 +462,14 @@ export const updateConsole = async (
         const mSlug = (updated?.manufacturer as any)?.slug
             || (consoleSlugInfo?.manufacturer as any)?.slug;
 
-        // On a publish this is what puts the URL into the sitemap Google reads.
+        // On a publish this is what puts the URL into the sitemap Google reads. On an
+        // ordinary edit the sitemap is unchanged, but every surface that renders the
+        // console's content still has to be invalidated or the edit is invisible.
         if (isPublishing && previousStatus !== 'published') {
             await revalidateConsoleSurfaces(cSlug, mSlug);
         } else if (cSlug) {
-            revalidatePath(`/consoles/${cSlug}`);
+            revalidateConsoleContent(cSlug, mSlug);
+            revalidateCatalogueCollections();
         }
 
         return { success: true };
@@ -526,7 +529,11 @@ export const addConsoleVariant = async (variantData: Omit<ConsoleVariant, 'id'>)
         if (mainVariantData.console_id) {
             const { data: parentConsole } = await supabase.from('consoles').select('slug, manufacturer:manufacturer(slug, name)').eq('id', mainVariantData.console_id).single();
             if (parentConsole?.slug) {
-                revalidatePath(`/consoles/${parentConsole.slug}`);
+                // Specs live on the variant, so a new configuration changes the console's
+                // listing card and its ranking in every derived collection, not just its
+                // detail page.
+                revalidateConsoleContent(parentConsole.slug, (parentConsole.manufacturer as any)?.slug);
+                revalidateCatalogueCollections();
             }
         }
 
@@ -558,8 +565,13 @@ export const updateConsoleVariant = async (id: string, variantData: Partial<Cons
         }
 
         const { data: updatedVariant } = await supabase.from('console_variants').select('console_id, consoles(slug, manufacturer:manufacturer(slug, name))').eq('id', id).single();
-        if ((updatedVariant?.consoles as any)?.slug) {
-            revalidatePath(`/consoles/${(updatedVariant?.consoles as any).slug}`);
+        const parentConsole = updatedVariant?.consoles as any;
+        if (parentConsole?.slug) {
+            // This is the path most edits take — screen, chip, price and emulation grades
+            // are all variant columns, and they feed the listing card, the OG image and
+            // the ranked collections as well as the detail page.
+            revalidateConsoleContent(parentConsole.slug, parentConsole.manufacturer?.slug);
+            revalidateCatalogueCollections();
         }
 
         return { success: true };
@@ -614,8 +626,11 @@ export const deleteConsoleVariant = async (id: string): Promise<{ success: boole
         }
 
         const { data: parent } = await supabase
-            .from('consoles').select('slug').eq('id', variant.console_id).maybeSingle();
-        if (parent?.slug) revalidatePath(`/consoles/${parent.slug}`);
+            .from('consoles').select('slug, manufacturer:manufacturer(slug)').eq('id', variant.console_id).maybeSingle();
+        if (parent?.slug) {
+            revalidateConsoleContent(parent.slug, (parent.manufacturer as any)?.slug);
+            revalidateCatalogueCollections();
+        }
 
         return { success: true, message: `Deleted "${variant.variant_name}".` };
     } catch (e: any) {
@@ -759,7 +774,11 @@ export const addConsoleImage = async (
             .select('slug, status, manufacturer:manufacturer_id(slug)')
             .eq('id', consoleId)
             .maybeSingle();
-        if (c?.status === 'published' && c.slug) revalidatePath(`/consoles/${c.slug}`);
+        // A gallery image can become the card image and the OG card, so refresh the
+        // listing surfaces too, not just the detail page.
+        if (c?.status === 'published' && c.slug) {
+            revalidateConsoleContent(c.slug, (c.manufacturer as any)?.slug);
+        }
         return { success: true };
     } catch (e: any) {
         return { success: false, message: e.message };
@@ -783,10 +802,12 @@ export const deleteConsoleImage = async (
         if (img?.console_id) {
             const { data: c } = await supabase
                 .from('consoles')
-                .select('slug, status')
+                .select('slug, status, manufacturer:manufacturer_id(slug)')
                 .eq('id', img.console_id)
                 .maybeSingle();
-            if (c?.status === 'published' && c.slug) revalidatePath(`/consoles/${c.slug}`);
+            if (c?.status === 'published' && c.slug) {
+                revalidateConsoleContent(c.slug, (c.manufacturer as any)?.slug);
+            }
         }
         return { success: true };
     } catch (e: any) {
@@ -855,7 +876,12 @@ export const setVariantAsin = async (
             .eq('id', variantId)
             .maybeSingle();
         const c: any = (v as any)?.consoles;
-        if (c?.status === 'published' && c.slug) revalidatePath(`/consoles/${c.slug}`);
+        // Buy paths render on the arena bar and the buying guides as well as the
+        // console page, so the ranked collections have to go stale with it.
+        if (c?.status === 'published' && c.slug) {
+            revalidatePath(`/consoles/${c.slug}`);
+            revalidateCatalogueCollections();
+        }
 
         return { success: true };
     } catch (e: any) {
@@ -964,7 +990,12 @@ export const addConsoleVendorLink = async (
             .select('slug, status')
             .eq('id', consoleId)
             .maybeSingle();
-        if (c?.status === 'published' && c.slug) revalidatePath(`/consoles/${c.slug}`);
+        // Buy paths render on the arena bar and the buying guides as well as the
+        // console page, so the ranked collections have to go stale with it.
+        if (c?.status === 'published' && c.slug) {
+            revalidatePath(`/consoles/${c.slug}`);
+            revalidateCatalogueCollections();
+        }
         return { success: true };
     } catch (e: any) {
         return { success: false, message: e.message };
@@ -1121,7 +1152,12 @@ export const setLinkApproval = async (
 
         const { data: c } = await supabase
             .from('consoles').select('slug, status').eq('id', link.console_id).maybeSingle();
-        if (c?.status === 'published' && c.slug) revalidatePath(`/consoles/${c.slug}`);
+        // Buy paths render on the arena bar and the buying guides as well as the
+        // console page, so the ranked collections have to go stale with it.
+        if (c?.status === 'published' && c.slug) {
+            revalidatePath(`/consoles/${c.slug}`);
+            revalidateCatalogueCollections();
+        }
         return { success: true };
     } catch (e: any) {
         return { success: false, message: e.message };
@@ -1146,7 +1182,12 @@ export const setConsoleLinksApproval = async (
 
         const { data: c } = await supabase
             .from('consoles').select('slug, status').eq('id', consoleId).maybeSingle();
-        if (c?.status === 'published' && c.slug) revalidatePath(`/consoles/${c.slug}`);
+        // Buy paths render on the arena bar and the buying guides as well as the
+        // console page, so the ranked collections have to go stale with it.
+        if (c?.status === 'published' && c.slug) {
+            revalidatePath(`/consoles/${c.slug}`);
+            revalidateCatalogueCollections();
+        }
         return { success: true };
     } catch (e: any) {
         return { success: false, message: e.message };
