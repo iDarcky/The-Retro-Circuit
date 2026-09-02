@@ -39,7 +39,11 @@ export function revalidateConsoleContent(slug?: string | null, manufacturerSlug?
  */
 export function revalidateCatalogueCollections() {
     revalidatePath('/best/[slug]', 'page');
-    revalidatePath('/consoles/[facet]/[value]', 'page');
+    // One pattern per facet: these are static segments now, because a second dynamic
+    // segment beside [slug] is a Next routing error.
+    revalidatePath('/consoles/chip/[value]', 'page');
+    revalidatePath('/consoles/os/[value]', 'page');
+    revalidatePath('/consoles/vendor/[value]', 'page');
     revalidatePath('/arena/[[...versus]]', 'page');
 }
 
