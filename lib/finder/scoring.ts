@@ -55,7 +55,28 @@ const SYSTEM_WEIGHTS: Record<SystemKey, number> = {
 const MAX_RAW_POWER = 1.25;    // Corresponds to Modern era systems
 
 // DYNAMIC LIBRARY MAX: Sum of all system weights.
-const MAX_RAW_LIBRARY = Object.values(SYSTEM_WEIGHTS).reduce((sum, weight) => sum + weight, 0);
+/**
+ * Systems that exist in the grid but that no variant is graded on yet.
+ *
+ * They keep their true difficulty weight above, so the model stays right and the
+ * moment data lands it is scored correctly. They are excluded from the normalisation
+ * denominators below because those denominators mean "the best a device could
+ * plausibly reach": counting a column that reads N/A on all 517 rows deflates every
+ * device's library score for credit literally nobody can earn, which quietly shifts
+ * the blend against library and in favour of power, ease, value and portability.
+ *
+ * Checked against the catalogue: xbox and xbox_360 are N/A on all 517 profiles, while
+ * wii_u passes on 124 and master_system on 4 — which is why those two are scored.
+ * Remove an entry here once its column has real grades.
+ */
+const UNGRADED: ReadonlySet<SystemKey> = new Set<SystemKey>(['xbox', 'xbox_360']);
+
+const gradedWeights = () =>
+    (Object.entries(SYSTEM_WEIGHTS) as [SystemKey, number][])
+        .filter(([key]) => !UNGRADED.has(key))
+        .map(([, weight]) => weight);
+
+const MAX_RAW_LIBRARY = gradedWeights().reduce((sum, weight) => sum + weight, 0);
 
 const MIN_RAW_EASE = 1;        // Hardest to set up
 const MAX_RAW_EASE = 5;        // Easiest to set up
@@ -120,7 +141,7 @@ const getTierMaxWeight = (tier: string | null) => {
 const getTierMaxLibrary = (tier: string | null) => {
     if (!tier) return MAX_RAW_LIBRARY;
     const maxW = getTierMaxWeight(tier);
-    return Object.values(SYSTEM_WEIGHTS).filter(w => w <= maxW).reduce((a, b) => a + b, 0);
+    return gradedWeights().filter(w => w <= maxW).reduce((a, b) => a + b, 0);
 };
 
 // --- SCORING FUNCTIONS ---
