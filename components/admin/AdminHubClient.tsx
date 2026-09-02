@@ -133,7 +133,7 @@ export default function AdminHubClient({ data }: { data: AdminDashboard }) {
                 <Tile n={gaps.NO_IMAGE} label="No image" sub="Blocks publish" tone="blocking"
                     href="/admin/consoles?status=DRAFT&gap=NO_IMAGE" />
                 <Tile n={revenue.variantsTotal - revenue.variantsWithAsin} label="No ASIN" sub="Search-link fallback"
-                    href="/admin/asins" />
+                    href="/admin/revenue?tab=asins" />
                 <Tile n={gaps.NO_PRICE} label="No price" sub="Drafts"
                     href="/admin/consoles?status=DRAFT&gap=NO_PRICE" />
                 <Tile n={gaps.NO_VARIANT} label="No variant" sub="Drafts"

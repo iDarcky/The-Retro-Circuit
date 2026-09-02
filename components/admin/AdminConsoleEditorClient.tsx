@@ -40,6 +40,11 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
 
     const [deletingId, setDeletingId] = useState<string | null>(null);
 
+    /* The editor grew past a screenful once the buy path joined the console fields and
+     * the variant list. Tabs keep each job to one view; the publish-readiness bar stays
+     * above them, because a blocker you cannot see is a blocker you forget. */
+    const [tab, setTab] = useState<'details' | 'variants' | 'commerce'>('details');
+
     const handleDeleteVariant = async (variant: ConsoleVariant) => {
         const name = variant.variant_name || 'this variant';
         if (!window.confirm(`Delete "${name}"? Its specs, input profile and emulation grades go with it. This cannot be undone.`)) return;
@@ -138,8 +143,45 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                 );
             })()}
 
+            {(() => {
+                const variants = consoleData.variants ?? [];
+                const hasBuyPath =
+                    variants.some((v: any) => v.amazon_asin) || initialLinks.some(l => l.approved);
+                const TABS = [
+                    { id: 'details' as const, label: 'Details', note: '' },
+                    { id: 'variants' as const, label: 'Variants', note: String(variants.length) },
+                    { id: 'commerce' as const, label: 'Buy path', note: hasBuyPath ? '✓' : '—' },
+                ];
+                return (
+                    <div className="flex border border-border-normal mb-8" role="tablist" aria-label="Console editor sections">
+                        {TABS.map(t => {
+                            const on = tab === t.id;
+                            return (
+                                <button
+                                    key={t.id}
+                                    type="button"
+                                    role="tab"
+                                    aria-selected={on}
+                                    onClick={() => setTab(t.id)}
+                                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 border-r border-border-normal last:border-r-0 font-mono text-[10px] uppercase tracking-widest transition-colors ${
+                                        on ? 'bg-white/[0.06] text-white' : 'text-gray-500 hover:text-white hover:bg-white/[0.03]'
+                                    }`}
+                                >
+                                    {t.label}
+                                    {t.note && (
+                                        <span className={`tabular-nums ${on ? 'text-gray-400' : 'text-gray-700'}`}>
+                                            {t.note}
+                                        </span>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+                );
+            })()}
+
             {/* Editor Area */}
-            <div className="bg-bg-primary border border-border-normal p-6 shadow-lg relative mb-12">
+            <div className={`bg-bg-primary border border-border-normal p-6 relative mb-12 ${tab === 'details' ? '' : 'hidden'}`}>
                  <div className="relative z-10">
                     <ConsoleForm
                         initialData={consoleData}
@@ -148,8 +190,9 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                  </div>
             </div>
 
-            {/* NEW VARIANTS SECTION */}
-            <div className="mt-8 border-t border-dashed border-gray-800 pt-8">
+            {/* Variants. Kept mounted rather than unmounted so the delete-in-flight state
+                and any open row survive a tab switch. */}
+            <div className={`mt-8 ${tab === 'variants' ? '' : 'hidden'}`}>
                  <div className="flex justify-between items-center mb-6">
                      <h3 className="font-pixel text-lg text-white">HARDWARE VARIANTS</h3>
                      <SwissButton variant="secondary" className="text-xs" onClick={handleOpenCreateVariant}>
@@ -221,7 +264,9 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                  </div>
             </div>
 
-            <ConsoleCommerceSection console={consoleData} initialLinks={initialLinks} />
+            <div className={tab === 'commerce' ? '' : 'hidden'}>
+                <ConsoleCommerceSection console={consoleData} initialLinks={initialLinks} />
+            </div>
 
             {/* Variant editor — full screen: the spec form is long and benefits from the
                 extra width/height, and a stray backdrop click can't discard the form. */}

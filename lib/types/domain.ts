@@ -367,7 +367,7 @@ export interface ConsoleLink {
   sort_order: number | null;
   /* Nothing imported is published by default. The 1,332 rows that arrived with the
    * spreadsheet were never chosen by anyone, so a link renders only once it has been
-   * greenlit in /admin/links. */
+   * greenlit in /admin/revenue. */
   approved?: boolean;
 }
 

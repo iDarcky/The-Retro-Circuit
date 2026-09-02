@@ -3,7 +3,7 @@
 /**
  * Everything that puts a buy path on a console: Amazon ASINs, vendor links, and the
  * approval queue for the imported console_links rows, which default to unapproved and
- * render nowhere until someone greenlights them at /admin/links.
+ * render nowhere until someone greenlights them at /admin/revenue.
  */
 
 import { createClient } from "../../lib/supabase/server";

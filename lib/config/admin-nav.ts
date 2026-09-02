@@ -21,9 +21,7 @@ export const ADMIN_NAV: AdminNavGroup[] = [
     {
         group: 'Revenue',
         items: [
-            { href: '/admin/asins', label: 'ASINs', hint: 'Catalogue-wide sweep' },
-            { href: '/admin/buy-links', label: 'Buy links', hint: 'Published, no path' },
-            { href: '/admin/links', label: 'Link review', hint: 'Imported, ungreenlit' },
+            { href: '/admin/revenue', label: 'Buy paths', hint: 'ASINs, links, triage' },
         ],
     },
     {

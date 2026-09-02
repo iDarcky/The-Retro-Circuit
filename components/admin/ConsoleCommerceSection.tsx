@@ -43,7 +43,7 @@ export default function ConsoleCommerceSection({ console: consoleData, initialLi
     const hasBuyPath = approvedVendor || anyAsin;
 
     return (
-        <section className="mt-8 border-t border-dashed border-gray-800 pt-8">
+        <section className="mt-8">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-2">
                 <h3 className="font-pixel text-lg text-white">BUY PATH</h3>
                 <span
@@ -81,7 +81,7 @@ export default function ConsoleCommerceSection({ console: consoleData, initialLi
                 </h4>
                 {variants.length === 0 ? (
                     <div className="p-6 border border-dashed border-gray-800 text-gray-600 font-mono text-xs">
-                        NO VARIANTS YET. ADD ONE ABOVE BEFORE SETTING AN ASIN.
+                        NO VARIANTS YET. ADD ONE IN THE VARIANTS TAB FIRST — AN ASIN BELONGS TO A CONFIGURATION.
                     </div>
                 ) : (
                     <div className="border border-border-normal divide-y divide-border-normal">

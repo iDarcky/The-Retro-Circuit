@@ -79,7 +79,7 @@ pnpm lint     # ESLint
 - `emulation_profiles` rows are created by a **DB trigger** when a variant is inserted. Data-modifying CTEs can't see the trigger's row (same snapshot) — write emulation data in a **separate statement**.
 - Input details live on `variant_input_profile`, not on the variant. `has_rumble` is its own tri-state column (`true` / `false` / unknown) — it used to share the legacy `haptics` field with gyro, which conflated two unrelated features. **Never coerce unknown to false** on these: use `safeTriBoolean` in `lib/schemas/validation.ts`, because `safeBoolean` would flatten 259 unknown rows into "no".
 - `console_variants.slug` addresses one configuration (155 of 517 filled). It is what variant-level Arena URLs and the configuration comparison pages are built from; a variant with no slug simply is not addressable.
-- `console_links.approved` defaults to **false**. All 1,332 imported rows are unapproved and render nowhere. Anything that surfaces a link — the console page, `pickBuyTarget`, a future widget — must filter on it. Greenlighting happens at `/admin/links`.
+- `console_links.approved` defaults to **false**. All 1,332 imported rows are unapproved and render nowhere. Anything that surfaces a link — the console page, `pickBuyTarget`, a future widget — must filter on it. Greenlighting happens at `/admin/revenue`.
 
 ## Rendering (keep compute low)
 - Public pages are static/SSG with `revalidate = false` (on-demand only). There is no time-based ISR.

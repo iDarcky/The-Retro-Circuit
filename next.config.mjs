@@ -52,6 +52,13 @@ const nextConfig = {
       // ─── Defunct legacy routes → homepage ───
       { source: '/signals', destination: '/', permanent: true },
       { source: '/archive', destination: '/', permanent: true },
+      // ─── Admin: three buy-path queues merged into one tabbed screen ───
+      // Not permanent: these are admin-only URLs behind auth, never indexed, and a 308
+      // would be cached in your own browser if the layout changes again.
+      { source: '/admin/asins', destination: '/admin/revenue?tab=asins', permanent: false },
+      { source: '/admin/buy-links', destination: '/admin/revenue', permanent: false },
+      { source: '/admin/links', destination: '/admin/revenue?tab=imported', permanent: false },
+
       { source: '/games', destination: '/', permanent: true },
       { source: '/timeline', destination: '/', permanent: true },
       { source: '/comparer', destination: '/arena', permanent: true },
