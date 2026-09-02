@@ -124,7 +124,8 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Expandable Storage?', key: 'storage_expandable', type: 'checkbox', required: false, width: 'quarter' },
             { label: 'Card Slots', key: 'expansion_slot_count', type: 'select', required: false, width: 'quarter', options: ['0', '1', '2'] },
             { label: 'Card Type', key: 'expansion_card_type', type: 'select', required: false, width: 'quarter',
-              options: ['microsd', 'sd', 'memory_stick', 'cfexpress', 'proprietary'] },
+              options: ['microsd', 'sd', 'memory_stick', 'cfexpress', 'm2_2230', 'm2_2242', 'external_ssd', 'microsd_plus_m2', 'proprietary'],
+              note: 'Pick what the slot takes. microsd_plus_m2 is for devices with both, like the AYANEO Next 2.' },
             { label: 'Speed Class', key: 'expansion_speed_class', type: 'text', required: false, width: 'quarter', note: 'UHS-I, UHS-II' },
         ]
     },
@@ -135,7 +136,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: 'Res X (px)', key: 'screen_resolution_x', type: 'number', required: false, width: 'third' },
             { label: 'Res Y (px)', key: 'screen_resolution_y', type: 'number', required: false, width: 'third' },
 
-            { label: 'Aspect Ratio', key: 'aspect_ratio', type: 'text', required: false, width: 'half', visualStyle: 'computed', note: 'Auto-calculated' },
+            { label: 'Aspect Ratio', key: 'aspect_ratio', type: 'text', required: false, width: 'half', note: 'Derived from the resolution, snapped to the nearest standard ratio. Type over it to override — a spec sheet beats arithmetic.' },
             { label: 'Pixel Density (PPI)', key: 'ppi', type: 'number', required: false, width: 'half', visualStyle: 'computed', note: 'Auto-calculated' },
 
             { label: 'Panel Type', key: 'display_type', type: 'select', required: false, width: 'third',
@@ -157,7 +158,7 @@ export const VARIANT_FORM_GROUPS = [
             { label: '2nd Res X', key: 'second_screen_resolution_x', type: 'number', required: false, width: 'third', optionalGroup: 'second_screen' },
             { label: '2nd Res Y', key: 'second_screen_resolution_y', type: 'number', required: false, width: 'third', optionalGroup: 'second_screen' },
 
-            { label: '2nd Aspect Ratio', key: 'second_screen_aspect_ratio', type: 'text', required: false, width: 'half', visualStyle: 'computed', note: 'Auto-calculated', optionalGroup: 'second_screen' },
+            { label: '2nd Aspect Ratio', key: 'second_screen_aspect_ratio', type: 'text', required: false, width: 'half', note: 'Derived, snapped, overridable', optionalGroup: 'second_screen' },
             { label: '2nd Pixel Density (PPI)', key: 'second_screen_ppi', type: 'number', required: false, width: 'half', visualStyle: 'computed', note: 'Auto-calculated', optionalGroup: 'second_screen' },
 
             { label: '2nd Panel Type', key: 'second_screen_display_type', type: 'select', required: false, width: 'third', optionalGroup: 'second_screen',

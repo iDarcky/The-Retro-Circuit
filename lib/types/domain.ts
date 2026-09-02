@@ -260,7 +260,7 @@ export interface ConsoleVariant {
   charge_port_position?: 'top' | 'bottom' | 'side' | 'back' | 'multiple' | null;
 
   expansion_slot_count?: number | null;
-  expansion_card_type?: 'microsd' | 'sd' | 'memory_stick' | 'cfexpress' | 'proprietary' | null;
+  expansion_card_type?: 'microsd' | 'sd' | 'memory_stick' | 'cfexpress' | 'm2_2230' | 'm2_2242' | 'external_ssd' | 'microsd_plus_m2' | 'proprietary' | null;
   expansion_speed_class?: string | null;
 
   lens_material?: 'tempered_glass' | 'gorilla_glass' | 'plastic' | 'none' | null;

@@ -4,6 +4,7 @@ import { SwissDropdown } from '../ui/SwissDropdown';
 import { useState, type FormEvent, type FC, useEffect, type ChangeEvent, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { addConsoleVariant, updateConsoleVariant, getVariantsByConsole } from '../../app/actions';
+import { aspectRatioOf, ppiOf } from '../../lib/utils/aspect-ratio';
 import { purgeCache } from '../../app/actions/revalidate';
 import { ConsoleVariantSchema, VariantInputProfileSchema, VARIANT_FORM_GROUPS, ConsoleVariant } from '../../lib/types';
 import { SHEET_STEPS, SHEET_ELSEWHERE, SHEET_PREAMBLE_KEYS, sheetLeftovers } from '../../lib/config/sheet-order';
@@ -85,6 +86,12 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     const isEditMode = !!initialData;
     const [showEmulationForm, setShowEmulationForm] = useState(false);
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+
+    /* A hand-typed aspect ratio wins over the derived one. Latched rather than compared
+     * against the computed value, so clearing the field to blank also counts as a
+     * decision and is not immediately refilled. */
+    const [aspectRatioTouched, setAspectRatioTouched] = useState(false);
+    const [secondAspectTouched, setSecondAspectTouched] = useState(false);
     /* Two layouts over one form. Grouped is the default and organises by subsystem;
      * sheet follows the import spreadsheet's column order so a row can be typed straight
      * down without hunting between sections. Same fields, same state, same save. */
@@ -109,6 +116,8 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     const [showSecondScreen, setShowSecondScreen] = useState(false);
 
     const handleInputChange = useCallback((key: string, value: any) => {
+        if (key === 'aspect_ratio') setAspectRatioTouched(true);
+        if (key === 'second_screen_aspect_ratio') setSecondAspectTouched(true);
         setFormData(prev => ({ ...prev, [key]: value }));
         setFieldErrors(prev => {
             if (!prev[key]) return prev;
@@ -132,6 +141,8 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             }
 
             setFormData(flattenedData);
+            setAspectRatioTouched(false);
+            setSecondAspectTouched(false);
             setShowSecondScreen(SECOND_SCREEN_KEYS.some(k => {
                 const v = (flattenedData as any)[k];
                 return v !== null && v !== undefined && v !== '';
@@ -296,39 +307,42 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         fetchTemplates();
     }, [formData.console_id]);
 
+    /* Derive PPI and aspect ratio from the panel dimensions.
+     *
+     * `aspectRatioOf` snaps to a standard ratio rather than reducing exactly: a 1200x752
+     * panel is sold as 16:10, and the exact answer, 75:47, is true but useless.
+     *
+     * The ratio is still overridable — `aspectRatioTouched` latches the moment you type
+     * in the field, and from then on resolution changes stop rewriting it. A spec sheet
+     * beats arithmetic, and there was previously no way to say so: the input was
+     * readOnly. */
     useEffect(() => {
         const size = parseFloat(formData.screen_size_inch);
         const w = parseFloat(formData.screen_resolution_x);
         const h = parseFloat(formData.screen_resolution_y);
-        if (!isNaN(size) && size > 0 && !isNaN(w) && w > 0 && !isNaN(h) && h > 0) {
-            const ppi = Math.round(Math.sqrt(w * w + h * h) / size);
-            const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b);
-            const divisor = gcd(w, h);
-            let ratioX = w / divisor, ratioY = h / divisor;
-            if (ratioX === 8 && ratioY === 5) { ratioX = 16; ratioY = 10; }
-            const ratio = `${ratioX}:${ratioY}`;
-            setFormData(prev => {
-                if (prev.ppi === ppi && prev.aspect_ratio === ratio) return prev;
-                return { ...prev, ppi, aspect_ratio: ratio };
-            });
-        }
-    }, [formData.screen_size_inch, formData.screen_resolution_x, formData.screen_resolution_y]);
+        const ppi = ppiOf(w, h, size);
+        const ratio = aspectRatioOf(w, h);
+        if (ppi === null || ratio === null) return;
+        setFormData(prev => {
+            const nextRatio = aspectRatioTouched ? prev.aspect_ratio : ratio;
+            if (prev.ppi === ppi && prev.aspect_ratio === nextRatio) return prev;
+            return { ...prev, ppi, aspect_ratio: nextRatio };
+        });
+    }, [formData.screen_size_inch, formData.screen_resolution_x, formData.screen_resolution_y, aspectRatioTouched]);
 
     useEffect(() => {
         const size = parseFloat(formData.second_screen_size);
         const w = parseFloat(formData.second_screen_resolution_x);
         const h = parseFloat(formData.second_screen_resolution_y);
-        if (!isNaN(size) && size > 0 && !isNaN(w) && w > 0 && !isNaN(h) && h > 0) {
-            const ppi = Math.round(Math.sqrt(w * w + h * h) / size);
-            const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b);
-            const divisor = gcd(w, h);
-            const ratio = `${w / divisor}:${h / divisor}`;
-            setFormData(prev => {
-                if (prev.second_screen_ppi === ppi && prev.second_screen_aspect_ratio === ratio) return prev;
-                return { ...prev, second_screen_ppi: ppi, second_screen_aspect_ratio: ratio };
-            });
-        }
-    }, [formData.second_screen_size, formData.second_screen_resolution_x, formData.second_screen_resolution_y]);
+        const ppi = ppiOf(w, h, size);
+        const ratio = aspectRatioOf(w, h);
+        if (ppi === null || ratio === null) return;
+        setFormData(prev => {
+            const nextRatio = secondAspectTouched ? prev.second_screen_aspect_ratio : ratio;
+            if (prev.second_screen_ppi === ppi && prev.second_screen_aspect_ratio === nextRatio) return prev;
+            return { ...prev, second_screen_ppi: ppi, second_screen_aspect_ratio: nextRatio };
+        });
+    }, [formData.second_screen_size, formData.second_screen_resolution_x, formData.second_screen_resolution_y, secondAspectTouched]);
 
     const toggleSection = (title: string) => {
         setOpenSections(prev => ({ ...prev, [title]: !prev[title] }));

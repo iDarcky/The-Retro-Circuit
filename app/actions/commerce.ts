@@ -26,7 +26,10 @@ export const fetchAsinWorklist = async (): Promise<AsinRow[]> => {
         const supabase = await createClient();
         const { data, error } = await supabase
             .from('console_variants')
-            .select('id, variant_name, amazon_asin, consoles!inner(slug, name, status, manufacturer:manufacturer_id(name))')
+            .select('id, variant_name, amazon_asin, consoles!inner(slug, name, status, release_status, manufacturer:manufacturer_id(name))')
+            // Same rule as the buy-path queue: a discontinued device has nothing to sell,
+            // so a missing ASIN is the right answer rather than an outstanding task.
+            .neq('consoles.release_status', 'discontinued')
             .order('variant_name');
 
         if (error) { console.error('[API] fetchAsinWorklist:', error.message); return []; }
@@ -108,10 +111,16 @@ export const fetchBuyLinkWorklist = async (): Promise<BuyLinkRow[]> => {
         const supabase = await createClient();
         const { data, error } = await supabase
             .from('consoles')
-            .select(`id, slug, name, status,
+            .select(`id, slug, name, status, release_status,
                      manufacturer:manufacturer_id(name),
                      console_links(id, kind),
-                     console_variants(amazon_asin)`);
+                     console_variants(amazon_asin)`)
+            // A discontinued device has nothing to sell, so a missing buy path is the
+            // correct state, not a gap. Eleven of the fifty-two published consoles with
+            // no buy path are discontinued; listing them made the backlog look a quarter
+            // bigger than it is and buried the ones worth acting on. The dashboard has
+            // always excluded them — this is the query that disagreed with it.
+            .neq('release_status', 'discontinued');
 
         if (error) { console.error('[API] fetchBuyLinkWorklist:', error.message); return []; }
 

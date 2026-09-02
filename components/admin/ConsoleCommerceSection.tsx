@@ -41,6 +41,10 @@ export default function ConsoleCommerceSection({ console: consoleData, initialLi
     const approvedVendor = links.some(l => l.approved && l.kind === 'vendor');
     const anyAsin = variants.some(v => Boolean((v as any).amazon_asin));
     const hasBuyPath = approvedVendor || anyAsin;
+    /* A discontinued device has nothing to sell. Missing a buy path is the correct state
+     * for it, not an outstanding task, so it is not flagged as one here or counted as one
+     * in the catalogue-wide queues. */
+    const discontinued = (consoleData as any).release_status === 'discontinued';
 
     return (
         <section className="mt-8">
@@ -50,16 +54,20 @@ export default function ConsoleCommerceSection({ console: consoleData, initialLi
                     className={`font-mono text-[9px] uppercase tracking-widest border px-2 py-1 ${
                         hasBuyPath
                             ? 'text-emerald-500 border-emerald-500/40'
-                            : 'text-orange-500 border-orange-500/40'
+                            : discontinued
+                              ? 'text-gray-500 border-gray-700'
+                              : 'text-orange-500 border-orange-500/40'
                     }`}
                 >
-                    {hasBuyPath ? 'Has a buy path' : 'No buy path'}
+                    {hasBuyPath ? 'Has a buy path' : discontinued ? 'Discontinued — none needed' : 'No buy path'}
                 </span>
             </div>
             <p className="font-mono text-[10px] text-gray-500 mb-6 max-w-[70ch] leading-relaxed">
-                {'//'} With neither an ASIN nor an approved vendor link, the buy button falls back to
-                an Amazon search for a device Amazon often does not stock. Paste plain product URLs —
-                the site applies its own affiliate tag, and a pasted one would pay whoever owns it.
+                {'//'} {discontinued
+                    ? 'This device is discontinued, so it needs no buy path — the page shows the successor instead. Anything set here still renders.'
+                    : 'With neither an ASIN nor an approved vendor link, the buy button falls back to an Amazon search for a device Amazon often does not stock.'}
+                {' '}Paste plain product URLs — the site applies its own affiliate tag, and a pasted one
+                would pay whoever owns it.
             </p>
 
             {note && (

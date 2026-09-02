@@ -15,6 +15,9 @@ const GlobalSearch: FC = () => {
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
+    /* "Nothing matched" and "the search broke" used to render the same NO RECORDS FOUND,
+     * which is why a broken search was impossible to diagnose from the outside. */
+    const [failed, setFailed] = useState(false);
 
     const inputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
@@ -40,6 +43,7 @@ const GlobalSearch: FC = () => {
 
         if (!query || query.length < 2) {
             setResults([]);
+            setFailed(false);
             setIsLoading(false);
             return;
         }
@@ -50,10 +54,12 @@ const GlobalSearch: FC = () => {
             try {
                 const data = await searchDatabase(query);
                 setResults(data);
+                setFailed(false);
                 setSelectedIndex(0);
             } catch (err) {
-                console.error("Search failed", err);
+                console.error('[search] request failed', err);
                 setResults([]);
+                setFailed(true);
             } finally {
                 setIsLoading(false);
             }
@@ -140,7 +146,13 @@ const GlobalSearch: FC = () => {
                         </div>
                     )}
 
-                    {results.length === 0 && query.length >= 2 && !isLoading && (
+                    {failed && query.length >= 2 && !isLoading && (
+                        <div className="p-8 text-center font-mono text-xs text-rose-500">
+                            SEARCH UNAVAILABLE. TRY AGAIN IN A MOMENT.
+                        </div>
+                    )}
+
+                    {!failed && results.length === 0 && query.length >= 2 && !isLoading && (
                         <div className="p-8 text-center font-mono text-xs text-text-muted">
                             NO RECORDS FOUND.
                         </div>
