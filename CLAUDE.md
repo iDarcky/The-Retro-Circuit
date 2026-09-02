@@ -51,9 +51,11 @@ pnpm lint     # ESLint
 ---
 
 ## Component Conventions
-- **Buttons:** `SwissButton` always — `Button` is deprecated (still exists in admin, don't add new instances)
+- **Buttons:** `SwissButton` always — the deprecated `Button` has been removed
 - **Dropdowns:** `SwissDropdown`
-- **Modals:** `SwissModal` (hard-edged, thick borders, no shadows)
+- **Modals:** `SwissModal` (hard-edged, thick borders, no shadows). Pass `fullScreen` for
+  long data-entry forms — it also disables backdrop-click close so a stray click cannot
+  discard a half-filled form
 - **Admin forms:** `AdminInput` is the base input component
 
 ### Supabase clients
@@ -130,7 +132,6 @@ pnpm lint     # ESLint
 ---
 
 ## Known Issues / Active TODOs
-- `Button` still used in most admin components — being phased out for `SwissButton`
 - 14 legacy input columns on `console_variants` (`dpad_mechanism`, `thumbstick_*`, `trigger_mechanism`, `gyro`, …) are superseded by `variant_input_profile` and read by nothing. The drop is staged in `supabase/migrations/*.sql.pending` — back up first, then rename to `.sql`. `haptics` was pulled out of that drop: it held 226 real rows and became `has_rumble`.
 - **378 of 379 drafts lack an image**, which blocks publishing — only 1 draft is currently publishable. This is the single biggest bottleneck; specs, buttons and emulation grades are already filled in. `/admin` counts the gaps and links into the filtered index (`?status=DRAFT&gap=NO_IMAGE`).
 - 47 of 517 variants have an `amazon_asin`, and **52 of the 78 published consoles still have no buy path at all** (no ASIN, no approved vendor link). Amazon is not the main channel for these devices — see the playbook's channel table before assuming ASINs are the fix.

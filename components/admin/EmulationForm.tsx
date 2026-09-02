@@ -4,7 +4,7 @@
 import { useState, useEffect, type FC } from 'react';
 import { supabase } from '../../lib/supabase/client';
 import { EmulationProfile } from '../../lib/types';
-import Button from '../ui/Button';
+import SwissButton from '../console/swiss/SwissButton';
 import { SwissDropdown } from '../ui/SwissDropdown';
 import { SYSTEM_TIERS } from '../../lib/config/emulation';
 
@@ -157,7 +157,7 @@ export const EmulationForm: FC<EmulationFormProps> = ({ variantId, onSave }) => 
             </div>
 
             <div className="flex justify-end mt-8">
-                <Button onClick={handleSave} isLoading={saving} variant="primary">SAVE PROFILE</Button>
+                <SwissButton onClick={handleSave} isLoading={saving} variant="primary">SAVE PROFILE</SwissButton>
             </div>
         </div>
     );

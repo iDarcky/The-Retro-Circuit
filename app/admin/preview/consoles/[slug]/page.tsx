@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { fetchConsoleBySlug } from '@/app/actions';
 import ConsoleDetailView from '@/components/console/ConsoleDetailView';
-import Button from '@/components/ui/Button';
+import SwissButton from '@/components/console/swiss/SwissButton';
 import Link from 'next/link';
 
 // Strict Dynamic - No Caching for Admin Preview
@@ -40,7 +40,7 @@ export default async function AdminConsolePreviewPage(props: Props) {
                 <p className="font-mono text-gray-400 mb-8">DRAFT NOT FOUND OR DATABASE ERROR.</p>
                 {error && <div className="text-red-500 font-mono text-xs mb-4">{error.message}</div>}
                 <Link href="/admin/consoles">
-                    <Button variant="secondary">BACK TO ADMIN</Button>
+                    <SwissButton variant="secondary">BACK TO ADMIN</SwissButton>
                 </Link>
             </div>
         );

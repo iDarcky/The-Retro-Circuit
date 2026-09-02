@@ -4,7 +4,7 @@ import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { ConsoleDetails, Manufacturer } from '../../lib/types';
 import { addConsole as createConsole, updateConsole, deleteConsole } from '../../app/actions/consoles';
-import Button from '../ui/Button';
+import SwissButton from '../console/swiss/SwissButton';
 import { AdminInput } from './AdminInput';
 import { buildSummary } from '../../lib/scoring/verdict';
 import ImageUpload from '../ui/ImageUpload';
@@ -400,7 +400,7 @@ export function ConsoleForm({ initialData, manufacturers }: ConsoleFormProps) {
                     <div></div> // Spacer
                 )}
 
-                <Button type="submit" isLoading={loading}>{isEditMode ? 'UPDATE CONSOLE IDENTITY' : 'CREATE FOLDER & START SPECS >'}</Button>
+                <SwissButton type="submit" isLoading={loading}>{isEditMode ? 'UPDATE CONSOLE IDENTITY' : 'CREATE FOLDER & START SPECS >'}</SwissButton>
             </div>
         </form>
     );

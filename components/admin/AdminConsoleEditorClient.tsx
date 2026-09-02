@@ -7,8 +7,8 @@ import { ConsoleDetails, Manufacturer, ConsoleVariant } from '@/lib/types';
 import { deleteConsoleVariant } from '@/app/actions';
 import { ConsoleForm } from '@/components/admin/ConsoleForm';
 import { VariantForm } from '@/components/admin/VariantForm';
-import Button from '@/components/ui/Button';
-import Modal from '@/components/ui/Modal';
+import SwissButton from '../console/swiss/SwissButton';
+import SwissModal from '../console/swiss/SwissModal';
 
 type EditorClientProps = {
     initialConsole: ConsoleDetails;
@@ -20,7 +20,7 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
     const [consoleData, setConsoleData] = useState<ConsoleDetails>(initialConsole);
     const [error, _setError] = useState<string | null>(null);
 
-    // Variant Modal State
+    // Variant SwissModal State
     const [isVariantModalOpen, setIsVariantModalOpen] = useState(false);
     const [editingVariant, setEditingVariant] = useState<ConsoleVariant | null>(null);
     const [variantError, setVariantError] = useState<string | null>(null);
@@ -82,9 +82,9 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                 <div className="flex gap-2">
                     {/* UPDATED LINK: Points to new Admin Preview Route */}
                     <Link href={`/admin/preview/consoles/${consoleData.slug}`} target="_blank">
-                        <Button variant="secondary" className="text-xs border border-gray-700 text-gray-400">
+                        <SwissButton variant="secondary" className="text-xs border border-gray-700 text-gray-400">
                              PREVIEW [↗]
-                        </Button>
+                        </SwissButton>
                     </Link>
                 </div>
             </div>
@@ -149,9 +149,9 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
             <div className="mt-8 border-t border-dashed border-gray-800 pt-8">
                  <div className="flex justify-between items-center mb-6">
                      <h3 className="font-pixel text-lg text-white">HARDWARE VARIANTS</h3>
-                     <Button variant="secondary" className="text-xs" onClick={handleOpenCreateVariant}>
+                     <SwissButton variant="secondary" className="text-xs" onClick={handleOpenCreateVariant}>
                         + ADD NEW VARIANT
-                     </Button>
+                     </SwissButton>
                  </div>
 
                  <div className="grid grid-cols-1 gap-4">
@@ -191,13 +191,13 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                                      </div>
                                  </div>
                                  <div className="flex items-center gap-2 shrink-0">
-                                     <Button
+                                     <SwissButton
                                         variant="secondary"
                                         className="text-xs border-gray-600 text-gray-400 hover:border-white hover:text-white"
                                         onClick={() => handleOpenEditVariant(variant)}
                                      >
                                          EDIT SPECS
-                                     </Button>
+                                     </SwissButton>
                                      <button
                                         type="button"
                                         disabled={deletingId === variant.id}
@@ -220,7 +220,7 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
 
             {/* Variant editor — full screen: the spec form is long and benefits from the
                 extra width/height, and a stray backdrop click can't discard the form. */}
-            <Modal
+            <SwissModal
                 isOpen={isVariantModalOpen}
                 onClose={() => setIsVariantModalOpen(false)}
                 fullScreen
@@ -238,7 +238,7 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                         ERROR: {variantError}
                     </div>
                 )}
-            </Modal>
+            </SwissModal>
         </div>
     );
 }

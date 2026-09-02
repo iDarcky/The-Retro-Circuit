@@ -7,9 +7,9 @@ import { bulkSetConsoleStatus } from '../../app/actions/dashboard';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { timeAgo } from '@/lib/utils/date-formatter';
-import Button from '@/components/ui/Button';
+import SwissButton from '../console/swiss/SwissButton';
 import { ConsoleForm } from '@/components/admin/ConsoleForm';
-import Modal from '@/components/ui/Modal';
+import SwissModal from '../console/swiss/SwissModal';
 import { Manufacturer } from '@/lib/types';
 import { deleteConsole } from '@/app/actions';
 
@@ -100,7 +100,7 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
     );
     const [release, setRelease] = useState<string>((params.get('release') || 'ALL').toLowerCase() === 'all' ? 'ALL' : (params.get('release') || 'ALL').toLowerCase());
 
-    // Modal State
+    // SwissModal State
     const [selected, setSelected] = useState<Set<string>>(new Set());
     const [bulkBusy, setBulkBusy] = useState(false);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -267,9 +267,9 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                 </div>
 
                 <div className="flex gap-2">
-                    <Button variant="secondary" className="text-xs" onClick={() => setIsCreateModalOpen(true)}>
+                    <SwissButton variant="secondary" className="text-xs" onClick={() => setIsCreateModalOpen(true)}>
                          + NEW CONSOLE FOLDER
-                    </Button>
+                    </SwissButton>
                 </div>
             </div>
 
@@ -565,8 +565,8 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                  </div>
             </div>
 
-            {/* Create Modal */}
-            <Modal
+            {/* Create SwissModal */}
+            <SwissModal
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
                 title="INITIALIZE NEW CONSOLE FOLDER"
@@ -579,7 +579,7 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                         ERROR: {createError}
                     </div>
                 )}
-            </Modal>
+            </SwissModal>
         </div>
     );
 }

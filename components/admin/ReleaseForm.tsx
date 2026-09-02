@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Release, RoadmapFeature } from '../../lib/types/domain';
-import Button from '../ui/Button';
+import SwissButton from '../console/swiss/SwissButton';
 import { createRelease, updateRelease, fetchRoadmapItems, updateRoadmapItem } from '../../app/actions/roadmap';
 
 interface ReleaseFormProps {
@@ -190,9 +190,9 @@ export const ReleaseForm = ({ initialData, onSuccess, onError }: ReleaseFormProp
             </div>
 
             <div className="pt-4 border-t border-gray-800">
-                <Button type="submit" variant="primary" disabled={loading} className="w-full">
+                <SwissButton type="submit" variant="primary" disabled={loading} className="w-full">
                     {loading ? 'PROCESSING...' : (initialData ? 'SAVE CHANGES' : 'INITIATE RELEASE')}
-                </Button>
+                </SwissButton>
             </div>
         </form>
     );

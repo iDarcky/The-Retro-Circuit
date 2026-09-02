@@ -7,7 +7,7 @@ import { addConsoleVariant, updateConsoleVariant, getVariantsByConsole } from '.
 import { purgeCache } from '../../app/actions/revalidate';
 import { ConsoleVariantSchema, VariantInputProfileSchema, VARIANT_FORM_GROUPS, ConsoleVariant } from '../../lib/types';
 import { SHEET_STEPS, SHEET_ELSEWHERE, SHEET_PREAMBLE_KEYS, sheetLeftovers } from '../../lib/config/sheet-order';
-import Button from '../ui/Button';
+import SwissButton from '../console/swiss/SwissButton';
 import { AdminInput } from './AdminInput';
 import ImageUpload from '../ui/ImageUpload';
 import { EmulationForm } from './EmulationForm';
@@ -991,8 +991,8 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 )}
 
                 <div className="flex justify-end gap-4 pt-6 border-t border-border-normal">
-                    {!isEditMode && <Button type="button" variant="secondary" onClick={(e) => handleSubmit(e, 'CLONE')} isLoading={loading}>[ SAVE & CLONE ]</Button>}
-                    <Button type="submit" onClick={(e) => handleSubmit(e, 'SAVE')} isLoading={loading}>{isEditMode ? 'UPDATE UNIT' : 'REGISTER UNIT'}</Button>
+                    {!isEditMode && <SwissButton type="button" variant="secondary" onClick={(e) => handleSubmit(e, 'CLONE')} isLoading={loading}>[ SAVE & CLONE ]</SwissButton>}
+                    <SwissButton type="submit" onClick={(e) => handleSubmit(e, 'SAVE')} isLoading={loading}>{isEditMode ? 'UPDATE UNIT' : 'REGISTER UNIT'}</SwissButton>
                 </div>
             </form>
         </div>

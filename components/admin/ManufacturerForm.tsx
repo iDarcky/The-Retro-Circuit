@@ -7,7 +7,7 @@ import { addManufacturer, updateManufacturer, deleteManufacturer } from '../../a
 import { purgeCache } from '../../app/actions/revalidate';
 import { supabase } from '../../lib/supabase/client';
 import { ManufacturerSchema, MANUFACTURER_FORM_FIELDS, Manufacturer } from '../../lib/types';
-import Button from '../ui/Button';
+import SwissButton from '../console/swiss/SwissButton';
 import { AdminInput } from './AdminInput';
 import ImageUpload from '../ui/ImageUpload';
 
@@ -330,9 +330,9 @@ export const ManufacturerForm: FC<ManufacturerFormProps> = ({ initialData, onSuc
                     <div></div> // Spacer
                 )}
 
-                <Button type="submit" isLoading={loading}>
+                <SwissButton type="submit" isLoading={loading}>
                     {isEditMode ? 'UPDATE FABRICATOR' : 'REGISTER FABRICATOR'}
-                </Button>
+                </SwissButton>
             </div>
         </form>
     );
