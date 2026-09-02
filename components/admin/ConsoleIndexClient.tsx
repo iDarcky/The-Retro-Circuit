@@ -39,6 +39,14 @@ type GapKey = 'ALL' | 'NO_IMAGE' | 'NO_VARIANT' | 'NO_PRICE' | 'READY';
  * An image is required to publish (see ConsoleForm validation); a console with no
  * variant has no specs at all; price drives the Best-Of guides and the finder.
  */
+/* "Ready" means ready *to publish*, so an already-published console is not ready — it
+ * is done. Without this the chip counted every console with no gaps, and since a
+ * published console has an image, a variant and a price by definition, all 77 of them
+ * landed in a queue labelled "ready to publish" beside the 2 drafts that actually were.
+ * The hub's dashboard has always drawn this line; the index did not. */
+const isReadyToPublish = (c: AdminConsoleRow): boolean =>
+    (c.status || 'draft').toLowerCase() !== 'published' && getGaps(c).length === 0;
+
 function getGaps(c: AdminConsoleRow): string[] {
     const gaps: string[] = [];
     const variants = c.variants || [];
@@ -153,7 +161,7 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
         NO_IMAGE: inStatus.filter(c => getGaps(c).includes('IMAGE')).length,
         NO_VARIANT: inStatus.filter(c => getGaps(c).includes('VARIANT')).length,
         NO_PRICE: inStatus.filter(c => getGaps(c).includes('PRICE')).length,
-        READY: inStatus.filter(c => getGaps(c).length === 0).length,
+        READY: inStatus.filter(isReadyToPublish).length,
     };
 
     const filteredConsoles = consoles.filter(c => {
@@ -171,7 +179,7 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
         const gaps = getGaps(c);
         const matchesGap =
             gap === 'ALL' ? true :
-            gap === 'READY' ? gaps.length === 0 :
+            gap === 'READY' ? isReadyToPublish(c) :
             gap === 'NO_IMAGE' ? gaps.includes('IMAGE') :
             gap === 'NO_VARIANT' ? gaps.includes('VARIANT') :
             gaps.includes('PRICE');
