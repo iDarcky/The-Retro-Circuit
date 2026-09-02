@@ -1,4 +1,5 @@
 import { fetchPublicManufacturers, fetchVaultConsoles } from '../../app/actions';
+import { siteConfig } from '../../config/site';
 import { fetchConsoleAndVariantCounts } from '../../app/actions/consoles';
 import ConsoleVaultClient from '../../components/console/ConsoleVaultClient';
 import ConsoleLinkIndex from '../../components/console/ConsoleLinkIndex';
@@ -14,7 +15,7 @@ export async function generateMetadata() {
   return {
     title: 'Console Vault | All Retro Handhelds | The Retro Circuit',
     description: `Browse, filter, and sort every retro handheld console in the database. ${numConsoles} consoles, ${numVariants} hardware variants.`,
-    alternates: { canonical: "https://theretrocircuit.com/consoles" },
+    alternates: { canonical: `${siteConfig.url}/consoles` },
   };
 }
 

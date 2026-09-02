@@ -1,5 +1,7 @@
+import { siteConfig } from '../config/site';
+
 export default function robots() {
-  const baseUrl = 'https://theretrocircuit.com';
+  const baseUrl = siteConfig.url;
   
   return {
     rules: [

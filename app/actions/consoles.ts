@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "../../lib/supabase/server";
+import { siteConfig } from '../../config/site';
 import { submitToIndexNow } from "../../lib/indexnow";
 import { supabaseAnon } from "../../lib/supabase/anon";
 import { ConsoleDetails, ConsoleVariant, VariantInputProfile } from "../../lib/types";
@@ -62,7 +63,7 @@ async function revalidateConsoleSurfaces(slug?: string | null, manufacturerSlug?
     revalidateCatalogueCollections();
     revalidatePath('/sitemap.xml');
 
-    const base = 'https://theretrocircuit.com';
+    const base = siteConfig.url;
     const urls = [`${base}/consoles/${slug}`, `${base}/consoles`, `${base}/sitemap.xml`];
     if (manufacturerSlug) urls.push(`${base}/fabricators/${manufacturerSlug}`);
     await submitToIndexNow(urls);

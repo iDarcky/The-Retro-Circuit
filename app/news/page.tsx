@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { siteConfig } from '../../config/site';
 import { Metadata } from 'next';
 import { SectionHeader } from '@/components/news/SectionHeader';
 import { SignalFeed } from '@/components/news/SignalFeed';
@@ -32,19 +33,19 @@ export default async function NewsPage() {
       '@type': 'CollectionPage',
       name: 'Transmission Feed - News & Signals',
       description: 'Latest hardware signals, reviews, and news from the retro handheld sector.',
-      url: 'https://theretrocircuit.com/news',
+      url: `${siteConfig.url}/news`,
       about: {
          '@type': 'ItemList',
          itemListElement: [
             ...newsItems.map((news: any, index: number) => ({
                '@type': 'ListItem',
                position: index + 1,
-               url: `https://theretrocircuit.com/news/${news.id}`
+               url: `${siteConfig.url}/news/${news.id}`
             })),
             ...reviews.map((review: any, index: number) => ({
                '@type': 'ListItem',
                position: newsItems.length + index + 1,
-               url: `https://theretrocircuit.com/news/reviews/${review.id}`
+               url: `${siteConfig.url}/news/reviews/${review.id}`
             }))
          ]
       }

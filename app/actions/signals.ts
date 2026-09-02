@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { siteConfig } from '../../config/site';
 import { supabaseAnon } from '@/lib/supabase/anon';
 import { revalidatePath } from 'next/cache';
 import { Signal, SignalType } from '@/lib/types/news';
@@ -25,8 +26,8 @@ const { data: newSignal, error } = await supabase
   // Let's index the news page they live on, or if there's a dedicated route:
   if (newSignal && newSignal.is_active) {
       // Assuming signals don't have their own detailed page, submit /news
-      // If they do, submit `https://theretrocircuit.com/news/signals/${newSignal.id}`
-      submitToIndexNow([`https://theretrocircuit.com/news`]);
+      // If they do, submit `${siteConfig.url}/news/signals/${newSignal.id}`
+      submitToIndexNow([`${siteConfig.url}/news`]);
   }
 
   revalidatePath('/news');
@@ -48,7 +49,7 @@ const { error } = await supabase
   }
 
   if (isActive) {
-      submitToIndexNow([`https://theretrocircuit.com/news`]);
+      submitToIndexNow([`${siteConfig.url}/news`]);
   }
 
   revalidatePath('/news');

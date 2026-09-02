@@ -1,4 +1,5 @@
 import { cache } from 'react';
+import { siteConfig } from '../../../config/site';
 import { notFound } from 'next/navigation';
 import { supabaseAnon } from '../../../lib/supabase/anon';
 import { ConsoleDetails } from '../../../lib/types';
@@ -96,7 +97,7 @@ export default async function FabricatorDetailPage(props: Props) {
         "@context": "https://schema.org",
         "@type": "Brand",
         "name": profile.name,
-        "url": `https://theretrocircuit.com/fabricators/${profile.slug}`,
+        "url": `${siteConfig.url}/fabricators/${profile.slug}`,
         "logo": profile.image_url
     };
 

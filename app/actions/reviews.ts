@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { siteConfig } from '../../config/site';
 import { supabaseAnon } from '@/lib/supabase/anon';
 import { revalidatePath } from 'next/cache';
 import { Review } from '@/lib/types/news';
@@ -35,7 +36,7 @@ export async function createReview(data: Omit<Review, 'id' | 'author' | 'publish
   }
 
   if (newReview) {
-      submitToIndexNow([`https://theretrocircuit.com/news/reviews/${newReview.id}`]);
+      submitToIndexNow([`${siteConfig.url}/news/reviews/${newReview.id}`]);
   }
 
   revalidatePath('/news');
@@ -130,7 +131,7 @@ export async function updateReview(id: string, data: Partial<Review>) {
     throw new Error(error.message);
   }
 
-  submitToIndexNow([`https://theretrocircuit.com/news/reviews/${id}`]);
+  submitToIndexNow([`${siteConfig.url}/news/reviews/${id}`]);
 
   revalidatePath('/news');
   revalidatePath('/admin/reviews');

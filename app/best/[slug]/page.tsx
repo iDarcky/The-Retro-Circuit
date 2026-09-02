@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { siteConfig } from '../../../config/site';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -53,13 +54,13 @@ export default async function BestOfPage(props: Props) {
         '@type': 'ItemList',
         name: collection.title,
         description: collection.description,
-        url: `https://theretrocircuit.com/best/${collection.slug}`,
+        url: `${siteConfig.url}/best/${collection.slug}`,
         numberOfItems: picks.length,
         itemListElement: picks.map((c, i) => ({
             '@type': 'ListItem',
             position: i + 1,
             name: [c.manufacturer?.name, c.name].filter(Boolean).join(' '),
-            url: `https://theretrocircuit.com/consoles/${c.slug}`,
+            url: `${siteConfig.url}/consoles/${c.slug}`,
         })),
     };
 

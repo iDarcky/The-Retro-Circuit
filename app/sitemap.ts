@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next';
+import { siteConfig } from '../config/site';
 import { supabaseAnon } from '../lib/supabase/anon';
 import { BEST_OF_COLLECTIONS } from '../lib/bestof/collections';
 import { fetchPublicManufacturers } from './actions/manufacturers';
@@ -8,7 +9,7 @@ import { fetchAllFacetPaths } from '../lib/config/facets';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Use the anonymous server client for sitemap generation
   const supabase = supabaseAnon;
-  const baseUrl = 'https://theretrocircuit.com';
+  const baseUrl = siteConfig.url;
 
   // 1. Static Routes
   const routes: MetadataRoute.Sitemap = [

@@ -1,4 +1,5 @@
 import { cache } from 'react';
+import { siteConfig } from '../../../config/site';
 import { notFound } from 'next/navigation';
 import { fetchConsoleBySlug } from '../../../app/actions';
 import { fetchConsoleList, fetchConsoleImages, fetchSuccessor } from '../../../app/actions/consoles';
@@ -192,10 +193,10 @@ export default async function ConsoleSpecsPage(props: Props) {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: fullName,
-    url: `https://theretrocircuit.com/consoles/${slug}`,
+    url: `${siteConfig.url}/consoles/${slug}`,
     image: [consoleData.image_url, ...galleryImages.map((g) => g.url)].filter(Boolean).length
       ? [consoleData.image_url, ...galleryImages.map((g) => g.url)].filter(Boolean)
-      : ['https://theretrocircuit.com/og-v2.png'],
+      : [`${siteConfig.url}/og-v2.png`],
     description: consoleData.description || `Full specs, variants, and pricing for the ${fullName}.`,
     brand: {
       '@type': 'Brand',
@@ -208,7 +209,7 @@ export default async function ConsoleSpecsPage(props: Props) {
     const firstAsin = consoleData.variants?.find((v) => v.amazon_asin)?.amazon_asin;
     const offerUrl = firstAsin
       ? `https://www.amazon.com/dp/${firstAsin}?tag=theretrocircu-20`
-      : `https://theretrocircuit.com/consoles/${slug}`;
+      : `${siteConfig.url}/consoles/${slug}`;
 
     jsonLd.offers = offerCount > 1 && maxPrice > minPrice
       ? {
@@ -268,11 +269,11 @@ export default async function ConsoleSpecsPage(props: Props) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Consoles', item: 'https://theretrocircuit.com/consoles' },
+      { '@type': 'ListItem', position: 1, name: 'Consoles', item: `${siteConfig.url}/consoles` },
       ...(consoleData.manufacturer?.slug
-        ? [{ '@type': 'ListItem', position: 2, name: mfgName, item: `https://theretrocircuit.com/fabricators/${consoleData.manufacturer.slug}` }]
+        ? [{ '@type': 'ListItem', position: 2, name: mfgName, item: `${siteConfig.url}/fabricators/${consoleData.manufacturer.slug}` }]
         : []),
-      { '@type': 'ListItem', position: consoleData.manufacturer?.slug ? 3 : 2, name: fullName, item: `https://theretrocircuit.com/consoles/${slug}` },
+      { '@type': 'ListItem', position: consoleData.manufacturer?.slug ? 3 : 2, name: fullName, item: `${siteConfig.url}/consoles/${slug}` },
     ],
   };
 
