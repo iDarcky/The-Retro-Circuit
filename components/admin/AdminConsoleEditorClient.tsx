@@ -9,13 +9,16 @@ import { ConsoleForm } from '@/components/admin/ConsoleForm';
 import { VariantForm } from '@/components/admin/VariantForm';
 import SwissButton from '../console/swiss/SwissButton';
 import SwissModal from '../console/swiss/SwissModal';
+import ConsoleCommerceSection from './ConsoleCommerceSection';
+import type { LinkReviewRow } from '../../app/actions/commerce';
 
 type EditorClientProps = {
     initialConsole: ConsoleDetails;
     initialManufacturers: Manufacturer[];
+    initialLinks: LinkReviewRow[];
 };
 
-export default function AdminConsoleEditorClient({ initialConsole, initialManufacturers }: EditorClientProps) {
+export default function AdminConsoleEditorClient({ initialConsole, initialManufacturers, initialLinks }: EditorClientProps) {
     const router = useRouter();
     const [consoleData, setConsoleData] = useState<ConsoleDetails>(initialConsole);
     const [error, _setError] = useState<string | null>(null);
@@ -217,6 +220,8 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                      )}
                  </div>
             </div>
+
+            <ConsoleCommerceSection console={consoleData} initialLinks={initialLinks} />
 
             {/* Variant editor — full screen: the spec form is long and benefits from the
                 extra width/height, and a stray backdrop click can't discard the form. */}

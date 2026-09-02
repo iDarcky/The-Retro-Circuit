@@ -283,6 +283,38 @@ export const fetchLinkReview = async (): Promise<LinkReviewConsole[]> => {
 };
 
 /** Greenlight or pull one link. Revalidates the console page when it is live. */
+/**
+ * Every link on one console, for the buy-path panel in its editor.
+ *
+ * The three commerce screens are catalogue-wide sweeps — they answer "which of the 462
+ * consoles still needs work". This answers "what does THIS console have", which is the
+ * question you actually have while editing one, and which nothing could answer before.
+ */
+export const fetchConsoleLinks = async (consoleId: string): Promise<LinkReviewRow[]> => {
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from('console_links')
+            .select('id, kind, url, label, approved, sort_order')
+            .eq('console_id', consoleId)
+            .order('approved', { ascending: false })
+            .order('sort_order', { ascending: true });
+        if (error) throw error;
+
+        return (data ?? []).map((l: any) => ({
+            id: l.id,
+            kind: l.kind,
+            url: l.url,
+            label: l.label,
+            approved: Boolean(l.approved),
+            domain: domainOf(l.url),
+        }));
+    } catch (e: any) {
+        console.error('[API] fetchConsoleLinks error:', e?.message ?? e);
+        return [];
+    }
+};
+
 export const setLinkApproval = async (
     linkId: string,
     approved: boolean,
