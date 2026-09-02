@@ -33,7 +33,7 @@ const SidebarItem = ({ to, label, exact = false, index }: SidebarItemProps) => {
       }`}
     >
       <span className="font-sans font-black text-3xl tracking-tighter uppercase w-full">
-        <span className="text-xs font-mono tracking-widest opacity-50 block mb-1">0{index} //</span>
+        <span className="text-xs font-mono tracking-widest opacity-50 block mb-1">0{index} {'//'}</span>
         {label}
       </span>
     </Link>

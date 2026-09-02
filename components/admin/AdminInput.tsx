@@ -71,7 +71,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                         maxLength={7}
                     />
                 </div>
-                {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
+                {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{'//'} {field.note}</div>}
                 {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold">! {error}</div>}
             </div>
         );
@@ -95,7 +95,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                     required={false}
                     placeholder={field.placeholder || "NO DATA"}
                 />
-                {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
+                {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{'//'} {field.note}</div>}
                 {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold">! {error}</div>}
             </div>
         );
@@ -126,7 +126,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                         {isChecked && <div className="w-2 h-2 bg-black"></div>}
                     </div>
                 </div>
-                {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
+                {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{'//'} {field.note}</div>}
                 {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold">! {error}</div>}
             </div>
         );
@@ -151,7 +151,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                         buttonClassName={`${baseInputClasses} ${borderColor} h-[46px] flex justify-between items-center`}
                     />
                 </div>
-                {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
+                {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{'//'} {field.note}</div>}
                 {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold">! {error}</div>}
             </div>
         );
@@ -177,7 +177,7 @@ export const AdminInput: FC<RenderInputProps> = ({ field, value, onChange, error
                 readOnly={isComputed}
                 placeholder={field.placeholder || "NO DATA"}
             />
-            {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
+            {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{'//'} {field.note}</div>}
             {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase font-bold">! {error}</div>}
         </div>
     );

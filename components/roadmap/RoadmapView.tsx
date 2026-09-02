@@ -256,7 +256,7 @@ export default function RoadmapView({ releases, upcomingItems, isAdmin }: Roadma
                                                 </div>
                                                 {release.title && (
                                                     <h3 className="text-lg font-bold text-emerald-400 font-mono uppercase tracking-wide mt-1">
-                                                    // {release.title}
+                                                    {'//'} {release.title}
                                                     </h3>
                                                 )}
                                             </div>

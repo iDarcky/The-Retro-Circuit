@@ -261,7 +261,7 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                             &lt; ROOT TERMINAL
                         </Link>
                         <p className="font-mono text-xs text-gray-500 tracking-widest">
-                            // TOTAL RECORDS: {consoles.length}
+                            {'//'} TOTAL RECORDS: {consoles.length}
                         </p>
                     </div>
                 </div>
@@ -556,7 +556,7 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                             {filteredConsoles.length === 0 && (
                                 <tr>
                                     <td colSpan={7} className="p-8 text-center text-gray-500 border-dashed border-gray-800 uppercase tracking-widest">
-                                        // NO RECORDS FOUND.
+                                        {'//'} NO RECORDS FOUND.
                                     </td>
                                 </tr>
                             )}

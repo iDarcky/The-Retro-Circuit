@@ -576,7 +576,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                         Has a second screen
                     </button>
                     {!showSecondScreen && (
-                        <div className="text-[9px] text-gray-600 mt-1 font-mono">// 9 of 514 devices do — leave this off for the rest</div>
+                        <div className="text-[9px] text-gray-600 mt-1 font-mono">{'//'} 9 of 514 devices do — leave this off for the rest</div>
                     )}
                 </div>
             );
@@ -590,7 +590,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 <div key={key} className={colSpan}>
                     <label className="text-[10px] mb-2 block uppercase tracking-wider text-gray-500">{field.label}</label>
                     {clusters.length === 0 && (
-                        <div className="text-[9px] text-gray-600 font-mono mb-2">// no clusters yet</div>
+                        <div className="text-[9px] text-gray-600 font-mono mb-2">{'//'} no clusters yet</div>
                     )}
                     <div className="space-y-1.5">
                         {clusters.map((c: any, i: number) => (
@@ -613,12 +613,12 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                         + Add cluster
                     </button>
                     <div className="text-[9px] text-gray-500 mt-2 font-mono tracking-tight leading-relaxed">
-                        // count · core · MHz · architecture year. Fastest cluster first.<br />
-                        // One row per cluster because &quot;8 cores&quot; hides the difference between
+                        {'//'} count · core · MHz · architecture year. Fastest cluster first.<br />
+                        {'//'} One row per cluster because &quot;8 cores&quot; hides the difference between
                         1&times;X4 + 4&times;A720 + 3&times;A520 and eight A55s.<br />
-                        // Architecture year ranks above clock: 2 GHz on a 2023 core beats 3 GHz on a 2016 one.
+                        {'//'} Architecture year ranks above clock: 2 GHz on a 2023 core beats 3 GHz on a 2016 one.
                         {derivedCores > 0 && (
-                            <><br />// Total cores: <span className="text-gray-300">{derivedCores}</span> (saved automatically)</>
+                            <><br />{'//'} Total cores: <span className="text-gray-300">{derivedCores}</span> (saved automatically)</>
                         )}
                     </div>
                 </div>
@@ -726,7 +726,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                         options={[{ label: 'Unknown', value: '' }, { label: 'Yes', value: 'true' }, { label: 'No', value: 'false' }]}
                         buttonClassName="w-full bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center"
                         labelPrefix="" inverted={false} />
-                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
+                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{'//'} {field.note}</div>}
                 </div>
             );
         }
@@ -751,7 +751,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                             );
                         })}
                     </div>
-                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
+                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{'//'} {field.note}</div>}
                 </div>
             );
         }
@@ -769,7 +769,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                             buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center"
                             labelPrefix="" inverted={false} />
                     </div>
-                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
+                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{'//'} {field.note}</div>}
                 </div>
             );
         }
@@ -787,7 +787,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                             buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center"
                             labelPrefix="" inverted={false} />
                     </div>
-                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
+                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{'//'} {field.note}</div>}
                     {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
                 </div>
             );
@@ -865,7 +865,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     ))}
                     {layout === 'sheet' && (
                         <span className="font-mono text-[9px] text-gray-600 ml-2">
-                            // matches the import spreadsheet, left to right
+                            {'//'} matches the import spreadsheet, left to right
                         </span>
                     )}
                 </div>
@@ -874,7 +874,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     <div className="space-y-3">
                         <div className="bg-black/40 border-l-4 border-secondary p-4">
                             <div className="font-mono text-[10px] uppercase tracking-widest text-gray-400 mb-3">
-                                Identity <span className="text-gray-600">// no sheet column, but required</span>
+                                Identity <span className="text-gray-600">{'//'} no sheet column, but required</span>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
                                 {SHEET_PREAMBLE_KEYS.map((k, i) =>
@@ -907,7 +907,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                             <summary className="p-4 cursor-pointer font-mono text-[11px] uppercase tracking-widest text-gray-400 hover:text-white">
                                 Not in the sheet
                                 <span className="text-gray-600 ml-2 normal-case tracking-normal">
-                                    // {sheetLeftovers(ALL_FIELD_KEYS).length} more fields
+                                    {'//'} {sheetLeftovers(ALL_FIELD_KEYS).length} more fields
                                 </span>
                             </summary>
                             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 pt-0">

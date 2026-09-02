@@ -92,7 +92,7 @@ export default function FabricatorClient({ initialManufacturers, counts = {} }: 
                         </Link>
                         <span>|</span>
                         <p>
-                            // TOTAL ENTITIES: {manufacturers.length}
+                            {'//'} TOTAL ENTITIES: {manufacturers.length}
                         </p>
                     </div>
                 </div>
@@ -196,7 +196,7 @@ export default function FabricatorClient({ initialManufacturers, counts = {} }: 
                 ))}
                 {filteredManufacturers.length === 0 && (
                     <div className="col-span-full p-12 text-center text-gray-500 font-mono text-xs border border-dashed border-gray-800 uppercase tracking-widest">
-                        // NO RECORDS FOUND MATCHING QUERY.
+                        {'//'} NO RECORDS FOUND MATCHING QUERY.
                     </div>
                 )}
             </div>

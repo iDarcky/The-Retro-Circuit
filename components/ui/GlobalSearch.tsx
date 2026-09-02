@@ -186,7 +186,7 @@ const GlobalSearch: FC = () => {
                                                 {res.type}
                                             </span>
                                             <span className="text-[10px] font-mono text-text-muted/50 truncate uppercase tracking-tight">
-                                                // {res.subtitle || 'DATABASE_RECORD'}
+                                                {'//'} {res.subtitle || 'DATABASE_RECORD'}
                                             </span>
                                         </div>
                                     </div>

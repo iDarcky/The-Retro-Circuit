@@ -298,9 +298,9 @@ export default function DesignSystemPage() {
               <div className="space-y-4 mt-6">
                 <div className="flex items-center text-xs font-mono tracking-wider">
                   <span className="text-white/50 hover:text-white cursor-pointer transition-colors pb-1">SYSTEMS</span>
-                  <span className="text-white/20 mx-3 font-mono">//</span>
+                  <span className="text-white/20 mx-3 font-mono">{'//'}</span>
                   <span className="text-white/50 hover:text-white cursor-pointer transition-colors pb-1">HANDHELDS</span>
-                  <span className="text-white/20 mx-3 font-mono">//</span>
+                  <span className="text-white/20 mx-3 font-mono">{'//'}</span>
                   <span className="text-white pb-1 border-b border-white">ANALOGUE POCKET</span>
                 </div>
               </div>

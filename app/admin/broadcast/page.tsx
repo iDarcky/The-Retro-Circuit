@@ -16,7 +16,7 @@ export default function BroadcastHub() {
                  BROADCAST
               </h1>
               <p className="font-mono text-xs md:text-sm text-gray-500 mt-2 tracking-widest uppercase">
-                 // PUBLIC TRANSMISSION CONTROL // v1.0
+                 {'//'} PUBLIC TRANSMISSION CONTROL // v1.0
               </p>
            </div>
            <div className="hidden md:block">

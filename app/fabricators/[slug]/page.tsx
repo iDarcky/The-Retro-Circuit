@@ -1,13 +1,27 @@
-
-import Link from 'next/link';
-// Switch to public client only
-import { createClient } from '../../../lib/supabase/client';
+import { cache } from 'react';
+import { notFound } from 'next/navigation';
+import { supabaseAnon } from '../../../lib/supabase/anon';
 import { ConsoleDetails } from '../../../lib/types';
-import Button from '../../../components/ui/Button';
 import FabricatorDetailClient from '../../../components/fabricator/FabricatorDetailClient';
 import { fetchPublicManufacturers } from '../../../app/actions/manufacturers';
+import { defaultVariantOf } from '../../../lib/normalize';
 
 export const revalidate = false;
+
+/**
+ * Memoized per request so generateMetadata and the page body share one lookup
+ * instead of querying the same brand twice — the pattern `/consoles/[slug]`
+ * already uses. Two separate lookups can also disagree about whether the brand
+ * exists, which is how the metadata and the body ended up failing differently.
+ */
+const resolveBrand = cache(async (slug: string) => {
+    const { data } = await supabaseAnon
+        .from('manufacturer')
+        .select('*')
+        .eq('slug', slug)
+        .maybeSingle();
+    return data;
+});
 
 export async function generateStaticParams() {
   const fabricators = await fetchPublicManufacturers();
@@ -21,15 +35,9 @@ type Props = {
 export async function generateMetadata(props: Props) {
     try {
         const params = await props.params;
-        const supabase = createClient(); // Use browser client (auth-agnostic in SSR if no cookies passed)
-        const { data: profile } = await supabase
-            .from('manufacturer')
-            .select('name')
-            .eq('slug', params.slug)
-            .single();
-
+        const profile = await resolveBrand(params.slug);
         const titleName = profile?.name || decodeURIComponent(params.slug);
-        
+
         return {
             title: `${titleName} Handheld History | The Retro Circuit`,
             description: `Explore the complete hardware archive of ${titleName}.`,
@@ -42,91 +50,47 @@ export async function generateMetadata(props: Props) {
     }
 }
 
-// Remove generateStaticParams entirely
-// export async function generateStaticParams() { return []; }
-
 export default async function FabricatorDetailPage(props: Props) {
     const params = await props.params;
     const slug = params.slug;
 
-    let profile = null;
+    const profile = await resolveBrand(slug);
+    if (!profile) notFound();
+
     let consoles: ConsoleDetails[] = [];
-    let fetchError: any = null;
 
-    try {
-        const supabase = createClient(); // Public client
+    const { data, error } = await supabaseAnon
+        .from('consoles')
+        .select('*, manufacturer:manufacturer(*), variants:console_variants(*)')
+        .eq('manufacturer_id', profile.id)
+        .eq('status', 'published');
 
-        // 1. Fetch Profile
-        const { data: manuProfile, error: manuError } = await supabase
-            .from('manufacturer')
-            .select('*')
-            .eq('slug', slug)
-            .single();
-        
-        if (manuError) throw manuError;
-        profile = manuProfile;
-
-        // 2. Fetch Consoles (Only if profile loaded)
-        if (profile) {
-            // Query by name first to ensure we get everything, regardless of NULL release years in parent table
-            const { data, error } = await supabase
-                .from('consoles')
-                .select('*, manufacturer:manufacturer(*), variants:console_variants(*)')
-                .eq('manufacturer_id', profile.id)
-                .eq('status', 'published') // Enforce published only
-                .order('name', { ascending: true });
-
-            if (error) {
-                console.error('[FabricatorPage] Console Fetch Error:', error.message);
-            }
-
-            // Normalize & Backfill data from variants
-            consoles = ((data as any) || []).map((c: any) => {
-                 const variants = c.variants || [];
-                 const defaultVar = variants.find((v: any) => v.is_default) || variants[0];
-                 // Polyfill image if missing
-                 if (!c.image_url && defaultVar?.image_url) {
-                     c.image_url = defaultVar.image_url;
-                 }
-                 if (!c.release_date && defaultVar?.release_date) {
-                     c.release_date = defaultVar.release_date;
-                 }
-                 c.specs = defaultVar;
-                 return c;
-            });
-
-            // Manual Sort: Newest First (handling TBA/Nulls at top)
-            consoles.sort((a, b) => {
-                 const dateA = a.specs?.release_date ? new Date(a.specs.release_date).getTime() : 0;
-                 const dateB = b.specs?.release_date ? new Date(b.specs.release_date).getTime() : 0;
-                 return dateB - dateA;
-            });
-        }
-    } catch (err: any) {
-        console.error("[FabricatorDetailPage] Error:", err);
-        fetchError = err;
+    if (error) {
+        // A brand with no listable hardware still has a profile worth rendering, so
+        // this degrades to an empty grid rather than taking down the whole page.
+        console.error('[FabricatorPage] Console Fetch Error:', error.message);
     }
 
-    if (!profile) {
-        return (
-             <div className="flex flex-col items-center justify-center min-h-[50vh] p-4 text-center">
-                <h2 className="font-pixel text-accent text-xl mb-4">FABRICATOR NOT FOUND</h2>
-                <div className="bg-red-900/20 border border-red-500 p-4 mb-8 max-w-lg overflow-auto w-full text-left">
-                    <p className="font-mono text-red-400 text-xs mb-2 font-bold uppercase border-b border-red-500 pb-1">SYSTEM ERROR</p>
-                    <div className="font-mono text-red-300 text-xs whitespace-pre-wrap">
-                        <div className="mb-2"><span className="text-red-500">ERROR:</span> {fetchError?.message || "Unknown Database Error"}</div>
-                         <div className="mt-4 text-[10px] text-gray-500">
-                             TIMESTAMP: {new Date().toISOString()}<br/>
-                             SLUG: {slug}
-                        </div>
-                    </div>
-                </div>
-                 <Link href="/fabricators">
-                    <Button variant="secondary">RETURN TO VAULT</Button>
-                </Link>
-             </div>
-        );
-    }
+    // Backfill the card fields from the default configuration. The release date used
+    // for ordering lives on the variant, not the console, which is why the sort below
+    // cannot move into SQL.
+    consoles = ((data as any) || []).map((c: any) => {
+        const defaultVar = defaultVariantOf<any>(c.variants);
+        if (!c.image_url && defaultVar?.image_url) c.image_url = defaultVar.image_url;
+        if (!c.release_date && defaultVar?.release_date) c.release_date = defaultVar.release_date;
+        c.specs = defaultVar;
+        return c;
+    });
+
+    // Newest first, with undated hardware at the top: an entry with no release date is
+    // an announced-but-unshipped device, which belongs above everything already out.
+    // The previous comparator coerced a null date to epoch 0, so those sorted to the
+    // bottom instead — the opposite of what its own comment claimed.
+    consoles.sort((a, b) => {
+        const dateA = a.specs?.release_date ? new Date(a.specs.release_date).getTime() : Infinity;
+        const dateB = b.specs?.release_date ? new Date(b.specs.release_date).getTime() : Infinity;
+        return dateB - dateA;
+    });
 
     const jsonLd = {
         "@context": "https://schema.org",
