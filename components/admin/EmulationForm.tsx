@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, type FC } from 'react';
-import { supabase } from '../../lib/supabase/singleton';
+import { supabase } from '../../lib/supabase/client';
 import { EmulationProfile } from '../../lib/types';
 import Button from '../ui/Button';
 import { SwissDropdown } from '../ui/SwissDropdown';

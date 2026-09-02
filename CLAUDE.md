@@ -57,9 +57,10 @@ pnpm lint     # ESLint
 - **Admin forms:** `AdminInput` is the base input component
 
 ### Supabase clients
-- `lib/supabase/server.ts` — server-side (cookie-aware)
-- `lib/supabase/client.ts` — client-side auth
-- `lib/supabase/anon.ts` — anonymous public queries
+- `lib/supabase/server.ts` — server-side (cookie-aware) — **forces a route dynamic**
+- `lib/supabase/client.ts` — client-side auth. Exports both `createClient()` and the
+  shared `supabase` instance (the former `singleton.ts`, now folded in)
+- `lib/supabase/anon.ts` — anonymous public queries, SSG-safe
 - `lib/supabase/admin.ts` — admin-privileged operations
 
 ---
@@ -88,7 +89,11 @@ pnpm lint     # ESLint
 
 ## Bulk data import
 - `scripts/import-consoles.ts` — JSON → consoles/variants/emulation (validates first, `--dry-run`, imports as **draft**).
-- `scripts/xlsx-to-import-json.py` / `-v2.py` — spreadsheet converters. Read the emulation column mapping from the sheet's own headers/cell comments; sheet layouts differ between versions. Excel silently turns aspect ratios like `16:9` into times (`16:09:00`).
+- `scripts/xlsx-to-import-json.py` — the spreadsheet converter (this is the former `-v5`;
+  v1–v4 were deleted, they read only ~30 of the 62 non-emulation columns and git has them).
+  Usage: `python3 scripts/xlsx-to-import-json.py <source.xlsx> <out.json> [--category emulation|pc_gaming]`.
+  Reads the emulation column mapping from the sheet's own headers/cell comments; sheet layouts
+  differ between versions. Excel silently turns aspect ratios like `16:9` into times (`16:09:00`).
 
 ---
 

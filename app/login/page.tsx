@@ -3,7 +3,7 @@
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { retroAuth } from '../../lib/auth';
-import { supabase } from '../../lib/supabase/singleton';
+import { supabase } from '../../lib/supabase/client';
 import SwissButton from '@/components/console/swiss/SwissButton';
 
 export default function LoginPage() {

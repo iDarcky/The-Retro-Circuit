@@ -5,7 +5,7 @@ import { useState, type FormEvent, type FC, type KeyboardEvent, useEffect, type 
 import { useRouter } from 'next/navigation';
 import { addManufacturer, updateManufacturer, deleteManufacturer } from '../../app/actions';
 import { purgeCache } from '../../app/actions/revalidate';
-import { supabase } from '../../lib/supabase/singleton';
+import { supabase } from '../../lib/supabase/client';
 import { ManufacturerSchema, MANUFACTURER_FORM_FIELDS, Manufacturer } from '../../lib/types';
 import Button from '../ui/Button';
 import { AdminInput } from './AdminInput';

@@ -1,4 +1,4 @@
-import { supabase } from "./supabase/singleton";
+import { supabase } from "./supabase/client";
 import { UserProfile } from "./types";
 
 export const retroAuth = {
