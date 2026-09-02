@@ -2,7 +2,7 @@
 
 ## Project Overview
 Retro handheld gaming device comparison engine. Solo PM project, shipped via AI agents.
-Pre-alpha v0.5.5 · 457 consoles (70 published, 387 draft) · 513 variants · 99 brands · Live at theretrocircuit.com
+Pre-alpha v0.5.5 · 462 consoles (78 published, 379 draft) · 517 variants · 99 brands · Live at theretrocircuit.com
 
 ---
 
@@ -74,11 +74,16 @@ pnpm lint     # ESLint
 - `cpu_clusters` is a jsonb array — `[{count, core, clock_mhz, uarch_year}]`, fastest first. Rendered one line per cluster. Compare generation before clock: 2 GHz Gen 8 beats 3 GHz Gen 1.
 - **A new variant column must be added to `ConsoleVariantSchema` in `lib/schemas/validation.ts`.** `safeParse` strips anything the schema does not name, so a column missing from it can never be written by the admin form — five columns were silently unwritable this way.
 - `emulation_profiles` rows are created by a **DB trigger** when a variant is inserted. Data-modifying CTEs can't see the trigger's row (same snapshot) — write emulation data in a **separate statement**.
+- Input details live on `variant_input_profile`, not on the variant. `has_rumble` is its own tri-state column (`true` / `false` / unknown) — it used to share the legacy `haptics` field with gyro, which conflated two unrelated features. **Never coerce unknown to false** on these: use `safeTriBoolean` in `lib/schemas/validation.ts`, because `safeBoolean` would flatten 259 unknown rows into "no".
+- `console_variants.slug` addresses one configuration (155 of 517 filled). It is what variant-level Arena URLs and the configuration comparison pages are built from; a variant with no slug simply is not addressable.
+- `console_links.approved` defaults to **false**. All 1,332 imported rows are unapproved and render nowhere. Anything that surfaces a link — the console page, `pickBuyTarget`, a future widget — must filter on it. Greenlighting happens at `/admin/links`.
 
 ## Rendering (keep compute low)
 - Public pages are static/SSG with `revalidate = false` (on-demand only). There is no time-based ISR.
 - Cacheability is decided by the Supabase client: `anon.ts` is SSG-safe; `server.ts` reads cookies and **forces the route dynamic**. Never import the server client into a public page.
 - Only `/admin/*`, `/profile`, `/unsubscribe` should be dynamic (`ƒ`). Verify with the `pnpm build` route table.
+- Pages that enumerate the catalogue at build time (`/arena/[[...versus]]`, `/consoles/[facet]/[value]`, `/consoles/[slug]/opengraph-image`, `/best/[slug]`) use `generateStaticParams` with `dynamicParams` left on, so anything outside the prebuilt set still renders on demand rather than 404ing.
+- The OG card renderer runs through Satori, which has two rules worth remembering: a `div` with more than one child needs an explicit `display`, and it **cannot decode WebP** (the uploader writes WebP, so `OG_RENDERABLE` filters those URLs out). The drawing lives in `lib/og/console-card.tsx` on purpose — it is a pure function so it can be exercised without a database.
 - Middleware is scoped to `/admin`, `/profile`, `/login`, `/design`. Security headers + CSP are set in `next.config.mjs` `headers()` so they still apply everywhere.
 
 ## Bulk data import
@@ -102,6 +107,12 @@ pnpm lint     # ESLint
 | `DESIGNAUDIT.md` | UI inconsistency tracker vs Swiss system |
 | `docs/CLAUDEAUDIT.md` | Product/code audit (March 2026) — historical snapshot |
 | `lib/bestof/collections.ts` | "Best Of" buying guides — filter+rank functions over live data, drive `/best/*` |
+| `lib/scoring/circuit-score.ts` | The Circuit Score: reach 40 / polish 35 / feel 25, plus percentile banding |
+| `lib/scoring/verdict.ts` | Spec-derived verdict, summary and tags. `noEmDash` is applied to everything it emits |
+| `lib/arena/resolve.ts` | Arena URL grammar — `console~variant`, `-vs-`, and legacy-token fallback |
+| `lib/arena/pairs.ts` | Which comparison pages get prebuilt, shared by the route and the sitemap |
+| `lib/config/facets.ts` | `/consoles/chip\|os\|vendor/[value]` facet pages |
+| `lib/config/sheet-order.ts` | The variant editor's spreadsheet-order layout (37 steps over 112 keys) |
 
 ---
 
@@ -115,12 +126,15 @@ pnpm lint     # ESLint
 
 ## Known Issues / Active TODOs
 - `Button` still used in most admin components — being phased out for `SwissButton`
-- 14 legacy input columns on `console_variants` (`dpad_mechanism`, `thumbstick_*`, `trigger_mechanism`, `haptics`, `gyro`, …) are superseded by `variant_input_profile` and read by nothing. The drop is staged in `supabase/migrations/*.sql.pending` — back up first, then rename to `.sql`.
-- **383 of 385 drafts lack an image**, which blocks publishing — only 1 draft is currently publishable. This is the single biggest bottleneck; specs, buttons and emulation grades are already filled in. `/admin` counts the gaps and links into the filtered index (`?status=DRAFT&gap=NO_IMAGE`).
-- Only 13 of 514 variants have an `amazon_asin`; the rest fall back to affiliate *search* links, which convert worse. Backfilling ASINs is the top revenue task.
+- 14 legacy input columns on `console_variants` (`dpad_mechanism`, `thumbstick_*`, `trigger_mechanism`, `gyro`, …) are superseded by `variant_input_profile` and read by nothing. The drop is staged in `supabase/migrations/*.sql.pending` — back up first, then rename to `.sql`. `haptics` was pulled out of that drop: it held 226 real rows and became `has_rumble`.
+- **378 of 379 drafts lack an image**, which blocks publishing — only 1 draft is currently publishable. This is the single biggest bottleneck; specs, buttons and emulation grades are already filled in. `/admin` counts the gaps and links into the filtered index (`?status=DRAFT&gap=NO_IMAGE`).
+- 47 of 517 variants have an `amazon_asin`, and **52 of the 78 published consoles still have no buy path at all** (no ASIN, no approved vendor link). Amazon is not the main channel for these devices — see the playbook's channel table before assuming ASINs are the fix.
+- **Nothing imported is publicly visible until approved.** 0 of 1,332 `console_links` rows are approved, so no console currently renders a "Reviews and retail" section. 24 of those rows sit on published consoles, which is the short list worth triaging first.
 - `release_status` is flipped by hand from the `/admin` "Release date passed" panel, not automatically: public pages are `revalidate = false`, so a silent status change would not reach the site until a rebuild.
 - The 1,332 imported `console_links` rows are **raw URLs and carry no affiliate tag** — only `lib/affiliate.ts` applies `theretrocircu-20`. Rendering a `kind='vendor'` Amazon link directly earns nothing; route it through `getBuyUrl`.
-- Consoles have no written intro / "system analysis". Spec-derived summaries can be generated from the emulation matrix; **opinionated copy must be human-written** — do not mass-generate device reviews.
+- 10 published consoles have no description. `buildSummary` in `lib/scoring/verdict.ts` drafts a spec-derived one from the emulation matrix, but **opinionated copy must be human-written** — do not mass-generate device reviews.
+- 362 of 517 variants have no `slug`, so their configurations cannot be addressed or compared individually. Some existing slugs are also terse (`8128`, `161t`) and would read better as `8gb-128gb` — worth fixing before those URLs are indexed.
+- The `supabase/migrations/` folder is a **record, not a runner**: migrations are applied through the Supabase MCP, and some file names drift from the applied version numbers. `supabase_migrations.schema_migrations` is the source of truth for what is actually applied.
 - `eslint-config-next` pinned at 14 (v16 needs an ESLint 9 flat-config migration).
 
 ---

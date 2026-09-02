@@ -2,6 +2,9 @@
 
 This document organizes all pending features, improvements, and ideas into functional categories, prioritized by impact.
 
+**Last reconciled against the codebase 2026-09-02.** Shipped items are struck through with
+a one-line note rather than deleted, so the same feature does not get proposed twice.
+
 **Priorities:**
 1.  🔴 **Critical** (Immediate value, fixes broken things, or primary missing features)
 2.  🟡 **Must Have** (Core value proposition, revenue drivers, significant UX improvements)
@@ -34,8 +37,8 @@ This document organizes all pending features, improvements, and ideas into funct
 - [ ] **3+ Device Comparison**: Expand `/arena` to support side-by-side comparison of 3-4 devices (currently limited to 2). Update routing to `/arena/[...slugs]`.
 
 ### 🟡 Must Have
-- [ ] **"Highlight Differences" Toggle**: A control to only show rows where specs differ, with color-coding (Green/Red) for better/worse stats.
-- [ ] **Shareable Comparison URLs**: Generate permalinks like `/arena?c1=deck&c2=ally` that pre-fill the comparison state for easy sharing.
+- [ ] **"Highlight Differences" Toggle**: A control to only show rows where specs differ, with color-coding (Green/Red) for better/worse stats. *Partly done: `VariantGuide` on the console page already shows only the rows that differ between configurations. The Arena itself still shows everything.*
+- [x] ~~**Shareable Comparison URLs**~~ — shipped as path segments, not query params: `/arena/[a]-vs-[b]`, alphabetically canonicalised. A variant-level form `console~variant` addresses one configuration. 551 pairs prebuilt (`lib/arena/pairs.ts`), the rest render on demand.
 
 ### 🟢 Nice to Have
 - [ ] **Visual Size Comparison**: Render a static SVG outline of a common object (Credit Card, iPhone) next to the console outline using `width_mm`.
@@ -48,12 +51,13 @@ This document organizes all pending features, improvements, and ideas into funct
 *Focus: Revenue generation and user retention.*
 
 ### 🔴 Critical
-- [ ] **Affiliate Integration**: Add `affiliate_amazon` and `affiliate_aliexpress` columns to the DB and implement a high-contrast `BuyButton` component.
+- [x] ~~**Affiliate Integration**~~ — done differently and better: no per-row affiliate columns, because a stored tagged URL rots and can be pasted with someone else's tag. `lib/affiliate.ts` is the single place the `theretrocircu-20` tag is applied, and `pickBuyTarget` chooses a real vendor listing over an Amazon search. **AliExpress has no programme wired up yet** and it is the largest channel in the data — see the playbook.
+- [ ] **Approved buy paths on the published catalogue**: 52 of 78 published consoles have no ASIN and no approved vendor link, so their buy button falls back to an Amazon search for a device Amazon often does not stock. `/admin/buy-links` and `/admin/links` are the two tools; this is data work now, not code.
 
 ### 🟡 Must Have
 - [ ] **Price History & Tracking**: Create a `price_history` table and display a Sparkline chart (6-month trend) with a "Best Time to Buy" indicator.
 - [ ] **Email Capture System**: Add "Notify when Released" buttons and "Price Drop Alerts" to capture user emails (Mailchimp/Resend integration).
-- [ ] **Legal Disclosures**: Add "Amazon Associate" and other affiliate disclosures to the Footer.
+- [x] ~~**Legal Disclosures**~~ — `AffiliateDisclosure` on the console page plus a footer line.
 
 ### 🟢 Nice to Have
 - [ ] **Pro / Premium Membership**: Stripe integration for an ad-free experience, unlimited comparisons, and advanced price alerts.
@@ -66,18 +70,20 @@ This document organizes all pending features, improvements, and ideas into funct
 *Focus: Organic traffic and authority.*
 
 ### 🔴 Critical
-- [ ] **Dynamic Metadata & JSON-LD**: Implement `generateMetadata` for console pages to create unique titles/descriptions. Inject `Product` Schema for Google Rich Snippets.
-- [ ] **Sitemap Priorities**: Update `sitemap.ts` to prioritize published/new consoles (`priority: 1.0`).
+- [x] ~~**Dynamic Metadata & JSON-LD**~~ — `Product` + `AggregateOffer` + `BreadcrumbList`. `availability` comes from `release_status`; deriving it from ASIN presence had been marking 64 released consoles `Discontinued`. Never add a self-assigned `aggregateRating`.
+- [ ] **Sitemap Priorities**: Update `sitemap.ts` to prioritize published/new consoles (`priority: 1.0`). *Arena, facet and best-of URLs are now all in the sitemap; the priorities are still flat.*
 
 ### 🟡 Must Have
-- [ ] **"Best Of" Static Pages**: Create high-value SEO landing pages like "Best Handhelds under $200", "Best for PS2 Emulation".
-- [ ] **System Analysis (SEO Spine)**: Ensure every console page has an 80-120 word unique description covering use-case, strengths, and limitations.
-- [ ] **Internal Linking**: Add a "Similar Consoles" section at the bottom of Detail Views to spread link equity.
+- [x] ~~**"Best Of" Static Pages**~~ — `/best/[slug]`, 8 guides driven by filter+rank functions over live data (`lib/bestof/collections.ts`), so they re-rank themselves as the catalogue changes.
+- [ ] **System Analysis (SEO Spine)**: 10 published consoles still have no description. `buildSummary` in `lib/scoring/verdict.ts` drafts the factual half from the emulation matrix — **the opinionated half must be human-written**, do not mass-generate device reviews.
+- [x] ~~**Internal Linking**~~ — "Similar hardware" and "How it stands" are one section at the bottom of every console page, plus per-step configuration comparison links and facet pages.
+- [ ] **Facet pages beyond chip/os/vendor**: price band and screen size are the obvious next two (`lib/config/facets.ts` takes a new entry with a column and two label functions).
 
 ### 🟢 Nice to Have
 - [ ] **Public Changelog**: A `/changelog` page to show active development and build trust.
 - [ ] **News / Blog Section**: A simple CMS for "Latest Intel" articles and news updates.
-- [ ] **Social Sharing Cards (OG)**: Use `@vercel/og` to generate dynamic images for comparison pages (e.g., showing both consoles in the preview image).
+- [x] ~~**Social Sharing Cards (OG)**~~ for console pages — `/consoles/[slug]/opengraph-image`, prerendered. *Still to do: the Arena equivalent, splitting the card between the two devices.*
+- [ ] **JPEG derivative on upload**: Satori cannot decode WebP and the uploader writes WebP, so OG cards currently fall back to a typographic layout instead of showing the device.
 
 ---
 

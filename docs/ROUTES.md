@@ -115,7 +115,13 @@ This document outlines the current state of public-facing routes in The Retro Ci
 *   **OpenGraph:** Dynamically generated at `/consoles/[slug]/opengraph-image`.
 *   **SEO Suggestions:**
     *   **H1 Tag:** Ensure the primary visual name of the console at the top of the page is wrapped in an `<h1>` tag for semantic structure.
-    *   **Schema Markup:** Expand current JSON-LD product schema to include AggregateRating (if applicable in the future) and clearer Offer structures based on `price_launch_usd`.
+    *   **Schema Markup:** `Product` + `AggregateOffer` + `BreadcrumbList` are emitted.
+        `availability` is derived from **`release_status`** — it used to be derived from
+        whether an ASIN existed, which marked 64 released consoles as `Discontinued` on
+        the pages absorbing 64% of impressions. **Do not add `aggregateRating`**: a
+        self-assigned rating on your own product is against Google's structured data
+        policy and risks a manual action. An editorial `Review` is allowed, and is the
+        right home for the Circuit Score once reviews are written.
     *   **Canonical:** Ensure canonical strictly points to the `[slug]` to avoid duplicate content from the `[manufacturer]-[slug]` legacy patterns.
     *   **Title Optimization:** Very strong currently.
 
@@ -138,8 +144,79 @@ This document outlines the current state of public-facing routes in The Retro Ci
 *   **Current Description (Dynamic):**
     *   No selection: `Pick any two retro handhelds and compare them head-to-head. Specs, performance, price, and emulation targets.`
     *   With selection: `Head-to-head spec comparison: [Console 1 Name] vs [Console 2 Name]. Performance, price, and emulation targets.`
+*   **URL grammar (`lib/arena/resolve.ts`):** a token is `console-slug` or
+    `console-slug~variant-slug`, two tokens joined by `-vs-`. The `~` separator was
+    picked because it appears in **zero** slugs — `--` appears in three, and a plain
+    hyphen collides outright (`anbernic-rg-vita` + `pro` is also a real console).
+    Legacy tokens with no separator still resolve: the longest matching console prefix
+    wins, so every pre-existing Arena URL keeps working.
+*   **Prebuilding (`lib/arena/pairs.ts`):** 551 pages — 92 configuration comparisons
+    (emitted first, so they always survive the 900-pair cap) and 459 cross-device ones,
+    from five rules rather than the 2,850-page cross product. The same module feeds the
+    route's `generateStaticParams` and `app/sitemap.ts`, so the two cannot drift.
+    `dynamicParams` stays on: a pair outside the list still renders on demand.
 *   **SEO Suggestions:**
     *   **Canonical Implementation:** The current setup alphabetically sorts the slugs for the canonical URL (e.g., `/arena/a-vs-b` is canonical for both `a-vs-b` and `b-vs-a`). This is **excellent** and prevents massive duplicate content issues.
     *   **Title Optimization:** Good, but consider adding intent keywords: `[Console 1] vs [Console 2] Specs & Emulation Comparison | The Retro Circuit`
     *   **Description Optimization:** Strong current description.
     *   **OpenGraph:** Consider creating a dynamic OpenGraph image route for comparisons (e.g., splitting the image 50/50 between the two consoles) to make social sharing of matchups highly engaging.
+
+### 14. Spec Facet Pages
+*   **Path:** `/consoles/[facet]/[value]` — `chip`, `os`, `vendor` (`lib/config/facets.ts`)
+*   **Examples:** `/consoles/chip/snapdragon-865`, `/consoles/os/android`, `/consoles/vendor/unisoc`
+*   **Current H1 (Dynamic):** `Handhelds with the [Chipset]` · `[OS] handhelds` · `Handhelds with [Vendor] silicon`
+*   **Current Title (Dynamic):** `[H1] | The Retro Circuit`
+*   **Current Description (Dynamic):** `Every retro handheld built on the [value]. [N] devices compared on specs, price and measured emulation performance.`
+*   **Notes:**
+    *   Built from the **structured** columns (`soc_name`, `os_family`, `soc_vendor`), never
+        the free-text ones — those carry import typos like `"Andorid 13"`.
+    *   A facet value needs at least `MIN_DEVICES_PER_FACET` (2) published devices to get a
+        page, so a one-device page can never be minted.
+    *   Shares a URL depth with `/consoles/brand/[name]`. The literal `brand` segment wins
+        over the `[facet]` dynamic segment, so brand pages are unaffected — worth
+        re-checking on any future route added at that depth.
+
+### 15. Buying Guides ("Best Of")
+*   **Path:** `/best` and `/best/[slug]` (`lib/bestof/collections.ts`)
+*   **Current Title (Dynamic):** `[Collection Title] ([Year]) | The Retro Circuit`
+*   **Notes:** filter+rank functions over live data rather than hand-maintained lists, so a
+    guide re-ranks itself as the catalogue changes. The year in the title is computed at
+    build time, which is what keeps these looking current in a SERP.
+
+---
+
+## Generated Assets
+
+### Console OG Cards
+*   **Path:** `/consoles/[slug]/opengraph-image` (`app/consoles/[slug]/opengraph-image.tsx`)
+*   **Renderer:** `lib/og/console-card.tsx` — deliberately a **pure function** taking plain
+    data, so it can be rendered in a test without a database. It is separated because the
+    first version took production down and the sandbox test could not have caught it.
+*   **Two Satori rules to respect:**
+    1.  A `div` with more than one child needs an explicit `display`. `Circuit Score{x ? … }`
+        is two children.
+    2.  It **cannot decode WebP**, and the uploader writes WebP. `OG_RENDERABLE` filters
+        unusable URLs so the card falls back to a typographic layout instead of failing the
+        build. A WebP uploader that also wrote a JPEG derivative would put photos back on
+        these cards.
+*   `dynamic = 'force-static'` with `generateStaticParams`, so nothing runs at request time.
+
+---
+
+## Admin Routes
+
+All under `/admin`, all `noindex` via `app/admin/layout.tsx`, all dynamic (`ƒ`), all
+gated on an authenticated user with `role = 'admin'`. `AdminHubClient` is the map — a
+route not listed there is findable only by remembering its URL.
+
+| Path | What it is |
+|---|---|
+| `/admin` | Hub: gap counts that link into the filtered index |
+| `/admin/consoles`, `/admin/consoles/[slug]` | Catalogue index and the console + variant editor |
+| `/admin/fabricators` | Brands and brand profiles |
+| `/admin/asins` | ASIN worklist |
+| `/admin/buy-links` | Published consoles with **no buy path at all**, worst-first |
+| `/admin/links` | Approval gate for the 1,332 imported review/vendor links |
+| `/admin/reviews`, `/admin/news`, `/admin/signals` | Editorial |
+| `/admin/roadmap`, `/admin/broadcast` | Product and subscriber email |
+| `/admin/preview/consoles/[slug]` | Renders an unpublished console as the public page |

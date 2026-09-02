@@ -111,3 +111,32 @@ To systematically execute the transition to the Vibrant Swiss aesthetic without 
 1. **Breadcrumbs**: Standardize all path navigation to use the mono \`//\` separator pattern.
 2. **Modals**: Strip rounded corners and box shadows from all `components/ui/Modal` instances, replacing them with thick border lines.
 3. **Data Grids**: Transition floating UI elements (like User Avatars and metrics displays) into rigid, mathematically aligned grid blocks.
+
+---
+
+## Console page, rebuilt 2026-09-02
+
+`/consoles/[slug]` was rebuilt against the v6 mockup and is now the most complete
+expression of the system in the app. Treat it as the reference when the written rules and
+an older page disagree.
+
+What it settled, and is worth copying:
+
+* **One accent per page.** Violet carries brand and primary action, cyan carries data.
+  Earlier versions of this page used four signal colours at once, which reads as noise
+  rather than as meaning. Rose and orange stay reserved for their semantic jobs.
+* **`Section` is the unit of layout** (`components/console/swiss/Section.tsx`) — eyebrow in
+  mono, title in pixel, optional control cluster on the right, one hairline rule. Every
+  block on the page uses it, so section spacing is defined once rather than per component.
+* **Sticky bars must watch the real scroller.** `MainLayout` scrolls an inner div, so
+  `window.scrollY` never changes and any listener bound to it is dead code. Use
+  `lib/hooks/useScrollRoot.ts`. This was miscounted as a CSS problem first and the wrong
+  fix made it worse.
+* **Mobile order is markup order.** CSS `order` moves the visual box and leaves the DOM
+  alone, which is wrong for reading order and for anyone on a screen reader. The hero was
+  reordered in the markup itself: breadcrumbs, then name and tags, then images.
+* **Tables scroll inside their own container**, with the label column `sticky left-0`
+  carrying an explicit panel background, never a transparent one.
+
+Still open on this page: the `Button` → `SwissButton` migration does not touch it (it was
+already clean), but the admin editor behind it is still full of the deprecated component.
