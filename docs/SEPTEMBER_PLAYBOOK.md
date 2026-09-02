@@ -5,31 +5,39 @@ or read from Vercel's runtime errors on the day, not carried over from the last 
 
 ---
 
-## Read this first: the site was erroring for 42 hours
+## Read this first: publishing was broken, but the site was not down
 
-Vercel's runtime error log for this project shows one error group:
+Vercel's production logs show **27 HTTP 500s in 48 hours**. Every one is a page Next had
+to render *on demand*:
 
-```
-Error: You cannot use different slug names for the same dynamic path ('facet' !== 'slug')
-count = 550   users = 66   first = 2026-09-01 20:17   last = 2026-09-02 14:23
-routes = /  ·  /consoles  ·  /arena  ·  /fabricators  ·  /consoles/<slug>  ·  …
-```
+| Path | 500s |
+|---|---|
+| `/consoles/ayn-thor` | 4 |
+| `/arena/…-vs-select` (three pairs) | 12 |
+| `/consoles/sony-psp-3000`, `sony-psp-street`, `sony-playstation-vita-pch-1000` | 4 |
+| `/consoles/konkr-pocket-block`, `one-netbook-onexplayer-3`, `trimui-brick-pro` | 3 |
+| two more arena pairs | 4 |
 
-`app/consoles/[slug]` and `app/consoles/[facet]/[value]` are two dynamic segments with
-different names at the same position, which Next.js forbids. It resolves at **request**
-time, not build time, so `next build` stayed green throughout and nothing surfaced it.
+The cause: `app/consoles/[slug]` and `app/consoles/[facet]/[value]` are two dynamic
+segments with different names at the same position, which Next.js forbids. It resolves at
+**request** time, so `next build` stayed green and prebuilt pages kept serving from cache
+— which is why the site looked, and was, healthy to a visitor.
 
-Three consequences that reshape this document:
+**What it broke is exactly the publishing loop.** Publish or edit a console →
+`revalidatePath` marks its page stale → the next request must regenerate it → routing
+conflict → 500 → the page never appears. Meanwhile `/consoles` serves the HTML built at
+deploy time, showing the old catalogue. That is the whole "I published the PSP and it
+won't appear anywhere" symptom, and `sony-psp-3000` and `sony-psp-street` are in the
+error list by name.
 
-1. **September traffic data is contaminated.** Any GSC or Vercel reading covering
-   1–2 Sep reflects a site returning 500s on its main templates. Do not treat it as a
-   signal about content, indexing or CTR.
-2. **Indexing may have gone backwards.** Google re-crawling a 500 repeatedly will drop
-   pages. The 93-stuck-pages figure from August is now a floor, not a baseline.
-3. **The first task is not growth, it is confirming recovery.** Fixed on the working
-   branch; not yet in production.
+Fixed on the working branch. Not yet in production.
 
-**Everything else in this plan is downstream of getting that deployed and verified.**
+**This is not a traffic-data problem.** 27 errors over two days on non-cached paths does
+not move GSC numbers. An earlier version of this section claimed a 42-hour site-wide
+outage contaminating September measurement; that came from reading a project-wide error
+*occurrence* count (550, across preview deployments and internal RSC segment fetches) as
+though it were user-facing production 500s. It was not. September targets below are
+unchanged from the pre-outage plan.
 
 ---
 
@@ -96,17 +104,15 @@ not a week — and it now happens inside the console editor rather than a separa
 - August projected full month: **173 clicks** — ~155 brand, **~17 everything else**
 - Doubling the total = 345. Brand demand is fixed, so non-brand would need **~190: 11×**
 
-11× in 30 days is not achievable, and two days of the month have now been spent serving
-500s. Set the goal on the half that can move, and reset the clock:
+11× in 30 days is not achievable. Set the goal on the half that can move:
 
 | Target | From | To | By |
 |---|---|---|---|
-| Non-brand clicks | 17 | **30+** | 30 Sep |
-| Pages indexed | 93 stuck | **+40** | 30 Sep |
-| Average position | 14.9 | **sub-13** | 30 Sep |
+| Non-brand clicks | 17 | **35+** | 30 Sep |
+| Pages indexed | 93 stuck | **+60** | 30 Sep |
+| Average position | 14.9 | **sub-12** | 30 Sep |
 
-Lower than the last draft's targets, deliberately. Two days of downtime mid-month, and
-recovery from a crawl error is not instant.
+Doubling non-brand is what compounds. Brand clicks plateau; content clicks don't.
 
 ---
 
@@ -125,14 +131,17 @@ touched it. No amount of admin polish substitutes for sourcing images.
 
 ### Now — get the fix live and confirm recovery
 
-- [ ] **Merge the working branch to `main` and deploy.** 18 commits, including the
+- [ ] **Merge the working branch to `main` and deploy.** 20 commits, including the
       routing fix. Production is still `main` @ 09:31 on 2 Sep, which contains the bug.
-- [ ] Confirm `/consoles`, `/`, `/arena`, `/fabricators` and a console page all return
-      200 in production
-- [ ] Confirm search returns results — it was failing because the pages hosting it were
-      erroring, not because of the search itself
-- [ ] GSC → Pages → check "Server error (5xx)" and request re-indexing on the templates
-- [ ] Only then look at any traffic number
+- [ ] Confirm the six paths that were 500ing now return 200: `/consoles/ayn-thor`,
+      `/consoles/konkr-pocket-block`, `/consoles/trimui-brick-pro`,
+      `/consoles/one-netbook-onexplayer-3`, and two `…-vs-select` arena URLs
+- [ ] Confirm search returns results. The backend was never broken — the RPC returns 16
+      rows for "anbernic" as the anon role — so if it still fails, the new error state
+      says whether it is Upstash or something else rather than showing "no results"
+- [ ] Publish one draft end to end and confirm it reaches `/consoles`, its own page and
+      the sitemap — this is the loop that was broken, so it is the loop to verify
+- [ ] GSC → Pages → check "Server error (5xx)"; a handful of URLs may need re-indexing
 
 ### This week — finish the six, then widen the buy path
 
@@ -250,11 +259,16 @@ These are blocked on something only the owner can do, not on engineering time.
 
 ## Lessons worth keeping
 
-- **A green build is not a working site.** The routing conflict threw 550 errors across
-  the whole catalogue for 42 hours while every local `next build` passed. Build-time
-  checks do not catch request-time routing errors. **When something is reported broken,
-  read the runtime logs before reading the code** — two rounds of reasoning about
-  deployments and caches were spent on a question Vercel's error page answered directly.
+- **A green build is not a working site.** The routing conflict never appeared in a
+  `next build` because it resolves at request time. Build-time checks do not catch
+  request-time routing errors. **When something is reported broken, read the runtime
+  logs before reading the code** — two rounds of reasoning about deployments and caches
+  were spent on a question the logs answered directly.
+- **Read the number, not the headline.** Those logs then got over-read in the other
+  direction: a project-wide error *occurrence* count of 550 became "the site was down
+  for 42 hours" in the first draft of this document. Filtering to production 500s gave
+  27, all on non-cached paths. The bug was real and the diagnosis was right; the blast
+  radius was invented. Check which environment a metric covers before planning around it.
 - **A green local build is not a green deploy, and a passing sandbox test is not a
   passing test.** The OG work took production down: `Circuit Score{reach ? …}` is two
   JSX children and Satori demands an explicit `display`. The sandbox test passed because
