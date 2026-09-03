@@ -4,10 +4,11 @@ import { SwissDropdown } from '../ui/SwissDropdown';
 import { useState, type FormEvent, type FC, useEffect, type ChangeEvent, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { addConsoleVariant, updateConsoleVariant, getVariantsByConsole } from '../../app/actions';
+import { aspectRatioOf, ppiOf } from '../../lib/utils/aspect-ratio';
 import { purgeCache } from '../../app/actions/revalidate';
 import { ConsoleVariantSchema, VariantInputProfileSchema, VARIANT_FORM_GROUPS, ConsoleVariant } from '../../lib/types';
 import { SHEET_STEPS, SHEET_ELSEWHERE, SHEET_PREAMBLE_KEYS, sheetLeftovers } from '../../lib/config/sheet-order';
-import Button from '../ui/Button';
+import SwissButton from '../console/swiss/SwissButton';
 import { AdminInput } from './AdminInput';
 import ImageUpload from '../ui/ImageUpload';
 import { EmulationForm } from './EmulationForm';
@@ -85,6 +86,12 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     const isEditMode = !!initialData;
     const [showEmulationForm, setShowEmulationForm] = useState(false);
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+
+    /* A hand-typed aspect ratio wins over the derived one. Latched rather than compared
+     * against the computed value, so clearing the field to blank also counts as a
+     * decision and is not immediately refilled. */
+    const [aspectRatioTouched, setAspectRatioTouched] = useState(false);
+    const [secondAspectTouched, setSecondAspectTouched] = useState(false);
     /* Two layouts over one form. Grouped is the default and organises by subsystem;
      * sheet follows the import spreadsheet's column order so a row can be typed straight
      * down without hunting between sections. Same fields, same state, same save. */
@@ -109,6 +116,8 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
     const [showSecondScreen, setShowSecondScreen] = useState(false);
 
     const handleInputChange = useCallback((key: string, value: any) => {
+        if (key === 'aspect_ratio') setAspectRatioTouched(true);
+        if (key === 'second_screen_aspect_ratio') setSecondAspectTouched(true);
         setFormData(prev => ({ ...prev, [key]: value }));
         setFieldErrors(prev => {
             if (!prev[key]) return prev;
@@ -132,6 +141,8 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
             }
 
             setFormData(flattenedData);
+            setAspectRatioTouched(false);
+            setSecondAspectTouched(false);
             setShowSecondScreen(SECOND_SCREEN_KEYS.some(k => {
                 const v = (flattenedData as any)[k];
                 return v !== null && v !== undefined && v !== '';
@@ -296,39 +307,42 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
         fetchTemplates();
     }, [formData.console_id]);
 
+    /* Derive PPI and aspect ratio from the panel dimensions.
+     *
+     * `aspectRatioOf` snaps to a standard ratio rather than reducing exactly: a 1200x752
+     * panel is sold as 16:10, and the exact answer, 75:47, is true but useless.
+     *
+     * The ratio is still overridable — `aspectRatioTouched` latches the moment you type
+     * in the field, and from then on resolution changes stop rewriting it. A spec sheet
+     * beats arithmetic, and there was previously no way to say so: the input was
+     * readOnly. */
     useEffect(() => {
         const size = parseFloat(formData.screen_size_inch);
         const w = parseFloat(formData.screen_resolution_x);
         const h = parseFloat(formData.screen_resolution_y);
-        if (!isNaN(size) && size > 0 && !isNaN(w) && w > 0 && !isNaN(h) && h > 0) {
-            const ppi = Math.round(Math.sqrt(w * w + h * h) / size);
-            const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b);
-            const divisor = gcd(w, h);
-            let ratioX = w / divisor, ratioY = h / divisor;
-            if (ratioX === 8 && ratioY === 5) { ratioX = 16; ratioY = 10; }
-            const ratio = `${ratioX}:${ratioY}`;
-            setFormData(prev => {
-                if (prev.ppi === ppi && prev.aspect_ratio === ratio) return prev;
-                return { ...prev, ppi, aspect_ratio: ratio };
-            });
-        }
-    }, [formData.screen_size_inch, formData.screen_resolution_x, formData.screen_resolution_y]);
+        const ppi = ppiOf(w, h, size);
+        const ratio = aspectRatioOf(w, h);
+        if (ppi === null || ratio === null) return;
+        setFormData(prev => {
+            const nextRatio = aspectRatioTouched ? prev.aspect_ratio : ratio;
+            if (prev.ppi === ppi && prev.aspect_ratio === nextRatio) return prev;
+            return { ...prev, ppi, aspect_ratio: nextRatio };
+        });
+    }, [formData.screen_size_inch, formData.screen_resolution_x, formData.screen_resolution_y, aspectRatioTouched]);
 
     useEffect(() => {
         const size = parseFloat(formData.second_screen_size);
         const w = parseFloat(formData.second_screen_resolution_x);
         const h = parseFloat(formData.second_screen_resolution_y);
-        if (!isNaN(size) && size > 0 && !isNaN(w) && w > 0 && !isNaN(h) && h > 0) {
-            const ppi = Math.round(Math.sqrt(w * w + h * h) / size);
-            const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b);
-            const divisor = gcd(w, h);
-            const ratio = `${w / divisor}:${h / divisor}`;
-            setFormData(prev => {
-                if (prev.second_screen_ppi === ppi && prev.second_screen_aspect_ratio === ratio) return prev;
-                return { ...prev, second_screen_ppi: ppi, second_screen_aspect_ratio: ratio };
-            });
-        }
-    }, [formData.second_screen_size, formData.second_screen_resolution_x, formData.second_screen_resolution_y]);
+        const ppi = ppiOf(w, h, size);
+        const ratio = aspectRatioOf(w, h);
+        if (ppi === null || ratio === null) return;
+        setFormData(prev => {
+            const nextRatio = secondAspectTouched ? prev.second_screen_aspect_ratio : ratio;
+            if (prev.second_screen_ppi === ppi && prev.second_screen_aspect_ratio === nextRatio) return prev;
+            return { ...prev, second_screen_ppi: ppi, second_screen_aspect_ratio: nextRatio };
+        });
+    }, [formData.second_screen_size, formData.second_screen_resolution_x, formData.second_screen_resolution_y, secondAspectTouched]);
 
     const toggleSection = (title: string) => {
         setOpenSections(prev => ({ ...prev, [title]: !prev[title] }));
@@ -576,7 +590,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                         Has a second screen
                     </button>
                     {!showSecondScreen && (
-                        <div className="text-[9px] text-gray-600 mt-1 font-mono">// 9 of 514 devices do — leave this off for the rest</div>
+                        <div className="text-[9px] text-gray-600 mt-1 font-mono">{'//'} 9 of 514 devices do — leave this off for the rest</div>
                     )}
                 </div>
             );
@@ -590,7 +604,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 <div key={key} className={colSpan}>
                     <label className="text-[10px] mb-2 block uppercase tracking-wider text-gray-500">{field.label}</label>
                     {clusters.length === 0 && (
-                        <div className="text-[9px] text-gray-600 font-mono mb-2">// no clusters yet</div>
+                        <div className="text-[9px] text-gray-600 font-mono mb-2">{'//'} no clusters yet</div>
                     )}
                     <div className="space-y-1.5">
                         {clusters.map((c: any, i: number) => (
@@ -613,12 +627,12 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                         + Add cluster
                     </button>
                     <div className="text-[9px] text-gray-500 mt-2 font-mono tracking-tight leading-relaxed">
-                        // count · core · MHz · architecture year. Fastest cluster first.<br />
-                        // One row per cluster because &quot;8 cores&quot; hides the difference between
+                        {'//'} count · core · MHz · architecture year. Fastest cluster first.<br />
+                        {'//'} One row per cluster because &quot;8 cores&quot; hides the difference between
                         1&times;X4 + 4&times;A720 + 3&times;A520 and eight A55s.<br />
-                        // Architecture year ranks above clock: 2 GHz on a 2023 core beats 3 GHz on a 2016 one.
+                        {'//'} Architecture year ranks above clock: 2 GHz on a 2023 core beats 3 GHz on a 2016 one.
                         {derivedCores > 0 && (
-                            <><br />// Total cores: <span className="text-gray-300">{derivedCores}</span> (saved automatically)</>
+                            <><br />{'//'} Total cores: <span className="text-gray-300">{derivedCores}</span> (saved automatically)</>
                         )}
                     </div>
                 </div>
@@ -726,7 +740,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                         options={[{ label: 'Unknown', value: '' }, { label: 'Yes', value: 'true' }, { label: 'No', value: 'false' }]}
                         buttonClassName="w-full bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center"
                         labelPrefix="" inverted={false} />
-                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
+                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{'//'} {field.note}</div>}
                 </div>
             );
         }
@@ -751,7 +765,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                             );
                         })}
                     </div>
-                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
+                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{'//'} {field.note}</div>}
                 </div>
             );
         }
@@ -769,7 +783,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                             buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center"
                             labelPrefix="" inverted={false} />
                     </div>
-                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
+                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{'//'} {field.note}</div>}
                 </div>
             );
         }
@@ -787,7 +801,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                             buttonClassName="bg-black border border-gray-700 p-3 outline-none text-white font-mono text-sm h-[46px] flex justify-between items-center"
                             labelPrefix="" inverted={false} />
                     </div>
-                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">// {field.note}</div>}
+                    {field.note && <div className="text-[9px] text-gray-500 mt-1 font-mono tracking-tight">{'//'} {field.note}</div>}
                     {error && <div className="text-[10px] text-accent mt-1 font-mono uppercase">! {error}</div>}
                 </div>
             );
@@ -865,7 +879,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     ))}
                     {layout === 'sheet' && (
                         <span className="font-mono text-[9px] text-gray-600 ml-2">
-                            // matches the import spreadsheet, left to right
+                            {'//'} matches the import spreadsheet, left to right
                         </span>
                     )}
                 </div>
@@ -874,7 +888,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                     <div className="space-y-3">
                         <div className="bg-black/40 border-l-4 border-secondary p-4">
                             <div className="font-mono text-[10px] uppercase tracking-widest text-gray-400 mb-3">
-                                Identity <span className="text-gray-600">// no sheet column, but required</span>
+                                Identity <span className="text-gray-600">{'//'} no sheet column, but required</span>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
                                 {SHEET_PREAMBLE_KEYS.map((k, i) =>
@@ -907,7 +921,7 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                             <summary className="p-4 cursor-pointer font-mono text-[11px] uppercase tracking-widest text-gray-400 hover:text-white">
                                 Not in the sheet
                                 <span className="text-gray-600 ml-2 normal-case tracking-normal">
-                                    // {sheetLeftovers(ALL_FIELD_KEYS).length} more fields
+                                    {'//'} {sheetLeftovers(ALL_FIELD_KEYS).length} more fields
                                 </span>
                             </summary>
                             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 pt-0">
@@ -991,8 +1005,8 @@ export const VariantForm: FC<VariantFormProps> = ({ consoleList, preSelectedCons
                 )}
 
                 <div className="flex justify-end gap-4 pt-6 border-t border-border-normal">
-                    {!isEditMode && <Button type="button" variant="secondary" onClick={(e) => handleSubmit(e, 'CLONE')} isLoading={loading}>[ SAVE & CLONE ]</Button>}
-                    <Button type="submit" onClick={(e) => handleSubmit(e, 'SAVE')} isLoading={loading}>{isEditMode ? 'UPDATE UNIT' : 'REGISTER UNIT'}</Button>
+                    {!isEditMode && <SwissButton type="button" variant="secondary" onClick={(e) => handleSubmit(e, 'CLONE')} isLoading={loading}>[ SAVE & CLONE ]</SwissButton>}
+                    <SwissButton type="submit" onClick={(e) => handleSubmit(e, 'SAVE')} isLoading={loading}>{isEditMode ? 'UPDATE UNIT' : 'REGISTER UNIT'}</SwissButton>
                 </div>
             </form>
         </div>

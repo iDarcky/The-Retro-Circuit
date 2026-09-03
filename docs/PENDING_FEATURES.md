@@ -52,7 +52,7 @@ a one-line note rather than deleted, so the same feature does not get proposed t
 
 ### 🔴 Critical
 - [x] ~~**Affiliate Integration**~~ — done differently and better: no per-row affiliate columns, because a stored tagged URL rots and can be pasted with someone else's tag. `lib/affiliate.ts` is the single place the `theretrocircu-20` tag is applied, and `pickBuyTarget` chooses a real vendor listing over an Amazon search. **AliExpress has no programme wired up yet** and it is the largest channel in the data — see the playbook.
-- [ ] **Approved buy paths on the published catalogue**: 52 of 78 published consoles have no ASIN and no approved vendor link, so their buy button falls back to an Amazon search for a device Amazon often does not stock. `/admin/buy-links` and `/admin/links` are the two tools; this is data work now, not code.
+- [ ] **Approved buy paths on the published catalogue**: 41 of 85 published consoles have no ASIN and no approved vendor link, so their buy button falls back to an Amazon search for a device Amazon often does not stock. (Was 52 of 78: discontinued devices are now excluded, since a device nobody sells needs no buy path.) Set one console's path in its editor's **Buy path** tab; sweep the backlog at `/admin/revenue`. Data work, not code.
 
 ### 🟡 Must Have
 - [ ] **Price History & Tracking**: Create a `price_history` table and display a Sparkline chart (6-month trend) with a "Best Time to Buy" indicator.

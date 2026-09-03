@@ -2,11 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { Manufacturer } from '@/lib/types';
-import Button from '@/components/ui/Button';
+import SwissButton from '../console/swiss/SwissButton';
 import { ManufacturerForm } from '@/components/admin/ManufacturerForm';
-import Modal from '@/components/ui/Modal';
+import SwissModal from '../console/swiss/SwissModal';
 import { deleteManufacturer } from '@/app/actions';
 
 interface FabricatorClientProps {
@@ -21,7 +20,7 @@ export default function FabricatorClient({ initialManufacturers, counts = {} }: 
     const [manufacturers, setManufacturers] = useState(initialManufacturers);
     const [search, setSearch] = useState('');
 
-    // Modal State
+    // SwissModal State
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingManufacturer, setEditingManufacturer] = useState<Manufacturer | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -87,20 +86,16 @@ export default function FabricatorClient({ initialManufacturers, counts = {} }: 
                         FABRICATORS
                     </h1>
                     <div className="flex gap-4 font-mono text-xs text-gray-500 uppercase tracking-widest">
-                        <Link href="/admin" className="hover:text-white hover:underline">
-                            &lt; ROOT TERMINAL
-                        </Link>
-                        <span>|</span>
                         <p>
-                            // TOTAL ENTITIES: {manufacturers.length}
+                            {'//'} TOTAL ENTITIES: {manufacturers.length}
                         </p>
                     </div>
                 </div>
 
                 <div className="flex gap-2">
-                    <Button variant="secondary" className="text-xs" onClick={handleOpenCreate}>
+                    <SwissButton variant="secondary" className="text-xs" onClick={handleOpenCreate}>
                          + REGISTER FABRICATOR
-                    </Button>
+                    </SwissButton>
                 </div>
             </div>
 
@@ -196,13 +191,13 @@ export default function FabricatorClient({ initialManufacturers, counts = {} }: 
                 ))}
                 {filteredManufacturers.length === 0 && (
                     <div className="col-span-full p-12 text-center text-gray-500 font-mono text-xs border border-dashed border-gray-800 uppercase tracking-widest">
-                        // NO RECORDS FOUND MATCHING QUERY.
+                        {'//'} NO RECORDS FOUND MATCHING QUERY.
                     </div>
                 )}
             </div>
 
-            {/* Modal */}
-            <Modal
+            {/* SwissModal */}
+            <SwissModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 title={editingManufacturer ? `EDIT ENTITY: ${editingManufacturer.name}` : "REGISTER NEW FABRICATOR"}
@@ -217,7 +212,7 @@ export default function FabricatorClient({ initialManufacturers, counts = {} }: 
                         ERROR: {errorMsg}
                     </div>
                 )}
-            </Modal>
+            </SwissModal>
         </div>
     );
 }

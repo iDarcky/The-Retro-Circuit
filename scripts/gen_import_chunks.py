@@ -12,8 +12,11 @@ import json, os, sys
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else '.'
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-rows = json.load(open(os.path.join(ROOT, 'v3_import.json'))) + \
-       json.load(open(os.path.join(ROOT, 'v4_import.json')))
+# The import dumps moved out of the repo root into data/imports/ so the root stays
+# readable; they are inputs to this script, not application data.
+IMPORTS = os.path.join(ROOT, 'data', 'imports')
+rows = json.load(open(os.path.join(IMPORTS, 'v3_import.json'))) + \
+       json.load(open(os.path.join(IMPORTS, 'v4_import.json')))
 
 VCOLS = ['variant_name', 'is_default', 'price_avg_usd', 'cpu_model', 'cpu_cores', 'cpu_threads',
  'cpu_clock_max_mhz', 'gpu_model', 'gpu_cores', 'gpu_clock_mhz', 'os', 'os_family', 'os_version',

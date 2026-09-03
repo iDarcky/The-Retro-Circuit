@@ -237,7 +237,10 @@ export const ConsoleVariantSchema = z.object({
   charge_port_positions: safeStringArray,
 
   expansion_slot_count: safeNumber,
-  expansion_card_type: safeEnum(['microsd', 'sd', 'memory_stick', 'cfexpress', 'proprietary'] as const),
+  // Storage expansion is not always one slot of one kind: the AYANEO Next 2 takes a
+  // microSD card and an M.2 SSD. The combined value says so in one column rather than
+  // forcing a choice between two true answers.
+  expansion_card_type: safeEnum(['microsd', 'sd', 'memory_stick', 'cfexpress', 'm2_2230', 'm2_2242', 'external_ssd', 'microsd_plus_m2', 'proprietary'] as const),
   expansion_speed_class: safeString,
 
   lens_material: safeEnum(['tempered_glass', 'gorilla_glass', 'plastic', 'none'] as const),

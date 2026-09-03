@@ -7,20 +7,23 @@ import { ConsoleDetails, Manufacturer, ConsoleVariant } from '@/lib/types';
 import { deleteConsoleVariant } from '@/app/actions';
 import { ConsoleForm } from '@/components/admin/ConsoleForm';
 import { VariantForm } from '@/components/admin/VariantForm';
-import Button from '@/components/ui/Button';
-import Modal from '@/components/ui/Modal';
+import SwissButton from '../console/swiss/SwissButton';
+import SwissModal from '../console/swiss/SwissModal';
+import ConsoleCommerceSection from './ConsoleCommerceSection';
+import type { LinkReviewRow } from '../../app/actions/commerce';
 
 type EditorClientProps = {
     initialConsole: ConsoleDetails;
     initialManufacturers: Manufacturer[];
+    initialLinks: LinkReviewRow[];
 };
 
-export default function AdminConsoleEditorClient({ initialConsole, initialManufacturers }: EditorClientProps) {
+export default function AdminConsoleEditorClient({ initialConsole, initialManufacturers, initialLinks }: EditorClientProps) {
     const router = useRouter();
     const [consoleData, setConsoleData] = useState<ConsoleDetails>(initialConsole);
     const [error, _setError] = useState<string | null>(null);
 
-    // Variant Modal State
+    // Variant SwissModal State
     const [isVariantModalOpen, setIsVariantModalOpen] = useState(false);
     const [editingVariant, setEditingVariant] = useState<ConsoleVariant | null>(null);
     const [variantError, setVariantError] = useState<string | null>(null);
@@ -36,6 +39,11 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
     };
 
     const [deletingId, setDeletingId] = useState<string | null>(null);
+
+    /* The editor grew past a screenful once the buy path joined the console fields and
+     * the variant list. Tabs keep each job to one view; the publish-readiness bar stays
+     * above them, because a blocker you cannot see is a blocker you forget. */
+    const [tab, setTab] = useState<'details' | 'variants' | 'commerce'>('details');
 
     const handleDeleteVariant = async (variant: ConsoleVariant) => {
         const name = variant.variant_name || 'this variant';
@@ -82,9 +90,9 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                 <div className="flex gap-2">
                     {/* UPDATED LINK: Points to new Admin Preview Route */}
                     <Link href={`/admin/preview/consoles/${consoleData.slug}`} target="_blank">
-                        <Button variant="secondary" className="text-xs border border-gray-700 text-gray-400">
+                        <SwissButton variant="secondary" className="text-xs border border-gray-700 text-gray-400">
                              PREVIEW [↗]
-                        </Button>
+                        </SwissButton>
                     </Link>
                 </div>
             </div>
@@ -135,8 +143,45 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                 );
             })()}
 
+            {(() => {
+                const variants = consoleData.variants ?? [];
+                const hasBuyPath =
+                    variants.some((v: any) => v.amazon_asin) || initialLinks.some(l => l.approved);
+                const TABS = [
+                    { id: 'details' as const, label: 'Details', note: '' },
+                    { id: 'variants' as const, label: 'Variants', note: String(variants.length) },
+                    { id: 'commerce' as const, label: 'Buy path', note: hasBuyPath ? '✓' : '—' },
+                ];
+                return (
+                    <div className="flex border border-border-normal mb-8" role="tablist" aria-label="Console editor sections">
+                        {TABS.map(t => {
+                            const on = tab === t.id;
+                            return (
+                                <button
+                                    key={t.id}
+                                    type="button"
+                                    role="tab"
+                                    aria-selected={on}
+                                    onClick={() => setTab(t.id)}
+                                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 border-r border-border-normal last:border-r-0 font-mono text-[10px] uppercase tracking-widest transition-colors ${
+                                        on ? 'bg-white/[0.06] text-white' : 'text-gray-500 hover:text-white hover:bg-white/[0.03]'
+                                    }`}
+                                >
+                                    {t.label}
+                                    {t.note && (
+                                        <span className={`tabular-nums ${on ? 'text-gray-400' : 'text-gray-700'}`}>
+                                            {t.note}
+                                        </span>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+                );
+            })()}
+
             {/* Editor Area */}
-            <div className="bg-bg-primary border border-border-normal p-6 shadow-lg relative mb-12">
+            <div className={`bg-bg-primary border border-border-normal p-6 relative mb-12 ${tab === 'details' ? '' : 'hidden'}`}>
                  <div className="relative z-10">
                     <ConsoleForm
                         initialData={consoleData}
@@ -145,13 +190,14 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                  </div>
             </div>
 
-            {/* NEW VARIANTS SECTION */}
-            <div className="mt-8 border-t border-dashed border-gray-800 pt-8">
+            {/* Variants. Kept mounted rather than unmounted so the delete-in-flight state
+                and any open row survive a tab switch. */}
+            <div className={`mt-8 ${tab === 'variants' ? '' : 'hidden'}`}>
                  <div className="flex justify-between items-center mb-6">
                      <h3 className="font-pixel text-lg text-white">HARDWARE VARIANTS</h3>
-                     <Button variant="secondary" className="text-xs" onClick={handleOpenCreateVariant}>
+                     <SwissButton variant="secondary" className="text-xs" onClick={handleOpenCreateVariant}>
                         + ADD NEW VARIANT
-                     </Button>
+                     </SwissButton>
                  </div>
 
                  <div className="grid grid-cols-1 gap-4">
@@ -191,13 +237,13 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                                      </div>
                                  </div>
                                  <div className="flex items-center gap-2 shrink-0">
-                                     <Button
+                                     <SwissButton
                                         variant="secondary"
                                         className="text-xs border-gray-600 text-gray-400 hover:border-white hover:text-white"
                                         onClick={() => handleOpenEditVariant(variant)}
                                      >
                                          EDIT SPECS
-                                     </Button>
+                                     </SwissButton>
                                      <button
                                         type="button"
                                         disabled={deletingId === variant.id}
@@ -218,9 +264,13 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                  </div>
             </div>
 
+            <div className={tab === 'commerce' ? '' : 'hidden'}>
+                <ConsoleCommerceSection console={consoleData} initialLinks={initialLinks} />
+            </div>
+
             {/* Variant editor — full screen: the spec form is long and benefits from the
                 extra width/height, and a stray backdrop click can't discard the form. */}
-            <Modal
+            <SwissModal
                 isOpen={isVariantModalOpen}
                 onClose={() => setIsVariantModalOpen(false)}
                 fullScreen
@@ -238,7 +288,7 @@ export default function AdminConsoleEditorClient({ initialConsole, initialManufa
                         ERROR: {variantError}
                     </div>
                 )}
-            </Modal>
+            </SwissModal>
         </div>
     );
 }

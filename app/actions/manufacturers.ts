@@ -55,28 +55,6 @@ export const fetchPublicManufacturers = async (): Promise<Manufacturer[]> => {
     }
 };
 
-export const getManufacturerBySlug = async (slug: string): Promise<Manufacturer | null> => {
-    try {
-        const supabase = supabaseAnon;
-        const { data, error } = await supabase.from('manufacturer').select('*').eq('slug', slug).single();
-        if (error) throw error;
-        return data as Manufacturer;
-    } catch {
-        return null;
-    }
-};
-
-export const getManufacturerById = async (id: string): Promise<Manufacturer | null> => {
-    try {
-        const supabase = await createClient();
-        const { data, error } = await supabase.from('manufacturer').select('*').eq('id', id).single();
-        if (error) throw error;
-        return data as Manufacturer;
-    } catch {
-        return null;
-    }
-};
-
 export const addManufacturer = async (manu: Omit<Manufacturer, 'id'>): Promise<{ success: boolean, message?: string }> => {
     try {
         const supabase = await createClient();

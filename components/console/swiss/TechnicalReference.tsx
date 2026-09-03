@@ -129,6 +129,8 @@ const TITLE_CASE: Record<string, string> = {
     usb_c: 'USB-C', micro_usb: 'Micro USB', mini_usb: 'Mini USB',
     barrel_dc: 'DC barrel', proprietary: 'Proprietary', none: 'None',
     microsd: 'microSD', sd: 'SD', memory_stick: 'Memory Stick', cfexpress: 'CFexpress',
+    m2_2230: 'M.2 2230 SSD', m2_2242: 'M.2 2242 SSD', external_ssd: 'External SSD',
+    microsd_plus_m2: 'microSD + M.2 SSD',
     tempered_glass: 'Tempered glass', gorilla_glass: 'Gorilla Glass', plastic: 'Plastic',
     multiple: 'Multiple', back: 'Back',
 };
@@ -165,7 +167,10 @@ const formatChargePort = (s: any): string | null => {
 
 const formatExpansion = (s: any): string | null => {
     if (!s.expansion_card_type) return s.microsd_type || null;
-    const head = s.expansion_slot_count > 1
+    // The combined value already names two slots of different kinds, so a count prefix
+    // would read as "2 x microSD + M.2 SSD" — four slots, which is not what it means.
+    const combined = String(s.expansion_card_type).includes('_plus_');
+    const head = !combined && s.expansion_slot_count > 1
         ? `${s.expansion_slot_count} \u00d7 ${label(s.expansion_card_type)}`
         : label(s.expansion_card_type);
     return [head, s.expansion_speed_class].filter(Boolean).join(' \u00b7 ');

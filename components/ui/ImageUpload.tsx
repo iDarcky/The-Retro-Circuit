@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, type ChangeEvent, type DragEvent, type KeyboardEvent, type FC } from 'react';
-import { supabase } from '../../lib/supabase/singleton';
+import { supabase } from '../../lib/supabase/client';
 import { resizeImageFile } from '../../lib/image-resize';
 
 interface ImageUploadProps {

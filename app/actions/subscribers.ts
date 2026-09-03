@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '../../lib/supabase/server';
+import { siteConfig } from '../../config/site';
 import { createAdminClient } from '../../lib/supabase/admin';
 import { Resend } from 'resend';
 
@@ -97,7 +98,7 @@ async function sendWelcomeEmail(normalizedEmail: string) {
 
       <br/>
 
-      <p>Changed your mind? <a href="https://theretrocircuit.com/unsubscribe?email=${encodeURIComponent(normalizedEmail)}" style="color: #ffffff; text-decoration: underline;">Unsubscribe here</a></p>
+      <p>Changed your mind? <a href="${siteConfig.url}/unsubscribe?email=${encodeURIComponent(normalizedEmail)}" style="color: #ffffff; text-decoration: underline;">Unsubscribe here</a></p>
 
       <br/>
 

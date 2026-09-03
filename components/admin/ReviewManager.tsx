@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Review } from '@/lib/types/news';
-import { createReview, deleteReview } from '@/app/actions/reviews';
+import { createReview, updateReview, deleteReview } from '@/app/actions/reviews';
 import { SwissDropdown } from '../ui/SwissDropdown';
 
 interface ReviewManagerProps {
@@ -23,6 +23,40 @@ export const ReviewManager: React.FC<ReviewManagerProps> = ({ reviews, consoles 
     cons: ''
   });
   const [isLoading, setIsLoading] = useState(false);
+  // Null means the form is creating; an id means it is editing that review. The fields
+  // are the same either way, so one form serves both.
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const EMPTY = {
+    console_id: '',
+    title: '',
+    summary: '',
+    score: 0,
+    image_url: '',
+    pros: '',
+    cons: ''
+  };
+
+  const startEdit = (review: Review) => {
+    setEditingId(review.id);
+    setFormData({
+      console_id: review.console_id ?? '',
+      title: review.title ?? '',
+      summary: review.summary ?? '',
+      score: review.score ?? 0,
+      image_url: review.image_url ?? '',
+      // pros/cons are text[] in the database and a comma-separated field here, so the
+      // join has to mirror the split the submit handler does.
+      pros: (review.pros ?? []).join(', '),
+      cons: (review.cons ?? []).join(', '),
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setFormData(EMPTY);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -40,32 +74,30 @@ export const ReviewManager: React.FC<ReviewManagerProps> = ({ reviews, consoles 
         return;
     }
 
-    try {
-      await createReview({
-        console_id: formData.console_id,
-        console_name: selectedConsole.name,
-        console_slug: selectedConsole.slug,
-        title: formData.title,
-        summary: formData.summary,
-        score: Number(formData.score),
-        image_url: formData.image_url,
-        pros: formData.pros ? formData.pros.split(',').map(p => p.trim()).filter(Boolean) : [],
-        cons: formData.cons ? formData.cons.split(',').map(c => c.trim()).filter(Boolean) : [],
-      });
+    const payload = {
+      console_id: formData.console_id,
+      console_name: selectedConsole.name,
+      console_slug: selectedConsole.slug,
+      title: formData.title,
+      summary: formData.summary,
+      score: Number(formData.score),
+      image_url: formData.image_url,
+      pros: formData.pros ? formData.pros.split(',').map(p => p.trim()).filter(Boolean) : [],
+      cons: formData.cons ? formData.cons.split(',').map(c => c.trim()).filter(Boolean) : [],
+    };
 
-      setFormData({
-        console_id: '',
-        title: '',
-        summary: '',
-        score: 0,
-        image_url: '',
-        pros: '',
-        cons: ''
-      });
+    try {
+      if (editingId) {
+        await updateReview(editingId, payload);
+      } else {
+        await createReview(payload);
+      }
+      setEditingId(null);
+      setFormData(EMPTY);
       router.refresh();
     } catch (error) {
-      console.error('Failed to create review:', error);
-      alert('Failed to publish review.');
+      console.error(editingId ? 'Failed to update review:' : 'Failed to create review:', error);
+      alert(editingId ? 'Could not save the changes.' : 'Could not publish the review.');
     } finally {
       setIsLoading(false);
     }
@@ -75,6 +107,8 @@ export const ReviewManager: React.FC<ReviewManagerProps> = ({ reviews, consoles 
     if (!confirm('Are you sure you want to delete this review?')) return;
     try {
       await deleteReview(id);
+      // Otherwise the form would still point at a row that no longer exists.
+      if (editingId === id) cancelEdit();
       router.refresh();
     } catch (error) {
       console.error('Failed to delete review:', error);
@@ -84,11 +118,11 @@ export const ReviewManager: React.FC<ReviewManagerProps> = ({ reviews, consoles 
   return (
     <div className="w-full max-w-6xl mx-auto p-6 space-y-8">
 
-      {/* Create Form */}
+      {/* Create / edit form — one form, switched by `editingId` */}
       <div className="bg-black/80 border border-white/10 p-6">
         <h2 className="text-xl font-pixel text-cyan-500 mb-6 flex items-center gap-2">
            <span className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse"></span>
-           PUBLISH ANALYSIS
+           {editingId ? 'EDIT ANALYSIS' : 'PUBLISH ANALYSIS'}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -174,13 +208,23 @@ export const ReviewManager: React.FC<ReviewManagerProps> = ({ reviews, consoles 
                </div>
            </div>
 
-           <div className="flex justify-end pt-4">
+           <div className="flex justify-end gap-3 pt-4">
+                {editingId && (
+                  <button
+                    type="button"
+                    onClick={cancelEdit}
+                    disabled={isLoading}
+                    className="border border-white/20 text-gray-400 hover:text-white hover:border-white font-bold uppercase text-xs px-6 py-3 transition-colors disabled:opacity-50"
+                  >
+                    CANCEL
+                  </button>
+                )}
                 <button
                   type="submit"
                   disabled={isLoading}
                   className="bg-cyan-600 hover:bg-cyan-500 text-black font-bold uppercase text-xs px-8 py-3 transition-colors disabled:opacity-50"
                 >
-                 {isLoading ? 'PROCESSING...' : 'PUBLISH REVIEW'}
+                 {isLoading ? 'PROCESSING...' : (editingId ? 'SAVE CHANGES' : 'PUBLISH REVIEW')}
                </button>
            </div>
         </form>
@@ -192,7 +236,14 @@ export const ReviewManager: React.FC<ReviewManagerProps> = ({ reviews, consoles 
 
         <div className="space-y-4">
           {reviews.map((review) => (
-            <div key={review.id} className="flex items-start justify-between p-4 border border-white/10 bg-black/20 hover:border-cyan-500/30 transition-colors">
+            <div
+              key={review.id}
+              className={`flex items-start justify-between p-4 border bg-black/20 transition-colors ${
+                editingId === review.id
+                  ? 'border-cyan-500'
+                  : 'border-white/10 hover:border-cyan-500/30'
+              }`}
+            >
               <div className="flex-1">
                  <div className="flex items-center gap-2 mb-2">
                     <span className="text-[10px] font-mono text-cyan-500 border border-cyan-500/30 px-2 py-0.5">
@@ -208,12 +259,20 @@ export const ReviewManager: React.FC<ReviewManagerProps> = ({ reviews, consoles 
                  </p>
               </div>
 
-              <button
-                onClick={() => handleDelete(review.id)}
-                className="ml-4 text-[10px] text-red-500 hover:text-red-400 uppercase font-bold border border-red-500/30 hover:bg-red-950/30 px-3 py-1 transition-colors"
-              >
-                DELETE
-              </button>
+              <div className="ml-4 flex shrink-0 gap-2">
+                <button
+                  onClick={() => startEdit(review)}
+                  className="text-[10px] text-cyan-400 hover:text-cyan-300 uppercase font-bold border border-cyan-500/30 hover:bg-cyan-950/30 px-3 py-1 transition-colors"
+                >
+                  EDIT
+                </button>
+                <button
+                  onClick={() => handleDelete(review.id)}
+                  className="text-[10px] text-red-500 hover:text-red-400 uppercase font-bold border border-red-500/30 hover:bg-red-950/30 px-3 py-1 transition-colors"
+                >
+                  DELETE
+                </button>
+              </div>
             </div>
           ))}
 

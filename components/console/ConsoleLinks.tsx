@@ -41,7 +41,7 @@ export default function ConsoleLinks({ links, productName, manufacturerName }: C
      * Every row here arrived with a spreadsheet import and none of it was chosen, so an
      * uncurated list of other people's videos was being published on our own product
      * pages by inheritance. `approved` defaults to false, which means this section shows
-     * nothing until someone has been through /admin/links, and turns itself back on one
+     * nothing until someone has been through /admin/revenue, and turns itself back on one
      * link at a time as they do. */
     const approved = (links ?? []).filter((l) => l.approved);
     if (approved.length === 0) return null;

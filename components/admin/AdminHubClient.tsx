@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { markConsoleReleased, type AdminDashboard, type WorklistRow } from '../../app/actions/dashboard';
+import { ADMIN_NAV } from '../../lib/config/admin-nav';
 
 /* The hub leads with what is missing, not with where to go.
  *
@@ -11,41 +12,6 @@ import { markConsoleReleased, type AdminDashboard, type WorklistRow } from '../.
  * number and the work it names are one click apart. The old navigation cards moved
  * to a strip at the bottom — still one click, but no longer the whole page. */
 
-/* Everything the admin can reach, grouped by what it is for. The hub is the map:
- * no page should be findable only by remembering its URL. */
-const NAV_GROUPS: { group: string; items: { href: string; label: string; hint: string }[] }[] = [
-    {
-        group: 'Catalogue',
-        items: [
-            { href: '/admin/consoles', label: 'Consoles', hint: 'Index & editor' },
-            { href: '/admin/fabricators', label: 'Fabricators', hint: 'Brands & profiles' },
-        ],
-    },
-    {
-        group: 'Revenue',
-        items: [
-            { href: '/admin/asins', label: 'ASINs', hint: 'Link products' },
-            { href: '/admin/buy-links', label: 'Buy links', hint: 'Published, no path' },
-            { href: '/admin/links', label: 'Link review', hint: 'Imported, ungreenlit' },
-        ],
-    },
-    {
-        group: 'Editorial',
-        items: [
-            { href: '/admin/reviews', label: 'Reviews', hint: 'Written verdicts' },
-            { href: '/admin/news', label: 'News', hint: 'Posts' },
-            { href: '/admin/signals', label: 'Signals', hint: 'Short updates' },
-        ],
-    },
-    {
-        group: 'Product',
-        items: [
-            { href: '/admin/roadmap', label: 'Roadmap', hint: 'Features & releases' },
-            { href: '/admin/broadcast', label: 'Broadcast', hint: 'Subscriber email' },
-            { href: '/design', label: 'Design system', hint: 'Tokens & components' },
-        ],
-    },
-];
 
 function Tile({ n, label, sub, href, tone = 'plain' }: {
     n: number; label: string; sub: string; href: string;
@@ -167,7 +133,7 @@ export default function AdminHubClient({ data }: { data: AdminDashboard }) {
                 <Tile n={gaps.NO_IMAGE} label="No image" sub="Blocks publish" tone="blocking"
                     href="/admin/consoles?status=DRAFT&gap=NO_IMAGE" />
                 <Tile n={revenue.variantsTotal - revenue.variantsWithAsin} label="No ASIN" sub="Search-link fallback"
-                    href="/admin/asins" />
+                    href="/admin/revenue?tab=asins" />
                 <Tile n={gaps.NO_PRICE} label="No price" sub="Drafts"
                     href="/admin/consoles?status=DRAFT&gap=NO_PRICE" />
                 <Tile n={gaps.NO_VARIANT} label="No variant" sub="Drafts"
@@ -180,7 +146,7 @@ export default function AdminHubClient({ data }: { data: AdminDashboard }) {
             <div className="mb-12">
                 <div className="font-mono text-[10px] tracking-[0.2em] uppercase text-gray-600 mb-4">Sections</div>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                    {NAV_GROUPS.map(g => (
+                    {ADMIN_NAV.map(g => (
                         <div key={g.group}>
                             <div className="font-mono text-[9px] tracking-[0.18em] uppercase text-primary pb-2 mb-3 border-b border-border-subtle">
                                 {g.group}

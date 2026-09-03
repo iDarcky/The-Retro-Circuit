@@ -1,7 +1,9 @@
 import { cache } from 'react';
+import { siteConfig } from '../../../config/site';
 import { notFound } from 'next/navigation';
 import { fetchConsoleBySlug } from '../../../app/actions';
-import { fetchConsoleList, fetchConsoleImages, fetchSuccessor } from '../../../app/actions/consoles';
+import { fetchConsoleList, fetchSuccessor } from '../../../app/actions/consoles';
+import { fetchConsoleImages } from '../../../app/actions/images';
 import ConsoleDetailView from '../../../components/console/ConsoleDetailView';
 import { fetchCatalogueStats } from '../../actions/scoring';
 import { circuitScore } from '../../../lib/scoring/circuit-score';
@@ -88,8 +90,30 @@ export async function generateMetadata(props: Props) {
     }
 
     const mfgName = data.manufacturer?.name ? data.manufacturer.name + ' ' : '';
-    const description = `Full specs, variants, and pricing for the ${mfgName}${data.name}. Compare emulation performance and find the right console.`;
-    const title = `${mfgName}${data.name} Specs, Price & Variants | The Retro Circuit`;
+
+    /* The snippet is the product, not the page.
+     *
+     * Console pages take 64% of impressions and convert at 0.07% — 15-30x below what
+     * their average position (~15) should return. That is not a ranking problem, it is
+     * a snippet problem: the old title promised "Specs, Price & Variants" to people
+     * searching "<device> review" or "<device> worth it", and the old description was
+     * one sentence of boilerplate identical on all 85 pages.
+     *
+     * `specsParts` was already being assembled above and then silently discarded — the
+     * concrete detail that makes a snippet clickable (5.5" AMOLED, 1080p, $459) was
+     * computed and thrown away on every page. It leads the description now.
+     *
+     * The year matters because these devices date fast and searchers filter on it. */
+    const releaseYear = defaultVar?.release_date ? String(defaultVar.release_date).slice(0, 4) : null;
+    const specLine = specsParts.slice(0, 4).join(' · ');
+
+    const description = specLine
+        ? `${mfgName}${data.name}: ${specLine}. Emulation tested per system, full spec sheet, and how it compares to the alternatives.`
+        : `${mfgName}${data.name} — full spec sheet, emulation performance per system, and how it compares to the alternatives.`;
+
+    const title = releaseYear
+        ? `${mfgName}${data.name} (${releaseYear}) — Specs & Emulation Performance | The Retro Circuit`
+        : `${mfgName}${data.name} — Specs & Emulation Performance | The Retro Circuit`;
 
     return {
       title: { absolute: title },
@@ -192,10 +216,10 @@ export default async function ConsoleSpecsPage(props: Props) {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: fullName,
-    url: `https://theretrocircuit.com/consoles/${slug}`,
+    url: `${siteConfig.url}/consoles/${slug}`,
     image: [consoleData.image_url, ...galleryImages.map((g) => g.url)].filter(Boolean).length
       ? [consoleData.image_url, ...galleryImages.map((g) => g.url)].filter(Boolean)
-      : ['https://theretrocircuit.com/og-v2.png'],
+      : [`${siteConfig.url}/og-v2.png`],
     description: consoleData.description || `Full specs, variants, and pricing for the ${fullName}.`,
     brand: {
       '@type': 'Brand',
@@ -208,7 +232,7 @@ export default async function ConsoleSpecsPage(props: Props) {
     const firstAsin = consoleData.variants?.find((v) => v.amazon_asin)?.amazon_asin;
     const offerUrl = firstAsin
       ? `https://www.amazon.com/dp/${firstAsin}?tag=theretrocircu-20`
-      : `https://theretrocircuit.com/consoles/${slug}`;
+      : `${siteConfig.url}/consoles/${slug}`;
 
     jsonLd.offers = offerCount > 1 && maxPrice > minPrice
       ? {
@@ -268,11 +292,11 @@ export default async function ConsoleSpecsPage(props: Props) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Consoles', item: 'https://theretrocircuit.com/consoles' },
+      { '@type': 'ListItem', position: 1, name: 'Consoles', item: `${siteConfig.url}/consoles` },
       ...(consoleData.manufacturer?.slug
-        ? [{ '@type': 'ListItem', position: 2, name: mfgName, item: `https://theretrocircuit.com/fabricators/${consoleData.manufacturer.slug}` }]
+        ? [{ '@type': 'ListItem', position: 2, name: mfgName, item: `${siteConfig.url}/fabricators/${consoleData.manufacturer.slug}` }]
         : []),
-      { '@type': 'ListItem', position: consoleData.manufacturer?.slug ? 3 : 2, name: fullName, item: `https://theretrocircuit.com/consoles/${slug}` },
+      { '@type': 'ListItem', position: consoleData.manufacturer?.slug ? 3 : 2, name: fullName, item: `${siteConfig.url}/consoles/${slug}` },
     ],
   };
 

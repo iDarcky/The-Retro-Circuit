@@ -214,9 +214,7 @@ route not listed there is findable only by remembering its URL.
 | `/admin` | Hub: gap counts that link into the filtered index |
 | `/admin/consoles`, `/admin/consoles/[slug]` | Catalogue index and the console + variant editor |
 | `/admin/fabricators` | Brands and brand profiles |
-| `/admin/asins` | ASIN worklist |
-| `/admin/buy-links` | Published consoles with **no buy path at all**, worst-first |
-| `/admin/links` | Approval gate for the 1,332 imported review/vendor links |
+| `/admin/revenue` | The three buy-path queues on one screen, as tabs: no buy path (default), needs ASIN, imported links. The old `/admin/asins`, `/admin/buy-links` and `/admin/links` redirect here. Per-console work lives in the console editor's **Buy path** tab, not here |
 | `/admin/reviews`, `/admin/news`, `/admin/signals` | Editorial |
 | `/admin/roadmap`, `/admin/broadcast` | Product and subscriber email |
 | `/admin/preview/consoles/[slug]` | Renders an unpublished console as the public page |

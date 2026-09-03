@@ -5,7 +5,7 @@ import { RoadmapFeature, Release } from '../../lib/types/domain';
 import RoadmapCard from './RoadmapCard';
 import { RoadmapForm } from '@/components/admin/RoadmapForm';
 import { ReleaseForm } from '@/components/admin/ReleaseForm';
-import Modal from '@/components/ui/Modal';
+import SwissModal from '../console/swiss/SwissModal';
 import { deleteRoadmapItem, updateRoadmapItem, deleteRelease } from '@/app/actions/roadmap';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -256,7 +256,7 @@ export default function RoadmapView({ releases, upcomingItems, isAdmin }: Roadma
                                                 </div>
                                                 {release.title && (
                                                     <h3 className="text-lg font-bold text-emerald-400 font-mono uppercase tracking-wide mt-1">
-                                                    // {release.title}
+                                                    {'//'} {release.title}
                                                     </h3>
                                                 )}
                                             </div>
@@ -299,7 +299,7 @@ export default function RoadmapView({ releases, upcomingItems, isAdmin }: Roadma
             {/* Admin Modals */}
             {isAdmin && (
                 <>
-                    <Modal
+                    <SwissModal
                         isOpen={isRoadmapModalOpen}
                         onClose={() => setIsRoadmapModalOpen(false)}
                         title={editingFeature ? `EDIT MISSION: ${editingFeature.title}` : "INITIATE NEW MISSION"}
@@ -314,9 +314,9 @@ export default function RoadmapView({ releases, upcomingItems, isAdmin }: Roadma
                                 ERROR: {errorMsg}
                             </div>
                         )}
-                    </Modal>
+                    </SwissModal>
 
-                    <Modal
+                    <SwissModal
                         isOpen={isReleaseModalOpen}
                         onClose={() => setIsReleaseModalOpen(false)}
                         title={editingRelease ? `EDIT RELEASE: v${editingRelease.version}` : "INITIATE NEW RELEASE"}
@@ -331,7 +331,7 @@ export default function RoadmapView({ releases, upcomingItems, isAdmin }: Roadma
                                 ERROR: {errorMsg}
                             </div>
                         )}
-                    </Modal>
+                    </SwissModal>
                 </>
             )}
         </div>

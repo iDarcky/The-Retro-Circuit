@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { fetchConsoleBySlug, fetchManufacturers } from '@/app/actions';
+import { fetchConsoleLinks } from '@/app/actions/commerce';
 import AdminConsoleEditorClient from '@/components/admin/AdminConsoleEditorClient';
 
 type Props = {
@@ -34,12 +35,17 @@ export default async function AdminConsoleEditPage(props: Props) {
         return notFound();
     }
 
+    // Sequential rather than in the Promise.all above: the links are keyed by console id,
+    // which only exists once the console has been resolved from its slug.
+    const links = await fetchConsoleLinks(consoleRes.data.id);
+
     // 3. Render Client Editor
     return (
         <Suspense fallback={<div className="p-8 text-center text-secondary font-mono animate-pulse">LOADING EDITOR...</div>}>
             <AdminConsoleEditorClient
                 initialConsole={consoleRes.data}
                 initialManufacturers={manufacturers}
+                initialLinks={links}
             />
         </Suspense>
     );

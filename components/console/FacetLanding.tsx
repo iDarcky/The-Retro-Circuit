@@ -1,16 +1,24 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { supabaseAnon } from '../../../../lib/supabase/anon';
-import { FACETS, getFacet, fetchFacetValues, fetchAllFacetPaths, type FacetDef } from '../../../../lib/config/facets';
 
-export const revalidate = false;
-export const dynamic = 'force-static';
-export const dynamicParams = false;
-
-export async function generateStaticParams() {
-    return fetchAllFacetPaths();
-}
+/**
+ * The facet landing page body, shared by /consoles/chip, /consoles/os and
+ * /consoles/vendor.
+ *
+ * These used to be one route, `app/consoles/[facet]/[value]`, sitting beside
+ * `app/consoles/[slug]`. Next.js forbids two dynamic segments with different names at
+ * the same position — "You cannot use different slug names for the same dynamic path
+ * ('facet' !== 'slug')" — and it threw that at request time across the whole /consoles
+ * tree, the homepage and /arena.
+ *
+ * `chip`, `os` and `vendor` are literal strings, so making them static segments removes
+ * the conflict and keeps every URL byte-identical. Adding a fourth facet means adding a
+ * folder here as well as an entry in lib/config/facets.ts — the cost of the fix, and
+ * cheap against a site-wide 500.
+ */
+import { supabaseAnon } from '../../lib/supabase/anon';
+import { FACETS, getFacet, fetchFacetValues, type FacetDef } from '../../lib/config/facets';
 
 /** Published consoles whose default variant matches this facet value. */
 async function fetchMatches(facet: FacetDef, value: string) {
@@ -47,8 +55,7 @@ async function fetchMatches(facet: FacetDef, value: string) {
     return { rows, label };
 }
 
-export async function generateMetadata(props: { params: Promise<{ facet: string; value: string }> }): Promise<Metadata> {
-    const { facet: facetSlug, value } = await props.params;
+export async function facetMetadata(facetSlug: string, value: string): Promise<Metadata> {
     const facet = getFacet(facetSlug);
     if (!facet) return { title: 'Not found | The Retro Circuit' };
     try {
@@ -64,8 +71,7 @@ export async function generateMetadata(props: { params: Promise<{ facet: string;
     }
 }
 
-export default async function FacetPage(props: { params: Promise<{ facet: string; value: string }> }) {
-    const { facet: facetSlug, value } = await props.params;
+export default async function FacetLanding({ facetSlug, value }: { facetSlug: string; value: string }) {
     const facet = getFacet(facetSlug);
     if (!facet) notFound();
 

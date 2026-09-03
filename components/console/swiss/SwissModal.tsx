@@ -9,9 +9,20 @@ interface SwissModalProps {
     onClose: () => void;
     title: string;
     children: React.ReactNode;
+    /**
+     * Fill the whole viewport instead of a centred dialog. Use for long data-entry forms
+     * — the variant spec editor is 112 fields over 37 steps — where the extra width and
+     * height matter.
+     *
+     * Full-screen modals also ignore backdrop clicks, so a stray click cannot discard a
+     * half-filled form. That guard came from the `Modal` this component replaced and is
+     * the reason the prop had to be ported rather than dropped: without it, one misplaced
+     * click in the variant editor loses the lot.
+     */
+    fullScreen?: boolean;
 }
 
-export default function SwissModal({ isOpen, onClose, title, children }: SwissModalProps) {
+export default function SwissModal({ isOpen, onClose, title, children, fullScreen = false }: SwissModalProps) {
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -40,11 +51,15 @@ export default function SwissModal({ isOpen, onClose, title, children }: SwissMo
 
     return createPortal(
         <div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fadeIn p-4"
-            onClick={onClose}
+            className={`fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fadeIn ${fullScreen ? '' : 'p-4'}`}
+            onClick={fullScreen ? undefined : onClose}
         >
             <div
-                className="w-full max-w-5xl max-h-[90vh] flex flex-col relative bg-[#09090b] border border-white/10 animate-slideUp shadow-2xl"
+                className={
+                    fullScreen
+                        ? 'w-full h-full flex flex-col relative bg-[#09090b] border-0 animate-fadeIn'
+                        : 'w-full max-w-5xl max-h-[90vh] flex flex-col relative bg-[#09090b] border border-white/10 animate-slideUp'
+                }
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
@@ -65,8 +80,8 @@ export default function SwissModal({ isOpen, onClose, title, children }: SwissMo
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto overflow-x-hidden p-0">
-                    {children}
+                <div className={`flex-1 overflow-y-auto overflow-x-hidden ${fullScreen ? 'p-6 md:p-8' : 'p-0'}`}>
+                    {fullScreen ? <div className="max-w-[1600px] mx-auto">{children}</div> : children}
                 </div>
 
                 {/* Footer / Status Bar */}

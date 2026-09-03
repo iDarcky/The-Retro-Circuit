@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { addConsoleVendorLink } from '../../app/actions/consoles';
-import type { BuyLinkRow } from '../../app/actions/consoles';
+import { addConsoleVendorLink } from '../../app/actions/commerce';
+import type { BuyLinkRow } from '../../app/actions/commerce';
 
 type Filter = 'urgent' | 'published' | 'all';
 

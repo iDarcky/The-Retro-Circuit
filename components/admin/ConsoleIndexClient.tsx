@@ -7,9 +7,9 @@ import { bulkSetConsoleStatus } from '../../app/actions/dashboard';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { timeAgo } from '@/lib/utils/date-formatter';
-import Button from '@/components/ui/Button';
+import SwissButton from '../console/swiss/SwissButton';
 import { ConsoleForm } from '@/components/admin/ConsoleForm';
-import Modal from '@/components/ui/Modal';
+import SwissModal from '../console/swiss/SwissModal';
 import { Manufacturer } from '@/lib/types';
 import { deleteConsole } from '@/app/actions';
 
@@ -39,6 +39,14 @@ type GapKey = 'ALL' | 'NO_IMAGE' | 'NO_VARIANT' | 'NO_PRICE' | 'READY';
  * An image is required to publish (see ConsoleForm validation); a console with no
  * variant has no specs at all; price drives the Best-Of guides and the finder.
  */
+/* "Ready" means ready *to publish*, so an already-published console is not ready — it
+ * is done. Without this the chip counted every console with no gaps, and since a
+ * published console has an image, a variant and a price by definition, all 77 of them
+ * landed in a queue labelled "ready to publish" beside the 2 drafts that actually were.
+ * The hub's dashboard has always drawn this line; the index did not. */
+const isReadyToPublish = (c: AdminConsoleRow): boolean =>
+    (c.status || 'draft').toLowerCase() !== 'published' && getGaps(c).length === 0;
+
 function getGaps(c: AdminConsoleRow): string[] {
     const gaps: string[] = [];
     const variants = c.variants || [];
@@ -100,7 +108,7 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
     );
     const [release, setRelease] = useState<string>((params.get('release') || 'ALL').toLowerCase() === 'all' ? 'ALL' : (params.get('release') || 'ALL').toLowerCase());
 
-    // Modal State
+    // SwissModal State
     const [selected, setSelected] = useState<Set<string>>(new Set());
     const [bulkBusy, setBulkBusy] = useState(false);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -153,7 +161,7 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
         NO_IMAGE: inStatus.filter(c => getGaps(c).includes('IMAGE')).length,
         NO_VARIANT: inStatus.filter(c => getGaps(c).includes('VARIANT')).length,
         NO_PRICE: inStatus.filter(c => getGaps(c).includes('PRICE')).length,
-        READY: inStatus.filter(c => getGaps(c).length === 0).length,
+        READY: inStatus.filter(isReadyToPublish).length,
     };
 
     const filteredConsoles = consoles.filter(c => {
@@ -171,7 +179,7 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
         const gaps = getGaps(c);
         const matchesGap =
             gap === 'ALL' ? true :
-            gap === 'READY' ? gaps.length === 0 :
+            gap === 'READY' ? isReadyToPublish(c) :
             gap === 'NO_IMAGE' ? gaps.includes('IMAGE') :
             gap === 'NO_VARIANT' ? gaps.includes('VARIANT') :
             gaps.includes('PRICE');
@@ -257,19 +265,16 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                         CONSOLE INDEX
                     </h1>
                     <div className="flex gap-4">
-                        <Link href="/admin" className="font-mono text-xs text-gray-500 hover:text-white hover:underline">
-                            &lt; ROOT TERMINAL
-                        </Link>
                         <p className="font-mono text-xs text-gray-500 tracking-widest">
-                            // TOTAL RECORDS: {consoles.length}
+                            {'//'} TOTAL RECORDS: {consoles.length}
                         </p>
                     </div>
                 </div>
 
                 <div className="flex gap-2">
-                    <Button variant="secondary" className="text-xs" onClick={() => setIsCreateModalOpen(true)}>
+                    <SwissButton variant="secondary" className="text-xs" onClick={() => setIsCreateModalOpen(true)}>
                          + NEW CONSOLE FOLDER
-                    </Button>
+                    </SwissButton>
                 </div>
             </div>
 
@@ -556,7 +561,7 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                             {filteredConsoles.length === 0 && (
                                 <tr>
                                     <td colSpan={7} className="p-8 text-center text-gray-500 border-dashed border-gray-800 uppercase tracking-widest">
-                                        // NO RECORDS FOUND.
+                                        {'//'} NO RECORDS FOUND.
                                     </td>
                                 </tr>
                             )}
@@ -565,8 +570,8 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                  </div>
             </div>
 
-            {/* Create Modal */}
-            <Modal
+            {/* Create SwissModal */}
+            <SwissModal
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
                 title="INITIALIZE NEW CONSOLE FOLDER"
@@ -579,7 +584,7 @@ export default function ConsoleIndexClient({ initialConsoles, initialManufacture
                         ERROR: {createError}
                     </div>
                 )}
-            </Modal>
+            </SwissModal>
         </div>
     );
 }

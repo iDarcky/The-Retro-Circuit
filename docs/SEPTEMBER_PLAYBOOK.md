@@ -1,218 +1,253 @@
 # September Playbook
 
-Reference doc for the September search push. Written 2026-08-26 from Google Search
-Console (6-month export + 1–23 Aug), Vercel Analytics, and the live database.
-**Updated 2026-09-02** after the admin/console-page branch. Catalogue counts, the gaps
-list and the shipped log are current as of then; the search metrics are still the
-1–23 Aug snapshot and have not been re-pulled.
+*Rewritten 2026-09-02 (evening); search figures replaced 2026-09-03 with the full-month
+August GSC exports. Every number below was queried from the live database, read from
+Vercel's runtime errors, or taken from a GSC CSV — none are carried over or projected.*
 
-Companion pages (same content, nicer to read):
-- Runbook: https://claude.ai/code/artifact/5244fe2b-4528-4217-9fa9-77cc08dff3cb
-- Playbook: https://claude.ai/code/artifact/945647ec-50b9-43e1-80ed-895d2e1049fd
+---
+
+## Read this first: publishing was broken, but the site was not down
+
+Vercel's production logs show **27 HTTP 500s in 48 hours**. Every one is a page Next had
+to render *on demand*:
+
+| Path | 500s |
+|---|---|
+| `/consoles/ayn-thor` | 4 |
+| `/arena/…-vs-select` (three pairs) | 12 |
+| `/consoles/sony-psp-3000`, `sony-psp-street`, `sony-playstation-vita-pch-1000` | 4 |
+| `/consoles/konkr-pocket-block`, `one-netbook-onexplayer-3`, `trimui-brick-pro` | 3 |
+| two more arena pairs | 4 |
+
+The cause: `app/consoles/[slug]` and `app/consoles/[facet]/[value]` are two dynamic
+segments with different names at the same position, which Next.js forbids. It resolves at
+**request** time, so `next build` stayed green and prebuilt pages kept serving from cache
+— which is why the site looked, and was, healthy to a visitor.
+
+**What it broke is exactly the publishing loop.** Publish or edit a console →
+`revalidatePath` marks its page stale → the next request must regenerate it → routing
+conflict → 500 → the page never appears. Meanwhile `/consoles` serves the HTML built at
+deploy time, showing the old catalogue. That is the whole "I published the PSP and it
+won't appear anywhere" symptom, and `sony-psp-3000` and `sony-psp-street` are in the
+error list by name.
+
+Fixed on the working branch. Not yet in production.
+
+**This is not a traffic-data problem.** 27 errors over two days on non-cached paths does
+not move GSC numbers. An earlier version of this section claimed a 42-hour site-wide
+outage contaminating September measurement; that came from reading a project-wide error
+*occurrence* count (550, across preview deployments and internal RSC segment fetches) as
+though it were user-facing production 500s. It was not. September targets below are
+unchanged from the pre-outage plan.
 
 ---
 
 ## Where we actually are
 
-| Metric | Value (1–23 Aug) |
+**Catalogue, 2026-09-02:**
+
+| | |
 |---|---|
-| Clicks | 128 |
-| Impressions | 995 |
-| CTR | 12.9% |
-| Average position | 14.9 |
+| Consoles | 462 — **85 published**, 372 draft |
+| Variants | 519 — 166 with a slug, 50 with an ASIN |
+| Links | 1,334 imported — **4 approved** |
+| Drafts with no image | **370 of 372** |
+| Published with no description | 9 |
+| Published, sellable, no buy path | **41** |
 
-The 12.9% CTR is misleading. Over six months **96% of clicks came from four brand
-queries** ("retro circuits", "retrocircuits", "retro circuit", "retro circuits games").
-Strip those out and the whole content-driven performance is **~17 clicks/month**.
+**Search, full August 2026** — the September benchmark. Read from the five GSC exports
+(Chart, Pages, Queries, Countries, Search appearance), not estimated:
 
-Average position 14.9 is the honest number: page two.
+| Metric | Aug 2026 |
+|---|---|
+| Clicks | **143** |
+| Impressions | **1,153** |
+| CTR | 12.40% |
+| Average position | ~14.4 (impression-weighted over the Pages export) |
+| Days with any click | 31 |
 
-**Catalogue as of 2026-09-02:** 462 consoles (78 published, 379 draft), 517 variants,
-1,332 review/vendor links (0 approved). The constraint has not moved: it is still images.
-378 of the 379 drafts have none, and specs, buttons and emulation grades are already in
-place for them.
+An earlier draft used a 1–23 Aug partial (128 / 995) and projected 173 for the month.
+The real month came in at **143** — the projection was 21% high because clicks *fell*
+through August rather than holding: 13 on 1 Aug, 2–3 a day by mid-month.
 
-### Where the clicks come from
+The 12.40% CTR is an artefact. **Three brand queries produced 84 of the 143 clicks
+(59%)**, all on the homepage. Non-brand clicks for the whole month: **59**.
 
-| Page type | Pages | Clicks | Impressions | CTR |
-|---|---|---|---|---|
-| Homepage (brand) | 1 | 509 | 1,399 | 36.4% |
-| Arena (`/x-vs-y`) | 15 | 44 | 1,537 | 2.86% |
-| Console detail | 39 | 5 | 6,774 | **0.07%** |
-| Fabricators | 8 | 6 | 252 | 2.38% |
+### Where the clicks come from — August only
 
-Console pages absorb 64% of impressions and convert at 0.07%. Arena pages are 4% of
-impressions and produce 70% of non-homepage clicks. **Comparisons rank; spec sheets
-don't.**
+| Page type | Pages | Clicks | Impressions | CTR | Avg position |
+|---|---|---|---|---|---|
+| Homepage | 1 | **132** | 299 | 44.15% | **5.5** |
+| Arena (`/x-vs-y`) | 11 | 7 | 333 | 2.10% | **13.5** |
+| Fabricators | 4 | 2 | 85 | 2.35% | 15.3 |
+| Console detail | 9 | **1** | **437** | **0.23%** | **18.2** |
+| Console index | 1 | 1 | 69 | 1.45% | 31.7 |
+| Other | 2 | 0 | 20 | 0% | 16.8 |
+
+(The previous version of this table mixed a six-month window with a partial-August one —
+the 6,774 console-detail impressions in it were a multi-month total, not a monthly rate.
+August's real console-detail impressions were 437.)
+
+### What August actually says
+
+**1. The problem is position, not the snippet.** This corrects the previous draft. Line
+up CTR against position and almost every page is earning what its rank is worth:
+`/consoles/retroid-pocket-6` sits at position **35.13** and gets 0.79%, which is normal
+for position 35. Console pages convert at 0.23% because they average position **18.2** —
+page two. Rewriting titles does not fix page two.
+
+**2. But there is a real snippet failure, and it is narrow.** A handful of pages rank on
+page one and still take zero clicks:
+
+| Page / query | Impressions | Position | Clicks |
+|---|---|---|---|
+| `/consoles/anbernic-rg-ds` | 173 | 15.46 | **0** |
+| "rg ds specs" | 36 | 9.97 | **0** |
+| "anbernic rg ds specs" | 21 | 9.81 | **0** |
+| "kinhank k59 specs" | 10 | 9.00 | **0** |
+| "ayaneo pocket s vs odin 3" | 18 | 7.06 | **0** |
+
+Position 7–10 with zero clicks across 85 impressions is not a ranking problem. That is
+where the title/description rewrite (commit `50a8877`) applies — to five queries, not to
+the whole catalogue. Measure it on exactly these rows in September.
+
+**3. Arena pages out-rank console pages: 13.5 vs 18.2.** They also convert nine times
+better. The best page on the site after the homepage is
+`/arena/ayaneo-pocket-vert-vs-analogue-pocket` — 5 clicks, 9.26% CTR, position **5.8**.
+Comparison pages rank because nobody else builds them; spec sheets compete with the
+manufacturer, Amazon and every review site at once. **This is the strongest signal in the
+whole export and it points at the 134 configuration-comparison URLs, not at images.**
+
+**4. Only two pages earned a first impression all month.** The index is not growing. That
+is a crawl/indexation problem, and it is what "publish by demand" below is for.
+
+**5. Search appearance is thin.** One rich-result type registered — Product snippets:
+129 impressions, 1 click, position 30.27. No FAQ, no breadcrumbs, no review snippets.
+
+**6. Audience:** US 99 clicks / 396 impressions / 25% CTR / position 10.15; Canada 16;
+UK 4. **Mobile 101, desktop 40, tablet 2 — 71% mobile.** The US ranks eight positions
+better than the site average, so US-intent content compounds fastest.
 
 ### The six devices that matter
 
-76% of all non-brand search demand, producing 3 clicks between them:
+76% of non-brand demand (impressions below are the six-month totals, not August).
+**All six are now published with an image** — that half of Week 2 is done.
 
-| Device | Impressions | Clicks | Avg position | Has ASIN? |
+| Device | Impressions (6mo) | Clicks | Description | Buy path |
 |---|---|---|---|---|
-| Ayn Thor | 899 | 0 | 15.4 | ❌ 0 of 4 variants |
-| Retroid Pocket 6 | 718 | 2 | 27.8 | ❌ 0 of 4 |
-| Anbernic RG DS | 279 | 1 | 16.6 | ❌ 0 of 1 |
-| Retroid Pocket 5 | 216 | 0 | 24.2 | ✅ 1 of 1 |
-| Retroid Pocket G2 | 146 | 0 | 13.3 | ❌ 0 of 1 |
-| Powkiddy RGB30 | 98 | 0 | 11.5 | ❌ 0 of 1 |
+| Ayn Thor | 899 | 0 | ✅ | ❌ |
+| Retroid Pocket 6 | 718 | 2 | ✅ | ✅ ASIN |
+| Anbernic RG DS | 279 | 1 | ✅ | ❌ |
+| Retroid Pocket 5 | 216 | 0 | ✅ | ✅ ASIN |
+| Retroid Pocket G2 | 146 | 0 | ❌ | ❌ |
+| Powkiddy RGB30 | 98 | 0 | ✅ | ❌ |
+
+**What is left on the six is one description and four buy paths.** That is an evening,
+not a week — and it now happens inside the console editor rather than a separate screen.
 
 ---
 
-## The honest math on "double in September"
+## The September target, set against the real August
 
-- August projected full month: **173 clicks**
-- Of which brand: ~155. Of which everything else: **~17**
-- Doubling the total = 345 clicks
-- Brand demand is fixed, so non-brand would have to reach **~190 — 11× current**
+- August actual: **143 clicks — 84 brand, 59 non-brand**
+- Doubling the total means 286. Brand demand is fixed by how many people type "retro
+  circuit", so all of it would have to come from non-brand: 202, a **3.4×**.
 
-11× in 30 days is not achievable. Set the goal on the half that can move:
+That is not achievable in 30 days. Set the goal on the half that can move:
 
-| Target | From | To |
+| Target | Aug actual | Sep goal |
 |---|---|---|
-| Non-brand clicks | 17 | **35+** |
-| Pages indexed (93 stuck) | — | **+60** |
-| Average position | 14.9 | **sub-12** |
-| Total clicks | 173 | ~190 (+10%) |
+| Non-brand clicks | 59 | **90+** |
+| Console-detail avg position | 18.2 | **sub-15** |
+| Arena clicks | 7 | **20+** |
+| Pages with a first impression | 2 | **+25** |
+| Zero-click page-one queries | 5 | **0** |
 
-Doubling non-brand is what compounds. Brand clicks plateau; content clicks don't.
-
----
-
-## What shipped 27 Aug → 2 Sep
-
-23 commits on `claude/admin-console-improvements-oew1x3`. Grouped by what it was for,
-because the branch touched three separate problems.
-
-### Indexability — the thing that compounds
-- **459 Arena comparison pages + 92 configuration pages** prebuilt and in the sitemap,
-  where there were previously zero prebuilt and one sitemap entry.
-- **Facet pages** at `/consoles/chip|os|vendor/[value]` (`lib/config/facets.ts`), built
-  from the structured columns. A facet needs at least 2 devices to exist, so no thin
-  pages. These are the "Snapdragon 865 handhelds" queries the catalogue can answer and
-  had no URL for.
-- **OG cards** at `/consoles/[slug]/opengraph-image`. Every link to this site posted
-  anywhere used to unfurl as a blank rectangle. Prerendered with the pages, so a broken
-  card fails the build rather than a visitor. Satori cannot decode WebP and the uploader
-  writes WebP, so photo-less cards fall back to a typographic layout — a WebP uploader
-  that also emitted a JPEG derivative would fix that.
-- **JSON-LD corrected.** It was marking 64 released consoles as `Discontinued`, because
-  availability was derived from whether an ASIN existed rather than from `release_status`.
-  That is a rich-result-eligibility bug, on the pages absorbing 64% of impressions.
-
-### The console page
-Rebuilt against the v6 mockup over several rounds: Circuit Score card, playability tiers,
-tier comparison, a scrolling device header that survives an inner scroll container, one
-accent colour, spec-derived summary and tags, smaller similar-console cards, mobile fold
-reordered to breadcrumbs → name and tags → images, affiliate disclosure restored.
-
-`VariantGuide` is the piece that matters commercially: for the 40 multi-variant published
-consoles it shows only the specs that actually differ between configurations, what each
-step costs, and links to the comparison page for each step. It deliberately does not pick
-a winner — that is opinionated copy, and it has to be human-written.
-
-### The admin
-- **The editor save was broken for every variant** — a hand-written key list omitted
-  `system_button_set`, so `safeParse` stripped it and the write failed. The list is now
-  derived from the schema shape, which is the class of bug that cannot recur.
-- **Rumble split from gyro.** They shared the legacy `haptics` field. `has_rumble` is
-  tri-state on purpose: `safeBoolean` would have coerced 259 unknown rows to "no", which
-  is a data loss disguised as a migration. Four mis-filed rows were rescued in the split.
-- Field gaps closed from publishing by hand: multi-position charge ports, storage in MB
-  (`512 MB` and `2 TB` were both unrepresentable), headphone jack position, GPU min/max
-  clocks, swappable battery, dual boot as a second `os_family`, delete-variant.
-- **A spreadsheet-order layout for the variant editor** (`lib/config/sheet-order.ts`):
-  37 steps over 112 keys, matching the order fields are filled in the source sheet. The
-  existing grouped layout is still there — this is a toggle, not a replacement.
-- **`/admin/links`** — the approval gate described under Revenue.
-
-### Lessons worth keeping
-- **A green local build is not a green deploy, and a passing sandbox test is not a
-  passing test.** The OG work took production down: `Circuit Score{reach ? …}` is two
-  JSX children and Satori demands an explicit `display` for that. The sandbox test
-  passed because the proxy blocks Supabase, so every card fell back to the name-only
-  branch and the failing shapes never ran. The fix was to extract a pure renderer and
-  assert six distinct shapes, not to re-read the code harder.
-- **`window.scrollY` is dead code inside a scroll container.** `MainLayout` scrolls an
-  inner div, so the sticky header never appeared and one "fix" made it worse before the
-  cause was found. `lib/hooks/useScrollRoot.ts` finds the real scroller.
+Non-brand is what compounds. Brand clicks plateau; content clicks don't.
 
 ---
 
-## Weekly plan
+## What the constraint actually is
 
-### Week 1 — ship and import ✅ DONE 2026-08-27, ahead of September
-- [x] Import v3 + v4 — 513 variants, 240 input profiles, 1,332 review/vendor links
-- [x] Merge to `main` (22 commits)
-- [x] **Vercel production branch fixed** — it pointed at a `production` branch that no
-      longer exists, so every push to `main` built as a *preview*. The live site had been
-      serving a stale deployment and nothing shipped, silently. Now set to `main`.
-- [x] Sitemap resubmitted in Search Console
+Not images. The earlier drafts of this document led with "370 of 372 drafts have no
+image" as the single biggest blocker, and August does not support that. Publishing 370
+more spec sheets adds 370 more pages of the type that averages **position 18.2 and a
+0.23% CTR**. Volume of a page type that does not rank is not a growth plan.
 
-The deploy misconfiguration was the real Week 1 blocker, not the import. Worth remembering
-as a failure mode: a green build is not the same as a live deploy.
+What August supports instead, in order:
 
-Publishing now updates the sitemap by itself — `updateConsole` calls
-`revalidateConsoleSurfaces()`, which revalidates `/sitemap.xml` and pings IndexNow. The
-sitemap only needs submitting once.
+1. **Comparison pages rank and spec sheets don't** (13.5 vs 18.2, 2.10% vs 0.23%). The
+   134 configuration-comparison URLs already mintable from fully-slugged variants are the
+   highest-yield inventory on the site and cost nothing to source.
+2. **Indexation is stalled** — 2 first impressions in 31 days. The routing fix is
+   directly upstream of this: pages that 500 on regeneration do not get indexed.
+3. **Five page-one queries take zero clicks.** Snippet work, precisely scoped.
+4. **Images matter for the devices with proven demand**, publish-by-demand, not as a
+   370-item backlog. Ten images against ten high-impression drafts is worth more than
+   fifty chosen alphabetically.
 
-### Week 3 work — comparison pages ✅ DONE 2026-09-01, two weeks early
-- [x] `generateStaticParams` on `/arena/[[...versus]]`. It had none: the page type
-      producing 70% of non-brand clicks existed only *after* someone had already found
-      it, and the sitemap listed the bare `/arena` hub and nothing else.
-- [x] The pair list lives in `lib/arena/pairs.ts` and is read by both the route and the
-      sitemap, so the two cannot drift. It builds **459 cross-device pages**, from five
-      rules that each match a way people shop, not the 2,850-page cross product.
-- [x] All six searched pairs are in the list explicitly and inserted first, so a growing
-      catalogue can never push them past the cap.
-- [x] Linked from each console page.
+Images remain a real gap — 370 drafts cannot go live without one. They are just not the
+lever that moves search in September.
+---
 
-Pairs people actually search: `odin 2 mini vs odin 3`, `ayaneo pocket s vs odin 3`,
-`retroid pocket 2 vs 2 plus`, `retroid pocket mini v1 vs v2`,
-`ayn odin 3 vs ayn odin 2 portal`, `ayaneo pocket s2 vs odin 3`.
+## Revised plan
 
-### The wedge — configuration comparisons ✅ SHIPPED 2026-09-01
-Retro Catalog lists the base model, or the Pro if there is one, and cannot compare two
-configurations of the same device. **40 of the 78 published consoles ship in more than
-one configuration, and on every one of them the variant count equals the distinct price
-count** — so the choice always costs money, and no page anywhere answers it.
+### Now — get the fix live and confirm recovery
 
-`/arena/ayn-thor~8128-vs-ayn-thor~12256` now does. **92 configuration pages** are
-prebuilt, ahead of the cross-device ones so they always survive the cap. The `~`
-separator was chosen by querying the data, not by taste: it appears in zero slugs, while
-`--` appears in three and a plain hyphen genuinely collides (`anbernic-rg-vita` + `pro`
-is also a real console, `anbernic-rg-vita-pro`).
+- [ ] **Merge the working branch to `main` and deploy.** 22 commits, including the
+      routing fix. Production is still `main` @ 09:31 on 2 Sep, which contains the bug.
+      Nothing below is measurable until this ships — August is the benchmark, and
+      September only differs from it if the fix is live.
+- [ ] Confirm the six paths that were 500ing now return 200: `/consoles/ayn-thor`,
+      `/consoles/konkr-pocket-block`, `/consoles/trimui-brick-pro`,
+      `/consoles/one-netbook-onexplayer-3`, and two `…-vs-select` arena URLs
+- [ ] Confirm search returns results. The backend was never broken — the RPC returns 16
+      rows for "anbernic" as the anon role — so if it still fails, the new error state
+      says whether it is Upstash or something else rather than showing "no results"
+- [ ] Publish one draft end to end and confirm it reaches `/consoles`, its own page and
+      the sitemap — this is the loop that was broken, so it is the loop to verify
+- [ ] GSC → Pages → check "Server error (5xx)"; a handful of URLs may need re-indexing
 
-Blocked from going further by data, not code: **362 of 517 variants have no slug**, so
-their configurations are not addressable. Some slugs that do exist are terse (`8128`,
-`161t`) and would read better as `8gb-128gb` — worth renaming before they are indexed.
+### This week — finish the six, then widen the buy path
 
-### Week 2 work — the six devices ⬅ STILL THE OPEN ONE
-- [ ] One good image each for the six above
-- [ ] **Give all six a buy path** at `/admin/buy-links`. Not ASINs: of 238 consoles with
-      vendor links only 33 reach Amazon, behind AliExpress (82), other retailers (82),
-      brand-direct (68) and crowdfunding (51). All six of these devices currently have
-      *no buy path at all* — as do **52 of the 78 published consoles**.
-- [ ] Write the missing description for Retroid Pocket G2 (146 impressions, empty field)
-- [ ] Publish, then confirm they appear in the sitemap within a day
+- [ ] Write the Retroid Pocket G2 description (146 impressions, empty field)
+- [ ] Buy paths for Thor, RG DS, RGB30, G2 — in the console editor's **Buy path** tab
+- [ ] Work the remaining 41 in `/admin/revenue` → "No buy path", worst-first
+- [ ] Approve the 24 imported links that sit on published consoles (4 done, from 1,334)
 
-### Week 4 (22–30 Sep) — measure, then widen
-- [ ] Coverage: has "Discovered — currently not indexed" fallen from 58?
-- [ ] Non-brand clicks vs the 17 baseline
-- [ ] Publish 10–15 more consoles, chosen by search demand not alphabetically
-- [ ] Backfill the remaining `soc` values by hand
+### Next — the 134 comparison URLs, because comparisons are what rank
+
+August settles this: arena pages average position **13.5** and 2.10% CTR against console
+detail's **18.2** and 0.23%. All 40 published multi-variant consoles are already fully
+slugged, which mints **134 comparison URLs nobody else has**, at zero sourcing cost.
+
+- [ ] Confirm all 134 are in `lib/arena/pairs.ts` and therefore prebuilt and in the sitemap
+- [ ] Link them from the parent console page — an orphan URL is not an indexed URL
+- [ ] Fix the five zero-click page-one queries listed above and re-measure those exact rows
+
+The lever is not adding slugs — the 353 unslugged variants are all on drafts and sit
+behind the image gap. It is making sure the pages that already exist are linked,
+prebuilt and submitted.
+
+### Then — publish by demand, not alphabetically
+
+- [ ] Source images for the **10 devices with the highest impressions among the drafts**.
+      Ten images is ten new pages that already have proven demand, which beats fifty
+      chosen at random.
+- [ ] Publish them, confirm they reach the sitemap within a day
 
 ---
 
 ## Revenue — 3 affiliate sales by year end
 
-**The blocker is not traffic — it is that most pages have nothing to click.**
-**52 of the 78 published consoles have no buy path at all**: no ASIN, no approved vendor
-link. 47 of 517 variants carry an ASIN, up from 13.
+**The blocker is not traffic — most pages have nothing to click.** 41 published,
+sellable consoles have no buy path: no ASIN, no approved vendor link.
 
-An earlier draft of this doc called the ASIN backfill the top revenue task. That was
-wrong, and the channel data says so. Grouping the 1,332 imported vendor links:
+That number was 52 in the last draft. It is 41 because discontinued devices are now
+excluded — a device that is no longer sold has nothing to sell, so a missing buy path is
+the correct state, not a task. Eleven of the fifty-two were discontinued.
+
+Grouping the 1,334 imported vendor links by channel:
 
 | Channel | Consoles |
 |---|---|
@@ -223,115 +258,113 @@ wrong, and the channel data says so. Grouping the 1,332 imported vendor links:
 | **Amazon** | **33** |
 | eBay | 23 |
 
-Amazon is the second-smallest channel. Most of these devices are never sold there —
-the Retroid Pocket 6 among them — so an Amazon search for one returns unrelated
-products. That was the live behaviour until 2026-08-27; `BuySection` now prefers a real
-vendor and only falls back to a search when nothing else is known.
+Amazon is the second-smallest channel. Most of these devices are never sold there — the
+Retroid Pocket 6 among them — so an Amazon search returns unrelated products.
 
 Priority order:
-1. **A buy path on the published 78** — `/admin/buy-links`, sorted worst-first. This is
-   the only revenue work that touches current traffic.
-2. **Investigate the AliExpress affiliate programme.** It covers the largest channel
-   here; Amazon Associates may simply be the wrong primary programme for this category.
+1. **A buy path on the 41.** The only revenue work that touches current traffic.
+2. **Investigate the AliExpress affiliate programme.** It covers the largest channel;
+   Amazon Associates may be the wrong primary programme for this category.
 3. ASINs where a device genuinely is on Amazon.
 
-**Two things to verify in the Associates dashboard:**
-- Amazon withdraws an application that hasn't produced **3 qualifying sales within
-  180 days**. Check the real status before assuming.
-- If the account closed, reapplying gives a **new tracking ID**. That breaks the hard
-  rule in CLAUDE.md (`theretrocircu-20` never changes). It is one line in
-  `lib/affiliate.ts`, but the rule and this doc both need updating.
-
-**Affiliate click tracking currently does nothing.** `AffiliateLink` calls
-`track('affiliate_click', …)` from `@vercel/analytics`, but custom events require a
-Vercel **Pro** plan — the dashboard says so explicitly. On Hobby those calls are
-discarded, so there is no measurement of how many people click buy. Either upgrade or
-add a lightweight own-side counter.
-
-**The 1,332 imported vendor links are stored raw and carry no tag** — only
-`lib/affiliate.ts` applies `theretrocircu-20`. `components/console/ConsoleLinks.tsx`
-rebuilds every Amazon URL through `getBuyUrl` (ASIN extracted from `/dp/` when present,
-tagged search otherwise). **Any future surface that renders these rows must do the same**
-— printing `link.url` directly sends the visitor to Amazon untagged.
-
-**None of those 1,332 rows is visible any more, and that is deliberate (2026-09-02).**
-They were rendering on live product pages by inheritance: 821 video reviews pointing at
-other people's channels, under our own "Reviews" heading, none of it chosen by anyone.
-`console_links.approved` now defaults to false, so the whole "Reviews and retail" section
-is absent from a console page until a link is greenlit at **`/admin/links`**, and appears
-by itself once one is. The gate is enforced in three places, because any one alone would
-leak: `ConsoleLinks` filters and returns null at zero, `ConsoleDetailView` guards the
-section on approval rather than row count, and **`pickBuyTarget` ignores unapproved
-vendor rows** so an unvetted sheet URL cannot become a device's buy button. Links typed
-by hand in the admin insert as approved.
-
-Only **24 of the 1,332 rows sit on a published console**, so restoring the useful ones on
-live pages is a short session, not a slog. It is also the cheapest available step towards
-priority 1 above: some of those 24 are real buy paths already in the database.
-
-**The source spreadsheet's links pointed at other people's affiliate accounts.** On
-import they carried an Amazon `tag=retrodeadfred-20`, `s.click.aliexpress` shortlinks,
-Impact Radius `irclickid` on Best Buy (`loc=Retro Game Corps`), Banggood `custlinkid`
-and shop `aff=` codes. Left in, every one of those clicks would have paid a competitor.
-The tracking was stripped and the bare product URLs kept — **re-check this on any future
-import**, since the sheets are maintained by someone else.
+**Verify in the Associates dashboard:** Amazon withdraws an application that has not
+produced **3 qualifying sales within 180 days**. Check the real status before assuming.
 
 ---
 
 ## Known data gaps (verified 2026-09-02)
 
-**378 of 379 drafts have no image.** Still the single biggest blocker, and eight more
-consoles published since 27 Aug has not changed its shape. Specs, buttons, emulation
-grades and links are in place for the rest; they cannot go live without a picture.
-Everything else on this list is smaller than this one.
+**370 of 372 drafts have no image.** A real gap — a draft cannot publish without one —
+but not the growth constraint. See "What the constraint actually is" above: the page type
+they would add averages position 18.2. Source images by demand, not by backlog.
 
-**22 consoles still have no variant** — they appear in neither spreadsheet, so the
-import could not fill them (18 draft, 4 archived): the Anbernic RG-351/RG-405 line,
-`anbernic-rg-rotate`, 1UP (3), 8BCraft (2), Acer Nitro Blaze (2), and the four Ayn Loki models.
+**22 consoles have no variant** — absent from both spreadsheets, so the import could not
+fill them: the Anbernic RG-351/RG-405 line, `anbernic-rg-rotate`, 1UP (3), 8BCraft (2),
+Acer Nitro Blaze (2), the four Ayn Loki models.
 
-**10 published consoles have no description.** Publishing without one is fine — the page
-is not thin without it, it carries a Circuit Score, a spec-derived summary, the playability
-tiers and the full reference table. `buildSummary` in `lib/scoring/verdict.ts` drafts the
-factual half from the emulation matrix; the opinionated half stays human-written.
+**9 published consoles have no description.** Publishing without one is fine — the page
+carries a Circuit Score, a spec-derived summary, playability tiers and the full reference
+table. `buildSummary` drafts the factual half; the opinionated half stays human-written.
 
-**362 of 517 variants have no `slug`.** Configuration comparison pages can only be built
-for a variant that has one, so this directly caps the one page type nobody else has.
-39 of the 40 multi-variant published consoles are covered; the gap is in the drafts.
+**Two data bugs found while auditing, both live:**
+- `Steam Deck` has a variant named **"OLED"** whose specs are `IPS LCD`, 7", 512 GB — a
+  mislabelled duplicate of "LCD + 512". `Steam Deck OLED` exists separately with correct
+  7.4" OLED specs. Both published, so the site shows a Steam Deck configuration called
+  OLED that is the LCD.
+- One published console has `device_category` = `"PC Gamimg Handheld"` — free text where
+  an enum value belongs. Nothing filters on it, but the finder special-cases `pc_gaming`.
 
-**0 of 1,332 `console_links` are approved**, so no console page renders a links section
-at all. 24 of them are on published consoles — that is the triage list.
+**Four published Steam Deck variants have a system-button list misfiled in `haptics`**
+(`'Steam, Quick Access, View, Menu, Volume +/-'`) and a null `system_button_set`. That
+string is the only copy, so the pending column drop would delete it.
 
 **`performance_grade` may be on the wrong scale.** 25 devices scored above their own
-denominator (`5.5/5`) because the converter assumes the sheet rates out of 5. They are
-clamped to `5/5` so nothing impossible renders — **check the source sheet and rescale.**
-The source `.xlsx` files are no longer in the working directory; they need re-uploading
-to verify.
+denominator (`5.5/5`), clamped to `5/5` so nothing impossible renders. The source `.xlsx`
+is not in the repo and never has been; it needs re-uploading to verify.
 
-**27 of 513 variants still need `soc` by hand** — the ones where `cpu_model` is empty or
-holds a bare CPU core ("Cortex-A7", "Tensilica LX6") rather than a chipset. Down from 273.
+**27 of 519 variants still need `soc` by hand** — where `cpu_model` is empty or holds a
+bare core ("Cortex-A7") rather than a chipset. Down from 273.
+
+**`model_no` is not searchable.** 163 variants carry one and the search function never
+looks at it. A migration is written and recorded but **not applied**.
 
 **The `_tech` input columns are empty** — `dpad_tech`, `face_button_tech`, `bumper_tech`,
 `trigger_tech` want membrane/microswitch/hall, which the spreadsheet does not record.
 Only `stick_tech` is populated.
 
-~~**`rg-rotate`** missing its brand prefix~~ — renamed to `anbernic-rg-rotate` while still
-a draft, so no live URL broke and no redirect entry was needed. Every slug now carries its
-brand prefix.
+---
+
+## Waiting on a decision
+
+These are blocked on something only the owner can do, not on engineering time.
+
+| Item | Needs |
+|---|---|
+| Drop the 14 legacy input columns | A Supabase backup, then the Steam Deck button repair, then the migration |
+| Make `model_no` searchable | Go-ahead to apply `20260902150000_search_model_no.sql` |
+| Fix the Steam Deck "OLED" variant | A decision: delete it, or rename it to what it is |
+| Fix `"PC Gamimg Handheld"` | One-row update to a valid enum value |
 
 ---
 
-## Also queued
+## Lessons worth keeping
 
-- ~~**Arena rework before Finder.**~~ Done: 551 prebuilt comparison URLs, and it was
-  treated as an SEO project rather than a redesign. Finder still gets 12 impressions and
-  redesigning it still will not move traffic.
-- **Variant slugs are the next indexability lever, and they are data work, not code.**
-  Every slug added to a multi-variant console mints comparison pages nobody else has.
-- **Game-based search** (from `docs/PENDING_FEATURES.md`, marked Critical): indexing
-  `emulation_profiles` so people can search "can X run GameCube". This matches real
-  query intent and nothing else on the site serves it.
+- **A green build is not a working site.** The routing conflict never appeared in a
+  `next build` because it resolves at request time. Build-time checks do not catch
+  request-time routing errors. **When something is reported broken, read the runtime
+  logs before reading the code** — two rounds of reasoning about deployments and caches
+  were spent on a question the logs answered directly.
+- **Read the number, not the headline.** Those logs then got over-read in the other
+  direction: a project-wide error *occurrence* count of 550 became "the site was down
+  for 42 hours" in the first draft of this document. Filtering to production 500s gave
+  27, all on non-cached paths. The bug was real and the diagnosis was right; the blast
+  radius was invented. Check which environment a metric covers before planning around it.
+- **A green local build is not a green deploy, and a passing sandbox test is not a
+  passing test.** The OG work took production down: `Circuit Score{reach ? …}` is two
+  JSX children and Satori demands an explicit `display`. The sandbox test passed because
+  the proxy blocks Supabase, so every card fell back to the name-only branch.
+- **Silent failure is worse than loud failure.** Search "did not work" for an unknowable
+  reason because every error path returned an empty array indistinguishable from "no
+  results". Three separate swallowed errors. It now says which it is.
+- **Counters that disagree are worse than no counter.** "78 ready to publish" was 77
+  already-published consoles plus 2 real ones, because the index counted "has no gaps"
+  while the dashboard counted "is a draft with no gaps". Two screens, one label, a
+  fortyfold difference.
+- **`window.scrollY` is dead code inside a scroll container.** `MainLayout` scrolls an
+  inner div. `lib/hooks/useScrollRoot.ts` finds the real scroller.
+
+---
+
+## Standing decisions
+
 - **IndexNow is not a Google strategy.** Google does not consume it. Referrers: google
-  87, bing 7. It is already wired; leave it and do not invest further.
-- **`images.unoptimized` and `revalidate = false` should both stay.** Vercel Hobby and
-  Supabase Free have no transformation service, and stored images average 31 KB. The
-  5.9 MB homepage hero was the whole problem and it is fixed.
+  87, bing 7. Wired already; leave it, invest nothing further.
+- **`images.unoptimized` and `revalidate = false` both stay.** Vercel Hobby and Supabase
+  Free have no transformation service, and stored images average 31 KB.
+- **The Finder does not need redesigning.** 12 impressions. Redesigning it will not move
+  traffic; it is not the constraint and has never been.
+- **Game-based search** (`docs/PENDING_FEATURES.md`, marked Critical) — indexing
+  `emulation_profiles` so people can search "can X run GameCube". This matches real query
+  intent and nothing else on the site serves it. It is the strongest *new* page type
+  available, and unlike the image backlog it is engineering work that can start today.
+  Worth scoping once the catalogue is stable.

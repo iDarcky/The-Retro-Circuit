@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo, useState, useTransition } from 'react';
-import { setVariantAsin, type AsinRow } from '../../app/actions/consoles';
+import { setVariantAsin } from '../../app/actions/commerce';
+import { type AsinRow } from '../../app/actions/commerce';
 
 type Filter = 'MISSING' | 'HAS' | 'ALL';
 

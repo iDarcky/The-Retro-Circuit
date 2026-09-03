@@ -260,7 +260,7 @@ export interface ConsoleVariant {
   charge_port_position?: 'top' | 'bottom' | 'side' | 'back' | 'multiple' | null;
 
   expansion_slot_count?: number | null;
-  expansion_card_type?: 'microsd' | 'sd' | 'memory_stick' | 'cfexpress' | 'proprietary' | null;
+  expansion_card_type?: 'microsd' | 'sd' | 'memory_stick' | 'cfexpress' | 'm2_2230' | 'm2_2242' | 'external_ssd' | 'microsd_plus_m2' | 'proprietary' | null;
   expansion_speed_class?: string | null;
 
   lens_material?: 'tempered_glass' | 'gorilla_glass' | 'plastic' | 'none' | null;
@@ -367,7 +367,7 @@ export interface ConsoleLink {
   sort_order: number | null;
   /* Nothing imported is published by default. The 1,332 rows that arrived with the
    * spreadsheet were never chosen by anyone, so a link renders only once it has been
-   * greenlit in /admin/links. */
+   * greenlit in /admin/revenue. */
   approved?: boolean;
 }
 

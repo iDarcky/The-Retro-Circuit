@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import Button from '../components/ui/Button';
+import SwissButton from '@/components/console/swiss/SwissButton';
 
 export default function NotFound() {
   const [logs, setLogs] = useState<string[]>([]);
@@ -59,7 +59,7 @@ export default function NotFound() {
       </div>
 
       <Link href="/">
-        <Button variant="primary">RETURN TO DASHBOARD</Button>
+        <SwissButton variant="primary">RETURN TO DASHBOARD</SwissButton>
       </Link>
     </div>
   );

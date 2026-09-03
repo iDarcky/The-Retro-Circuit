@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { NewsItem, NewsCategory } from '@/lib/types/news';
-import { createNews, deleteNews } from '@/app/actions/news';
+import { createNews, updateNews, deleteNews } from '@/app/actions/news';
 import { SwissDropdown } from '../ui/SwissDropdown';
 
 interface NewsManagerProps {
@@ -20,6 +20,35 @@ export const NewsManager: React.FC<NewsManagerProps> = ({ news }) => {
     category: 'announcement' as NewsCategory,
   });
   const [isLoading, setIsLoading] = useState(false);
+  // Null means the form is creating. An id means it is editing that article, which is
+  // the only difference between the two modes — the fields are identical, so one form
+  // serves both rather than a second near-copy of it.
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const EMPTY = {
+    title: '',
+    excerpt: '',
+    content: '',
+    image_url: '',
+    category: 'announcement' as NewsCategory,
+  };
+
+  const startEdit = (item: NewsItem) => {
+    setEditingId(item.id);
+    setFormData({
+      title: item.title ?? '',
+      excerpt: item.excerpt ?? '',
+      content: item.content ?? '',
+      image_url: item.image_url ?? '',
+      category: item.category,
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setFormData(EMPTY);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -30,26 +59,26 @@ export const NewsManager: React.FC<NewsManagerProps> = ({ news }) => {
     e.preventDefault();
     setIsLoading(true);
 
-    try {
-      await createNews({
-        title: formData.title,
-        excerpt: formData.excerpt,
-        content: formData.content,
-        image_url: formData.image_url,
-        category: formData.category,
-      });
+    const payload = {
+      title: formData.title,
+      excerpt: formData.excerpt,
+      content: formData.content,
+      image_url: formData.image_url,
+      category: formData.category,
+    };
 
-      setFormData({
-        title: '',
-        excerpt: '',
-        content: '',
-        image_url: '',
-        category: 'announcement',
-      });
+    try {
+      if (editingId) {
+        await updateNews(editingId, payload);
+      } else {
+        await createNews(payload);
+      }
+      setEditingId(null);
+      setFormData(EMPTY);
       router.refresh();
     } catch (error) {
-      console.error('Failed to create news:', error);
-      alert('Failed to publish news.');
+      console.error(editingId ? 'Failed to update news:' : 'Failed to create news:', error);
+      alert(editingId ? 'Could not save the changes.' : 'Could not publish the article.');
     } finally {
       setIsLoading(false);
     }
@@ -59,6 +88,9 @@ export const NewsManager: React.FC<NewsManagerProps> = ({ news }) => {
     if (!confirm('Are you sure you want to delete this article?')) return;
     try {
       await deleteNews(id);
+      // Deleting the article being edited would otherwise leave the form pointing at a
+      // row that no longer exists, and saving it would fail with a confusing error.
+      if (editingId === id) cancelEdit();
       router.refresh();
     } catch (error) {
       console.error('Failed to delete news:', error);
@@ -68,11 +100,11 @@ export const NewsManager: React.FC<NewsManagerProps> = ({ news }) => {
   return (
     <div className="w-full max-w-6xl mx-auto p-6 space-y-8">
 
-      {/* Create Form */}
+      {/* Create / edit form — one form, switched by `editingId` */}
       <div className="bg-black/80 border border-white/10 p-6">
         <h2 className="text-xl font-pixel text-violet-500 mb-6 flex items-center gap-2">
            <span className="w-2 h-2 bg-violet-500 rounded-full animate-pulse"></span>
-           PUBLISH NEWS
+           {editingId ? 'EDIT NEWS' : 'PUBLISH NEWS'}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -132,13 +164,25 @@ export const NewsManager: React.FC<NewsManagerProps> = ({ news }) => {
              />
            </div>
 
-           <div className="flex justify-end pt-4">
+           <div className="flex justify-end gap-3 pt-4">
+                {editingId && (
+                  <button
+                    type="button"
+                    onClick={cancelEdit}
+                    disabled={isLoading}
+                    className="border border-white/20 text-gray-400 hover:text-white hover:border-white font-bold uppercase text-xs px-6 py-3 transition-colors disabled:opacity-50"
+                  >
+                    CANCEL
+                  </button>
+                )}
                 <button
                   type="submit"
                   disabled={isLoading}
                   className="bg-violet-600 hover:bg-violet-500 text-black font-bold uppercase text-xs px-8 py-3 transition-colors disabled:opacity-50"
                 >
-                 {isLoading ? 'PUBLISHING...' : 'PUBLISH ARTICLE'}
+                 {isLoading
+                   ? (editingId ? 'SAVING...' : 'PUBLISHING...')
+                   : (editingId ? 'SAVE CHANGES' : 'PUBLISH ARTICLE')}
                </button>
            </div>
         </form>
@@ -150,7 +194,14 @@ export const NewsManager: React.FC<NewsManagerProps> = ({ news }) => {
 
         <div className="space-y-4">
           {news.map((item) => (
-            <div key={item.id} className="flex items-start justify-between p-4 border border-white/10 bg-black/20 hover:border-violet-500/30 transition-colors">
+            <div
+              key={item.id}
+              className={`flex items-start justify-between p-4 border bg-black/20 transition-colors ${
+                editingId === item.id
+                  ? 'border-violet-500'
+                  : 'border-white/10 hover:border-violet-500/30'
+              }`}
+            >
               <div className="flex-1">
                  <div className="flex items-center gap-2 mb-2">
                     <span className="text-[10px] font-mono text-violet-500 border border-violet-500/30 px-2 py-0.5 uppercase">
@@ -166,12 +217,20 @@ export const NewsManager: React.FC<NewsManagerProps> = ({ news }) => {
                  </p>
               </div>
 
-              <button
-                onClick={() => handleDelete(item.id)}
-                className="ml-4 text-[10px] text-red-500 hover:text-red-400 uppercase font-bold border border-red-500/30 hover:bg-red-950/30 px-3 py-1 transition-colors"
-              >
-                DELETE
-              </button>
+              <div className="ml-4 flex shrink-0 gap-2">
+                <button
+                  onClick={() => startEdit(item)}
+                  className="text-[10px] text-violet-400 hover:text-violet-300 uppercase font-bold border border-violet-500/30 hover:bg-violet-950/30 px-3 py-1 transition-colors"
+                >
+                  EDIT
+                </button>
+                <button
+                  onClick={() => handleDelete(item.id)}
+                  className="text-[10px] text-red-500 hover:text-red-400 uppercase font-bold border border-red-500/30 hover:bg-red-950/30 px-3 py-1 transition-colors"
+                >
+                  DELETE
+                </button>
+              </div>
             </div>
           ))}
 

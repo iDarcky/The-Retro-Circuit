@@ -1,5 +1,6 @@
 
 import { ConsoleDetails } from '../types';
+import type { SystemKey } from '../config/emulation';
 
 export type ProfileType = 'nostalgia' | 'completionist' | 'performance' | 'onthego' | 'gift';
 
@@ -22,26 +23,60 @@ const PROFILE_WEIGHTS: Record<string, FinderWeights> = {
     default: { power: 20, portability: 20, ease: 20, value: 20, library: 20 }
 };
 
-// System Era Weights for Library/Power Calculation
-const SYSTEM_WEIGHTS: Record<string, number> = {
+// System Era Weights for Library/Power Calculation.
+//
+// Typed as Record<SystemKey, number>, so adding a system to SYSTEM_TIERS without
+// giving it a weight is a compile error. This table had silently fallen four systems
+// behind that list — master_system, xbox, wii_u and xbox_360 were absent, so a device
+// whose strength was one of them earned no library or power credit for it.
+//
+// The weights track emulation difficulty, which is finer-grained than the five display
+// tiers: wii and x3ds sit in the tiers' "Modern & HD" band but weigh 1.0 here because
+// they are markedly easier to run than ps3. The four added below follow the same rule —
+// master_system with the 8/16-bit set, xbox alongside its 6th-gen contemporaries, and
+// wii_u and xbox_360 with ps3, whose hardware generation they share.
+const SYSTEM_WEIGHTS: Record<SystemKey, number> = {
     // 8-16 bit -> 0.25
     nes_state: 0.25, snes_state: 0.25, gb_state: 0.25, gba_state: 0.25, genesis_state: 0.25, gbc_state: 0.25,
+    master_system: 0.25,
     // 32/64 bit -> 0.5
     ps1_state: 0.5, n64_state: 0.5, dreamcast_state: 0.5, saturn_state: 0.5,
     // Handheld 2000s -> 0.75
     psp_state: 0.75, nds_state: 0.75,
     // 6th gen -> 1.0
-    ps2_state: 1.0, gamecube_state: 1.0, wii_state: 1.0,
+    ps2_state: 1.0, gamecube_state: 1.0, wii_state: 1.0, xbox: 1.0,
     // Modern -> 1.25
     switch_state: 1.25, ps3_state: 1.25, x3ds_state: 1.0,
-    vita_state: 0.75
+    vita_state: 0.75,
+    wii_u: 1.25, xbox_360: 1.25
 };
 
 // --- NORMALIZATION CONSTANTS ---
 const MAX_RAW_POWER = 1.25;    // Corresponds to Modern era systems
 
 // DYNAMIC LIBRARY MAX: Sum of all system weights.
-const MAX_RAW_LIBRARY = Object.values(SYSTEM_WEIGHTS).reduce((sum, weight) => sum + weight, 0);
+/**
+ * Systems that exist in the grid but that no variant is graded on yet.
+ *
+ * They keep their true difficulty weight above, so the model stays right and the
+ * moment data lands it is scored correctly. They are excluded from the normalisation
+ * denominators below because those denominators mean "the best a device could
+ * plausibly reach": counting a column that reads N/A on all 517 rows deflates every
+ * device's library score for credit literally nobody can earn, which quietly shifts
+ * the blend against library and in favour of power, ease, value and portability.
+ *
+ * Checked against the catalogue: xbox and xbox_360 are N/A on all 517 profiles, while
+ * wii_u passes on 124 and master_system on 4 — which is why those two are scored.
+ * Remove an entry here once its column has real grades.
+ */
+const UNGRADED: ReadonlySet<SystemKey> = new Set<SystemKey>(['xbox', 'xbox_360']);
+
+const gradedWeights = () =>
+    (Object.entries(SYSTEM_WEIGHTS) as [SystemKey, number][])
+        .filter(([key]) => !UNGRADED.has(key))
+        .map(([, weight]) => weight);
+
+const MAX_RAW_LIBRARY = gradedWeights().reduce((sum, weight) => sum + weight, 0);
 
 const MIN_RAW_EASE = 1;        // Hardest to set up
 const MAX_RAW_EASE = 5;        // Easiest to set up
@@ -106,7 +141,7 @@ const getTierMaxWeight = (tier: string | null) => {
 const getTierMaxLibrary = (tier: string | null) => {
     if (!tier) return MAX_RAW_LIBRARY;
     const maxW = getTierMaxWeight(tier);
-    return Object.values(SYSTEM_WEIGHTS).filter(w => w <= maxW).reduce((a, b) => a + b, 0);
+    return gradedWeights().filter(w => w <= maxW).reduce((a, b) => a + b, 0);
 };
 
 // --- SCORING FUNCTIONS ---

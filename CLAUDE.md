@@ -2,7 +2,7 @@
 
 ## Project Overview
 Retro handheld gaming device comparison engine. Solo PM project, shipped via AI agents.
-Pre-alpha v0.5.5 · 462 consoles (78 published, 379 draft) · 517 variants · 99 brands · Live at theretrocircuit.com
+Pre-alpha v0.5.5 · 462 consoles (85 published, 372 draft) · 519 variants · 99 brands · Live at theretrocircuit.com
 
 ---
 
@@ -51,15 +51,18 @@ pnpm lint     # ESLint
 ---
 
 ## Component Conventions
-- **Buttons:** `SwissButton` always — `Button` is deprecated (still exists in admin, don't add new instances)
+- **Buttons:** `SwissButton` always — the deprecated `Button` has been removed
 - **Dropdowns:** `SwissDropdown`
-- **Modals:** `SwissModal` (hard-edged, thick borders, no shadows)
+- **Modals:** `SwissModal` (hard-edged, thick borders, no shadows). Pass `fullScreen` for
+  long data-entry forms — it also disables backdrop-click close so a stray click cannot
+  discard a half-filled form
 - **Admin forms:** `AdminInput` is the base input component
 
 ### Supabase clients
-- `lib/supabase/server.ts` — server-side (cookie-aware)
-- `lib/supabase/client.ts` — client-side auth
-- `lib/supabase/anon.ts` — anonymous public queries
+- `lib/supabase/server.ts` — server-side (cookie-aware) — **forces a route dynamic**
+- `lib/supabase/client.ts` — client-side auth. Exports both `createClient()` and the
+  shared `supabase` instance (the former `singleton.ts`, now folded in)
+- `lib/supabase/anon.ts` — anonymous public queries, SSG-safe
 - `lib/supabase/admin.ts` — admin-privileged operations
 
 ---
@@ -76,7 +79,7 @@ pnpm lint     # ESLint
 - `emulation_profiles` rows are created by a **DB trigger** when a variant is inserted. Data-modifying CTEs can't see the trigger's row (same snapshot) — write emulation data in a **separate statement**.
 - Input details live on `variant_input_profile`, not on the variant. `has_rumble` is its own tri-state column (`true` / `false` / unknown) — it used to share the legacy `haptics` field with gyro, which conflated two unrelated features. **Never coerce unknown to false** on these: use `safeTriBoolean` in `lib/schemas/validation.ts`, because `safeBoolean` would flatten 259 unknown rows into "no".
 - `console_variants.slug` addresses one configuration (155 of 517 filled). It is what variant-level Arena URLs and the configuration comparison pages are built from; a variant with no slug simply is not addressable.
-- `console_links.approved` defaults to **false**. All 1,332 imported rows are unapproved and render nowhere. Anything that surfaces a link — the console page, `pickBuyTarget`, a future widget — must filter on it. Greenlighting happens at `/admin/links`.
+- `console_links.approved` defaults to **false**. All 1,332 imported rows are unapproved and render nowhere. Anything that surfaces a link — the console page, `pickBuyTarget`, a future widget — must filter on it. Greenlighting happens at `/admin/revenue`.
 
 ## Rendering (keep compute low)
 - Public pages are static/SSG with `revalidate = false` (on-demand only). There is no time-based ISR.
@@ -88,7 +91,11 @@ pnpm lint     # ESLint
 
 ## Bulk data import
 - `scripts/import-consoles.ts` — JSON → consoles/variants/emulation (validates first, `--dry-run`, imports as **draft**).
-- `scripts/xlsx-to-import-json.py` / `-v2.py` — spreadsheet converters. Read the emulation column mapping from the sheet's own headers/cell comments; sheet layouts differ between versions. Excel silently turns aspect ratios like `16:9` into times (`16:09:00`).
+- `scripts/xlsx-to-import-json.py` — the spreadsheet converter (this is the former `-v5`;
+  v1–v4 were deleted, they read only ~30 of the 62 non-emulation columns and git has them).
+  Usage: `python3 scripts/xlsx-to-import-json.py <source.xlsx> <out.json> [--category emulation|pc_gaming]`.
+  Reads the emulation column mapping from the sheet's own headers/cell comments; sheet layouts
+  differ between versions. Excel silently turns aspect ratios like `16:9` into times (`16:09:00`).
 
 ---
 
@@ -125,10 +132,9 @@ pnpm lint     # ESLint
 ---
 
 ## Known Issues / Active TODOs
-- `Button` still used in most admin components — being phased out for `SwissButton`
 - 14 legacy input columns on `console_variants` (`dpad_mechanism`, `thumbstick_*`, `trigger_mechanism`, `gyro`, …) are superseded by `variant_input_profile` and read by nothing. The drop is staged in `supabase/migrations/*.sql.pending` — back up first, then rename to `.sql`. `haptics` was pulled out of that drop: it held 226 real rows and became `has_rumble`.
-- **378 of 379 drafts lack an image**, which blocks publishing — only 1 draft is currently publishable. This is the single biggest bottleneck; specs, buttons and emulation grades are already filled in. `/admin` counts the gaps and links into the filtered index (`?status=DRAFT&gap=NO_IMAGE`).
-- 47 of 517 variants have an `amazon_asin`, and **52 of the 78 published consoles still have no buy path at all** (no ASIN, no approved vendor link). Amazon is not the main channel for these devices — see the playbook's channel table before assuming ASINs are the fix.
+- **370 of 372 drafts lack an image**, which blocks publishing — only 2 drafts are currently publishable. This is the single biggest bottleneck; specs, buttons and emulation grades are already filled in. `/admin` counts the gaps and links into the filtered index (`?status=DRAFT&gap=NO_IMAGE`).
+- 50 of 519 variants have an `amazon_asin`, and **41 of the 85 published consoles still have no buy path at all** (no ASIN, no approved vendor link; discontinued devices are excluded, as they need none). Amazon is not the main channel for these devices — see the playbook's channel table before assuming ASINs are the fix.
 - **Nothing imported is publicly visible until approved.** 0 of 1,332 `console_links` rows are approved, so no console currently renders a "Reviews and retail" section. 24 of those rows sit on published consoles, which is the short list worth triaging first.
 - `release_status` is flipped by hand from the `/admin` "Release date passed" panel, not automatically: public pages are `revalidate = false`, so a silent status change would not reach the site until a rebuild.
 - The 1,332 imported `console_links` rows are **raw URLs and carry no affiliate tag** — only `lib/affiliate.ts` applies `theretrocircu-20`. Rendering a `kind='vendor'` Amazon link directly earns nothing; route it through `getBuyUrl`.

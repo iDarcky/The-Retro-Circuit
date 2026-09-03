@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { siteConfig } from '../../config/site';
 import { supabaseAnon } from '@/lib/supabase/anon';
 import { revalidatePath } from 'next/cache';
 import { NewsItem } from '@/lib/types/news';
@@ -27,7 +28,7 @@ const { data: newNews, error } = await supabase
   }
 
   if (newNews && newNews.status === 'published') {
-      submitToIndexNow([`https://theretrocircuit.com/news/${newNews.id}`]);
+      submitToIndexNow([`${siteConfig.url}/news/${newNews.id}`]);
   }
 
   revalidatePath('/news');
@@ -110,7 +111,7 @@ export async function updateNews(id: string, data: Partial<NewsItem>) {
   }
 
   if (isPublishing && previousStatus !== 'published') {
-    submitToIndexNow([`https://theretrocircuit.com/news/${id}`]);
+    submitToIndexNow([`${siteConfig.url}/news/${id}`]);
   }
 
   revalidatePath('/news');

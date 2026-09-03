@@ -1,5 +1,4 @@
 "use client";
-import Button from '@/components/ui/Button';
 import SwissButton from '@/components/console/swiss/SwissButton';
 import { TechBadge } from '@/components/ui/specs/TechBadge';
 import { SwissDropdown } from '@/components/ui/SwissDropdown';
@@ -48,23 +47,18 @@ export default function DesignSystemPage() {
         <section className="space-y-8">
           <h2 className="text-3xl font-pixel text-violet-500 uppercase border-l-4 border-violet-500 pl-4">Buttons</h2>
           <div className="grid grid-cols-1 gap-8">
-
+            {/* The deprecated `Button` used to sit alongside this for comparison. It is
+                gone now that nothing imports it, and a living style guide should show
+                the system in force rather than what it replaced. */}
             <div className="bg-white/5 p-8 border border-white/10 space-y-6">
-              <h3 className="text-xl font-pixel text-white mb-4">Standard Button</h3>
+              <h3 className="text-xl font-pixel text-white mb-4">SwissButton</h3>
               <div className="flex flex-wrap gap-4 items-center">
-                <Button variant="primary">Primary</Button>
-                <Button variant="secondary">Secondary</Button>
-                <Button variant="danger">Danger</Button>
-              </div>
-            </div>
-
-            <div className="bg-white/5 p-8 border border-white/10 space-y-6">
-              <h3 className="text-xl font-pixel text-white mb-4">SwissButton (Console View)</h3>
-              <div className="flex flex-wrap gap-4 items-center">
-                <SwissButton variant="primary">Swiss Primary</SwissButton>
-                <SwissButton variant="orange">Swiss Orange</SwissButton>
-                <SwissButton variant="secondary">Swiss Secondary</SwissButton>
-                <SwissButton variant="danger">Swiss Danger</SwissButton>
+                <SwissButton variant="primary">Primary</SwissButton>
+                <SwissButton variant="orange">Orange</SwissButton>
+                <SwissButton variant="secondary">Secondary</SwissButton>
+                <SwissButton variant="danger">Danger</SwissButton>
+                <SwissButton variant="primary" isLoading>Loading</SwissButton>
+                <SwissButton variant="primary" disabled>Disabled</SwissButton>
               </div>
             </div>
           </div>
@@ -298,9 +292,9 @@ export default function DesignSystemPage() {
               <div className="space-y-4 mt-6">
                 <div className="flex items-center text-xs font-mono tracking-wider">
                   <span className="text-white/50 hover:text-white cursor-pointer transition-colors pb-1">SYSTEMS</span>
-                  <span className="text-white/20 mx-3 font-mono">//</span>
+                  <span className="text-white/20 mx-3 font-mono">{'//'}</span>
                   <span className="text-white/50 hover:text-white cursor-pointer transition-colors pb-1">HANDHELDS</span>
-                  <span className="text-white/20 mx-3 font-mono">//</span>
+                  <span className="text-white/20 mx-3 font-mono">{'//'}</span>
                   <span className="text-white pb-1 border-b border-white">ANALOGUE POCKET</span>
                 </div>
               </div>
