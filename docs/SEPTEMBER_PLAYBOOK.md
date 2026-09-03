@@ -1,7 +1,8 @@
 # September Playbook
 
-*Rewritten 2026-09-02 (evening). Every number below was queried from the live database
-or read from Vercel's runtime errors on the day, not carried over from the last draft.*
+*Rewritten 2026-09-02 (evening); search figures replaced 2026-09-03 with the full-month
+August GSC exports. Every number below was queried from the live database, read from
+Vercel's runtime errors, or taken from a GSC CSV — none are carried over or projected.*
 
 ---
 
@@ -54,38 +55,85 @@ unchanged from the pre-outage plan.
 | Published with no description | 9 |
 | Published, sellable, no buy path | **41** |
 
-**Search, 1–23 Aug** (the last uncontaminated window):
+**Search, full August 2026** — the September benchmark. Read from the five GSC exports
+(Chart, Pages, Queries, Countries, Search appearance), not estimated:
 
-| Metric | Value |
+| Metric | Aug 2026 |
 |---|---|
-| Clicks | 128 |
-| Impressions | 995 |
-| CTR | 12.9% |
-| Average position | 14.9 |
+| Clicks | **143** |
+| Impressions | **1,153** |
+| CTR | 12.40% |
+| Average position | ~14.4 (impression-weighted over the Pages export) |
+| Days with any click | 31 |
 
-The 12.9% CTR is misleading. Over six months **96% of clicks came from four brand
-queries**. Strip those and content-driven performance is **~17 clicks/month**. Average
-position 14.9 is the honest number: page two.
+An earlier draft used a 1–23 Aug partial (128 / 995) and projected 173 for the month.
+The real month came in at **143** — the projection was 21% high because clicks *fell*
+through August rather than holding: 13 on 1 Aug, 2–3 a day by mid-month.
 
-### Where the clicks come from
+The 12.40% CTR is an artefact. **Three brand queries produced 84 of the 143 clicks
+(59%)**, all on the homepage. Non-brand clicks for the whole month: **59**.
 
-| Page type | Pages | Clicks | Impressions | CTR |
-|---|---|---|---|---|
-| Homepage (brand) | 1 | 509 | 1,399 | 36.4% |
-| Arena (`/x-vs-y`) | 15 | 44 | 1,537 | 2.86% |
-| Console detail | 39 | 5 | 6,774 | **0.07%** |
-| Fabricators | 8 | 6 | 252 | 2.38% |
+### Where the clicks come from — August only
 
-Console pages absorb 64% of impressions and convert at 0.07%. Arena pages are 4% of
-impressions and produce 70% of non-homepage clicks. **Comparisons rank; spec sheets
-don't.** This is still the most useful sentence in the document.
+| Page type | Pages | Clicks | Impressions | CTR | Avg position |
+|---|---|---|---|---|---|
+| Homepage | 1 | **132** | 299 | 44.15% | **5.5** |
+| Arena (`/x-vs-y`) | 11 | 7 | 333 | 2.10% | **13.5** |
+| Fabricators | 4 | 2 | 85 | 2.35% | 15.3 |
+| Console detail | 9 | **1** | **437** | **0.23%** | **18.2** |
+| Console index | 1 | 1 | 69 | 1.45% | 31.7 |
+| Other | 2 | 0 | 20 | 0% | 16.8 |
+
+(The previous version of this table mixed a six-month window with a partial-August one —
+the 6,774 console-detail impressions in it were a multi-month total, not a monthly rate.
+August's real console-detail impressions were 437.)
+
+### What August actually says
+
+**1. The problem is position, not the snippet.** This corrects the previous draft. Line
+up CTR against position and almost every page is earning what its rank is worth:
+`/consoles/retroid-pocket-6` sits at position **35.13** and gets 0.79%, which is normal
+for position 35. Console pages convert at 0.23% because they average position **18.2** —
+page two. Rewriting titles does not fix page two.
+
+**2. But there is a real snippet failure, and it is narrow.** A handful of pages rank on
+page one and still take zero clicks:
+
+| Page / query | Impressions | Position | Clicks |
+|---|---|---|---|
+| `/consoles/anbernic-rg-ds` | 173 | 15.46 | **0** |
+| "rg ds specs" | 36 | 9.97 | **0** |
+| "anbernic rg ds specs" | 21 | 9.81 | **0** |
+| "kinhank k59 specs" | 10 | 9.00 | **0** |
+| "ayaneo pocket s vs odin 3" | 18 | 7.06 | **0** |
+
+Position 7–10 with zero clicks across 85 impressions is not a ranking problem. That is
+where the title/description rewrite (commit `50a8877`) applies — to five queries, not to
+the whole catalogue. Measure it on exactly these rows in September.
+
+**3. Arena pages out-rank console pages: 13.5 vs 18.2.** They also convert nine times
+better. The best page on the site after the homepage is
+`/arena/ayaneo-pocket-vert-vs-analogue-pocket` — 5 clicks, 9.26% CTR, position **5.8**.
+Comparison pages rank because nobody else builds them; spec sheets compete with the
+manufacturer, Amazon and every review site at once. **This is the strongest signal in the
+whole export and it points at the 134 configuration-comparison URLs, not at images.**
+
+**4. Only two pages earned a first impression all month.** The index is not growing. That
+is a crawl/indexation problem, and it is what "publish by demand" below is for.
+
+**5. Search appearance is thin.** One rich-result type registered — Product snippets:
+129 impressions, 1 click, position 30.27. No FAQ, no breadcrumbs, no review snippets.
+
+**6. Audience:** US 99 clicks / 396 impressions / 25% CTR / position 10.15; Canada 16;
+UK 4. **Mobile 101, desktop 40, tablet 2 — 71% mobile.** The US ranks eight positions
+better than the site average, so US-intent content compounds fastest.
 
 ### The six devices that matter
 
-76% of all non-brand demand. **All six are now published with an image** — that half of
-Week 2 is done.
+76% of non-brand demand (impressions below are the six-month totals, not August).
+**All six are now published with an image** — that half of Week 2 is done.
 
-| Device | Impressions | Clicks | Description | Buy path |
+| Device | Impressions (6mo) | Clicks | Description | Buy path |
 |---|---|---|---|---|
 | Ayn Thor | 899 | 0 | ✅ | ❌ |
 | Retroid Pocket 6 | 718 | 2 | ✅ | ✅ ASIN |
@@ -99,40 +147,57 @@ not a week — and it now happens inside the console editor rather than a separa
 
 ---
 
-## The honest math on "double in September"
+## The September target, set against the real August
 
-- August projected full month: **173 clicks** — ~155 brand, **~17 everything else**
-- Doubling the total = 345. Brand demand is fixed, so non-brand would need **~190: 11×**
+- August actual: **143 clicks — 84 brand, 59 non-brand**
+- Doubling the total means 286. Brand demand is fixed by how many people type "retro
+  circuit", so all of it would have to come from non-brand: 202, a **3.4×**.
 
-11× in 30 days is not achievable. Set the goal on the half that can move:
+That is not achievable in 30 days. Set the goal on the half that can move:
 
-| Target | From | To | By |
-|---|---|---|---|
-| Non-brand clicks | 17 | **35+** | 30 Sep |
-| Pages indexed | 93 stuck | **+60** | 30 Sep |
-| Average position | 14.9 | **sub-12** | 30 Sep |
+| Target | Aug actual | Sep goal |
+|---|---|---|
+| Non-brand clicks | 59 | **90+** |
+| Console-detail avg position | 18.2 | **sub-15** |
+| Arena clicks | 7 | **20+** |
+| Pages with a first impression | 2 | **+25** |
+| Zero-click page-one queries | 5 | **0** |
 
-Doubling non-brand is what compounds. Brand clicks plateau; content clicks don't.
+Non-brand is what compounds. Brand clicks plateau; content clicks don't.
 
 ---
 
-## The constraint has not moved
+## What the constraint actually is
 
-**370 of 372 drafts have no image.** Specs, buttons, emulation grades and links are in
-place for them; they cannot go live without a picture. Everything else on the gap list
-is smaller than this one, and it is the reason the catalogue is 85 pages rather than 400.
+Not images. The earlier drafts of this document led with "370 of 372 drafts have no
+image" as the single biggest blocker, and August does not support that. Publishing 370
+more spec sheets adds 370 more pages of the type that averages **position 18.2 and a
+0.23% CTR**. Volume of a page type that does not rank is not a growth plan.
 
-It is also not a code problem, which is why five sessions of engineering have not
-touched it. No amount of admin polish substitutes for sourcing images.
+What August supports instead, in order:
 
+1. **Comparison pages rank and spec sheets don't** (13.5 vs 18.2, 2.10% vs 0.23%). The
+   134 configuration-comparison URLs already mintable from fully-slugged variants are the
+   highest-yield inventory on the site and cost nothing to source.
+2. **Indexation is stalled** — 2 first impressions in 31 days. The routing fix is
+   directly upstream of this: pages that 500 on regeneration do not get indexed.
+3. **Five page-one queries take zero clicks.** Snippet work, precisely scoped.
+4. **Images matter for the devices with proven demand**, publish-by-demand, not as a
+   370-item backlog. Ten images against ten high-impression drafts is worth more than
+   fifty chosen alphabetically.
+
+Images remain a real gap — 370 drafts cannot go live without one. They are just not the
+lever that moves search in September.
 ---
 
 ## Revised plan
 
 ### Now — get the fix live and confirm recovery
 
-- [ ] **Merge the working branch to `main` and deploy.** 20 commits, including the
+- [ ] **Merge the working branch to `main` and deploy.** 22 commits, including the
       routing fix. Production is still `main` @ 09:31 on 2 Sep, which contains the bug.
+      Nothing below is measurable until this ships — August is the benchmark, and
+      September only differs from it if the fix is live.
 - [ ] Confirm the six paths that were 500ing now return 200: `/consoles/ayn-thor`,
       `/consoles/konkr-pocket-block`, `/consoles/trimui-brick-pro`,
       `/consoles/one-netbook-onexplayer-3`, and two `…-vs-select` arena URLs
@@ -150,23 +215,26 @@ touched it. No amount of admin polish substitutes for sourcing images.
 - [ ] Work the remaining 41 in `/admin/revenue` → "No buy path", worst-first
 - [ ] Approve the 24 imported links that sit on published consoles (4 done, from 1,334)
 
-### Next — publish by demand, not alphabetically
+### Next — the 134 comparison URLs, because comparisons are what rank
+
+August settles this: arena pages average position **13.5** and 2.10% CTR against console
+detail's **18.2** and 0.23%. All 40 published multi-variant consoles are already fully
+slugged, which mints **134 comparison URLs nobody else has**, at zero sourcing cost.
+
+- [ ] Confirm all 134 are in `lib/arena/pairs.ts` and therefore prebuilt and in the sitemap
+- [ ] Link them from the parent console page — an orphan URL is not an indexed URL
+- [ ] Fix the five zero-click page-one queries listed above and re-measure those exact rows
+
+The lever is not adding slugs — the 353 unslugged variants are all on drafts and sit
+behind the image gap. It is making sure the pages that already exist are linked,
+prebuilt and submitted.
+
+### Then — publish by demand, not alphabetically
 
 - [ ] Source images for the **10 devices with the highest impressions among the drafts**.
       Ten images is ten new pages that already have proven demand, which beats fifty
       chosen at random.
 - [ ] Publish them, confirm they reach the sitemap within a day
-
-### Then — the lever that is actually free
-
-**Configuration comparison pages.** All 40 published multi-variant consoles are already
-fully slugged, and that mints **134 comparison URLs nobody else has**. This is a
-correction to the last draft, which called variant slugs "the next indexability lever":
-they are not, because the 353 unslugged variants are all on drafts and therefore sit
-behind the image constraint like everything else.
-
-The lever is not adding slugs — it is making sure the 134 pages that already exist are
-linked, prebuilt and submitted. Arena pages are the one page type here that converts.
 
 ---
 
@@ -206,7 +274,9 @@ produced **3 qualifying sales within 180 days**. Check the real status before as
 
 ## Known data gaps (verified 2026-09-02)
 
-**370 of 372 drafts have no image.** The single biggest blocker. Unchanged.
+**370 of 372 drafts have no image.** A real gap — a draft cannot publish without one —
+but not the growth constraint. See "What the constraint actually is" above: the page type
+they would add averages position 18.2. Source images by demand, not by backlog.
 
 **22 consoles have no variant** — absent from both spreadsheets, so the import could not
 fill them: the Anbernic RG-351/RG-405 line, `anbernic-rg-rotate`, 1UP (3), 8BCraft (2),
