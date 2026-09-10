@@ -64,7 +64,16 @@ export default async function LandingPage() {
                 <div className="relative z-10 mx-auto grid max-w-[1600px] items-center gap-10 lg:grid-cols-12 lg:gap-12">
                     <div className="min-w-0 lg:col-span-5">
                         <h1 className="text-balance font-pixel text-[8vw] uppercase leading-[1.35] tracking-tight text-white sm:text-[30px] lg:text-[34px] xl:text-[38px]">
-                            Welcome to<br /><span className="text-violet-500">the Circuit_</span>
+                            Welcome to<br />
+                            {/* The one gradient the design system allows: "No gradient text —
+                              * solid only. Exception: hero brand name THE CIRCUIT." Violet to
+                              * cyan because those are the two signal colours the rest of the
+                              * site already runs on, brand into data, which on a circuit board
+                              * reads as current. It stays violet where background-clip:text is
+                              * unsupported, rather than rendering invisible. */}
+                            <span className="inline-block bg-gradient-to-r from-violet-500 via-violet-400 to-cyan-400 bg-clip-text text-violet-500 supports-[background-clip:text]:text-transparent">
+                                the Circuit_
+                            </span>
                         </h1>
 
                         <p className="mt-6 max-w-md text-lg leading-relaxed text-text-secondary">
