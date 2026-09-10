@@ -114,7 +114,32 @@ export async function getFinderResults(
             aestheticPref: searchParams.aesthetic_pref || searchParams.aesthetic || null
         };
 
-        let filteredConsoles = [...allConsoles];
+        /* --- BUYABILITY: the one cut that never relaxes ---
+         *
+         * The Finder recommends something to buy, so it may only ever answer with a device
+         * somebody can actually order. Until this existed the quiz drew from every
+         * published console and would happily hand back an Ayn Odin that stopped shipping
+         * in 2021, or a device that is not out yet.
+         *
+         * Unlike every other filter below, this one has no progressive fallback. If the
+         * other answers leave nothing buyable, the right outcome is a smaller result set or
+         * none — never a recommendation to buy something that cannot be bought.
+         *
+         * A null status is treated as buyable on purpose: release_status is maintained by
+         * hand from the /admin "Release date passed" panel, and a newly imported console
+         * that nobody has classified yet should degrade to visible rather than silently
+         * vanish from the quiz. Every published row carries one today.
+         */
+        const buyable = allConsoles.filter(
+            (c) => !c.release_status || c.release_status === 'released'
+        );
+
+        if (buyable.length === 0) {
+            console.warn('Finder: no released consoles in the catalogue — check release_status.');
+            return [];
+        }
+
+        let filteredConsoles = [...buyable];
         let relaxedFeatures: string[] = [];
 
         // --- Q2: FORM FACTOR HARD CUT ---
