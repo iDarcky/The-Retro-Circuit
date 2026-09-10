@@ -107,6 +107,7 @@ pnpm lint     # ESLint
 |------|---------|
 | `docs/SEPTEMBER_PLAYBOOK.md` | **The live plan.** Search data, weekly tasks, revenue blockers, verified data gaps |
 | `docs/PENDING_FEATURES.md` | Prioritized feature backlog (now includes the Finder, accessibility and legal/mobile items) |
+| `docs/FINDER_SPLIT.md` | Concept notes for splitting the Finder into a buying tool and a charming quiz — not scheduled |
 | `docs/DATA_MAPPING.md` | Spreadsheet → database column mapping, and the traps |
 | `docs/ROUTES.md` | Route documentation with payloads |
 | `docs/DESIGN.md` | Full design system spec — **in force** |

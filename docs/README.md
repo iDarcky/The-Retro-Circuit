@@ -10,6 +10,7 @@ from regenerating the same report under a new name.
 |---|---|---|
 | [`SEPTEMBER_PLAYBOOK.md`](SEPTEMBER_PLAYBOOK.md) | The live plan: search data, weekly tasks, revenue blockers, verified data gaps | Start here. This is the working doc. |
 | [`PENDING_FEATURES.md`](PENDING_FEATURES.md) | The backlog, by category and priority | Picking the next feature |
+| [`FINDER_SPLIT.md`](FINDER_SPLIT.md) | Concept notes: the Finder as a buying tool plus a charming quiz. Not scheduled | Revisiting the Finder |
 | [`ROADMAP.md`](ROADMAP.md) | Changelog + release checklist (generated 2026-03-05) | Checking what shipped when |
 | [`DATA_MAPPING.md`](DATA_MAPPING.md) | Spreadsheet → database column mapping, and the traps | Importing catalogue data |
 | [`ROUTES.md`](ROUTES.md) | Every public route, its metadata and SEO notes | Adding or changing a page |
