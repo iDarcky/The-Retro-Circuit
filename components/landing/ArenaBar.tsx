@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ConsoleSearch } from '../arena/ConsoleSearch';
 import { buildArenaPath } from '../../lib/arena/resolve';
+import CircuitPattern from './CircuitPattern';
 
 interface Matchup {
     path: string;
@@ -38,8 +39,11 @@ export default function ArenaBar({ consoles, matchups, deviceCount }: ArenaBarPr
     };
 
     return (
-        <section className="border-b border-border-subtle bg-bg-secondary/30 px-6 py-12 md:px-12 md:py-16">
-            <div className="mx-auto grid max-w-[1600px] gap-8 lg:grid-cols-12 lg:gap-12">
+        <section className="relative overflow-hidden border-b border-border-subtle bg-bg-secondary/30 px-6 py-12 md:px-12 md:py-16">
+            {/* Cyan here rather than violet: this band is the data tool, and cyan is what
+              * the system reserves for specs. */}
+            <CircuitPattern accentColor="cyan" className="absolute inset-0 h-full w-full" />
+            <div className="relative z-10 mx-auto grid max-w-[1600px] gap-8 lg:grid-cols-12 lg:gap-12">
                 <div className="min-w-0 lg:col-span-4">
                     <h2 className="text-balance font-mono text-2xl font-bold tracking-tight text-white md:text-3xl">
                         Head to head

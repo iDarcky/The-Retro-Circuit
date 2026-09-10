@@ -65,7 +65,7 @@ export default function LatestCarousel({ devices }: LatestCarouselProps) {
             aria-roledescription="carousel"
             aria-label="Latest devices added to the catalogue"
             onKeyDown={onKeyDown}
-            className="border border-border-subtle bg-bg-secondary/40"
+            className="border border-border-subtle bg-bg-secondary"
         >
             {/* Header strip: what this is, and where you are in it */}
             <div className="flex items-center justify-between gap-4 border-b border-border-subtle px-4 py-3 md:px-6">

@@ -6,6 +6,7 @@ import { toLandingDevice } from './toDevice';
 import LatestCarousel from './LatestCarousel';
 import ArenaBar from './ArenaBar';
 import NewsletterPanel from './NewsletterPanel';
+import CircuitPattern from './CircuitPattern';
 
 /* Comparisons the search data already shows people looking for. Kept short on
  * purpose: three is a prompt, ten is a directory. Mirrors SEARCHED_PAIRS in
@@ -48,12 +49,22 @@ export default async function LandingPage() {
     return (
         <div className="min-h-screen bg-bg-primary font-sans text-text-primary">
 
-            {/* HERO — the statement on the left, the newest hardware on the right */}
-            <header className="border-b border-border-subtle px-6 pb-10 pt-10 md:px-12 md:pb-14 md:pt-16">
-                <div className="mx-auto grid max-w-[1600px] items-center gap-10 lg:grid-cols-12 lg:gap-12">
+            {/* HERO — the statement on the left, the newest hardware on the right.
+              *
+              * The traces are the reason the background is not flat black. They are the
+              * site's own metaphor rather than decoration borrowed from somewhere else,
+              * and they sit at 0.15 alpha with no glow, so they read as substrate and
+              * never compete with the headline. Violet here, cyan at the compare tool;
+              * nowhere else, because a texture on every section stops being a texture. */}
+            <header className="relative overflow-hidden border-b border-border-subtle px-6 pb-10 pt-10 md:px-12 md:pb-14 md:pt-16">
+                <CircuitPattern
+                    accentColor="violet"
+                    className="absolute inset-0 h-full w-full"
+                />
+                <div className="relative z-10 mx-auto grid max-w-[1600px] items-center gap-10 lg:grid-cols-12 lg:gap-12">
                     <div className="min-w-0 lg:col-span-5">
                         <h1 className="text-balance font-pixel text-[8vw] uppercase leading-[1.35] tracking-tight text-white sm:text-[30px] lg:text-[34px] xl:text-[38px]">
-                            Welcome to<br />the Circuit<span className="text-violet-500">_</span>
+                            Welcome to<br /><span className="text-violet-500">the Circuit_</span>
                         </h1>
 
                         <p className="mt-6 max-w-md text-lg leading-relaxed text-text-secondary">
