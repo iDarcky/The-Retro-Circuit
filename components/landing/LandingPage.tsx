@@ -7,6 +7,7 @@ import LatestCarousel from './LatestCarousel';
 import ArenaBar from './ArenaBar';
 import NewsletterPanel from './NewsletterPanel';
 import CircuitPattern from './CircuitPattern';
+import TraceRule from './TraceRule';
 
 /* Comparisons the search data already shows people looking for. Kept short on
  * purpose: three is a prompt, ten is a directory. Mirrors SEARCHED_PAIRS in
@@ -101,7 +102,7 @@ export default async function LandingPage() {
                                 href="/finder"
                                 className="inline-flex touch-manipulation items-center justify-center border border-border-normal px-7 py-4 font-mono text-sm uppercase tracking-widest text-text-secondary transition-colors hover:border-white hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                             >
-                                Help me choose
+                                Try the Finder
                             </Link>
                         </div>
                     </div>
@@ -111,6 +112,8 @@ export default async function LandingPage() {
                     </div>
                 </div>
             </header>
+
+            <TraceRule />
 
             {/* Arena, as the tool itself, in the slot under the hero.
               *

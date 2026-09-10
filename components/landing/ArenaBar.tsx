@@ -39,10 +39,10 @@ export default function ArenaBar({ consoles, matchups, deviceCount }: ArenaBarPr
 
     /* Same ground as the hero, deliberately. What actually erased the boundary was the
      * circuit traces running in both sections at the same scale, lined up straight
-     * through the rule between them; those stop at the hero now. The division here is
-     * space and a brighter rule, not a panel fill. */
+     * through the rule between them; those stop at the hero now. The division is space
+     * plus the bus line TraceRule draws above this section, not a panel fill. */
     return (
-        <section className="border-t border-border-normal px-6 py-16 md:px-12 md:py-24">
+        <section className="px-6 py-16 md:px-12 md:py-24">
             <div className="mx-auto grid max-w-[1600px] gap-8 lg:grid-cols-12 lg:gap-12">
                 <div className="min-w-0 lg:col-span-4 lg:self-center">
                     <h2 className="text-balance font-mono text-2xl font-bold tracking-tight text-white md:text-3xl">
