@@ -2,7 +2,7 @@
 
 import { useRef, useState, type FormEvent } from 'react';
 import { Loader2 } from 'lucide-react';
-import { subscribeEmail } from '../../../app/actions/subscribers';
+import { subscribeEmail } from '../../app/actions/subscribers';
 
 type Status = 'idle' | 'loading' | 'success' | 'error';
 

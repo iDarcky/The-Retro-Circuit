@@ -1,4 +1,4 @@
-import type { ConsoleDetails, ConsoleVariant } from '../../../lib/types/domain';
+import type { ConsoleDetails, ConsoleVariant } from '../../lib/types/domain';
 import type { LandingDevice } from './types';
 
 /** The variant a console should be represented by: its default, else its first. */

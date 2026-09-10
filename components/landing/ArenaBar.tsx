@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ConsoleSearch } from '../../arena/ConsoleSearch';
-import { buildArenaPath } from '../../../lib/arena/resolve';
+import { ConsoleSearch } from '../arena/ConsoleSearch';
+import { buildArenaPath } from '../../lib/arena/resolve';
 
 interface Matchup {
     path: string;

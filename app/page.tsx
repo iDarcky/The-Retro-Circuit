@@ -1,13 +1,11 @@
 export const revalidate = false;
 
 import LandingPage from '@/components/landing/LandingPage';
-import { getSystemVersion } from './actions/roadmap';
 
-export default async function ControlRoomPage() {
-  const version = await getSystemVersion();
+export default function HomePage() {
   return (
     <div className="w-full">
-      <LandingPage version={version} />
+      <LandingPage />
     </div>
   );
 }
