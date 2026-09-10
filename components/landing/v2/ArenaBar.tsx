@@ -1,0 +1,123 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { ConsoleSearch } from '../../arena/ConsoleSearch';
+import { buildArenaPath } from '../../../lib/arena/resolve';
+
+interface Matchup {
+    path: string;
+    left: string;
+    right: string;
+}
+
+interface ArenaBarProps {
+    consoles: { name: string; slug: string }[];
+    matchups: Matchup[];
+    deviceCount: number;
+}
+
+/* Arena, on the homepage, as the tool rather than a link to the tool.
+ *
+ * Note the URL: buildArenaPath takes console slugs straight. Console slugs already
+ * carry the brand (`anbernic-rg-sp`), so prefixing the manufacturer slug again — as
+ * the old QuickCompare did — produced `anbernic-anbernic-rg-sp`, which resolves to
+ * nothing.
+ */
+export default function ArenaBar({ consoles, matchups, deviceCount }: ArenaBarProps) {
+    const router = useRouter();
+    const [left, setLeft] = useState<{ slug: string; name: string } | null>(null);
+    const [right, setRight] = useState<{ slug: string; name: string } | null>(null);
+
+    const ready = !!left && !!right;
+
+    const compare = () => {
+        if (!left || !right) return;
+        router.push(buildArenaPath(left.slug, right.slug));
+    };
+
+    return (
+        <section className="border-b border-border-subtle bg-bg-secondary/30 px-6 py-12 md:px-12 md:py-16">
+            <div className="mx-auto grid max-w-[1600px] gap-8 lg:grid-cols-12 lg:gap-12">
+                <div className="min-w-0 lg:col-span-4">
+                    <h2 className="font-mono text-2xl font-bold tracking-tight text-white md:text-3xl">
+                        Put two devices side by side
+                    </h2>
+                    <p className="mt-3 max-w-md text-text-secondary">
+                        Every spec lined up in one table, down to the SoC generation and the
+                        emulation grade per system.
+                    </p>
+                </div>
+
+                <div className="min-w-0 lg:col-span-8">
+                    <div className="border border-border-subtle bg-bg-primary p-5 md:p-6">
+                        <div className="grid gap-4 md:grid-cols-[1fr_auto_1fr] md:items-end">
+                            <div className="flex flex-col gap-2">
+                                <label className="font-mono text-[11px] uppercase tracking-widest text-cyan-500">
+                                    First device
+                                </label>
+                                <ConsoleSearch
+                                    consoles={consoles}
+                                    onSelect={(slug, name) => setLeft({ slug, name })}
+                                    placeholder={`Search ${deviceCount} devices`}
+                                    themeColor="cyan"
+                                    currentSelection={left?.name}
+                                    textColor="white"
+                                    highlightSelection
+                                />
+                            </div>
+
+                            <span
+                                aria-hidden
+                                className="hidden pb-3 text-center font-mono text-xs uppercase tracking-widest text-text-muted md:block"
+                            >
+                                vs
+                            </span>
+
+                            <div className="flex flex-col gap-2">
+                                <label className="font-mono text-[11px] uppercase tracking-widest text-violet-400">
+                                    Second device
+                                </label>
+                                <ConsoleSearch
+                                    consoles={consoles}
+                                    onSelect={(slug, name) => setRight({ slug, name })}
+                                    placeholder={`Search ${deviceCount} devices`}
+                                    themeColor="primary"
+                                    currentSelection={right?.name}
+                                    textColor="white"
+                                    highlightSelection
+                                />
+                            </div>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={compare}
+                            disabled={!ready}
+                            className="mt-5 w-full border border-white bg-white px-6 py-3 font-mono text-sm uppercase tracking-widest text-black transition-colors hover:bg-transparent hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500 disabled:cursor-not-allowed disabled:border-border-normal disabled:bg-transparent disabled:text-text-muted"
+                        >
+                            {ready ? 'Compare these two' : 'Pick two devices'}
+                        </button>
+                    </div>
+
+                    {/* The escape hatch for anyone who does not have two names in mind */}
+                    <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-2">
+                        <span className="font-mono text-[11px] uppercase tracking-widest text-text-muted">
+                            Most compared
+                        </span>
+                        {matchups.map((matchup) => (
+                            <Link
+                                key={matchup.path}
+                                href={matchup.path}
+                                className="border border-border-subtle px-3 py-1.5 font-mono text-xs text-text-secondary transition-colors hover:border-cyan-500 hover:text-cyan-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-500"
+                            >
+                                {matchup.left} <span className="text-text-muted">vs</span> {matchup.right}
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+}
