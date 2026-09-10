@@ -37,12 +37,12 @@ export default function ArenaBar({ consoles, matchups, deviceCount }: ArenaBarPr
         router.push(buildArenaPath(left.slug, right.slug));
     };
 
-    /* An opaque step off the hero's ground, not a 30% tint of it. At bg-secondary/30
-     * this band computed to about #0c0c0e against a #09090b page — three values of
-     * separation, which is none. The tonal change is what divides the two sections now
-     * that the traces stop at the hero. */
+    /* Same ground as the hero, deliberately. What actually erased the boundary was the
+     * circuit traces running in both sections at the same scale, lined up straight
+     * through the rule between them; those stop at the hero now. The division here is
+     * space and a brighter rule, not a panel fill. */
     return (
-        <section className="border-y border-border-subtle bg-bg-secondary px-6 py-14 md:px-12 md:py-20">
+        <section className="border-t border-border-normal px-6 py-16 md:px-12 md:py-24">
             <div className="mx-auto grid max-w-[1600px] gap-8 lg:grid-cols-12 lg:gap-12">
                 <div className="min-w-0 lg:col-span-4 lg:self-center">
                     <h2 className="text-balance font-mono text-2xl font-bold tracking-tight text-white md:text-3xl">
