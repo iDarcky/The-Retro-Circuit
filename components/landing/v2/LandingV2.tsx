@@ -52,8 +52,8 @@ export default async function LandingV2() {
             <header className="border-b border-border-subtle px-6 pb-10 pt-10 md:px-12 md:pb-14 md:pt-16">
                 <div className="mx-auto grid max-w-[1600px] items-center gap-10 lg:grid-cols-12 lg:gap-12">
                     <div className="min-w-0 lg:col-span-5">
-                        <h1 className="text-balance font-pixel text-[8vw] uppercase leading-[1.35] tracking-tight text-white sm:text-[34px] lg:text-[40px] xl:text-[46px]">
-                            Every retro<br />handheld<span className="text-violet-500">_</span>
+                        <h1 className="text-balance font-pixel text-[8vw] uppercase leading-[1.35] tracking-tight text-white sm:text-[30px] lg:text-[34px] xl:text-[38px]">
+                            Welcome to<br />the Circuit<span className="text-violet-500">_</span>
                         </h1>
 
                         <p className="mt-6 max-w-md text-lg leading-relaxed text-text-secondary">

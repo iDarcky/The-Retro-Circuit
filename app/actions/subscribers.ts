@@ -92,9 +92,9 @@ async function sendWelcomeEmail(normalizedEmail: string) {
 
       <p>You're in the circuit.</p>
 
-      <p>We'll send a monthly update when new consoles drop,<br/>
-      specs update, or something worth reading lands on<br/>
-      The Retro Circuit.</p>
+      <p>We'll email you when new consoles land in the<br/>
+      catalogue, when specs change, or when something<br/>
+      worth reading goes up on The Retro Circuit.</p>
 
       <br/>
 

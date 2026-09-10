@@ -30,7 +30,15 @@ export async function generateMetadata({ params }: { params: Promise<{ versus?: 
     if (!versus || versus.length === 0) return hub;
 
     const parts = splitVersus(versus[0]);
-    if (!parts) return hub;
+    if (!parts) {
+        /* A segment that is not `a-vs-b` — the homepage carousel's "Compare it" links
+         * land here, since /arena/<slug> preselects one side and leaves the other empty.
+         * The page is worth rendering, but it is half a comparison wearing the hub's
+         * title, and several of them at once would be duplicate thin pages competing
+         * with /arena itself. Keep them out of the index and let the links on them
+         * still be followed. */
+        return { ...hub, robots: { index: false, follow: true } };
+    }
 
     // Resolving here as well as in the page means a legacy hyphen URL canonicalises onto
     // the `~` form rather than declaring itself canonical, so the two do not compete.
