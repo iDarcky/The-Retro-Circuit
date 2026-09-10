@@ -73,7 +73,7 @@ export default async function AboutPage() {
 
             <div className="space-y-6 text-zinc-300 font-light leading-relaxed">
                 <p>
-                    The Circuit is live but unfinished. Pre-Alpha means the data is growing, features are evolving, and things may occasionally break. That's the deal for now.
+                    The Circuit is live but unfinished. Beta means the data is growing, features are evolving, and things may occasionally break. That&apos;s the deal for now.
                 </p>
                 <p>
                     <span className="text-white font-medium">{counts.consoles}</span> consoles catalogued. <span className="text-white font-medium">{counts.variants}</span> hardware variants. The Console Vault is live. Arena VS is live. The Finder — the feature that answers "what should I actually buy?" — is in active development.

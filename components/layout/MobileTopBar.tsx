@@ -28,7 +28,7 @@ const MobileTopBar: FC<MobileTopBarProps> = ({ onMenuClick, isSidebarOpen }) => 
                 </Link>
             </div>
 
-            {/* Pre-alpha Badge */}
+            {/* Beta Badge — same label as DesktopHeader */}
             <div className="flex items-center h-full hover:bg-orange-500/10 transition-colors duration-300 border-r border-border-subtle">
                 <Link href="/about" className="flex items-center justify-center group px-2.5 h-full w-full">
                     <div className="border border-orange-500 bg-orange-500/10 px-1.5 py-0.5 flex items-center group-hover:bg-orange-500 transition-colors duration-300">

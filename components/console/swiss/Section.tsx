@@ -9,7 +9,7 @@ import { type FC, type ReactNode } from 'react';
  *
  * Violet, not orange, because the site already decided: DesktopHeader is
  * `border-b-2 border-violet-500` with violet nav underlines, and DESIGN.md reserves
- * orange for warnings, attention and beta, which is the PRE-ALPHA badge and nothing else
+ * orange for warnings, attention and beta, which is the BETA badge and nothing else
  * on this page. The three orange headers were the legacy, not the direction.
  *
  * Spacing, rule weight and scroll offset live here too, so sections cannot drift apart

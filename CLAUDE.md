@@ -2,7 +2,7 @@
 
 ## Project Overview
 Retro handheld gaming device comparison engine. Solo PM project, shipped via AI agents.
-Pre-alpha v0.5.5 · 462 consoles (85 published, 372 draft) · 519 variants · 99 brands · Live at theretrocircuit.com
+Beta v0.5.5 · 462 consoles (87 published, 372 draft) · 521 variants · 99 brands · Live at theretrocircuit.com
 
 ---
 

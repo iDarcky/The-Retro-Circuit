@@ -27,11 +27,15 @@ export default function DesktopHeader() {
                   <span className="font-pixel text-[14px] leading-tight text-white/40 group-hover:text-secondary transition-colors">RETRO CIRCUIT_</span>
               </Link>
           </div>
-          {/* LEFT: Pre-alpha Badge - Grid Cell 1.5 */}
+          {/* LEFT: Beta Badge - Grid Cell 1.5.
+              Says BETA, matching MobileTopBar. It read PRE-ALPHA here and BETA there,
+              so the same site made two different claims about itself depending on the
+              device — and 71% of the traffic saw the mobile one. */}
           <div className="flex shrink-0 bg-bg-primary hover:bg-orange-500/10 transition-colors duration-300">
-              <Link href="/about" className="flex items-start justify-center pt-5 px-4 group h-full w-full">
-                  <div className="border border-orange-500 bg-orange-500/10 px-2 py-1 flex items-center group-hover:bg-orange-500 transition-colors duration-300">
-                      <span className="font-pixel text-[10px] leading-tight text-orange-500 group-hover:text-black transition-colors">PRE-ALPHA | Learn more</span>
+              <Link href="/about" aria-label="Beta — read more about the project" className="flex items-start justify-center pt-5 px-4 group h-full w-full">
+                  <div className="border border-orange-500 bg-orange-500/10 px-2 py-1 flex items-center gap-2 group-hover:bg-orange-500 transition-colors duration-300">
+                      <span className="font-pixel text-[10px] leading-tight text-orange-500 group-hover:text-black transition-colors">BETA</span>
+                      <span className="font-mono text-[10px] leading-tight text-orange-500/70 group-hover:text-black transition-colors">Learn more</span>
                   </div>
               </Link>
           </div>
