@@ -45,7 +45,9 @@ const inter = Inter({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0f0f1b",
+  // Matches --bg-primary. It used to be #0f0f1b, which left a visible seam between the
+  // mobile browser chrome and the page — and 71% of the traffic is mobile.
+  themeColor: "#09090b",
   interactiveWidget: "resizes-content",
 };
 
@@ -119,8 +121,20 @@ export default async function RootLayout({
     ]
   };
 
+  // Every console image is served from Supabase storage, including the homepage
+  // carousel's LCP image, so the connection is worth opening before the HTML names it.
+  const imageOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
   return (
     <html lang="en" className="dark">
+      <head>
+        {imageOrigin && (
+          <>
+            <link rel="preconnect" href={imageOrigin} crossOrigin="anonymous" />
+            <link rel="dns-prefetch" href={imageOrigin} />
+          </>
+        )}
+      </head>
       <body className={`${pressStart.variable} ${jetBrainsMono.variable} ${shareTechMono.variable} ${inter.variable} font-sans min-h-screen flex flex-col bg-bg-primary text-text-primary antialiased selection:bg-violet-500/30 selection:text-white`}>
         <script
           type="application/ld+json"

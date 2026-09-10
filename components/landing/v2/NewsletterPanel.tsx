@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import { Loader2 } from 'lucide-react';
 import { subscribeEmail } from '../../../app/actions/subscribers';
 
@@ -17,6 +17,7 @@ export default function NewsletterPanel({ deviceCount }: { deviceCount: number }
     const [email, setEmail] = useState('');
     const [status, setStatus] = useState<Status>('idle');
     const [message, setMessage] = useState('');
+    const inputRef = useRef<HTMLInputElement>(null);
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
@@ -32,6 +33,8 @@ export default function NewsletterPanel({ deviceCount }: { deviceCount: number }
         } else {
             setStatus('error');
             setMessage(result.message);
+            // Send focus back to the field the reader has to correct.
+            inputRef.current?.focus();
         }
     }
 
@@ -40,12 +43,12 @@ export default function NewsletterPanel({ deviceCount }: { deviceCount: number }
             <div className="mx-auto max-w-[1600px]">
                 <div className="grid gap-8 border border-violet-500/40 bg-bg-secondary/40 p-6 md:grid-cols-2 md:items-center md:gap-12 md:p-10">
                     <div>
-                        <h2 className="font-mono text-2xl font-bold tracking-tight text-white md:text-3xl">
-                            New devices, once a month
+                        <h2 className="text-balance font-mono text-2xl font-bold tracking-tight text-white md:text-3xl">
+                            New hardware, first
                         </h2>
                         <p className="mt-3 max-w-md text-text-secondary">
-                            What went into the catalogue, what the specs turned out to be, and which
-                            releases are worth waiting for. Nothing else.
+                            Leave your email and you will hear when devices are added to the
+                            catalogue, specs already filled in. Nothing else.
                         </p>
                     </div>
 
@@ -65,7 +68,10 @@ export default function NewsletterPanel({ deviceCount }: { deviceCount: number }
                                         type="email"
                                         name="email"
                                         autoComplete="email"
+                                        inputMode="email"
+                                        spellCheck={false}
                                         required
+                                        ref={inputRef}
                                         value={email}
                                         onChange={(e) => {
                                             setEmail(e.target.value);
@@ -79,9 +85,16 @@ export default function NewsletterPanel({ deviceCount }: { deviceCount: number }
                                     <button
                                         type="submit"
                                         disabled={status === 'loading'}
-                                        className="inline-flex items-center justify-center gap-2 border border-violet-500 bg-violet-600 px-6 py-3 font-mono text-sm uppercase tracking-widest text-white transition-colors hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400 disabled:cursor-not-allowed disabled:opacity-50"
+                                        className="inline-flex touch-manipulation items-center justify-center gap-2 border border-violet-500 bg-violet-600 px-6 py-3 font-mono text-sm uppercase tracking-widest text-white transition-colors hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400 disabled:cursor-not-allowed disabled:opacity-50"
                                     >
-                                        {status === 'loading' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Subscribe'}
+                                        {status === 'loading' ? (
+                                            <>
+                                                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                                                <span className="sr-only">Subscribing…</span>
+                                            </>
+                                        ) : (
+                                            'Subscribe'
+                                        )}
                                     </button>
                                 </div>
                                 <p id="landing-newsletter-note" className="font-mono text-[11px] text-text-muted">

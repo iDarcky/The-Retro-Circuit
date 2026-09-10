@@ -52,7 +52,7 @@ export default async function LandingV2() {
             <header className="border-b border-border-subtle px-6 pb-10 pt-10 md:px-12 md:pb-14 md:pt-16">
                 <div className="mx-auto grid max-w-[1600px] items-center gap-10 lg:grid-cols-12 lg:gap-12">
                     <div className="min-w-0 lg:col-span-5">
-                        <h1 className="font-pixel text-[8vw] uppercase leading-[1.35] tracking-tight text-white sm:text-[34px] lg:text-[40px] xl:text-[46px]">
+                        <h1 className="text-balance font-pixel text-[8vw] uppercase leading-[1.35] tracking-tight text-white sm:text-[34px] lg:text-[40px] xl:text-[46px]">
                             Every retro<br />handheld<span className="text-violet-500">_</span>
                         </h1>
 
@@ -68,13 +68,13 @@ export default async function LandingV2() {
                         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                             <Link
                                 href="/consoles"
-                                className="inline-flex items-center justify-center border border-violet-500 bg-violet-600 px-7 py-4 font-mono text-sm uppercase tracking-widest text-white transition-colors hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400"
+                                className="inline-flex touch-manipulation items-center justify-center border border-violet-500 bg-violet-600 px-7 py-4 font-mono text-sm uppercase tracking-widest text-white transition-colors hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400"
                             >
                                 Browse all {counts.consoles}
                             </Link>
                             <Link
                                 href="/finder"
-                                className="inline-flex items-center justify-center border border-border-normal px-7 py-4 font-mono text-sm uppercase tracking-widest text-text-secondary transition-colors hover:border-white hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                                className="inline-flex touch-manipulation items-center justify-center border border-border-normal px-7 py-4 font-mono text-sm uppercase tracking-widest text-text-secondary transition-colors hover:border-white hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                             >
                                 Help me choose
                             </Link>

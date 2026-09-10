@@ -73,8 +73,13 @@ export default function LatestCarousel({ devices }: LatestCarouselProps) {
                     Latest additions
                 </h2>
                 <div className="flex items-center gap-3">
-                    <span aria-live="polite" className="font-mono text-xs tabular-nums text-text-muted">
+                    <span aria-hidden className="font-mono text-xs tabular-nums text-text-muted">
                         {String(index + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}
+                    </span>
+                    <span aria-live="polite" className="sr-only">
+                        {devices[index]
+                            ? `${devices[index].brand} ${devices[index].name}, ${index + 1} of ${count}`
+                            : ''}
                     </span>
                     <div className="flex">
                         <button
@@ -82,18 +87,18 @@ export default function LatestCarousel({ devices }: LatestCarouselProps) {
                             onClick={() => goTo(index - 1)}
                             disabled={index === 0}
                             aria-label="Previous device"
-                            className="flex h-8 w-8 items-center justify-center border border-border-normal text-text-secondary transition-colors hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-text-secondary"
+                            className="flex h-8 w-8 touch-manipulation items-center justify-center border border-border-normal text-text-secondary transition-colors hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-text-secondary"
                         >
-                            <ChevronLeft size={16} />
+                            <ChevronLeft size={16} aria-hidden />
                         </button>
                         <button
                             type="button"
                             onClick={() => goTo(index + 1)}
                             disabled={index === count - 1}
                             aria-label="Next device"
-                            className="-ml-px flex h-8 w-8 items-center justify-center border border-border-normal text-text-secondary transition-colors hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-text-secondary"
+                            className="-ml-px flex h-8 w-8 touch-manipulation items-center justify-center border border-border-normal text-text-secondary transition-colors hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-text-secondary"
                         >
-                            <ChevronRight size={16} />
+                            <ChevronRight size={16} aria-hidden />
                         </button>
                     </div>
                 </div>
@@ -137,7 +142,7 @@ export default function LatestCarousel({ devices }: LatestCarouselProps) {
                                     <p className="font-mono text-[11px] uppercase tracking-widest text-cyan-500">
                                         {device.brand}
                                     </p>
-                                    <h3 className="mt-1 font-mono text-2xl font-bold tracking-tight text-white md:text-3xl">
+                                    <h3 className="mt-1 text-balance font-mono text-2xl font-bold tracking-tight text-white md:text-3xl">
                                         {device.name}
                                     </h3>
 
@@ -189,7 +194,7 @@ export default function LatestCarousel({ devices }: LatestCarouselProps) {
                         onClick={() => goTo(i)}
                         aria-label={`Show ${device.brand} ${device.name}`}
                         aria-current={i === index}
-                        className={`flex min-w-[7.5rem] flex-1 flex-col gap-1 px-3 py-2.5 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-violet-500 ${
+                        className={`flex min-w-[7.5rem] flex-1 touch-manipulation flex-col gap-1 px-3 py-2.5 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-violet-500 ${
                             i === index
                                 ? 'bg-violet-600 text-white'
                                 : 'bg-bg-primary text-text-secondary hover:bg-white/[0.04]'

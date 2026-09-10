@@ -39,6 +39,10 @@
   /* Semantic Mappings */
   --background: var(--bg-primary);
   --foreground: var(--text-primary);
+
+  /* Tells the browser to render native UI — form controls, scrollbars, the email
+     field on the homepage — in its dark variant. Without it they came back light. */
+  color-scheme: dark;
 }
 
 body {

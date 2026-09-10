@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, type FC, type ChangeEvent, type KeyboardEvent } from 'react';
+import { useState, useEffect, useId, useRef, type FC, type ChangeEvent, type KeyboardEvent } from 'react';
 import { Search } from 'lucide-react';
 
 interface ConsoleSearchProps {
@@ -11,14 +11,22 @@ interface ConsoleSearchProps {
     currentSelection?: string;
     textColor?: 'default' | 'white';
     highlightSelection?: boolean;
+    /** Ties the control to a visible <label htmlFor>. One is generated when omitted. */
+    id?: string;
+    /** Use when there is no visible label to point at this control. */
+    ariaLabel?: string;
 }
 
-export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, placeholder = "SELECT SYSTEM...", themeColor, currentSelection, textColor = 'default', highlightSelection = false }) => {
+export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, placeholder = "SELECT SYSTEM…", themeColor, currentSelection, textColor = 'default', highlightSelection = false, id, ariaLabel }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [activeIndex, setActiveIndex] = useState(-1);
     const wrapperRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
+    const generatedId = useId();
+    const inputId = id ?? `console-search-${generatedId}`;
+    const listId = `${inputId}-listbox`;
+    const optionId = (index: number) => `${inputId}-option-${index}`;
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -149,7 +157,17 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
         <div className="relative w-full group" ref={wrapperRef}>
             <div className="relative">
                 <input
+                    id={inputId}
+                    name={inputId}
                     type="text"
+                    role="combobox"
+                    aria-expanded={isOpen}
+                    aria-controls={listId}
+                    aria-autocomplete="list"
+                    aria-activedescendant={isOpen && activeIndex >= 0 ? optionId(activeIndex) : undefined}
+                    aria-label={ariaLabel}
+                    autoComplete="off"
+                    spellCheck={false}
                     value={searchTerm}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                     onFocus={() => setIsOpen(true)}
@@ -158,11 +176,11 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                     className={`
                         w-full bg-black/50 border border-white/10 p-4 pl-10 
                         font-mono text-sm ${inputTextColor} ${inputPlaceholderColor} uppercase tracking-wider
-                        rounded-none transition-all
+                        rounded-none transition-colors
                         ${theme.border} focus-visible:ring-1 ${theme.ring} focus:outline-none
                     `}
                 />
-                <div className={`absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${iconColor}`}>
+                <div aria-hidden className={`absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${iconColor}`}>
                     <Search size={14} strokeWidth={1.5} />
                 </div>
             </div>
@@ -170,11 +188,17 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
             {isOpen && (
                 <div
                     ref={listRef}
-                    className="absolute left-0 right-0 top-[calc(100%-1px)] max-h-[300px] overflow-y-auto bg-black border border-white/10 border-t-transparent z-[9999] shadow-xl"
+                    id={listId}
+                    role="listbox"
+                    aria-label={ariaLabel ?? 'Matching devices'}
+                    className="absolute left-0 right-0 top-[calc(100%-1px)] max-h-[300px] overflow-y-auto bg-black border border-white/10 border-t-transparent z-[9999]"
                 >
                     {filtered.map((c, idx) => (
                         <div 
                             key={c.slug}
+                            id={optionId(idx)}
+                            role="option"
+                            aria-selected={idx === activeIndex}
                             onClick={() => {
                                 onSelect(c.slug, c.name);
                                 setSearchTerm('');
@@ -187,7 +211,7 @@ export const ConsoleSearch: FC<ConsoleSearchProps> = ({ consoles, onSelect, plac
                         </div>
                     ))}
                     {filtered.length === 0 && (
-                        <div className="p-4 bg-black/50 border-t border-white/5 flex flex-col items-center justify-center gap-2">
+                        <div role="status" className="p-4 bg-black/50 border-t border-white/5 flex flex-col items-center justify-center gap-2">
                             <span className="text-xs font-mono text-white/40 text-center uppercase tracking-wider">NO MATCHES FOUND</span>
                             <span className="text-[10px] font-mono text-white/20 text-center uppercase tracking-widest">TRY &apos;GAMEBOY&apos;</span>
                         </div>
