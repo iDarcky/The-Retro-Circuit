@@ -27,7 +27,7 @@ export const ArenaStickyHeader = ({ selectionA, selectionB, onReset }: ArenaStic
                 ${isVisible ? 'translate-y-0' : '-translate-y-full'}
             `}
         >
-            <div className="bg-black/80 backdrop-blur-md border-b border-white/10 shadow-2xl">
+            <div className="border-b border-border-subtle bg-bg-primary">
                 <div className="max-w-7xl mx-auto px-4 py-2">
                     <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
                         

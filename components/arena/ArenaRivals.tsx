@@ -41,14 +41,14 @@ export const ArenaRivals = ({ currentA, currentB, allConsoles }: ArenaRivalsProp
                     <Link 
                         key={rival.slug}
                         href={`/arena?p1=${currentA || rival.slug}&p2=${rival.slug}`} // Compare Rival vs Current A (or Rival vs Rival if empty)
-                        className="group border border-white/5 bg-white/5 hover:bg-white/10 p-4 flex items-center justify-between transition-all hover:border-white/20"
+                        className="group flex items-center justify-between border border-border-subtle p-4 transition-colors hover:border-white/20 hover:bg-white/[0.04]"
                     >
                         <div className="flex flex-col">
                             <span className="font-mono text-xs text-blue-400 group-hover:text-blue-300 transition-colors uppercase">CHALLENGER</span>
                             <span className="font-pixel text-sm text-white truncate max-w-[150px]">{rival.name}</span>
                         </div>
                         <div className="text-white/20 group-hover:text-white transition-colors">
-                            <span className="text-xs font-mono border border-white/20 px-2 py-1 rounded-sm uppercase">VS</span>
+                            <span className="border border-white/20 px-2 py-1 font-mono text-xs uppercase">VS</span>
                         </div>
                     </Link>
                 ))}

@@ -11,14 +11,13 @@ interface GlanceComparisonProps {
 const StatBar = ({ value, max, color }: { value: number; max: number; color: 'blue' | 'red' }) => {
     if (!value || !max) return null;
     const percentage = Math.min(100, Math.max(0, (value / max) * 100));
-    const bgClass = color === 'blue' ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]';
 
     return (
-        <div className="w-full h-1.5 bg-white/10 mt-2 rounded-sm overflow-hidden flex justify-start">
-            <div 
-                className={`h-full ${bgClass} transition-all duration-1000 ease-out`} 
+        <div aria-hidden className="mt-2 flex h-1.5 w-full justify-start overflow-hidden bg-white/10">
+            <div
+                className={`h-full ${color === 'blue' ? 'bg-blue-500' : 'bg-red-500'}`}
                 style={{ width: `${percentage}%` }}
-            ></div>
+            />
         </div>
     );
 };
@@ -57,9 +56,11 @@ const TaleRow = ({
     // Styles - Updated to Blue/Red
     const baseColorA = "text-blue-400";
     const baseColorB = "text-red-400";
-    const winColorA = "text-blue-300 drop-shadow-[0_0_10px_rgba(96,165,250,0.8)] font-black scale-105";
-    const winColorB = "text-red-300 drop-shadow-[0_0_10px_rgba(248,113,113,0.8)] font-black scale-105";
-    const dimColor = "opacity-60 grayscale-[0.5]";
+    const winColorA = "text-blue-300 font-black";
+    const winColorB = "text-red-300 font-black";
+    // The losing side is the other half of the comparison, not a failure state, so it
+    // dims a little rather than being desaturated out of legibility.
+    const dimColor = "opacity-70";
 
     const classA = winner === 'A' ? winColorA : (winner === 'B' ? `${baseColorA} ${dimColor}` : baseColorA);
     const classB = winner === 'B' ? winColorB : (winner === 'A' ? `${baseColorB} ${dimColor}` : baseColorB);
@@ -67,11 +68,11 @@ const TaleRow = ({
     const maxVal = (showBar && numA && numB) ? Math.max(numA, numB) : 0;
 
     return (
-        <div className="group flex flex-col md:flex-row items-center justify-between py-5 border-b border-white/5 hover:bg-white/5 transition-colors relative">
+        <div className="group relative flex flex-col items-center justify-between border-b border-border-subtle py-5 transition-colors last:border-b-0 hover:bg-white/[0.04] md:flex-row">
             
             {/* Player A (Left) */}
             <div className="w-full md:w-5/12 text-center md:text-right order-2 md:order-1 px-4 flex flex-col items-center md:items-end">
-                <div className={`font-mono text-xl md:text-3xl font-bold leading-tight transition-all duration-300 ${classA}`}>
+                <div className={`font-mono text-xl md:text-3xl font-bold leading-tight tabular-nums ${classA}`}>
                     {valueA || '---'}
                     {winner === 'A' && <span className="ml-2 text-xs md:text-sm align-top">◀</span>}
                 </div>
@@ -86,15 +87,14 @@ const TaleRow = ({
 
             {/* Label (Center) */}
             <div className="w-full md:w-2/12 text-center order-1 md:order-2 mb-2 md:mb-0 relative">
-                <div className="absolute inset-0 bg-white/5 blur-xl rounded-full opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                <span className="font-pixel text-[10px] md:text-xs uppercase tracking-[0.2em] text-white/40 group-hover:text-white transition-colors relative z-10">
+                <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-text-muted transition-colors group-hover:text-white">
                     {label}
                 </span>
             </div>
 
             {/* Player B (Right) */}
             <div className="w-full md:w-5/12 text-center md:text-left order-3 md:order-3 px-4 flex flex-col items-center md:items-start">
-                <div className={`font-mono text-xl md:text-3xl font-bold leading-tight transition-all duration-300 ${classB}`}>
+                <div className={`font-mono text-xl md:text-3xl font-bold leading-tight tabular-nums ${classB}`}>
                     {winner === 'B' && <span className="mr-2 text-xs md:text-sm align-top">▶</span>}
                     {valueB || '---'}
                 </div>
@@ -133,9 +133,6 @@ export const GlanceComparison = ({ variantA, variantB }: GlanceComparisonProps) 
     const battA = variantA.battery_capacity_mah;
     const battB = variantB.battery_capacity_mah;
 
-console.log('GlanceComparison variantA emulation_profile:', variantA?.emulation_profile);
-console.log('GlanceComparison variantA emulation_profiles:', (variantA as any)?.emulation_profiles);
-
     // Helper to calculate highest tier
     const getHighestTier = (profile?: EmulationProfile | null) => {
         if (!profile) return null;
@@ -162,16 +159,12 @@ console.log('GlanceComparison variantA emulation_profiles:', (variantA as any)?.
     const tierB = getHighestTier(variantB?.emulation_profile || ((variantB as any)?.emulation_profiles ? (Array.isArray((variantB as any).emulation_profiles) ? (variantB as any).emulation_profiles[0] : (variantB as any).emulation_profiles) : null));
 
     return (
-        <div className="w-full mb-12 animate-fadeIn">
-            <div className="flex items-center gap-4 mb-8">
-                <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent flex-1"></div>
-                <h3 className="font-pixel text-xl md:text-3xl text-white text-center tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
-                    TALE OF THE TAPE
-                </h3>
-                <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent flex-1"></div>
-            </div>
+        <div className="mb-12 w-full">
+            <h2 className="mb-6 font-mono text-xl font-bold tracking-tight text-white md:text-2xl">
+                Tale of the tape
+            </h2>
 
-            <div className="flex flex-col border-t border-b border-white/10 bg-black/20 backdrop-blur-sm">
+            <div className="flex flex-col border border-border-subtle">
                 
                 {/* 0. Max Emulation (New) */}
                 <TaleRow

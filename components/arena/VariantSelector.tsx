@@ -67,7 +67,7 @@ export const VariantSelector: FC<VariantSelectorProps> = ({ variants, selectedSl
             </button>
 
             {isOpen && (
-                <div className={`absolute left-0 top-full mt-1 w-full md:w-48 max-h-48 overflow-y-auto bg-black border ${theme.border} shadow-xl`}>
+                <div className={`absolute left-0 top-full mt-1 max-h-48 w-full overflow-y-auto border bg-black md:w-48 ${theme.border}`}>
                     {variants.map(v => (
                         <div
                             key={v.id}
