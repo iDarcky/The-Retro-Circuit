@@ -4,7 +4,6 @@ import { fetchConsoleList, fetchConsoleAndVariantCounts } from '../../../app/act
 import { buildArenaPath } from '../../../lib/arena/resolve';
 import { toLandingDevice } from './toDevice';
 import LatestCarousel from './LatestCarousel';
-import FinderStart from './FinderStart';
 import ArenaBar from './ArenaBar';
 import NewsletterPanel from './NewsletterPanel';
 
@@ -62,18 +61,22 @@ export default async function LandingV2() {
                             comparable spec table. Eight questions gets you a pick and the runners-up.
                         </p>
 
+                        {/* Browse leads, the finder follows. The finder is still Beta and
+                          * drew 12 impressions in August, so it gets a button rather than
+                          * the primary action — enough to be findable, since search never
+                          * sends anyone to it. */}
                         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                             <Link
-                                href="/finder"
+                                href="/consoles"
                                 className="inline-flex items-center justify-center border border-violet-500 bg-violet-600 px-7 py-4 font-mono text-sm uppercase tracking-widest text-white transition-colors hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400"
                             >
-                                Start the finder
+                                Browse all {counts.consoles}
                             </Link>
                             <Link
-                                href="/consoles"
+                                href="/finder"
                                 className="inline-flex items-center justify-center border border-border-normal px-7 py-4 font-mono text-sm uppercase tracking-widest text-text-secondary transition-colors hover:border-white hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                             >
-                                Browse the catalogue
+                                Help me choose
                             </Link>
                         </div>
                     </div>
@@ -84,10 +87,14 @@ export default async function LandingV2() {
                 </div>
             </header>
 
-            {/* Question one, asked here rather than one page away */}
-            <FinderStart />
-
-            {/* Arena, as the tool itself */}
+            {/* Arena, as the tool itself, in the slot under the hero.
+              *
+              * The August export puts comparison pages ahead of everything else — they
+              * out-rank console pages 13.5 to 18.2 and convert nine times better — and
+              * the homepage is the only page on the site with clicks to spend (132 of
+              * them, against 11 everywhere else combined). So the best section goes to
+              * the strongest asset, and the matchup links below the picker feed the
+              * comparison URLs the index is not growing fast enough to reach. */}
             <ArenaBar consoles={searchable} matchups={matchups} deviceCount={counts.consoles} />
 
             {/* Shortlists — the self-serve lane, kept to one line */}
