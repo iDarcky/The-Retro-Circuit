@@ -42,26 +42,31 @@ export default function ArenaBar({ consoles, matchups, deviceCount }: ArenaBarPr
             <div className="mx-auto grid max-w-[1600px] gap-8 lg:grid-cols-12 lg:gap-12">
                 <div className="min-w-0 lg:col-span-4">
                     <h2 className="font-mono text-2xl font-bold tracking-tight text-white md:text-3xl">
-                        Put two devices side by side
+                        Head to head
                     </h2>
                     <p className="mt-3 max-w-md text-text-secondary">
-                        Every spec lined up in one table, down to the SoC generation and the
-                        emulation grade per system.
+                        Every spec in one table, down to the SoC generation and the emulation
+                        grade per system.
                     </p>
                 </div>
 
                 <div className="min-w-0 lg:col-span-8">
                     <div className="border border-border-subtle bg-bg-primary p-5 md:p-6">
+                        {/* Player 1 / Player 2 in blue and red is the one place the interface
+                          * speaks the subject's own language rather than the catalogue's, and
+                          * it reads instantly. Kept from the old QuickCompare; the shadow, the
+                          * rounded VS token and the corner brackets that grew on hover are not,
+                          * since DESIGN.md prohibits all three. */}
                         <div className="grid gap-4 md:grid-cols-[1fr_auto_1fr] md:items-end">
-                            <div className="flex flex-col gap-2">
-                                <label className="font-mono text-[11px] uppercase tracking-widest text-cyan-500">
-                                    First device
+                            <div className="flex min-w-0 flex-col gap-2">
+                                <label className="font-mono text-[11px] font-bold uppercase tracking-widest text-blue-400">
+                                    Player 1
                                 </label>
                                 <ConsoleSearch
                                     consoles={consoles}
                                     onSelect={(slug, name) => setLeft({ slug, name })}
                                     placeholder={`Search ${deviceCount} devices`}
-                                    themeColor="cyan"
+                                    themeColor="blue"
                                     currentSelection={left?.name}
                                     textColor="white"
                                     highlightSelection
@@ -70,20 +75,20 @@ export default function ArenaBar({ consoles, matchups, deviceCount }: ArenaBarPr
 
                             <span
                                 aria-hidden
-                                className="hidden pb-3 text-center font-mono text-xs uppercase tracking-widest text-text-muted md:block"
+                                className="hidden h-9 w-9 items-center justify-center border border-border-normal font-mono text-[11px] uppercase tracking-widest text-text-muted md:flex"
                             >
                                 vs
                             </span>
 
-                            <div className="flex flex-col gap-2">
-                                <label className="font-mono text-[11px] uppercase tracking-widest text-violet-400">
-                                    Second device
+                            <div className="flex min-w-0 flex-col gap-2">
+                                <label className="font-mono text-[11px] font-bold uppercase tracking-widest text-red-400">
+                                    Player 2
                                 </label>
                                 <ConsoleSearch
                                     consoles={consoles}
                                     onSelect={(slug, name) => setRight({ slug, name })}
                                     placeholder={`Search ${deviceCount} devices`}
-                                    themeColor="primary"
+                                    themeColor="red"
                                     currentSelection={right?.name}
                                     textColor="white"
                                     highlightSelection
@@ -95,7 +100,7 @@ export default function ArenaBar({ consoles, matchups, deviceCount }: ArenaBarPr
                             type="button"
                             onClick={compare}
                             disabled={!ready}
-                            className="mt-5 w-full border border-white bg-white px-6 py-3 font-mono text-sm uppercase tracking-widest text-black transition-colors hover:bg-transparent hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500 disabled:cursor-not-allowed disabled:border-border-normal disabled:bg-transparent disabled:text-text-muted"
+                            className="mt-5 w-full border border-white bg-white px-6 py-3.5 font-mono text-sm font-bold uppercase tracking-widest text-black transition-colors hover:bg-transparent hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500 disabled:cursor-not-allowed disabled:border-border-normal disabled:bg-transparent disabled:text-text-muted"
                         >
                             {ready ? 'Compare these two' : 'Pick two devices'}
                         </button>
