@@ -54,8 +54,12 @@ export default async function LandingPage() {
               * The traces are the reason the background is not flat black. They are the
               * site's own metaphor rather than decoration borrowed from somewhere else,
               * and they sit at 0.15 alpha with no glow, so they read as substrate and
-              * never compete with the headline. Violet here, cyan at the compare tool;
-              * nowhere else, because a texture on every section stops being a texture. */}
+              * never compete with the headline.
+              *
+              * The hero, and only the hero. They ran in the compare band too, and because
+              * it is the very next section and the drawing is the same at the same scale,
+              * the traces lined up straight through the rule between them — so the two
+              * bands had no visible boundary at all. That band steps tonally instead. */}
             <header className="relative overflow-hidden border-b border-border-subtle px-6 pb-10 pt-10 md:px-12 md:pb-14 md:pt-16">
                 <CircuitPattern
                     accentColor="violet"
@@ -67,11 +71,12 @@ export default async function LandingPage() {
                             Welcome to<br />
                             {/* The one gradient the design system allows: "No gradient text —
                               * solid only. Exception: hero brand name THE CIRCUIT." Violet to
-                              * cyan because those are the two signal colours the rest of the
-                              * site already runs on, brand into data, which on a circuit board
-                              * reads as current. It stays violet where background-clip:text is
-                              * unsupported, rather than rendering invisible. */}
-                            <span className="inline-block bg-gradient-to-r from-violet-500 via-violet-400 to-cyan-400 bg-clip-text text-violet-500 supports-[background-clip:text]:text-transparent">
+                              * blue because the compare block directly below opens with a blue
+                              * Player 1 — the gradient hands off to it rather than landing on a
+                              * fourth hue two hundred pixels above it. It stays violet where
+                              * background-clip:text is unsupported, rather than rendering
+                              * invisible. */}
+                            <span className="inline-block bg-gradient-to-r from-violet-500 via-violet-400 to-blue-400 bg-clip-text text-violet-500 supports-[background-clip:text]:text-transparent">
                                 the Circuit_
                             </span>
                         </h1>
