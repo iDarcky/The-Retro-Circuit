@@ -285,7 +285,7 @@ const FinderFlowContent = () => {
 
             {stepParam === 'conflict' && conflictState && (
                 <div className="max-w-2xl mx-auto p-8 bg-zinc-900 border border-orange-500/50 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-red-500"></div>
+                    <div aria-hidden className="absolute left-0 top-0 h-1 w-full bg-orange-500"></div>
                     <h2 className="text-2xl font-pixel text-orange-400 mb-4">Your picks clash a bit — here’s the trade-off</h2>
                     <p className="text-zinc-300 font-mono text-sm mb-8 leading-relaxed">
                         Devices that can run <strong className="text-white">{conflictState.tierName}</strong> reliably start above <strong className="text-white">${conflictState.minBudget}</strong>.

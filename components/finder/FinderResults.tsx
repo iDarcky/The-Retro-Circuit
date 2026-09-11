@@ -44,7 +44,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
     return (
       <div className="w-full h-96 flex flex-col items-center justify-center p-4">
         <div className="w-16 h-16 border-4 border-white/20 border-t-white rounded-none animate-spin mb-6"></div>
-        <div className="font-pixel text-white text-xs animate-pulse tracking-widest">CALCULATING MATCHES...</div>
+        <div role="status" className="font-mono text-sm tracking-widest text-white">Matching devices…</div>
       </div>
     );
   }
@@ -101,7 +101,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                 alt={winner.name}
                 width={600}
                 height={400}
-                className="w-full h-auto object-contain drop-shadow-2xl"
+                className="h-auto w-full object-contain"
                 priority
               />
             ) : (
@@ -191,7 +191,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                     alt={consoleItem.name}
                     width={300}
                     height={200}
-                    className="max-h-full w-auto object-contain drop-shadow-lg opacity-80 group-hover:opacity-100 transition-opacity"
+                    className="max-h-full w-auto object-contain opacity-80 transition-opacity group-hover:opacity-100"
                   />
                 ) : (
                   <span className="font-pixel text-4xl text-zinc-800">?</span>
@@ -234,7 +234,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
 
                   {/* COMPARE BUTTON */}
                   <Link href={`/arena/${winner.slug}-vs-${consoleItem.slug}`} className="w-full">
-                    <button className="w-full py-3 border border-white/20 text-zinc-400 text-xs font-mono uppercase hover:bg-white hover:text-black hover:border-white transition-all">
+                    <button className="w-full py-3 border border-white/20 text-zinc-400 text-xs font-mono uppercase hover:border-white hover:bg-white hover:text-black transition-colors">
                       COMPARE VS WINNER
                     </button>
                   </Link>
@@ -255,7 +255,7 @@ export const FinderResults: FC<FinderResultsProps> = ({ onRestart }) => {
                         placement="finder_alternative"
                         className="w-full"
                       >
-                        <button className="w-full py-3 bg-white text-black text-xs font-mono font-bold uppercase hover:bg-zinc-200 transition-all">
+                        <button className="w-full py-3 bg-white text-black text-xs font-mono font-bold uppercase hover:bg-zinc-200 transition-colors">
                           {consoleItem.amazon_asin ? 'BUY NOW' : 'FIND ON AMAZON'}
                         </button>
                       </AffiliateLink>

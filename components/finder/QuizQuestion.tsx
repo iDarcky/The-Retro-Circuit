@@ -75,7 +75,7 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
   const isNextDisabled = selectedIds.length === 0;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 w-full animate-in fade-in slide-in-from-bottom-4 duration-500 pb-24">
+    <div className="mx-auto w-full max-w-3xl px-4 pb-24 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-300">
       {/* Header Section */}
       <div className="mb-12 text-center">
         <div className="flex items-center justify-center gap-3 mb-6">
@@ -95,19 +95,25 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
             )}
         </div>
 
-        <h2 className="text-2xl md:text-4xl font-pixel text-white mb-4 leading-relaxed uppercase">
+        <h2
+          id={`quiz-question-${stepNumber}`}
+          className="text-balance font-mono text-2xl font-bold leading-tight tracking-tight text-white md:text-3xl"
+        >
           {question}
         </h2>
 
         {subtitle && (
-          <p className="text-zinc-400 font-mono text-sm md:text-base max-w-xl mx-auto leading-relaxed">
+          <p className="mx-auto mt-4 max-w-xl font-sans text-sm leading-relaxed text-zinc-400 md:text-base">
             {subtitle}
           </p>
         )}
       </div>
 
       {/* Options Grid */}
-      <div className={clsx(
+      <div
+        role={multiSelect ? 'group' : 'radiogroup'}
+        aria-labelledby={`quiz-question-${stepNumber}`}
+        className={clsx(
         "grid gap-4 mb-12",
         // Adapt grid based on option count/length for better Swiss layouts
         options.length <= 4
@@ -120,8 +126,12 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
             <button
                 key={option.id}
                 onClick={() => handleOptionClick(option.id)}
+                role={multiSelect ? undefined : 'radio'}
+                aria-checked={multiSelect ? undefined : isSelected}
+                aria-pressed={multiSelect ? isSelected : undefined}
                 className={clsx(
-                "group relative text-left transition-all duration-200 focus:outline-none p-6 border",
+                "group relative touch-manipulation border p-6 text-left transition-colors duration-200",
+                "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500",
                 // Swiss Interactive States
                 isSelected
                     ? "bg-white border-white text-black"
@@ -167,11 +177,11 @@ export const QuizQuestion: FC<QuizQuestionProps> = ({
             onClick={handleNext}
             disabled={isNextDisabled}
             className={clsx(
-                "min-w-[200px] font-pixel text-sm py-4",
-                isNextDisabled && "opacity-50 grayscale cursor-not-allowed"
+                "min-w-[200px] py-4 font-mono text-sm font-bold uppercase tracking-widest",
+                isNextDisabled && "cursor-not-allowed opacity-50"
             )}
          >
-            {stepNumber === totalSteps ? 'REVEAL RESULTS' : 'NEXT STEP ->'}
+            {stepNumber === totalSteps ? 'See results' : 'Next question'}
          </SwissButton>
       </div>
 
