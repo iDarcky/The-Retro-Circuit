@@ -4,6 +4,10 @@ import { FinderFlow } from '@/components/finder/FinderFlow';
 export const metadata: Metadata = {
     title: { absolute: 'Find the Best Retro Handheld for You | The Retro Circuit Quiz' },
     description: "Not sure which retro handheld to buy? Answer a few quick questions about your budget and emulation needs, and we'll match you with the perfect device.",
+    /* Every step of the quiz is the same page with different search params — ?step=q4,
+     * ?profile=…&budget_band=… and so on. Without this each of those is a separate URL
+     * competing with the others. */
+    alternates: { canonical: '/finder' },
 };
 
 /* Question one is still the landing.

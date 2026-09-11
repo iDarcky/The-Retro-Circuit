@@ -8,6 +8,7 @@ import { BEST_OF_COLLECTIONS, getCollection, selectForCollection } from '../../.
 import { getBuyUrl } from '../../../lib/affiliate';
 import AffiliateLink from '../../../components/console/AffiliateLink';
 import { formatReleaseDate } from '../../../lib/utils/date-formatter';
+import { buildBreadcrumbLd } from '../../../lib/seo/breadcrumbs';
 
 export const revalidate = false;
 
@@ -64,9 +65,17 @@ export default async function BestOfPage(props: Props) {
         })),
     };
 
+    // The visual breadcrumb below has existed for a while; this is the same trail in the
+    // markup that actually reaches a search result.
+    const breadcrumbLd = buildBreadcrumbLd([
+        { name: 'Buying Guides', path: '/best' },
+        { name: collection.title, path: `/best/${collection.slug}` },
+    ]);
+
     return (
         <div className="w-full max-w-5xl mx-auto px-6 md:px-12 py-16 md:py-24">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
 
             <nav className="mb-8 font-mono text-[10px] uppercase tracking-widest text-gray-500">
                 <Link href="/best" className="hover:text-white transition-colors">Buying Guides</Link>

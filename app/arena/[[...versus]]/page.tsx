@@ -8,6 +8,8 @@ import { fetchArenaPairs } from '../../../lib/arena/pairs';
 import { parseToken, splitVersus, buildArenaToken } from '../../../lib/arena/resolve';
 import { normalizeVariant, unwrapRelation } from '../../../lib/normalize';
 import ArenaComparisonClient from '../../../components/arena/ArenaComparisonClient';
+import { buildBreadcrumbLd } from '../../../lib/seo/breadcrumbs';
+import { buildArenaPath } from '../../../lib/arena/resolve';
 
 /* Build the comparison pages instead of waiting for a visitor to ask for one.
  *
@@ -170,10 +172,30 @@ export default async function ArenaVersusPage({ params }: { params: Promise<{ ve
         loading: false
     } : undefined;
 
+    const nameOf = (r: typeof r1) =>
+        [r?.details?.manufacturer?.name, r?.details?.name].filter(Boolean).join(' ').trim();
+
+    const breadcrumbLd = buildBreadcrumbLd([
+        { name: 'Arena', path: '/arena' },
+        {
+            name: `${nameOf(r1) || parts[0]} vs ${nameOf(r2) || parts[1]}`,
+            path: buildArenaPath(
+                buildArenaToken(r1?.p ?? parts[0], r1?.v ?? null),
+                buildArenaToken(r2?.p ?? parts[1], r2?.v ?? null)
+            ),
+        },
+    ]);
+
     return (
-        <ArenaComparisonClient
-            initialSelectionA={initialSelectionA}
-            initialSelectionB={initialSelectionB}
-        />
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+            />
+            <ArenaComparisonClient
+                initialSelectionA={initialSelectionA}
+                initialSelectionB={initialSelectionB}
+            />
+        </>
     );
 }
