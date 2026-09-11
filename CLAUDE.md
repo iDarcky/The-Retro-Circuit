@@ -71,7 +71,7 @@ pnpm lint     # ESLint
 - `Manufacturer` → many `Consoles` → many `Console_Variants` → `Emulation_Profiles`
 - Server actions: `app/actions/` (consoles.ts, manufacturers.ts, search.ts, etc.)
 - Supabase returns 1:1 relations as arrays — normalization helpers unwrap them (see `app/actions/consoles.ts`)
-- Specs live on the **variant**, not the console. `device_category` (`emulation` | `pc_gaming` | `fpga` | `legacy`) separates Android/Chinese handhelds from OEM devices and PC handhelds.
+- Specs live on the **variant**, not the console. `device_category` (`emulation` | `pc_gaming` | `fpga` | `legacy`) separates Android/Chinese handhelds from OEM devices and PC handhelds. **It is plain nullable `text` with no check constraint** — not an enum, despite reading like one. A hand-typed `"PC Gamimg Handheld"` sat on the published Ayn Thor until Sep 2026 and was invisible to every filter that matched the four real values.
 - Structured platform fields on `console_variants`: `os_family` (enum), `os_version`, `soc_vendor` / `soc_name` / `soc_gen`, `gpu_vendor` / `gpu_name`, `cpu_arch` (enum), `vulkan_support`, `gpu_driver`, `benchmark_score`. Free-text `os` / `cpu_architecture` / `soc` / `gpu_model` are kept as display strings — **filter on the structured columns**, the free text has typos (`"Andorid 13"`).
 - More structured columns replaced imported free text (Aug 2026): `cooling_type` + `cooling_fan_count` + `cooling_*` booleans, `speaker_count` / `speaker_config` / `speaker_placement`, `charge_port*`, `expansion_slot_count` / `expansion_card_type` / `expansion_speed_class`, `lens_material` / `lens_laminated`. The originals (`cooling_solution`, `audio_speakers`, `microsd_type`, `screen_lens`) survive as fallbacks and are dropped by `20260828170000_drop_legacy_input_columns.sql.pending`.
 - `cpu_clusters` is a jsonb array — `[{count, core, clock_mhz, uarch_year}]`, fastest first. Rendered one line per cluster. Compare generation before clock: 2 GHz Gen 8 beats 3 GHz Gen 1.
@@ -142,6 +142,7 @@ pnpm lint     # ESLint
 - 10 published consoles have no description. `buildSummary` in `lib/scoring/verdict.ts` drafts a spec-derived one from the emulation matrix, but **opinionated copy must be human-written** — do not mass-generate device reviews.
 - 362 of 517 variants have no `slug`, so their configurations cannot be addressed or compared individually. Some existing slugs are also terse (`8128`, `161t`) and would read better as `8gb-128gb` — worth fixing before those URLs are indexed.
 - The `supabase/migrations/` folder is a **record, not a runner**: migrations are applied through the Supabase MCP, and some file names drift from the applied version numbers. `supabase_migrations.schema_migrations` is the source of truth for what is actually applied.
+- `consoles.device_category` has no check constraint, so a typo in the admin form becomes a category no filter matches. Adding `check (device_category in ('emulation','pc_gaming','fpga','legacy'))` would close it — that is a migration, so back up first.
 - `eslint-config-next` pinned at 14 (v16 needs an ESLint 9 flat-config migration).
 
 ---

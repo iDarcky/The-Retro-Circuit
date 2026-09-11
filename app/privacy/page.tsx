@@ -4,6 +4,7 @@ import LegalMarkdownRenderer from '../../components/legal/LegalMarkdownRenderer'
 import { getSystemVersion } from '../../app/actions/roadmap';
 
 export const metadata = {
+   alternates: { canonical: '/privacy' },
   title: 'Privacy Policy | The Retro Circuit',
   description: 'Privacy Policy detailing data handling and user privacy practices at The Retro Circuit.',
   robots: { index: false, follow: true }

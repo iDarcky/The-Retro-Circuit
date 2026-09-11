@@ -4,6 +4,7 @@ import { siteConfig } from '../../config/site';
 import LegalMarkdownRenderer from '../../components/legal/LegalMarkdownRenderer';
 
 export const metadata = {
+   alternates: { canonical: '/terms' },
   title: 'Terms of Service | The Retro Circuit',
   description: 'Terms of Service and usage conditions for The Retro Circuit database.',
   robots: { index: false, follow: true }

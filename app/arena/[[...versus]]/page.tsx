@@ -9,6 +9,7 @@ import { parseToken, splitVersus, buildArenaToken } from '../../../lib/arena/res
 import { normalizeVariant, unwrapRelation } from '../../../lib/normalize';
 import ArenaComparisonClient from '../../../components/arena/ArenaComparisonClient';
 import { buildBreadcrumbLd } from '../../../lib/seo/breadcrumbs';
+import { siteConfig } from '../../../config/site';
 import { buildArenaPath } from '../../../lib/arena/resolve';
 
 /* Build the comparison pages instead of waiting for a visitor to ask for one.
@@ -175,6 +176,35 @@ export default async function ArenaVersusPage({ params }: { params: Promise<{ ve
     const nameOf = (r: typeof r1) =>
         [r?.details?.manufacturer?.name, r?.details?.name].filter(Boolean).join(' ').trim();
 
+    /* The two devices, as an ItemList of Products.
+     *
+     * Deliberately not a bare Product: Google awards the Product rich result to a page
+     * with one primary product, and a versus page has two by definition — claiming either
+     * as the page's product would be a misdescription. An ItemList says what this page
+     * actually is. Treat the payoff as entity clarity rather than a snippet.
+     *
+     * No offers block either. The only price on record is the launch price, and a
+     * schema.org Offer asserts a current one. /consoles/[slug] carries the offers. */
+    const productListLd = {
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        itemListElement: [r1, r2]
+            .filter((r): r is NonNullable<typeof r1> => !!r?.details)
+            .map((r, index) => ({
+                '@type': 'ListItem',
+                position: index + 1,
+                item: {
+                    '@type': 'Product',
+                    name: [r.details.manufacturer?.name, r.details.name].filter(Boolean).join(' '),
+                    ...(r.details.manufacturer?.name
+                        ? { brand: { '@type': 'Brand', name: r.details.manufacturer.name } }
+                        : {}),
+                    ...(r.details.image_url ? { image: r.details.image_url } : {}),
+                    url: `${siteConfig.url}/consoles/${r.details.slug}`,
+                },
+            })),
+    };
+
     const breadcrumbLd = buildBreadcrumbLd([
         { name: 'Arena', path: '/arena' },
         {
@@ -192,6 +222,12 @@ export default async function ArenaVersusPage({ params }: { params: Promise<{ ve
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
             />
+            {productListLd.itemListElement.length > 0 && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(productListLd) }}
+                />
+            )}
             <ArenaComparisonClient
                 initialSelectionA={initialSelectionA}
                 initialSelectionB={initialSelectionB}

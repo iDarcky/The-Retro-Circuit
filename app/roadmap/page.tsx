@@ -3,6 +3,7 @@ import RoadmapView from '../../components/roadmap/RoadmapView';
 import { fetchRoadmapItems, getSystemVersion, fetchReleases } from '../../app/actions/roadmap';
 
 export const metadata: Metadata = {
+   alternates: { canonical: '/roadmap' },
   title: 'Project Roadmap | The Retro Circuit',
   description: 'Track our progress as we build the ultimate handheld gaming database. See what features are coming next.',
 };

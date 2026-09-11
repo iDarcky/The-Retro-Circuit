@@ -12,6 +12,7 @@ import { fetchPublicNews } from '../actions/news';
 export const revalidate = false;
 
 export const metadata: Metadata = {
+   alternates: { canonical: '/news' },
    title: 'Transmission Feed | The Retro Circuit',
    description: 'Latest hardware signals, reviews, and news from the retro handheld sector. Direct updates from the control center.',
    openGraph: {
