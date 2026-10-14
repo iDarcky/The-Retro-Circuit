@@ -1,4 +1,7 @@
--- NOT YET APPLIED. Waiting on the owner's go-ahead (production permission change).
+-- APPLIED 2026-10-14 via the Supabase MCP, as six migrations (revoke_rpc_on_internal_functions,
+-- profiles_update_own_only, profiles_role_not_user_editable, catalogue_writes_admin_only,
+-- content_writes_admin_only). The live version uses ALTER POLICY on the existing policy names
+-- instead of drop + create, so policy names differ from the ones below; the rules are the same.
 --
 -- 2026-10-14 security pass. Today several policies let ANY signed-in user (and on
 -- emulation_profiles, anyone at all, signed in or not) write the catalogue, and the

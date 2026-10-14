@@ -1,4 +1,6 @@
--- NOT YET APPLIED. Waiting on the owner's go-ahead.
+-- APPLIED 2026-10-14 (as timestamps_checks_and_defaults) EXCEPT sections 3 (link dedupe + unique),
+-- 4 and 5, which remove data or schema and are kept in
+-- 20261014232000_remove_duplicates_and_empty_column.sql.pending.
 --
 -- 2026-10-14 cleanup from the database review. Additive rules plus two small removals.
 -- Every CHECK below was verified against live data first: no current row violates one.
@@ -29,20 +31,10 @@ alter table public.consoles
   add constraint chk_device_category
   check (device_category is null or device_category in ('emulation', 'pc_gaming', 'fpga', 'legacy'));
 
--- 3. Uniqueness. One console_links row was imported twice (same console, same URL, same
--- timestamp, both unapproved); keep one.
-delete from public.console_links a
-  using public.console_links b
-  where a.console_id = b.console_id and a.url = b.url and a.id > b.id;
-alter table public.console_links add constraint console_links_console_url_key unique (console_id, url);
+-- 3. Uniqueness.
 -- Arena and configuration URLs are built from (console, variant slug).
 alter table public.console_variants add constraint console_variants_console_slug_key unique (console_id, slug);
 
--- 4. Duplicate index: the primary key already covers variant_id.
-alter table public.variant_input_profile drop constraint if exists variant_input_profile_variant_id_key;
-
--- 5. consoles.setup_ease is empty on all rows and read by nothing; setup_ease_score holds the data.
-alter table public.consoles drop column if exists setup_ease;
 
 -- 6. Launch prices as money, like price_avg_usd.
 alter table public.console_variants alter column price_launch_usd type numeric(10,2);
