@@ -19,7 +19,32 @@ if (redisUrl && redisToken) {
   });
 }
 
+/* One comparison, one URL.
+ *
+ * Google ranked the reversed order (`ayaneo-pocket-vert-vs-analogue-pocket`) and ignored
+ * the sorted URL the sitemap and canonical tag named, splitting signals across two
+ * addresses. A redirect thrown from the page arrives after the streamed shell, so it is a
+ * 200 with a client-side redirect; only middleware can answer with a real 308. Pure string
+ * work, no auth or rate limiting, and the sort matches lib/arena/resolve.ts buildArenaPath. */
+function arenaOrderRedirect(request: NextRequest): NextResponse | null {
+  const match = request.nextUrl.pathname.match(/^\/arena\/([^/]+)$/);
+  if (!match) return null;
+  let segment: string;
+  try { segment = decodeURIComponent(match[1]); } catch { return null; }
+  const sides = segment.split('-vs-');
+  if (sides.length !== 2 || !sides[0] || !sides[1]) return null;
+  const sorted = [...sides].sort();
+  if (sorted[0] === sides[0]) return null;
+  const url = request.nextUrl.clone();
+  url.pathname = `/arena/${sorted.join('-vs-')}`;
+  return NextResponse.redirect(url, 308);
+}
+
 export async function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith('/arena/')) {
+    return arenaOrderRedirect(request) ?? NextResponse.next();
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -152,5 +177,7 @@ export const config = {
     '/profile/:path*',
     '/login',
     '/design/:path*',
+    // Arena only for the pair-order redirect above; it returns before auth and rate limiting.
+    '/arena/:path+',
   ],
 };

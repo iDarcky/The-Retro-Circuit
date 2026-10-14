@@ -84,9 +84,8 @@ export const metadata: Metadata = {
     description: 'The hub for retro handheld consoles. Compare specs, find your perfect device with The Finder, and go head-to-head in Arena VS.',
     images: ['/og-v2.png'],
   },
-  alternates: {
-    canonical: siteConfig.url,
-  },
+  // No site-wide canonical. Every page that inherited this one told Google it was a copy
+  // of the homepage, and Google merged /arena into it. Pages declare their own instead.
 };
 
 export default async function RootLayout({

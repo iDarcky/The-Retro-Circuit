@@ -5,6 +5,7 @@ import { fetchRoadmapItems, getSystemVersion, fetchReleases } from '../../app/ac
 export const metadata: Metadata = {
   title: 'Project Roadmap | The Retro Circuit',
   description: 'Track our progress as we build the ultimate handheld gaming database. See what features are coming next.',
+  alternates: { canonical: '/roadmap' },
 };
 
 export default async function RoadmapPage() {

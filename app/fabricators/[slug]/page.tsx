@@ -45,6 +45,9 @@ export async function generateMetadata(props: Props) {
             alternates: {
                 canonical: `/fabricators/${params.slug}`,
             },
+            // A brand with no description is a heading over a one-item list, which Google
+            // reported as a soft 404 (game-kiddy). Kept out of the index until it has copy.
+            ...(profile?.description?.trim() ? {} : { robots: { index: false, follow: true } }),
         };
     } catch (e) {
         return { title: 'Fabricator Archive | The Retro Circuit' };

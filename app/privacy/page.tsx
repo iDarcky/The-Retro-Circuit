@@ -6,7 +6,8 @@ import { getSystemVersion } from '../../app/actions/roadmap';
 export const metadata = {
   title: 'Privacy Policy | The Retro Circuit',
   description: 'Privacy Policy detailing data handling and user privacy practices at The Retro Circuit.',
-  robots: { index: false, follow: true }
+  robots: { index: false, follow: true },
+  alternates: { canonical: '/privacy' },
 };
 
 export default async function PrivacyPage() {

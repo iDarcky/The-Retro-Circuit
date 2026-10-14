@@ -87,7 +87,7 @@ pnpm lint     # ESLint
 - Only `/admin/*`, `/profile`, `/unsubscribe` should be dynamic (`ƒ`). Verify with the `pnpm build` route table.
 - Pages that enumerate the catalogue at build time (`/arena/[[...versus]]`, `/consoles/[facet]/[value]`, `/consoles/[slug]/opengraph-image`, `/best/[slug]`) use `generateStaticParams` with `dynamicParams` left on, so anything outside the prebuilt set still renders on demand rather than 404ing.
 - The OG card renderer runs through Satori, which has two rules worth remembering: a `div` with more than one child needs an explicit `display`, and it **cannot decode WebP** (the uploader writes WebP, so `OG_RENDERABLE` filters those URLs out). The drawing lives in `lib/og/console-card.tsx` on purpose — it is a pure function so it can be exercised without a database.
-- Middleware is scoped to `/admin`, `/profile`, `/login`, `/design`. Security headers + CSP are set in `next.config.mjs` `headers()` so they still apply everywhere.
+- Middleware is scoped to `/admin`, `/profile`, `/login`, `/design`, plus `/arena/*` for the pair-order 308 only (it returns before auth and rate limiting). Security headers + CSP are set in `next.config.mjs` `headers()` so they still apply everywhere.
 
 ## Bulk data import
 - `scripts/import-consoles.ts` — JSON → consoles/variants/emulation (validates first, `--dry-run`, imports as **draft**).
@@ -118,6 +118,7 @@ pnpm lint     # ESLint
 | `lib/scoring/verdict.ts` | Spec-derived verdict, summary and tags. `noEmDash` is applied to everything it emits |
 | `lib/arena/resolve.ts` | Arena URL grammar — `console~variant`, `-vs-`, and legacy-token fallback |
 | `lib/arena/pairs.ts` | Which comparison pages get prebuilt, shared by the route and the sitemap |
+| `lib/arena/indexable.ts` | The curated comparisons in the sitemap. Configuration pairs and pairs outside `pairs.ts` are noindex |
 | `lib/config/facets.ts` | `/consoles/chip\|os\|vendor/[value]` facet pages |
 | `lib/config/sheet-order.ts` | The variant editor's spreadsheet-order layout (37 steps over 112 keys) |
 

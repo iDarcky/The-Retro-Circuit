@@ -3,6 +3,10 @@ export const revalidate = false;
 import LandingPage from '@/components/landing/LandingPage';
 import { getSystemVersion } from './actions/roadmap';
 
+export const metadata = {
+  alternates: { canonical: '/' },
+};
+
 export default async function ControlRoomPage() {
   const version = await getSystemVersion();
   return (

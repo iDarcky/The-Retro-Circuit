@@ -8,6 +8,7 @@ import { fetchConsoleAndVariantCounts } from '../../app/actions/consoles';
 export const metadata = {
   title: 'About | The Retro Circuit',
   description: "The story behind The Retro Circuit. Why it was built, what it stands for, and where it's going.",
+  alternates: { canonical: '/about' },
 };
 
 export default async function AboutPage() {

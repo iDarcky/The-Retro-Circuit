@@ -25,16 +25,18 @@ type Props = {
 // Memoized per-request so generateMetadata and the page body share a single DB fetch
 // for the same slug instead of querying twice.
 const resolveConsoleSlug = cache(async (rawSlug: string): Promise<{ data: ConsoleDetails | null }> => {
-  try {
-    const exactMatch = await fetchConsoleBySlug(rawSlug, false);
-    if (exactMatch && exactMatch.data) {
-      return { data: exactMatch.data };
-    }
-    return { data: null };
-  } catch (error) {
-    console.error("[resolveConsoleSlug] Error:", error);
-    return { data: null };
+  const exactMatch = await fetchConsoleBySlug(rawSlug, false);
+  if (exactMatch && exactMatch.data) {
+    return { data: exactMatch.data };
   }
+  // Only a genuine miss may become a 404. Pages are static with revalidate = false, so
+  // a query that failed at build time used to be frozen as a not-found page until the
+  // next deploy: /consoles/asus-rog-ally is published but Google saw noindex and a
+  // homepage canonical. Throwing fails the build or returns a 500, which is retried.
+  if (exactMatch?.error && exactMatch.error.message !== 'Console not found in database') {
+    throw new Error(`[resolveConsoleSlug] ${rawSlug}: ${exactMatch.error.message}`);
+  }
+  return { data: null };
 });
 
 export async function generateMetadata(props: Props) {
@@ -142,14 +144,8 @@ export default async function ConsoleSpecsPage(props: Props) {
   const params = await props.params;
   const slug = decodeURIComponent(params.slug);
 
-  let consoleData = null;
-
-  try {
-    const { data } = await resolveConsoleSlug(slug);
-    consoleData = data;
-  } catch (err: any) {
-    console.error("[ConsoleSpecsPage] Critical Error:", err);
-  }
+  // A failed query throws through to the error page instead of becoming a cached 404.
+  const { data: consoleData } = await resolveConsoleSlug(slug);
 
   if (!consoleData) {
     notFound();

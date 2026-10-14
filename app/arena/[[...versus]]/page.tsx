@@ -5,6 +5,7 @@ export const dynamicParams = true;
 
 import { supabaseAnon } from '../../../lib/supabase/anon';
 import { fetchArenaPairs } from '../../../lib/arena/pairs';
+import { INDEXABLE_ARENA_PAIRS } from '../../../lib/arena/indexable';
 import { parseToken, splitVersus, buildArenaToken } from '../../../lib/arena/resolve';
 import { normalizeVariant, unwrapRelation } from '../../../lib/normalize';
 import ArenaComparisonClient from '../../../components/arena/ArenaComparisonClient';
@@ -15,9 +16,15 @@ import ArenaComparisonClient from '../../../components/arena/ArenaComparisonClie
  * comparison through an internal link from the finder or the homepage compare box. This
  * is the page type carrying most of the site's non-brand clicks. */
 export async function generateStaticParams() {
-    const pairs = await fetchArenaPairs();
+    const pairs = new Set([...await fetchArenaPairs(), ...INDEXABLE_ARENA_PAIRS]);
     // The bare hub, then one entry per pair.
-    return [{ versus: [] as string[] }, ...pairs.map(pair => ({ versus: [pair] }))];
+    return [{ versus: [] as string[] }, ...Array.from(pairs, pair => ({ versus: [pair] }))];
+}
+
+async function isIndexablePair(key: string): Promise<boolean> {
+    if (INDEXABLE_ARENA_PAIRS.has(key)) return true;
+    if (key.includes('~')) return false;
+    return (await fetchArenaPairs()).includes(key);
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ versus?: string[] }> }) {
@@ -26,6 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ versus?: 
     const hub = {
         title: 'Arena VS | Compare Any Two Handhelds | The Retro Circuit',
         description: 'Pick any two retro handhelds and compare them head-to-head. Specs, performance, price, and emulation targets.',
+        alternates: { canonical: '/arena' },
     };
     if (!versus || versus.length === 0) return hub;
 
@@ -66,10 +74,15 @@ export async function generateMetadata({ params }: { params: Promise<{ versus?: 
         ? `Two configurations of the same device compared: what changes between ${a.label} and ${b.label}, and what the step costs.`
         : `Head-to-head spec comparison: ${a.label} vs ${b.label}. Performance, price, and emulation targets.`;
 
+    const canonicalKey = [a.token, b.token].sort().join('-vs-');
     return {
         title,
         description,
-        alternates: { canonical: `/arena/${[a.token, b.token].sort().join('-vs-')}` },
+        alternates: { canonical: `/arena/${canonicalKey}` },
+        // Noindex only what nobody searches for: configuration pairs (`~`) and pairings
+        // outside the generated list (pairs.ts). The curated set is always indexable; the
+        // rest of the generated pairs stay indexable but are left out of the sitemap.
+        ...(await isIndexablePair(canonicalKey) ? {} : { robots: { index: false, follow: true } }),
         openGraph: { title, description },
     };
 }
