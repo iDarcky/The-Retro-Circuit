@@ -303,13 +303,13 @@ export interface ConsoleVariant {
   other_connectivity?: string;
   cellular_connectivity?: string;
   video_out?: string | null;
-  haptics?: string;
 
   // Deprecated Fields Removed:
   // input_layout, other_buttons, dpad_mechanism, dpad_shape,
   // thumbstick_mechanism, thumbstick_layout, thumbstick_cap, has_stick_clicks,
   // shoulder_layout, bumper_mechanism, trigger_mechanism, action_button_mechanism,
-  // has_back_buttons, has_keyboard (moved to profile), gyro (moved to profile as has_gyro)
+  // has_back_buttons, has_keyboard (moved to profile), gyro (moved to profile as has_gyro),
+  // haptics (moved to profile as has_rumble)
 
   width_mm?: number;
   height_mm?: number;
