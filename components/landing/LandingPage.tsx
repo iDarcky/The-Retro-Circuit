@@ -45,9 +45,6 @@ export default async function LandingPage({ version }: LandingPageProps) {
             className="object-cover opacity-40 [mask-image:linear-gradient(to_right,rgba(0,0,0,1)_0%,rgba(0,0,0,0.5)_100%)]"
             priority
           />
-          {/* Progressive Blur Layer: Blurs left (text area), sharpens right */}
-          <div className="absolute inset-0 backdrop-blur-[4px] [mask-image:linear-gradient(to_right,black_0%,transparent_80%)]"></div>
-
           {/* Gradient Overlay for Text Readability */}
           <div className="absolute inset-0 bg-gradient-to-r from-bg-primary via-bg-primary/80 to-transparent" />
         </div>
