@@ -280,8 +280,6 @@ export const ConsoleVariantSchema = z.object({
   other_connectivity: safeString,
   cellular_connectivity: safeString,
   video_out: safeString,
-  haptics: safeString,
-  gyro: safeBoolean, // Legacy field, kept but usually unused
 
   // CONTROLS - REPLACED BY VARIANT INPUT PROFILE (below)
   // We remove the old fields to prevent Zod from stripping new ones if we merged,

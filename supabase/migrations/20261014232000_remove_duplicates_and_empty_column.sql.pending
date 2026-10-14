@@ -1,0 +1,16 @@
+-- NOT YET APPLIED. These statements delete data or schema, so the Supabase MCP asks for a
+-- confirmation this session could not give. Apply from the Supabase SQL editor (a backup is
+-- in schema backup_20261014), then rename to .sql.
+
+-- One console_links row was imported twice (same console, same URL, same timestamp, both
+-- unapproved); keep one, then stop it happening again.
+delete from public.console_links a
+  using public.console_links b
+  where a.console_id = b.console_id and a.url = b.url and a.id > b.id;
+alter table public.console_links add constraint console_links_console_url_key unique (console_id, url);
+
+-- Duplicate index: the primary key already covers variant_id.
+alter table public.variant_input_profile drop constraint if exists variant_input_profile_variant_id_key;
+
+-- consoles.setup_ease is empty on all rows and read by nothing; setup_ease_score holds the data.
+alter table public.consoles drop column if exists setup_ease;
