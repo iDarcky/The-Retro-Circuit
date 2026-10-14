@@ -54,7 +54,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
     default: siteConfig.name,
-    template: `%s | ${siteConfig.name}`,
+    // Every page title already ends in "| The Retro Circuit", so the template adds nothing.
+    // Appending siteConfig.name here produced "X | The Retro Circuit | The Retro Circuit |
+    // Ultimate Retro Console Comparisons & Specs", which Google truncates mid-brand.
+    template: '%s',
   },
   description: 'The hub for retro handheld consoles. Compare specs, find your perfect device with The Finder, and go head-to-head in Arena VS.',
   icons: {
