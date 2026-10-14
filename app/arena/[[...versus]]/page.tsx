@@ -21,6 +21,12 @@ export async function generateStaticParams() {
     return [{ versus: [] as string[] }, ...Array.from(pairs, pair => ({ versus: [pair] }))];
 }
 
+async function isIndexablePair(key: string): Promise<boolean> {
+    if (INDEXABLE_ARENA_PAIRS.has(key)) return true;
+    if (key.includes('~')) return false;
+    return (await fetchArenaPairs()).includes(key);
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ versus?: string[] }> }) {
     const { versus } = await params;
 
@@ -73,9 +79,10 @@ export async function generateMetadata({ params }: { params: Promise<{ versus?: 
         title,
         description,
         alternates: { canonical: `/arena/${canonicalKey}` },
-        // Only the curated pairs are indexable; the long tail still serves visitors.
-        // See lib/arena/indexable.ts for why.
-        ...(INDEXABLE_ARENA_PAIRS.has(canonicalKey) ? {} : { robots: { index: false, follow: true } }),
+        // Noindex only what nobody searches for: configuration pairs (`~`) and pairings
+        // outside the generated list (pairs.ts). The curated set is always indexable; the
+        // rest of the generated pairs stay indexable but are left out of the sitemap.
+        ...(await isIndexablePair(canonicalKey) ? {} : { robots: { index: false, follow: true } }),
         openGraph: { title, description },
     };
 }

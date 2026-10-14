@@ -56,7 +56,15 @@ interface PairRow {
 
 const key = (a: string, b: string) => [a, b].sort().join('-vs-');
 
-export async function fetchArenaPairs(): Promise<string[]> {
+/* Memoised per process: the Arena page asks for the list once per comparison when deciding
+ * whether that page is indexable, and the build renders several hundred of them. */
+let pairsPromise: Promise<string[]> | null = null;
+export function fetchArenaPairs(): Promise<string[]> {
+    pairsPromise ??= buildArenaPairs();
+    return pairsPromise;
+}
+
+async function buildArenaPairs(): Promise<string[]> {
     const pairs = new Set<string>();
     for (const [a, b] of SEARCHED_PAIRS) pairs.add(key(a, b));
 

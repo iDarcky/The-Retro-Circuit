@@ -1,12 +1,13 @@
 import { VERSUS_SEP } from './resolve';
 
-/* The comparison pages we ask Google to index.
+/* The comparison pages we put in the sitemap.
  *
  * pairs.ts generates ~720 comparisons and the sitemap used to list all of them. On
  * 2026-10-15 Google had indexed 12 of those 720, never crawled 707, and was barely
- * crawling the rest of the site either: 82% of the sitemap was one template. Every pair
- * still renders for visitors and internal links; only these are indexable and in the
- * sitemap. Everything else is noindex, follow.
+ * crawling the rest of the site either: 82% of the sitemap was one template. Only these
+ * are in the sitemap now. Other console-level pairs from pairs.ts stay indexable, so Google
+ * can still pick them up through links; configuration pairs and pairings outside pairs.ts
+ * are noindex, follow (see app/arena/[[...versus]]/page.tsx).
  *
  * Picked from Search Console (2026-10-15, 90 days and 16 months):
  *   - every pair that drew impressions or is already indexed
@@ -72,7 +73,7 @@ const PAIRS: [string, string][] = [
 
 export const pairKey = (a: string, b: string) => [a, b].sort().join(VERSUS_SEP);
 
-/** Sorted `a-vs-b` keys of the comparisons that may be indexed. */
+/** Sorted `a-vs-b` keys of the comparisons listed in the sitemap, always indexable. */
 export const INDEXABLE_ARENA_PAIRS: ReadonlySet<string> = new Set(PAIRS.map(([a, b]) => pairKey(a, b)));
 
 /** The two console slugs of an indexable pair, for filtering against what is published. */
