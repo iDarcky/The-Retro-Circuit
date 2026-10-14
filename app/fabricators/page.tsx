@@ -6,6 +6,7 @@ export const revalidate = false;
 export const metadata = {
   title: { absolute: 'Retro Handheld Manufacturers & Brands | The Retro Circuit' },
   description: 'Browse all retro handheld manufacturers and modders. Explore their full device catalogues and specs.',
+  alternates: { canonical: '/fabricators' },
 };
 
 export default async function FabricatorsPage() {

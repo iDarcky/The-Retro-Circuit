@@ -3,7 +3,7 @@ import { siteConfig } from '../config/site';
 import { supabaseAnon } from '../lib/supabase/anon';
 import { BEST_OF_COLLECTIONS } from '../lib/bestof/collections';
 import { fetchPublicManufacturers } from './actions/manufacturers';
-import { fetchArenaPairs } from '../lib/arena/pairs';
+import { INDEXABLE_ARENA_SIDES, pairKey } from '../lib/arena/indexable';
 import { fetchAllFacetPaths } from '../lib/config/facets';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -22,9 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/best`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
     { url: `${baseUrl}/roadmap`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.5 },
     { url: `${baseUrl}/about`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${baseUrl}/credits`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
-    { url: `${baseUrl}/privacy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${baseUrl}/terms`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
+    // /credits, /privacy and /terms are noindex, so listing them only sent Google mixed signals.
   ];
 
   // Buying-guide landing pages — high-value SEO surfaces.
@@ -57,7 +55,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 3. Dynamic Fabricators — published-only, per the public-pages rule in CLAUDE.md.
     const fabricators = await fetchPublicManufacturers();
     if (fabricators) {
-      fabricators.forEach((item: any) => {
+      // A brand with no description is noindex (see app/fabricators/[slug]), so it stays out.
+      fabricators.filter((item: any) => item.description?.trim()).forEach((item: any) => {
         routes.push({
           url: `${baseUrl}/fabricators/${item.slug}`,
           lastModified: new Date(),
@@ -67,10 +66,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     }
 
-    // 4. Arena comparisons.
-    // These carry ~70% of non-brand clicks and were absent from the sitemap entirely,
-    // so the best-performing page type was discoverable only through internal links.
-    const arenaPairs = await fetchArenaPairs();
+    // 4. Arena comparisons: the curated, indexable set only (lib/arena/indexable.ts).
+    // Listing all ~720 generated pairs made the sitemap 82% one template, and Google
+    // stopped crawling most of the site. Pairs whose consoles are not published are skipped.
+    const published = new Set((consoles || []).map((c: any) => c.slug));
+    const arenaPairs = INDEXABLE_ARENA_SIDES
+      .filter(([a, b]) => published.has(a) && published.has(b))
+      .map(([a, b]) => pairKey(a, b));
     arenaPairs.forEach((pair) => {
       routes.push({
         url: `${baseUrl}/arena/${pair}`,

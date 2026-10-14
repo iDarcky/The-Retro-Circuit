@@ -14,6 +14,7 @@ export const revalidate = false;
 export const metadata: Metadata = {
    title: 'Transmission Feed | The Retro Circuit',
    description: 'Latest hardware signals, reviews, and news from the retro handheld sector. Direct updates from the control center.',
+   alternates: { canonical: '/news' },
    openGraph: {
       title: 'Transmission Feed | The Retro Circuit',
       description: 'Latest hardware signals, reviews, and news from the retro handheld sector.',

@@ -118,6 +118,7 @@ pnpm lint     # ESLint
 | `lib/scoring/verdict.ts` | Spec-derived verdict, summary and tags. `noEmDash` is applied to everything it emits |
 | `lib/arena/resolve.ts` | Arena URL grammar — `console~variant`, `-vs-`, and legacy-token fallback |
 | `lib/arena/pairs.ts` | Which comparison pages get prebuilt, shared by the route and the sitemap |
+| `lib/arena/indexable.ts` | The curated comparisons that are indexable and in the sitemap; every other pair is noindex |
 | `lib/config/facets.ts` | `/consoles/chip\|os\|vendor/[value]` facet pages |
 | `lib/config/sheet-order.ts` | The variant editor's spreadsheet-order layout (37 steps over 112 keys) |
 

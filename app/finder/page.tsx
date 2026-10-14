@@ -4,6 +4,7 @@ import { FinderFlow } from '@/components/finder/FinderFlow';
 export const metadata: Metadata = {
     title: { absolute: 'Find the Best Retro Handheld for You | The Retro Circuit Quiz' },
     description: "Not sure which retro handheld to buy? Answer a few quick questions about your budget and emulation needs, and we'll match you with the perfect device.",
+    alternates: { canonical: '/finder' },
 };
 
 export default function FinderTestPage() {
