@@ -6,7 +6,6 @@ export const dynamicParams = true;
 import { supabaseAnon } from '../../../lib/supabase/anon';
 import { fetchArenaPairs } from '../../../lib/arena/pairs';
 import { INDEXABLE_ARENA_PAIRS } from '../../../lib/arena/indexable';
-import { permanentRedirect } from 'next/navigation';
 import { parseToken, splitVersus, buildArenaToken } from '../../../lib/arena/resolve';
 import { normalizeVariant, unwrapRelation } from '../../../lib/normalize';
 import ArenaComparisonClient from '../../../components/arena/ArenaComparisonClient';
@@ -128,22 +127,6 @@ export default async function ArenaVersusPage({ params }: { params: Promise<{ ve
         .eq('status', 'published');
     const bySlug = new Map<string, string>((index ?? []).map((c: any) => [c.slug, c.id]));
     const slugSet = new Set(bySlug.keys());
-
-    /* One comparison, one URL.
-     *
-     * The canonical tag alone did not hold: Google ranked the reversed order
-     * (`ayaneo-pocket-vert-vs-analogue-pocket`) and ignored the sorted URL the sitemap
-     * listed, splitting the signals across two addresses. Any other order, and the legacy
-     * hyphen shape, now redirects permanently to the sorted form. */
-    const parsedA = parts[0] ? parseToken(parts[0], slugSet) : null;
-    const parsedB = parts[1] ? parseToken(parts[1], slugSet) : null;
-    if (parsedA && parsedB) {
-        const canonicalKey = [
-            buildArenaToken(parsedA.consoleSlug, parsedA.variantSlug),
-            buildArenaToken(parsedB.consoleSlug, parsedB.variantSlug),
-        ].sort().join('-vs-');
-        if (decodeURIComponent(versus[0]) !== canonicalKey) permanentRedirect(`/arena/${canonicalKey}`);
-    }
 
     const resolveSlug = async (_supabase: any, raw: string) => {
         const parsed = parseToken(raw, slugSet);
