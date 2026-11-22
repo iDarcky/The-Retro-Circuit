@@ -22,7 +22,8 @@ This policy applies to all visitors and users of theretrocircuit.com. The Site i
 
 ### Information collected automatically
 
-- **Analytics data** — we use Vercel Analytics (cookieless, no personal data stored) to understand how the Site is used. No personally identifiable information is collected through analytics.
+- **Analytics data** — we use Vercel Analytics (cookieless, no personal data stored) to understand how the Site is used.
+- **Page counts** — we use GoatCounter (cookieless, no personal data stored) to count page views, referrers and broad device/country information. No personally identifiable information is collected through analytics.
 
 We do not use advertising cookies, tracking pixels, or third-party ad networks.
 
@@ -45,6 +46,7 @@ Your data is stored and processed by the following third-party services:
 - **Supabase** — database and authentication (hosted in the EU)
 - **Vercel** — website hosting (US-based infrastructure, EU edge network)
 - **Resend** — transactional and newsletter email delivery
+- **GoatCounter** — cookieless page-view counting (no personal data stored)
 
 All third-party processors are bound by data processing agreements and handle your data in accordance with applicable law.
 
@@ -111,7 +113,7 @@ We retain your email address for as long as you are subscribed to our newsletter
 
 ## 12. Cookies
 
-The Site does not use tracking or advertising cookies. Vercel Analytics is cookieless. If this changes, we will update this policy and add a cookie notice.
+The Site does not use tracking or advertising cookies. Vercel Analytics and GoatCounter are cookieless. If this changes, we will update this policy and add a cookie notice.
 
 ---
 
