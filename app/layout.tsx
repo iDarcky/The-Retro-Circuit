@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Press_Start_2P, JetBrains_Mono, Share_Tech_Mono, Inter } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -152,6 +153,12 @@ export default async function RootLayout({
         </ConsentProvider>
         <PageViewTracker />
         <SpeedInsights />
+        {/* GoatCounter: cookieless page counts, so it loads for every visitor (no consent gate). */}
+        <Script
+          src="https://gc.zgo.at/count.js"
+          data-goatcounter="https://theretrocircuit.goatcounter.com/count"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );

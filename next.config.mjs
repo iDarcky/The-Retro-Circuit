@@ -19,11 +19,11 @@ const nextConfig = {
 
     const cspHeader = `
       default-src 'self';
-      script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''};
+      script-src 'self' 'unsafe-inline' https://gc.zgo.at${isDev ? " 'unsafe-eval'" : ''};
       style-src 'self' 'unsafe-inline';
       img-src 'self' blob: data: https:;
       font-src 'self' data:;
-      connect-src 'self' ${supabaseUrl};
+      connect-src 'self' ${supabaseUrl} https://theretrocircuit.goatcounter.com;
       object-src 'none';
       base-uri 'self';
       form-action 'self';
