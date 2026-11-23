@@ -6,7 +6,7 @@
 import { useMemo, useState, type CSSProperties } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { SYSTEMS, type HomeData, type SystemKey } from './data';
+import { SYSTEMS, type HomeData, type HomeDevice, type SystemKey } from './data';
 
 const THEMES: Record<'light' | 'dark' | 'site', CSSProperties> = {
     light: {
@@ -111,6 +111,16 @@ function Buttons({ size = 10, site }: { size?: number; site?: boolean }) {
     );
 }
 
+type VsRow = { label: string; a: number | null; b: number | null; fmt: (n: number) => string; lowerWins?: boolean };
+const vsRows = (a: HomeDevice, b: HomeDevice): VsRow[] => [
+    { label: 'Screen', a: a.screenIn, b: b.screenIn, fmt: (n) => `${n}"` },
+    { label: 'RAM', a: a.ramGb, b: b.ramGb, fmt: (n) => `${n} GB` },
+    { label: 'Battery', a: a.batteryMah, b: b.batteryMah, fmt: (n) => `${n} mAh` },
+    { label: 'Weight', a: a.weightG, b: b.weightG, fmt: (n) => `${n} g`, lowerWins: true },
+    { label: 'Launch price', a: a.price, b: b.price, fmt: (n) => `$${n}`, lowerWins: true },
+    { label: 'PS2', a: a.emu.ps2 || null, b: b.emu.ps2 || null, fmt: (n) => RATING[n] },
+];
+
 const BUDGETS = [
     { label: 'Any price', max: Infinity },
     { label: 'Under $100', max: 100 },
@@ -144,6 +154,8 @@ function Segmented<T extends string | number>({ items, value, onChange, label, a
 export default function VariantConsole({ data, theme }: { data: HomeData; theme: 'light' | 'dark' | 'site' }) {
     const [systems, setSystems] = useState<SystemKey[]>(['ps2']);
     const [budget, setBudget] = useState(2);
+    const [pairIx, setPairIx] = useState(0);
+    const pair = data.pairs[pairIx];
 
     const results = useMemo(() => {
         const max = BUDGETS[budget].max;
@@ -160,7 +172,7 @@ export default function VariantConsole({ data, theme }: { data: HomeData; theme:
     return (
         <div style={THEMES[theme]} data-theme={theme} className="console-page bg-[var(--shell)] text-[var(--ink)] min-h-screen font-sans">
             {/* Hero */}
-            <header className="px-5 pt-16 md:pt-24 text-center">
+            <header className="px-5 pt-16 md:pt-24 pb-12 md:pb-16 text-center">
                 <div className="flex justify-center mb-6"><Buttons size={9} site={theme === 'site'} /></div>
                 <h1 className={theme === 'site'
                     ? 'font-pixel text-[26px] leading-[1.35] sm:text-5xl md:text-[64px] md:leading-[1.25]'
@@ -171,132 +183,171 @@ export default function VariantConsole({ data, theme }: { data: HomeData; theme:
                     {data.counts.consoles} retro handhelds, measured the same way
                     {Number.isFinite(minPrice) ? `, from $${minPrice} pocket players to PS2-class powerhouses.` : '.'}
                 </p>
-
-            </header>
-
-            {/* Picker, right under the hero headline */}
-            <section className="px-5 text-center" aria-label="Find a handheld">
-                <p className="mt-12 text-lg md:text-xl font-semibold">What do you want to play, and what do you want to spend?</p>
-                <div className="mt-6 flex flex-col items-center gap-3">
-                    <Segmented
-                        label="Systems"
-                        items={SYSTEMS.map((s) => ({ key: s.key as SystemKey, label: s.label }))}
-                        value={systems}
-                        onChange={(k) => setSystems((s) => (s.includes(k) ? s.filter((x) => x !== k) : [...s, k]))}
-                    />
-                    <Segmented
-                        label="Budget"
-                        accent="var(--a-select)"
-                        items={BUDGETS.map((b, i) => ({ key: i, label: b.label }))}
-                        value={[budget]}
-                        onChange={setBudget}
-                    />
-                </div>
-                <p className="mt-8 text-[var(--mute)]" aria-live="polite">
-                    {results.length} {results.length === 1 ? 'match' : 'matches'}
-                    {results.length > 4 ? ', top four shown' : ''}
-                </p>
-
-                {results.length === 0 ? (
-                    <p className="mt-10 text-xl">Nothing fits yet. Raise the budget or drop a system.</p>
-                ) : (
-                    <div className="mt-10 max-w-[1200px] mx-auto grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-14 text-center">
-                        {results.slice(0, 4).map((x) => (
-                            <div key={x.slug} className="flex flex-col items-center">
-                                <div className="relative w-36 h-28">
-                                    {x.image && <Image src={x.image} alt="" fill sizes="144px" className="object-contain" />}
-                                </div>
-                                <h3 className="mt-6 text-xl md:text-2xl font-bold tracking-[-0.02em]">{x.label}</h3>
-                                <p className="mt-1 text-[var(--mute)]">{x.price ? `$${x.price} at launch` : 'Price not listed'}</p>
-                                <Link href={`/consoles/${x.slug}`} className="mt-4 pill rounded-[var(--r-pill)] bg-[var(--pill)] text-[var(--pill-ink)] px-5 py-2 text-sm font-medium hover:opacity-85">See specs</Link>
-                                <dl className="mt-8 w-full max-w-[240px] divide-y divide-[var(--line)] border-t border-[var(--line)] text-sm">
-                                    {first && (
-                                        <div className="py-4">
-                                            <dt className="sr-only">{sysLabel(first)}</dt>
-                                            <dd className="flex items-center justify-center gap-2">
-                                                <span className="w-2 h-2 rounded-full" style={{ background: RATING_COLOR[x.emu[first]] }} />
-                                                {sysLabel(first)} runs {RATING[x.emu[first]].toLowerCase()}
-                                            </dd>
-                                        </div>
-                                    )}
-                                    <div className="py-4"><dt className="text-[var(--mute)]">Screen</dt><dd className="font-mono text-base text-[var(--data)]">{x.screenIn ? `${x.screenIn}"` : 'Not listed'}</dd></div>
-                                    <div className="py-4"><dt className="text-[var(--mute)]">Chip</dt><dd className="font-mono text-base text-[var(--data)]">{x.chip ?? 'Not listed'}</dd></div>
-                                    <div className="py-4"><dt className="text-[var(--mute)]">Battery</dt><dd className="font-mono text-base text-[var(--data)]">{x.batteryMah ? `${x.batteryMah} mAh` : 'Not listed'}</dd></div>
-                                </dl>
-                            </div>
-                        ))}
-                    </div>
-                )}
-                <div className="mt-12 flex justify-center items-center gap-6">
+                <div className="mt-8 flex justify-center items-center gap-6">
                     <Link href="/consoles" className="pill rounded-[var(--r-pill)] bg-[var(--pill)] text-[var(--pill-ink)] px-6 py-3 text-[15px] font-medium hover:opacity-85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--a-blue)]">
                         Browse handhelds
                     </Link>
                     <Link href="/arena" className="text-[15px] font-medium hover:underline" style={{ color: BLUE }}>Compare two ›</Link>
                 </div>
-            </section>
+            </header>
 
-            {/* Newest */}
-            <section className="px-5 pt-28 md:pt-40" aria-labelledby="new-heading">
-                <div className="max-w-[1200px] mx-auto">
-                    <h2 id="new-heading" className="text-4xl md:text-6xl font-extrabold tracking-[-0.04em] text-center">Just added.</h2>
-                    <ul className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--line)] border border-[var(--line)]">
-                        {data.newest.map((n) => (
-                            <li key={n.slug} className="bg-[var(--shell)]">
-                                <Link href={`/consoles/${n.slug}`} className="group flex items-center gap-4 p-4 h-full hover:bg-[var(--panel)] focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--a-blue)]">
-                                    <div className="relative w-16 h-12 shrink-0">{n.image && <Image src={n.image} alt="" fill sizes="64px" className="object-contain" />}</div>
-                                    <div className="min-w-0 text-left">
-                                        <p className="font-semibold truncate">{n.label}</p>
-                                        <p className="font-mono text-xs text-[var(--data)]">{[n.screenIn ? `${n.screenIn}"` : null, n.price ? `$${n.price}` : null].filter(Boolean).join(', ') || 'See specs'}</p>
-                                    </div>
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
+            {/* Just added: a sideways strip, full width */}
+            <section aria-labelledby="new-heading" className="border-y border-[var(--line)]">
+                <div className="flex items-stretch overflow-x-auto no-scrollbar snap-x">
+                    <h2 id="new-heading" className="shrink-0 snap-start flex items-center px-5 md:px-8 font-mono text-sm text-[var(--mute)] border-r border-[var(--line)] whitespace-nowrap">
+                        Just added
+                    </h2>
+                    {data.newest.map((n) => (
+                        <Link
+                            key={n.slug}
+                            href={`/consoles/${n.slug}`}
+                            className="shrink-0 snap-start flex items-center gap-3 px-5 py-4 border-r border-[var(--line)] hover:bg-[var(--panel)] focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--a-blue)]"
+                        >
+                            <div className="relative w-14 h-10 shrink-0">{n.image && <Image src={n.image} alt="" fill sizes="56px" className="object-contain" />}</div>
+                            <div className="text-left">
+                                <p className="font-semibold whitespace-nowrap">{n.label}</p>
+                                <p className="font-mono text-xs text-[var(--data)] whitespace-nowrap">
+                                    {[n.screenIn ? `${n.screenIn}"` : null, n.price ? `$${n.price}` : null].filter(Boolean).join(', ') || 'See specs'}
+                                </p>
+                            </div>
+                        </Link>
+                    ))}
                 </div>
             </section>
 
-            {/* Head-to-heads */}
-            <section className="px-5 pt-28 md:pt-40" aria-labelledby="vs-heading">
+            {/* Picker: a ranked table, not cards */}
+            <section className="px-5 pt-20 md:pt-28" aria-labelledby="fit-heading">
                 <div className="max-w-[1200px] mx-auto">
-                    <h2 id="vs-heading" className="text-4xl md:text-6xl font-extrabold tracking-[-0.04em] text-center">Head to head.</h2>
-                    <p className="mt-4 text-lg md:text-xl text-[var(--mute)] text-center">The comparisons people look up most.</p>
-                    <div className="mt-12 grid md:grid-cols-2 gap-5">
-                        {data.pairs.slice(0, 4).map((p) => (
-                            <Link key={p.href} href={p.href} className="group rounded-[var(--r-lg)] bg-[var(--card)] border border-[var(--line)] p-8 flex flex-col items-center text-center hover:border-[var(--ink)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--a-blue)]">
-                                <div className="flex items-center justify-center gap-4 w-full">
-                                    <div className="relative w-28 h-24">{p.a.image && <Image src={p.a.image} alt="" fill sizes="112px" className="object-contain" />}</div>
-                                    <span className="font-pixel text-xs text-[var(--mute)]">VS</span>
-                                    <div className="relative w-28 h-24">{p.b.image && <Image src={p.b.image} alt="" fill sizes="112px" className="object-contain" />}</div>
-                                </div>
-                                <p className="mt-6 text-xl font-bold tracking-[-0.02em]">{p.a.label} vs {p.b.label}</p>
-                                <p className="mt-2 text-[15px] font-medium group-hover:underline" style={{ color: BLUE }}>Compare ›</p>
-                            </Link>
-                        ))}
+                    <h2 id="fit-heading" className="text-3xl md:text-5xl font-extrabold tracking-[-0.04em] text-center">Which one is right for you?</h2>
+                    <p className="mt-3 text-lg text-[var(--mute)] text-center">Pick what you want to play and what you want to spend.</p>
+                    <div className="mt-8 flex flex-col items-center gap-3">
+                        <Segmented
+                            label="Systems"
+                            items={SYSTEMS.map((s) => ({ key: s.key as SystemKey, label: s.label }))}
+                            value={systems}
+                            onChange={(k) => setSystems((s) => (s.includes(k) ? s.filter((x) => x !== k) : [...s, k]))}
+                        />
+                        <Segmented
+                            label="Budget"
+                            accent="var(--a-select)"
+                            items={BUDGETS.map((b, i) => ({ key: i, label: b.label }))}
+                            value={[budget]}
+                            onChange={setBudget}
+                        />
                     </div>
-                    <ul className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-[15px]">
-                        {data.pairs.slice(4, 12).map((p) => (
-                            <li key={p.href}><Link href={p.href} className="hover:underline" style={{ color: BLUE }}>{p.a.label} vs {p.b.label}</Link></li>
-                        ))}
-                    </ul>
+
+                    <div className="mt-10 border border-[var(--line)]">
+                        <p className="px-5 py-3 text-sm text-[var(--mute)] border-b border-[var(--line)]" aria-live="polite">
+                            {results.length} {results.length === 1 ? 'match' : 'matches'}
+                            {results.length > 5 ? ', best five first' : ''}
+                        </p>
+                        {results.length === 0 ? (
+                            <p className="px-5 py-10 text-center">Nothing fits yet. Raise the budget or drop a system.</p>
+                        ) : (
+                            <ol>
+                                {results.slice(0, 5).map((x, i) => (
+                                    <li key={x.slug} className="border-b border-[var(--line)] last:border-b-0">
+                                        <Link href={`/consoles/${x.slug}`} className="grid grid-cols-[1.5rem_3.5rem_1fr_auto] md:grid-cols-[2rem_4rem_1.4fr_1fr_1fr_1fr_5rem] items-center gap-4 px-5 py-3 hover:bg-[var(--panel)] focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--a-blue)]">
+                                            <span className="font-mono text-sm text-[var(--mute)]">{i + 1}</span>
+                                            <div className="relative w-14 h-10">{x.image && <Image src={x.image} alt="" fill sizes="56px" className="object-contain" />}</div>
+                                            <span className="min-w-0">
+                                                <span className="block font-semibold truncate">{x.label}</span>
+                                                {first && (
+                                                    <span className="flex items-center gap-1.5 text-xs text-[var(--mute)]">
+                                                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: RATING_COLOR[x.emu[first]] }} />
+                                                        {sysLabel(first)} {RATING[x.emu[first]].toLowerCase()}
+                                                    </span>
+                                                )}
+                                            </span>
+                                            <span className="hidden md:block font-mono text-sm text-[var(--data)] truncate">{x.chip ?? 'Not listed'}</span>
+                                            <span className="hidden md:block font-mono text-sm text-[var(--data)]">{x.screenIn ? `${x.screenIn}"` : 'Not listed'}</span>
+                                            <span className="hidden md:block font-mono text-sm text-[var(--data)]">{x.batteryMah ? `${x.batteryMah} mAh` : 'Not listed'}</span>
+                                            <span className="font-mono text-sm text-right">{x.price ? `$${x.price}` : 'Not listed'}</span>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ol>
+                        )}
+                    </div>
                 </div>
             </section>
 
-            {/* Guides */}
-            <section className="px-5 pt-28 md:pt-40" aria-labelledby="guides-heading">
-                <div className="max-w-[1200px] mx-auto">
-                    <h2 id="guides-heading" className="text-4xl md:text-6xl font-extrabold tracking-[-0.04em] text-center">The best, ranked.</h2>
-                    <p className="mt-4 text-lg md:text-xl text-[var(--mute)] text-center">Buying guides that update as new handhelds arrive.</p>
-                    <ul className="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-5">
+            {/* Head to head: one live comparison, the rest as links */}
+            <section className="px-5 pt-24 md:pt-36" aria-labelledby="vs-heading">
+                <div className="max-w-[1200px] mx-auto grid lg:grid-cols-12 gap-10">
+                    <div className="lg:col-span-4">
+                        <h2 id="vs-heading" className="text-3xl md:text-5xl font-extrabold tracking-[-0.04em]">Head to head.</h2>
+                        <p className="mt-3 text-lg text-[var(--mute)]">The comparisons people look up most.</p>
+                        <div className="mt-8 flex flex-col" role="tablist" aria-label="Matchups">
+                            {data.pairs.slice(0, 6).map((p, i) => (
+                                <button
+                                    key={p.href}
+                                    role="tab"
+                                    aria-selected={i === pairIx}
+                                    onClick={() => setPairIx(i)}
+                                    className="text-left py-2.5 border-b border-[var(--line)] text-[15px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--a-blue)]"
+                                    style={{ color: i === pairIx ? 'var(--ink)' : 'var(--mute)', fontWeight: i === pairIx ? 600 : 400 }}
+                                >
+                                    {p.a.label} vs {p.b.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    {pair && (
+                        <div className="lg:col-span-8 border border-[var(--line)]">
+                            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-5 py-5 border-b border-[var(--line)]">
+                                <div className="flex items-center gap-3 min-w-0">
+                                    <div className="relative w-14 h-10 shrink-0">{pair.a.image && <Image src={pair.a.image} alt="" fill sizes="56px" className="object-contain" />}</div>
+                                    <p className="font-bold truncate">{pair.a.label}</p>
+                                </div>
+                                <span className="font-pixel text-[10px] text-[var(--mute)]">VS</span>
+                                <div className="flex items-center justify-end gap-3 min-w-0">
+                                    <p className="font-bold truncate text-right">{pair.b.label}</p>
+                                    <div className="relative w-14 h-10 shrink-0">{pair.b.image && <Image src={pair.b.image} alt="" fill sizes="56px" className="object-contain" />}</div>
+                                </div>
+                            </div>
+                            <table className="w-full text-sm">
+                                <caption className="sr-only">{pair.a.label} compared with {pair.b.label}</caption>
+                                <tbody>
+                                    {vsRows(pair.a, pair.b).map((r) => {
+                                        const both = r.a !== null && r.b !== null && r.a !== r.b;
+                                        const aWins = both && (r.lowerWins ? r.a! < r.b! : r.a! > r.b!);
+                                        const bWins = both && !aWins;
+                                        return (
+                                            <tr key={r.label} className="border-b border-[var(--line)] last:border-b-0">
+                                                <td className="px-5 py-3 font-mono w-[40%]" style={{ color: aWins ? 'var(--a-blue)' : 'var(--ink)' }}>
+                                                    {r.a !== null ? r.fmt(r.a) : 'Not listed'}{aWins ? ' ✓' : ''}
+                                                </td>
+                                                <th scope="row" className="py-3 font-normal text-[var(--mute)] text-center">{r.label}</th>
+                                                <td className="px-5 py-3 font-mono text-right w-[40%]" style={{ color: bWins ? 'var(--a-blue)' : 'var(--ink)' }}>
+                                                    {bWins ? '✓ ' : ''}{r.b !== null ? r.fmt(r.b) : 'Not listed'}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                            <Link href={pair.href} className="block px-5 py-4 border-t border-[var(--line)] text-[15px] font-medium hover:bg-[var(--panel)]" style={{ color: BLUE }}>
+                                See the full comparison ›
+                            </Link>
+                        </div>
+                    )}
+                </div>
+            </section>
+
+            {/* Guides: text only */}
+            <section className="px-5 pt-24 md:pt-36" aria-labelledby="guides-heading">
+                <div className="max-w-[1200px] mx-auto grid lg:grid-cols-12 gap-10">
+                    <div className="lg:col-span-4">
+                        <h2 id="guides-heading" className="text-3xl md:text-5xl font-extrabold tracking-[-0.04em]">The best, ranked.</h2>
+                        <p className="mt-3 text-lg text-[var(--mute)]">Buying guides that update as new handhelds arrive.</p>
+                    </div>
+                    <ul className="lg:col-span-8 grid sm:grid-cols-2 gap-x-10 border-t border-[var(--line)]">
                         {data.guides.map((g) => (
-                            <li key={g.href}>
-                                <Link href={g.href} title={g.title} className="group h-full rounded-[var(--r-lg)] bg-[var(--panel)] border border-[var(--line)] p-6 flex flex-col gap-5 hover:border-[var(--ink)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--a-blue)]">
-                                    <div className="flex -space-x-2 h-16">
-                                        {g.picks.slice(0, 3).map((x) => (
-                                            <div key={x.slug} className="relative w-14 h-16">{x.image && <Image src={x.image} alt="" fill sizes="64px" className="object-contain" />}</div>
-                                        ))}
-                                    </div>
-                                    <p className="text-xl md:text-2xl font-bold tracking-[-0.02em] leading-tight">{g.label}</p>
-                                    <p className="mt-auto text-sm text-[var(--mute)]">{g.picks.length} picks</p>
+                            <li key={g.href} className="border-b border-[var(--line)]">
+                                <Link href={g.href} title={g.title} className="group block py-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--a-blue)]">
+                                    <p className="text-lg font-bold tracking-[-0.01em] group-hover:underline">{g.label}</p>
+                                    <p className="mt-1 text-sm text-[var(--mute)] line-clamp-2">{g.description}</p>
                                 </Link>
                             </li>
                         ))}
