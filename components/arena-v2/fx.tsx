@@ -121,7 +121,7 @@ export function TugBar({ a, b, lowerWins = false, colorA, colorB }: { a: number;
 export function FaceButtons({ size = 9 }: { size?: number }) {
     const dot = { width: size, height: size };
     return (
-        <span aria-hidden className="inline-grid grid-cols-3 gap-[2px]">
+        <span aria-hidden className="inline-grid grid-cols-3 gap-[2px] motion-safe:animate-[faceTurn_6s_cubic-bezier(.5,1.8,.5,1)_infinite]">
             <span /><span style={dot} className="rounded-full bg-violet-500" /><span />
             <span style={dot} className="rounded-full bg-cyan-500" /><span /><span style={dot} className="rounded-full bg-rose-500" />
             <span /><span style={dot} className="rounded-full bg-orange-500" /><span />
