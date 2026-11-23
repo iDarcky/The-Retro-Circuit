@@ -3,6 +3,7 @@ import { loadHomeData } from './home-data';
 import HandheldPicker from './HandheldPicker';
 import HeadToHead from './HeadToHead';
 import JustAdded from './JustAdded';
+import Bit from '../brand/Bit';
 
 const focus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500';
 
@@ -10,7 +11,7 @@ const focus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outli
 function FaceButtons() {
     const dot = 'w-[9px] h-[9px] rounded-full';
     return (
-        <span aria-hidden className="inline-grid grid-cols-3 gap-[2px]">
+        <span aria-hidden className="inline-grid grid-cols-3 gap-[2px] motion-safe:animate-[faceTurn_6s_cubic-bezier(.5,1.8,.5,1)_infinite]">
             <span /><span className={`${dot} bg-violet-500`} /><span />
             <span className={`${dot} bg-cyan-500`} /><span /><span className={`${dot} bg-rose-500`} />
             <span /><span className={`${dot} bg-orange-500`} /><span />
@@ -53,7 +54,7 @@ export default async function LandingPage() {
 
             {/* Finder */}
             <section className="px-5 md:px-12 pt-16 md:pt-36 pb-16 md:pb-36" aria-labelledby="finder-heading">
-                <div className="max-w-[1200px] mx-auto bg-violet-600 text-white px-6 py-10 md:p-20 grid md:grid-cols-[1fr_auto] gap-12 items-center overflow-hidden">
+                <div className="max-w-[1200px] mx-auto bg-violet-600 text-white px-6 py-10 md:p-20 grid md:grid-cols-[1fr_auto] gap-8 md:gap-12 items-center overflow-hidden">
                     <div>
                         <h2 id="finder-heading" className="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-[-0.04em] leading-[1.05]">Still deciding?</h2>
                         <p className="mt-4 text-base sm:text-lg md:text-xl text-violet-100 max-w-[32ch]">Answer eight quick questions and get a ranked shortlist made for you.</p>
@@ -61,16 +62,16 @@ export default async function LandingPage() {
                             Start the Finder
                         </Link>
                     </div>
-                    {/* A controller, drawn: d-pad and two face buttons */}
-                    <div aria-hidden className="hidden md:flex items-center gap-12 md:gap-16 justify-center">
-                        <div className="relative w-24 h-24">
-                            <span className="absolute left-1/3 top-0 w-1/3 h-full bg-indigo-950 rounded-sm" />
-                            <span className="absolute top-1/3 left-0 h-1/3 w-full bg-indigo-950 rounded-sm" />
-                        </div>
-                        <div className="rotate-[-20deg] flex gap-4">
-                            <span className="w-14 h-14 rounded-full bg-cyan-500" />
-                            <span className="w-14 h-14 rounded-full bg-rose-500 -translate-y-3.5" />
-                        </div>
+                    {/* Bit, the mascot, offering to help */}
+                    <div aria-hidden className="flex items-end gap-3 md:flex-col md:items-center md:gap-5 md:pr-8">
+                        <span className="relative order-2 md:order-1 bg-white text-black font-pixel text-[9px] md:text-[11px] leading-relaxed px-3 py-2 md:px-4 md:py-3 mb-10 md:mb-0">
+                            Psst. I can help.
+                            {/* stepped pixel tail, pointing at Bit */}
+                            <span className="absolute w-2 h-2 bg-white -left-2 bottom-3 md:left-1/2 md:-bottom-2" />
+                            <span className="absolute w-2 h-2 bg-white -left-4 bottom-1 md:left-[calc(50%-8px)] md:-bottom-4" />
+                        </span>
+                        <span className="order-1 md:order-2 md:hidden"><Bit size={96} /></span>
+                        <span className="order-1 md:order-2 hidden md:block"><Bit size={200} /></span>
                     </div>
                 </div>
             </section>

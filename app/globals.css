@@ -148,3 +148,29 @@ body {
     radial-gradient(120% 90% at 50% 40%, rgba(139, 92, 246, 0.10), transparent 62%),
     var(--rc-panel);
 }
+
+/* Homepage mark: the four face buttons turn a quarter at a time, like a d-pad clicking round */
+@keyframes faceTurn {
+  0%, 18% { transform: rotate(0deg); }
+  25%, 43% { transform: rotate(90deg); }
+  50%, 68% { transform: rotate(180deg); }
+  75%, 93% { transform: rotate(270deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Bit, the pixel mascot: a two-frame idle bob, a blink, and a wave in bursts */
+@keyframes bitBob {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-1px); }
+}
+@keyframes bitBlink {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 0; }
+  96% { opacity: 1; }
+}
+@keyframes bitWaveA {
+  0% { opacity: 1; } 12% { opacity: 0; } 24% { opacity: 1; } 36% { opacity: 0; } 48%, 100% { opacity: 1; }
+}
+@keyframes bitWaveB {
+  0% { opacity: 0; } 12% { opacity: 1; } 24% { opacity: 0; } 36% { opacity: 1; } 48%, 100% { opacity: 0; }
+}
