@@ -43,8 +43,12 @@ export default function Bit({ size = 160, className = '', title }: { size?: numb
 
             <g filter={`url(#${glow})`} className="motion-safe:animate-[neonFlicker_7s_linear_infinite]">
                 {/* Shoes and legs stay planted */}
-                <Tubes w={40} paths={['M418,742 L400,826', 'M598,742 L608,826']} />
-                <Tubes w={58} line={9} paths={['M352,850 Q352,826 400,824 Q446,824 448,850 Q446,868 400,868 Q352,868 352,850 Z', 'M566,850 Q566,826 612,824 Q662,824 664,850 Q662,868 614,868 Q566,868 566,850 Z']} />
+                {/* Legs and shoes stay planted: one outline each */}
+                <g fill={DARK} stroke={PINK} strokeWidth="9" strokeLinejoin="round" strokeLinecap="round">
+                    <path d="M394,716 L379,816 Q336,816 316,836 Q298,860 318,876 Q330,884 360,884 L428,884 Q456,882 454,856 Q452,834 438,818 L448,716" />
+                    <path d="M566,716 L560,818 Q546,834 546,856 Q546,882 574,884 L644,884 Q674,884 686,876 Q706,860 688,836 Q668,816 626,816 L620,716" />
+                    <path d="M379,816 Q392,818 402,828 M626,816 Q612,818 604,828" fill="none" />
+                </g>
 
                 {/* Everything above the legs bobs */}
                 <g className="motion-safe:animate-[bitBob_1.4s_ease-in-out_infinite]">
@@ -89,7 +93,11 @@ export default function Bit({ size = 160, className = '', title }: { size?: numb
                     <path d="M480,702 L512,690 M548,702 L580,690" stroke={CYAN} strokeWidth="11" strokeLinecap="round" />
 
                     {/* Fist resting on the side, in front */}
-                    <Tubes w={44} paths={['M196,600 Q212,628 240,632', 'M252,632 m-40,0 a40,40 0 1,0 80,0 a40,40 0 1,0 -80,0', 'M232,602 L262,600', 'M226,632 L262,634', 'M232,660 L260,664']} line={8} />
+                    <Tubes w={44} paths={['M196,600 Q210,612 224,612']} />
+                    <g fill={DARK} stroke={PINK} strokeWidth="9" strokeLinejoin="round" strokeLinecap="round">
+                        <path d="M228,588 Q244,570 262,586 Q300,600 302,646 Q302,700 250,708 Q222,712 212,694 Q190,690 196,668 Q176,656 190,636 Q176,614 198,602 Q206,584 228,588 Z" />
+                        <path d="M212,694 Q224,684 238,688 M196,668 Q212,658 228,662 M190,636 Q204,626 220,630 M228,588 Q234,604 228,614" fill="none" />
+                    </g>
                 </g>
             </g>
         </svg>
