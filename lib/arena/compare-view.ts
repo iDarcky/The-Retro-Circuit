@@ -19,6 +19,8 @@ export interface SpecRow {
     b: string | null;
     /** Which side has the better value, when the row has a direction and both are known. */
     win: 'a' | 'b' | null;
+    /** The raw numbers, when the row is a measurement both sides have (for the tug-of-war bar). */
+    nums?: { a: number; b: number; lowerWins: boolean };
 }
 
 export interface SpecGroup {
@@ -206,7 +208,8 @@ function row(def: Def, a: V, b: V): SpecRow {
         const aBetter = def.better === 'higher' ? ra.n > rb.n : ra.n < rb.n;
         win = aBetter ? 'a' : 'b';
     }
-    return { label: def.label, a: ra.show, b: rb.show, win };
+    const nums = def.better && ra.n && rb.n ? { a: ra.n, b: rb.n, lowerWins: def.better === 'lower' } : undefined;
+    return { label: def.label, a: ra.show, b: rb.show, win, nums };
 }
 
 /** Every spec, grouped, skipping rows neither side has. */
@@ -229,6 +232,7 @@ export function keySpecs(a: V, b: V): SpecRow[] {
             a: pa ? `$${pa}` : null,
             b: pb ? `$${pb}` : null,
             win: pa && pb && pa !== pb ? (pa < pb ? 'a' : 'b') : null,
+            nums: pa && pb ? { a: pa, b: pb, lowerWins: true } : undefined,
         };
     })();
     const rename: Record<string, string> = { Size: 'Screen', Capacity: 'Battery' };

@@ -3,16 +3,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronRight } from 'lucide-react';
+import { AppWindow, BatteryFull, ChevronRight, Cpu, MemoryStick, Monitor, Weight } from 'lucide-react';
 import { chipOf, playsByRating, priceOf, ramGb, RATING_LABEL, specList, text, untested, variantLabel } from '../../lib/arena/compare-view';
 import { pairKey } from '../../lib/arena/indexable';
 import AffiliateLink from '../console/AffiliateLink';
 import DevicePicker, { type PickerConsole } from '../arena-v2/DevicePicker';
 import type { BuyTarget } from '../../lib/affiliate';
+import { BlockMeter, CountUp, DOT_GRID, FaceButtons, Reveal, SectionHead, SegmentBar } from '../arena-v2/fx';
 
 const focus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-500';
-const H2 = 'text-2xl md:text-4xl font-extrabold tracking-[-0.03em]';
-const METER = ['bg-rose-500', 'bg-rose-500', 'bg-orange-500', 'bg-emerald-500', 'bg-emerald-500'];
+const RATING_TEXT = ['text-rose-400', 'text-rose-400', 'text-orange-400', 'text-emerald-400', 'text-emerald-400'];
 
 interface Score {
     score: number;
@@ -25,11 +25,7 @@ interface Score {
 }
 
 function Meter({ rank }: { rank: number }) {
-    return (
-        <span className="inline-flex gap-[3px]" aria-hidden>
-            {[1, 2, 3, 4].map((i) => <span key={i} className={`w-4 h-3 ${i <= rank ? METER[rank] : 'bg-white/10'}`} />)}
-        </span>
-    );
+    return <BlockMeter rank={rank} size="lg" />;
 }
 
 /** "Higher than 3 in 4" reads better than "top 14%" and survives new devices being added. */
@@ -65,6 +61,7 @@ export default function ConsoleView(p: {
     const [comparing, setComparing] = useState(false);
     const v = useMemo(() => p.variants[iv] ?? {}, [p.variants, iv]);
     const price = priceOf(v);
+    const n0 = p.variants.length > 1 ? 1 : 0;
     const specs = useMemo(() => specList(v), [v]);
     const plays = useMemo(() => playsByRating(v), [v]);
     const notTested = useMemo(() => untested(v), [v]);
@@ -78,13 +75,13 @@ export default function ConsoleView(p: {
         return [{ label: 'Launch price', values: p.variants.map((x) => (priceOf(x) ? `$${priceOf(x)}` : null)) }, ...rows].filter((r) => new Set(r.values).size > 1 || r.label === 'Launch price');
     }, [p.variants]);
 
-    const quick = [
-        { k: 'Screen', v: [v.screen_size_inch ? `${v.screen_size_inch}"` : null, text(v.display_type), v.refresh_rate_hz ? `${v.refresh_rate_hz} Hz` : null].filter(Boolean).join(' ') || null },
-        { k: 'Chip', v: chipOf(v) },
-        { k: 'Memory', v: [ramGb(v) ? `${ramGb(v)} GB` : null, v.storage_gb ? `${v.storage_gb} GB` : null].filter(Boolean).join(' / ') || null },
-        { k: 'Battery', v: v.battery_capacity_mah ? `${v.battery_capacity_mah} mAh` : v.battery_capacity_wh ? `${v.battery_capacity_wh} Wh` : null },
-        { k: 'Weight', v: v.weight_g ? `${v.weight_g} g` : null },
-        { k: 'Software', v: text(v.os_family) && v.os_version ? `${text(v.os_family)} ${v.os_version}` : text(v.os) },
+    const quick: { k: string; v: string | null; icon: typeof Monitor }[] = [
+        { icon: Monitor, k: 'Screen', v: [v.screen_size_inch ? `${v.screen_size_inch}"` : null, text(v.display_type), v.refresh_rate_hz ? `${v.refresh_rate_hz} Hz` : null].filter(Boolean).join(' ') || null },
+        { icon: Cpu, k: 'Chip', v: chipOf(v) },
+        { icon: MemoryStick, k: 'Memory', v: [ramGb(v) ? `${ramGb(v)} GB` : null, v.storage_gb ? `${v.storage_gb} GB` : null].filter(Boolean).join(' / ') || null },
+        { icon: BatteryFull, k: 'Battery', v: v.battery_capacity_mah ? `${v.battery_capacity_mah} mAh` : v.battery_capacity_wh ? `${v.battery_capacity_wh} Wh` : null },
+        { icon: Weight, k: 'Weight', v: v.weight_g ? `${v.weight_g} g` : null },
+        { icon: AppWindow, k: 'Software', v: text(v.os_family) && v.os_version ? `${text(v.os_family)} ${v.os_version}` : text(v.os) },
     ];
 
     // Sticky bar once the hero has scrolled away.
@@ -142,9 +139,15 @@ export default function ConsoleView(p: {
 
                 {/* Hero */}
                 <div ref={hero} className="mt-6 md:mt-8 grid md:grid-cols-[4fr_6fr] gap-8 md:gap-12 items-start">
-                    <div className="border border-white/10 aspect-[16/9] md:aspect-[4/3] relative">
-                        {p.image && <Image src={p.image} alt={p.label} fill sizes="(min-width: 768px) 480px, 100vw" className="object-contain p-8 md:p-16" priority />}
-                        {status && <span className="absolute top-3 left-3 font-mono text-xs text-orange-400 border border-orange-500/50 px-2 py-1">{status}</span>}
+                    <div className="bg-violet-600 aspect-[16/9] md:aspect-[4/3] relative overflow-hidden" style={DOT_GRID}>
+                        <span className="absolute inset-0 p-8 md:p-14 motion-safe:animate-[floatIn_700ms_ease-out_both]">
+                            <span className="relative block w-full h-full motion-safe:animate-[spriteBob_1.6s_steps(2,jump-none)_infinite]">
+                                {p.image && <Image src={p.image} alt={p.label} fill sizes="(min-width: 768px) 480px, 100vw" className="object-contain" priority />}
+                            </span>
+                        </span>
+                        <span className="absolute bottom-3 right-3"><FaceButtons size={8} /></span>
+                        {p.formFactor && <span className="absolute bottom-3 left-3 font-pixel text-[9px] text-white/80">{p.formFactor.toUpperCase()}</span>}
+                        {status && <span className="absolute top-3 left-3 font-mono text-xs bg-orange-500 text-black px-2 py-1">{status}</span>}
                     </div>
 
                     <div>
@@ -152,7 +155,7 @@ export default function ConsoleView(p: {
                         <h1 className="mt-2 text-4xl md:text-6xl font-extrabold tracking-[-0.04em] leading-[1.02]">{p.label}</h1>
 
                         <div className="mt-6 flex items-baseline gap-3">
-                            <span className="font-mono text-4xl md:text-5xl text-white">{price ? `$${price}` : 'Price not listed'}</span>
+                            <span className={`font-pixel text-white ${price ? 'text-3xl md:text-4xl' : 'text-base'}`}>{price ? `$${price}` : 'Price not listed'}</span>
                             {price && <span className="text-text-secondary">at launch</span>}
                         </div>
                         {Number(v.price_avg_usd) >= 20 && Math.round(Number(v.price_avg_usd)) !== price && (
@@ -165,12 +168,15 @@ export default function ConsoleView(p: {
                         )}
 
                         {p.score && (
-                            <div className="mt-6 border border-white/10 p-4 flex items-center gap-4">
-                                <span className="font-pixel text-2xl md:text-3xl text-violet-400 shrink-0">{p.score.score}</span>
-                                <span className="text-sm text-zinc-300 leading-snug">
-                                    <span className="font-semibold text-white">Circuit Score out of 100.</span>{' '}
-                                    {p.score.pct != null ? `That's ${share(p.score.pct)} of the ${p.score.tierSize} devices that play the same systems.` : 'Measured from what it plays and how well.'}
-                                </span>
+                            <div className="mt-6 border border-white/10 p-4">
+                                <div className="flex items-center gap-4">
+                                    <CountUp to={p.score.score} className="font-pixel text-3xl md:text-4xl text-violet-400 shrink-0 w-[3ch]" />
+                                    <span className="text-sm text-zinc-300 leading-snug">
+                                        <span className="font-semibold text-white">Circuit Score out of 100.</span>{' '}
+                                        {p.score.pct != null ? `That's ${share(p.score.pct)} of the ${p.score.tierSize} devices that play the same systems.` : 'Measured from what it plays and how well.'}
+                                    </span>
+                                </div>
+                                <div className="mt-3"><SegmentBar value={p.score.score} /></div>
                             </div>
                         )}
 
@@ -191,19 +197,18 @@ export default function ConsoleView(p: {
 
                 {/* Quick facts */}
                 <dl className="mt-10 md:mt-14 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 border-l border-t border-white/10">
-                    {quick.map((q) => (
-                        <div key={q.k} className="border-r border-b border-white/10 px-4 py-4">
-                            <dt className="text-xs text-text-secondary">{q.k}</dt>
-                            <dd className={`mt-1 font-mono text-sm leading-snug ${q.v ? 'text-cyan-400' : 'text-zinc-600'}`}>{q.v ?? 'Not listed'}</dd>
-                        </div>
+                    {quick.map((q, i) => (
+                        <Reveal key={q.k} delay={i * 70} className="border-r border-b border-white/10 px-4 py-4 hover:bg-white/[0.04]">
+                            <dt className="flex items-center gap-2 text-xs text-text-secondary"><q.icon size={14} className="text-cyan-500" aria-hidden />{q.k}</dt>
+                            <dd className={`mt-1.5 font-mono text-sm leading-snug ${q.v ? 'text-cyan-400' : 'text-zinc-600'}`}>{q.v ?? 'Not listed'}</dd>
+                        </Reveal>
                     ))}
                 </dl>
 
                 {/* Configurations */}
                 {p.variants.length > 1 && (
-                    <section className="mt-16 md:mt-24" aria-labelledby="config-heading">
-                        <h2 id="config-heading" className={H2}>Which configuration</h2>
-                        <p className="mt-2 text-text-secondary">It comes in {p.variants.length} versions. Pick one and the whole page updates.</p>
+                    <Reveal className="mt-16 md:mt-24"><section aria-labelledby="config-heading">
+                        <SectionHead n={1} eyebrow="Pick your version" id="config-heading" title="Which configuration" sub={`It comes in ${p.variants.length} versions. Pick one and the whole page updates.`} />
                         <div className="mt-6 overflow-x-auto border border-white/10">
                             <table className="w-full text-sm">
                                 <thead>
@@ -230,18 +235,29 @@ export default function ConsoleView(p: {
                             </table>
                         </div>
                         {configRows.length <= 1 && <p className="mt-3 text-sm text-text-secondary">We have not recorded any spec differences between these yet.</p>}
-                    </section>
+                    </section></Reveal>
                 )}
 
                 {/* What it plays */}
                 {plays.length > 0 && (
-                    <section className="mt-16 md:mt-24" aria-labelledby="plays-heading">
-                        <h2 id="plays-heading" className={H2}>What it plays</h2>
-                        <p className="mt-2 text-text-secondary">Tested system by system. Four blocks means perfect, one means it struggles.</p>
-                        <div className="mt-6 border border-white/10 divide-y divide-white/10">
+                    <Reveal className="mt-16 md:mt-24"><section aria-labelledby="plays-heading">
+                        <SectionHead n={n0 + 1} eyebrow="Game library" id="plays-heading" title="What it plays" sub="Tested system by system. Four blocks means perfect, one means it struggles." />
+                        {/* Tally, like a high-score table */}
+                        <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/10 border border-white/10">
+                            {[4, 3, 2, 1].map((r) => {
+                                const n = plays.filter((x) => x.rank === r || (r === 1 && x.rank === 0)).reduce((t, x) => t + x.systems.length, 0);
+                                return (
+                                    <div key={r} className="bg-bg-primary px-4 py-4">
+                                        <CountUp to={n} className={`font-pixel text-2xl md:text-3xl ${n ? RATING_TEXT[r] : 'text-zinc-700'}`} />
+                                        <p className="mt-2 text-xs text-text-secondary">{r === 1 ? 'Struggle' : RATING_LABEL[r]}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <div className="border border-t-0 border-white/10 divide-y divide-white/10">
                             {plays.map(({ rank, systems }) => (
                                 <div key={rank} className="px-4 md:px-5 py-4 grid md:grid-cols-[12rem_1fr] gap-2 md:gap-6 items-baseline">
-                                    <span className="flex items-center gap-3"><Meter rank={rank} /><span className="font-semibold text-sm">{RATING_LABEL[rank]}</span></span>
+                                    <span className="flex items-center gap-3"><Meter rank={rank} /><span className={`font-semibold text-sm ${RATING_TEXT[rank]}`}>{RATING_LABEL[rank]}</span></span>
                                     <span className="text-[15px] text-zinc-300 leading-relaxed">{systems.join(', ')}</span>
                                 </div>
                             ))}
@@ -252,13 +268,13 @@ export default function ConsoleView(p: {
                                 </div>
                             )}
                         </div>
-                    </section>
+                    </section></Reveal>
                 )}
 
                 {/* About */}
                 {(p.description || p.summary) && (
                     <section className="mt-16 md:mt-24 grid md:grid-cols-[1fr_2fr] gap-6 md:gap-12" aria-labelledby="about-heading">
-                        <h2 id="about-heading" className={H2}>About it</h2>
+                        <SectionHead n={n0 + 2} eyebrow="The story" id="about-heading" title="About it" />
                         <div>
                             <p className="text-lg leading-relaxed text-zinc-300 max-w-[62ch]">{p.description ?? p.summary}</p>
                             {!p.description && <p className="mt-3 text-xs text-text-secondary">Written from the spec sheet.</p>}
@@ -268,7 +284,7 @@ export default function ConsoleView(p: {
 
                 {/* Every spec */}
                 <section className="mt-16 md:mt-24" aria-labelledby="specs-heading">
-                    <h2 id="specs-heading" className={H2}>Every spec</h2>
+                    <SectionHead n={n0 + 3} eyebrow="Spec sheet" id="specs-heading" title="Every spec" />
                     {p.variants.length > 1 && <p className="mt-2 text-text-secondary">For the {variantLabel(v, iv)} configuration.</p>}
                     <div className="mt-6 grid md:grid-cols-2 gap-x-8 gap-y-8">
                         {specs.map((g) => (
@@ -290,7 +306,7 @@ export default function ConsoleView(p: {
                 {/* Reviews */}
                 {p.reviews.length > 0 && (
                     <section className="mt-16 md:mt-24" aria-labelledby="reviews-heading">
-                        <h2 id="reviews-heading" className={H2}>Reviews and videos</h2>
+                        <SectionHead n={n0 + 4} eyebrow="Elsewhere" id="reviews-heading" title="Reviews and videos" />
                         <ul className="mt-6 border border-white/10 divide-y divide-white/10">
                             {p.reviews.map((r) => (
                                 <li key={r.url}><a href={r.url} rel="nofollow noopener" target="_blank" className={`block px-4 py-3 text-sm hover:bg-white/[0.04] ${focus}`}>{r.label}</a></li>
@@ -301,7 +317,7 @@ export default function ConsoleView(p: {
 
                 {/* Compare */}
                 <section className="mt-16 md:mt-24" aria-labelledby="compare-heading">
-                    <h2 id="compare-heading" className={H2}>Compare it</h2>
+                    <SectionHead n={n0 + 4} eyebrow="Rivals" id="compare-heading" title="Compare it" />
                     {p.comparisons.length > 0 && (
                         <ul className="mt-6 flex flex-wrap gap-2">
                             {p.comparisons.map((c) => (
@@ -315,8 +331,8 @@ export default function ConsoleView(p: {
                             <ul className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10">
                                 {p.similar.map((s) => (
                                     <li key={s.slug} className="bg-bg-primary flex flex-col">
-                                        <Link href={`/consoles-preview/${s.slug}`} className={`flex-1 block p-4 hover:bg-white/[0.04] ${focus} focus-visible:-outline-offset-2`}>
-                                            <span className="relative block w-full h-20">{s.image && <Image src={s.image} alt="" fill sizes="160px" className="object-contain" />}</span>
+                                        <Link href={`/consoles-preview/${s.slug}`} className={`group flex-1 block p-4 hover:bg-white/[0.04] ${focus} focus-visible:-outline-offset-2`}>
+                                            <span className="relative block w-full h-20 group-hover:motion-safe:animate-[spriteBob_0.5s_steps(2,jump-none)_infinite]">{s.image && <Image src={s.image} alt="" fill sizes="160px" className="object-contain" />}</span>
                                             <span className="mt-3 block font-semibold text-sm leading-snug">{s.label}</span>
                                             <span className="mt-1 block font-mono text-xs text-cyan-400">{[s.screen ? `${s.screen}"` : null, s.price ? `$${s.price}` : null].filter(Boolean).join(', ')}</span>
                                         </Link>

@@ -148,3 +148,19 @@ body {
     radial-gradient(120% 90% at 50% 40%, rgba(139, 92, 246, 0.10), transparent 62%),
     var(--rc-panel);
 }
+
+/* Mockup motion (prototype/arena-redesign). Every use is behind motion-safe:. */
+@keyframes floatIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes vsPop {
+  0% { transform: translate(-50%, -50%) scale(0); }
+  70% { transform: translate(-50%, -50%) scale(1.15); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+/* Two-frame bob, like an idle sprite */
+@keyframes spriteBob {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
