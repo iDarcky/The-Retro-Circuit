@@ -142,8 +142,8 @@ export default function ConsoleView(p: {
 
                 {/* Hero */}
                 <div ref={hero} className="mt-6 md:mt-8 grid md:grid-cols-[4fr_6fr] gap-8 md:gap-12 items-start">
-                    <div className="border border-white/10 aspect-[4/3] relative">
-                        {p.image && <Image src={p.image} alt={p.label} fill sizes="(min-width: 768px) 480px, 100vw" className="object-contain p-14 md:p-16" priority />}
+                    <div className="border border-white/10 aspect-[16/9] md:aspect-[4/3] relative">
+                        {p.image && <Image src={p.image} alt={p.label} fill sizes="(min-width: 768px) 480px, 100vw" className="object-contain p-8 md:p-16" priority />}
                         {status && <span className="absolute top-3 left-3 font-mono text-xs text-orange-400 border border-orange-500/50 px-2 py-1">{status}</span>}
                     </div>
 
@@ -205,25 +205,24 @@ export default function ConsoleView(p: {
                         <h2 id="config-heading" className={H2}>Which configuration</h2>
                         <p className="mt-2 text-text-secondary">It comes in {p.variants.length} versions. Pick one and the whole page updates.</p>
                         <div className="mt-6 overflow-x-auto border border-white/10">
-                            <table className="w-full text-sm min-w-[480px]">
+                            <table className="w-full text-sm">
                                 <thead>
-                                    <tr className="border-b border-white/10">
-                                        <th className="text-left font-normal text-text-secondary px-4 py-3 w-40">Configuration</th>
-                                        {p.variants.map((x, j) => (
-                                            <th key={x.id ?? j} className="px-2 py-2 text-left font-normal">
-                                                <button type="button" aria-pressed={iv === j} onClick={() => setIv(j)} className={`w-full text-left px-3 py-2 font-mono text-xs border ${focus} ${iv === j ? 'bg-white text-black border-white' : 'border-white/10 hover:bg-white/[0.06]'}`}>
-                                                    {variantLabel(x, j)}
-                                                </button>
-                                            </th>
-                                        ))}
+                                    <tr className="border-b border-white/10 text-left text-text-secondary">
+                                        <th className="font-normal px-4 py-3">Configuration</th>
+                                        {configRows.map((r) => <th key={r.label} className="font-normal px-3 py-3 whitespace-nowrap">{r.label === 'Launch price' ? 'Price' : r.label}</th>)}
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {configRows.map((r) => (
-                                        <tr key={r.label} className="border-b border-white/10 last:border-b-0">
-                                            <th scope="row" className="text-left font-normal text-text-secondary px-4 py-3">{r.label}</th>
-                                            {r.values.map((val, j) => (
-                                                <td key={j} className={`px-5 py-3 font-mono ${iv === j ? 'text-white' : 'text-zinc-400'}`}>{val ?? 'Not listed'}</td>
+                                    {p.variants.map((x, j) => (
+                                        <tr key={x.id ?? j} className={`border-b border-white/10 last:border-b-0 ${iv === j ? 'bg-white/[0.06]' : ''}`}>
+                                            <td className="px-2 py-2">
+                                                <button type="button" aria-pressed={iv === j} onClick={() => setIv(j)} className={`w-full text-left px-2 py-1.5 flex items-center gap-2.5 ${focus}`}>
+                                                    <span className={`w-3.5 h-3.5 shrink-0 border ${iv === j ? 'bg-violet-500 border-violet-500' : 'border-white/30'}`} aria-hidden />
+                                                    <span className={`font-mono text-xs sm:text-sm ${iv === j ? 'text-white' : 'text-zinc-300'}`}>{variantLabel(x, j)}</span>
+                                                </button>
+                                            </td>
+                                            {configRows.map((r) => (
+                                                <td key={r.label} className={`px-3 py-2 font-mono text-xs sm:text-sm ${iv === j ? 'text-white' : 'text-zinc-400'}`}>{r.values[j] ?? 'Not listed'}</td>
                                             ))}
                                         </tr>
                                     ))}
