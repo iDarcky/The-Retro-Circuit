@@ -181,7 +181,7 @@ export default function ArenaView({ a, b, consoles, related, base }: {
                                 <button type="button" onClick={() => setPicking(picking === key ? null : key)} className={`inline-flex items-center gap-1.5 text-violet-400 hover:text-white ${focus}`}>
                                     <ArrowLeftRight size={14} aria-hidden /> Swap
                                 </button>
-                                <Link href={`/consoles/${s.slug}`} className={`text-text-secondary hover:text-white ${focus}`}>Full specs page</Link>
+                                <Link href={`/consoles-preview/${s.slug}`} className={`text-text-secondary hover:text-white ${focus}`}>Full specs page</Link>
                             </div>
                         </div>
                     ))}

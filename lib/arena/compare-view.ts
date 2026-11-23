@@ -300,3 +300,36 @@ export function reasons(a: V, b: V): { a: string[]; b: string[] } {
 
     return out;
 }
+
+/* ---------- one device ---------- */
+
+/** Every spec of one configuration, grouped, skipping what is not recorded. */
+export function specList(v: V): { title: string; rows: { label: string; value: string }[] }[] {
+    return GROUPS.map((g) => ({
+        title: g.title,
+        rows: g.defs.map((d) => ({ label: d.label, value: d.get(v).show })).filter((r): r is { label: string; value: string } => !!r.value),
+    })).filter((g) => g.rows.length > 0);
+}
+
+/** Systems grouped by rating, best first, plus the ones nobody has tested. */
+export function playsByRating(v: V): { rank: number; systems: string[] }[] {
+    const p = v.emulation_profile ?? v.emulation_profiles;
+    const prof = (Array.isArray(p) ? p[0] : p) || {};
+    const by = new Map<number, string[]>();
+    for (const tier of SYSTEM_TIERS) {
+        for (const { key, label } of tier.systems) {
+            const r = STATE_RANK[prof[key]];
+            if (r === undefined) continue;
+            if (!by.has(r)) by.set(r, []);
+            by.get(r)!.push(label);
+        }
+    }
+    return [...by.entries()].sort((a, b) => b[0] - a[0]).map(([rank, systems]) => ({ rank, systems }));
+}
+
+/** Untested systems, so the page can say so instead of implying "can't run". */
+export function untested(v: V): string[] {
+    const p = v.emulation_profile ?? v.emulation_profiles;
+    const prof = (Array.isArray(p) ? p[0] : p) || {};
+    return SYSTEM_TIERS.flatMap((t) => [...t.systems] as { key: string; label: string }[]).filter(({ key }) => STATE_RANK[prof[key]] === undefined).map((s) => s.label);
+}
