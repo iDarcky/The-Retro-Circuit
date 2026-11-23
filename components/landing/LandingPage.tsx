@@ -70,8 +70,8 @@ export default async function LandingPage() {
                             <span className="absolute w-2 h-2 bg-white -left-2 bottom-3 md:left-1/2 md:-bottom-2" />
                             <span className="absolute w-2 h-2 bg-white -left-4 bottom-1 md:left-[calc(50%-8px)] md:-bottom-4" />
                         </span>
-                        <span className="order-1 md:order-2 md:hidden"><Bit size={96} /></span>
-                        <span className="order-1 md:order-2 hidden md:block"><Bit size={200} /></span>
+                        <span className="order-1 md:order-2 md:hidden"><Bit size={130} /></span>
+                        <span className="order-1 md:order-2 hidden md:block"><Bit size={260} /></span>
                     </div>
                 </div>
             </section>
