@@ -14,6 +14,7 @@ export const metadata = {
 };
 
 const VARIANTS = [
+  { key: 'G', name: 'Apple meets 90s Nintendo, site theme' },
   { key: 'E', name: 'Apple meets 90s Nintendo, light' },
   { key: 'F', name: 'Apple meets 90s Nintendo, dark' },
   { key: 'A', name: 'Showroom' },
@@ -23,13 +24,13 @@ const VARIANTS = [
 ];
 
 export default async function HomePrototype({ searchParams }: { searchParams: Promise<{ variant?: string }> }) {
-  const v = ((await searchParams).variant ?? 'E').toUpperCase();
+  const v = ((await searchParams).variant ?? 'G').toUpperCase();
   const showSwitcher = process.env.VERCEL_ENV !== 'production';
   const data = v === 'D' ? null : await loadHomeData();
   return (
     <div className="w-full">
-      {v === 'E' || v === 'F' ? (
-        <VariantConsole data={data!} theme={v === 'F' ? 'dark' : 'light'} />
+      {v === 'E' || v === 'F' || v === 'G' ? (
+        <VariantConsole data={data!} theme={v === 'G' ? 'site' : v === 'F' ? 'dark' : 'light'} />
       ) : v === 'D' ? (
         <LandingPage />
       ) : v === 'B' ? (
@@ -39,7 +40,7 @@ export default async function HomePrototype({ searchParams }: { searchParams: Pr
       ) : (
         <VariantShowroom data={data!} />
       )}
-      {showSwitcher && <Switcher variants={VARIANTS} current={VARIANTS.some((x) => x.key === v) ? v : 'E'} />}
+      {showSwitcher && <Switcher variants={VARIANTS} current={VARIANTS.some((x) => x.key === v) ? v : 'G'} />}
     </div>
   );
 }

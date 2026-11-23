@@ -168,3 +168,8 @@ body {
   .ledger-screen > img, .ledger-scan { animation: none; }
   .ledger-scan { display: none; }
 }
+
+/* PROTOTYPE (prototype/homepage-variants): site-theme take of the console mockup uses the
+   mono face on its buttons, as the rest of the site does. */
+.console-page[data-theme="site"] .pill { font-family: var(--font-mono), monospace; }
+.console-page[data-theme="site"] a.pill:hover { background: #8B5CF6; color: #fff; opacity: 1; }
