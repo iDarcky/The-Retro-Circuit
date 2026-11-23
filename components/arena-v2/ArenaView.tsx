@@ -92,6 +92,11 @@ export default function ArenaView({ a, b, consoles, related, base }: {
 
     const keys = useMemo(() => keySpecs(va, vb), [va, vb]);
     const emu = useMemo(() => emulationRows(va, vb), [va, vb]);
+    const emuDiff = emu.filter((r) => r.a !== r.b);
+    // Systems both rate the same, grouped by rating, best first.
+    const emuSame = Object.entries(
+        emu.filter((r) => r.a === r.b && r.a !== null).reduce<Record<number, string[]>>((m, r) => ((m[r.a!] ||= []).push(r.label), m), {}),
+    ).map(([k, v]) => [Number(k), v] as [number, string[]]).sort((x, y) => y[0] - x[0]);
     const why = useMemo(() => reasons(va, vb), [va, vb]);
     const groups = useMemo(() => specGroups(va, vb), [va, vb]);
     const wins = keys.filter((r) => r.win === 'a').length, losses = keys.filter((r) => r.win === 'b').length;
@@ -230,16 +235,28 @@ export default function ArenaView({ a, b, consoles, related, base }: {
                 {emu.length > 0 && (
                     <section className="mt-16 md:mt-24" aria-labelledby="emu-heading">
                         <h2 id="emu-heading" className={H2}>What it plays</h2>
-                        <p className="mt-2 text-text-secondary">How well each system runs, from four blocks (perfect) down to one (struggles).</p>
-                        <div className="mt-6 border border-white/10">
-                            {emu.map((r) => (
-                                <div key={r.label} className="grid grid-cols-2 md:grid-cols-[1fr_11rem_1fr] gap-x-4 gap-y-1.5 px-4 md:px-5 py-3 border-b border-white/10 last:border-b-0">
-                                    <span className="col-span-2 md:col-span-1 md:order-2 text-xs md:text-sm text-text-secondary md:text-center self-center">{r.label}</span>
-                                    <span className="md:order-1"><Meter rank={r.a} win={r.win === 'a'} align="left" /></span>
-                                    <span className="block md:order-3"><Meter rank={r.b} win={r.win === 'b'} align="right" /></span>
-                                </div>
-                            ))}
-                        </div>
+                        <p className="mt-2 text-text-secondary">How well each system runs, from four blocks (perfect) down to one (struggles). Where they differ comes first.</p>
+                        {emuDiff.length > 0 && (
+                            <div className="mt-6 border border-white/10">
+                                {emuDiff.map((r) => (
+                                    <div key={r.label} className="grid grid-cols-2 md:grid-cols-[1fr_11rem_1fr] gap-x-4 gap-y-1.5 px-4 md:px-5 py-3 border-b border-white/10 last:border-b-0">
+                                        <span className="col-span-2 md:col-span-1 md:order-2 text-xs md:text-sm text-text-secondary md:text-center self-center">{r.label}</span>
+                                        <span className="md:order-1"><Meter rank={r.a} win={r.win === 'a'} align="left" /></span>
+                                        <span className="block md:order-3"><Meter rank={r.b} win={r.win === 'b'} align="right" /></span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        {emuSame.length > 0 && (
+                            <div className={`${emuDiff.length ? 'border-t-0' : 'mt-6'} border border-white/10 divide-y divide-white/10`}>
+                                {emuSame.map(([rank, names]) => (
+                                    <div key={rank} className="px-4 md:px-5 py-3 flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+                                        <span className="shrink-0 md:w-52"><Meter rank={rank} win={false} align="left" /></span>
+                                        <span className="text-sm text-zinc-300"><span className="text-text-secondary">Same on both: </span>{names.join(', ')}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </section>
                 )}
 
