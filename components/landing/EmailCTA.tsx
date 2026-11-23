@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { subscribeEmail } from "../../app/actions/subscribers";
-import CircuitPattern from "./CircuitPattern";
 
 type Status = "idle" | "loading" | "success" | "error";
 
 /**
- * EmailCTA — Thin single-line strip with rose/red accent.
+ * EmailCTA: the homepage newsletter signup.
  */
 export default function EmailCTA() {
     const [email, setEmail] = useState("");
@@ -33,70 +32,51 @@ export default function EmailCTA() {
     }
 
     return (
-        <section className="px-6 md:px-12 py-6 md:py-8 border-b border-border-subtle relative overflow-hidden">
-            {/* Circuit board background */}
-            <CircuitPattern accentColor="rose" className="absolute inset-0 w-full h-full opacity-40" />
+        <section className="px-5 md:px-12 py-14 md:py-20 border-b border-border-subtle" aria-labelledby="signals-heading">
+            <div className="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end">
+                <div className="lg:col-span-7">
+                    <h2 id="signals-heading" className="font-pixel text-lg md:text-2xl leading-snug text-white mb-4">
+                        New handhelds, once a month
+                    </h2>
+                    <p className="text-text-secondary leading-relaxed max-w-[52ch]">
+                        One email with the devices we added, the ones announced, and what changed. No spam, and you can
+                        unsubscribe any time.
+                    </p>
+                </div>
 
-            <div className="max-w-[1800px] mx-auto relative z-10">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-8">
-
-                    {/* Left — Tag + inline text */}
-                    <div className="flex items-center gap-3 shrink-0">
-                        <div className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse" />
-                        <span className="text-xs font-mono uppercase tracking-widest text-rose-400">Signals</span>
-                        <span className="hidden md:inline text-text-muted mx-1">/</span>
-                        <span className="hidden md:inline text-sm text-text-secondary font-light">
-                            Stay in the loop. Monthly updates on new devices &amp; releases.
-                        </span>
-                    </div>
-
-                    {/* Right — Form or success */}
-                    <div className="shrink-0">
-                        {status === "success" ? (
-                            <div className="inline-flex items-center gap-2 text-rose-400 font-mono text-xs md:text-sm uppercase tracking-widest animate-fade-in">
-                                {message}<span className="animate-pulse">_</span>
-                            </div>
-                        ) : (
-                            <div className="relative">
-                                <form onSubmit={handleSubmit} className="flex gap-2">
-                                    <input
-                                        id="newsletter-email"
-                                        type="email"
-                                        aria-label="Email Address"
-                                        value={email}
-                                        onChange={(e) => {
-                                            setEmail(e.target.value);
-                                            if (status === "error") setStatus("idle");
-                                        }}
-                                        placeholder="your@email.com"
-                                        required
-                                        className="w-48 md:w-56 bg-bg-secondary border border-border-normal text-text-primary font-mono text-xs px-3 py-2 placeholder:text-text-secondary/40 focus:outline-none focus:border-rose-500 transition-colors tracking-wide"
-                                    />
-                                    <button
-                                        type="submit"
-                                        disabled={status === "loading"}
-                                        className="inline-flex items-center gap-2 bg-rose-600 text-white font-mono text-xs px-4 py-2 hover:brightness-110 transition-[filter,opacity] uppercase tracking-widest border border-rose-500 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
-                                    >
-                                        {status === "loading" ? (
-                                            <Loader2 className="w-3 h-3 animate-spin" />
-                                        ) : (
-                                            <>
-                                                Subscribe <ArrowRight className="w-3 h-3" />
-                                            </>
-                                        )}
-                                    </button>
-                                </form>
-
-                                {status === "error" && (
-                                    <p className="absolute left-0 top-full mt-1.5 text-red-400 font-mono text-[10px] uppercase tracking-wider whitespace-nowrap">{message}</p>
-                                )}
-
-                                <p className="absolute left-0 top-full mt-1.5 text-zinc-600 text-[9px] font-mono tracking-wider uppercase whitespace-nowrap">
-                                    No Spam. Unsubscribe Anytime.
-                                </p>
-                            </div>
-                        )}
-                    </div>
+                <div className="lg:col-span-5">
+                    {status === "success" ? (
+                        <p role="status" className="font-mono text-sm text-violet-300">{message}</p>
+                    ) : (
+                        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+                            <label htmlFor="newsletter-email" className="sr-only">Email address</label>
+                            <input
+                                id="newsletter-email"
+                                type="email"
+                                autoComplete="email"
+                                value={email}
+                                onChange={(e) => {
+                                    setEmail(e.target.value);
+                                    if (status === "error") setStatus("idle");
+                                }}
+                                placeholder="you@example.com"
+                                required
+                                aria-invalid={status === "error" || undefined}
+                                aria-describedby={status === "error" ? "newsletter-error" : undefined}
+                                className="flex-1 min-w-0 bg-bg-secondary border border-border-normal text-text-primary font-mono text-sm px-4 py-3.5 placeholder:text-text-muted focus:outline-none focus:border-violet-500 transition-colors"
+                            />
+                            <button
+                                type="submit"
+                                disabled={status === "loading"}
+                                className="inline-flex justify-center items-center gap-2 bg-violet-600 border border-violet-500 text-white font-mono text-sm px-6 py-3.5 hover:bg-white hover:text-black hover:border-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500"
+                            >
+                                {status === "loading" ? <Loader2 className="w-4 h-4 animate-spin" aria-label="Subscribing" /> : "Subscribe"}
+                            </button>
+                        </form>
+                    )}
+                    {status === "error" && (
+                        <p id="newsletter-error" className="mt-2 font-mono text-xs text-rose-400">{message}</p>
+                    )}
                 </div>
             </div>
         </section>
