@@ -2,11 +2,11 @@
 /* PROTOTYPE (throwaway): Mockups E and F, "Apple meets 90s Nintendo".
  * An Apple-style product page built from 90s console parts: grey plastic panels, the four
  * coloured face buttons as the only accents, and a Game Boy green screen as the spec
- * readout. E is the light plastic take, F the same page at night. */
+ * readout was dropped after review. E is light plastic, F dark, G the site's own theme. */
 import { useMemo, useState, type CSSProperties } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { SYSTEMS, type HomeData, type HomeDevice, type SystemKey } from './data';
+import { SYSTEMS, type HomeData, type SystemKey } from './data';
 
 const THEMES: Record<'light' | 'dark' | 'site', CSSProperties> = {
     light: {
@@ -21,6 +21,8 @@ const THEMES: Record<'light' | 'dark' | 'site', CSSProperties> = {
         ['--r-lg' as any]: '28px',
         ['--r-pill' as any]: '999px',
         ['--a-red' as any]: '#D3352B',
+        ['--a-select' as any]: '#D3352B',
+        ['--data' as any]: 'var(--ink)',
         ['--a-yellow' as any]: '#E9B021',
         ['--a-blue' as any]: '#2F5FB3',
         ['--a-green' as any]: '#22995A',
@@ -45,6 +47,8 @@ const THEMES: Record<'light' | 'dark' | 'site', CSSProperties> = {
         ['--r-lg' as any]: '28px',
         ['--r-pill' as any]: '999px',
         ['--a-red' as any]: '#D3352B',
+        ['--a-select' as any]: '#D3352B',
+        ['--data' as any]: 'var(--ink)',
         ['--a-yellow' as any]: '#E9B021',
         ['--a-blue' as any]: '#5B8DEF',
         ['--a-green' as any]: '#22995A',
@@ -70,6 +74,8 @@ const THEMES: Record<'light' | 'dark' | 'site', CSSProperties> = {
         ['--r-lg' as any]: '2px',
         ['--r-pill' as any]: '2px',
         ['--a-red' as any]: '#F43F5E',
+        ['--a-select' as any]: '#7C3AED',
+        ['--data' as any]: '#22D3EE',
         ['--a-yellow' as any]: '#F97316',
         ['--a-blue' as any]: '#A78BFA',
         ['--a-green' as any]: '#10B981',
@@ -105,45 +111,6 @@ function Buttons({ size = 10, site }: { size?: number; site?: boolean }) {
     );
 }
 
-/** A Game Boy screen: dark bezel with the two stripes, green LCD, pixel type. */
-function SpecScreen({ d }: { d: HomeDevice }) {
-    const rows: [string, string | null][] = [
-        ['CHIP', d.chip],
-        ['SCREEN', d.screenIn ? `${d.screenIn}"` : null],
-        ['RAM', d.ramGb ? `${d.ramGb}GB` : null],
-        ['BATTERY', d.batteryMah ? `${d.batteryMah}mAh` : null],
-        ['WEIGHT', d.weightG ? `${d.weightG}g` : null],
-        ['PRICE', d.price ? `$${d.price}` : null],
-    ];
-    return (
-        <div className="bg-[#56576A] rounded-[14px] rounded-br-[48px] p-4 md:p-6 w-full max-w-[460px]">
-            <div className="flex items-center gap-2 mb-3">
-                <span className="h-[3px] flex-1 bg-[#8E1B3B]" />
-                <span className="text-[10px] md:text-xs italic font-bold tracking-tight text-[#C9C9D6] whitespace-nowrap">SPEC MATRIX WITH FULL DATA</span>
-                <span className="h-[3px] flex-1 bg-[#2A2D6B]" />
-            </div>
-            <div className="flex gap-3 items-stretch">
-                <div className="hidden sm:flex flex-col items-center pt-8 gap-1">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#E0312B]" />
-                    <span className="text-[7px] text-[#C9C9D6] tracking-wider">BATTERY</span>
-                </div>
-                <div key={d.slug} className="lcd flex-1 bg-[#9BBC0F] text-[#0F380F] font-pixel text-[9px] md:text-[11px] leading-[1.9] p-4 md:p-5 rounded-[3px]">
-                    <p className="text-[#0F380F] mb-3 truncate">{d.label.toUpperCase()}</p>
-                    {rows.map(([k, v]) => (
-                        <p key={k} className="flex justify-between gap-3">
-                            <span className="text-[#306230]">{k}</span>
-                            <span className="truncate">{v ?? '---'}</span>
-                        </p>
-                    ))}
-                    <Link href={`/consoles/${d.slug}`} className="inline-block mt-3 hover:bg-[#0F380F] hover:text-[#9BBC0F] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0F380F]">
-                        ▶ VIEW ALL SPECS
-                    </Link>
-                </div>
-            </div>
-        </div>
-    );
-}
-
 const BUDGETS = [
     { label: 'Any price', max: Infinity },
     { label: 'Under $100', max: 100 },
@@ -175,10 +142,8 @@ function Segmented<T extends string | number>({ items, value, onChange, label, a
 }
 
 export default function VariantConsole({ data, theme }: { data: HomeData; theme: 'light' | 'dark' | 'site' }) {
-    const [hero, setHero] = useState(0);
     const [systems, setSystems] = useState<SystemKey[]>(['ps2']);
     const [budget, setBudget] = useState(2);
-    const d = data.newest[hero];
 
     const results = useMemo(() => {
         const max = BUDGETS[budget].max;
@@ -192,7 +157,6 @@ export default function VariantConsole({ data, theme }: { data: HomeData; theme:
     const first = systems[0];
     const sysLabel = (k: SystemKey) => SYSTEMS.find((s) => s.key === k)!.label;
 
-    if (!d) return null;
     return (
         <div style={THEMES[theme]} data-theme={theme} className="console-page bg-[var(--shell)] text-[var(--ink)] min-h-screen font-sans">
             {/* Hero */}
@@ -207,43 +171,13 @@ export default function VariantConsole({ data, theme }: { data: HomeData; theme:
                     {data.counts.consoles} retro handhelds, measured the same way
                     {Number.isFinite(minPrice) ? `, from $${minPrice} pocket players to PS2-class powerhouses.` : '.'}
                 </p>
-                <div className="mt-8 flex justify-center items-center gap-6">
-                    <Link href="/consoles" className="pill rounded-[var(--r-pill)] bg-[var(--pill)] text-[var(--pill-ink)] px-6 py-3 text-[15px] font-medium hover:opacity-85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--a-blue)]">
-                        Browse handhelds
-                    </Link>
-                    <Link href="/arena" className="text-[15px] font-medium hover:underline" style={{ color: BLUE }}>Compare two ›</Link>
-                </div>
 
-                <div className="mt-14 md:mt-20 max-w-[1200px] mx-auto rounded-[var(--r-lg)] bg-[var(--panel)] border border-[var(--line)] px-5 py-10 md:p-14 grid lg:grid-cols-2 gap-10 items-center">
-                    <div className="relative aspect-[4/3] w-full">
-                        {d.image && <Image key={d.slug} src={d.image} alt={d.label} fill priority sizes="(max-width:1024px) 90vw, 560px" className="object-contain" />}
-                    </div>
-                    <div className="flex flex-col items-center lg:items-start gap-6">
-                        <p className="text-sm text-[var(--mute)]">Just added</p>
-                        <SpecScreen d={d} />
-                    </div>
-                </div>
-                <div className="mt-6 flex justify-center gap-2" role="group" aria-label="Newest handhelds">
-                    {data.newest.map((n, i) => (
-                        <button
-                            key={n.slug}
-                            onClick={() => setHero(i)}
-                            aria-pressed={i === hero}
-                            aria-label={n.label}
-                            className="h-2.5 rounded-full transition-[width,background-color] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--a-blue)]"
-                            style={{ width: i === hero ? 28 : 10, background: i === hero ? 'var(--ink)' : 'var(--line)' }}
-                        />
-                    ))}
-                </div>
             </header>
 
-            {/* Which one is right for you */}
-            <section className="px-5 pt-28 md:pt-40 text-center" aria-labelledby="fit-heading">
-                <h2 id="fit-heading" className="text-4xl md:text-6xl font-extrabold tracking-[-0.04em] leading-[1.05]">
-                    Which handheld<br />is right for you?
-                </h2>
-                <p className="mt-4 text-lg md:text-xl text-[var(--mute)]">Pick what you want to play and what you want to spend.</p>
-                <div className="mt-10 flex flex-col items-center gap-3">
+            {/* Picker, right under the hero headline */}
+            <section className="px-5 text-center" aria-label="Find a handheld">
+                <p className="mt-12 text-lg md:text-xl font-semibold">What do you want to play, and what do you want to spend?</p>
+                <div className="mt-6 flex flex-col items-center gap-3">
                     <Segmented
                         label="Systems"
                         items={SYSTEMS.map((s) => ({ key: s.key as SystemKey, label: s.label }))}
@@ -252,7 +186,7 @@ export default function VariantConsole({ data, theme }: { data: HomeData; theme:
                     />
                     <Segmented
                         label="Budget"
-                        accent={RED}
+                        accent="var(--a-select)"
                         items={BUDGETS.map((b, i) => ({ key: i, label: b.label }))}
                         value={[budget]}
                         onChange={setBudget}
@@ -269,8 +203,8 @@ export default function VariantConsole({ data, theme }: { data: HomeData; theme:
                     <div className="mt-10 max-w-[1200px] mx-auto grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-14 text-center">
                         {results.slice(0, 4).map((x) => (
                             <div key={x.slug} className="flex flex-col items-center">
-                                <div className="relative w-full aspect-square">
-                                    {x.image && <Image src={x.image} alt="" fill sizes="(max-width:1024px) 45vw, 280px" className="object-contain" />}
+                                <div className="relative w-36 h-28">
+                                    {x.image && <Image src={x.image} alt="" fill sizes="144px" className="object-contain" />}
                                 </div>
                                 <h3 className="mt-6 text-xl md:text-2xl font-bold tracking-[-0.02em]">{x.label}</h3>
                                 <p className="mt-1 text-[var(--mute)]">{x.price ? `$${x.price} at launch` : 'Price not listed'}</p>
@@ -285,14 +219,40 @@ export default function VariantConsole({ data, theme }: { data: HomeData; theme:
                                             </dd>
                                         </div>
                                     )}
-                                    <div className="py-4"><dt className="text-[var(--mute)]">Screen</dt><dd className="text-lg font-semibold">{x.screenIn ? `${x.screenIn}"` : 'Not listed'}</dd></div>
-                                    <div className="py-4"><dt className="text-[var(--mute)]">Chip</dt><dd className="text-lg font-semibold">{x.chip ?? 'Not listed'}</dd></div>
-                                    <div className="py-4"><dt className="text-[var(--mute)]">Battery</dt><dd className="text-lg font-semibold">{x.batteryMah ? `${x.batteryMah} mAh` : 'Not listed'}</dd></div>
+                                    <div className="py-4"><dt className="text-[var(--mute)]">Screen</dt><dd className="font-mono text-base text-[var(--data)]">{x.screenIn ? `${x.screenIn}"` : 'Not listed'}</dd></div>
+                                    <div className="py-4"><dt className="text-[var(--mute)]">Chip</dt><dd className="font-mono text-base text-[var(--data)]">{x.chip ?? 'Not listed'}</dd></div>
+                                    <div className="py-4"><dt className="text-[var(--mute)]">Battery</dt><dd className="font-mono text-base text-[var(--data)]">{x.batteryMah ? `${x.batteryMah} mAh` : 'Not listed'}</dd></div>
                                 </dl>
                             </div>
                         ))}
                     </div>
                 )}
+                <div className="mt-12 flex justify-center items-center gap-6">
+                    <Link href="/consoles" className="pill rounded-[var(--r-pill)] bg-[var(--pill)] text-[var(--pill-ink)] px-6 py-3 text-[15px] font-medium hover:opacity-85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--a-blue)]">
+                        Browse handhelds
+                    </Link>
+                    <Link href="/arena" className="text-[15px] font-medium hover:underline" style={{ color: BLUE }}>Compare two ›</Link>
+                </div>
+            </section>
+
+            {/* Newest */}
+            <section className="px-5 pt-28 md:pt-40" aria-labelledby="new-heading">
+                <div className="max-w-[1200px] mx-auto">
+                    <h2 id="new-heading" className="text-4xl md:text-6xl font-extrabold tracking-[-0.04em] text-center">Just added.</h2>
+                    <ul className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--line)] border border-[var(--line)]">
+                        {data.newest.map((n) => (
+                            <li key={n.slug} className="bg-[var(--shell)]">
+                                <Link href={`/consoles/${n.slug}`} className="group flex items-center gap-4 p-4 h-full hover:bg-[var(--panel)] focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--a-blue)]">
+                                    <div className="relative w-16 h-12 shrink-0">{n.image && <Image src={n.image} alt="" fill sizes="64px" className="object-contain" />}</div>
+                                    <div className="min-w-0 text-left">
+                                        <p className="font-semibold truncate">{n.label}</p>
+                                        <p className="font-mono text-xs text-[var(--data)]">{[n.screenIn ? `${n.screenIn}"` : null, n.price ? `$${n.price}` : null].filter(Boolean).join(', ') || 'See specs'}</p>
+                                    </div>
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             </section>
 
             {/* Head-to-heads */}
@@ -304,9 +264,9 @@ export default function VariantConsole({ data, theme }: { data: HomeData; theme:
                         {data.pairs.slice(0, 4).map((p) => (
                             <Link key={p.href} href={p.href} className="group rounded-[var(--r-lg)] bg-[var(--card)] border border-[var(--line)] p-8 flex flex-col items-center text-center hover:border-[var(--ink)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--a-blue)]">
                                 <div className="flex items-center justify-center gap-4 w-full">
-                                    <div className="relative w-2/5 aspect-square">{p.a.image && <Image src={p.a.image} alt="" fill sizes="200px" className="object-contain" />}</div>
+                                    <div className="relative w-28 h-24">{p.a.image && <Image src={p.a.image} alt="" fill sizes="112px" className="object-contain" />}</div>
                                     <span className="font-pixel text-xs text-[var(--mute)]">VS</span>
-                                    <div className="relative w-2/5 aspect-square">{p.b.image && <Image src={p.b.image} alt="" fill sizes="200px" className="object-contain" />}</div>
+                                    <div className="relative w-28 h-24">{p.b.image && <Image src={p.b.image} alt="" fill sizes="112px" className="object-contain" />}</div>
                                 </div>
                                 <p className="mt-6 text-xl font-bold tracking-[-0.02em]">{p.a.label} vs {p.b.label}</p>
                                 <p className="mt-2 text-[15px] font-medium group-hover:underline" style={{ color: BLUE }}>Compare ›</p>
