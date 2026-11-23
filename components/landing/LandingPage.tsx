@@ -23,7 +23,8 @@ function toLedgerDevice(c: ConsoleDetails): LedgerDevice {
         chip: s.soc_name || s.soc || null,
         screen: size,
         resolution: res,
-        price: typeof price === 'number' && price > 0 ? Math.round(price) : null,
+        // No handheld sells for under $20, so a smaller number is a data-entry slip; hide it.
+        price: typeof price === 'number' && price >= 20 ? Math.round(price) : null,
     };
 }
 
