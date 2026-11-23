@@ -270,7 +270,7 @@ export default function ConsoleView(p: {
                                         {/* Easter egg: Bit is on it */}
                                         <span className="shrink-0 flex items-end gap-2" title="Bit is still testing these">
                                             <span className="font-pixel text-[8px] text-cyan-400 mb-6 hidden sm:inline">ON IT!</span>
-                                            <Bit size={44} />
+                                            <Bit size={80} />
                                         </span>
                                     </span>
                                 </div>
