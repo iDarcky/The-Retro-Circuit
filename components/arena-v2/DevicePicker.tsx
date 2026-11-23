@@ -23,6 +23,7 @@ export default function DevicePicker({ consoles, hrefFor, onPick, label, autoFoc
     selected?: string | null;
 }) {
     const [q, setQ] = useState('');
+    const [open, setOpen] = useState(!!autoFocus);
     const hits = useMemo(() => {
         const words = q.toLowerCase().split(/\s+/).filter(Boolean);
         return consoles.filter((c) => words.every((w) => c.label.toLowerCase().includes(w))).slice(0, 8);
@@ -37,13 +38,14 @@ export default function DevicePicker({ consoles, hrefFor, onPick, label, autoFoc
                 <Search size={16} className="text-text-secondary shrink-0" aria-hidden />
                 <input
                     value={q}
-                    onChange={(e) => setQ(e.target.value)}
+                    onChange={(e) => { setQ(e.target.value); setOpen(true); }}
+                    onFocus={() => setOpen(true)}
                     placeholder="Search handhelds"
                     autoFocus={autoFocus}
                     className="w-full bg-transparent py-3 text-base outline-none placeholder:text-zinc-600"
                 />
             </div>
-            <ul className="mt-2 border border-white/10 max-h-[22rem] overflow-y-auto">
+            {open && <ul className="mt-2 border border-white/10 max-h-[22rem] overflow-y-auto">
                 {hits.length === 0 && <li className="px-3 py-3 text-sm text-text-secondary">No handheld matches that.</li>}
                 {hits.map((c) => {
                     const inner = (
@@ -62,7 +64,7 @@ export default function DevicePicker({ consoles, hrefFor, onPick, label, autoFoc
                         </li>
                     );
                 })}
-            </ul>
+            </ul>}
         </div>
     );
 }
