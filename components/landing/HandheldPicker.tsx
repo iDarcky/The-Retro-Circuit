@@ -22,7 +22,7 @@ function Toggle({ on, onClick, children, active }: { on: boolean; onClick: () =>
             type="button"
             aria-pressed={on}
             onClick={onClick}
-            className={`shrink-0 whitespace-nowrap px-3 sm:px-4 py-2 font-mono text-sm transition-colors ${focus} ${on ? active : 'text-zinc-300 hover:text-white hover:bg-white/[0.06]'}`}
+            className={`whitespace-nowrap px-2.5 sm:px-4 py-2 font-mono text-[13px] sm:text-sm transition-colors ${focus} ${on ? active : 'text-zinc-300 hover:text-white hover:bg-white/[0.06]'}`}
         >
             {children}
         </button>
@@ -57,7 +57,7 @@ export default function HandheldPicker({ devices, guides }: { devices: HomeDevic
                 <p className="mt-3 text-base sm:text-lg text-text-secondary">Pick what you want to play and what you want to spend.</p>
 
                 <div className="mt-6 md:mt-8 flex flex-col items-stretch sm:items-start gap-3">
-                    <div role="group" aria-label="Systems" className="flex sm:inline-flex sm:flex-wrap overflow-x-auto no-scrollbar border border-white/10 p-1 gap-1">
+                    <div role="group" aria-label="Systems" className="flex flex-wrap sm:inline-flex border border-white/10 p-1 gap-1">
                         {SYSTEMS.map((s) => (
                             <Toggle
                                 key={s.key}
@@ -69,7 +69,7 @@ export default function HandheldPicker({ devices, guides }: { devices: HomeDevic
                             </Toggle>
                         ))}
                     </div>
-                    <div role="group" aria-label="Budget" className="flex sm:inline-flex sm:flex-wrap overflow-x-auto no-scrollbar border border-white/10 p-1 gap-1">
+                    <div role="group" aria-label="Budget" className="flex flex-wrap sm:inline-flex border border-white/10 p-1 gap-1">
                         {BUDGETS.map((b, i) => (
                             <Toggle key={b.label} on={budget === i} active="bg-violet-600 text-white" onClick={() => setBudget(i)}>
                                 {b.label}

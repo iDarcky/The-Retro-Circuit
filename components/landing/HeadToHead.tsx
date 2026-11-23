@@ -40,8 +40,8 @@ export default function HeadToHead({ pairs }: { pairs: HomePair[] }) {
 
     return (
         <section className="px-5 md:px-12 pt-16 md:pt-36" aria-labelledby="vs-heading">
-            <div className="max-w-[1200px] mx-auto grid lg:grid-cols-12 gap-6 lg:gap-10">
-                <div className="lg:col-span-4">
+            <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
+                <div className="lg:col-span-4 min-w-0">
                     <h2 id="vs-heading" className="text-[28px] leading-tight sm:text-3xl md:text-5xl font-extrabold tracking-[-0.04em]">Head to head.</h2>
                     <p className="mt-3 text-base sm:text-lg text-text-secondary">The comparisons people look up most.</p>
                     <div className="mt-6 lg:mt-8 flex lg:flex-col gap-2 lg:gap-0 overflow-x-auto no-scrollbar -mx-5 px-5 lg:mx-0 lg:px-0" role="tablist" aria-label="Matchups">
@@ -62,7 +62,7 @@ export default function HeadToHead({ pairs }: { pairs: HomePair[] }) {
                     </div>
                 </div>
 
-                <div id="vs-panel" role="tabpanel" aria-labelledby={`vs-tab-${ix}`} className="lg:col-span-8 border border-white/10 self-start">
+                <div id="vs-panel" role="tabpanel" aria-labelledby={`vs-tab-${ix}`} className="lg:col-span-8 min-w-0 border border-white/10 self-start">
                     <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 sm:py-5 border-b border-white/10">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 min-w-0">
                             <Thumb d={a} />
