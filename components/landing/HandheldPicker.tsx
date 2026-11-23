@@ -22,7 +22,7 @@ function Toggle({ on, onClick, children, active }: { on: boolean; onClick: () =>
             type="button"
             aria-pressed={on}
             onClick={onClick}
-            className={`px-4 py-2 font-mono text-sm transition-colors ${focus} ${on ? active : 'text-zinc-300 hover:text-white hover:bg-white/[0.06]'}`}
+            className={`shrink-0 whitespace-nowrap px-3 sm:px-4 py-2 font-mono text-sm transition-colors ${focus} ${on ? active : 'text-zinc-300 hover:text-white hover:bg-white/[0.06]'}`}
         >
             {children}
         </button>
@@ -51,13 +51,13 @@ export default function HandheldPicker({ devices, guides }: { devices: HomeDevic
     const firstLabel = first ? SYSTEMS.find((s) => s.key === first)!.label : null;
 
     return (
-        <section className="px-5 md:px-12 pt-20 md:pt-28" aria-labelledby="picker-heading">
+        <section className="px-5 md:px-12 pt-14 md:pt-28" aria-labelledby="picker-heading">
             <div className="max-w-[1200px] mx-auto">
-                <h2 id="picker-heading" className="text-3xl md:text-5xl font-extrabold tracking-[-0.04em]">Which one is right for you?</h2>
-                <p className="mt-3 text-lg text-text-secondary">Pick what you want to play and what you want to spend.</p>
+                <h2 id="picker-heading" className="text-[28px] leading-tight sm:text-3xl md:text-5xl font-extrabold tracking-[-0.04em]">Which one is right for you?</h2>
+                <p className="mt-3 text-base sm:text-lg text-text-secondary">Pick what you want to play and what you want to spend.</p>
 
-                <div className="mt-8 flex flex-col items-start gap-3">
-                    <div role="group" aria-label="Systems" className="inline-flex flex-wrap border border-white/10 p-1 gap-1">
+                <div className="mt-6 md:mt-8 flex flex-col items-stretch sm:items-start gap-3">
+                    <div role="group" aria-label="Systems" className="flex sm:inline-flex sm:flex-wrap overflow-x-auto no-scrollbar border border-white/10 p-1 gap-1">
                         {SYSTEMS.map((s) => (
                             <Toggle
                                 key={s.key}
@@ -69,7 +69,7 @@ export default function HandheldPicker({ devices, guides }: { devices: HomeDevic
                             </Toggle>
                         ))}
                     </div>
-                    <div role="group" aria-label="Budget" className="inline-flex flex-wrap border border-white/10 p-1 gap-1">
+                    <div role="group" aria-label="Budget" className="flex sm:inline-flex sm:flex-wrap overflow-x-auto no-scrollbar border border-white/10 p-1 gap-1">
                         {BUDGETS.map((b, i) => (
                             <Toggle key={b.label} on={budget === i} active="bg-violet-600 text-white" onClick={() => setBudget(i)}>
                                 {b.label}
@@ -78,27 +78,27 @@ export default function HandheldPicker({ devices, guides }: { devices: HomeDevic
                     </div>
                 </div>
 
-                <div className="mt-8 border border-white/10">
-                    <p className="px-5 py-3 text-sm text-text-secondary border-b border-white/10" aria-live="polite">
+                <div className="mt-6 md:mt-8 border border-white/10">
+                    <p className="px-4 sm:px-5 py-3 text-sm text-text-secondary border-b border-white/10" aria-live="polite">
                         {results.length} {results.length === 1 ? 'match' : 'matches'}
                         {results.length > SHOWN ? ', best five first' : ''}
                     </p>
                     {results.length === 0 ? (
-                        <p className="px-5 py-10">Nothing fits yet. Raise the budget or drop a system.</p>
+                        <p className="px-4 sm:px-5 py-10">Nothing fits yet. Raise the budget or drop a system.</p>
                     ) : (
                         <ol>
                             {results.slice(0, SHOWN).map((d, i) => (
                                 <li key={d.slug} className="border-b border-white/10 last:border-b-0">
                                     <Link
                                         href={`/consoles/${d.slug}`}
-                                        className={`grid grid-cols-[1.25rem_3.5rem_1fr_auto] md:grid-cols-[2rem_4rem_1.4fr_1fr_0.6fr_0.8fr_5rem] items-center gap-4 px-5 py-3 hover:bg-white/[0.04] ${focus} focus-visible:-outline-offset-2`}
+                                        className={`grid grid-cols-[1.25rem_3.5rem_1fr_auto] md:grid-cols-[2rem_4rem_1.4fr_1fr_0.6fr_0.8fr_5rem] items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3 hover:bg-white/[0.04] ${focus} focus-visible:-outline-offset-2`}
                                     >
                                         <span className="font-mono text-sm text-text-secondary">{i + 1}</span>
                                         <span className="relative w-14 h-10">
                                             {d.image && <Image src={d.image} alt="" fill sizes="56px" className="object-contain" />}
                                         </span>
                                         <span className="min-w-0">
-                                            <span className="block font-semibold leading-snug md:truncate">{d.label}</span>
+                                            <span className="block font-semibold text-[15px] sm:text-base leading-snug md:truncate">{d.label}</span>
                                             {first && (
                                                 <span className="flex items-center gap-1.5 text-xs text-text-secondary">
                                                     <span className={`w-1.5 h-1.5 rounded-full ${RATING_DOT[d.emu[first]]}`} />

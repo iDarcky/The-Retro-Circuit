@@ -39,12 +39,12 @@ export default function HeadToHead({ pairs }: { pairs: HomePair[] }) {
     const { a, b } = pair;
 
     return (
-        <section className="px-5 md:px-12 pt-24 md:pt-36" aria-labelledby="vs-heading">
-            <div className="max-w-[1200px] mx-auto grid lg:grid-cols-12 gap-10">
+        <section className="px-5 md:px-12 pt-16 md:pt-36" aria-labelledby="vs-heading">
+            <div className="max-w-[1200px] mx-auto grid lg:grid-cols-12 gap-6 lg:gap-10">
                 <div className="lg:col-span-4">
-                    <h2 id="vs-heading" className="text-3xl md:text-5xl font-extrabold tracking-[-0.04em]">Head to head.</h2>
-                    <p className="mt-3 text-lg text-text-secondary">The comparisons people look up most.</p>
-                    <div className="mt-8 flex flex-col" role="tablist" aria-label="Matchups">
+                    <h2 id="vs-heading" className="text-[28px] leading-tight sm:text-3xl md:text-5xl font-extrabold tracking-[-0.04em]">Head to head.</h2>
+                    <p className="mt-3 text-base sm:text-lg text-text-secondary">The comparisons people look up most.</p>
+                    <div className="mt-6 lg:mt-8 flex lg:flex-col gap-2 lg:gap-0 overflow-x-auto no-scrollbar -mx-5 px-5 lg:mx-0 lg:px-0" role="tablist" aria-label="Matchups">
                         {pairs.slice(0, TABS).map((p, i) => (
                             <button
                                 key={p.href}
@@ -54,7 +54,7 @@ export default function HeadToHead({ pairs }: { pairs: HomePair[] }) {
                                 aria-selected={i === ix}
                                 aria-controls="vs-panel"
                                 onClick={() => setIx(i)}
-                                className={`text-left py-2.5 border-b border-white/10 text-[15px] ${focus} ${i === ix ? 'text-white font-semibold' : 'text-text-secondary hover:text-white'}`}
+                                className={`shrink-0 lg:shrink text-left whitespace-nowrap lg:whitespace-normal px-3 lg:px-0 py-2 lg:py-2.5 border lg:border-0 lg:border-b border-white/10 text-sm lg:text-[15px] ${focus} ${i === ix ? 'bg-white text-black lg:bg-transparent lg:text-white font-semibold' : 'text-text-secondary hover:text-white'}`}
                             >
                                 {p.a.label} vs {p.b.label}
                             </button>
@@ -63,7 +63,7 @@ export default function HeadToHead({ pairs }: { pairs: HomePair[] }) {
                 </div>
 
                 <div id="vs-panel" role="tabpanel" aria-labelledby={`vs-tab-${ix}`} className="lg:col-span-8 border border-white/10 self-start">
-                    <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-5 py-5 border-b border-white/10">
+                    <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 sm:py-5 border-b border-white/10">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 min-w-0">
                             <Thumb d={a} />
                             <p className="font-bold text-sm sm:text-base leading-snug sm:truncate">{a.label}</p>
@@ -83,12 +83,12 @@ export default function HeadToHead({ pairs }: { pairs: HomePair[] }) {
                                 const bWins = both && !aWins;
                                 return (
                                     <tr key={r.label} className="border-b border-white/10 last:border-b-0">
-                                        <td className={`px-5 py-3 font-mono w-[40%] ${aWins ? 'text-violet-400' : ''}`}>
+                                        <td className={`px-4 sm:px-5 py-3 font-mono w-[38%] sm:w-[40%] ${aWins ? 'text-violet-400' : ''}`}>
                                             {r.a !== null ? r.fmt(r.a) : 'Not listed'}
                                             {aWins && <span aria-label="better"> ✓</span>}
                                         </td>
-                                        <th scope="row" className="py-3 font-normal text-text-secondary text-center">{r.label}</th>
-                                        <td className={`px-5 py-3 font-mono text-right w-[40%] ${bWins ? 'text-violet-400' : ''}`}>
+                                        <th scope="row" className="py-3 font-normal text-xs sm:text-sm text-text-secondary text-center">{r.label}</th>
+                                        <td className={`px-4 sm:px-5 py-3 font-mono text-right w-[38%] sm:w-[40%] ${bWins ? 'text-violet-400' : ''}`}>
                                             {bWins && <span aria-label="better">✓ </span>}
                                             {r.b !== null ? r.fmt(r.b) : 'Not listed'}
                                         </td>
@@ -97,27 +97,31 @@ export default function HeadToHead({ pairs }: { pairs: HomePair[] }) {
                             })}
                         </tbody>
                     </table>
-                    <Link href={pair.href} className={`block px-5 py-4 border-t border-white/10 font-mono text-sm text-violet-400 hover:bg-white hover:text-black ${focus} focus-visible:-outline-offset-2`}>
+                    <Link href={pair.href} className={`block px-4 sm:px-5 py-4 border-t border-white/10 font-mono text-sm text-violet-400 hover:bg-white hover:text-black ${focus} focus-visible:-outline-offset-2`}>
                         See the full comparison
                     </Link>
                 </div>
             </div>
 
-            {pairs.length > TABS && (
-                <p className="max-w-[1200px] mx-auto mt-6 text-[15px] leading-relaxed text-text-secondary">
-                    More comparisons:{' '}
-                    {pairs.map((p, i) => (
-                        <span key={p.href}>
-                            <Link href={p.href} className={`text-violet-400 hover:text-white underline-offset-4 hover:underline ${focus}`}>
-                                {p.a.label} vs {p.b.label}
-                            </Link>
-                            {i < pairs.length - 1 ? ', ' : ''}
-                        </span>
-                    ))}
-                    , or{' '}
-                    <Link href="/arena" className={`text-violet-400 hover:text-white underline-offset-4 hover:underline ${focus}`}>pick your own two</Link>.
-                </p>
-            )}
+            <div className="max-w-[1200px] mx-auto mt-8">
+                {pairs.length > TABS && (
+                    <>
+                        <h3 className="font-mono text-sm text-text-secondary">Also compared often</h3>
+                        <ul className="mt-3 flex flex-wrap gap-2">
+                            {pairs.slice(TABS).map((p) => (
+                                <li key={p.href}>
+                                    <Link href={p.href} className={`block px-3 py-2 border border-white/10 text-sm hover:bg-white hover:text-black transition-colors ${focus}`}>
+                                        {p.a.label} vs {p.b.label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </>
+                )}
+                <Link href="/arena" className={`inline-block mt-4 font-mono text-sm text-violet-400 hover:text-white ${focus}`}>
+                    Or pick any two yourself
+                </Link>
+            </div>
         </section>
     );
 }

@@ -1,9 +1,8 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { loadHomeData } from './home-data';
 import HandheldPicker from './HandheldPicker';
 import HeadToHead from './HeadToHead';
-import EmailCTA from './EmailCTA';
+import JustAdded from './JustAdded';
 
 const focus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500';
 
@@ -26,51 +25,26 @@ export default async function LandingPage() {
         <div className="bg-bg-primary min-h-screen text-text-primary font-sans">
             {/* Hero, ending in the "Just added" strip */}
             <header>
-                <div className="px-5 pt-16 md:pt-24 pb-12 md:pb-16 text-center">
+                <div className="px-5 pt-12 md:pt-24 pb-10 md:pb-16 text-center">
                     <div className="flex justify-center mb-6"><FaceButtons /></div>
                     <h1 className="font-pixel text-[20px] leading-[1.4] sm:text-4xl lg:text-5xl md:text-[64px] md:leading-[1.25] text-white">
                         Every handheld.<br />Every spec.
                     </h1>
-                    <p className="mt-6 text-lg md:text-2xl text-text-secondary max-w-[34ch] mx-auto leading-snug">
+                    <p className="mt-5 md:mt-6 text-base sm:text-lg md:text-2xl text-text-secondary max-w-[34ch] mx-auto leading-snug">
                         {data.count > 0 ? `${data.count} retro handhelds, measured the same way` : 'Retro handhelds, measured the same way'}
                         {data.minPrice ? `, from $${data.minPrice} pocket players to PS2-class powerhouses.` : '.'}
                     </p>
-                    <div className="mt-8 flex justify-center items-center gap-6">
-                        <Link href="/consoles" className={`bg-white text-black font-mono text-sm px-6 py-3 hover:bg-violet-500 hover:text-white transition-colors ${focus}`}>
+                    <div className="mt-8 flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-3 sm:gap-6 max-w-[320px] sm:max-w-none mx-auto">
+                        <Link href="/consoles" className={`text-center bg-white text-black font-mono text-sm px-6 py-3 hover:bg-violet-500 hover:text-white transition-colors ${focus}`}>
                             Browse handhelds
                         </Link>
-                        <Link href="/arena" className={`font-mono text-sm text-violet-400 hover:text-white ${focus}`}>
+                        <Link href="/arena" className={`text-center font-mono text-sm text-violet-400 hover:text-white py-3 sm:py-0 border border-white/10 sm:border-0 ${focus}`}>
                             Compare two
                         </Link>
                     </div>
                 </div>
 
-                {data.newest.length > 0 && (
-                    <div className="border-y border-white/10">
-                        <div className="flex items-stretch overflow-x-auto no-scrollbar snap-x">
-                            <h2 className="shrink-0 snap-start flex items-center px-5 md:px-8 font-mono text-sm text-text-secondary border-r border-white/10 whitespace-nowrap">
-                                Just added
-                            </h2>
-                            {data.newest.map((d) => (
-                                <Link
-                                    key={d.slug}
-                                    href={`/consoles/${d.slug}`}
-                                    className={`shrink-0 snap-start flex items-center gap-3 px-5 py-4 border-r border-white/10 hover:bg-white/[0.04] ${focus} focus-visible:-outline-offset-2`}
-                                >
-                                    <span className="relative w-14 h-10 shrink-0">
-                                        {d.image && <Image src={d.image} alt="" fill sizes="56px" className="object-contain" />}
-                                    </span>
-                                    <span className="text-left">
-                                        <span className="block font-semibold whitespace-nowrap">{d.label}</span>
-                                        <span className="block font-mono text-xs text-cyan-400 whitespace-nowrap">
-                                            {[d.screenIn ? `${d.screenIn}"` : null, d.price ? `$${d.price}` : null].filter(Boolean).join(', ') || 'See specs'}
-                                        </span>
-                                    </span>
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                {data.newest.length > 0 && <JustAdded devices={data.newest} />}
             </header>
 
             <HandheldPicker devices={data.all} guides={data.guides} />
@@ -78,17 +52,17 @@ export default async function LandingPage() {
             <HeadToHead pairs={data.pairs} />
 
             {/* Finder */}
-            <section className="px-5 md:px-12 pt-24 md:pt-36 pb-24 md:pb-36" aria-labelledby="finder-heading">
-                <div className="max-w-[1200px] mx-auto bg-violet-600 text-white px-8 py-14 md:p-20 grid md:grid-cols-[1fr_auto] gap-12 items-center overflow-hidden">
+            <section className="px-5 md:px-12 pt-16 md:pt-36 pb-16 md:pb-36" aria-labelledby="finder-heading">
+                <div className="max-w-[1200px] mx-auto bg-violet-600 text-white px-6 py-10 md:p-20 grid md:grid-cols-[1fr_auto] gap-12 items-center overflow-hidden">
                     <div>
-                        <h2 id="finder-heading" className="text-4xl md:text-6xl font-extrabold tracking-[-0.04em] leading-[1.05]">Still deciding?</h2>
-                        <p className="mt-4 text-lg md:text-xl text-violet-100 max-w-[32ch]">Answer eight quick questions and get a ranked shortlist made for you.</p>
+                        <h2 id="finder-heading" className="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-[-0.04em] leading-[1.05]">Still deciding?</h2>
+                        <p className="mt-4 text-base sm:text-lg md:text-xl text-violet-100 max-w-[32ch]">Answer eight quick questions and get a ranked shortlist made for you.</p>
                         <Link href="/finder" className={`mt-8 inline-block bg-white text-black font-mono text-sm px-6 py-3 hover:bg-black hover:text-white transition-colors ${focus} focus-visible:outline-white`}>
                             Start the Finder
                         </Link>
                     </div>
                     {/* A controller, drawn: d-pad and two face buttons */}
-                    <div aria-hidden className="flex items-center gap-12 md:gap-16 justify-center">
+                    <div aria-hidden className="hidden md:flex items-center gap-12 md:gap-16 justify-center">
                         <div className="relative w-24 h-24">
                             <span className="absolute left-1/3 top-0 w-1/3 h-full bg-indigo-950 rounded-sm" />
                             <span className="absolute top-1/3 left-0 h-1/3 w-full bg-indigo-950 rounded-sm" />
@@ -101,7 +75,6 @@ export default async function LandingPage() {
                 </div>
             </section>
 
-            <EmailCTA />
         </div>
     );
 }
