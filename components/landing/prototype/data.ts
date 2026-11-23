@@ -25,6 +25,8 @@ const STATE_RANK: Record<string, number> = { Perfect: 4, Great: 3, Playable: 2, 
 export interface HomeDevice {
     slug: string;
     name: string;
+    /** Brand plus model, e.g. "Retroid Pocket 6", unless the name already starts with the brand. */
+    label: string;
     brand: string;
     image: string | null;
     price: number | null;
@@ -48,6 +50,9 @@ export interface HomeData {
     guides: { href: string; label: string; title: string; description: string; picks: HomeDevice[] }[];
 }
 
+const fullName = (brand: string, name: string) =>
+    !brand || name.toLowerCase().startsWith(brand.toLowerCase()) ? name : `${brand} ${name}`;
+
 const num = (v: unknown) => (typeof v === 'number' && v > 0 ? v : null);
 
 export function toHomeDevice(c: ConsoleDetails): HomeDevice {
@@ -67,6 +72,7 @@ export function toHomeDevice(c: ConsoleDetails): HomeDevice {
     return {
         slug: c.slug,
         name: c.name,
+        label: fullName(c.manufacturer?.name ?? '', c.name),
         brand: c.manufacturer?.name ?? '',
         image: c.image_url ?? null,
         // No handheld sells for under $20; a smaller number is a data-entry slip.

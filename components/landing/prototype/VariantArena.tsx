@@ -53,7 +53,7 @@ export default function VariantArena({ data }: { data: HomeData }) {
                             onClick={() => setI(j)}
                             className={`shrink-0 px-3 py-2 border font-mono text-xs ${i === j ? 'bg-white text-black border-white' : 'border-white/20 text-zinc-400 hover:border-white hover:text-white'}`}
                         >
-                            {p.a.name} vs {p.b.name}
+                            {p.a.label} vs {p.b.label}
                         </button>
                     ))}
                 </div>
@@ -98,7 +98,7 @@ export default function VariantArena({ data }: { data: HomeData }) {
                         <li key={d.slug} className="bg-black">
                             <Link href={`/consoles/${d.slug}`} className="group block hover:bg-white hover:text-black">
                                 <div className="relative aspect-square">{d.image && <Image src={d.image} alt="" fill sizes="12vw" className="object-contain p-4" />}</div>
-                                <p className="px-3 pb-3 text-sm font-semibold truncate">{d.name}</p>
+                                <p className="px-3 pb-3 text-sm font-semibold truncate">{d.label}</p>
                             </Link>
                         </li>
                     ))}

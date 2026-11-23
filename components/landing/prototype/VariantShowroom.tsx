@@ -31,7 +31,7 @@ function Shelf({ title, href, devices }: { title: string; href: string; devices:
                                 {d.image && <Image src={d.image} alt="" fill sizes="256px" className="object-contain p-6" />}
                             </div>
                             <div className="p-4">
-                                <p className="font-semibold truncate">{d.name}</p>
+                                <p className="font-semibold truncate">{d.label}</p>
                                 <p className="font-mono text-xs text-zinc-400 group-hover:text-zinc-700">{d.price ? `$${d.price}` : d.brand}</p>
                             </div>
                         </Link>

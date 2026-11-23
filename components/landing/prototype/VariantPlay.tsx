@@ -87,7 +87,7 @@ export default function VariantPlay({ data }: { data: HomeData }) {
                                         {d.image && <Image src={d.image} alt="" fill sizes="25vw" className="object-contain p-5" />}
                                     </div>
                                     <div className="p-4 mt-auto">
-                                        <p className="font-semibold truncate">{d.name}</p>
+                                        <p className="font-semibold truncate">{d.label}</p>
                                         <p className="font-mono text-xs text-zinc-400 group-hover:text-zinc-700 mt-1">
                                             {d.price ? `$${d.price}` : 'Price not listed'}
                                             {systems[0] ? `, ${SYSTEMS.find((s) => s.key === systems[0])!.label} ${RATING[d.emu[systems[0]]].toLowerCase()}` : ''}
@@ -113,9 +113,9 @@ export default function VariantPlay({ data }: { data: HomeData }) {
                             {data.pairs.slice(0, 8).map((p) => (
                                 <li key={p.href}>
                                     <Link href={p.href} className="flex justify-between gap-4 py-3 hover:text-violet-400">
-                                        <span>{p.a.name}</span>
+                                        <span>{p.a.label}</span>
                                         <span className="font-mono text-xs text-zinc-500 self-center">vs</span>
-                                        <span className="text-right">{p.b.name}</span>
+                                        <span className="text-right">{p.b.label}</span>
                                     </Link>
                                 </li>
                             ))}
