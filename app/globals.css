@@ -148,23 +148,3 @@ body {
     radial-gradient(120% 90% at 50% 40%, rgba(139, 92, 246, 0.10), transparent 62%),
     var(--rc-panel);
 }
-
-/* Homepage spec ledger: when the screen switches device, the picture "draws in" in
-   eight hard steps, like an LCD refreshing line by line. One moment, user-triggered. */
-@keyframes ledger-draw {
-  from { clip-path: inset(0 0 100% 0); }
-  to { clip-path: inset(0 0 0 0); }
-}
-@keyframes ledger-scan {
-  from { transform: translateY(-100%); }
-  to { transform: translateY(100%); }
-}
-.ledger-screen > img { animation: ledger-draw 320ms steps(8, end) both; }
-.ledger-scan {
-  background: linear-gradient(to bottom, transparent calc(100% - 2px), rgb(139 92 246 / 0.9) calc(100% - 2px));
-  animation: ledger-scan 320ms steps(8, end) both;
-}
-@media (prefers-reduced-motion: reduce) {
-  .ledger-screen > img, .ledger-scan { animation: none; }
-  .ledger-scan { display: none; }
-}

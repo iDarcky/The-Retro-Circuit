@@ -1,69 +1,107 @@
-import { fetchLatestConsoles } from '../../app/actions/latest';
-import { fetchConsoleList, fetchConsoleAndVariantCounts } from '../../app/actions/consoles';
-import { INDEXABLE_ARENA_SIDES, pairKey } from '../../lib/arena/indexable';
-import { BEST_OF_COLLECTIONS } from '../../lib/bestof/collections';
-import { type ConsoleDetails } from '../../lib/types/domain';
-import LandingView, { type Matchup } from './LandingView';
-import { type LedgerDevice } from './SpecLedger';
+import Link from 'next/link';
+import Image from 'next/image';
+import { loadHomeData } from './home-data';
+import HandheldPicker from './HandheldPicker';
+import HeadToHead from './HeadToHead';
+import EmailCTA from './EmailCTA';
 
-/** How many curated comparisons the homepage links to. */
-const MATCHUP_COUNT = 10;
+const focus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500';
 
-function toLedgerDevice(c: ConsoleDetails): LedgerDevice {
-    const s: any = c.specs || {};
-    const size = typeof s.screen_size_inch === 'number' && s.screen_size_inch > 0 ? `${s.screen_size_inch}"` : null;
-    const res =
-        s.screen_resolution_x && s.screen_resolution_y ? `${s.screen_resolution_x}×${s.screen_resolution_y}` : null;
-    const price = s.price_launch_usd ?? s.price_avg_usd ?? null;
-    return {
-        slug: c.slug,
-        name: c.name,
-        brand: c.manufacturer?.name ?? '',
-        image: c.image_url ?? null,
-        chip: s.soc_name || s.soc || null,
-        screen: size,
-        resolution: res,
-        // No handheld sells for under $20, so a smaller number is a data-entry slip; hide it.
-        price: typeof price === 'number' && price >= 20 ? Math.round(price) : null,
-    };
+/** The four signal colours set out like a controller's face buttons: the page's small mark. */
+function FaceButtons() {
+    const dot = 'w-[9px] h-[9px] rounded-full';
+    return (
+        <span aria-hidden className="inline-grid grid-cols-3 gap-[2px]">
+            <span /><span className={`${dot} bg-violet-500`} /><span />
+            <span className={`${dot} bg-cyan-500`} /><span /><span className={`${dot} bg-rose-500`} />
+            <span /><span className={`${dot} bg-orange-500`} /><span />
+        </span>
+    );
 }
 
 export default async function LandingPage() {
-    // Independent queries, run in parallel.
-    const [latestAdded, allConsoles, counts] = await Promise.all([
-        fetchLatestConsoles(8),
-        fetchConsoleList(),
-        fetchConsoleAndVariantCounts(),
-    ]);
-
-    const searchableConsoles = allConsoles.map((c) => ({
-        name: c.name,
-        slug: c.slug,
-        manufacturerSlug:
-            c.manufacturer?.slug || c.manufacturer?.name.toLowerCase().replace(/\s+/g, '-') || 'unknown',
-    }));
-
-    // Curated comparisons from the sitemap's keep-list, only where both sides are published.
-    // Same canonical URL the sitemap uses, so these links point straight at indexed pages.
-    const names = new Map(allConsoles.map((c) => [c.slug, c.name]));
-    const matchups: Matchup[] = INDEXABLE_ARENA_SIDES.filter(([a, b]) => names.has(a) && names.has(b))
-        .slice(0, MATCHUP_COUNT)
-        .map(([a, b]) => ({ href: `/arena/${pairKey(a, b)}`, a: names.get(a)!, b: names.get(b)! }));
-
-    const guides = BEST_OF_COLLECTIONS.map((g) => ({
-        href: `/best/${g.slug}`,
-        label: g.shortLabel,
-        title: g.title,
-        description: g.description,
-    }));
+    const data = await loadHomeData();
 
     return (
-        <LandingView
-            counts={counts}
-            devices={latestAdded.map(toLedgerDevice)}
-            matchups={matchups}
-            guides={guides}
-            searchableConsoles={searchableConsoles}
-        />
+        <div className="bg-bg-primary min-h-screen text-text-primary font-sans">
+            {/* Hero, ending in the "Just added" strip */}
+            <header>
+                <div className="px-5 pt-16 md:pt-24 pb-12 md:pb-16 text-center">
+                    <div className="flex justify-center mb-6"><FaceButtons /></div>
+                    <h1 className="font-pixel text-[20px] leading-[1.4] sm:text-4xl lg:text-5xl md:text-[64px] md:leading-[1.25] text-white">
+                        Every handheld.<br />Every spec.
+                    </h1>
+                    <p className="mt-6 text-lg md:text-2xl text-text-secondary max-w-[34ch] mx-auto leading-snug">
+                        {data.count > 0 ? `${data.count} retro handhelds, measured the same way` : 'Retro handhelds, measured the same way'}
+                        {data.minPrice ? `, from $${data.minPrice} pocket players to PS2-class powerhouses.` : '.'}
+                    </p>
+                    <div className="mt-8 flex justify-center items-center gap-6">
+                        <Link href="/consoles" className={`bg-white text-black font-mono text-sm px-6 py-3 hover:bg-violet-500 hover:text-white transition-colors ${focus}`}>
+                            Browse handhelds
+                        </Link>
+                        <Link href="/arena" className={`font-mono text-sm text-violet-400 hover:text-white ${focus}`}>
+                            Compare two
+                        </Link>
+                    </div>
+                </div>
+
+                {data.newest.length > 0 && (
+                    <div className="border-y border-white/10">
+                        <div className="flex items-stretch overflow-x-auto no-scrollbar snap-x">
+                            <h2 className="shrink-0 snap-start flex items-center px-5 md:px-8 font-mono text-sm text-text-secondary border-r border-white/10 whitespace-nowrap">
+                                Just added
+                            </h2>
+                            {data.newest.map((d) => (
+                                <Link
+                                    key={d.slug}
+                                    href={`/consoles/${d.slug}`}
+                                    className={`shrink-0 snap-start flex items-center gap-3 px-5 py-4 border-r border-white/10 hover:bg-white/[0.04] ${focus} focus-visible:-outline-offset-2`}
+                                >
+                                    <span className="relative w-14 h-10 shrink-0">
+                                        {d.image && <Image src={d.image} alt="" fill sizes="56px" className="object-contain" />}
+                                    </span>
+                                    <span className="text-left">
+                                        <span className="block font-semibold whitespace-nowrap">{d.label}</span>
+                                        <span className="block font-mono text-xs text-cyan-400 whitespace-nowrap">
+                                            {[d.screenIn ? `${d.screenIn}"` : null, d.price ? `$${d.price}` : null].filter(Boolean).join(', ') || 'See specs'}
+                                        </span>
+                                    </span>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </header>
+
+            <HandheldPicker devices={data.all} guides={data.guides} />
+
+            <HeadToHead pairs={data.pairs} />
+
+            {/* Finder */}
+            <section className="px-5 md:px-12 pt-24 md:pt-36 pb-24 md:pb-36" aria-labelledby="finder-heading">
+                <div className="max-w-[1200px] mx-auto bg-violet-600 text-white px-8 py-14 md:p-20 grid md:grid-cols-[1fr_auto] gap-12 items-center overflow-hidden">
+                    <div>
+                        <h2 id="finder-heading" className="text-4xl md:text-6xl font-extrabold tracking-[-0.04em] leading-[1.05]">Still deciding?</h2>
+                        <p className="mt-4 text-lg md:text-xl text-violet-100 max-w-[32ch]">Answer eight quick questions and get a ranked shortlist made for you.</p>
+                        <Link href="/finder" className={`mt-8 inline-block bg-white text-black font-mono text-sm px-6 py-3 hover:bg-black hover:text-white transition-colors ${focus} focus-visible:outline-white`}>
+                            Start the Finder
+                        </Link>
+                    </div>
+                    {/* A controller, drawn: d-pad and two face buttons */}
+                    <div aria-hidden className="flex items-center gap-12 md:gap-16 justify-center">
+                        <div className="relative w-24 h-24">
+                            <span className="absolute left-1/3 top-0 w-1/3 h-full bg-indigo-950 rounded-sm" />
+                            <span className="absolute top-1/3 left-0 h-1/3 w-full bg-indigo-950 rounded-sm" />
+                        </div>
+                        <div className="rotate-[-20deg] flex gap-4">
+                            <span className="w-14 h-14 rounded-full bg-cyan-500" />
+                            <span className="w-14 h-14 rounded-full bg-rose-500 -translate-y-3.5" />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <EmailCTA />
+        </div>
     );
 }
