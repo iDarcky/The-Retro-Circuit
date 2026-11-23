@@ -64,13 +64,13 @@ export default function HeadToHead({ pairs }: { pairs: HomePair[] }) {
 
                 <div id="vs-panel" role="tabpanel" aria-labelledby={`vs-tab-${ix}`} className="lg:col-span-8 border border-white/10 self-start">
                     <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-5 py-5 border-b border-white/10">
-                        <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 min-w-0">
                             <Thumb d={a} />
-                            <p className="font-bold truncate">{a.label}</p>
+                            <p className="font-bold text-sm sm:text-base leading-snug sm:truncate">{a.label}</p>
                         </div>
                         <span className="font-pixel text-[10px] text-text-secondary">VS</span>
-                        <div className="flex items-center justify-end gap-3 min-w-0">
-                            <p className="font-bold truncate text-right">{b.label}</p>
+                        <div className="flex flex-col-reverse sm:flex-row items-end sm:items-center justify-end gap-2 sm:gap-3 min-w-0">
+                            <p className="font-bold text-sm sm:text-base leading-snug sm:truncate text-right">{b.label}</p>
                             <Thumb d={b} />
                         </div>
                     </div>

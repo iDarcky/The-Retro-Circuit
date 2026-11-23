@@ -98,7 +98,7 @@ export default function HandheldPicker({ devices, guides }: { devices: HomeDevic
                                             {d.image && <Image src={d.image} alt="" fill sizes="56px" className="object-contain" />}
                                         </span>
                                         <span className="min-w-0">
-                                            <span className="block font-semibold truncate">{d.label}</span>
+                                            <span className="block font-semibold leading-snug md:truncate">{d.label}</span>
                                             {first && (
                                                 <span className="flex items-center gap-1.5 text-xs text-text-secondary">
                                                     <span className={`w-1.5 h-1.5 rounded-full ${RATING_DOT[d.emu[first]]}`} />
