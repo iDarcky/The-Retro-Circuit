@@ -158,14 +158,23 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* Bit, the neon mascot: a gentle float, a side-to-side rock, and the odd neon flicker */
-@keyframes bitFloat {
-  0%, 100% { transform: translateY(2%); }
-  50% { transform: translateY(-2%); }
+/* Bit, the neon mascot: a gentle bob, a wave in bursts, a blink, and the odd neon flicker */
+@keyframes bitBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
-@keyframes bitRock {
-  0%, 100% { transform: rotate(-2deg); }
-  50% { transform: rotate(2deg); }
+@keyframes bitWave {
+  0%, 60%, 100% { transform: rotate(0deg); }
+  10% { transform: rotate(-14deg); }
+  20% { transform: rotate(6deg); }
+  30% { transform: rotate(-14deg); }
+  40% { transform: rotate(6deg); }
+  50% { transform: rotate(-6deg); }
+}
+@keyframes bitBlink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  93% { transform: scaleY(0.1); }
+  96% { transform: scaleY(1); }
 }
 @keyframes neonFlicker {
   0%, 88%, 100% { opacity: 1; }
