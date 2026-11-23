@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeftRight, Check } from 'lucide-react';
-import { emulationRows, keySpecs, priceOf, reasons, RATING_LABEL, specGroups, type SpecRow } from '../../lib/arena/compare-view';
+import { emulationRows, keySpecs, priceOf, reasons, RATING_LABEL, specGroups, variantLabel, type SpecRow } from '../../lib/arena/compare-view';
 import { getBuyUrl } from '../../lib/affiliate';
 import { pairKey } from '../../lib/arena/indexable';
 import AffiliateLink from '../console/AffiliateLink';
@@ -165,7 +165,7 @@ export default function ArenaView({ a, b, consoles, related, base }: {
                                                 onClick={() => set(j)}
                                                 className={`px-2.5 py-1.5 font-mono text-xs border ${focus} ${i === j ? 'bg-white text-black border-white' : 'border-white/10 text-zinc-300 hover:text-white hover:bg-white/[0.06]'}`}
                                             >
-                                                {x.variant_name || `Option ${j + 1}`}
+                                                {variantLabel(x, j)}
                                             </button>
                                         ))}
                                     </div>

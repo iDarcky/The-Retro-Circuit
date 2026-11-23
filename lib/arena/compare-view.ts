@@ -101,7 +101,7 @@ const n = (key: string, unit = '', better: Better = 'higher') => ({
 });
 const t = (get: (v: V) => unknown) => ({ get: (v: V) => ({ show: text(get(v)) }) });
 const b = (get: (v: V) => unknown) => ({ get: (v: V) => ({ show: yesNo(get(v)) }) });
-const ip = (v: V) => v.variant_input_profile || {};
+const ip = (v: V) => { const p = v.variant_input_profile; return (Array.isArray(p) ? p[0] : p) || {}; };
 
 const GROUPS: { title: string; defs: Def[] }[] = [
     {
@@ -234,11 +234,21 @@ export function keySpecs(a: V, b: V): SpecRow[] {
     ];
 }
 
+/** What a configuration is called on its button: its name, else memory and storage. */
+export function variantLabel(v: V, i: number): string {
+    const name = text(v.variant_name);
+    if (name) return name;
+    const r = ramGb(v), st = num(v.storage_gb);
+    if (r && st) return `${r} GB + ${st} GB`;
+    return text(v.slug) ?? `Option ${i + 1}`;
+}
+
 /* ---------- emulation ---------- */
 
 /** Systems either device has a rating for, oldest first. */
 export function emulationRows(a: V, b: V): EmuRow[] {
-    const pa = a.emulation_profile || {}, pb = b.emulation_profile || {};
+    const prof = (v: V) => { const p = v.emulation_profile ?? v.emulation_profiles; return (Array.isArray(p) ? p[0] : p) || {}; };
+    const pa = prof(a), pb = prof(b);
     const systems: { key: string; label: string }[] = SYSTEM_TIERS.flatMap((tier) => [...tier.systems] as { key: string; label: string }[]);
     return systems
         .map(({ key, label }): EmuRow => {
