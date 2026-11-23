@@ -6,7 +6,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
-export function useInView<T extends HTMLElement>(margin = '0px 0px -12% 0px') {
+export function useInView<T extends HTMLElement>(margin = '0px 0px -4% 0px') {
     const ref = useRef<T>(null);
     const [seen, setSeen] = useState(false);
     useEffect(() => {
@@ -27,7 +27,7 @@ export function Reveal({ children, className = '', delay = 0 }: { children: Reac
         <div
             ref={ref}
             style={{ transitionDelay: `${delay}ms` }}
-            className={`motion-safe:transition-all motion-safe:duration-700 motion-safe:ease-out ${seen ? 'opacity-100 translate-y-0' : 'motion-safe:opacity-0 motion-safe:translate-y-6'} ${className}`}
+            className={`motion-safe:transition-all motion-safe:duration-500 motion-safe:ease-out ${seen ? 'opacity-100 translate-y-0' : 'motion-safe:opacity-0 motion-safe:translate-y-6'} ${className}`}
         >
             {children}
         </div>
@@ -106,7 +106,8 @@ export function SegmentBar({ value, segments = 20, color = 'bg-violet-400' }: { 
 export function TugBar({ a, b, lowerWins = false, colorA, colorB }: { a: number; b: number; lowerWins?: boolean; colorA: string; colorB: string }) {
     const [ref, seen] = useInView<HTMLSpanElement>();
     const [x, y] = lowerWins ? [1 / a, 1 / b] : [a, b];
-    const share = Math.max(8, Math.min(92, (x / (x + y)) * 100));
+    // Lean by the relative gap, so a 15% difference is visible rather than a 46/54 split.
+    const share = Math.max(10, Math.min(90, 50 + ((x - y) / Math.max(x, y)) * 75));
     return (
         <span ref={ref} className="flex h-1.5 w-full bg-white/10" aria-hidden>
             <span style={{ width: seen ? `${share}%` : '50%' }} className={`${colorA} motion-safe:transition-[width] motion-safe:duration-700 motion-safe:ease-out`} />
