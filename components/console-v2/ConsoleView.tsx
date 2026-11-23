@@ -141,9 +141,9 @@ export default function ConsoleView(p: {
                 </nav>
 
                 {/* Hero */}
-                <div ref={hero} className="mt-6 md:mt-8 grid md:grid-cols-[5fr_6fr] gap-8 md:gap-12 items-start">
+                <div ref={hero} className="mt-6 md:mt-8 grid md:grid-cols-[4fr_6fr] gap-8 md:gap-12 items-start">
                     <div className="border border-white/10 aspect-[4/3] relative">
-                        {p.image && <Image src={p.image} alt={p.label} fill sizes="(min-width: 768px) 480px, 100vw" className="object-contain p-10 md:p-14" priority />}
+                        {p.image && <Image src={p.image} alt={p.label} fill sizes="(min-width: 768px) 480px, 100vw" className="object-contain p-14 md:p-16" priority />}
                         {status && <span className="absolute top-3 left-3 font-mono text-xs text-orange-400 border border-orange-500/50 px-2 py-1">{status}</span>}
                     </div>
 
@@ -155,6 +155,9 @@ export default function ConsoleView(p: {
                             <span className="font-mono text-4xl md:text-5xl text-white">{price ? `$${price}` : 'Price not listed'}</span>
                             {price && <span className="text-text-secondary">at launch</span>}
                         </div>
+                        {Number(v.price_avg_usd) >= 20 && Math.round(Number(v.price_avg_usd)) !== price && (
+                            <p className="mt-1 text-sm text-zinc-300">Usually sells for about ${Math.round(Number(v.price_avg_usd))} now.</p>
+                        )}
                         {p.score?.pricePct != null && p.score.medianPrice && (
                             <p className="mt-1 text-sm text-text-secondary">
                                 Devices that play the same systems launched at ${p.score.medianPrice} on average.

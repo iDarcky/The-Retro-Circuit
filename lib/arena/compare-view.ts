@@ -54,6 +54,10 @@ export function text(v: unknown): string | null {
     if (!s || /^(false|null|none|n\/a|unknown|-+)$/i.test(s)) return null;
     const nice = NICE[s.toLowerCase()];
     if (nice) return nice;
+    // SHOUTY_SNAKE codes like 8G_DPAD_TOP
+    if (/^[A-Z0-9]+(_[A-Z0-9]+)+$/.test(s)) {
+        return s.split('_').map((w) => (/^\d+G$/.test(w) ? `${w.slice(0, -1)} GB` : w === 'DPAD' ? 'D-pad' : w.toLowerCase())).join(' ');
+    }
     // snake_case and all-lowercase single words read as raw data
     const spaced = s.replace(/_/g, ' ');
     return spaced === spaced.toLowerCase() ? spaced[0].toUpperCase() + spaced.slice(1) : spaced;
