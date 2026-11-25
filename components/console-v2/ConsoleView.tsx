@@ -190,7 +190,7 @@ export default function ConsoleView(p: {
                         {p.buy && <p className="mt-3 text-xs text-text-secondary">We may earn a commission from this link. It never changes the specs or scores.</p>}
                         {comparing && (
                             <div className="mt-4">
-                                <DevicePicker consoles={p.consoles} hrefFor={(s) => `/arena-preview/${pairKey(p.slug, s)}`} label={`Compare the ${p.label} with`} autoFocus />
+                                <DevicePicker consoles={p.consoles} hrefFor={(s) => `/arena/${pairKey(p.slug, s)}`} label={`Compare the ${p.label} with`} autoFocus />
                             </div>
                         )}
                     </div>
@@ -339,12 +339,12 @@ export default function ConsoleView(p: {
                             <ul className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10">
                                 {p.similar.map((s) => (
                                     <li key={s.slug} className="bg-bg-primary flex flex-col">
-                                        <Link href={`/consoles-preview/${s.slug}`} className={`group flex-1 block p-4 hover:bg-white/[0.04] ${focus} focus-visible:-outline-offset-2`}>
+                                        <Link href={`/consoles/${s.slug}`} className={`group flex-1 block p-4 hover:bg-white/[0.04] ${focus} focus-visible:-outline-offset-2`}>
                                             <span className="relative block w-full h-20 group-hover:motion-safe:animate-[spriteBob_0.5s_steps(2,jump-none)_infinite]">{s.image && <Image src={s.image} alt="" fill sizes="160px" className="object-contain" />}</span>
                                             <span className="mt-3 block font-semibold text-sm leading-snug">{s.label}</span>
                                             <span className="mt-1 block font-mono text-xs text-cyan-400">{[s.screen ? `${s.screen}"` : null, s.price ? `$${s.price}` : null].filter(Boolean).join(', ')}</span>
                                         </Link>
-                                        <Link href={`/arena-preview/${pairKey(p.slug, s.slug)}`} className={`border-t border-white/10 px-4 py-2.5 font-mono text-xs text-violet-400 hover:bg-white hover:text-black ${focus} focus-visible:-outline-offset-2`}>
+                                        <Link href={`/arena/${pairKey(p.slug, s.slug)}`} className={`border-t border-white/10 px-4 py-2.5 font-mono text-xs text-violet-400 hover:bg-white hover:text-black ${focus} focus-visible:-outline-offset-2`}>
                                             Compare
                                         </Link>
                                     </li>

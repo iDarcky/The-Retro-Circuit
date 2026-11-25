@@ -47,6 +47,17 @@ const nextConfig = {
       },
     ];
   },
+  // BETA BRANCH ONLY (beta/redesign): serve the redesigned compare and console pages on the
+  // real URLs so the whole new look can be clicked through together. Never merge this block.
+  async rewrites() {
+    return {
+      beforeFiles: [
+        { source: '/arena', destination: '/arena-preview' },
+        { source: '/arena/:path*', destination: '/arena-preview/:path*' },
+        { source: '/consoles/:slug', destination: '/consoles-preview/:slug' },
+      ],
+    };
+  },
   async redirects() {
     return [
       // ─── Defunct legacy routes → homepage ───

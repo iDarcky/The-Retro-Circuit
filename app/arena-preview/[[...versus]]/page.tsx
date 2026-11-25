@@ -19,7 +19,7 @@ export async function generateStaticParams() {
     return [{ versus: [] as string[] }];
 }
 
-const BASE = '/arena-preview';
+const BASE = '/arena'; // beta: rewritten to this route
 
 const label = (brand: string | undefined, name: string) =>
     !brand || name.toLowerCase().startsWith(brand.toLowerCase()) ? name : `${brand} ${name}`;

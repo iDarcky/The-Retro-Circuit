@@ -164,6 +164,7 @@ body {
   0% { transform: translateY(0); }
   100% { transform: translateY(-4px); }
 }
+/* Homepage mark: the four face buttons turn a quarter at a time, like a d-pad clicking round */
 @keyframes faceTurn {
   0%, 18% { transform: rotate(0deg); }
   25%, 43% { transform: rotate(90deg); }
