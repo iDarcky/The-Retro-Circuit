@@ -5,6 +5,7 @@ import HeadToHead from './HeadToHead';
 import JustAdded from './JustAdded';
 import Bit from '../brand/Bit';
 import HeroBackground from './HeroBackground';
+import { PageTitle } from '../layout/PageTitle';
 
 const focus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500';
 
@@ -37,13 +38,9 @@ export default async function LandingPage() {
                     <div className="w-full max-w-[1200px] mx-auto grid md:grid-cols-[1fr_auto] items-center gap-10 md:gap-16">
                         <div>
                             <div className="mb-6"><FaceButtons /></div>
-                            <h1 className="font-pixel text-[26px] leading-[1.4] sm:text-4xl md:text-[52px] lg:text-[64px] md:leading-[1.2]">
-                                <span className="block text-violet-400">Every handheld.</span>
-                                <span className="block text-cyan-400">Every spec.</span>
-                            </h1>
-                            <p className="mt-6 text-lg md:text-2xl text-text-secondary max-w-[36ch] leading-snug">
-                                {data.count > 0 ? `${data.count} retro handhelds, measured the same way` : 'Retro handhelds, measured the same way'}
-                                {data.minPrice ? `, from $${data.minPrice} pocket players to PS2-class powerhouses.` : '.'}
+                            <PageTitle size="hero" color="home" lead={<>Welcome to<br /></>} accent="the Circuit" />
+                            <p className="mt-6 text-xl md:text-3xl font-semibold tracking-[-0.02em] text-text-secondary">
+                                Every handheld. <span className="text-white">Every spec.</span>
                             </p>
                             <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-6 max-w-[320px] sm:max-w-none">
                                 {/* Purple, with the corner brackets that grow into a frame on hover (as on the live site) */}

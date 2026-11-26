@@ -7,10 +7,10 @@ import { Search } from 'lucide-react';
 
 // Each section has its own signal colour, shown as the underline under its link.
 const navItems = [
-  { name: 'CONSOLES', path: '/consoles', bar: 'bg-violet-500' },
+  { name: 'CONSOLES', path: '/consoles', bar: 'bg-cyan-500' },
   { name: 'BEST OF', path: '/best', bar: 'bg-yellow-400' },
   { name: 'FABRICATORS', path: '/fabricators', bar: 'bg-emerald-500' },
-  { name: 'VS MODE', path: '/arena', bar: 'bg-cyan-500' },
+  { name: 'VS MODE', path: '/arena', bar: 'bg-gradient-to-r from-sky-500 to-rose-500' },
   { name: 'NEWS', path: '/news', bar: 'bg-orange-500' },
 ];
 

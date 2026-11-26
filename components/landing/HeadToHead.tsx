@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { type HomeDevice, type HomePair } from './home-types';
+import { SectionTitle } from '../layout/PageTitle';
 
 const focus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-500 focus-visible:-outline-offset-2';
 const CARDS = 6;
@@ -24,7 +25,7 @@ export default function HeadToHead({ pairs }: { pairs: HomePair[] }) {
         <section className="px-5 md:px-12 pt-16 md:pt-28" aria-labelledby="vs-heading">
             <div className="max-w-[1200px] mx-auto">
                 <div className="flex flex-wrap items-end justify-between gap-3">
-                    <h2 id="vs-heading" className="text-[28px] leading-tight sm:text-3xl md:text-5xl font-extrabold tracking-[-0.04em]">Head to head.</h2>
+                    <SectionTitle id="vs-heading" color="home">Head to head</SectionTitle>
                     <Link href="/arena" className="font-mono text-sm text-violet-400 hover:text-white">Pick any two →</Link>
                 </div>
                 <ul className="mt-6 md:mt-8 grid sm:grid-cols-2 lg:grid-cols-3 border-l border-t border-white/10">

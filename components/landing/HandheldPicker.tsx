@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { SwissDropdown } from '../ui/SwissDropdown';
+import { SectionTitle } from '../layout/PageTitle';
 import { RATING, SYSTEMS, type HomeDevice, type SystemKey } from './home-types';
 
 const BUDGETS = [
@@ -54,7 +55,7 @@ export default function HandheldPicker({ devices }: { devices: HomeDevice[] }) {
     return (
         <section className="px-5 md:px-12 pt-14 md:pt-28" aria-labelledby="picker-heading">
             <div className="max-w-[1200px] mx-auto">
-                <h2 id="picker-heading" className="text-[28px] leading-tight sm:text-3xl md:text-5xl font-extrabold tracking-[-0.04em]">Which one is right for you?</h2>
+                <SectionTitle id="picker-heading" color="home">Which one is right for you?</SectionTitle>
                 <div className="mt-6 md:mt-8 flex flex-col lg:flex-row lg:items-center gap-3">
                     <div role="group" aria-label="Systems you want to play" className="flex flex-wrap border border-white/10 p-1 gap-1">
                         {SYSTEMS.map((s) => (
