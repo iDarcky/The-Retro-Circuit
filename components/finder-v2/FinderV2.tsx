@@ -33,12 +33,12 @@ function Host({ says, sub, mood = 'idle' }: { says: string; sub?: string | null;
     return (
         <div className="flex items-end gap-3 lg:flex-col lg:items-start lg:gap-4" aria-live="polite">
             <div className="shrink-0 lg:order-2">
-                <span className="lg:hidden"><Bit size={88} /></span>
+                <span className="lg:hidden"><Bit size={64} /></span>
                 <span className="hidden lg:block"><Bit size={190} /></span>
             </div>
             <div
                 key={says}
-                className={`relative lg:order-1 border-2 px-4 py-3 motion-safe:animate-[floatIn_350ms_ease-out_both] ${mood === 'worried' ? 'border-orange-500 bg-orange-500 text-black' : 'border-white bg-white text-black'} mb-6 lg:mb-0 max-w-[30ch]`}
+                className={`relative lg:order-1 border-2 px-4 py-3 motion-safe:animate-[floatIn_350ms_ease-out_both] ${mood === 'worried' ? 'border-orange-500 bg-orange-500 text-black' : 'border-white bg-white text-black'} mb-4 lg:mb-0 max-w-[30ch]`}
             >
                 <p className="font-pixel text-[10px] lg:text-[11px] leading-relaxed">{says}</p>
                 {sub && <p className="mt-2 text-[13px] leading-snug text-zinc-700">{sub}</p>}
@@ -101,8 +101,8 @@ function Question({ step, onAnswer, initial }: { step: number; onAnswer: (ids: s
     return (
         <div key={step} className="motion-safe:animate-[floatIn_400ms_ease-out_both]">
             <h1 className="text-3xl md:text-5xl font-extrabold tracking-[-0.04em] leading-[1.05]">{q.question.replace(/^Form Factor - /, '')}</h1>
-            {q.subtitle && <p className="mt-3 text-text-secondary max-w-[60ch]">{q.subtitle}</p>}
-            <div className={`mt-8 grid gap-2 ${q.options.length > 4 ? 'sm:grid-cols-2' : 'sm:grid-cols-2'}`}>
+            {q.subtitle && <p className="hidden sm:block mt-3 text-text-secondary max-w-[60ch]">{q.subtitle}</p>}
+            <div className={`mt-5 sm:mt-8 grid gap-2 ${q.options.length > 4 ? 'sm:grid-cols-2' : 'sm:grid-cols-2'}`}>
                 {q.options.map((o, i) => {
                     const on = picked.includes(o.id);
                     return (
@@ -111,7 +111,7 @@ function Question({ step, onAnswer, initial }: { step: number; onAnswer: (ids: s
                             type="button"
                             onClick={() => choose(o.id)}
                             aria-pressed={on}
-                            className={`group text-left flex items-start gap-4 border px-4 py-4 transition-colors ${on ? 'bg-white text-black border-white' : 'border-white/10 hover:bg-white/[0.04] hover:border-white/30'} ${focus}`}
+                            className={`group text-left flex items-start gap-4 border px-4 py-3 sm:py-4 transition-colors ${on ? 'bg-white text-black border-white' : 'border-white/10 hover:bg-white/[0.04] hover:border-white/30'} ${focus}`}
                         >
                             <span className={`shrink-0 w-8 h-8 flex items-center justify-center font-pixel text-[10px] text-white ${on ? 'bg-black' : KEY_BG[i % 4]} motion-safe:transition-transform group-active:translate-y-0.5`}>
                                 {on && q.multiSelect ? <Check size={14} /> : String.fromCharCode(65 + i)}
@@ -175,7 +175,7 @@ function Results({ params, onRestart, editHref }: { params: URLSearchParams; onR
 
     if (results === null) {
         return (
-            <div className="grid lg:grid-cols-[220px_1fr] gap-8 lg:gap-16 items-start">
+            <div className="grid lg:grid-cols-[220px_1fr] gap-5 sm:gap-8 lg:gap-16 items-start">
                 <Host says={LINES.LOADING} />
                 <div className="space-y-2" aria-hidden>
                     {[0, 1, 2].map((i) => <div key={i} className="h-24 bg-white/[0.04] motion-safe:animate-pulse" style={{ animationDelay: `${i * 150}ms` }} />)}
@@ -186,7 +186,7 @@ function Results({ params, onRestart, editHref }: { params: URLSearchParams; onR
 
     if (results.length === 0) {
         return (
-            <div className="grid lg:grid-cols-[220px_1fr] gap-8 lg:gap-16 items-start">
+            <div className="grid lg:grid-cols-[220px_1fr] gap-5 sm:gap-8 lg:gap-16 items-start">
                 <Host says={LINES.NONE} mood="worried" />
                 <div>
                     <h1 className="text-3xl md:text-5xl font-extrabold tracking-[-0.04em]">No match yet</h1>
@@ -204,7 +204,7 @@ function Results({ params, onRestart, editHref }: { params: URLSearchParams; onR
     const note = LINES.relaxedNote(winner._relaxed_features);
 
     return (
-        <div className="grid lg:grid-cols-[220px_1fr] gap-8 lg:gap-16 items-start">
+        <div className="grid lg:grid-cols-[220px_1fr] gap-5 sm:gap-8 lg:gap-16 items-start">
             <div className="lg:sticky lg:top-28">
                 <Host says={gift ? LINES.FOUND_GIFT : LINES.FOUND} sub={note} mood={note ? 'worried' : 'happy'} />
             </div>
@@ -333,7 +333,7 @@ function FinderV2Content({ base }: { base: string }) {
             go(p);
         };
         return (
-            <div className="grid lg:grid-cols-[220px_1fr] gap-8 lg:gap-16 items-start">
+            <div className="grid lg:grid-cols-[220px_1fr] gap-5 sm:gap-8 lg:gap-16 items-start">
                 <Host says={LINES.CLASH} mood="worried" />
                 <div className="motion-safe:animate-[floatIn_400ms_ease-out_both]">
                     <h1 className="text-3xl md:text-5xl font-extrabold tracking-[-0.04em] leading-[1.05]">Budget or power?</h1>
@@ -364,7 +364,7 @@ function FinderV2Content({ base }: { base: string }) {
     const initial = params.get(PARAM[step])?.split(',') ?? [];
 
     return (
-        <div className="grid lg:grid-cols-[220px_1fr] gap-8 lg:gap-16 items-start">
+        <div className="grid lg:grid-cols-[220px_1fr] gap-5 sm:gap-8 lg:gap-16 items-start">
             <div className="lg:sticky lg:top-28">
                 <Host says={reaction ?? LINES.PROMPT[step]} sub={reaction ? LINES.PROMPT[step] : null} />
             </div>
