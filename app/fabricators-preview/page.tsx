@@ -1,11 +1,10 @@
-import Link from 'next/link';
-import Image from 'next/image';
 import type { Metadata } from 'next';
 import { fetchPublicManufacturers } from '../actions/manufacturers';
 import { fetchVaultConsoles } from '../actions/consoles';
 import type { ConsoleDetails, Manufacturer } from '../../lib/types';
 import { PageTitle } from '../../components/layout/PageTitle';
-import { brandFill, brandTagline } from '../../lib/brand/theme';
+import { brandColor, brandTagline } from '../../lib/brand/theme';
+import BrandFolder from '../../components/fabricator/BrandFolder';
 
 // Beta mockup of the redesigned brands index. Served on /fabricators in the beta branch through a rewrite.
 export const revalidate = false;
@@ -40,34 +39,20 @@ export default async function BrandsPreview() {
             </header>
 
             <section className="px-5 md:px-12" aria-label="All brands">
-                <div className="max-w-[1400px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-x-3 gap-y-5">
-                    {rows.map(({ b, n }) => {
-                        const fill = brandFill(b.name, (b as any).brand_color);
-                        const tagline = brandTagline(b.description);
-                        return (
-                            /* A folder: a tab on top, the body below, both in the brand's own colour */
-                            <Link key={b.id} href={`/fabricators/${b.slug}`} className="group flex flex-col focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet-500 rounded-[22px]" style={{ color: fill.fg }}>
-                                <span className="relative z-10 -mb-[2px] self-start w-[42%] h-7 rounded-t-2xl border-2 border-b-0 border-black transition-[width] duration-300 group-hover:w-[55%]" style={{ background: fill.bg }} aria-hidden />
-                                <span className="relative flex-1 flex flex-col rounded-[22px] rounded-tl-none border-2 border-black p-5 md:p-6 min-h-[200px] transition-transform duration-300 group-hover:motion-safe:-translate-y-1" style={{ background: fill.bg }}>
-                                    <span className="flex items-center gap-3">
-                                        <span className="relative w-11 h-11 shrink-0 rounded-xl bg-white border-2 border-black p-1.5">
-                                            {b.image_url ? <span className="relative block w-full h-full"><Image src={b.image_url} alt="" fill sizes="44px" className="object-contain" /></span>
-                                                : <span className="absolute inset-0 flex items-center justify-center font-pixel text-xs text-black">{b.name.charAt(0)}</span>}
-                                        </span>
-                                        <span className="min-w-0">
-                                            <span className="block text-xl font-semibold tracking-[-0.02em] truncate">{b.name}</span>
-                                            <span className="block font-mono text-[11px]" style={{ color: fill.muted }}>{[b.country, b.founded_year ? `since ${b.founded_year}` : null].filter(Boolean).join(' · ')}</span>
-                                        </span>
-                                    </span>
-                                    {tagline && <span className="mt-5 font-pixel text-[10px] leading-relaxed">{tagline}</span>}
-                                    <span className="mt-auto pt-6 flex items-end justify-between">
-                                        <span className="text-5xl font-semibold tracking-[-0.04em] tabular-nums leading-none">{n}</span>
-                                        <span className="font-mono text-xs" style={{ color: fill.muted }}>{n === 1 ? 'handheld' : 'handhelds'} →</span>
-                                    </span>
-                                </span>
-                            </Link>
-                        );
-                    })}
+                <div className="max-w-[1400px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-x-5 gap-y-8">
+                    {rows.map(({ b, list, n }) => (
+                        <BrandFolder
+                            key={b.id}
+                            href={`/fabricators/${b.slug}`}
+                            name={b.name}
+                            meta={[b.country, b.founded_year ? `since ${b.founded_year}` : null].filter(Boolean).join(' · ')}
+                            tagline={brandTagline(b.description)}
+                            count={n}
+                            color={brandColor(b.name, (b as any).brand_color)}
+                            logo={b.image_url ?? null}
+                            devices={list.slice(0, 3).map((c) => c.image_url!)}
+                        />
+                    ))}
                 </div>
             </section>
         </main>

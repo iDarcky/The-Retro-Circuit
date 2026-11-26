@@ -25,9 +25,9 @@ function Slot({ n, value, others, onPick, onClear }: {
 }) {
     const s = SIDE[n];
     return (
-        <div className={`relative isolate overflow-hidden rounded-3xl border-2 backdrop-blur-xl p-5 md:p-8 min-h-[18rem] flex flex-col transition-colors duration-500 ${value ? s.ready : s.panel}`}>
+        <div className={`relative isolate focus-within:z-20 rounded-3xl border-2 backdrop-blur-xl p-5 md:p-8 min-h-[18rem] flex flex-col transition-colors duration-500 ${value ? s.ready : s.panel}`}>
             <span aria-hidden className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent ${s.line} to-transparent opacity-70`} />
-            <span aria-hidden className={`absolute -z-10 left-1/2 top-1/2 w-64 h-40 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl transition-opacity duration-500 ${value ? 'opacity-100' : 'opacity-40'}`} style={{ background: s.glow }} />
+            <span aria-hidden className="absolute inset-0 -z-10 overflow-hidden rounded-3xl"><span className={`absolute left-1/2 top-1/2 w-64 h-40 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl transition-opacity duration-500 ${value ? 'opacity-100' : 'opacity-40'}`} style={{ background: s.glow }} /></span>
             <div className={`flex items-center justify-between gap-3 ${n === 2 ? 'md:flex-row-reverse' : ''}`}>
                 <p className={`font-pixel text-[10px] md:text-xs ${s.text}`}>{s.label}</p>
                 {value && <span className={`font-mono text-xs font-bold tracking-widest ${s.text} motion-safe:animate-pulse`}>READY</span>}
