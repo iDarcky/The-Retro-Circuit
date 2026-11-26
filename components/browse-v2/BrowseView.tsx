@@ -161,7 +161,7 @@ export default function BrowseView({ devices }: { devices: BrowseDevice[]; varia
                         </div>
                     ) : (
                         <>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 2xl:grid-cols-6 gap-2 md:gap-3">
                                 {list.map((d, i) => <DeviceCard key={d.slug} d={d} priority={i < 6} />)}
                             </div>
                         </>

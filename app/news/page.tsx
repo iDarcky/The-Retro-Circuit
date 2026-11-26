@@ -123,7 +123,7 @@ export default async function NewsPage() {
                             <h2 id="newest" className="font-pixel text-base md:text-xl leading-snug text-orange-400">Newest handhelds</h2>
                             <Link href="/consoles" className="font-mono text-sm text-violet-400 hover:text-white">See all →</Link>
                         </div>
-                        <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-5">
+                        <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-2 md:gap-3">
                             {newest.map((d, i) => <DeviceCard key={d.slug} d={d} priority={i < 3} />)}
                         </div>
                     </section>

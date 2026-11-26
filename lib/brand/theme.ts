@@ -28,3 +28,12 @@ export function brandTagline(description?: string | null): string | null {
     const m = /^(.{3,90}?[.!?])(\s|$)/.exec(d);
     return m ? m[1] : null;
 }
+
+/** The brand colour as a solid fill, with black or white text, whichever reads better on it. */
+export function brandFill(name: string, raw?: string | null): { bg: string; fg: string; muted: string } {
+    const hex = raw || STATIC_HEX[name] || '#10b981';
+    const rgb = hexToRgb(hex) ?? [16, 185, 129];
+    const lum = (0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]) / 255;
+    const light = lum > 0.55;
+    return { bg: `rgb(${rgb.join(',')})`, fg: light ? '#0b0b0e' : '#ffffff', muted: light ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.7)' };
+}

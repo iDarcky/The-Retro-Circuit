@@ -5,7 +5,7 @@ import { fetchPublicManufacturers } from '../actions/manufacturers';
 import { fetchVaultConsoles } from '../actions/consoles';
 import type { ConsoleDetails, Manufacturer } from '../../lib/types';
 import { PageTitle } from '../../components/layout/PageTitle';
-import { brandColor, brandTagline } from '../../lib/brand/theme';
+import { brandFill, brandTagline } from '../../lib/brand/theme';
 
 // Beta mockup of the redesigned brands index. Served on /fabricators in the beta branch through a rewrite.
 export const revalidate = false;
@@ -40,34 +40,32 @@ export default async function BrandsPreview() {
             </header>
 
             <section className="px-5 md:px-12" aria-label="All brands">
-                <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {rows.map(({ b, list, n }) => {
-                        const color = brandColor(b.name, (b as any).brand_color);
+                <div className="max-w-[1400px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-x-3 gap-y-5">
+                    {rows.map(({ b, n }) => {
+                        const fill = brandFill(b.name, (b as any).brand_color);
                         const tagline = brandTagline(b.description);
                         return (
-                        <Link key={b.id} href={`/fabricators/${b.slug}`} style={{ ['--brand' as string]: color }} className="group relative flex flex-col border border-white/10 p-6 md:p-8 hover:border-[var(--brand)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-violet-500">
-                            <span className="absolute left-0 top-0 h-1 w-16 bg-[var(--brand)] transition-all group-hover:w-full" aria-hidden />
-                            <span className="absolute inset-0 bg-[var(--brand)] opacity-0 group-hover:opacity-[0.06] transition-opacity pointer-events-none" aria-hidden />
-                            <div className="relative flex items-center gap-4">
-                                <span className="relative w-14 h-14 shrink-0 bg-white p-2">
-                                    {b.image_url ? <span className="relative block w-full h-full"><Image src={b.image_url} alt="" fill sizes="56px" className="object-contain" /></span>
-                                        : <span className="absolute inset-0 flex items-center justify-center font-pixel text-black">{b.name.charAt(0)}</span>}
-                                </span>
-                                <div className="min-w-0">
-                                    <h2 className="text-2xl font-extrabold tracking-[-0.02em] truncate">{b.name}</h2>
-                                    <p className="mt-1 font-mono text-xs text-text-secondary">{[b.country, b.founded_year ? `since ${b.founded_year}` : null].filter(Boolean).join(' · ')}</p>
-                                </div>
-                                <span className="ml-auto text-right shrink-0"><span className="block font-pixel text-lg text-[var(--brand)]">{n}</span><span className="font-mono text-[10px] text-zinc-500">{n === 1 ? 'handheld' : 'handhelds'}</span></span>
-                            </div>
-                            {tagline && <p className="relative mt-5 font-pixel text-[11px] leading-relaxed text-[var(--brand)]">{tagline}</p>}
-                            <div className="relative mt-auto pt-8 flex items-end gap-4 h-36">
-                                {list.slice(0, 3).map((c, k) => (
-                                    <span key={c.id} className="relative flex-1 h-full group-hover:motion-safe:animate-[spriteBob_0.5s_steps(2,jump-none)_infinite]" style={{ animationDelay: `${k * 90}ms` }}>
-                                        <Image src={c.image_url!} alt="" fill sizes="140px" className="object-contain object-bottom" />
+                            /* A folder: a tab on top, the body below, both in the brand's own colour */
+                            <Link key={b.id} href={`/fabricators/${b.slug}`} className="group flex flex-col focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet-500 rounded-[22px]" style={{ color: fill.fg }}>
+                                <span className="relative z-10 -mb-[2px] self-start w-[42%] h-7 rounded-t-2xl border-2 border-b-0 border-black transition-[width] duration-300 group-hover:w-[55%]" style={{ background: fill.bg }} aria-hidden />
+                                <span className="relative flex-1 flex flex-col rounded-[22px] rounded-tl-none border-2 border-black p-5 md:p-6 min-h-[200px] transition-transform duration-300 group-hover:motion-safe:-translate-y-1" style={{ background: fill.bg }}>
+                                    <span className="flex items-center gap-3">
+                                        <span className="relative w-11 h-11 shrink-0 rounded-xl bg-white border-2 border-black p-1.5">
+                                            {b.image_url ? <span className="relative block w-full h-full"><Image src={b.image_url} alt="" fill sizes="44px" className="object-contain" /></span>
+                                                : <span className="absolute inset-0 flex items-center justify-center font-pixel text-xs text-black">{b.name.charAt(0)}</span>}
+                                        </span>
+                                        <span className="min-w-0">
+                                            <span className="block text-xl font-semibold tracking-[-0.02em] truncate">{b.name}</span>
+                                            <span className="block font-mono text-[11px]" style={{ color: fill.muted }}>{[b.country, b.founded_year ? `since ${b.founded_year}` : null].filter(Boolean).join(' · ')}</span>
+                                        </span>
                                     </span>
-                                ))}
-                            </div>
-                        </Link>
+                                    {tagline && <span className="mt-5 font-pixel text-[10px] leading-relaxed">{tagline}</span>}
+                                    <span className="mt-auto pt-6 flex items-end justify-between">
+                                        <span className="text-5xl font-semibold tracking-[-0.04em] tabular-nums leading-none">{n}</span>
+                                        <span className="font-mono text-xs" style={{ color: fill.muted }}>{n === 1 ? 'handheld' : 'handhelds'} →</span>
+                                    </span>
+                                </span>
+                            </Link>
                         );
                     })}
                 </div>
