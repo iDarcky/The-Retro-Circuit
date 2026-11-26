@@ -42,7 +42,9 @@ const Footer: FC<FooterProps> = ({ version }) => {
         <nav aria-label="Footer" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 whitespace-nowrap">
           {links.map((l) => <Link key={l.href} href={l.href} className={link}>{l.label}</Link>)}
           <button type="button" onClick={reset} className={link}>Cookies</button>
-          <span className="font-mono text-zinc-600">{version.replace(/^pre-?alpha\s*/i, 'v')}</span>
+          <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-500">VER {version.replace(/^pre-?alpha\s*/i, '')}</span>
+          <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-emerald-500">Online<span className="w-1.5 h-1.5 bg-emerald-500 motion-safe:animate-pulse" aria-hidden /></span>
+          <span className="hidden lg:inline font-mono text-[10px] uppercase tracking-wider text-zinc-600">Loc: Mars</span>
         </nav>
       </div>
     </footer>

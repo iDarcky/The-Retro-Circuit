@@ -20,13 +20,6 @@ const H2 = ({ n, children, color }: { n: string; children: React.ReactNode; colo
     </div>
 );
 
-const STACK = [
-    ['Framework', 'Next.js 16'],
-    ['UI', 'React 19 and Tailwind CSS'],
-    ['Data', 'Supabase (PostgreSQL)'],
-    ['Language', 'TypeScript'],
-    ['Hosting', 'Vercel'],
-];
 
 export default async function AboutPage() {
     const [version, counts, brands] = await Promise.all([
@@ -107,14 +100,7 @@ export default async function AboutPage() {
                                 <p>This space has people who have put real work into it. The goal was never to compete with that or copy it, but to add to it. To contribute something that didn&apos;t exist in quite this way before.</p>
                                 <p>If something here helped you or sparked something in you, that&apos;s the point and we are happy.</p>
                             </div>
-                            <dl className="mt-8 border-t border-white/10">
-                                {STACK.map(([k, v]) => (
-                                    <div key={k} className="flex justify-between gap-4 border-b border-white/10 py-3 text-sm">
-                                        <dt className="font-mono text-zinc-500">{k}</dt><dd>{v}</dd>
-                                    </div>
-                                ))}
-                            </dl>
-                            <Link href="/credits" className="mt-6 inline-flex items-center gap-2 font-mono text-sm text-violet-400 hover:text-white">All credits <ArrowRight size={14} /></Link>
+                            <Link href="/credits" className="mt-6 inline-flex items-center gap-2 font-mono text-sm text-violet-400 hover:text-white">See who we thank <ArrowRight size={14} /></Link>
                         </div>
                     </section>
 
