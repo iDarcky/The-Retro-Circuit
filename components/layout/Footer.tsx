@@ -35,10 +35,10 @@ const Footer: FC<FooterProps> = ({ version }) => {
 
   return (
     <footer className="w-full bg-bg-primary shrink-0 z-10 relative border-t border-white/10">
-      <div className="max-w-[1400px] mx-auto px-5 md:px-12 py-4 flex flex-wrap lg:flex-nowrap items-center justify-center lg:justify-between gap-x-5 gap-y-2 text-xs text-text-secondary">
+      <div className="max-w-[1400px] mx-auto px-5 md:px-12 py-4 flex flex-wrap md:flex-nowrap items-center justify-center md:justify-between gap-x-5 gap-y-2 text-xs text-text-secondary">
         <Link href="/" className={`font-bold text-white whitespace-nowrap ${link}`}>© {currentYear} The Retro Circuit</Link>
-        {/* Amazon specifies its sentence verbatim; the second covers the other retailers. */}
-        <span className="text-zinc-500 text-center lg:text-left">As an Amazon Associate I earn from qualifying purchases. Other retailer links may earn a commission too.</span>
+        {/* Amazon specifies this sentence verbatim. */}
+        <span className="text-zinc-500 text-center md:text-left md:truncate">As an Amazon Associate I earn from qualifying purchases.</span>
         <nav aria-label="Footer" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 whitespace-nowrap">
           {links.map((l) => <Link key={l.href} href={l.href} className={link}>{l.label}</Link>)}
           <button type="button" onClick={reset} className={link}>Cookies</button>
