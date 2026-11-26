@@ -26,7 +26,7 @@ export default function DevicePicker({ consoles, hrefFor, onPick, label, autoFoc
     const [open, setOpen] = useState(!!autoFocus);
     const hits = useMemo(() => {
         const words = q.toLowerCase().split(/\s+/).filter(Boolean);
-        return consoles.filter((c) => words.every((w) => c.label.toLowerCase().includes(w))).slice(0, 8);
+        return consoles.filter((c) => words.every((w) => c.label.toLowerCase().includes(w)));
     }, [consoles, q]);
 
     const item = 'flex items-center gap-3 px-3 py-2.5 border-b border-white/10 last:border-b-0 hover:bg-white/[0.06]';

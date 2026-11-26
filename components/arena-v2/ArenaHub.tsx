@@ -17,13 +17,13 @@ function Slot({ n, value, others, onPick, onClear }: {
     onClear: () => void;
 }) {
     return (
-        <div className="p-5 md:p-8 min-h-[14rem] flex flex-col">
-            <p className="font-pixel text-[10px] text-text-secondary">HANDHELD {n}</p>
+        <div className={`p-5 md:p-8 min-h-[14rem] flex flex-col border-t-4 ${n === 1 ? 'border-blue-500 bg-blue-600/[0.12]' : 'border-red-500 bg-red-600/[0.12]'}`}>
+            <p className={`font-pixel text-[10px] ${n === 1 ? 'text-blue-400' : 'text-red-400'}`}>PLAYER {n}</p>
             {value ? (
                 <div className="mt-5 flex-1 flex flex-col">
                     <span className="relative w-full h-24 md:h-32">{value.image && <Image src={value.image} alt="" fill sizes="200px" className="object-contain" />}</span>
                     <p className="mt-4 text-lg md:text-2xl font-bold leading-tight">{value.label}</p>
-                    <button type="button" onClick={onClear} className={`mt-3 self-start font-mono text-xs text-violet-400 hover:text-white ${focus}`}>Change</button>
+                    <button type="button" onClick={onClear} className={`mt-3 self-start font-mono text-xs ${n === 1 ? 'text-blue-400' : 'text-red-400'} hover:text-white ${focus}`}>Change</button>
                 </div>
             ) : (
                 <div className="mt-4"><DevicePicker consoles={others} onPick={onPick} label={n === 1 ? 'First handheld' : 'Second handheld'} /></div>
@@ -46,7 +46,7 @@ export default function ArenaHub({ consoles, popular, base }: {
     return (
         <div className="bg-bg-primary text-text-primary font-sans min-h-screen">
             <div className="max-w-[1100px] mx-auto px-5 pt-10 md:pt-16 pb-24">
-                                <PageTitle lead="VS" accent="Mode" color="vs" />
+                <PageTitle lead="VS" accent="Mode" color="vs" />
                 <p className="mt-4 text-base md:text-lg text-text-secondary max-w-[52ch]">
                     Pick any two of {consoles.length} handhelds. See who wins, spec by spec.
                 </p>
@@ -54,12 +54,12 @@ export default function ArenaHub({ consoles, popular, base }: {
                 <div className="mt-8 md:mt-10 grid md:grid-cols-[1fr_auto_1fr] border border-white/10">
                     <Slot n={1} value={one} others={consoles.filter((c) => c.slug !== two?.slug)} onPick={setOne} onClear={() => setOne(null)} />
                     <div className="flex md:flex-col items-center justify-center border-y md:border-y-0 md:border-x border-white/10 px-4 py-3">
-                        <span className="font-pixel text-xs text-text-secondary">VS</span>
+                        <span className="font-pixel text-sm md:text-base text-white motion-safe:animate-pulse">VS</span>
                     </div>
                     <Slot n={2} value={two} others={consoles.filter((c) => c.slug !== one?.slug)} onPick={setTwo} onClear={() => setTwo(null)} />
                 </div>
                 {one && two ? (
-                    <Link href={`${base}/${pairKey(one.slug, two.slug)}`} className={`block text-center bg-violet-600 hover:bg-white hover:text-black text-white font-mono text-sm px-6 py-4 transition-colors ${focus}`}>
+                    <Link href={`${base}/${pairKey(one.slug, two.slug)}`} className={`block text-center bg-gradient-to-r from-blue-600 to-red-600 hover:from-white hover:to-white hover:text-black text-white font-mono text-sm px-6 py-4 transition-colors ${focus}`}>
                         Compare {one.label} and {two.label}
                     </Link>
                 ) : (
@@ -67,7 +67,7 @@ export default function ArenaHub({ consoles, popular, base }: {
                 )}
 
                 <section className="mt-16 md:mt-24" aria-labelledby="popular-heading">
-                    <h2 id="popular-heading" className="font-pixel text-base md:text-xl leading-snug text-sky-400">Popular comparisons</h2>
+                    <h2 id="popular-heading" className="font-pixel text-base md:text-xl leading-snug text-blue-400">Popular comparisons</h2>
                     <ul className="mt-6 grid md:grid-cols-2 gap-px bg-white/10 border border-white/10">
                         {popular.map((p) => (
                             <li key={p.href} className="bg-bg-primary">

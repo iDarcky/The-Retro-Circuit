@@ -24,8 +24,8 @@ export interface Side {
 const focus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-500';
 /* Each side keeps one colour all the way down the page, like player 1 and player 2. */
 const SIDE = {
-    a: { text: 'text-violet-400', bar: 'bg-violet-500', block: 'bg-violet-600', tag: 'P1' },
-    b: { text: 'text-cyan-400', bar: 'bg-cyan-500', block: 'bg-cyan-600', tag: 'P2' },
+    a: { text: 'text-blue-400', bar: 'bg-blue-500', block: 'bg-blue-600', tag: 'P1' },
+    b: { text: 'text-red-400', bar: 'bg-red-500', block: 'bg-red-600', tag: 'P2' },
 } as const;
 
 /* ---------- small pieces ---------- */
@@ -144,7 +144,7 @@ export default function ArenaView({ a, b, consoles, related, base }: {
 
             <div className="max-w-[1100px] mx-auto px-5 pt-10 md:pt-16 pb-24">
                 {/* Title */}
-                <p className="font-pixel text-[10px] text-violet-400">HEAD TO HEAD</p>
+                <p className="font-pixel text-[10px]"><span className="text-blue-400">P1</span> <span className="text-text-secondary">VS</span> <span className="text-red-400">P2</span></p>
                 <h1 className="mt-4 text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-[-0.04em] leading-[1.05]">
                     <span className={SIDE.a.text}>{a.label}</span> <span className="text-text-secondary font-bold">vs</span> <span className={SIDE.b.text}>{b.label}</span>
                 </h1>
@@ -214,7 +214,7 @@ export default function ArenaView({ a, b, consoles, related, base }: {
 
                 {/* Where each one wins */}
                 <Reveal className="mt-16 md:mt-24"><section aria-labelledby="wins-heading">
-                    <SectionHead color="text-sky-400" n={1} eyebrow="Scoreboard" id="wins-heading" title="Where each one wins" />
+                    <SectionHead color="text-blue-400" n={1} eyebrow="Scoreboard" id="wins-heading" title="Where each one wins" />
                     {/* Scoreboard: key specs won by each side */}
                     <div className="mt-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3 md:gap-6 border border-white/10 px-4 md:px-8 py-5">
                         <span className="text-sm md:text-base font-semibold leading-tight">{a.label}</span>
@@ -251,7 +251,7 @@ export default function ArenaView({ a, b, consoles, related, base }: {
 
                 {/* Key specs */}
                 <Reveal className="mt-16 md:mt-24"><section aria-labelledby="key-heading">
-                    <SectionHead color="text-sky-400" n={2} eyebrow="Tale of the tape" id="key-heading" title="Key specs" sub="The bar leans toward whichever side is better." />
+                    <SectionHead color="text-blue-400" n={2} eyebrow="Tale of the tape" id="key-heading" title="Key specs" sub="The bar leans toward whichever side is better." />
                     <div className="mt-6 border border-white/10">
                         {keys.map((r) => <Row key={r.label} r={r} />)}
                     </div>
@@ -260,7 +260,7 @@ export default function ArenaView({ a, b, consoles, related, base }: {
                 {/* Emulation */}
                 {emu.length > 0 && (
                     <Reveal className="mt-16 md:mt-24"><section aria-labelledby="emu-heading">
-                        <SectionHead color="text-sky-400" n={3} eyebrow="Game library" id="emu-heading" title="What they play" sub="Four blocks is perfect, one is struggling. Where they differ comes first." />
+                        <SectionHead color="text-blue-400" n={3} eyebrow="Game library" id="emu-heading" title="What they play" sub="Four blocks is perfect, one is struggling. Where they differ comes first." />
                         {emuDiff.length > 0 && (
                             <div className="mt-6 border border-white/10">
                                 {emuDiff.map((r) => (
@@ -288,7 +288,7 @@ export default function ArenaView({ a, b, consoles, related, base }: {
                 {/* Every spec */}
                 <section className="mt-16 md:mt-24" aria-labelledby="all-heading">
                     <div className="flex flex-wrap items-end justify-between gap-4">
-                        <SectionHead color="text-sky-400" n={4} eyebrow="Spec sheet" id="all-heading" title="Every spec" />
+                        <SectionHead color="text-blue-400" n={4} eyebrow="Spec sheet" id="all-heading" title="Every spec" />
                         <label className="inline-flex items-center gap-2 font-mono text-sm cursor-pointer select-none">
                             <input type="checkbox" checked={diffOnly} onChange={(e) => setDiffOnly(e.target.checked)} className="accent-violet-500 w-4 h-4" />
                             Only differences
@@ -310,7 +310,7 @@ export default function ArenaView({ a, b, consoles, related, base }: {
 
                 {/* Buy */}
                 <section className="mt-16 md:mt-24" aria-labelledby="buy-heading">
-                    <SectionHead color="text-sky-400" n={5} eyebrow="Get one" id="buy-heading" title="Where to buy" />
+                    <SectionHead color="text-blue-400" n={5} eyebrow="Get one" id="buy-heading" title="Where to buy" />
                     <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {sides.map(({ s, v, key }) => {
                             const url = getBuyUrl({ asin: v.amazon_asin, name: s.name, manufacturer: s.brand });
@@ -336,7 +336,7 @@ export default function ArenaView({ a, b, consoles, related, base }: {
                 {/* More */}
                 {related.length > 0 && (
                     <section className="mt-16 md:mt-24" aria-labelledby="more-heading">
-                        <SectionHead color="text-sky-400" n={6} eyebrow="Next match" id="more-heading" title="Other comparisons" />
+                        <SectionHead color="text-blue-400" n={6} eyebrow="Next match" id="more-heading" title="Other comparisons" />
                         <ul className="mt-6 flex flex-wrap gap-2">
                             {related.map((p) => (
                                 <li key={p.href}>

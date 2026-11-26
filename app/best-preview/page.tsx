@@ -23,7 +23,7 @@ export default async function BestPreviewIndex() {
             <header className="px-5 md:px-12 pt-12 md:pt-20 pb-10">
                 <div className="max-w-[1400px] mx-auto">
                     <PageTitle lead="Best" accent="of" color="best" />
-                    <p className="mt-5 text-lg md:text-xl text-text-secondary max-w-[52ch]">Our picks for every budget and every system, ranked from the specs. Nobody pays to be on these lists.</p>
+                    <p className="mt-5 text-lg md:text-xl text-text-secondary max-w-[52ch]">Our picks for every budget and every system, ranked from the specs.</p>
                 </div>
             </header>
 

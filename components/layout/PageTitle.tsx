@@ -8,7 +8,7 @@ export const PAGE_COLORS = {
     vault: { grad: 'from-cyan-300 to-sky-500', solid: 'text-cyan-400', bar: 'bg-cyan-500' },
     best: { grad: 'from-yellow-300 to-amber-500', solid: 'text-yellow-400', bar: 'bg-yellow-400' },
     fabricators: { grad: 'from-emerald-300 to-green-500', solid: 'text-emerald-400', bar: 'bg-emerald-500' },
-    vs: { grad: 'from-sky-400 to-rose-500', solid: 'text-sky-400', bar: 'bg-sky-500' },
+    vs: { grad: 'from-blue-500 to-red-500', solid: 'text-red-500', bar: 'bg-red-500' },
     news: { grad: 'from-orange-300 to-orange-500', solid: 'text-orange-400', bar: 'bg-orange-500' },
 } as const;
 export type PageColor = keyof typeof PAGE_COLORS;
