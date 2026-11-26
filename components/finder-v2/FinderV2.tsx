@@ -31,20 +31,20 @@ const focus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outli
 
 function Host({ says, sub, mood = 'idle' }: { says: string; sub?: string | null; mood?: 'idle' | 'happy' | 'worried' }) {
     return (
-        <div className="flex items-end gap-3 md:flex-col md:items-start md:gap-4" aria-live="polite">
-            <div className="shrink-0 md:order-2">
-                <span className="md:hidden"><Bit size={88} /></span>
-                <span className="hidden md:block"><Bit size={190} /></span>
+        <div className="flex items-end gap-3 lg:flex-col lg:items-start lg:gap-4" aria-live="polite">
+            <div className="shrink-0 lg:order-2">
+                <span className="lg:hidden"><Bit size={88} /></span>
+                <span className="hidden lg:block"><Bit size={190} /></span>
             </div>
             <div
                 key={says}
-                className={`relative md:order-1 border-2 px-4 py-3 motion-safe:animate-[floatIn_350ms_ease-out_both] ${mood === 'worried' ? 'border-orange-500 bg-orange-500 text-black' : 'border-white bg-white text-black'} mb-6 md:mb-0 max-w-[30ch]`}
+                className={`relative lg:order-1 border-2 px-4 py-3 motion-safe:animate-[floatIn_350ms_ease-out_both] ${mood === 'worried' ? 'border-orange-500 bg-orange-500 text-black' : 'border-white bg-white text-black'} mb-6 lg:mb-0 max-w-[30ch]`}
             >
-                <p className="font-pixel text-[10px] md:text-[11px] leading-relaxed">{says}</p>
+                <p className="font-pixel text-[10px] lg:text-[11px] leading-relaxed">{says}</p>
                 {sub && <p className="mt-2 text-[13px] leading-snug text-zinc-700">{sub}</p>}
                 {/* stepped tail: points left at Bit on phones, down on desktop */}
-                <span className={`absolute w-2 h-2 -left-2.5 bottom-3 md:left-10 md:-bottom-2.5 ${mood === 'worried' ? 'bg-orange-500' : 'bg-white'}`} />
-                <span className={`absolute w-2 h-2 -left-[18px] bottom-1 md:left-8 md:bottom-auto md:-bottom-[18px] ${mood === 'worried' ? 'bg-orange-500' : 'bg-white'}`} />
+                <span className={`absolute w-2 h-2 -left-2.5 bottom-3 lg:left-10 lg:-bottom-2.5 ${mood === 'worried' ? 'bg-orange-500' : 'bg-white'}`} />
+                <span className={`absolute w-2 h-2 -left-[18px] bottom-1 lg:left-8 lg:bottom-auto lg:-bottom-[18px] ${mood === 'worried' ? 'bg-orange-500' : 'bg-white'}`} />
             </div>
         </div>
     );
@@ -175,7 +175,7 @@ function Results({ params, onRestart, editHref }: { params: URLSearchParams; onR
 
     if (results === null) {
         return (
-            <div className="grid md:grid-cols-[220px_1fr] gap-8 md:gap-16 items-start">
+            <div className="grid lg:grid-cols-[220px_1fr] gap-8 lg:gap-16 items-start">
                 <Host says={LINES.LOADING} />
                 <div className="space-y-2" aria-hidden>
                     {[0, 1, 2].map((i) => <div key={i} className="h-24 bg-white/[0.04] motion-safe:animate-pulse" style={{ animationDelay: `${i * 150}ms` }} />)}
@@ -186,7 +186,7 @@ function Results({ params, onRestart, editHref }: { params: URLSearchParams; onR
 
     if (results.length === 0) {
         return (
-            <div className="grid md:grid-cols-[220px_1fr] gap-8 md:gap-16 items-start">
+            <div className="grid lg:grid-cols-[220px_1fr] gap-8 lg:gap-16 items-start">
                 <Host says={LINES.NONE} mood="worried" />
                 <div>
                     <h1 className="text-3xl md:text-5xl font-extrabold tracking-[-0.04em]">No match yet</h1>
@@ -204,8 +204,8 @@ function Results({ params, onRestart, editHref }: { params: URLSearchParams; onR
     const note = LINES.relaxedNote(winner._relaxed_features);
 
     return (
-        <div className="grid md:grid-cols-[220px_1fr] gap-8 md:gap-16 items-start">
-            <div className="md:sticky md:top-28">
+        <div className="grid lg:grid-cols-[220px_1fr] gap-8 lg:gap-16 items-start">
+            <div className="lg:sticky lg:top-28">
                 <Host says={gift ? LINES.FOUND_GIFT : LINES.FOUND} sub={note} mood={note ? 'worried' : 'happy'} />
             </div>
 
@@ -213,11 +213,11 @@ function Results({ params, onRestart, editHref }: { params: URLSearchParams; onR
                 <p className="font-pixel text-[10px] text-violet-400">{gift ? 'GIFT PICKS' : 'YOUR MATCHES'}</p>
 
                 {/* Winner */}
-                <article className="mt-4 bg-violet-600 text-white grid sm:grid-cols-[minmax(0,240px)_1fr] gap-6 p-6 md:p-8 motion-safe:animate-[floatIn_600ms_ease-out_both]" style={DOT_GRID}>
+                <article className="mt-4 bg-violet-600 text-white grid sm:grid-cols-[minmax(0,200px)_1fr] gap-6 p-6 md:p-8 motion-safe:animate-[floatIn_600ms_ease-out_both]" style={DOT_GRID}>
                     <div className="relative aspect-[4/3] sm:aspect-square">
                         {winner.image_url && (
                             <span className="absolute inset-0 motion-safe:animate-[spriteBob_1.6s_steps(2,jump-none)_infinite]">
-                                <Image src={winner.image_url} alt={winner.name} fill sizes="240px" className="object-contain" priority />
+                                <Image src={winner.image_url} alt={winner.name} fill sizes="200px" className="object-contain" priority />
                             </span>
                         )}
                     </div>
@@ -333,7 +333,7 @@ function FinderV2Content({ base }: { base: string }) {
             go(p);
         };
         return (
-            <div className="grid md:grid-cols-[220px_1fr] gap-8 md:gap-16 items-start">
+            <div className="grid lg:grid-cols-[220px_1fr] gap-8 lg:gap-16 items-start">
                 <Host says={LINES.CLASH} mood="worried" />
                 <div className="motion-safe:animate-[floatIn_400ms_ease-out_both]">
                     <h1 className="text-3xl md:text-5xl font-extrabold tracking-[-0.04em] leading-[1.05]">Budget or power?</h1>
@@ -364,8 +364,8 @@ function FinderV2Content({ base }: { base: string }) {
     const initial = params.get(PARAM[step])?.split(',') ?? [];
 
     return (
-        <div className="grid md:grid-cols-[220px_1fr] gap-8 md:gap-16 items-start">
-            <div className="md:sticky md:top-28">
+        <div className="grid lg:grid-cols-[220px_1fr] gap-8 lg:gap-16 items-start">
+            <div className="lg:sticky lg:top-28">
                 <Host says={reaction ?? LINES.PROMPT[step]} sub={reaction ? LINES.PROMPT[step] : null} />
             </div>
             <div className="min-w-0">
