@@ -2,7 +2,6 @@
 
 import { type FC, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { siteConfig } from '../../config/site';
 import { useConsent } from '../privacy/ConsentContext';
 import { retroAuth } from '../../lib/auth';
 
@@ -23,65 +22,28 @@ const Footer: FC<FooterProps> = ({ version }) => {
     checkAdmin();
   }, []);
 
+  // BETA BRANCH: one line on desktop. It wraps on narrow phones, where one line cannot fit.
+  const links = [
+    { label: 'About', href: '/about' },
+    { label: 'Roadmap', href: '/roadmap' },
+    { label: 'Credits', href: '/credits' },
+    { label: 'Privacy', href: '/privacy' },
+    { label: 'Terms', href: '/terms' },
+    ...(isAdmin ? [{ label: 'Admin', href: '/admin' }] : []),
+  ];
+  const link = 'hover:text-white transition-colors';
+
   return (
-    <footer className="w-full bg-bg-primary shrink-0 z-10 relative">
-      {/* Swiss Gradient Line - Full Spectrum */}
-      <div className="w-full h-[2px] bg-gradient-to-r from-[#ff4f00] via-pink-500 via-violet-500 via-cyan-500 to-[#10b981]" />
-
-      <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0">
-        
-        {/* Left: Branding & Legal */}
-        <div className="flex flex-col items-center md:items-start gap-1 text-xs font-sans text-text-muted">
-           <Link href="/" className="font-bold text-text-primary tracking-tight uppercase hover:text-primary transition-colors">
-             The Retro Circuit
-           </Link>
-           <span className="text-[10px]">© {currentYear} All Rights Reserved.</span>
-           {/* Amazon specifies this sentence verbatim. The second one covers the other
-               retailers, which Amazon's wording does not. */}
-           <span className="text-[10px]">As an Amazon Associate I earn from qualifying purchases.</span>
-           <span className="text-[10px] text-zinc-600">
-             Some other retailer links may also earn a commission. It never affects what we
-             list, how devices rank, or the specs we publish.
-           </span>
-           <button
-             onClick={reset}
-             className="text-[10px] uppercase text-zinc-600 hover:text-zinc-400 transition-colors cursor-pointer text-left"
-           >
-             Cookie Settings
-           </button>
-        </div>
-
-        {/* Center: Navigation */}
-        <nav className="flex flex-wrap justify-center items-center gap-6 text-xs font-sans font-medium tracking-wide text-text-secondary">
-           {siteConfig.routes.map((route) => (
-              <Link
-                key={route.href}
-                href={route.href}
-                className="hover:text-primary transition-colors duration-200"
-              >
-                {route.label}
-              </Link>
-           ))}
-           {isAdmin && (
-             <Link
-               href="/admin"
-               className="hover:text-primary transition-colors duration-200"
-             >
-               Admin
-             </Link>
-           )}
+    <footer className="w-full bg-bg-primary shrink-0 z-10 relative border-t border-white/10">
+      <div className="max-w-[1400px] mx-auto px-5 md:px-12 py-4 flex flex-wrap lg:flex-nowrap items-center justify-center lg:justify-between gap-x-5 gap-y-2 text-xs text-text-secondary">
+        <Link href="/" className={`font-bold text-white whitespace-nowrap ${link}`}>© {currentYear} The Retro Circuit</Link>
+        {/* Amazon specifies its sentence verbatim; the second covers the other retailers. */}
+        <span className="text-zinc-500 text-center lg:text-left">As an Amazon Associate I earn from qualifying purchases. Other retailer links may earn a commission too.</span>
+        <nav aria-label="Footer" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 whitespace-nowrap">
+          {links.map((l) => <Link key={l.href} href={l.href} className={link}>{l.label}</Link>)}
+          <button type="button" onClick={reset} className={link}>Cookies</button>
+          <span className="font-mono text-zinc-600">{version.replace(/^pre-?alpha\s*/i, 'v')}</span>
         </nav>
-
-        {/* Right: System Status */}
-        <div className="flex items-center gap-4 text-[10px] font-mono text-text-secondary tracking-wider uppercase">
-           <span>VER: {version}</span>
-           <span className="flex items-center gap-2 text-emerald-500">
-             ONLINE
-             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_5px_currentColor]"></span>
-           </span>
-           <span className="hidden sm:inline opacity-50">LOC: MARS</span>
-        </div>
-
       </div>
     </footer>
   );
