@@ -160,6 +160,11 @@ body {
   100% { transform: translate(-50%, -50%) scale(1); }
 }
 /* Two-frame bob, like an idle sprite */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
 @keyframes spriteBob {
   0% { transform: translateY(0); }
   100% { transform: translateY(-4px); }
@@ -198,3 +203,5 @@ body {
   91.5% { opacity: 0.4; }
   93% { opacity: 1; }
 }
+/* BETA: hero background switcher. On the purple block the purple button turns white. */
+html[data-hero-bg="C"] .hero-cta { background: #fff; color: #000; }

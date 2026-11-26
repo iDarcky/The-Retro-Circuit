@@ -4,6 +4,7 @@ import HandheldPicker from './HandheldPicker';
 import HeadToHead from './HeadToHead';
 import JustAdded from './JustAdded';
 import Bit from '../brand/Bit';
+import HeroBackground from './HeroBackground';
 
 const focus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500';
 
@@ -21,61 +22,62 @@ function FaceButtons() {
 
 export default async function LandingPage() {
     const data = await loadHomeData();
+    const sprites = data.newest.filter((d) => d.image).map((d) => ({ slug: d.slug, image: d.image! }));
 
     return (
         <div className="bg-bg-primary min-h-screen text-text-primary font-sans">
-            {/* Hero, ending in the "Just added" strip */}
-            <header>
-                <div className="px-5 pt-12 md:pt-24 pb-10 md:pb-16 text-center">
-                    <div className="flex justify-center mb-6"><FaceButtons /></div>
-                    <h1 className="font-pixel text-[20px] leading-[1.4] sm:text-4xl lg:text-5xl md:text-[64px] md:leading-[1.25] text-white">
-                        Every handheld.<br />Every spec.
-                    </h1>
-                    <p className="mt-5 md:mt-6 text-base sm:text-lg md:text-2xl text-text-secondary max-w-[34ch] mx-auto leading-snug">
-                        {data.count > 0 ? `${data.count} retro handhelds, measured the same way` : 'Retro handhelds, measured the same way'}
-                        {data.minPrice ? `, from $${data.minPrice} pocket players to PS2-class powerhouses.` : '.'}
-                    </p>
-                    <div className="mt-8 flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-3 sm:gap-6 max-w-[320px] sm:max-w-none mx-auto">
-                        <Link href="/consoles" className={`text-center bg-white text-black font-mono text-sm px-6 py-3 hover:bg-violet-500 hover:text-white transition-colors ${focus}`}>
-                            Browse handhelds
-                        </Link>
-                        <Link href="/arena" className={`text-center font-mono text-sm text-violet-400 hover:text-white py-3 sm:py-0 border border-white/10 sm:border-0 ${focus}`}>
-                            Compare two
+            {/* Hero: fills the first screen and ends in the "Just added" strip */}
+            <header className="relative flex flex-col min-h-[calc(100svh-3.5rem)] md:min-h-[calc(100svh-4.125rem)] overflow-hidden">
+                <HeroBackground sprites={sprites} />
+
+                <div className="relative flex-1 flex items-center px-5 md:px-12 py-12 md:py-16">
+                    <div className="w-full max-w-[1200px] mx-auto grid md:grid-cols-[1fr_auto] items-center gap-10 md:gap-16">
+                        <div>
+                            <div className="mb-6"><FaceButtons /></div>
+                            <h1 className="font-pixel text-[26px] leading-[1.4] sm:text-4xl md:text-[52px] lg:text-[64px] md:leading-[1.2] text-white">
+                                Every handheld.<br />Every spec.
+                            </h1>
+                            <p className="mt-6 text-lg md:text-2xl text-text-secondary max-w-[36ch] leading-snug">
+                                {data.count > 0 ? `${data.count} retro handhelds, measured the same way` : 'Retro handhelds, measured the same way'}
+                                {data.minPrice ? `, from $${data.minPrice} pocket players to PS2-class powerhouses.` : '.'}
+                            </p>
+                            <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-6 max-w-[320px] sm:max-w-none">
+                                {/* Purple, with the corner brackets that grow into a frame on hover (as on the live site) */}
+                                <span className="relative group inline-flex">
+                                    <span aria-hidden className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-violet-500 transition-[width,height,border-color] duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-violet-300" />
+                                    <span aria-hidden className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-violet-500 transition-[width,height,border-color] duration-500 group-hover:w-[calc(100%+12px)] group-hover:h-[calc(100%+12px)] group-hover:border-violet-300" />
+                                    <Link href="/consoles" className={`hero-cta relative w-full text-center bg-violet-600 text-white font-mono text-sm px-7 py-3.5 hover:brightness-110 transition-[filter] ${focus}`}>
+                                        Browse handhelds
+                                    </Link>
+                                </span>
+                                <Link href="/arena" className={`text-center font-mono text-sm text-violet-300 hover:text-white py-3 sm:py-0 border border-white/10 sm:border-0 ${focus}`}>
+                                    Compare two
+                                </Link>
+                            </div>
+                        </div>
+
+                        {/* Bit offers the Finder */}
+                        <Link href="/finder" className={`group flex items-end md:flex-col md:items-center gap-3 md:gap-5 ${focus}`}>
+                            <span className="relative order-2 md:order-1 bg-white text-black font-pixel text-[9px] md:text-[11px] leading-relaxed px-3 py-2 md:px-4 md:py-3 mb-8 md:mb-0 group-hover:bg-violet-500 group-hover:text-white transition-colors">
+                                Psst. I can help.
+                                {/* stepped pixel tail, pointing at Bit */}
+                                <span className="absolute w-2 h-2 bg-inherit -left-2 bottom-3 md:left-1/2 md:-bottom-2" />
+                                <span className="absolute w-2 h-2 bg-inherit -left-4 bottom-1 md:left-[calc(50%-8px)] md:-bottom-4" />
+                            </span>
+                            <span className="order-1 md:order-2 md:hidden"><Bit size={110} /></span>
+                            <span className="order-1 md:order-2 hidden md:block"><Bit size={280} /></span>
                         </Link>
                     </div>
                 </div>
 
-                {data.newest.length > 0 && <JustAdded devices={data.newest} />}
+                {data.newest.length > 0 && <div className="relative bg-bg-primary"><JustAdded devices={data.newest} /></div>}
             </header>
 
-            <HandheldPicker devices={data.all} guides={data.guides} />
+            <HandheldPicker devices={data.all} />
 
             <HeadToHead pairs={data.pairs} />
 
-            {/* Finder */}
-            <section className="px-5 md:px-12 pt-16 md:pt-36 pb-16 md:pb-36" aria-labelledby="finder-heading">
-                <div className="max-w-[1200px] mx-auto bg-violet-600 text-white px-6 py-10 md:p-20 grid md:grid-cols-[1fr_auto] gap-8 md:gap-12 items-center overflow-hidden">
-                    <div>
-                        <h2 id="finder-heading" className="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-[-0.04em] leading-[1.05]">Still deciding?</h2>
-                        <p className="mt-4 text-base sm:text-lg md:text-xl text-violet-100 max-w-[32ch]">Answer eight quick questions and get a ranked shortlist made for you.</p>
-                        <Link href="/finder" className={`mt-8 inline-block bg-white text-black font-mono text-sm px-6 py-3 hover:bg-black hover:text-white transition-colors ${focus} focus-visible:outline-white`}>
-                            Start the Finder
-                        </Link>
-                    </div>
-                    {/* Bit, the mascot, offering to help */}
-                    <div aria-hidden className="flex items-end gap-3 md:flex-col md:items-center md:gap-5 md:pr-8">
-                        <span className="relative order-2 md:order-1 bg-white text-black font-pixel text-[9px] md:text-[11px] leading-relaxed px-3 py-2 md:px-4 md:py-3 mb-10 md:mb-0">
-                            Psst. I can help.
-                            {/* stepped pixel tail, pointing at Bit */}
-                            <span className="absolute w-2 h-2 bg-white -left-2 bottom-3 md:left-1/2 md:-bottom-2" />
-                            <span className="absolute w-2 h-2 bg-white -left-4 bottom-1 md:left-[calc(50%-8px)] md:-bottom-4" />
-                        </span>
-                        <span className="order-1 md:order-2 md:hidden"><Bit size={130} /></span>
-                        <span className="order-1 md:order-2 hidden md:block"><Bit size={260} /></span>
-                    </div>
-                </div>
-            </section>
-
+            <div className="h-20 md:h-32" />
         </div>
     );
 }

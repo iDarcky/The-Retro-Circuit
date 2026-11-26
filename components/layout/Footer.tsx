@@ -34,7 +34,8 @@ const Footer: FC<FooterProps> = ({ version }) => {
   const link = 'hover:text-white transition-colors';
 
   return (
-    <footer className="w-full bg-bg-primary shrink-0 z-10 relative border-t border-white/10">
+    <footer className="w-full bg-bg-primary shrink-0 z-10 relative">
+      <div className="w-full h-[2px] bg-gradient-to-r from-[#ff4f00] via-pink-500 via-violet-500 via-cyan-500 to-[#10b981]" />
       <div className="max-w-[1400px] mx-auto px-5 md:px-12 py-4 flex flex-wrap md:flex-nowrap items-center justify-center md:justify-between gap-x-5 gap-y-2 text-xs text-text-secondary">
         <Link href="/" className={`font-bold text-white whitespace-nowrap ${link}`}>© {currentYear} The Retro Circuit</Link>
         {/* Amazon specifies this sentence verbatim. */}

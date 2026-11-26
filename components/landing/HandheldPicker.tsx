@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { RATING, SYSTEMS, type HomeDevice, type HomeGuide, type SystemKey } from './home-types';
+import { RATING, SYSTEMS, type HomeDevice, type SystemKey } from './home-types';
 
 const BUDGETS = [
     { label: 'Any price', max: Infinity },
@@ -34,7 +34,7 @@ function Toggle({ on, onClick, children, active }: { on: boolean; onClick: () =>
  * ranked table. The default (PS2, under $200) is rendered on the server, so the first
  * paint already shows results and links.
  */
-export default function HandheldPicker({ devices, guides }: { devices: HomeDevice[]; guides: HomeGuide[] }) {
+export default function HandheldPicker({ devices }: { devices: HomeDevice[] }) {
     const [systems, setSystems] = useState<SystemKey[]>(['ps2']);
     const [budget, setBudget] = useState(2);
 
@@ -54,10 +54,8 @@ export default function HandheldPicker({ devices, guides }: { devices: HomeDevic
         <section className="px-5 md:px-12 pt-14 md:pt-28" aria-labelledby="picker-heading">
             <div className="max-w-[1200px] mx-auto">
                 <h2 id="picker-heading" className="text-[28px] leading-tight sm:text-3xl md:text-5xl font-extrabold tracking-[-0.04em]">Which one is right for you?</h2>
-                <p className="mt-3 text-base sm:text-lg text-text-secondary">Pick what you want to play and what you want to spend.</p>
-
-                <div className="mt-6 md:mt-8 flex flex-col items-stretch sm:items-start gap-3">
-                    <div role="group" aria-label="Systems" className="flex flex-wrap sm:inline-flex border border-white/10 p-1 gap-1">
+                <div className="mt-6 md:mt-8 flex flex-col lg:flex-row lg:items-center gap-3">
+                    <div role="group" aria-label="Systems you want to play" className="flex flex-wrap border border-white/10 p-1 gap-1">
                         {SYSTEMS.map((s) => (
                             <Toggle
                                 key={s.key}
@@ -69,20 +67,23 @@ export default function HandheldPicker({ devices, guides }: { devices: HomeDevic
                             </Toggle>
                         ))}
                     </div>
-                    <div role="group" aria-label="Budget" className="flex flex-wrap sm:inline-flex border border-white/10 p-1 gap-1">
-                        {BUDGETS.map((b, i) => (
-                            <Toggle key={b.label} on={budget === i} active="bg-violet-600 text-white" onClick={() => setBudget(i)}>
-                                {b.label}
-                            </Toggle>
-                        ))}
+                    <div className="flex items-center gap-3">
+                        <label className="sr-only" htmlFor="picker-budget">Budget</label>
+                        <select
+                            id="picker-budget"
+                            value={budget}
+                            onChange={(e) => setBudget(Number(e.target.value))}
+                            className={`bg-violet-600 text-white font-mono text-sm px-3 py-[11px] border-0 ${focus}`}
+                        >
+                            {BUDGETS.map((b, i) => <option key={b.label} value={i}>{b.label}</option>)}
+                        </select>
+                        <span className="font-mono text-xs text-text-secondary whitespace-nowrap" aria-live="polite">
+                            {results.length} {results.length === 1 ? 'match' : 'matches'}
+                        </span>
                     </div>
                 </div>
 
                 <div className="mt-6 md:mt-8 border border-white/10">
-                    <p className="px-4 sm:px-5 py-3 text-sm text-text-secondary border-b border-white/10" aria-live="polite">
-                        {results.length} {results.length === 1 ? 'match' : 'matches'}
-                        {results.length > SHOWN ? ', best five first' : ''}
-                    </p>
                     {results.length === 0 ? (
                         <p className="px-4 sm:px-5 py-10">Nothing fits yet. Raise the budget or drop a system.</p>
                     ) : (
@@ -117,17 +118,6 @@ export default function HandheldPicker({ devices, guides }: { devices: HomeDevic
                     )}
                 </div>
 
-                <p className="mt-6 text-[15px] leading-relaxed text-text-secondary">
-                    Or see a ranked guide:{' '}
-                    {guides.map((g, i) => (
-                        <span key={g.href}>
-                            <Link href={g.href} title={g.title} className={`text-violet-400 hover:text-white underline-offset-4 hover:underline ${focus}`}>
-                                {g.label}
-                            </Link>
-                            {i < guides.length - 1 ? ', ' : ''}
-                        </span>
-                    ))}
-                </p>
             </div>
         </section>
     );

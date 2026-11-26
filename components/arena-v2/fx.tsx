@@ -35,11 +35,11 @@ export function Reveal({ children, className = '', delay = 0 }: { children: Reac
 }
 
 /** Pixel eyebrow over a section heading: "02  WHAT IT PLAYS". */
-export function SectionHead({ n, eyebrow, title, sub, id, color = 'text-violet-400' }: { n: number; eyebrow: string; title: string; sub?: ReactNode; id: string; color?: string }) {
+export function SectionHead({ eyebrow, title, sub, id, color = 'text-violet-400' }: { n?: number; eyebrow: string; title: string; sub?: ReactNode; id: string; color?: string }) {
     return (
         <div>
             <p className={`font-pixel text-[10px] ${color}`}>
-                <span className="text-text-secondary">{String(n).padStart(2, '0')}</span>&nbsp;&nbsp;{eyebrow.toUpperCase()}
+                {eyebrow.toUpperCase()}
             </p>
             <h2 id={id} className="mt-3 text-2xl md:text-4xl font-extrabold tracking-[-0.03em]">{title}</h2>
             {sub && <p className="mt-2 text-text-secondary">{sub}</p>}

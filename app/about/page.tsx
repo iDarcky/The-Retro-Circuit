@@ -13,10 +13,10 @@ export const metadata = {
     alternates: { canonical: '/about' },
 };
 
-const H2 = ({ n, children, color }: { n: string; children: React.ReactNode; color: string }) => (
+const H2 = ({ children, color }: { n?: string; children: React.ReactNode; color: string }) => (
     <div>
-        <p className={`font-pixel text-[10px] ${color}`}><span className="text-text-secondary">{n}</span></p>
-        <h2 className="mt-3 text-3xl md:text-4xl font-extrabold tracking-[-0.03em] leading-tight">{children}</h2>
+        <span aria-hidden className={`block w-6 h-1 mb-4 ${color.replace('text-', 'bg-').replace('-400', '-500')}`} />
+        <h2 className="text-3xl md:text-4xl font-extrabold tracking-[-0.03em] leading-tight">{children}</h2>
     </div>
 );
 
@@ -38,7 +38,6 @@ export default async function AboutPage() {
         <main className="bg-bg-primary min-h-screen text-text-primary font-sans pb-24">
             <header className="px-5 md:px-12 pt-12 md:pt-20 pb-14">
                 <div className="max-w-[1100px] mx-auto">
-                    <p className="font-pixel text-[10px] text-violet-400"><span className="text-text-secondary">01</span>&nbsp;&nbsp;ABOUT</p>
                     <h1 className="mt-4 text-4xl md:text-7xl font-extrabold tracking-[-0.045em] leading-[0.98]">Good data, good design,<br className="hidden md:block" /> and a love for the hardware.</h1>
                 </div>
             </header>

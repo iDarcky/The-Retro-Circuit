@@ -36,7 +36,6 @@ export default async function BrandsPreview() {
         <main className="bg-bg-primary min-h-screen text-text-primary font-sans pb-24">
             <header className="px-5 md:px-12 pt-12 md:pt-20 pb-12 md:pb-16">
                 <div className="max-w-[1400px] mx-auto">
-                    <p className="font-pixel text-[10px] text-violet-400"><span className="text-text-secondary">01</span>&nbsp;&nbsp;BRANDS</p>
                     <h1 className="mt-4 text-4xl md:text-7xl font-extrabold tracking-[-0.045em] leading-[0.98]">Who makes them.</h1>
                     <p className="mt-5 text-lg md:text-xl text-text-secondary max-w-[52ch]">{brands.length} brands, from the big names to one-device makers. Biggest line-ups first.</p>
                 </div>
