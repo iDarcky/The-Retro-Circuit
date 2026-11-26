@@ -40,7 +40,7 @@ export default function JustAdded({ devices }: { devices: HomeDevice[] }) {
             </h2>
             <div className="group flex-1 min-w-0 overflow-x-auto motion-safe:overflow-hidden no-scrollbar">
                 <div
-                    className="flex w-max motion-safe:animate-[marquee_linear_infinite] group-hover:[animation-play-state:paused] group-focus-within:[animation-play-state:paused]"
+                    className="flex w-max motion-safe:animate-[stripLoop_linear_infinite] group-hover:[animation-play-state:paused] group-focus-within:[animation-play-state:paused]"
                     style={{ animationDuration: `${seconds}s` }}
                 >
                     {devices.map((d) => <Item key={d.slug} d={d} />)}

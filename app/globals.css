@@ -160,7 +160,7 @@ body {
   100% { transform: translate(-50%, -50%) scale(1); }
 }
 /* Two-frame bob, like an idle sprite */
-@keyframes marquee {
+@keyframes stripLoop {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
