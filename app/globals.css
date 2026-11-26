@@ -207,5 +207,9 @@ body {
 
 /* Big screens: grow the whole site a little, so a 2K or 4K monitor at 100% scaling does not
  * show small text in a narrow middle column. Media queries still read the real width. */
-@media (min-width: 1800px) { html { zoom: 1.125; } }
-@media (min-width: 2300px) { html { zoom: 1.25; } }
+html { --zoom: 1; }
+@media (min-width: 1800px) { html { zoom: 1.125; --zoom: 1.125; } }
+@media (min-width: 2300px) { html { zoom: 1.25; --zoom: 1.25; } }
+/* Zoom also scales viewport units, so screen-height boxes divide it back out. */
+.h-screen { height: calc(100vh / var(--zoom)); }
+.min-h-screen { min-height: calc(100vh / var(--zoom)); }

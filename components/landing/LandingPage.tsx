@@ -31,7 +31,7 @@ export default async function LandingPage() {
     return (
         <div className="bg-bg-primary min-h-screen text-text-primary font-sans">
             {/* Hero: fills the first screen and ends in the "Just added" strip */}
-            <header className="relative flex flex-col min-h-[calc(100svh-3.5rem)] md:min-h-[calc(100svh-4.125rem)] overflow-hidden">
+            <header className="relative flex flex-col min-h-[calc(100svh/var(--zoom,1)-3.5rem)] md:min-h-[calc(100svh/var(--zoom,1)-4.125rem)] overflow-hidden">
                 <HeroBackground sprites={sprites} />
 
                 <div className="relative flex-1 flex items-center px-5 md:px-12 py-12 md:py-16">
