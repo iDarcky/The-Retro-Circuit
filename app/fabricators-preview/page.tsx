@@ -45,7 +45,6 @@ export default async function BrandsPreview() {
                             key={b.id}
                             href={`/fabricators/${b.slug}`}
                             name={b.name}
-                            meta={[b.country, b.founded_year ? `since ${b.founded_year}` : null].filter(Boolean).join(' · ')}
                             tagline={brandTagline(b.description)}
                             count={n}
                             color={brandColor(b.name, (b as any).brand_color)}
