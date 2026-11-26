@@ -190,6 +190,13 @@ export async function getFinderResults(
 
         if (scoredConsoles.length === 0) return [];
 
+        // Only recommend devices that actually play what was asked for, when enough do.
+        // Without this a $90 device that struggles with PS2 could come second for a PS2 ask.
+        if (inputs.targetTier) {
+            const capable = scoredConsoles.filter(c => (c._breakdown?.tierFit ?? 0) >= 0.6);
+            if (capable.length >= 3) scoredConsoles.splice(0, scoredConsoles.length, ...capable);
+        }
+
         // --- SELECTION LOGIC (Multi-Pass) ---
         const finalSelection: FinderResultConsole[] = [];
         const pickedIds = new Set<string>();
