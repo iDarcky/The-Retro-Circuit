@@ -38,13 +38,13 @@ const Footer: FC<FooterProps> = ({ version }) => {
       <div className="max-w-[1400px] mx-auto px-5 md:px-12 py-4 flex flex-wrap md:flex-nowrap items-center justify-center md:justify-between gap-x-5 gap-y-2 text-xs text-text-secondary">
         <Link href="/" className={`font-bold text-white whitespace-nowrap ${link}`}>© {currentYear} The Retro Circuit</Link>
         {/* Amazon specifies this sentence verbatim. */}
-        <span className="min-w-0 text-zinc-500 text-center md:text-left md:truncate">As an Amazon Associate I earn from qualifying purchases.</span>
+        <span className="min-w-0 text-zinc-500 text-center md:text-left">As an Amazon Associate I earn from qualifying purchases.</span>
         <nav aria-label="Footer" className="flex flex-wrap md:flex-nowrap shrink-0 items-center justify-center gap-x-4 gap-y-1 whitespace-nowrap">
           {links.map((l) => <Link key={l.href} href={l.href} className={link}>{l.label}</Link>)}
           <button type="button" onClick={reset} className={link}>Cookies</button>
-          <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-500">VER {version.replace(/^pre-?alpha\s*/i, '')}</span>
+          <span className="hidden xl:inline font-mono text-[10px] uppercase tracking-wider text-zinc-500">VER {version.replace(/^pre-?alpha\s*/i, '')}</span>
           <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-emerald-500">Online<span className="w-1.5 h-1.5 bg-emerald-500 motion-safe:animate-pulse" aria-hidden /></span>
-          <span className="hidden lg:inline font-mono text-[10px] uppercase tracking-wider text-zinc-600">Loc: Mars</span>
+          <span className="hidden xl:inline font-mono text-[10px] uppercase tracking-wider text-zinc-600">Loc: Mars</span>
         </nav>
       </div>
     </footer>
