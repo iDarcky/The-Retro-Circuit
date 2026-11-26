@@ -131,7 +131,7 @@ export default async function BrandPreview(props: Props) {
                         )}
                     </div>
                     <p className="mt-2 text-text-secondary">Newest first.</p>
-                    <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3 md:gap-5">
+                    <div className="mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-6">
                         {devices.map((d, i) => <DeviceCard key={d.slug} d={d} priority={i < 6} />)}
                     </div>
                 </div>

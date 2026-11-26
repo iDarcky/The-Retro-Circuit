@@ -31,38 +31,33 @@ export function osLabel(os?: string | null) {
     return OS_LABEL[os.toLowerCase()] ?? os.charAt(0).toUpperCase() + os.slice(1);
 }
 
-/** A soft glow behind the handheld, by shape, so the glass has colour to pick up. */
-const GLOW: Record<string, string> = {
-    horizontal: 'rgba(139,92,246,0.35)',
-    vertical: 'rgba(6,182,212,0.32)',
-    clamshell: 'rgba(244,63,94,0.30)',
-};
-
-/* Glass card: a frosted panel over a faint coloured glow, a small handheld icon, then the
- * brand, name and price. Owner asked for transparency and smaller icons (2026-11-27). */
+/* The old Vault card, brought back at the owner's request (2026-11-27) and polished: a square
+ * picture area with room around the handheld, then brand, year, name and price underneath. */
 export default function DeviceCard({ d, priority = false }: { d: CardDevice; priority?: boolean }) {
-    const shape = (d.shape ?? '').toLowerCase();
-    const glow = GLOW[shape] ?? 'rgba(251,191,36,0.25)';
     return (
         <Link
             href={`/consoles/${d.slug}`}
-            className="group relative isolate flex flex-col overflow-hidden rounded-[20px] border border-white/[0.09] bg-white/[0.035] backdrop-blur-xl p-5 pt-7 transition-colors duration-300 hover:bg-white/[0.07] hover:border-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500"
+            className="group relative flex flex-col overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] hover:border-violet-500/50 transition-all duration-300 motion-safe:hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500"
         >
-            {/* the glow the glass sits on, brighter on hover */}
-            <span aria-hidden className="absolute -z-10 left-1/2 top-6 w-32 h-24 -translate-x-1/2 rounded-full blur-2xl opacity-60 transition-opacity duration-300 group-hover:opacity-100" style={{ background: glow }} />
-            {/* top sheen, like light on a plastic shell */}
-            <span aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-            <span className="relative mx-auto block w-[52%] aspect-[4/3] group-hover:motion-safe:animate-[spriteBob_0.5s_steps(2,jump-none)_infinite]">
+            <span className="relative aspect-square flex items-center justify-center p-9 bg-gradient-to-b from-transparent to-black/25">
                 {d.image ? (
-                    <Image src={d.image} alt="" fill sizes="(min-width: 1024px) 110px, 28vw" className="object-contain" priority={priority} />
+                    <span className="relative w-full h-full transition-transform duration-500 group-hover:scale-110">
+                        <Image src={d.image} alt={d.name} fill sizes="(min-width: 1280px) 16vw, (min-width: 768px) 25vw, 45vw" className="object-contain" priority={priority} />
+                    </span>
                 ) : (
-                    <span className="absolute inset-0 flex items-center justify-center font-pixel text-zinc-700">?</span>
+                    <span className="font-mono text-xs text-zinc-700">NO VISUAL</span>
                 )}
+                <span aria-hidden className="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-emerald-500/50 group-hover:bg-emerald-400 transition-colors" />
             </span>
-            <span className="mt-6 text-xs text-text-secondary truncate">{d.brand}</span>
-            <span className="mt-0.5 font-semibold leading-snug group-hover:text-violet-300 transition-colors">{d.name}</span>
-            <span className="mt-auto pt-4 text-xl font-semibold tracking-[-0.03em] tabular-nums text-white">
-                {d.price ? `$${d.price}` : <span className="text-xs font-normal tracking-normal text-zinc-600">Price not listed</span>}
+            <span className="flex flex-col gap-1 p-4 border-t border-white/[0.06] bg-white/[0.01]">
+                <span className="flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider truncate">{d.brand}</span>
+                    {d.year && <span className="text-[10px] font-mono text-zinc-600">{d.year}</span>}
+                </span>
+                <span className="flex items-baseline justify-between gap-3">
+                    <span className="text-sm font-bold text-white leading-tight truncate group-hover:text-violet-300 transition-colors">{d.name}</span>
+                    {d.price ? <span className="shrink-0 font-mono text-xs text-cyan-400 tabular-nums">${d.price}</span> : null}
+                </span>
             </span>
         </Link>
     );
