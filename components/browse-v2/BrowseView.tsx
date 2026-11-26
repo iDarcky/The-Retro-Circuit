@@ -8,8 +8,8 @@ import { useMemo, useState } from 'react';
 import { Search, X } from 'lucide-react';
 import DeviceCard, { type CardDevice, SHAPE_COLOR, osLabel } from './DeviceCard';
 import Bit from '../brand/Bit';
+import { SwissDropdown } from '../ui/SwissDropdown';
 import { PageTitle } from '../layout/PageTitle';
-import { CountUp } from '../arena-v2/fx';
 
 export interface BrowseDevice extends CardDevice {
     released?: number; // ms, for sorting
@@ -24,6 +24,7 @@ const PRICE_BANDS = [
 const SHAPES = ['Horizontal', 'Vertical', 'Clamshell'];
 const SORTS = [
     { id: 'new', label: 'Newest' },
+    { id: 'old', label: 'Oldest' },
     { id: 'cheap', label: 'Cheapest' },
     { id: 'dear', label: 'Priciest' },
     { id: 'az', label: 'A to Z' },
@@ -45,7 +46,7 @@ function Chip({ on, onClick, children, dot }: { on: boolean; onClick: () => void
     );
 }
 
-export default function BrowseView({ devices, variantCount }: { devices: BrowseDevice[]; variantCount: number }) {
+export default function BrowseView({ devices }: { devices: BrowseDevice[]; variantCount?: number }) {
     const [q, setQ] = useState('');
     const [shapes, setShapes] = useState<string[]>([]);
     const [band, setBand] = useState<string | null>(null);
@@ -75,6 +76,7 @@ export default function BrowseView({ devices, variantCount }: { devices: BrowseD
             sort === 'cheap' ? price(a) - price(b) :
             sort === 'dear' ? (b.price ?? -1) - (a.price ?? -1) :
             sort === 'az' ? a.name.localeCompare(b.name) :
+            sort === 'old' ? (a.released ?? Infinity) - (b.released ?? Infinity) :
             (b.released ?? 0) - (a.released ?? 0),
         );
         return out;
@@ -82,7 +84,7 @@ export default function BrowseView({ devices, variantCount }: { devices: BrowseD
 
     const active = !!(q || shapes.length || band || os || brand);
     const reset = () => { setQ(''); setShapes([]); setBand(null); setOs(null); setBrand(''); };
-    const toggleShape = (s: string) => { setShapes((cur) => (cur.includes(s) ? cur.filter((x) => x !== s) : [...cur, s])); };
+    const toggleShape = (s: string) => { setShapes((cur) => (cur[0] === s ? [] : [s])); };
 
     return (
         <div>
@@ -92,9 +94,6 @@ export default function BrowseView({ devices, variantCount }: { devices: BrowseD
                     <PageTitle lead="Console" accent="Vault" color="vault" />
                     <p className="mt-5 text-lg md:text-xl text-text-secondary max-w-[56ch]">
                         The complete archive of handheld gaming history. Filter by shape, price and operating system, then sort by what matters to you.
-                    </p>
-                    <p className="mt-3 font-mono text-sm text-zinc-500">
-                        <CountUp to={devices.length} className="text-cyan-400" /> handhelds · {variantCount} configurations
                     </p>
                 </div>
             </header>
@@ -114,23 +113,24 @@ export default function BrowseView({ devices, variantCount }: { devices: BrowseD
                             />
                         </label>
                         <div className="flex gap-3">
-                            <select
+                            <SwissDropdown
                                 value={brand}
-                                onChange={(e) => { setBrand(e.target.value); }}
-                                aria-label="Brand"
-                                className={`flex-1 sm:flex-none bg-bg-primary border border-white/15 px-3 py-2.5 text-sm ${focus}`}
-                            >
-                                <option value="">All brands</option>
-                                {brands.map((b) => <option key={b} value={b}>{b}</option>)}
-                            </select>
-                            <select
+                                onChange={(v) => setBrand(v)}
+                                options={[{ value: '', label: 'All brands' }, ...brands.map((b) => ({ value: b, label: b }))]}
+                                labelPrefix=""
+                                className="flex-1 sm:flex-none"
+                                buttonClassName="!py-[9px] !text-sm !normal-case !tracking-normal min-w-[150px]"
+                                menuClassName="z-[60] max-h-[60vh] overflow-y-auto"
+                            />
+                            <SwissDropdown
                                 value={sort}
-                                onChange={(e) => setSort(e.target.value)}
-                                aria-label="Sort"
-                                className={`flex-1 sm:flex-none bg-bg-primary border border-white/15 px-3 py-2.5 text-sm ${focus}`}
-                            >
-                                {SORTS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-                            </select>
+                                onChange={(v) => setSort(v)}
+                                options={SORTS.map((s) => ({ value: s.id, label: s.label }))}
+                                labelPrefix=""
+                                className="flex-1 sm:flex-none"
+                                buttonClassName="!py-[9px] !text-sm !normal-case !tracking-normal min-w-[130px]"
+                                menuClassName="z-[60] right-0 left-auto"
+                            />
                         </div>
                     </div>
                     <div className="flex items-center gap-2 overflow-x-auto -mx-5 px-5 md:mx-0 md:px-0 md:flex-wrap pb-1 md:pb-0 [scrollbar-width:none]">
@@ -161,7 +161,7 @@ export default function BrowseView({ devices, variantCount }: { devices: BrowseD
                         </div>
                     ) : (
                         <>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 border-l border-t border-white/10">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5">
                                 {list.map((d, i) => <DeviceCard key={d.slug} d={d} priority={i < 6} />)}
                             </div>
                         </>

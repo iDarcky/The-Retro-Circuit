@@ -4,12 +4,11 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { AppWindow, BatteryFull, ChevronRight, Cpu, MemoryStick, Monitor, Weight } from 'lucide-react';
-import { chipOf, playsByRating, priceOf, ramGb, RATING_LABEL, specList, text, untested, variantLabel } from '../../lib/arena/compare-view';
+import { chipOf, playsByRating, priceOf, ramGb, RATING_LABEL, specList, text, variantLabel } from '../../lib/arena/compare-view';
 import { pairKey } from '../../lib/arena/indexable';
 import AffiliateLink from '../console/AffiliateLink';
 import DevicePicker, { type PickerConsole } from '../arena-v2/DevicePicker';
 import type { BuyTarget } from '../../lib/affiliate';
-import Bit from '../brand/Bit';
 import { BlockMeter, CountUp, DOT_GRID, FaceButtons, Reveal, SectionHead, SegmentBar } from '../arena-v2/fx';
 
 const focus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-500';
@@ -65,7 +64,6 @@ export default function ConsoleView(p: {
     const n0 = p.variants.length > 1 ? 1 : 0;
     const specs = useMemo(() => specList(v), [v]);
     const plays = useMemo(() => playsByRating(v), [v]);
-    const notTested = useMemo(() => untested(v), [v]);
 
     // Specs that change between configurations, for the configuration table.
     const configRows = useMemo(() => {
@@ -262,19 +260,6 @@ export default function ConsoleView(p: {
                                     <span className="text-[15px] text-zinc-300 leading-relaxed">{systems.join(', ')}</span>
                                 </div>
                             ))}
-                            {notTested.length > 0 && (
-                                <div className="px-4 md:px-5 py-4 grid md:grid-cols-[12rem_1fr] gap-2 md:gap-6 items-baseline">
-                                    <span className="text-sm text-text-secondary">Not tested yet</span>
-                                    <span className="flex items-end justify-between gap-4">
-                                        <span className="text-[15px] text-text-secondary leading-relaxed">{notTested.join(', ')}</span>
-                                        {/* Easter egg: Bit is on it */}
-                                        <span className="shrink-0 flex items-end gap-2" title="Bit is still testing these">
-                                            <span className="font-pixel text-[8px] text-cyan-400 mb-6 hidden sm:inline">ON IT!</span>
-                                            <Bit size={80} />
-                                        </span>
-                                    </span>
-                                </div>
-                            )}
                         </div>
                     </section></Reveal>
                 )}
@@ -285,7 +270,6 @@ export default function ConsoleView(p: {
                         <SectionHead color="text-cyan-400" n={n0 + 2} eyebrow="The story" id="about-heading" title="About it" />
                         <div>
                             <p className="text-lg leading-relaxed text-zinc-300 max-w-[62ch]">{p.description ?? p.summary}</p>
-                            {!p.description && <p className="mt-3 text-xs text-text-secondary">Written from the spec sheet.</p>}
                         </div>
                     </section>
                 )}

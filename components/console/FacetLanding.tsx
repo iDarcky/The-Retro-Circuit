@@ -102,7 +102,7 @@ export default async function FacetLanding({ facetSlug, value }: { facetSlug: st
             </header>
 
             <section className="px-5 md:px-12" aria-label="Devices">
-                <div className="max-w-[1400px] mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 border-l border-t border-white/10">
+                <div className="max-w-[1400px] mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5">
                     {rows.map((r, i) => (
                         <DeviceCard key={r.id} priority={i < 6} d={{ slug: r.slug, name: r.name, brand: r.brand, image: r.image, shape: r.shape, price: r.price >= 20 ? Math.round(r.price) : null, chip: r.soc, screen: r.screen, os: r.os, year: r.year }} />
                     ))}
