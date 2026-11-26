@@ -37,7 +37,7 @@ function Chip({ on, onClick, children, dot }: { on: boolean; onClick: () => void
             type="button"
             aria-pressed={on}
             onClick={onClick}
-            className={`inline-flex items-center gap-2 border px-3 py-2 text-[13px] sm:text-sm transition-colors ${on ? 'bg-white text-black border-white' : 'border-white/10 text-zinc-300 hover:border-white/40'} ${focus}`}
+            className={`inline-flex shrink-0 whitespace-nowrap items-center gap-2 border px-3 py-2 text-[13px] sm:text-sm transition-colors ${on ? 'bg-white text-black border-white' : 'border-white/10 text-zinc-300 hover:border-white/40'} ${focus}`}
         >
             {dot && <span className={`w-2 h-2 ${dot}`} />}
             {children}
@@ -132,11 +132,11 @@ export default function BrowseView({ devices, variantCount }: { devices: BrowseD
                             </select>
                         </div>
                     </div>
-                    <div className="flex gap-2 overflow-x-auto -mx-5 px-5 md:mx-0 md:px-0 md:flex-wrap pb-1 md:pb-0 [scrollbar-width:none]">
+                    <div className="flex items-center gap-2 overflow-x-auto -mx-5 px-5 md:mx-0 md:px-0 md:flex-wrap pb-1 md:pb-0 [scrollbar-width:none]">
                         {SHAPES.map((s) => <Chip key={s} dot={SHAPE_COLOR[s.toLowerCase()]} on={shapes.includes(s.toLowerCase())} onClick={() => toggleShape(s.toLowerCase())}>{s}</Chip>)}
-                        <span className="w-px bg-white/10 mx-1 shrink-0" aria-hidden />
+                        <span className="w-px h-6 bg-white/10 mx-1 shrink-0" aria-hidden />
                         {PRICE_BANDS.map((b) => <Chip key={b.id} on={band === b.id} onClick={() => { setBand(band === b.id ? null : b.id); setShown(PAGE); }}>{b.label}</Chip>)}
-                        <span className="w-px bg-white/10 mx-1 shrink-0" aria-hidden />
+                        <span className="w-px h-6 bg-white/10 mx-1 shrink-0" aria-hidden />
                         {osOptions.map((o) => <Chip key={o} on={os === o} onClick={() => { setOs(os === o ? null : o); setShown(PAGE); }}>{osLabel(o)}</Chip>)}
                     </div>
                     <div className="flex items-center gap-4 text-sm text-text-secondary" aria-live="polite">
@@ -160,7 +160,7 @@ export default function BrowseView({ devices, variantCount }: { devices: BrowseD
                         </div>
                     ) : (
                         <>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-px bg-white/10 border border-white/10">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 border-l border-t border-white/10">
                                 {list.slice(0, shown).map((d, i) => <DeviceCard key={d.slug} d={d} priority={i < 6} />)}
                             </div>
                             {shown < list.length && (

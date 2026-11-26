@@ -37,7 +37,7 @@ export default function DeviceCard({ d, priority = false }: { d: CardDevice; pri
     return (
         <Link
             href={`/consoles/${d.slug}`}
-            className="group relative flex flex-col bg-bg-primary p-4 hover:bg-white/[0.04] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-violet-500"
+            className="group relative flex flex-col bg-bg-primary border-r border-b border-white/10 p-4 hover:bg-white/[0.04] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-violet-500"
         >
             <span className="relative block h-24 w-full group-hover:motion-safe:animate-[spriteBob_0.5s_steps(2,jump-none)_infinite]">
                 {d.image ? (
