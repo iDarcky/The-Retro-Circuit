@@ -5,6 +5,8 @@ import HeadToHead from './HeadToHead';
 import JustAdded from './JustAdded';
 import Bit from '../brand/Bit';
 import HeroBackground from './HeroBackground';
+import TitleFontPicker from './TitleFontPicker';
+import { TITLE_FONT_VARS } from './title-fonts';
 
 const focus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500';
 
@@ -37,8 +39,9 @@ export default async function LandingPage() {
                     <div className="w-full max-w-[1200px] mx-auto grid md:grid-cols-[1fr_auto] items-center gap-10 md:gap-16">
                         <div>
                             <div className="mb-6"><FaceButtons /></div>
-                            <h1 className="font-pixel text-[26px] leading-[1.4] sm:text-4xl md:text-[52px] lg:text-[64px] md:leading-[1.2] text-white">
-                                Every handheld.<br />Every spec.
+                            <h1 className={`hero-title ${TITLE_FONT_VARS} font-pixel text-[26px] leading-[1.4] sm:text-4xl md:text-[52px] lg:text-[64px] md:leading-[1.2]`}>
+                                <span className="block text-violet-400">Every handheld.</span>
+                                <span className="block text-cyan-400">Every spec.</span>
                             </h1>
                             <p className="mt-6 text-lg md:text-2xl text-text-secondary max-w-[36ch] leading-snug">
                                 {data.count > 0 ? `${data.count} retro handhelds, measured the same way` : 'Retro handhelds, measured the same way'}
@@ -57,6 +60,7 @@ export default async function LandingPage() {
                                     Compare two
                                 </Link>
                             </div>
+                            <TitleFontPicker />
                         </div>
 
                         {/* Bit offers the Finder */}

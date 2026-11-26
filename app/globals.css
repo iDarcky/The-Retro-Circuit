@@ -203,3 +203,9 @@ body {
   91.5% { opacity: 0.4; }
   93% { opacity: 1; }
 }
+
+/* BETA ONLY: homepage title font preview (see components/landing/TitleFontPicker.tsx). */
+html:not([data-title-font="a"]) .hero-title { font-family: var(--font-title-pixelify); font-size: clamp(40px, 6.6vw, 88px); line-height: 1; letter-spacing: -0.01em; }
+html[data-title-font="c"] .hero-title { font-family: var(--font-title-silkscreen); font-size: clamp(34px, 5.4vw, 72px); line-height: 1.05; letter-spacing: 0; }
+html[data-title-font="d"] .hero-title { font-family: var(--font-title-bungee); font-size: clamp(34px, 5.6vw, 76px); line-height: 1.02; letter-spacing: 0; }
+html[data-title-font="e"] .hero-title { font-family: var(--font-title-jersey); font-size: clamp(52px, 9vw, 124px); line-height: 0.9; letter-spacing: 0.01em; }

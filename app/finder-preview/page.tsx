@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 
 export default function FinderPreviewPage() {
     return (
-        <main className="bg-bg-primary min-h-screen text-text-primary font-sans">
-            <div className="max-w-[1200px] mx-auto px-5 md:px-12 pt-10 md:pt-16 pb-24">
+        <main className="flex-1 bg-bg-primary text-text-primary font-sans">
+            <div className="max-w-[1200px] mx-auto px-5 md:px-12 pt-8 md:pt-16 pb-12">
                 <FinderV2 base="/finder" />
             </div>
         </main>
