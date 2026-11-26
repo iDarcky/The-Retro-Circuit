@@ -51,7 +51,7 @@ export default function BrandFolder({ href, name, tagline, count, color, logo, d
                 {/* the sheet tucked in */}
                 <span className="absolute left-[5%] right-[5%] top-[6%] bottom-0 rounded-[14px] bg-white/95 transition-transform duration-500 ease-out group-hover:-translate-y-[4%]">
                     {fill === 'logo' && (
-                        <span className="absolute inset-x-[6%] top-[4%] h-[62%] -rotate-[8deg] transition-transform duration-500 ease-out group-hover:-rotate-[4deg] group-hover:scale-105">
+                        <span className="absolute inset-x-[5%] top-[6%] h-[56%] -rotate-[6deg] transition-transform duration-500 ease-out group-hover:-rotate-[4deg] group-hover:scale-105">
                             {logo ? (
                                 <Image src={logo} alt="" fill sizes="(min-width: 1024px) 25vw, 80vw" className="object-contain" />
                             ) : (
@@ -61,7 +61,7 @@ export default function BrandFolder({ href, name, tagline, count, color, logo, d
                     )}
                 </span>
                 {fill === 'handhelds' && (
-                    <span className="absolute left-[8%] right-[8%] top-[9%] h-[48%] flex items-center justify-center gap-[3%] transition-transform duration-500 ease-out group-hover:-translate-y-[6%]">
+                    <span className="absolute left-[8%] right-[8%] top-[10%] h-[50%] flex items-center justify-center gap-[3%] transition-transform duration-500 ease-out group-hover:-translate-y-[6%]">
                         {devices.slice(0, 3).map((src, i) => (
                             <span key={src} className={`relative h-full flex-1 ${i === 1 ? 'z-10 scale-110' : i === 0 ? '-rotate-6' : 'rotate-6'}`}>
                                 <Image src={src} alt="" fill sizes="140px" className="object-contain" />
@@ -72,9 +72,9 @@ export default function BrandFolder({ href, name, tagline, count, color, logo, d
             </span>
 
             {/* Frosted glass front */}
-            <span className="absolute left-[2%] right-[2%] top-[42%] bottom-[2.5%] rounded-[20px] border border-white/25 bg-white/[0.14] backdrop-blur-md">
-                <span className="absolute inset-0 rounded-[20px] bg-gradient-to-b from-white/[0.10] to-black/30" />
-                <span className="relative h-full flex flex-col p-[6%]">
+            <span className="absolute left-[2%] right-[2%] top-[50%] bottom-[2.5%] rounded-[20px] border border-white/20 bg-white/[0.05] backdrop-blur-md">
+                <span className="absolute inset-0 rounded-[20px] bg-gradient-to-b from-white/[0.08] to-black/45" />
+                <span className="relative h-full flex flex-col px-[6%] py-[5%]">
                     <span className="block text-lg md:text-xl font-semibold leading-tight tracking-[-0.02em] text-white truncate">{name}</span>
                     {tagline && <span className="mt-1 block text-xs md:text-[13px] text-white/65 leading-snug line-clamp-1">{tagline}</span>}
                     <span className="mt-auto flex items-end justify-between gap-3">
