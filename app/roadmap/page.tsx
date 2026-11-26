@@ -44,7 +44,7 @@ export default async function RoadmapPage() {
                 <div className="max-w-[1200px] mx-auto">
                     <p className="font-pixel text-[10px] text-violet-400"><span className="text-text-secondary">01</span>&nbsp;&nbsp;ROADMAP</p>
                     <h1 className="mt-4 text-4xl md:text-7xl font-extrabold tracking-[-0.045em] leading-[0.98]">What we&apos;re building.</h1>
-                    <p className="mt-5 text-lg md:text-xl text-text-secondary max-w-[56ch]">Everything being built, fixed and shipped, in the open. We&apos;re on <span className="font-pixel text-white text-base">v{version}</span> and heading for 1.0.</p>
+                    <p className="mt-5 text-lg md:text-xl text-text-secondary max-w-[56ch]">Everything being built, fixed and shipped, in the open. We&apos;re on <span className="font-mono text-white">{String(version).replace(/^v/i, '')}</span> and heading for 1.0.</p>
                 </div>
             </header>
 
@@ -63,7 +63,19 @@ export default async function RoadmapPage() {
                                 <h2 className="text-2xl font-extrabold tracking-[-0.02em]">Up next</h2>
                                 <span className="font-pixel text-sm">{next.length}</span>
                             </div>
-                            {next.length ? <ul>{next.map((f) => <Item key={f.id} f={f} />)}</ul> : <p className="py-6 text-text-secondary">Nothing planned yet.</p>}
+                            {next.length ? (
+                                <>
+                                    <ul>{next.slice(0, 8).map((f) => <Item key={f.id} f={f} />)}</ul>
+                                    {next.length > 8 && (
+                                        <details className="group">
+                                            <summary className="cursor-pointer list-none py-4 font-mono text-sm text-violet-400 hover:text-white">
+                                                <span className="group-open:hidden">Show {next.length - 8} more</span><span className="hidden group-open:inline">Show fewer</span>
+                                            </summary>
+                                            <ul>{next.slice(8).map((f) => <Item key={f.id} f={f} />)}</ul>
+                                        </details>
+                                    )}
+                                </>
+                            ) : <p className="py-6 text-text-secondary">Nothing planned yet.</p>}
                         </div>
                     </section>
 

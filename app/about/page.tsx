@@ -38,7 +38,7 @@ export default async function AboutPage() {
         { v: counts.consoles, k: 'handhelds', bg: 'bg-violet-600' },
         { v: counts.variants, k: 'configurations', bg: 'bg-cyan-600' },
         { v: brands.length, k: 'brands', bg: 'bg-rose-600' },
-        { v: version || 'pre-alpha', k: 'current version', bg: 'bg-orange-600' },
+        { v: String(version || '').replace(/^pre-?alpha\s*/i, '') || '0.x', k: 'pre-alpha version', bg: 'bg-orange-600' },
     ];
 
     return (
