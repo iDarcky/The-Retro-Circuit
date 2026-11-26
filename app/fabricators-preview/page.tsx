@@ -34,7 +34,7 @@ export default async function BrandsPreview() {
 
     return (
         <main className="bg-bg-primary min-h-screen text-text-primary font-sans pb-24">
-            <header className="px-5 md:px-12 pt-12 md:pt-20 pb-10">
+            <header className="px-5 md:px-12 pt-12 md:pt-20 pb-12 md:pb-16">
                 <div className="max-w-[1400px] mx-auto">
                     <p className="font-pixel text-[10px] text-violet-400"><span className="text-text-secondary">01</span>&nbsp;&nbsp;BRANDS</p>
                     <h1 className="mt-4 text-4xl md:text-7xl font-extrabold tracking-[-0.045em] leading-[0.98]">Who makes them.</h1>
@@ -43,25 +43,25 @@ export default async function BrandsPreview() {
             </header>
 
             <section className="px-5 md:px-12" aria-label="Brands with three or more handhelds">
-                <div className="max-w-[1400px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 border-l border-t border-white/10">
+                <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                     {big.map(({ b, list, n }, i) => (
-                        <Link key={b.id} href={`/fabricators/${b.slug}`} className="group relative flex flex-col border-r border-b border-white/10 p-5 hover:bg-white/[0.04] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-violet-500">
-                            <span className={`absolute left-0 top-0 h-1 w-12 ${ACCENT[i % 4]} transition-all group-hover:w-full`} aria-hidden />
+                        <Link key={b.id} href={`/fabricators/${b.slug}`} className="group relative flex flex-col border border-white/10 p-6 md:p-8 hover:bg-white/[0.04] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-violet-500">
+                            <span className={`absolute left-0 top-0 h-1 w-16 ${ACCENT[i % 4]} transition-all group-hover:w-full`} aria-hidden />
                             <div className="flex items-center gap-4">
-                                <span className="relative w-14 h-14 shrink-0 bg-white p-2">
-                                    {b.image_url ? <span className="relative block w-full h-full"><Image src={b.image_url} alt="" fill sizes="56px" className="object-contain" /></span>
+                                <span className="relative w-16 h-16 shrink-0 bg-white p-2.5">
+                                    {b.image_url ? <span className="relative block w-full h-full"><Image src={b.image_url} alt="" fill sizes="64px" className="object-contain" /></span>
                                         : <span className="absolute inset-0 flex items-center justify-center font-pixel text-black">{b.name.charAt(0)}</span>}
                                 </span>
                                 <div className="min-w-0">
-                                    <h2 className="text-xl font-extrabold tracking-[-0.02em] truncate group-hover:text-violet-300 transition-colors">{b.name}</h2>
-                                    <p className="font-mono text-xs text-text-secondary">{[b.country, b.founded_year ? `since ${b.founded_year}` : null].filter(Boolean).join(' · ')}</p>
+                                    <h2 className="text-2xl font-extrabold tracking-[-0.02em] truncate group-hover:text-violet-300 transition-colors">{b.name}</h2>
+                                    <p className="mt-1 font-mono text-xs text-text-secondary">{[b.country, b.founded_year ? `since ${b.founded_year}` : null].filter(Boolean).join(' · ')}</p>
                                 </div>
                                 <span className="ml-auto text-right shrink-0"><span className="block font-pixel text-lg">{n}</span><span className="font-mono text-[10px] text-zinc-500">handhelds</span></span>
                             </div>
-                            <div className="mt-5 flex items-end gap-2 h-20">
-                                {list.slice(0, 4).map((c, k) => (
+                            <div className="mt-8 flex items-end gap-4 h-28">
+                                {list.slice(0, 3).map((c, k) => (
                                     <span key={c.id} className="relative flex-1 h-full group-hover:motion-safe:animate-[spriteBob_0.5s_steps(2,jump-none)_infinite]" style={{ animationDelay: `${k * 90}ms` }}>
-                                        <Image src={c.image_url!} alt="" fill sizes="90px" className="object-contain object-bottom" />
+                                        <Image src={c.image_url!} alt="" fill sizes="140px" className="object-contain object-bottom" />
                                     </span>
                                 ))}
                             </div>
@@ -71,13 +71,13 @@ export default async function BrandsPreview() {
             </section>
 
             {small.length > 0 && (
-                <section className="px-5 md:px-12 mt-14" aria-labelledby="more-brands">
+                <section className="px-5 md:px-12 mt-20 md:mt-28" aria-labelledby="more-brands">
                     <div className="max-w-[1400px] mx-auto">
                         <h2 id="more-brands" className="text-2xl md:text-3xl font-extrabold tracking-[-0.03em]">Smaller makers</h2>
                         <p className="mt-2 text-text-secondary">One or two handhelds each.</p>
-                        <div className="mt-5 flex flex-wrap gap-2">
+                        <div className="mt-6 flex flex-wrap gap-3">
                             {small.sort((x, y) => x.b.name.localeCompare(y.b.name)).map(({ b, n }) => (
-                                <Link key={b.id} href={`/fabricators/${b.slug}`} className="inline-flex items-center gap-2 border border-white/10 px-3 py-2 text-sm text-zinc-300 hover:bg-white hover:text-black transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-500">
+                                <Link key={b.id} href={`/fabricators/${b.slug}`} className="inline-flex items-center gap-2 border border-white/10 px-4 py-2.5 text-sm text-zinc-300 hover:bg-white hover:text-black transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-500">
                                     {b.name}<span className="font-mono text-xs text-zinc-500">{n}</span>
                                 </Link>
                             ))}

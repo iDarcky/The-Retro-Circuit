@@ -66,7 +66,7 @@ export default async function BrandPreview(props: Props) {
     return (
         <main className="bg-bg-primary min-h-screen text-text-primary font-sans pb-24">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'Brand', name: b.name, url: `${siteConfig.url}/fabricators/${b.slug}`, logo: b.image_url }) }} />
-            <header className="px-5 md:px-12 pt-10 md:pt-16 pb-10">
+            <header className="px-5 md:px-12 pt-10 md:pt-16 pb-14 md:pb-20">
                 <div className="max-w-[1400px] mx-auto">
                     <nav aria-label="Breadcrumb">
                         <ol className="flex items-center gap-2 font-mono text-xs text-text-secondary">
@@ -75,7 +75,7 @@ export default async function BrandPreview(props: Props) {
                             <li aria-current="page" className="text-white">{b.name}</li>
                         </ol>
                     </nav>
-                    <div className="mt-8 flex flex-col md:flex-row md:items-end gap-6 md:gap-10">
+                    <div className="mt-10 md:mt-14 flex flex-col md:flex-row md:items-end gap-8 md:gap-12">
                         <span className="relative w-24 h-24 md:w-32 md:h-32 shrink-0 bg-white p-3">
                             {b.image_url ? <span className="relative block w-full h-full"><Image src={b.image_url} alt={`${b.name} logo`} fill sizes="128px" className="object-contain" priority /></span>
                                 : <span className="absolute inset-0 flex items-center justify-center font-pixel text-3xl text-black">{b.name.charAt(0)}</span>}
@@ -86,23 +86,23 @@ export default async function BrandPreview(props: Props) {
                         </div>
                         <dl className="md:ml-auto flex gap-px bg-white/10 border border-white/10 self-start md:self-end">
                             {facts.map((f) => (
-                                <div key={f.k} className="bg-bg-primary px-4 py-3">
+                                <div key={f.k} className="bg-bg-primary px-5 py-4">
                                     <dt className="font-mono text-[10px] text-zinc-500">{f.k}</dt>
                                     <dd className="font-pixel text-sm mt-1">{f.v}</dd>
                                 </div>
                             ))}
                         </dl>
                     </div>
-                    {sentences && <p className="mt-8 text-lg md:text-xl text-zinc-300 leading-relaxed max-w-[65ch]">{sentences}</p>}
-                    {b.website && <a href={b.website} target="_blank" rel="noopener noreferrer" className={`mt-4 inline-block font-mono text-sm text-violet-400 hover:text-white ${focus}`}>Official site ↗</a>}
+                    {sentences && <p className="mt-10 md:mt-14 text-lg md:text-xl text-zinc-300 leading-relaxed max-w-[65ch]">{sentences}</p>}
+                    {b.website && <a href={b.website} target="_blank" rel="noopener noreferrer" className={`mt-6 inline-block font-mono text-sm text-violet-400 hover:text-white ${focus}`}>Official site ↗</a>}
                 </div>
             </header>
 
             {(knownFor.length > 0 || b.who_its_for) && (
                 <section className="px-5 md:px-12">
-                    <div className="max-w-[1400px] mx-auto grid md:grid-cols-2 gap-2">
+                    <div className="max-w-[1400px] mx-auto grid md:grid-cols-2 gap-4">
                         {knownFor.length > 0 && (
-                            <div className="bg-violet-600 p-6 md:p-8">
+                            <div className="bg-violet-600 p-8 md:p-10">
                                 <h2 className="font-pixel text-[11px]">KNOWN FOR</h2>
                                 <ul className="mt-5 space-y-3">
                                     {knownFor.map((k) => <li key={k} className="flex gap-3 leading-relaxed"><span className="mt-2 w-2 h-2 bg-white shrink-0" aria-hidden />{k}</li>)}
@@ -110,7 +110,7 @@ export default async function BrandPreview(props: Props) {
                             </div>
                         )}
                         {b.who_its_for && (
-                            <div className="bg-cyan-600 p-6 md:p-8">
+                            <div className="bg-cyan-600 p-8 md:p-10">
                                 <h2 className="font-pixel text-[11px]">WHO IT&apos;S FOR</h2>
                                 <p className="mt-5 text-lg leading-relaxed">{b.who_its_for}</p>
                             </div>
@@ -119,7 +119,7 @@ export default async function BrandPreview(props: Props) {
                 </section>
             )}
 
-            <section className="px-5 md:px-12 mt-14" aria-labelledby="lineup">
+            <section className="px-5 md:px-12 mt-20 md:mt-28" aria-labelledby="lineup">
                 <div className="max-w-[1400px] mx-auto">
                     <div className="flex flex-wrap items-end justify-between gap-4">
                         <h2 id="lineup" className="text-3xl md:text-4xl font-extrabold tracking-[-0.03em]">The line-up</h2>
@@ -128,16 +128,16 @@ export default async function BrandPreview(props: Props) {
                         )}
                     </div>
                     <p className="mt-2 text-text-secondary">Newest first.</p>
-                    <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 border-l border-t border-white/10">
+                    <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 border-l border-t border-white/10">
                         {devices.map((d, i) => <DeviceCard key={d.slug} d={d} priority={i < 6} />)}
                     </div>
                 </div>
             </section>
 
-            <section className="px-5 md:px-12 mt-16">
+            <section className="px-5 md:px-12 mt-20 md:mt-28">
                 <div className="max-w-[1400px] mx-auto">
                     <h2 className="text-2xl md:text-3xl font-extrabold tracking-[-0.03em]">Other brands</h2>
-                    <div className="mt-5 flex flex-wrap gap-2">
+                    <div className="mt-6 flex flex-wrap gap-3">
                         {others.map((m) => (
                             <Link key={m.id} href={`/fabricators/${m.slug}`} className={`border border-white/10 px-3 py-2 text-sm text-zinc-300 hover:bg-white hover:text-black transition-colors ${focus}`}>{m.name}</Link>
                         ))}
