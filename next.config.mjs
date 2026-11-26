@@ -59,6 +59,8 @@ const nextConfig = {
         { source: '/finder', destination: '/finder-preview' },
         { source: '/best', destination: '/best-preview' },
         { source: '/best/:slug', destination: '/best-preview/:slug' },
+        { source: '/fabricators', destination: '/fabricators-preview' },
+        { source: '/fabricators/:slug', destination: '/fabricators-preview/:slug' },
       ],
     };
   },
