@@ -1,83 +1,65 @@
-import { getSystemVersion } from '../../app/actions/roadmap';
+import Link from 'next/link';
+import Bit from '../../components/brand/Bit';
 
+// BETA BRANCH: redesigned in place.
 export const metadata = {
-  title: 'Credits | The Retro Circuit',
-  description: 'Acknowledgments and credits for the open-source tools, data, and contributors powering The Retro Circuit.',
-  robots: { index: false, follow: true },
-  alternates: { canonical: '/credits' },
+    title: 'Credits | The Retro Circuit',
+    description: 'Acknowledgments and credits for the open-source tools, data, and contributors powering The Retro Circuit.',
+    robots: { index: false, follow: true },
+    alternates: { canonical: '/credits' },
 };
 
-export default async function CreditsPage() {
-  const version = await getSystemVersion();
-  return (
-    <div className="bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-violet-500/30 selection:text-white pb-24 relative overflow-hidden">
+const TOOLS = [
+    { name: 'Next.js', what: 'The framework the site runs on', href: 'https://nextjs.org' },
+    { name: 'React', what: 'The interface library', href: 'https://react.dev' },
+    { name: 'Supabase', what: 'The database behind the catalogue', href: 'https://supabase.com' },
+    { name: 'Tailwind CSS', what: 'Styling', href: 'https://tailwindcss.com' },
+    { name: 'Vercel', what: 'Hosting', href: 'https://vercel.com' },
+    { name: 'Lucide', what: 'Icons', href: 'https://lucide.dev' },
+    { name: 'Press Start 2P', what: 'The pixel font, by CodeMan38', href: 'https://fonts.google.com/specimen/Press+Start+2P' },
+    { name: 'Inter and JetBrains Mono', what: 'Body and data fonts', href: 'https://fonts.google.com' },
+];
+const COLORS = ['bg-violet-500', 'bg-cyan-500', 'bg-rose-500', 'bg-orange-500'];
 
-      {/* Background Effects */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.05] pointer-events-none"></div>
+export default function CreditsPage() {
+    return (
+        <main className="bg-bg-primary min-h-screen text-text-primary font-sans pb-24">
+            <header className="px-5 md:px-12 pt-12 md:pt-20 pb-14">
+                <div className="max-w-[900px] mx-auto">
+                    <p className="font-pixel text-[10px] text-violet-400"><span className="text-text-secondary">01</span>&nbsp;&nbsp;CREDITS</p>
+                    <h1 className="mt-4 text-4xl md:text-7xl font-extrabold tracking-[-0.045em] leading-[0.98]">Thank you.</h1>
+                    <p className="mt-5 text-lg md:text-xl text-text-secondary max-w-[56ch]">This project is a tribute to the history of handheld gaming. It exists to preserve technical specifications and provide a clean, data-driven interface for enthusiasts.</p>
+                </div>
+            </header>
 
-      {/* 1. HERO HEADER */}
-      <header className="px-6 md:px-12 pt-12 md:pt-24 pb-8 md:pb-16 border-b border-white/5 relative z-10">
-        <div className="max-w-4xl mx-auto w-full">
+            <div className="px-5 md:px-12">
+                <div className="max-w-[900px] mx-auto space-y-20">
+                    <section aria-labelledby="tools">
+                        <h2 id="tools" className="text-2xl md:text-4xl font-extrabold tracking-[-0.03em]">Built with</h2>
+                        <ul className="mt-8 grid sm:grid-cols-2 gap-px bg-white/10 border border-white/10">
+                            {TOOLS.map((t, i) => (
+                                <li key={t.name} className="bg-bg-primary">
+                                    <a href={t.href} target="_blank" rel="noopener noreferrer" className="group flex items-start gap-4 p-5 h-full hover:bg-white/[0.04] transition-colors">
+                                        <span className={`mt-2 w-2 h-2 shrink-0 ${COLORS[i % 4]}`} aria-hidden />
+                                        <span>
+                                            <span className="block font-bold group-hover:text-violet-300 transition-colors">{t.name} <span className="font-mono text-xs text-zinc-500">↗</span></span>
+                                            <span className="block text-sm text-text-secondary">{t.what}</span>
+                                        </span>
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
 
-           {/* Metadata Pill - Violet Variant */}
-           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-violet-900/30 bg-violet-950/10 text-[9px] md:text-xs font-mono uppercase tracking-widest text-violet-400 mb-8 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(139,92,246,0.1)]">
-               <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-violet-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(139,92,246,0.5)]"></div>
-               System Online // Attribution Protocol // v{version}
-           </div>
-
-           {/* Title */}
-           <h1 className="text-4xl md:text-6xl font-pixel text-white leading-none tracking-tighter mb-8">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-purple-400">CREDITS</span><span className="text-violet-500 animate-pulse">_</span>
-           </h1>
-
-        </div>
-      </header>
-
-      {/* MAIN CONTENT */}
-      <div className="max-w-4xl mx-auto px-6 md:px-12 py-16 space-y-16 relative z-10">
-
-          {/* Section 1: Tribute */}
-          <section className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-8">
-             <div className="flex items-center gap-3 self-start pt-1 whitespace-nowrap">
-               <span className="font-mono text-xs text-violet-500 border border-violet-500/30 px-2 py-0.5 bg-violet-500/5">[ 01 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Mission</h2>
+                    <section className="flex flex-col sm:flex-row items-center gap-6 border border-white/10 p-8 md:p-10">
+                        <Bit size={110} />
+                        <div>
+                            <p className="font-pixel text-[11px] leading-relaxed">More names coming soon.</p>
+                            <p className="mt-2 text-text-secondary">Helped with data or spotted your work here? <a href="mailto:contact@theretrocircuit.com" className="text-violet-400 hover:text-white">Tell us</a> and we&apos;ll credit you properly. Or read the <Link href="/about" className="text-violet-400 hover:text-white">story behind the site</Link>.</p>
+                        </div>
+                    </section>
+                </div>
             </div>
-            <div className="space-y-6 text-gray-300 leading-relaxed text-lg font-light">
-              <p>
-                This project is a tribute to the history of handheld gaming. It exists to preserve technical specifications and provide a clean, data-driven interface for enthusiasts.
-              </p>
-              <div className="pl-6 border-l-2 border-violet-500/50">
-                  <p className="text-zinc-400 font-light italic">
-                    Inspired by the raw utility of industrial terminals and the precision of Swiss design.
-                  </p>
-              </div>
-            </div>
-          </section>
-
-          {/* Section 2: Pending Data */}
-          <section className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-8">
-            <div className="flex items-center gap-3 self-start pt-1 whitespace-nowrap">
-               <span className="font-mono text-xs text-zinc-500 border border-zinc-800 px-2 py-0.5">[ 02 ]</span>
-               <h2 className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Data Fragments</h2>
-            </div>
-
-            <div className="bg-white/[0.02] border border-dashed border-zinc-800 p-12 text-center relative overflow-hidden group">
-                 <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.02)_50%,transparent_75%,transparent_100%)] bg-[length:250%_250%,100%_100%] animate-shine pointer-events-none" />
-
-                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 mb-6 group-hover:border-violet-500/30 transition-colors">
-                    <span className="font-mono text-zinc-600 group-hover:text-violet-400 text-lg">?</span>
-                 </div>
-
-                 <p className="font-mono text-sm text-zinc-500 uppercase tracking-widest mb-2">
-                    [ ADDITIONAL ATTRIBUTIONS PENDING ]
-                 </p>
-                 <p className="text-zinc-600 text-xs font-mono">
-                    System awaiting operator input...
-                 </p>
-            </div>
-          </section>
-
-      </div>
-    </div>
-  );
+        </main>
+    );
 }

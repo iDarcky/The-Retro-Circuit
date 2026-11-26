@@ -43,12 +43,12 @@ export default function LegalMarkdownRenderer({ content, themeColor }: LegalMark
           }
 
           return (
-            <p className="text-lg text-zinc-300 font-light leading-relaxed mb-6" {...props} />
+            <p className="text-base md:text-lg text-zinc-300 leading-relaxed mb-5" {...props} />
           );
         },
         // Heading 1 (Page Title)
         h1: ({ node, ...props }) => (
-          <h1 className="text-4xl md:text-5xl font-pixel text-white leading-none tracking-tighter mb-8" {...props} />
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-[-0.045em] leading-[1] text-white mb-10" {...props} />
         ),
         // Heading 2 (Intercepted for Swiss Industrial bracket style)
         h2: ({ node, children, ...props }) => {
@@ -66,41 +66,37 @@ export default function LegalMarkdownRenderer({ content, themeColor }: LegalMark
             const title = match[2];
 
             return (
-              <div className="flex items-center gap-4 mb-4 mt-8" {...props}>
-                <span className={`font-mono text-xs ${theme.bracketText} border ${theme.bracketBorder} px-2 py-0.5 ${theme.bracketBg}`}>
-                  [ {num} ]
-                </span>
-                <h2 className={`font-mono text-sm tracking-widest ${theme.headingText} uppercase`}>
-                  {title}
-                </h2>
+              <div className="flex items-baseline gap-4 mb-4 mt-14 pt-6 border-t border-white/10" {...props}>
+                <span className={`font-pixel text-[11px] ${theme.headingText}`}>{num}</span>
+                <h2 className="text-2xl md:text-3xl font-extrabold tracking-[-0.03em] text-white">{title}</h2>
               </div>
             );
           }
 
           // Fallback if it doesn't match the numbered pattern
-          return <h2 className={`font-mono text-sm tracking-widest ${theme.headingText} uppercase mb-4 mt-8`} {...props}>{children}</h2>;
+          return <h2 className="text-2xl md:text-3xl font-extrabold tracking-[-0.03em] text-white mb-4 mt-14 pt-6 border-t border-white/10" {...props}>{children}</h2>;
         },
         // Heading 3
         h3: ({ node, ...props }) => (
-          <h3 className="text-xl font-medium text-white mt-6 mb-3" {...props} />
+          <h3 className="text-xl font-bold text-white mt-8 mb-3" {...props} />
         ),
         // Lists
         ul: ({ node, ...props }) => (
-          <ul className="list-disc pl-6 space-y-2 text-lg text-zinc-300 font-light leading-relaxed mb-6" {...props} />
+          <ul className="list-disc pl-6 space-y-2 text-base md:text-lg text-zinc-300 leading-relaxed mb-6" {...props} />
         ),
         ol: ({ node, ...props }) => (
-          <ol className="list-decimal pl-6 space-y-2 text-lg text-zinc-300 font-light leading-relaxed mb-6" {...props} />
+          <ol className="list-decimal pl-6 space-y-2 text-base md:text-lg text-zinc-300 leading-relaxed mb-6" {...props} />
         ),
         li: ({ node, ...props }) => (
           <li className="pl-2" {...props} />
         ),
         // Links
         a: ({ node, ...props }) => (
-          <a className="text-white hover:text-zinc-300 underline decoration-white/30 underline-offset-4 transition-colors break-words" target={props.href?.startsWith('http') ? "_blank" : undefined} rel={props.href?.startsWith('http') ? "noopener noreferrer" : undefined} {...props} />
+          <a className="text-violet-300 hover:text-white underline decoration-violet-400/40 underline-offset-4 transition-colors break-words" target={props.href?.startsWith('http') ? "_blank" : undefined} rel={props.href?.startsWith('http') ? "noopener noreferrer" : undefined} {...props} />
         ),
         // Bold text
         strong: ({ node, ...props }) => (
-          <strong className="font-medium text-white" {...props} />
+          <strong className="font-semibold text-white" {...props} />
         ),
         // Emphasized text
         em: ({ node, ...props }) => (
@@ -109,7 +105,7 @@ export default function LegalMarkdownRenderer({ content, themeColor }: LegalMark
         // Tables
         table: ({ node, ...props }) => (
           <div className="overflow-x-auto mb-6">
-            <table className="w-full border-collapse text-left text-lg text-zinc-300 font-light border border-zinc-800" {...props} />
+            <table className="w-full border-collapse text-left text-base text-zinc-300 border border-white/10" {...props} />
           </div>
         ),
         thead: ({ node, ...props }) => (
