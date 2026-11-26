@@ -54,6 +54,7 @@ const nextConfig = {
       beforeFiles: [
         { source: '/arena', destination: '/arena-preview' },
         { source: '/arena/:path*', destination: '/arena-preview/:path*' },
+        { source: '/consoles', destination: '/consoles-browse-preview' },
         { source: '/consoles/:slug', destination: '/consoles-preview/:slug' },
         { source: '/finder', destination: '/finder-preview' },
       ],

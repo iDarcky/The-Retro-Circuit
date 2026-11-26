@@ -17,6 +17,7 @@ import type { Metadata } from 'next';
  * folder here as well as an entry in lib/config/facets.ts — the cost of the fix, and
  * cheap against a site-wide 500.
  */
+import DeviceCard from '../browse-v2/DeviceCard';
 import { supabaseAnon } from '../../lib/supabase/anon';
 import { FACETS, getFacet, fetchFacetValues, type FacetDef } from '../../lib/config/facets';
 
@@ -25,8 +26,8 @@ async function fetchMatches(facet: FacetDef, value: string) {
     const { data, error } = await supabaseAnon
         .from('console_variants')
         .select(`
-            ${facet.column}, price_avg_usd, price_launch_usd, ram_mb, screen_size_inch, soc_name,
-            console:consoles!inner(id, name, slug, image_url, status, manufacturer:manufacturer(name))
+            ${facet.column}, price_avg_usd, price_launch_usd, ram_mb, screen_size_inch, soc_name, os_family, release_date,
+            console:consoles!inner(id, name, slug, image_url, status, form_factor, manufacturer:manufacturer(name))
         `)
         .eq('console.status', 'published')
         .not(facet.column, 'is', null);
@@ -48,6 +49,7 @@ async function fetchMatches(facet: FacetDef, value: string) {
             byConsole.set(c.id, {
                 id: c.id, name: c.name, slug: c.slug, image: c.image_url,
                 brand: mfg?.name ?? '', price, ram: row.ram_mb, screen: row.screen_size_inch, soc: row.soc_name,
+                shape: c.form_factor ?? null, os: row.os_family ?? null, year: row.release_date ? String(row.release_date).slice(0, 4) : null,
             });
         }
     }
@@ -82,87 +84,57 @@ export default async function FacetLanding({ facetSlug, value }: { facetSlug: st
     const siblings = (await fetchFacetValues(facet)).filter(v => v.param !== value).slice(0, 12);
 
     return (
-        <div className="w-full min-h-screen bg-[#09090b] text-white pb-20">
-            <div className="max-w-[1600px] mx-auto px-4 md:px-8 pt-6">
-                <nav aria-label="Breadcrumb" className="mb-4 md:mb-6">
-                    <ol className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em]">
-                        <li><Link href="/consoles" className="text-gray-500 hover:text-white transition-colors">Vault</Link></li>
-                        <li className="flex items-center gap-1.5" aria-current="page">
-                            <span className="text-gray-700" aria-hidden="true">&rsaquo;</span>
-                            <span className="text-gray-300">{facet.toLabel(value)}</span>
-                        </li>
-                    </ol>
-                </nav>
-
-                <div className="font-mono text-[9.5px] uppercase tracking-[0.2em] text-gray-500 mb-2">
-                    {rows.length} device{rows.length === 1 ? '' : 's'} &middot; by {facet.label}
+        <main className="bg-bg-primary min-h-screen text-text-primary font-sans pb-24">
+            <header className="px-5 md:px-12 pt-10 md:pt-16 pb-8">
+                <div className="max-w-[1400px] mx-auto">
+                    <nav aria-label="Breadcrumb">
+                        <ol className="flex items-center gap-2 font-mono text-xs text-text-secondary">
+                            <li><Link href="/consoles" className="hover:text-white">Every handheld</Link></li>
+                            <li aria-hidden>/</li>
+                            <li aria-current="page" className="text-white">{label || facet.toLabel(value)}</li>
+                        </ol>
+                    </nav>
+                    <p className="mt-8 font-pixel text-[10px] text-cyan-400">BY {facet.label.toUpperCase()}</p>
+                    <h1 className="mt-4 text-4xl md:text-6xl font-extrabold tracking-[-0.045em] leading-[1]">{facet.title(label)}</h1>
+                    <p className="mt-4 text-lg text-text-secondary max-w-[60ch]">{facet.description(label, rows.length)}</p>
+                    <p className="mt-6 font-mono text-sm"><span className="font-pixel text-white">{rows.length}</span> <span className="text-text-secondary">device{rows.length === 1 ? '' : 's'}, cheapest first</span></p>
                 </div>
-                <h1 className="font-pixel text-2xl sm:text-3xl md:text-4xl text-white uppercase leading-tight tracking-tight mb-4">
-                    {facet.title(label)}
-                </h1>
-                <p className="font-sans text-sm text-gray-400 max-w-[68ch] mb-10">
-                    {facet.description(label, rows.length)}
-                </p>
+            </header>
 
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--rc-hair)] border border-white/10">
-                    {rows.map(r => (
-                        <Link key={r.id} href={`/consoles/${r.slug}`} className="rc-cell group block p-3 hover:bg-white/[0.03] transition-colors">
-                            <div className="rc-bed relative h-[110px] flex items-center justify-center border border-white/[0.07] mb-2.5">
-                                {r.image ? (
-                                    /* eslint-disable-next-line @next/next/no-img-element */
-                                    <img src={r.image} alt="" loading="lazy" decoding="async"
-                                         className="max-h-[85%] max-w-[85%] object-contain opacity-85 group-hover:opacity-100 transition-opacity" />
-                                ) : (
-                                    <span className="font-pixel text-lg text-zinc-800">?</span>
-                                )}
-                            </div>
-                            <div className="font-mono text-[9px] uppercase tracking-widest text-gray-600 truncate">{r.brand || 'Unknown'}</div>
-                            <div className="font-mono text-[12.5px] text-white truncate mt-0.5 group-hover:text-violet-300 transition-colors">{r.name}</div>
-                            <div className="flex items-baseline justify-between gap-2 mt-2">
-                                <span className="font-mono text-[13px] font-bold text-emerald-400 tabular-nums">
-                                    {r.price > 0 ? `$${r.price}` : <span className="text-gray-700">&mdash;</span>}
-                                </span>
-                                {r.ram > 0 && (
-                                    <span className="font-mono text-[9px] uppercase tracking-wider text-gray-600">
-                                        {r.ram >= 1024 ? `${Math.round(r.ram / 1024)} GB` : `${r.ram} MB`}
-                                    </span>
-                                )}
-                            </div>
-                        </Link>
+            <section className="px-5 md:px-12" aria-label="Devices">
+                <div className="max-w-[1400px] mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-px bg-white/10 border border-white/10">
+                    {rows.map((r, i) => (
+                        <DeviceCard key={r.id} priority={i < 6} d={{ slug: r.slug, name: r.name, brand: r.brand, image: r.image, shape: r.shape, price: r.price >= 20 ? Math.round(r.price) : null, chip: r.soc, screen: r.screen, os: r.os, year: r.year }} />
                     ))}
                 </div>
+            </section>
 
-                {siblings.length > 0 && (
-                    <div className="rc-rule-top pt-[18px] mt-16">
-                        <h2 className="font-pixel text-[13px] md:text-[15px] text-violet-500 uppercase tracking-widest mb-5">
-                            Other {facet.label}s
-                        </h2>
-                        <div className="flex flex-wrap gap-2">
+            {siblings.length > 0 && (
+                <section className="px-5 md:px-12 mt-16">
+                    <div className="max-w-[1400px] mx-auto">
+                        <h2 className="text-2xl md:text-3xl font-extrabold tracking-[-0.03em]">Other {facet.label}s</h2>
+                        <div className="mt-5 flex flex-wrap gap-2">
                             {siblings.map(sib => (
                                 <Link key={sib.param} href={`/consoles/${facet.slug}/${sib.param}`}
-                                      className="flex items-baseline gap-2 border border-white/10 px-3 py-2 font-mono text-[11px]
-                                                 text-gray-400 hover:border-violet-500/60 hover:text-violet-300 transition-colors">
+                                      className="inline-flex items-baseline gap-2 border border-white/10 px-3 py-2 text-sm text-zinc-300 hover:bg-white hover:text-black transition-colors">
                                     {sib.label}
-                                    <span className="text-[9px] text-gray-600 tabular-nums">{sib.count}</span>
+                                    <span className="font-mono text-xs text-zinc-500">{sib.count}</span>
                                 </Link>
                             ))}
                         </div>
                     </div>
-                )}
+                </section>
+            )}
 
-                <div className="rc-rule-top pt-[18px] mt-16">
-                    <h2 className="font-pixel text-[13px] md:text-[15px] text-violet-500 uppercase tracking-widest mb-5">Browse by</h2>
-                    <div className="flex flex-wrap gap-2">
-                        {FACETS.filter(f => f.slug !== facet.slug).map(f => (
-                            <Link key={f.slug} href="/consoles"
-                                  className="border border-white/10 px-3 py-2 font-mono text-[11px] uppercase tracking-wider
-                                             text-gray-400 hover:border-white hover:text-white transition-colors">
-                                {f.label}
-                            </Link>
-                        ))}
-                    </div>
+            <section className="px-5 md:px-12 mt-12">
+                <div className="max-w-[1400px] mx-auto flex flex-wrap items-center gap-2">
+                    <span className="font-mono text-xs text-text-secondary mr-2">Browse by</span>
+                    {FACETS.filter(f => f.slug !== facet.slug).map(f => (
+                        <Link key={f.slug} href="/consoles" className="border border-white/10 px-3 py-2 text-sm text-zinc-300 hover:bg-white hover:text-black transition-colors">{f.label}</Link>
+                    ))}
+                    <Link href="/finder" className="ml-auto bg-violet-500 text-white font-mono text-sm px-4 py-2 hover:bg-white hover:text-black transition-colors">Not sure? Ask the Finder</Link>
                 </div>
-            </div>
-        </div>
+            </section>
+        </main>
     );
 }
