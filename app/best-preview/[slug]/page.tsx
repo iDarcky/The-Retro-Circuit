@@ -151,7 +151,7 @@ export default async function BestPreviewGuide(props: Props) {
 
                         {/* Other guides */}
                         <section className="mt-16">
-                            <h2 className="text-2xl md:text-3xl font-extrabold tracking-[-0.03em]">More guides</h2>
+                            <h2 className="font-pixel text-base md:text-xl leading-snug text-yellow-400">More guides</h2>
                             <div className="mt-5 flex flex-wrap gap-2">
                                 {BEST_OF_COLLECTIONS.filter((x) => x.slug !== slug).map((x) => {
                                     const c2 = GUIDE_COLORS[BEST_OF_COLLECTIONS.indexOf(x) % 4];

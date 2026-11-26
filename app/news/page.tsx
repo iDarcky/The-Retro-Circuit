@@ -7,6 +7,7 @@ import { fetchPublicNews } from '../actions/news';
 import { fetchVaultConsoles } from '../actions/consoles';
 import DeviceCard from '../../components/browse-v2/DeviceCard';
 import Bit from '../../components/brand/Bit';
+import { PageTitle } from '../../components/layout/PageTitle';
 
 // BETA BRANCH: redesigned in place. Notes from the editor lead, then reviews and news when
 // there are any, then the newest handhelds in the catalogue so the page is never empty.
@@ -53,8 +54,8 @@ export default async function NewsPage() {
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             <header className="px-5 md:px-12 pt-12 md:pt-20 pb-12">
                 <div className="max-w-[1100px] mx-auto">
-                    <h1 className="mt-4 text-4xl md:text-7xl font-extrabold tracking-[-0.045em] leading-[0.98]">What&apos;s new.</h1>
-                    <p className="mt-5 text-lg md:text-xl text-text-secondary max-w-[52ch]">Notes from the editor, reviews, and the latest handhelds to land in the catalogue.</p>
+                    <PageTitle lead="News &" accent="Signals" color="news" />
+                    <p className="mt-5 text-lg md:text-xl text-text-secondary max-w-[52ch]">New releases, notes from the editor, and what&apos;s worth knowing this week.</p>
                 </div>
             </header>
 
@@ -62,7 +63,7 @@ export default async function NewsPage() {
                 <div className="max-w-[1100px] mx-auto space-y-20 md:space-y-28">
                     {/* Editor's notes */}
                     <section aria-labelledby="notes">
-                        <h2 id="notes" className="text-2xl md:text-4xl font-extrabold tracking-[-0.03em]">From the editor</h2>
+                        <h2 id="notes" className="font-pixel text-base md:text-xl leading-snug text-orange-400">From the editor</h2>
                         {signals.length > 0 ? (
                             <ol className="mt-8 border-l border-white/10">
                                 {signals.map((s: any) => (
@@ -81,7 +82,7 @@ export default async function NewsPage() {
                     {/* Reviews, only when there are any */}
                     {reviews.length > 0 && (
                         <section aria-labelledby="reviews">
-                            <h2 id="reviews" className="text-2xl md:text-4xl font-extrabold tracking-[-0.03em]">Reviews</h2>
+                            <h2 id="reviews" className="font-pixel text-base md:text-xl leading-snug text-orange-400">Reviews</h2>
                             <div className="mt-8 grid md:grid-cols-2 gap-4">
                                 {reviews.map((r: any) => (
                                     <Link key={r.id} href={`/consoles/${r.console_slug}`} className="group bg-cyan-600 p-6 md:p-8 flex flex-col hover:bg-white hover:text-black transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
@@ -101,7 +102,7 @@ export default async function NewsPage() {
                     {/* News posts, only when there are any */}
                     {news.length > 0 && (
                         <section aria-labelledby="posts">
-                            <h2 id="posts" className="text-2xl md:text-4xl font-extrabold tracking-[-0.03em]">Posts</h2>
+                            <h2 id="posts" className="font-pixel text-base md:text-xl leading-snug text-orange-400">Posts</h2>
                             <ul className="mt-8 border-t border-white/10">
                                 {news.map((n: any) => (
                                     <li key={n.id} className="border-b border-white/10 py-6 grid md:grid-cols-[140px_1fr] gap-2 md:gap-8">
@@ -119,7 +120,7 @@ export default async function NewsPage() {
                     {/* Newest handhelds */}
                     <section aria-labelledby="newest">
                         <div className="flex flex-wrap items-end justify-between gap-4">
-                            <h2 id="newest" className="text-2xl md:text-4xl font-extrabold tracking-[-0.03em]">Newest handhelds</h2>
+                            <h2 id="newest" className="font-pixel text-base md:text-xl leading-snug text-orange-400">Newest handhelds</h2>
                             <Link href="/consoles" className="font-mono text-sm text-violet-400 hover:text-white">See all →</Link>
                         </div>
                         <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 border-l border-t border-white/10">

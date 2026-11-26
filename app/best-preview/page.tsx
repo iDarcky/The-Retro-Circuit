@@ -5,6 +5,7 @@ import { BEST_OF_COLLECTIONS, selectForCollection } from '../../lib/bestof/colle
 import { fetchAllConsoles } from '../actions/consoles';
 import { DOT_GRID, GUIDE_COLORS } from '../../components/best-v2/shared';
 import type { ConsoleDetails } from '../../lib/types';
+import { PageTitle } from '../../components/layout/PageTitle';
 
 // Beta mockup of the redesigned guide index. Served on /best in the beta branch through a rewrite.
 export const revalidate = false;
@@ -21,8 +22,8 @@ export default async function BestPreviewIndex() {
         <main className="bg-bg-primary min-h-screen text-text-primary font-sans pb-24">
             <header className="px-5 md:px-12 pt-12 md:pt-20 pb-10">
                 <div className="max-w-[1400px] mx-auto">
-                    <h1 className="mt-4 text-4xl md:text-7xl font-extrabold tracking-[-0.045em] leading-[0.98]">The best handhelds,<br className="hidden md:block" /> by what you need.</h1>
-                    <p className="mt-5 text-lg md:text-xl text-text-secondary max-w-[52ch]">Every ranking comes from our own spec and emulation data. Nobody pays to be on these lists.</p>
+                    <PageTitle lead="Best" accent="of" color="best" />
+                    <p className="mt-5 text-lg md:text-xl text-text-secondary max-w-[52ch]">Our picks for every budget and every system, ranked from the specs. Nobody pays to be on these lists.</p>
                 </div>
             </header>
 
@@ -60,7 +61,7 @@ export default async function BestPreviewIndex() {
             <section className="px-5 md:px-12 mt-16">
                 <div className="max-w-[1400px] mx-auto border border-white/10 p-6 md:p-10 flex flex-col md:flex-row md:items-center gap-6 justify-between">
                     <div>
-                        <h2 className="text-2xl md:text-3xl font-extrabold tracking-[-0.03em]">Want a pick just for you?</h2>
+                        <h2 className="font-pixel text-base md:text-xl leading-snug text-yellow-400">Want a pick just for you?</h2>
                         <p className="mt-2 text-text-secondary">Eight quick questions, one answer.</p>
                     </div>
                     <Link href="/finder" className="bg-white text-black font-mono text-sm px-6 py-3 hover:bg-violet-500 hover:text-white transition-colors self-start md:self-auto">Ask the Finder</Link>

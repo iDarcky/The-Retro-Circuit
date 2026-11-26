@@ -122,7 +122,7 @@ export default async function BrandPreview(props: Props) {
             <section className="px-5 md:px-12 mt-20 md:mt-28" aria-labelledby="lineup">
                 <div className="max-w-[1400px] mx-auto">
                     <div className="flex flex-wrap items-end justify-between gap-4">
-                        <h2 id="lineup" className="text-3xl md:text-4xl font-extrabold tracking-[-0.03em]">The line-up</h2>
+                        <h2 id="lineup" className="font-pixel text-base md:text-xl leading-snug text-emerald-400">The line-up</h2>
                         {first && second && (
                             <Link href={`/arena/${pairKey(first.slug, second.slug)}`} className={`font-mono text-sm text-violet-400 hover:text-white ${focus}`}>Compare {first.name} vs {second.name} →</Link>
                         )}
@@ -136,7 +136,7 @@ export default async function BrandPreview(props: Props) {
 
             <section className="px-5 md:px-12 mt-20 md:mt-28">
                 <div className="max-w-[1400px] mx-auto">
-                    <h2 className="text-2xl md:text-3xl font-extrabold tracking-[-0.03em]">Other brands</h2>
+                    <h2 className="font-pixel text-base md:text-xl leading-snug text-emerald-400">Other brands</h2>
                     <div className="mt-6 flex flex-wrap gap-3">
                         {others.map((m) => (
                             <Link key={m.id} href={`/fabricators/${m.slug}`} className={`border border-white/10 px-3 py-2 text-sm text-zinc-300 hover:bg-white hover:text-black transition-colors ${focus}`}>{m.name}</Link>

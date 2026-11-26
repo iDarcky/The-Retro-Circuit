@@ -209,7 +209,7 @@ export default function ConsoleView(p: {
                 {/* Configurations */}
                 {p.variants.length > 1 && (
                     <Reveal className="mt-16 md:mt-24"><section aria-labelledby="config-heading">
-                        <SectionHead n={1} eyebrow="Pick your version" id="config-heading" title="Which configuration" sub={`It comes in ${p.variants.length} versions. Pick one and the whole page updates.`} />
+                        <SectionHead color="text-cyan-400" n={1} eyebrow="Pick your version" id="config-heading" title="Which configuration" sub={`It comes in ${p.variants.length} versions. Pick one and the whole page updates.`} />
                         <div className="mt-6 overflow-x-auto border border-white/10">
                             <table className="w-full text-sm">
                                 <thead>
@@ -242,7 +242,7 @@ export default function ConsoleView(p: {
                 {/* What it plays */}
                 {plays.length > 0 && (
                     <Reveal className="mt-16 md:mt-24"><section aria-labelledby="plays-heading">
-                        <SectionHead n={n0 + 1} eyebrow="Game library" id="plays-heading" title="What it plays" sub="Tested system by system. Four blocks means perfect, one means it struggles." />
+                        <SectionHead color="text-cyan-400" n={n0 + 1} eyebrow="Game library" id="plays-heading" title="What it plays" sub="Tested system by system. Four blocks means perfect, one means it struggles." />
                         {/* Tally, like a high-score table */}
                         <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/10 border border-white/10">
                             {[4, 3, 2, 1].map((r) => {
@@ -282,7 +282,7 @@ export default function ConsoleView(p: {
                 {/* About */}
                 {(p.description || p.summary) && (
                     <section className="mt-16 md:mt-24 grid md:grid-cols-[1fr_2fr] gap-6 md:gap-12" aria-labelledby="about-heading">
-                        <SectionHead n={n0 + 2} eyebrow="The story" id="about-heading" title="About it" />
+                        <SectionHead color="text-cyan-400" n={n0 + 2} eyebrow="The story" id="about-heading" title="About it" />
                         <div>
                             <p className="text-lg leading-relaxed text-zinc-300 max-w-[62ch]">{p.description ?? p.summary}</p>
                             {!p.description && <p className="mt-3 text-xs text-text-secondary">Written from the spec sheet.</p>}
@@ -292,7 +292,7 @@ export default function ConsoleView(p: {
 
                 {/* Every spec */}
                 <section className="mt-16 md:mt-24" aria-labelledby="specs-heading">
-                    <SectionHead n={n0 + 3} eyebrow="Spec sheet" id="specs-heading" title="Every spec" />
+                    <SectionHead color="text-cyan-400" n={n0 + 3} eyebrow="Spec sheet" id="specs-heading" title="Every spec" />
                     {p.variants.length > 1 && <p className="mt-2 text-text-secondary">For the {variantLabel(v, iv)} configuration.</p>}
                     <div className="mt-6 grid md:grid-cols-2 gap-x-8 gap-y-8">
                         {specs.map((g) => (
@@ -314,7 +314,7 @@ export default function ConsoleView(p: {
                 {/* Reviews */}
                 {p.reviews.length > 0 && (
                     <section className="mt-16 md:mt-24" aria-labelledby="reviews-heading">
-                        <SectionHead n={n0 + 4} eyebrow="Elsewhere" id="reviews-heading" title="Reviews and videos" />
+                        <SectionHead color="text-cyan-400" n={n0 + 4} eyebrow="Elsewhere" id="reviews-heading" title="Reviews and videos" />
                         <ul className="mt-6 border border-white/10 divide-y divide-white/10">
                             {p.reviews.map((r) => (
                                 <li key={r.url}><a href={r.url} rel="nofollow noopener" target="_blank" className={`block px-4 py-3 text-sm hover:bg-white/[0.04] ${focus}`}>{r.label}</a></li>
@@ -325,7 +325,7 @@ export default function ConsoleView(p: {
 
                 {/* Compare */}
                 <section className="mt-16 md:mt-24" aria-labelledby="compare-heading">
-                    <SectionHead n={n0 + 4} eyebrow="Rivals" id="compare-heading" title="Compare it" />
+                    <SectionHead color="text-cyan-400" n={n0 + 4} eyebrow="Rivals" id="compare-heading" title="Compare it" />
                     {p.comparisons.length > 0 && (
                         <ul className="mt-6 flex flex-wrap gap-2">
                             {p.comparisons.map((c) => (

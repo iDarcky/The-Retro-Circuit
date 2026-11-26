@@ -91,7 +91,7 @@ export default function BrowseView({ devices, variantCount }: { devices: BrowseD
                 <div className="max-w-[1400px] mx-auto">
                     <PageTitle lead="Console" accent="Vault" color="vault" />
                     <p className="mt-5 text-lg md:text-xl text-text-secondary max-w-[56ch]">
-                        The complete archive of handheld gaming history. Filter by era, form factor, and technical specifications.
+                        The complete archive of handheld gaming history. Filter by shape, price and operating system, then sort by what matters to you.
                     </p>
                     <p className="mt-3 font-mono text-sm text-zinc-500">
                         <CountUp to={devices.length} className="text-cyan-400" /> handhelds · {variantCount} configurations

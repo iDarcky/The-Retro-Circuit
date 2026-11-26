@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { pairKey } from '../../lib/arena/indexable';
 import DevicePicker, { type PickerConsole } from './DevicePicker';
+import { PageTitle } from '../layout/PageTitle';
 
 const focus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-500';
 
@@ -45,10 +46,9 @@ export default function ArenaHub({ consoles, popular, base }: {
     return (
         <div className="bg-bg-primary text-text-primary font-sans min-h-screen">
             <div className="max-w-[1100px] mx-auto px-5 pt-10 md:pt-16 pb-24">
-                <p className="font-pixel text-[10px] text-violet-400">HEAD TO HEAD</p>
-                <h1 className="mt-4 text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-[-0.04em] leading-[1.05]">Compare two handhelds.</h1>
+                                <PageTitle lead="VS" accent="Mode" color="vs" />
                 <p className="mt-4 text-base md:text-lg text-text-secondary max-w-[52ch]">
-                    Pick any two of {consoles.length} and see every spec side by side, with what each one plays.
+                    Pick any two of {consoles.length} handhelds. See who wins, spec by spec.
                 </p>
 
                 <div className="mt-8 md:mt-10 grid md:grid-cols-[1fr_auto_1fr] border border-white/10">
@@ -67,7 +67,7 @@ export default function ArenaHub({ consoles, popular, base }: {
                 )}
 
                 <section className="mt-16 md:mt-24" aria-labelledby="popular-heading">
-                    <h2 id="popular-heading" className="text-2xl md:text-4xl font-extrabold tracking-[-0.03em]">Popular comparisons</h2>
+                    <h2 id="popular-heading" className="font-pixel text-base md:text-xl leading-snug text-sky-400">Popular comparisons</h2>
                     <ul className="mt-6 grid md:grid-cols-2 gap-px bg-white/10 border border-white/10">
                         {popular.map((p) => (
                             <li key={p.href} className="bg-bg-primary">

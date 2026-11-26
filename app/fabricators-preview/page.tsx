@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { fetchPublicManufacturers } from '../actions/manufacturers';
 import { fetchVaultConsoles } from '../actions/consoles';
 import type { ConsoleDetails, Manufacturer } from '../../lib/types';
+import { PageTitle } from '../../components/layout/PageTitle';
 
 // Beta mockup of the redesigned brands index. Served on /fabricators in the beta branch through a rewrite.
 export const revalidate = false;
@@ -36,8 +37,8 @@ export default async function BrandsPreview() {
         <main className="bg-bg-primary min-h-screen text-text-primary font-sans pb-24">
             <header className="px-5 md:px-12 pt-12 md:pt-20 pb-12 md:pb-16">
                 <div className="max-w-[1400px] mx-auto">
-                    <h1 className="mt-4 text-4xl md:text-7xl font-extrabold tracking-[-0.045em] leading-[0.98]">Who makes them.</h1>
-                    <p className="mt-5 text-lg md:text-xl text-text-secondary max-w-[52ch]">{brands.length} brands, from the big names to one-device makers. Biggest line-ups first.</p>
+                    <PageTitle accent="Fabricators" color="fabricators" />
+                    <p className="mt-5 text-lg md:text-xl text-text-secondary max-w-[52ch]">Every brand behind the handhelds, from big names to garage makers. {brands.length} of them, biggest line-ups first.</p>
                 </div>
             </header>
 
@@ -72,7 +73,7 @@ export default async function BrandsPreview() {
             {small.length > 0 && (
                 <section className="px-5 md:px-12 mt-20 md:mt-28" aria-labelledby="more-brands">
                     <div className="max-w-[1400px] mx-auto">
-                        <h2 id="more-brands" className="text-2xl md:text-3xl font-extrabold tracking-[-0.03em]">Smaller makers</h2>
+                        <h2 id="more-brands" className="font-pixel text-base md:text-xl leading-snug text-emerald-400">Smaller makers</h2>
                         <p className="mt-2 text-text-secondary">One or two handhelds each.</p>
                         <div className="mt-6 flex flex-wrap gap-3">
                             {small.sort((x, y) => x.b.name.localeCompare(y.b.name)).map(({ b, n }) => (

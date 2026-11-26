@@ -214,7 +214,7 @@ export default function ArenaView({ a, b, consoles, related, base }: {
 
                 {/* Where each one wins */}
                 <Reveal className="mt-16 md:mt-24"><section aria-labelledby="wins-heading">
-                    <SectionHead n={1} eyebrow="Scoreboard" id="wins-heading" title="Where each one wins" />
+                    <SectionHead color="text-sky-400" n={1} eyebrow="Scoreboard" id="wins-heading" title="Where each one wins" />
                     {/* Scoreboard: key specs won by each side */}
                     <div className="mt-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3 md:gap-6 border border-white/10 px-4 md:px-8 py-5">
                         <span className="text-sm md:text-base font-semibold leading-tight">{a.label}</span>
@@ -251,7 +251,7 @@ export default function ArenaView({ a, b, consoles, related, base }: {
 
                 {/* Key specs */}
                 <Reveal className="mt-16 md:mt-24"><section aria-labelledby="key-heading">
-                    <SectionHead n={2} eyebrow="Tale of the tape" id="key-heading" title="Key specs" sub="The bar leans toward whichever side is better." />
+                    <SectionHead color="text-sky-400" n={2} eyebrow="Tale of the tape" id="key-heading" title="Key specs" sub="The bar leans toward whichever side is better." />
                     <div className="mt-6 border border-white/10">
                         {keys.map((r) => <Row key={r.label} r={r} />)}
                     </div>
@@ -260,7 +260,7 @@ export default function ArenaView({ a, b, consoles, related, base }: {
                 {/* Emulation */}
                 {emu.length > 0 && (
                     <Reveal className="mt-16 md:mt-24"><section aria-labelledby="emu-heading">
-                        <SectionHead n={3} eyebrow="Game library" id="emu-heading" title="What they play" sub="Four blocks is perfect, one is struggling. Where they differ comes first." />
+                        <SectionHead color="text-sky-400" n={3} eyebrow="Game library" id="emu-heading" title="What they play" sub="Four blocks is perfect, one is struggling. Where they differ comes first." />
                         {emuDiff.length > 0 && (
                             <div className="mt-6 border border-white/10">
                                 {emuDiff.map((r) => (
@@ -288,7 +288,7 @@ export default function ArenaView({ a, b, consoles, related, base }: {
                 {/* Every spec */}
                 <section className="mt-16 md:mt-24" aria-labelledby="all-heading">
                     <div className="flex flex-wrap items-end justify-between gap-4">
-                        <SectionHead n={4} eyebrow="Spec sheet" id="all-heading" title="Every spec" />
+                        <SectionHead color="text-sky-400" n={4} eyebrow="Spec sheet" id="all-heading" title="Every spec" />
                         <label className="inline-flex items-center gap-2 font-mono text-sm cursor-pointer select-none">
                             <input type="checkbox" checked={diffOnly} onChange={(e) => setDiffOnly(e.target.checked)} className="accent-violet-500 w-4 h-4" />
                             Only differences
@@ -310,7 +310,7 @@ export default function ArenaView({ a, b, consoles, related, base }: {
 
                 {/* Buy */}
                 <section className="mt-16 md:mt-24" aria-labelledby="buy-heading">
-                    <SectionHead n={5} eyebrow="Get one" id="buy-heading" title="Where to buy" />
+                    <SectionHead color="text-sky-400" n={5} eyebrow="Get one" id="buy-heading" title="Where to buy" />
                     <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {sides.map(({ s, v, key }) => {
                             const url = getBuyUrl({ asin: v.amazon_asin, name: s.name, manufacturer: s.brand });
@@ -336,7 +336,7 @@ export default function ArenaView({ a, b, consoles, related, base }: {
                 {/* More */}
                 {related.length > 0 && (
                     <section className="mt-16 md:mt-24" aria-labelledby="more-heading">
-                        <SectionHead n={6} eyebrow="Next match" id="more-heading" title="Other comparisons" />
+                        <SectionHead color="text-sky-400" n={6} eyebrow="Next match" id="more-heading" title="Other comparisons" />
                         <ul className="mt-6 flex flex-wrap gap-2">
                             {related.map((p) => (
                                 <li key={p.href}>
