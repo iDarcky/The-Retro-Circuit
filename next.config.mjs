@@ -55,6 +55,7 @@ const nextConfig = {
         { source: '/arena', destination: '/arena-preview' },
         { source: '/arena/:path*', destination: '/arena-preview/:path*' },
         { source: '/consoles/:slug', destination: '/consoles-preview/:slug' },
+        { source: '/finder', destination: '/finder-preview' },
       ],
     };
   },

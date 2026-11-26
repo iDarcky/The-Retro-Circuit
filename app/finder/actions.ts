@@ -2,6 +2,7 @@
 
 import { fetchAllConsoles } from '../../app/actions/consoles';
 import { calculateConsoleScore, ScoreBreakdown, getDeviceTierLevel } from '../../lib/finder/scoring';
+import { isBuyable, meetsMustHaves } from '../../lib/finder/features';
 
 
 export interface FinderResultConsole {
@@ -132,43 +133,29 @@ export async function getFinderResults(
         }
 
         // --- Q7: DEALBREAKERS (MUST-HAVES) ---
+        // A must-have is a promise: never drop it quietly. If nothing in the chosen
+        // shape has it, relax the shape instead and keep the must-have.
         if (inputs.features && inputs.features !== 'none') {
-            const requestedFeatures = inputs.features.split(',').map(f => f.trim().toLowerCase());
-
-            const temp = filteredConsoles.filter(consoleItem => {
-                const specs = consoleItem.specs as any || {};
-                const formFactor = consoleItem.form_factor?.toLowerCase() || '';
-                const chassisFeatures = consoleItem.chassis_features || '';
-
-                for (const req of requestedFeatures) {
-                    if (req === 'none') continue;
-
-                    if (req === 'hdmi') {
-                        if (!specs.video_output || specs.video_output.toLowerCase() === 'no' || specs.video_output.toLowerCase() === 'none') return false;
-                    } else if (req === 'bluetooth') {
-                        if (!specs.bluetooth || specs.bluetooth.toLowerCase() === 'no' || specs.bluetooth.toLowerCase() === 'none') return false;
-                    } else if (req === 'wifi') {
-                        if (!specs.wifi || specs.wifi.toLowerCase() === 'no' || specs.wifi.toLowerCase() === 'none') return false;
-                    } else if (req === 'dual_sticks') {
-                        const sticks = parseInt(specs.joysticks || '0');
-                        if (isNaN(sticks) || sticks < 2) return false;
-                    } else if (req === 'dual_screen') {
-                        const hasDualChassis = chassisFeatures.toLowerCase().includes('dual screen');
-                        const isClamshell = formFactor === 'clamshell';
-                        const screen = parseFloat(specs.screen_size_inch || '0');
-                        if (!hasDualChassis && !isClamshell && screen < 5.0) return false;
-                    }
-                }
-                return true;
-            });
-
+            const requested = inputs.features.split(',').map(f => f.trim().toLowerCase()).filter(f => f && f !== 'none');
+            const withFeatures = (list: typeof allConsoles) => list.filter(c => meetsMustHaves(c as any, requested));
+            const temp = withFeatures(filteredConsoles);
             if (temp.length > 0) {
                 filteredConsoles = temp;
             } else {
-                // progressive fallback: try removing feature filters if they eliminate EVERYTHING
-                relaxedFeatures.push('features');
+                const anyShape = withFeatures(allConsoles);
+                if (anyShape.length > 0) {
+                    filteredConsoles = anyShape;
+                    if (!relaxedFeatures.includes('form_factor')) relaxedFeatures.push('form_factor');
+                } else {
+                    relaxedFeatures.push('features');
+                }
             }
         }
+
+        // --- BUYABLE ONLY ---
+        // Discontinued and unreleased devices cannot be bought new, so they are not a match.
+        const buyable = filteredConsoles.filter(c => isBuyable(c as any));
+        if (buyable.length > 0) filteredConsoles = buyable;
 
         // --- SCORING ---
         // Score everything first. Explicitly type the array to FinderResultConsole[]

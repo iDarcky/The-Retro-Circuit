@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { QuizQuestion } from '@/components/finder/QuizQuestion';
 import { FinderResults } from '@/components/finder/FinderResults';
 
-const QUESTIONS = [
+export const QUESTIONS = [
     {
         id: 'q1',
         question: "What best describes you?",
@@ -106,7 +106,7 @@ const QUESTIONS = [
 ];
 
 // --- CONFLICT LOGIC ---
-const checkBudgetConflict = (tier: string | null, budget: string | null) => {
+export const checkBudgetConflict = (tier: string | null, budget: string | null) => {
     if (!tier || !budget) return null;
 
     if (tier === 'modern' && (budget === 'b_under_60' || budget === 'b_60_120')) {
