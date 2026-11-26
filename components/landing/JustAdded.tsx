@@ -27,11 +27,14 @@ function Item({ d, hidden = false }: { d: HomeDevice; hidden?: boolean }) {
 
 /**
  * The newest consoles as a strip that drifts sideways on its own and pauses under the
- * pointer. The list is drawn twice so the loop is seamless; the copy is hidden from screen
+ * pointer. The list is drawn four times so the loop is seamless; the copy is hidden from screen
  * readers and the keyboard. With reduced motion it is a plain sideways-scrolling row.
  */
 export default function JustAdded({ devices }: { devices: HomeDevice[] }) {
-    const seconds = Math.max(30, devices.length * 5);
+    // Each half of the track holds the list twice, so one half is always wider than the
+    // screen and the loop never shows a gap. About 9 seconds per handheld: slow enough to read.
+    const half = [...devices, ...devices];
+    const seconds = half.length * 9;
     return (
         <div className="border-y border-white/10 flex flex-wrap sm:flex-nowrap items-stretch">
             <h2 className="w-full sm:w-auto shrink-0 flex items-center gap-2 px-5 md:px-8 py-2 sm:py-0 font-mono text-xs sm:text-sm text-text-secondary border-b sm:border-b-0 sm:border-r border-white/10 whitespace-nowrap">
@@ -45,7 +48,7 @@ export default function JustAdded({ devices }: { devices: HomeDevice[] }) {
                 >
                     {devices.map((d) => <Item key={d.slug} d={d} />)}
                     <span className="hidden motion-safe:contents">
-                        {devices.map((d) => <Item key={`${d.slug}-2`} d={d} hidden />)}
+                        {[...devices, ...half].map((d, i) => <Item key={`${d.slug}-${i}`} d={d} hidden />)}
                     </span>
                 </div>
             </div>

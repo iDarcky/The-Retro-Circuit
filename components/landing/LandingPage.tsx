@@ -22,7 +22,10 @@ function FaceButtons() {
 
 export default async function LandingPage() {
     const data = await loadHomeData();
-    const sprites = data.newest.filter((d) => d.image).map((d) => ({ slug: d.slug, image: d.image! }));
+    // Twelve handhelds spread across the catalogue, so the backdrop shows a mix of shapes.
+    const withImg = data.all.filter((d) => d.image);
+    const step = Math.max(1, Math.floor(withImg.length / 12));
+    const sprites = withImg.filter((_, i) => i % step === 0).slice(0, 12).map((d) => ({ slug: d.slug, image: d.image! }));
 
     return (
         <div className="bg-bg-primary min-h-screen text-text-primary font-sans">

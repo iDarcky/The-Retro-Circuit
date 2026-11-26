@@ -203,5 +203,3 @@ body {
   91.5% { opacity: 0.4; }
   93% { opacity: 1; }
 }
-/* BETA: hero background switcher. On the purple block the purple button turns white. */
-html[data-hero-bg="C"] .hero-cta { background: #fff; color: #000; }

@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { SwissDropdown } from '../ui/SwissDropdown';
 import { RATING, SYSTEMS, type HomeDevice, type SystemKey } from './home-types';
 
 const BUDGETS = [
@@ -68,15 +69,14 @@ export default function HandheldPicker({ devices }: { devices: HomeDevice[] }) {
                         ))}
                     </div>
                     <div className="flex items-center gap-3">
-                        <label className="sr-only" htmlFor="picker-budget">Budget</label>
-                        <select
-                            id="picker-budget"
+                        <SwissDropdown
                             value={budget}
-                            onChange={(e) => setBudget(Number(e.target.value))}
-                            className={`bg-violet-600 text-white font-mono text-sm px-3 py-[11px] border-0 ${focus}`}
-                        >
-                            {BUDGETS.map((b, i) => <option key={b.label} value={i}>{b.label}</option>)}
-                        </select>
+                            onChange={(v) => setBudget(v)}
+                            options={BUDGETS.map((b, i) => ({ value: i, label: b.label }))}
+                            labelPrefix=""
+                            menuClassName="z-[60] left-0 right-auto"
+                            buttonClassName="!bg-violet-600 !text-white !border-violet-600 hover:!bg-violet-500 !py-[11px] !text-sm !normal-case !tracking-normal min-w-[150px]"
+                        />
                         <span className="font-mono text-xs text-text-secondary whitespace-nowrap" aria-live="polite">
                             {results.length} {results.length === 1 ? 'match' : 'matches'}
                         </span>

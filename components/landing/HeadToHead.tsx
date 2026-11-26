@@ -15,11 +15,10 @@ function Thumb({ d }: { d: HomeDevice }) {
 
 /**
  * The comparisons people look up most, as a compact grid of matchups. Each card is a plain
- * link to the full comparison, so crawlers reach them all; the rest sit in one line below.
+ * link to the full comparison, so crawlers reach them all; the full list lives in the sitemap.
  */
 export default function HeadToHead({ pairs }: { pairs: HomePair[] }) {
     if (!pairs.length) return null;
-    const more = pairs.slice(CARDS);
 
     return (
         <section className="px-5 md:px-12 pt-16 md:pt-28" aria-labelledby="vs-heading">
@@ -45,17 +44,6 @@ export default function HeadToHead({ pairs }: { pairs: HomePair[] }) {
                         </li>
                     ))}
                 </ul>
-                {more.length > 0 && (
-                    <p className="mt-5 text-sm leading-relaxed text-text-secondary">
-                        Also compared often:{' '}
-                        {more.map((p, i) => (
-                            <span key={p.href}>
-                                <Link href={p.href} className="text-zinc-300 hover:text-white underline-offset-4 hover:underline">{p.a.label} vs {p.b.label}</Link>
-                                {i < more.length - 1 ? ', ' : ''}
-                            </span>
-                        ))}
-                    </p>
-                )}
             </div>
         </section>
     );

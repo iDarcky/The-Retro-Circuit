@@ -41,6 +41,12 @@ function toHomeDevice(c: ConsoleDetails): HomeDevice {
 }
 
 /** Everything the homepage draws, from one read of the published catalogue. */
+/** Matchups the owner picked to lead the homepage's head-to-head. A pair shows only once
+ *  both consoles are published (Retroid Pocket Duo is still in review as of 2026-11-26). */
+const HOME_PAIRS: [string, string][] = [
+    ['ayn-thor', 'retroid-pocket-duo'],
+];
+
 export async function loadHomeData(): Promise<HomeData> {
     const [all, latest] = await Promise.all([fetchAllConsoles(), fetchLatestConsoles(8)]);
     const bySlug = new Map(all.map((c) => [c.slug, toHomeDevice(c)]));
@@ -54,7 +60,7 @@ export async function loadHomeData(): Promise<HomeData> {
         all: devices,
         // The sitemap's curated comparisons, where both consoles are published, so these
         // links point at the indexed URLs.
-        pairs: INDEXABLE_ARENA_SIDES.filter(([a, b]) => bySlug.has(a) && bySlug.has(b))
+        pairs: [...HOME_PAIRS, ...INDEXABLE_ARENA_SIDES].filter(([a, b]) => bySlug.has(a) && bySlug.has(b))
             .slice(0, 12)
             .map(([a, b]) => ({ href: `/arena/${pairKey(a, b)}`, a: bySlug.get(a)!, b: bySlug.get(b)! })),
         guides: BEST_OF_COLLECTIONS.map((g) => ({ href: `/best/${g.slug}`, label: g.shortLabel, title: g.title })),
