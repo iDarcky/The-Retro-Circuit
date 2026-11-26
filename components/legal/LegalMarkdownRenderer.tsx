@@ -66,7 +66,7 @@ export default function LegalMarkdownRenderer({ content, themeColor }: LegalMark
             const title = match[2];
 
             return (
-              <div className="flex items-baseline gap-4 mb-4 mt-14 pt-6 border-t border-white/10" {...props}>
+              <div className="flex items-baseline gap-4 mb-4 mt-10" {...props}>
                 <span className={`font-pixel text-[11px] ${theme.headingText}`}>{num}</span>
                 <h2 className="text-2xl md:text-3xl font-extrabold tracking-[-0.03em] text-white">{title}</h2>
               </div>
@@ -74,7 +74,7 @@ export default function LegalMarkdownRenderer({ content, themeColor }: LegalMark
           }
 
           // Fallback if it doesn't match the numbered pattern
-          return <h2 className="text-2xl md:text-3xl font-extrabold tracking-[-0.03em] text-white mb-4 mt-14 pt-6 border-t border-white/10" {...props}>{children}</h2>;
+          return <h2 className="text-2xl md:text-3xl font-extrabold tracking-[-0.03em] text-white mb-4 mt-10" {...props}>{children}</h2>;
         },
         // Heading 3
         h3: ({ node, ...props }) => (
