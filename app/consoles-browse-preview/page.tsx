@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { fetchVaultConsoles } from '../actions';
 import { fetchConsoleAndVariantCounts } from '../actions/consoles';
 import BrowseView, { type BrowseDevice } from '../../components/browse-v2/BrowseView';
-import ConsoleLinkIndex from '../../components/console/ConsoleLinkIndex';
 import type { ConsoleDetails } from '../../lib/types';
 
 // Beta mockup of the redesigned catalogue. Served on /consoles in the beta branch through a rewrite.
@@ -46,7 +45,6 @@ export default async function BrowsePreviewPage() {
     return (
         <main className="bg-bg-primary min-h-screen text-text-primary font-sans">
             <BrowseView devices={devices} variantCount={variants} />
-            <ConsoleLinkIndex consoles={consoles} />
         </main>
     );
 }

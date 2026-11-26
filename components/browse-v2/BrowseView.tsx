@@ -1,8 +1,8 @@
 'use client';
 
 /* The catalogue, redesigned: every filter visible at once as chips, results update as
- * you tap, and a "show more" instead of numbered pages. The full A-Z index under it is
- * server-rendered so every console still has a crawlable link. */
+ * you tap, and every handheld is on the page at once (images load lazily), so each
+ * console page gets a real link in the HTML without a separate A-Z list. */
 
 import { useMemo, useState } from 'react';
 import { Search, X } from 'lucide-react';
@@ -27,7 +27,6 @@ const SORTS = [
     { id: 'dear', label: 'Priciest' },
     { id: 'az', label: 'A to Z' },
 ];
-const PAGE = 24;
 
 const focus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500';
 
@@ -52,7 +51,6 @@ export default function BrowseView({ devices, variantCount }: { devices: BrowseD
     const [os, setOs] = useState<string | null>(null);
     const [brand, setBrand] = useState('');
     const [sort, setSort] = useState('new');
-    const [shown, setShown] = useState(PAGE);
 
     const osOptions = useMemo(() => {
         const n = new Map<string, number>();
@@ -82,8 +80,8 @@ export default function BrowseView({ devices, variantCount }: { devices: BrowseD
     }, [devices, q, shapes, band, os, brand, sort]);
 
     const active = !!(q || shapes.length || band || os || brand);
-    const reset = () => { setQ(''); setShapes([]); setBand(null); setOs(null); setBrand(''); setShown(PAGE); };
-    const toggleShape = (s: string) => { setShapes((cur) => (cur.includes(s) ? cur.filter((x) => x !== s) : [...cur, s])); setShown(PAGE); };
+    const reset = () => { setQ(''); setShapes([]); setBand(null); setOs(null); setBrand(''); };
+    const toggleShape = (s: string) => { setShapes((cur) => (cur.includes(s) ? cur.filter((x) => x !== s) : [...cur, s])); };
 
     return (
         <div>
@@ -107,7 +105,7 @@ export default function BrowseView({ devices, variantCount }: { devices: BrowseD
                             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" aria-hidden />
                             <input
                                 value={q}
-                                onChange={(e) => { setQ(e.target.value); setShown(PAGE); }}
+                                onChange={(e) => { setQ(e.target.value); }}
                                 placeholder="Search by name, brand or chip"
                                 className="w-full bg-transparent border border-white/15 focus:border-violet-500 outline-none pl-9 pr-3 py-2.5 text-sm placeholder:text-zinc-600"
                             />
@@ -115,7 +113,7 @@ export default function BrowseView({ devices, variantCount }: { devices: BrowseD
                         <div className="flex gap-3">
                             <select
                                 value={brand}
-                                onChange={(e) => { setBrand(e.target.value); setShown(PAGE); }}
+                                onChange={(e) => { setBrand(e.target.value); }}
                                 aria-label="Brand"
                                 className={`flex-1 sm:flex-none bg-bg-primary border border-white/15 px-3 py-2.5 text-sm ${focus}`}
                             >
@@ -135,9 +133,9 @@ export default function BrowseView({ devices, variantCount }: { devices: BrowseD
                     <div className="flex items-center gap-2 overflow-x-auto -mx-5 px-5 md:mx-0 md:px-0 md:flex-wrap pb-1 md:pb-0 [scrollbar-width:none]">
                         {SHAPES.map((s) => <Chip key={s} dot={SHAPE_COLOR[s.toLowerCase()]} on={shapes.includes(s.toLowerCase())} onClick={() => toggleShape(s.toLowerCase())}>{s}</Chip>)}
                         <span className="w-px h-6 bg-white/10 mx-1 shrink-0" aria-hidden />
-                        {PRICE_BANDS.map((b) => <Chip key={b.id} on={band === b.id} onClick={() => { setBand(band === b.id ? null : b.id); setShown(PAGE); }}>{b.label}</Chip>)}
+                        {PRICE_BANDS.map((b) => <Chip key={b.id} on={band === b.id} onClick={() => { setBand(band === b.id ? null : b.id); }}>{b.label}</Chip>)}
                         <span className="w-px h-6 bg-white/10 mx-1 shrink-0" aria-hidden />
-                        {osOptions.map((o) => <Chip key={o} on={os === o} onClick={() => { setOs(os === o ? null : o); setShown(PAGE); }}>{osLabel(o)}</Chip>)}
+                        {osOptions.map((o) => <Chip key={o} on={os === o} onClick={() => { setOs(os === o ? null : o); }}>{osLabel(o)}</Chip>)}
                     </div>
                     <div className="flex items-center gap-4 text-sm text-text-secondary" aria-live="polite">
                         <span><span className="text-white font-semibold">{list.length}</span> of {devices.length}</span>
@@ -161,15 +159,8 @@ export default function BrowseView({ devices, variantCount }: { devices: BrowseD
                     ) : (
                         <>
                             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 border-l border-t border-white/10">
-                                {list.slice(0, shown).map((d, i) => <DeviceCard key={d.slug} d={d} priority={i < 6} />)}
+                                {list.map((d, i) => <DeviceCard key={d.slug} d={d} priority={i < 6} />)}
                             </div>
-                            {shown < list.length && (
-                                <div className="mt-8 flex justify-center">
-                                    <button type="button" onClick={() => setShown((s) => s + PAGE)} className={`border border-white/20 font-mono text-sm px-6 py-3 hover:bg-white hover:text-black ${focus}`}>
-                                        Show {Math.min(PAGE, list.length - shown)} more
-                                    </button>
-                                </div>
-                            )}
                         </>
                     )}
                 </div>
