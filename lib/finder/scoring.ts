@@ -515,25 +515,28 @@ export const calculateConsoleScore = (
     // Q8: Aesthetic Bonus
     let aestheticBonus = 0;
     if (inputs.aestheticPref) {
-        const availableColors = (consoleItem.specs as any)?.available_colors?.toLowerCase() || '';
-        const material = (consoleItem.specs as any)?.chassis_material?.toLowerCase() || '';
+        const availableColors = String((consoleItem.specs as any)?.available_colors ?? '').toLowerCase();
+        const material = String((consoleItem.specs as any)?.body_material ?? (consoleItem.specs as any)?.chassis_material ?? '').toLowerCase();
         const pref = inputs.aestheticPref.toLowerCase();
 
         let colorKeywords: string[] = [];
         let materialKeywords: string[] = [];
         switch (pref) {
             case 'retro':
-                colorKeywords = ['grey', 'gray', 'beige', 'classic', 'dmg', 'wood', 'gold', 'famicom'];
+                // Colour names in the data read like "Retro Gray", "SNES Grey", "Retro GB".
+                colorKeywords = ['retro', 'snes', 'famicom', 'dmg', 'gameboy', ' gb', 'beige', 'classic', 'wood', 'grey', 'gray'];
                 break;
             case 'transparent':
-                colorKeywords = ['transparent', 'clear', 'atomic', 'crystal', 'ice', 'purple', 'blue'];
+                // Only see-through shells: "Ice Soul White" or plain purple are not transparent.
+                colorKeywords = ['transparent', 'clear', 'atomic', 'crystal', 'translucent', 'see-through'];
                 break;
             case 'modern':
-                colorKeywords = ['black', 'white', 'silver', 'matte', 'slate'];
+                // Black and white are on nearly every device, so they cannot signal "modern".
+                colorKeywords = ['silver', 'matte', 'slate', 'titanium', 'graphite'];
                 materialKeywords = ['metal', 'aluminium', 'aluminum', 'alloy'];
                 break;
             case 'colorful':
-                colorKeywords = ['yellow', 'blue', 'red', 'green', 'pink', 'orange', 'teal', 'indigo', 'turquoise'];
+                colorKeywords = ['yellow', 'blue', 'red', 'green', 'pink', 'orange', 'teal', 'indigo', 'turquoise', 'purple', 'lime', 'mint'];
                 break;
         }
 
