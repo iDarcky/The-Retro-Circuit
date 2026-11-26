@@ -38,7 +38,7 @@ export default function JustAdded({ devices }: { devices: HomeDevice[] }) {
                 <span className="w-1.5 h-1.5 bg-emerald-500 motion-safe:animate-pulse" aria-hidden />
                 Just added
             </h2>
-            <div className="group flex-1 min-w-0 overflow-x-auto motion-safe:overflow-hidden no-scrollbar">
+            <div className="group basis-full sm:basis-0 flex-1 min-w-0 overflow-x-auto motion-safe:overflow-hidden no-scrollbar">
                 <div
                     className="flex w-max motion-safe:animate-[stripLoop_linear_infinite] group-hover:[animation-play-state:paused] group-focus-within:[animation-play-state:paused]"
                     style={{ animationDuration: `${seconds}s` }}
