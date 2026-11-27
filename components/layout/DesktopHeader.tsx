@@ -9,12 +9,12 @@ export default function DesktopHeader() {
   const pathname = usePathname();
   const { openSearch } = useSearch();
 
-  const navItems = [
+  const navItems: { name: string; path: string; also?: string[] }[] = [
     { name: 'CONSOLES', path: '/consoles' },
-    { name: 'BEST OF', path: '/best' },
     { name: 'FABRICATORS', path: '/fabricators' },
     { name: 'VS MODE', path: '/arena' },
-    { name: 'NEWS', path: '/news' },
+    // Best Of lists live under News & Guides now, so /best/* lights this item up too.
+    { name: 'NEWS & GUIDES', path: '/news', also: ['/best'] },
   ];
 
   return (
@@ -57,7 +57,7 @@ export default function DesktopHeader() {
           {/* RIGHT: Navigation - Grid Cell 3 */}
           <div className="flex items-center gap-8 px-8 shrink-0 bg-bg-primary">
               {navItems.map((item) => {
-                  const isActive = pathname.startsWith(item.path);
+                  const isActive = pathname.startsWith(item.path) || (item.also ?? []).some((p) => pathname.startsWith(p));
                   return (
                       <Link
                           key={item.path}
