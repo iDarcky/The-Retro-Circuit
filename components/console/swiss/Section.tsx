@@ -40,7 +40,7 @@ const Section: FC<SectionProps> = ({ id, title, eyebrow, actions, first = false,
                         {eyebrow}
                     </div>
                 )}
-                <h2 className="font-pixel text-[13px] md:text-[15px] text-violet-500 uppercase tracking-widest">
+                <h2 className="font-pixel text-base md:text-xl leading-snug text-cyan-400 uppercase">
                     {title}
                 </h2>
             </div>

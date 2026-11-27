@@ -85,14 +85,15 @@ const SpecSection = ({ title, children, colorClass = "text-violet-400 border-vio
     }
 
     return (
-        <div className="mb-8 break-inside-avoid border border-white/5 bg-black/20 rounded-sm p-4 hover:border-white/20 transition-colors shadow-xl">
-            <h3 className={`font-pixel text-xs uppercase tracking-widest mb-4 border-b pb-2 ${colorClass}`}>
-                {title}
-            </h3>
-            <div className="flex flex-col">
+        <details open className="group/spec mb-6 break-inside-avoid rounded-xl border border-white/[0.08] bg-white/[0.02] hover:border-white/20 transition-colors">
+            <summary className="flex items-center gap-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden px-4 py-3.5">
+                <span aria-hidden className="font-pixel text-[9px] text-cyan-400 transition-transform group-open/spec:rotate-90">▸</span>
+                <h3 className={`font-pixel text-xs uppercase tracking-widest ${colorClass.split(' ')[0]}`}>{title}</h3>
+            </summary>
+            <div className="flex flex-col px-3 pb-3 border-t border-white/[0.06] pt-2">
                 {children}
             </div>
-        </div>
+        </details>
     );
 };
 
@@ -261,13 +262,13 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
     const SECTIONS = {
         // Section order and membership mirror VARIANT_FORM_GROUPS one for one, so a field
         // you fill in under a heading in the admin appears under the same heading here.
-        PLATFORM: ['os', 'os_family', 'os_version', 'ui_skin', 'model_no'],
+        PLATFORM: ['os', 'os_family', 'os_version', 'os_secondary_family', 'ui_skin', 'model_no'],
         SILICON: ['soc', 'soc_vendor', 'soc_name', 'cpu_model', 'cpu_clusters', 'cpu_architecture', 'cpu_process_node', 'cpu_cores', 'cpu_threads', 'cpu_clock_max_mhz', 'gpu_model', 'gpu_vendor', 'gpu_name', 'gpu_architecture', 'gpu_cores', 'gpu_compute_units', 'gpu_clock_min_mhz', 'gpu_clock_mhz', 'gpu_teraflops', 'benchmark_score', 'performance_grade'],
         MEMORY: ['ram_mb', 'ram_type', 'ram_speed_mhz', 'storage_gb', 'storage_type', 'storage_expandable'],
         DISPLAY: ['screen_size_inch', 'screen_resolution_x', 'display_type', 'display_tech', 'refresh_rate_hz', 'brightness_nits', 'touchscreen', 'aspect_ratio', 'ppi', 'second_screen_size', 'second_screen_touch', 'second_screen_ppi', 'second_screen_aspect_ratio', 'second_screen_refresh_rate', 'second_screen_nits'],
         INPUT: ['variant_input_profile'],
         CONNECTIVITY: ['wifi_specs', 'bluetooth_specs', 'other_connectivity', 'cellular_connectivity', 'video_out'],
-        POWER: ['battery_capacity_mah', 'battery_capacity_wh', 'battery_type', 'charging_speed_w', 'tdp_wattage', 'charging_tech', 'charge_port', 'cooling_solution', 'cooling_type'],
+        POWER: ['battery_swappable', 'battery_capacity_mah', 'battery_capacity_wh', 'battery_type', 'charging_speed_w', 'tdp_wattage', 'charging_tech', 'charge_port', 'cooling_solution', 'cooling_type'],
         CHASSIS: ['width_mm', 'height_mm', 'depth_mm', 'weight_g', 'body_material', 'available_colors', 'ports'],
         AUDIO: ['audio_speakers', 'speaker_config', 'has_headphone_jack', 'has_microphone', 'biometrics', 'camera_specs', 'sensors']
     };
@@ -278,6 +279,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
             {hasData(SECTIONS.PLATFORM, mergedSpecs) && (
                 <SpecSection title="Platform" colorClass="text-violet-400 border-violet-500/20">
                     <SpecRow label="OS / Firmware" value={formatOs(mergedSpecs)} />
+                    <SpecRow label="Second OS" value={[(mergedSpecs as any).os_secondary_family, (mergedSpecs as any).os_secondary_version].filter(Boolean).join(' ').replace(/^./, (c) => c.toUpperCase()) || null} />
                     <SpecRow label="UI Skin" value={mergedSpecs.ui_skin} />
                     <SpecRow label="Model No" value={mergedSpecs.model_no} />
                 </SpecSection>
@@ -407,6 +409,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                     <SpecRow label="Battery Cap" value={mergedSpecs.battery_capacity_mah} unit="mAh" />
                     <SpecRow label="Battery Energy" value={mergedSpecs.battery_capacity_wh} unit="Wh" />
                     <SpecRow label="Type" value={mergedSpecs.battery_type} />
+                    <SpecRow label="Swappable" value={yesNo((mergedSpecs as any).battery_swappable)} />
                     <SpecRow label="Charge Port" value={formatChargePort(mergedSpecs)} />
                     <SpecRow label="Charging" value={mergedSpecs.charging_speed_w} unit="W" />
                     <SpecRow label="Charging Tech" value={mergedSpecs.charging_tech} />
@@ -432,8 +435,8 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
                     <SpecRow label="Speakers" value={formatSpeakers(mergedSpecs)} />
                     <SpecRow label="Audio Output" value={mergedSpecs.audio_tech} />
                     <SpecRow label="Sensors" value={mergedSpecs.sensors} />
-                    <SpecRow label="Headphone Jack" value={mergedSpecs.has_headphone_jack ? 'YES' : 'NO'} />
-                    <SpecRow label="Microphone" value={mergedSpecs.has_microphone ? 'YES' : 'NO'} />
+                    <SpecRow label="Headphone Jack" value={mergedSpecs.has_headphone_jack && (mergedSpecs as any).headphone_jack_position ? `YES (${label((mergedSpecs as any).headphone_jack_position)?.toLowerCase()})` : yesNo(mergedSpecs.has_headphone_jack)} />
+                    <SpecRow label="Microphone" value={yesNo(mergedSpecs.has_microphone)} />
                     <SpecRow label="Biometrics" value={mergedSpecs.biometrics} />
                     <SpecRow label="Camera" value={mergedSpecs.camera_specs} />
                 </SpecSection>
