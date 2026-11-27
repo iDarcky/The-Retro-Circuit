@@ -94,7 +94,7 @@ export default function SimilarConsoles({ currentConsole }: SimilarConsolesProps
 
     if (isLoading) {
         return (
-            <div className="w-full h-48 flex items-center justify-center border border-white/10 bg-white/[0.02]">
+            <div className="w-full h-48 flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.02]">
                 <div className="font-mono text-zinc-500 text-sm animate-pulse">ANALYZING DATABASE FOR MATCHES...</div>
             </div>
         );
@@ -110,7 +110,7 @@ export default function SimilarConsoles({ currentConsole }: SimilarConsolesProps
          * full-width buttons each, so three of them ran longer than the specification
          * section they follow. An alternative is a glance, not a landing page: the whole
          * card is the link, and the comparison is a hairline row underneath. */
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--rc-hair)] border border-white/10">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--rc-hair)] rounded-xl overflow-hidden border border-white/10">
             {similarConsoles.map(consoleItem => {
                 const displayPrice = (consoleItem as any)._displayPrice;
 
@@ -123,7 +123,7 @@ export default function SimilarConsoles({ currentConsole }: SimilarConsolesProps
                 return (
                     <div key={consoleItem.id} className="rc-cell group">
                         <Link href={`/consoles/${consoleItem.slug}`} className="block p-3 hover:bg-white/[0.03] transition-colors">
-                            <div className="rc-bed relative h-[74px] flex items-center justify-center border border-white/[0.07] mb-2.5">
+                            <div className="rc-bed relative h-[74px] flex items-center justify-center rounded-lg border border-white/[0.07] mb-2.5">
                                 {imageUrl ? (
                                     <Image
                                         src={imageUrl.startsWith('http') ? imageUrl : `/${imageUrl.replace(/^\//, '')}`}

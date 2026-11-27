@@ -86,10 +86,10 @@ const ConsoleTabs: FC<Props> = ({ tabs, device }) => {
                                 alt=""
                                 loading="lazy"
                                 decoding="async"
-                                className="rc-bed h-7 w-7 shrink-0 self-center border border-white/10 object-contain p-0.5"
+                                className="rc-bed h-7 w-7 shrink-0 self-center rounded-md border border-white/10 object-contain p-0.5"
                             />
                         ) : (
-                            <span className="rc-bed h-7 w-7 shrink-0 self-center border border-white/10" aria-hidden="true" />
+                            <span className="rc-bed h-7 w-7 shrink-0 self-center rounded-md border border-white/10" aria-hidden="true" />
                         )}
                         <span className="font-mono text-[12.5px] text-white truncate">{device.name}</span>
                         {device.variantName && (

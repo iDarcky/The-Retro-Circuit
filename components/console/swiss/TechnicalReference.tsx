@@ -60,7 +60,7 @@ const SpecSection = ({ title, children, colorClass = "text-violet-400 border-vio
 
     if (viewMode === 'ribbon') {
         return (
-            <div className="flex flex-col w-full border-x border-b border-white/10 bg-black/40 first:border-t first:rounded-t-sm last:rounded-b-sm overflow-hidden">
+            <div className="flex flex-col w-full border-x border-b border-white/10 bg-black/40 first:border-t first:rounded-t-xl last:rounded-b-xl overflow-hidden">
                 <h3 className={`font-pixel text-[10px] uppercase tracking-widest px-4 py-3 bg-white/[0.02] border-b m-0 ${colorClass}`}>
                     {title}
                 </h3>
@@ -447,7 +447,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
 
     if (viewMode === 'table') {
         return (
-            <div className="overflow-x-auto w-full border border-white/10 rounded-sm bg-[#09090b]">
+            <div className="overflow-x-auto w-full border border-white/10 rounded-xl bg-[#09090b]">
                 <table className="w-full text-left border-collapse min-w-[600px]">
                     <tbody>
                         {content}
@@ -459,7 +459,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
 
     if (viewMode === 'ribbon') {
         return (
-            <div className="flex flex-col rounded-sm overflow-hidden">
+            <div className="flex flex-col rounded-xl overflow-hidden">
                 {content}
             </div>
         );
