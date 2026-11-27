@@ -148,3 +148,38 @@ body {
     radial-gradient(120% 90% at 50% 40%, rgba(139, 92, 246, 0.10), transparent 62%),
     var(--rc-panel);
 }
+
+/* Big screens: grow the whole site a little, so a 2K or 4K monitor at 100% scaling does not
+ * show small text in a narrow middle column. Media queries still read the real width. */
+html { --zoom: 1; }
+@media (min-width: 1800px) { html { zoom: 1.125; --zoom: 1.125; } }
+@media (min-width: 2300px) { html { zoom: 1.25; --zoom: 1.25; } }
+/* Zoom also scales viewport units, so screen-height boxes divide it back out. */
+.h-screen { height: calc(100vh / var(--zoom)); }
+.min-h-screen { min-height: calc(100vh / var(--zoom)); }
+
+/* Bit, the neon mascot: a gentle bob, a wave in bursts, a blink, and the odd neon flicker */
+@keyframes bitBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes bitWave {
+  0%, 60%, 100% { transform: rotate(0deg); }
+  10% { transform: rotate(-14deg); }
+  20% { transform: rotate(6deg); }
+  30% { transform: rotate(-14deg); }
+  40% { transform: rotate(6deg); }
+  50% { transform: rotate(-6deg); }
+}
+@keyframes bitLid {
+  0%, 90%, 100% { transform: scaleY(0); }
+  93% { transform: scaleY(1); }
+  96% { transform: scaleY(0); }
+}
+@keyframes neonFlicker {
+  0%, 88%, 100% { opacity: 1; }
+  89% { opacity: 0.55; }
+  90% { opacity: 1; }
+  91.5% { opacity: 0.4; }
+  93% { opacity: 1; }
+}

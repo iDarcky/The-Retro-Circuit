@@ -1,8 +1,8 @@
-import { fetchPublicManufacturers, fetchVaultConsoles } from '../../app/actions';
+import { fetchVaultConsoles } from '../../app/actions';
 import { siteConfig } from '../../config/site';
 import { fetchConsoleAndVariantCounts } from '../../app/actions/consoles';
-import ConsoleVaultClient from '../../components/console/ConsoleVaultClient';
-import ConsoleLinkIndex from '../../components/console/ConsoleLinkIndex';
+import BrowseView, { type BrowseDevice } from '../../components/browse-v2/BrowseView';
+import type { ConsoleDetails } from '../../lib/types';
 
 export async function generateMetadata() {
   // Use the anonymous client (via the shared action) so this page stays fully static.
@@ -22,15 +22,30 @@ export async function generateMetadata() {
 
 export const revalidate = false;
 
+function toDevice(c: ConsoleDetails): BrowseDevice {
+    const s: any = c.specs || {};
+    const price = Number(s.price_launch_usd || s.price_avg_usd) || null;
+    const released = s.release_date ? new Date(s.release_date).getTime() : undefined;
+    return {
+        slug: c.slug,
+        name: c.name,
+        brand: c.manufacturer?.name ?? null,
+        image: c.image_url ?? null,
+        shape: c.form_factor ?? null,
+        price: price && price >= 20 ? Math.round(price) : null,
+        chip: s.soc_name ?? null,
+        screen: s.screen_size_inch ?? null,
+        os: s.os_family ?? null,
+        year: s.release_date ? String(s.release_date).slice(0, 4) : null,
+        released: Number.isFinite(released) ? released : undefined,
+    };
+}
+
 export default async function ConsoleVaultPage() {
-  let manufacturers: any[] = [];
   let allConsoles: any[] = [];
 
   try {
-    [manufacturers, allConsoles] = await Promise.all([
-      fetchPublicManufacturers(),
-      fetchVaultConsoles()
-    ]);
+    allConsoles = await fetchVaultConsoles();
   } catch (error) {
     console.warn('Build Warning: Failed to fetch console vault data. Returning empty state.', error);
     // Fallback is empty arrays, allowing build to complete
@@ -38,8 +53,9 @@ export default async function ConsoleVaultPage() {
 
   return (
     <>
-      <ConsoleVaultClient initialManufacturers={manufacturers} initialConsoles={allConsoles} />
-      <ConsoleLinkIndex consoles={allConsoles} />
+      <main className="bg-bg-primary min-h-screen text-text-primary font-sans">
+        <BrowseView devices={(allConsoles as ConsoleDetails[]).filter((c) => c.slug).map(toDevice)} />
+      </main>
     </>
   );
 }
