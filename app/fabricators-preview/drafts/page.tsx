@@ -3,8 +3,8 @@ import { fetchPublicManufacturers } from '../../actions/manufacturers';
 import { fetchVaultConsoles } from '../../actions/consoles';
 import type { ConsoleDetails, Manufacturer } from '../../../lib/types';
 import { PageTitle } from '../../../components/layout/PageTitle';
-import { brandColor, brandTagline } from '../../../lib/brand/theme';
-import BrandFolder from '../../../components/fabricator/BrandFolder';
+import { brandColor } from '../../../lib/brand/theme';
+import BrandFolderIcon from '../../../components/fabricator/BrandFolderIcon';
 
 // Beta mockup of the redesigned brands index. Served on /fabricators in the beta branch through a rewrite.
 export const revalidate = false;
@@ -31,40 +31,47 @@ export default async function BrandFolderDrafts() {
 
     return (
         <main className="bg-bg-primary min-h-screen text-text-primary font-sans pb-24">
-            <header className="px-5 md:px-12 pt-12 md:pt-16 pb-10">
+            <header className="px-5 md:px-12 pt-12 md:pt-20 pb-10 md:pb-12">
                 <div className="max-w-[1400px] mx-auto">
-                    <PageTitle lead="Folder" accent="drafts" color="fabricators" />
-                    <p className="mt-5 text-lg text-text-secondary max-w-[60ch]">Four of your folders, same top brands. In each row the first two hold the logo, huge and tossed in; the other two hold three of the brand&apos;s handhelds.</p>
+                    <PageTitle accent="Fabricators" color="fabricators" />
+                    <p className="mt-5 text-lg md:text-xl text-text-secondary max-w-[52ch]">Every brand behind the handhelds, from big names to garage makers. Open a folder to see what they make.</p>
                 </div>
             </header>
-            {([
-                ['sheet', 'Folder 4: sheet inside, glass front'],
-                ['tab', 'Folder 3: dark, the name on the front tab'],
-                ['tilt', 'Folder 10: tilted glass, name on a label'],
-                ['wave', 'Folder 11: dipped glass edge, + pill'],
-            ] as const).map(([shape, label]) => (
-                <section key={shape} className="px-5 md:px-12 mb-14" aria-label={label}>
-                    <div className="max-w-[1400px] mx-auto">
-                        <h2 className="font-pixel text-sm md:text-base text-emerald-400 mb-5">{label}</h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-8">
-                            {rows.slice(0, 4).map(({ b, list, n }, i) => (
-                                <BrandFolder
+
+            <section className="px-5 md:px-12" aria-label="All brands">
+                <div className="max-w-[1400px] mx-auto rounded-2xl border border-white/10 bg-white/[0.015] overflow-hidden">
+                    {/* Window bar, like a file browser on an old desktop */}
+                    <div className="flex items-center gap-4 px-4 md:px-5 h-12 border-b border-white/10 bg-white/[0.03]">
+                        <span aria-hidden className="flex gap-1.5">
+                            <span className="w-3 h-3 rounded-full bg-rose-500/80" />
+                            <span className="w-3 h-3 rounded-full bg-orange-400/80" />
+                            <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
+                        </span>
+                        <span className="font-mono text-xs text-white/70 truncate"><span className="text-white/40">C:\CIRCUIT\</span>FABRICATORS</span>
+                        <span className="ml-auto font-mono text-[11px] text-white/40 hidden sm:block">sorted by line-up</span>
+                    </div>
+                    {/* Desktop with a faint dot grid */}
+                    <div className="p-4 md:p-6 bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:18px_18px]">
+                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 2xl:grid-cols-10 gap-x-1 gap-y-3">
+                            {rows.map(({ b, n }) => (
+                                <BrandFolderIcon
                                     key={b.id}
-                                    shape={shape}
-                                    fill={i < 2 ? 'logo' : 'handhelds'}
                                     href={`/fabricators/${b.slug}`}
                                     name={b.name}
-                                    tagline={brandTagline(b.description)}
                                     count={n}
                                     color={brandColor(b.name, (b as any).brand_color)}
                                     logo={b.image_url ?? null}
-                                    devices={list.slice(0, 3).map((c) => c.image_url!)}
                                 />
                             ))}
                         </div>
                     </div>
-                </section>
-            ))}
+                    {/* Status bar */}
+                    <div className="flex items-center justify-between px-4 md:px-5 h-9 border-t border-white/10 font-mono text-[11px] text-white/40">
+                        <span>{brands.length} folders</span>
+                        <span>{rows.reduce((s, r) => s + r.n, 0)} handhelds inside</span>
+                    </div>
+                </div>
+            </section>
         </main>
     );
 }
