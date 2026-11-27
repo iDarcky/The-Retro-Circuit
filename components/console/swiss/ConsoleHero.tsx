@@ -210,7 +210,7 @@ const ConsoleHero: FC<Props> = ({
 
                 {/* ---- IMAGE ---- left column on desktop, via grid placement ------ */}
                 <div className="lg:col-start-1 lg:col-span-7 lg:row-start-1 lg:row-span-2">
-                    <div className="rc-bed relative w-full aspect-[4/3] border border-white/10 flex items-center justify-center overflow-hidden">
+                    <div className="rc-bed relative w-full aspect-[4/3] rounded-2xl border border-white/10 flex items-center justify-center overflow-hidden">
                         <span className="absolute top-3 left-3 font-mono text-[10px] tracking-widest text-white/25">FIG. 01</span>
                         <span className="absolute top-3 right-3 font-mono text-[10px] tracking-widest text-white/25 flex items-center gap-1.5">
                             <span className="w-1.5 h-1.5 bg-violet-500 inline-block" aria-hidden="true" />
@@ -283,7 +283,7 @@ const ConsoleHero: FC<Props> = ({
                                 medianScore={tierStats?.medianScore ?? null}
                             />
                         ) : (
-                            <div className="border border-white/10 bg-white/[0.02] p-4">
+                            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
                                 <div className="font-mono text-[9px] uppercase tracking-widest text-gray-500 mb-3">Circuit Score</div>
                                 <div className="font-pixel text-lg text-gray-600 leading-none">Untested</div>
                                 <div className="font-mono text-[10px] text-gray-500 mt-3">No graded emulation profile yet</div>
@@ -311,7 +311,7 @@ const ConsoleHero: FC<Props> = ({
                         </Link>
                         {discontinued && (
                             <div className="flex-1 min-w-[150px] flex flex-col items-center justify-center px-4 py-2.5
-                                            border border-dashed border-white/15 text-gray-500 font-mono text-[11px]
+                                            rounded-lg border border-dashed border-white/15 text-gray-500 font-mono text-[11px]
                                             uppercase tracking-widest text-center">
                                 <span>Discontinued</span>
                                 <span className="text-[9px] tracking-wider opacity-70 normal-case mt-0.5">
@@ -327,8 +327,8 @@ const ConsoleHero: FC<Props> = ({
                                 className={`flex-1 min-w-[150px] flex flex-col items-center justify-center px-4 py-2.5 font-mono
                                             text-[11px] uppercase tracking-widest transition-colors ${
                                     buy.confidence === 'direct'
-                                        ? 'border border-cyan-500/60 text-cyan-400 hover:bg-cyan-500 hover:text-black'
-                                        : 'border border-dashed border-orange-500/50 text-orange-400 hover:bg-orange-500 hover:text-black'
+                                        ? 'rounded-lg border border-cyan-500/60 text-cyan-400 hover:bg-cyan-500 hover:text-black'
+                                        : 'rounded-lg border border-dashed border-orange-500/50 text-orange-400 hover:bg-orange-500 hover:text-black'
                                 }`}
                             >
                                 <span>
@@ -343,7 +343,7 @@ const ConsoleHero: FC<Props> = ({
                             type="button"
                             onClick={onShare}
                             aria-label="Copy link to this console"
-                            className="relative px-4 py-3 border border-white/15 text-gray-400 hover:border-white hover:text-white transition-colors"
+                            className="relative px-4 py-3 rounded-lg border border-white/15 text-gray-400 hover:border-white hover:text-white transition-colors"
                         >
                             <Share2 className="w-4 h-4" />
                             {shareCopied && (
@@ -358,7 +358,7 @@ const ConsoleHero: FC<Props> = ({
                     {discontinued && successor && (
                         <Link
                             href={`/consoles/${successor.slug}`}
-                            className="group mt-3 flex items-center justify-between gap-3 border border-white/10 px-4 py-3
+                            className="group mt-3 flex items-center justify-between gap-3 rounded-xl border border-white/10 px-4 py-3
                                        hover:border-violet-500/60 hover:bg-violet-500/[0.06] transition-colors"
                         >
                             <span className="min-w-0">

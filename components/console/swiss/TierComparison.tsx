@@ -51,7 +51,7 @@ const TierComparison: FC<{
     const tierSize = stats?.scores.length ?? 0;
     if (tierSize < MIN_POPULATION_FOR_RANK) {
         return (
-            <div className="border border-white/10 bg-white/[0.02] p-4 font-mono text-[11px] text-gray-500">
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 font-mono text-[11px] text-gray-500">
                 Only {tierSize} published Tier {reach} device{tierSize === 1 ? '' : 's'} to compare against —
                 rankings appear once there are {MIN_POPULATION_FOR_RANK}.
             </div>
@@ -109,7 +109,7 @@ const TierComparison: FC<{
                 </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-[var(--rc-hair)] border border-white/10">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-[var(--rc-hair)] rounded-xl overflow-hidden border border-white/10">
                 {rows.map(row => {
                     const band = bandOf(row.percentile!);
                     const tone = TONE[row.tone];

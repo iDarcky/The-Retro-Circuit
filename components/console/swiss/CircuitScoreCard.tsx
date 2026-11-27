@@ -32,7 +32,7 @@ const CircuitScoreCard: FC<Props> = ({ score, percentile, tierSize, medianScore,
     const topPct = rankable ? Math.max(1, Math.round((1 - percentile!) * 100)) : null;
 
     return (
-        <div className="border border-white/10 bg-white/[0.02] p-4">
+        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
             <div className="font-mono text-[9px] uppercase tracking-widest text-gray-500 mb-3">
                 Circuit Score
             </div>
@@ -51,7 +51,7 @@ const CircuitScoreCard: FC<Props> = ({ score, percentile, tierSize, medianScore,
 
             {/* Parts, to scale against the full 100 so the empty space is legible too. */}
             <div
-                className="flex h-2 mt-4 border border-white/10"
+                className="flex h-2 mt-4 rounded-full overflow-hidden border border-white/10"
                 role="img"
                 aria-label={`Reach ${score.parts.reach}, Polish ${score.parts.polish}, Feel ${score.parts.feel} out of ${total}`}
             >
@@ -96,7 +96,7 @@ export const PriceCard: FC<{
     const band = rankable ? bandOf(1 - percentile!) : null;
 
     return (
-        <div className="border border-white/10 bg-white/[0.02] p-4">
+        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
             <div className="font-mono text-[9px] uppercase tracking-widest text-gray-500 mb-3">Price</div>
             {price ? (
                 <>

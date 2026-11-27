@@ -75,7 +75,7 @@ const PlayabilityTiers: FC<{ profile?: EmulationProfile | null }> = ({ profile }
                 </div>
             </div>
 
-            <div className="border border-white/10">
+            <div className="rounded-xl overflow-hidden border border-white/10">
                 {rows.map(row => (
                     <div key={row.n} className="grid grid-cols-1 sm:grid-cols-[130px_1fr] border-b border-white/10 last:border-b-0">
                         <div className="px-4 py-3 bg-white/[0.02] border-b sm:border-b-0 sm:border-r border-white/10">

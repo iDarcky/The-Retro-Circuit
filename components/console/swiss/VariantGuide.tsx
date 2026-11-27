@@ -84,7 +84,7 @@ const VariantGuide: FC<{
 
     if (rows.length === 0) {
         return (
-            <div className="border border-white/10 bg-white/[0.02] p-4 font-mono text-[11px] text-gray-500">
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 font-mono text-[11px] text-gray-500">
                 {ordered.length} configurations are listed, but the specs recorded for them are
                 identical. If they differ in the real world, that is a gap in our data.
             </div>
@@ -93,7 +93,7 @@ const VariantGuide: FC<{
 
     return (
         <div>
-            <div className="overflow-x-auto border border-white/10">
+            <div className="overflow-x-auto rounded-xl border border-white/10">
                 <table className="w-full border-collapse min-w-[520px]">
                     <thead>
                         <tr>
@@ -178,7 +178,7 @@ const VariantGuide: FC<{
                                     buildArenaToken(consoleSlug, a.slug),
                                     buildArenaToken(consoleSlug, b.slug),
                                 )}
-                                className="flex items-center gap-2 border border-white/10 px-3 py-2 font-mono text-[10.5px]
+                                className="flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 font-mono text-[10.5px]
                                            text-gray-400 hover:border-violet-500/60 hover:text-violet-300 transition-colors"
                             >
                                 <span>{a.name} vs {b.name}</span>
