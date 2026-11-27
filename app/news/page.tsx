@@ -1,149 +1,138 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { siteConfig } from '../../config/site';
-import { Metadata } from 'next';
-import { SectionHeader } from '@/components/news/SectionHeader';
-import { SignalFeed } from '@/components/news/SignalFeed';
-import { ReviewGrid } from '@/components/news/ReviewGrid';
-import { NewsFeed } from '@/components/news/NewsFeed';
-import { fetchActiveSignals } from '../actions/signals';
-import { fetchPublicReviews } from '../actions/reviews';
-import { fetchPublicNews } from '../actions/news';
+import { BEST_OF_COLLECTIONS } from '../../lib/bestof/collections';
+import { getArticles, SERIES_LABELS } from '../../lib/articles';
+import { fetchArticleConsoles } from '../../lib/articles/consoles';
+import PageHeader from '../../components/articles/PageHeader';
+import { ArticleCard, ArticleRow, FeaturedArticle } from '../../components/articles/ArticleCard';
 
 export const revalidate = false;
 
 export const metadata: Metadata = {
-   title: 'Transmission Feed | The Retro Circuit',
-   description: 'Latest hardware signals, reviews, and news from the retro handheld sector. Direct updates from the control center.',
-   alternates: { canonical: '/news' },
-   openGraph: {
-      title: 'Transmission Feed | The Retro Circuit',
-      description: 'Latest hardware signals, reviews, and news from the retro handheld sector.',
-      type: 'website',
-   }
+    title: { absolute: 'News & Buying Guides for Retro Handhelds | The Retro Circuit' },
+    description:
+        'Buying guides, gift guides and news on retro handhelds. Every pick links to full specs, prices and side-by-side comparisons.',
+    alternates: { canonical: '/news' },
+    openGraph: {
+        title: 'News & Guides | The Retro Circuit',
+        description: 'Buying guides, gift guides and news on retro handhelds.',
+        type: 'website',
+    },
 };
 
+/** The series shown first on the page. Change this when the next season's guides land. */
+const HEADLINE_SERIES = 'holiday-2026';
+
+const sectionTitle = 'font-pixel text-[13px] leading-relaxed text-[#ff7a1a] m-0 mb-5';
+
 export default async function NewsPage() {
-   const [activeSignals, reviews, newsItems] = await Promise.all([
-      fetchActiveSignals(),
-      fetchPublicReviews(),
-      fetchPublicNews()
-   ]);
+    const articles = getArticles();
+    const series = articles.filter((a) => a.series === HEADLINE_SERIES);
+    const featured = series.find((a) => a.featured) ?? series[0];
+    const restOfSeries = series.filter((a) => a !== featured);
+    const otherGuides = articles.filter((a) => a.category === 'guide' && a.series !== HEADLINE_SERIES);
+    const latest = articles.filter((a) => a.category !== 'guide');
 
-   const jsonLd = {
-      '@context': 'https://schema.org',
-      '@type': 'CollectionPage',
-      name: 'Transmission Feed - News & Signals',
-      description: 'Latest hardware signals, reviews, and news from the retro handheld sector.',
-      url: `${siteConfig.url}/news`,
-      about: {
-         '@type': 'ItemList',
-         itemListElement: [
-            ...newsItems.map((news: any, index: number) => ({
-               '@type': 'ListItem',
-               position: index + 1,
-               url: `${siteConfig.url}/news/${news.id}`
-            })),
-            ...reviews.map((review: any, index: number) => ({
-               '@type': 'ListItem',
-               position: newsItems.length + index + 1,
-               url: `${siteConfig.url}/news/reviews/${review.id}`
-            }))
-         ]
-      }
-   };
+    const covers = await fetchArticleConsoles(articles.map((a) => a.cover || ''));
+    const coverOf = (slug?: string) => (slug ? covers.get(slug)?.image_url : undefined);
 
-   return (
-      <div className="w-full bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-violet-500/30 selection:text-white pb-24 relative overflow-hidden">
-         <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-         />
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: 'News & Guides',
+        description: 'Buying guides, gift guides and news on retro handhelds.',
+        url: `${siteConfig.url}/news`,
+        mainEntity: {
+            '@type': 'ItemList',
+            itemListElement: [
+                ...articles.filter((a) => !a.draft).map((a) => `/news/${a.slug}`),
+                ...BEST_OF_COLLECTIONS.map((c) => `/best/${c.slug}`),
+            ].map((path, i) => ({ '@type': 'ListItem', position: i + 1, url: `${siteConfig.url}${path}` })),
+        },
+    };
 
-         {/* Background Effects */}
-         <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.05] pointer-events-none"></div>
+    const jumps = [
+        series.length > 0 && { href: '#holiday', label: SERIES_LABELS[HEADLINE_SERIES] ?? 'Featured guides' },
+        { href: '#rankings', label: 'Rankings' },
+        otherGuides.length > 0 && { href: '#guides', label: 'More guides' },
+        latest.length > 0 && { href: '#latest', label: 'News' },
+    ].filter(Boolean) as { href: string; label: string }[];
 
-         {/* HERO HEADER */}
-         <header className="px-6 md:px-12 pt-12 md:pt-24 pb-8 md:pb-16 border-b border-white/5 relative z-10">
-            <div className="max-w-7xl mx-auto w-full">
-               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-violet-900/30 bg-violet-950/10 text-[9px] md:text-xs font-mono uppercase tracking-widest text-violet-400 mb-8 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(139,92,246,0.1)]">
-                  <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-violet-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(139,92,246,0.5)]"></div>
-                  Transmission Feed // v1.0
-               </div>
+    return (
+        <div className="w-full bg-[#0a0a0c] min-h-screen text-white font-sans pb-24">
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-               <h1 className="text-4xl md:text-6xl font-pixel text-white leading-none tracking-tighter mb-4">
-                  NEWS & <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">SIGNALS</span><span className="text-violet-500 animate-pulse">_</span>
-               </h1>
+            <PageHeader lead="News &" accent="Guides" sub="Buying guides, gift ideas and news on retro handhelds. Every pick links to full specs and prices.">
+                <nav aria-label="On this page" className="flex flex-wrap gap-2 mt-6">
+                    {jumps.map((j) => (
+                        <a
+                            key={j.href}
+                            href={j.href}
+                            className="font-mono text-[13px] border border-white/10 text-gray-400 px-3 min-h-[40px] inline-flex items-center hover:border-[#ff7a1a] hover:text-[#ff7a1a] transition-colors"
+                        >
+                            {j.label}
+                        </a>
+                    ))}
+                </nav>
+            </PageHeader>
 
-               <p className="text-xl text-gray-400 font-light max-w-2xl">
-                  Latest reviews, hardware updates, and direct transmissions from the control center.
-               </p>
-            </div>
-         </header>
+            <div className="max-w-[1240px] mx-auto px-4 md:px-[4vw]">
+                {featured && (
+                    <section id="holiday" className="py-10 md:py-12 scroll-mt-20">
+                        <h2 className={sectionTitle}>{SERIES_LABELS[HEADLINE_SERIES] ?? 'Featured guides'}</h2>
+                        <FeaturedArticle article={featured} image={coverOf(featured.cover)} />
+                        {restOfSeries.length > 0 && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                                {restOfSeries.map((a) => (
+                                    <ArticleCard key={a.slug} article={a} image={coverOf(a.cover)} />
+                                ))}
+                            </div>
+                        )}
+                    </section>
+                )}
 
-         {/* MAIN CONTENT */}
-         <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 space-y-24 relative z-10">
+                <section id="rankings" className="py-10 md:py-12 border-t border-white/10 scroll-mt-20">
+                    <h2 className={sectionTitle}>Always-updated rankings</h2>
+                    <p className="text-gray-400 max-w-[62ch] -mt-2 mb-6">
+                        Ranked straight from our spec and emulation data, so they change as new handhelds arrive.
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10">
+                        {BEST_OF_COLLECTIONS.map((c) => (
+                            <Link
+                                key={c.slug}
+                                href={`/best/${c.slug}`}
+                                className="group bg-[#0a0a0c] p-5 flex flex-col gap-2 hover:bg-[#111114] transition-colors"
+                            >
+                                <span className="font-mono text-xs text-cyan-400">{c.shortLabel}</span>
+                                <span className="font-semibold text-[17px] leading-snug group-hover:text-[#ff7a1a] transition-colors">{c.title}</span>
+                            </Link>
+                        ))}
+                    </div>
+                </section>
 
-            {/* SECTION 1: SIGNALS */}
-            <section>
-               <SectionHeader number="01" title="SIGNALS" subtitle="STATUS_FEED" color="emerald" />
-               <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-8">
-                  <div className="text-sm text-gray-400 font-light leading-relaxed">
-                     <p className="mb-4">
-                        Direct, unfiltered updates from the editor. Quick thoughts on hardware being tested, site updates, and industry whispers.
-                     </p>
-                     <div className="font-mono text-xs text-emerald-500/70 border-l-2 border-emerald-900/50 pl-4 py-1">
-                        {'// FREQUENCY: HIGH'}<br />
-                        {'// SOURCE: ADMIN_TERMINAL'}
-                     </div>
-                  </div>
-                  <SignalFeed signals={activeSignals} />
-               </div>
-            </section>
-
-            {/* SECTION 2: REVIEWS */}
-            <section>
-               <SectionHeader number="02" title="REVIEWS" subtitle="HARDWARE_ANALYSIS" color="cyan" />
-               {reviews.length > 0 ? (
-                  <ReviewGrid reviews={reviews} />
-               ) : (
-                  <div className="text-center py-12 border border-white/10 bg-white/5 rounded-lg">
-                     <p className="font-mono text-sm text-gray-500">NO_DATA_AVAILABLE</p>
-                  </div>
-               )}
-
-               <div className="mt-8 text-center">
-                  <Link href="/reviews" className="inline-flex items-center gap-2 text-xs font-mono text-cyan-500 uppercase tracking-widest hover:text-cyan-400 hover:underline underline-offset-4 decoration-cyan-500/30 transition-all">
-                     View All Reviews <span>→</span>
-                  </Link>
-               </div>
-            </section>
-
-            {/* SECTION 3: NEWS */}
-            <section>
-               <SectionHeader number="03" title="NEWS" subtitle="SECTOR_UPDATES" color="violet" />
-               <div className="w-full max-w-4xl">
-
-                  {/* News Feed - Full Width */}
-                  <div>
-                     {newsItems.length > 0 ? (
-                        <NewsFeed news={newsItems} />
-                     ) : (
-                        <div className="text-center py-12 border border-white/10 bg-white/5 rounded-lg">
-                           <p className="font-mono text-sm text-gray-500">NO_DATA_AVAILABLE</p>
+                {otherGuides.length > 0 && (
+                    <section id="guides" className="py-10 md:py-12 border-t border-white/10 scroll-mt-20">
+                        <h2 className={sectionTitle}>More guides</h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {otherGuides.map((a) => (
+                                <ArticleCard key={a.slug} article={a} image={coverOf(a.cover)} />
+                            ))}
                         </div>
-                     )}
-                     <div className="mt-8">
-                        <Link href="/news/archive" className="inline-flex items-center gap-2 text-xs font-mono text-violet-500 uppercase tracking-widest hover:text-violet-400 hover:underline underline-offset-4 decoration-violet-500/30 transition-all">
-                           Access Archive <span>→</span>
-                        </Link>
-                     </div>
-                  </div>
+                    </section>
+                )}
 
-               </div>
-            </section>
-
-         </div>
-      </div>
-   );
+                {latest.length > 0 && (
+                    <section id="latest" className="py-10 md:py-12 border-t border-white/10 scroll-mt-20">
+                        <h2 className={sectionTitle}>News</h2>
+                        <div className="border-t border-white/10">
+                            {latest.map((a) => (
+                                <ArticleRow key={a.slug} article={a} />
+                            ))}
+                        </div>
+                    </section>
+                )}
+            </div>
+        </div>
+    );
 }
