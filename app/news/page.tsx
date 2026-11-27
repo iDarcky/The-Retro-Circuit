@@ -2,14 +2,19 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { siteConfig } from '../../config/site';
 import { BEST_OF_COLLECTIONS } from '../../lib/bestof/collections';
-import { getArticles, SERIES_LABELS } from '../../lib/articles';
+import { getArticles } from '../../lib/articles';
 import { fetchArticleConsoles } from '../../lib/articles/consoles';
 import PageHeader from '../../components/articles/PageHeader';
 import { ArticleListItem, FeaturedArticle } from '../../components/articles/ArticleCard';
 import SignalsFeed from '../../components/articles/SignalsFeed';
 import { fetchActiveSignals } from '../actions/signals';
 
-export const revalidate = false;
+// Rebuilt once a day so expired Signals drop off on their own (see SIGNAL_DAYS). One
+// regeneration a day for one page; posting a Signal also revalidates it straight away.
+export const revalidate = 86400;
+
+/** A Signal is shown for this many days after it is posted, then hides itself. */
+const SIGNAL_DAYS = 14;
 
 export const metadata: Metadata = {
     title: { absolute: 'News & Buying Guides for Retro Handhelds | The Retro Circuit' },
@@ -23,23 +28,21 @@ export const metadata: Metadata = {
     },
 };
 
-/** The series shown first on the page. Change this when the next season's guides land. */
-const HEADLINE_SERIES = 'holiday-2026';
 
 const sectionTitle = 'font-pixel text-[13px] leading-relaxed text-[#ff7a1a] m-0 mb-5';
 
 export default async function NewsPage() {
     const articles = getArticles();
-    const series = articles.filter((a) => a.series === HEADLINE_SERIES);
-    const featured = series.find((a) => a.featured) ?? series[0];
-    const restOfSeries = series.filter((a) => a !== featured);
-    const otherGuides = articles.filter((a) => a.category === 'guide' && a.series !== HEADLINE_SERIES);
-    const latest = articles.filter((a) => a.category !== 'guide');
+    // Newest first. The article marked `featured` gets the big card; everything else follows.
+    const featured = articles.find((a) => a.featured) ?? articles[0];
+    const rest = articles.filter((a) => a !== featured);
 
-    const [covers, signals] = await Promise.all([
+    const [covers, allSignals] = await Promise.all([
         fetchArticleConsoles(articles.map((a) => a.cover || '')),
         fetchActiveSignals(),
     ]);
+    const cutoff = Date.now() - SIGNAL_DAYS * 24 * 60 * 60 * 1000;
+    const signals = allSignals.filter((sg) => new Date(sg.created_at).getTime() >= cutoff);
     const coverOf = (slug?: string) => (slug ? covers.get(slug)?.image_url : undefined);
 
     const jsonLd = {
@@ -67,40 +70,20 @@ export default async function NewsPage() {
                 Phone: Signals first as a swipe row, then guides, then Rankings. */}
             <div className="max-w-[1240px] mx-auto px-4 md:px-[4vw] pt-8 md:pt-10 flex flex-col lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start gap-8">
                 <div className="min-w-0 flex flex-col gap-12 order-2 lg:order-none">
-                    {featured && (
-                        <section id="holiday" className="scroll-mt-20">
-                            <h2 className={sectionTitle}>{SERIES_LABELS[HEADLINE_SERIES] ?? 'Featured guides'}</h2>
+                    {featured ? (
+                        <section id="latest" className="scroll-mt-20">
+                            <h2 className={sectionTitle}>Latest</h2>
                             <FeaturedArticle article={featured} image={coverOf(featured.cover)} />
-                            {restOfSeries.length > 0 && (
+                            {rest.length > 0 && (
                                 <div className="flex flex-col gap-3 mt-3">
-                                    {restOfSeries.map((a) => (
+                                    {rest.map((a) => (
                                         <ArticleListItem key={a.slug} article={a} image={coverOf(a.cover)} />
                                     ))}
                                 </div>
                             )}
                         </section>
-                    )}
-
-                    {otherGuides.length > 0 && (
-                        <section id="guides" className="scroll-mt-20">
-                            <h2 className={sectionTitle}>More guides</h2>
-                            <div className="flex flex-col gap-3">
-                                {otherGuides.map((a) => (
-                                    <ArticleListItem key={a.slug} article={a} image={coverOf(a.cover)} />
-                                ))}
-                            </div>
-                        </section>
-                    )}
-
-                    {latest.length > 0 && (
-                        <section id="latest" className="scroll-mt-20">
-                            <h2 className={sectionTitle}>News</h2>
-                            <div className="flex flex-col gap-3">
-                                {latest.map((a) => (
-                                    <ArticleListItem key={a.slug} article={a} image={coverOf(a.cover)} />
-                                ))}
-                            </div>
-                        </section>
+                    ) : (
+                        <p className="text-gray-500 font-mono text-sm">Nothing here yet.</p>
                     )}
                 </div>
 
