@@ -5,10 +5,11 @@ export const dynamicParams = true;
 
 import { supabaseAnon } from '../../../lib/supabase/anon';
 import { fetchArenaPairs } from '../../../lib/arena/pairs';
-import { INDEXABLE_ARENA_PAIRS } from '../../../lib/arena/indexable';
 import { parseToken, splitVersus, buildArenaToken } from '../../../lib/arena/resolve';
 import { normalizeVariant, unwrapRelation } from '../../../lib/normalize';
-import ArenaComparisonClient from '../../../components/arena/ArenaComparisonClient';
+import { INDEXABLE_ARENA_PAIRS, INDEXABLE_ARENA_SIDES, pairKey } from '../../../lib/arena/indexable';
+import ArenaView, { type Side } from '../../../components/arena-v2/ArenaView';
+import ArenaHub from '../../../components/arena-v2/ArenaHub';
 
 /* Build the comparison pages instead of waiting for a visitor to ask for one.
  *
@@ -87,98 +88,63 @@ export async function generateMetadata({ params }: { params: Promise<{ versus?: 
     };
 }
 
-/**
- * Fetch a console's full data (with variants, emulation profiles, input profiles) by its DB id.
- * This is the single "heavy" query — called only once we know which console we need.
- */
-async function fetchFullConsole(supabase: any, consoleId: string) {
-    const { data: fullConsole } = await supabase
-        .from('consoles')
-        .select('*, manufacturer:manufacturer(*)')
-        .eq('id', consoleId)
-        .maybeSingle();
+const BASE = '/arena';
 
-    if (!fullConsole) return null;
+const label = (brand: string | undefined, name: string) =>
+    !brand || name.toLowerCase().startsWith(brand.toLowerCase()) ? name : `${brand} ${name}`;
 
-    const { data: variants } = await supabase
+async function fetchSide(id: string, variantSlug: string | null): Promise<Side | null> {
+    const { data: c } = await supabaseAnon.from('consoles').select('*, manufacturer:manufacturer(*)').eq('id', id).maybeSingle();
+    if (!c) return null;
+    const { data: vs } = await supabaseAnon
         .from('console_variants')
         .select('*, emulation_profiles(*), variant_input_profile(*)')
-        .eq('console_id', fullConsole.id);
-
-    fullConsole.variants = variants?.map(normalizeVariant) || [];
-    return fullConsole;
+        .eq('console_id', c.id);
+    const variants = (vs ?? []).map((v: any) => normalizeVariant(v)).filter(Boolean) as any[];
+    variants.sort((x, y) => Number(!!y.is_default) - Number(!!x.is_default) || (x.price_launch_usd ?? 0) - (y.price_launch_usd ?? 0));
+    const chosen = (variantSlug && variants.find((v) => v.slug === variantSlug)) || variants[0];
+    const brand = unwrapRelation<any>(c.manufacturer)?.name;
+    return {
+        slug: c.slug,
+        brand: brand ?? '',
+        name: c.name,
+        label: label(brand, c.name),
+        image: c.image_url ?? chosen?.image_url ?? null,
+        variants,
+        initialVariant: chosen ? variants.indexOf(chosen) : 0,
+    };
 }
-
 
 export default async function ArenaVersusPage({ params }: { params: Promise<{ versus?: string[] }> }) {
     const { versus } = await params;
 
-    if (!versus || versus.length === 0) {
-        return <ArenaComparisonClient />;
-    }
-
-    const supabase = supabaseAnon;
-    const parts = splitVersus(versus[0]) ?? [versus[0], ''];
-
-    /* One index fetch, then pure parsing.
-     *
-     * This replaced three overlapping heuristics that each hit the database, the last of
-     * which walked hyphens right to left issuing a query per position. It was ambiguous
-     * as well as slow: `anbernic-rg-vita-pro` is both a console and the Vita's Pro
-     * configuration, and the console always won, so that configuration had no URL. See
-     * lib/arena/resolve.ts for why the separator is `~`.
-     */
-    const { data: index } = await supabase
+    const { data: index } = await supabaseAnon
         .from('consoles')
-        .select('id, slug')
-        .eq('status', 'published');
-    const bySlug = new Map<string, string>((index ?? []).map((c: any) => [c.slug, c.id]));
+        .select('id, slug, name, image_url, manufacturer:manufacturer(name)')
+        .eq('status', 'published')
+        .order('name');
+    const rows = (index ?? []) as any[];
+    const all = rows.map((r) => ({ slug: r.slug as string, label: label(unwrapRelation<any>(r.manufacturer)?.name, r.name), image: r.image_url as string | null }));
+    const bySlug = new Map(rows.map((r) => [r.slug as string, r.id as string]));
+    const nameOf = new Map(all.map((c) => [c.slug, c.label]));
+
+    const popular = INDEXABLE_ARENA_SIDES.filter(([a, b]) => bySlug.has(a) && bySlug.has(b)).map(([a, b]) => ({
+        href: `${BASE}/${pairKey(a, b)}`,
+        a, b,
+        label: `${nameOf.get(a)} vs ${nameOf.get(b)}`,
+    }));
+
+    const parts = versus?.[0] ? splitVersus(versus[0]) : null;
+    if (!parts) return <ArenaHub consoles={all} popular={popular.slice(0, 12)} base={BASE} />;
+
     const slugSet = new Set(bySlug.keys());
+    const [pa, pb] = parts.map((t) => parseToken(t, slugSet));
+    const [a, b] = await Promise.all([pa, pb].map((p) => (p && bySlug.has(p.consoleSlug) ? fetchSide(bySlug.get(p.consoleSlug)!, p.variantSlug ?? null) : null)));
+    if (!a || !b) return <ArenaHub consoles={all} popular={popular.slice(0, 12)} base={BASE} />;
 
-    const resolveSlug = async (_supabase: any, raw: string) => {
-        const parsed = parseToken(raw, slugSet);
-        if (!parsed) return { p: raw, v: null, details: null, variant: null };
+    // Other comparisons people make with either device, then the rest of the popular list.
+    const involving = popular.filter((p) => (p.a === a.slug || p.b === a.slug || p.a === b.slug || p.b === b.slug) && !(new Set([p.a, p.b]).has(a.slug) && new Set([p.a, p.b]).has(b.slug)));
+    const related = [...involving, ...popular.filter((p) => !involving.includes(p) && !(p.a === a.slug && p.b === b.slug) && !(p.a === b.slug && p.b === a.slug))].slice(0, 8);
 
-        const consoleId = bySlug.get(parsed.consoleSlug);
-        if (!consoleId) return { p: raw, v: null, details: null, variant: null };
-
-        const fullConsole = await fetchFullConsole(supabase, consoleId);
-        if (!fullConsole) return { p: raw, v: null, details: null, variant: null };
-
-        // An unknown variant slug falls back to the default rather than 404ing: the
-        // console is still the right page to show.
-        const variant = (parsed.variantSlug
-            ? fullConsole.variants?.find((v: any) => v.slug === parsed.variantSlug)
-            : null)
-            ?? fullConsole.variants?.find((v: any) => v.is_default)
-            ?? fullConsole.variants?.[0]
-            ?? null;
-
-        return { p: parsed.consoleSlug, v: variant?.slug ?? null, details: fullConsole, variant };
-    };
-    const [r1, r2] = await Promise.all([
-        parts[0] ? resolveSlug(supabase, parts[0]) : Promise.resolve(null),
-        parts[1] ? resolveSlug(supabase, parts[1]) : Promise.resolve(null)
-    ]);
-
-    const initialSelectionA = r1?.details ? {
-        slug: r1.p,
-        details: r1.details,
-        selectedVariant: r1.variant,
-        loading: false
-    } : undefined;
-
-    const initialSelectionB = r2?.details ? {
-        slug: r2.p,
-        details: r2.details,
-        selectedVariant: r2.variant,
-        loading: false
-    } : undefined;
-
-    return (
-        <ArenaComparisonClient
-            initialSelectionA={initialSelectionA}
-            initialSelectionB={initialSelectionB}
-        />
-    );
+    return <ArenaView a={a} b={b} consoles={all} related={related} base={BASE} />;
 }
