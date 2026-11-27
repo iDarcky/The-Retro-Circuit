@@ -4,7 +4,7 @@ import { fetchVaultConsoles } from '../actions/consoles';
 import type { ConsoleDetails, Manufacturer } from '../../lib/types';
 import { PageTitle } from '../../components/layout/PageTitle';
 import { brandColor, brandTagline } from '../../lib/brand/theme';
-import BrandFolder from '../../components/fabricator/BrandFolder';
+import BrandCard from '../../components/fabricator/BrandCard';
 
 // Beta mockup of the redesigned brands index. Served on /fabricators in the beta branch through a rewrite.
 export const revalidate = false;
@@ -39,9 +39,9 @@ export default async function BrandsPreview() {
             </header>
 
             <section className="px-5 md:px-12" aria-label="All brands">
-                <div className="max-w-[1400px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-x-5 gap-y-8">
-                    {rows.map(({ b, list, n }) => (
-                        <BrandFolder
+                <div className="max-w-[1400px] mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                    {rows.map(({ b, n }) => (
+                        <BrandCard
                             key={b.id}
                             href={`/fabricators/${b.slug}`}
                             name={b.name}
@@ -49,7 +49,6 @@ export default async function BrandsPreview() {
                             count={n}
                             color={brandColor(b.name, (b as any).brand_color)}
                             logo={b.image_url ?? null}
-                            devices={list.slice(0, 3).map((c) => c.image_url!)}
                         />
                     ))}
                 </div>
