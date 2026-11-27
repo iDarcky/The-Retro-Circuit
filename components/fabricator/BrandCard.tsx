@@ -32,7 +32,7 @@ export default function BrandCard({ href, name, tagline, count, color, logo }: B
                 <span aria-hidden className="absolute left-0 right-0 bottom-0 h-[2px] bg-[var(--brand)] opacity-60 group-hover:opacity-100 transition-opacity" />
             </span>
             <span className="flex flex-col gap-1 p-4">
-                <span className="flex items-baseline justify-between gap-3">
+                <span className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-x-3 gap-y-0.5">
                     <span className="text-sm font-bold text-white truncate">{name}</span>
                     <span className="shrink-0 font-mono text-xs text-cyan-400 tabular-nums">{count} {count === 1 ? 'handheld' : 'handhelds'}</span>
                 </span>

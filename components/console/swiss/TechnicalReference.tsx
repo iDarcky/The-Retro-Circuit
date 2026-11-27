@@ -279,7 +279,7 @@ export default function TechnicalReference({ mergedSpecs, viewMode = 'grid' }: T
             {hasData(SECTIONS.PLATFORM, mergedSpecs) && (
                 <SpecSection title="Platform" colorClass="text-violet-400 border-violet-500/20">
                     <SpecRow label="OS / Firmware" value={formatOs(mergedSpecs)} />
-                    <SpecRow label="Second OS" value={[(mergedSpecs as any).os_secondary_family, (mergedSpecs as any).os_secondary_version].filter(Boolean).join(' ') || null} />
+                    <SpecRow label="Second OS" value={[(mergedSpecs as any).os_secondary_family, (mergedSpecs as any).os_secondary_version].filter(Boolean).join(' ').replace(/^./, (c) => c.toUpperCase()) || null} />
                     <SpecRow label="UI Skin" value={mergedSpecs.ui_skin} />
                     <SpecRow label="Model No" value={mergedSpecs.model_no} />
                 </SpecSection>
