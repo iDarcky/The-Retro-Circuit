@@ -5,14 +5,16 @@ import { BEST_OF_COLLECTIONS } from '../../lib/bestof/collections';
 import { getArticles, SERIES_LABELS } from '../../lib/articles';
 import { fetchArticleConsoles } from '../../lib/articles/consoles';
 import PageHeader from '../../components/articles/PageHeader';
-import { ArticleCard, ArticleRow, FeaturedArticle } from '../../components/articles/ArticleCard';
+import { ArticleListItem, FeaturedArticle } from '../../components/articles/ArticleCard';
+import SignalsFeed from '../../components/articles/SignalsFeed';
+import { fetchActiveSignals } from '../actions/signals';
 
 export const revalidate = false;
 
 export const metadata: Metadata = {
     title: { absolute: 'News & Buying Guides for Retro Handhelds | The Retro Circuit' },
     description:
-        'Buying guides, gift guides and news on retro handhelds. Every pick links to full specs, prices and side-by-side comparisons.',
+        'Quick news, buying guides and always-updated rankings for retro handhelds. Every pick links to full specs, prices and comparisons.',
     alternates: { canonical: '/news' },
     openGraph: {
         title: 'News & Guides | The Retro Circuit',
@@ -34,7 +36,10 @@ export default async function NewsPage() {
     const otherGuides = articles.filter((a) => a.category === 'guide' && a.series !== HEADLINE_SERIES);
     const latest = articles.filter((a) => a.category !== 'guide');
 
-    const covers = await fetchArticleConsoles(articles.map((a) => a.cover || ''));
+    const [covers, signals] = await Promise.all([
+        fetchArticleConsoles(articles.map((a) => a.cover || '')),
+        fetchActiveSignals(),
+    ]);
     const coverOf = (slug?: string) => (slug ? covers.get(slug)?.image_url : undefined);
 
     const jsonLd = {
@@ -52,86 +57,73 @@ export default async function NewsPage() {
         },
     };
 
-    const jumps = [
-        series.length > 0 && { href: '#holiday', label: SERIES_LABELS[HEADLINE_SERIES] ?? 'Featured guides' },
-        { href: '#rankings', label: 'Rankings' },
-        otherGuides.length > 0 && { href: '#guides', label: 'More guides' },
-        latest.length > 0 && { href: '#latest', label: 'News' },
-    ].filter(Boolean) as { href: string; label: string }[];
-
     return (
         <div className="w-full bg-[#0a0a0c] min-h-screen text-white font-sans pb-24">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-            <PageHeader lead="News &" accent="Guides" sub="Buying guides, gift ideas and news on retro handhelds. Every pick links to full specs and prices.">
-                <nav aria-label="On this page" className="flex flex-wrap gap-2 mt-6">
-                    {jumps.map((j) => (
-                        <a
-                            key={j.href}
-                            href={j.href}
-                            className="font-mono text-[13px] border border-white/10 text-gray-400 px-3 min-h-[40px] inline-flex items-center hover:border-[#ff7a1a] hover:text-[#ff7a1a] transition-colors"
-                        >
-                            {j.label}
-                        </a>
-                    ))}
-                </nav>
-            </PageHeader>
+            <PageHeader lead="News &" accent="Guides" sub="Quick signals, buying guides and rankings for retro handhelds." />
 
-            <div className="max-w-[1240px] mx-auto px-4 md:px-[4vw]">
-                {featured && (
-                    <section id="holiday" className="py-10 md:py-12 scroll-mt-20">
-                        <h2 className={sectionTitle}>{SERIES_LABELS[HEADLINE_SERIES] ?? 'Featured guides'}</h2>
-                        <FeaturedArticle article={featured} image={coverOf(featured.cover)} />
-                        {restOfSeries.length > 0 && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                                {restOfSeries.map((a) => (
-                                    <ArticleCard key={a.slug} article={a} image={coverOf(a.cover)} />
+            {/* Desktop: guides left, Signals + Rankings in a sticky sidebar on the right.
+                Phone: Signals first as a swipe row, then guides, then Rankings. */}
+            <div className="max-w-[1240px] mx-auto px-4 md:px-[4vw] pt-8 md:pt-10 flex flex-col lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start gap-8">
+                <div className="min-w-0 flex flex-col gap-12 order-2 lg:order-none">
+                    {featured && (
+                        <section id="holiday" className="scroll-mt-20">
+                            <h2 className={sectionTitle}>{SERIES_LABELS[HEADLINE_SERIES] ?? 'Featured guides'}</h2>
+                            <FeaturedArticle article={featured} image={coverOf(featured.cover)} />
+                            {restOfSeries.length > 0 && (
+                                <div className="flex flex-col gap-3 mt-3">
+                                    {restOfSeries.map((a) => (
+                                        <ArticleListItem key={a.slug} article={a} image={coverOf(a.cover)} />
+                                    ))}
+                                </div>
+                            )}
+                        </section>
+                    )}
+
+                    {otherGuides.length > 0 && (
+                        <section id="guides" className="scroll-mt-20">
+                            <h2 className={sectionTitle}>More guides</h2>
+                            <div className="flex flex-col gap-3">
+                                {otherGuides.map((a) => (
+                                    <ArticleListItem key={a.slug} article={a} image={coverOf(a.cover)} />
                                 ))}
                             </div>
-                        )}
-                    </section>
-                )}
+                        </section>
+                    )}
 
-                <section id="rankings" className="py-10 md:py-12 border-t border-white/10 scroll-mt-20">
-                    <h2 className={sectionTitle}>Always-updated rankings</h2>
-                    <p className="text-gray-400 max-w-[62ch] -mt-2 mb-6">
-                        Ranked straight from our spec and emulation data, so they change as new handhelds arrive.
-                    </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10">
-                        {BEST_OF_COLLECTIONS.map((c) => (
-                            <Link
-                                key={c.slug}
-                                href={`/best/${c.slug}`}
-                                className="group bg-[#0a0a0c] p-5 flex flex-col gap-2 hover:bg-[#111114] transition-colors"
-                            >
-                                <span className="font-mono text-xs text-cyan-400">{c.shortLabel}</span>
-                                <span className="font-semibold text-[17px] leading-snug group-hover:text-[#ff7a1a] transition-colors">{c.title}</span>
-                            </Link>
-                        ))}
+                    {latest.length > 0 && (
+                        <section id="latest" className="scroll-mt-20">
+                            <h2 className={sectionTitle}>News</h2>
+                            <div className="flex flex-col gap-3">
+                                {latest.map((a) => (
+                                    <ArticleListItem key={a.slug} article={a} image={coverOf(a.cover)} />
+                                ))}
+                            </div>
+                        </section>
+                    )}
+                </div>
+
+                <aside className="contents lg:flex lg:flex-col lg:gap-4 lg:sticky lg:top-24">
+                    <div className="order-1 lg:order-none min-w-0">
+                        <SignalsFeed signals={signals} />
                     </div>
-                </section>
-
-                {otherGuides.length > 0 && (
-                    <section id="guides" className="py-10 md:py-12 border-t border-white/10 scroll-mt-20">
-                        <h2 className={sectionTitle}>More guides</h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {otherGuides.map((a) => (
-                                <ArticleCard key={a.slug} article={a} image={coverOf(a.cover)} />
+                    <section id="rankings" aria-labelledby="rankings-title" className="order-3 lg:order-none border border-white/10 bg-[#111114] scroll-mt-20">
+                        <h2 id="rankings-title" className="m-0 px-4 py-3 border-b border-white/10 font-pixel text-[12px] leading-relaxed text-[#ff7a1a]">
+                            Rankings
+                        </h2>
+                        <p className="m-0 px-4 pt-3 text-[13px] text-gray-500">Update automatically as new handhelds arrive.</p>
+                        <ul className="m-0 p-0 list-none">
+                            {BEST_OF_COLLECTIONS.map((c) => (
+                                <li key={c.slug} className="border-b border-white/10 last:border-0">
+                                    <Link href={`/best/${c.slug}`} className="block px-4 py-2.5 text-[15px] hover:text-[#ff7a1a] transition-colors">
+                                        {c.title}
+                                    </Link>
+                                </li>
                             ))}
-                        </div>
+                        </ul>
                     </section>
-                )}
-
-                {latest.length > 0 && (
-                    <section id="latest" className="py-10 md:py-12 border-t border-white/10 scroll-mt-20">
-                        <h2 className={sectionTitle}>News</h2>
-                        <div className="border-t border-white/10">
-                            {latest.map((a) => (
-                                <ArticleRow key={a.slug} article={a} />
-                            ))}
-                        </div>
-                    </section>
-                )}
+                </aside>
             </div>
         </div>
     );
