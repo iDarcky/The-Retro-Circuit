@@ -3,7 +3,6 @@ import { siteConfig } from '../../config/site';
 import { fetchConsoleAndVariantCounts } from '../../app/actions/consoles';
 import BrowseView, { type BrowseDevice } from '../../components/browse-v2/BrowseView';
 import type { ConsoleDetails } from '../../lib/types';
-import ConsoleLinkIndex from '../../components/console/ConsoleLinkIndex';
 
 export async function generateMetadata() {
   // Use the anonymous client (via the shared action) so this page stays fully static.
@@ -57,7 +56,6 @@ export default async function ConsoleVaultPage() {
       <main className="bg-bg-primary min-h-screen text-text-primary font-sans">
         <BrowseView devices={(allConsoles as ConsoleDetails[]).filter((c) => c.slug).map(toDevice)} />
       </main>
-      <ConsoleLinkIndex consoles={allConsoles} />
     </>
   );
 }
