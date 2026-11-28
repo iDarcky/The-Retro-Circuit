@@ -19,7 +19,7 @@ interface AffiliateLinkProps {
  *
  * Without this we have no idea which surfaces actually convert — previously there
  * were zero custom analytics events anywhere in the app. Events go to Vercel
- * Analytics (cookieless, consent-gated by AnalyticsWrapper).
+ * Analytics (cookieless, loads for every visitor).
  */
 export default function AffiliateLink({
     href,

@@ -7,10 +7,7 @@ import "./globals.css";
 import ClientShell from "../components/layout/ClientShell";
 import AuthSync from "../components/auth/AuthSync";
 import Footer from "../components/layout/Footer";
-import { ConsentProvider } from "../components/privacy/ConsentContext";
-import { CookieBanner } from "../components/privacy/CookieBanner";
-import { AnalyticsWrapper } from "../components/privacy/AnalyticsWrapper";
-import { PageViewTracker } from "../components/analytics/PageViewTracker";
+import { Analytics } from "@vercel/analytics/next";
 import { siteConfig } from "../config/site";
 import { getSystemVersion } from "./actions/roadmap";
 
@@ -135,30 +132,29 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgLd) }}
         />
 
-        {/* Auth Synchronization */}
-        <ConsentProvider>
-          <AuthSync />
+        <AuthSync />
 
-          {/* Main Application Shell */}
-          <ClientShell>
-            {/* Flex wrapper to ensure footer sticks to bottom */}
-            <div className="flex-1 w-full flex flex-col">
-              {children}
-            </div>
-            <Footer version={version} />
-          </ClientShell>
+        {/* Main Application Shell */}
+        <ClientShell>
+          {/* Flex wrapper to ensure footer sticks to bottom */}
+          <div className="flex-1 w-full flex flex-col">
+            {children}
+          </div>
+          <Footer version={version} />
+        </ClientShell>
 
-          <CookieBanner />
-          <AnalyticsWrapper />
-        </ConsentProvider>
-        <PageViewTracker />
+        {/* Both analytics tools are cookieless and store no personal data, so they load for
+            every visitor without a consent banner (see content/legal/privacy.md). */}
+        <Analytics />
         <SpeedInsights />
-        {/* GoatCounter: cookieless page counts, so it loads for every visitor (no consent gate). */}
-        <Script
-          src="https://gc.zgo.at/count.js"
-          data-goatcounter="https://theretrocircuit.goatcounter.com/count"
-          strategy="afterInteractive"
-        />
+        {/* GoatCounter counts production only, so visits to preview deployments stay out. */}
+        {process.env.VERCEL_ENV === 'production' && (
+          <Script
+            src="https://gc.zgo.at/count.js"
+            data-goatcounter="https://theretrocircuit.goatcounter.com/count"
+            strategy="afterInteractive"
+          />
+        )}
       </body>
     </html>
   );
