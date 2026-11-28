@@ -1,149 +1,113 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { siteConfig } from '../../config/site';
-import { Metadata } from 'next';
-import { SectionHeader } from '@/components/news/SectionHeader';
-import { SignalFeed } from '@/components/news/SignalFeed';
-import { ReviewGrid } from '@/components/news/ReviewGrid';
-import { NewsFeed } from '@/components/news/NewsFeed';
+import { BEST_OF_COLLECTIONS } from '../../lib/bestof/collections';
+import { getArticles } from '../../lib/articles';
+import { fetchArticleConsoles } from '../../lib/articles/consoles';
+import PageHeader from '../../components/articles/PageHeader';
+import { ArticleListItem, FeaturedArticle } from '../../components/articles/ArticleCard';
+import SignalsFeed from '../../components/articles/SignalsFeed';
 import { fetchActiveSignals } from '../actions/signals';
-import { fetchPublicReviews } from '../actions/reviews';
-import { fetchPublicNews } from '../actions/news';
 
-export const revalidate = false;
+// Rebuilt once a day so expired Signals drop off on their own (see SIGNAL_DAYS). One
+// regeneration a day for one page; posting a Signal also revalidates it straight away.
+export const revalidate = 86400;
+
+/** A Signal is shown for this many days after it is posted, then hides itself. */
+const SIGNAL_DAYS = 14;
 
 export const metadata: Metadata = {
-   title: 'Transmission Feed | The Retro Circuit',
-   description: 'Latest hardware signals, reviews, and news from the retro handheld sector. Direct updates from the control center.',
-   alternates: { canonical: '/news' },
-   openGraph: {
-      title: 'Transmission Feed | The Retro Circuit',
-      description: 'Latest hardware signals, reviews, and news from the retro handheld sector.',
-      type: 'website',
-   }
+    title: { absolute: 'News & Buying Guides for Retro Handhelds | The Retro Circuit' },
+    description:
+        'Quick news, buying guides and always-updated rankings for retro handhelds. Every pick links to full specs, prices and comparisons.',
+    alternates: { canonical: '/news' },
+    openGraph: {
+        title: 'News & Guides | The Retro Circuit',
+        description: 'Buying guides, gift guides and news on retro handhelds.',
+        type: 'website',
+    },
 };
 
+
+const sectionTitle = 'font-pixel text-[13px] leading-relaxed text-[#ff7a1a] m-0 mb-5';
+
 export default async function NewsPage() {
-   const [activeSignals, reviews, newsItems] = await Promise.all([
-      fetchActiveSignals(),
-      fetchPublicReviews(),
-      fetchPublicNews()
-   ]);
+    const articles = getArticles();
+    // Newest first. The article marked `featured` gets the big card; everything else follows.
+    const featured = articles.find((a) => a.featured) ?? articles[0];
+    const rest = articles.filter((a) => a !== featured);
 
-   const jsonLd = {
-      '@context': 'https://schema.org',
-      '@type': 'CollectionPage',
-      name: 'Transmission Feed - News & Signals',
-      description: 'Latest hardware signals, reviews, and news from the retro handheld sector.',
-      url: `${siteConfig.url}/news`,
-      about: {
-         '@type': 'ItemList',
-         itemListElement: [
-            ...newsItems.map((news: any, index: number) => ({
-               '@type': 'ListItem',
-               position: index + 1,
-               url: `${siteConfig.url}/news/${news.id}`
-            })),
-            ...reviews.map((review: any, index: number) => ({
-               '@type': 'ListItem',
-               position: newsItems.length + index + 1,
-               url: `${siteConfig.url}/news/reviews/${review.id}`
-            }))
-         ]
-      }
-   };
+    const [covers, allSignals] = await Promise.all([
+        fetchArticleConsoles(articles.map((a) => a.cover || '')),
+        fetchActiveSignals(),
+    ]);
+    const cutoff = Date.now() - SIGNAL_DAYS * 24 * 60 * 60 * 1000;
+    const signals = allSignals.filter((sg) => new Date(sg.created_at).getTime() >= cutoff);
+    const coverOf = (slug?: string) => (slug ? covers.get(slug)?.image_url : undefined);
 
-   return (
-      <div className="w-full bg-bg-primary min-h-screen text-text-primary font-sans selection:bg-violet-500/30 selection:text-white pb-24 relative overflow-hidden">
-         <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-         />
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: 'News & Guides',
+        description: 'Buying guides, gift guides and news on retro handhelds.',
+        url: `${siteConfig.url}/news`,
+        mainEntity: {
+            '@type': 'ItemList',
+            itemListElement: [
+                ...articles.filter((a) => !a.draft).map((a) => `/news/${a.slug}`),
+                ...BEST_OF_COLLECTIONS.map((c) => `/best/${c.slug}`),
+            ].map((path, i) => ({ '@type': 'ListItem', position: i + 1, url: `${siteConfig.url}${path}` })),
+        },
+    };
 
-         {/* Background Effects */}
-         <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.05] pointer-events-none"></div>
+    return (
+        <div className="w-full bg-[#0a0a0c] min-h-screen text-white font-sans pb-24">
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-         {/* HERO HEADER */}
-         <header className="px-6 md:px-12 pt-12 md:pt-24 pb-8 md:pb-16 border-b border-white/5 relative z-10">
-            <div className="max-w-7xl mx-auto w-full">
-               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-violet-900/30 bg-violet-950/10 text-[9px] md:text-xs font-mono uppercase tracking-widest text-violet-400 mb-8 animate-fade-in backdrop-blur-sm shadow-[0_0_15px_-3px_rgba(139,92,246,0.1)]">
-                  <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-violet-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(139,92,246,0.5)]"></div>
-                  Transmission Feed // v1.0
-               </div>
+            <PageHeader lead="News &" accent="Guides" sub="Quick signals, buying guides and rankings for retro handhelds." />
 
-               <h1 className="text-4xl md:text-6xl font-pixel text-white leading-none tracking-tighter mb-4">
-                  NEWS & <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">SIGNALS</span><span className="text-violet-500 animate-pulse">_</span>
-               </h1>
+            {/* Desktop: guides left, Signals + Rankings in a sticky sidebar on the right.
+                Phone: Signals first as a swipe row, then guides, then Rankings. */}
+            <div className="max-w-[1240px] mx-auto px-4 md:px-[4vw] pt-8 md:pt-10 flex flex-col lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start gap-8">
+                <div className="min-w-0 flex flex-col gap-12 order-2 lg:order-none">
+                    {featured ? (
+                        <section id="latest" className="scroll-mt-20">
+                            <h2 className={sectionTitle}>Latest</h2>
+                            <FeaturedArticle article={featured} image={coverOf(featured.cover)} />
+                            {rest.length > 0 && (
+                                <div className="flex flex-col gap-3 mt-3">
+                                    {rest.map((a) => (
+                                        <ArticleListItem key={a.slug} article={a} image={coverOf(a.cover)} />
+                                    ))}
+                                </div>
+                            )}
+                        </section>
+                    ) : (
+                        <p className="text-gray-500 font-mono text-sm">Nothing here yet.</p>
+                    )}
+                </div>
 
-               <p className="text-xl text-gray-400 font-light max-w-2xl">
-                  Latest reviews, hardware updates, and direct transmissions from the control center.
-               </p>
+                <aside className="contents lg:flex lg:flex-col lg:gap-4 lg:sticky lg:top-24">
+                    <div className="order-1 lg:order-none min-w-0">
+                        <SignalsFeed signals={signals} />
+                    </div>
+                    <section id="rankings" aria-labelledby="rankings-title" className="order-3 lg:order-none border border-white/10 bg-[#111114] scroll-mt-20">
+                        <h2 id="rankings-title" className="m-0 px-4 py-3 border-b border-white/10 font-pixel text-[12px] leading-relaxed text-[#ff7a1a]">
+                            Rankings
+                        </h2>
+                        <p className="m-0 px-4 pt-3 text-[13px] text-gray-500">Update automatically as new handhelds arrive.</p>
+                        <ul className="m-0 p-0 list-none">
+                            {BEST_OF_COLLECTIONS.map((c) => (
+                                <li key={c.slug} className="border-b border-white/10 last:border-0">
+                                    <Link href={`/best/${c.slug}`} className="block px-4 py-2.5 text-[15px] hover:text-[#ff7a1a] transition-colors">
+                                        {c.title}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+                </aside>
             </div>
-         </header>
-
-         {/* MAIN CONTENT */}
-         <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 space-y-24 relative z-10">
-
-            {/* SECTION 1: SIGNALS */}
-            <section>
-               <SectionHeader number="01" title="SIGNALS" subtitle="STATUS_FEED" color="emerald" />
-               <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-8">
-                  <div className="text-sm text-gray-400 font-light leading-relaxed">
-                     <p className="mb-4">
-                        Direct, unfiltered updates from the editor. Quick thoughts on hardware being tested, site updates, and industry whispers.
-                     </p>
-                     <div className="font-mono text-xs text-emerald-500/70 border-l-2 border-emerald-900/50 pl-4 py-1">
-                        {'// FREQUENCY: HIGH'}<br />
-                        {'// SOURCE: ADMIN_TERMINAL'}
-                     </div>
-                  </div>
-                  <SignalFeed signals={activeSignals} />
-               </div>
-            </section>
-
-            {/* SECTION 2: REVIEWS */}
-            <section>
-               <SectionHeader number="02" title="REVIEWS" subtitle="HARDWARE_ANALYSIS" color="cyan" />
-               {reviews.length > 0 ? (
-                  <ReviewGrid reviews={reviews} />
-               ) : (
-                  <div className="text-center py-12 border border-white/10 bg-white/5 rounded-lg">
-                     <p className="font-mono text-sm text-gray-500">NO_DATA_AVAILABLE</p>
-                  </div>
-               )}
-
-               <div className="mt-8 text-center">
-                  <Link href="/reviews" className="inline-flex items-center gap-2 text-xs font-mono text-cyan-500 uppercase tracking-widest hover:text-cyan-400 hover:underline underline-offset-4 decoration-cyan-500/30 transition-all">
-                     View All Reviews <span>→</span>
-                  </Link>
-               </div>
-            </section>
-
-            {/* SECTION 3: NEWS */}
-            <section>
-               <SectionHeader number="03" title="NEWS" subtitle="SECTOR_UPDATES" color="violet" />
-               <div className="w-full max-w-4xl">
-
-                  {/* News Feed - Full Width */}
-                  <div>
-                     {newsItems.length > 0 ? (
-                        <NewsFeed news={newsItems} />
-                     ) : (
-                        <div className="text-center py-12 border border-white/10 bg-white/5 rounded-lg">
-                           <p className="font-mono text-sm text-gray-500">NO_DATA_AVAILABLE</p>
-                        </div>
-                     )}
-                     <div className="mt-8">
-                        <Link href="/news/archive" className="inline-flex items-center gap-2 text-xs font-mono text-violet-500 uppercase tracking-widest hover:text-violet-400 hover:underline underline-offset-4 decoration-violet-500/30 transition-all">
-                           Access Archive <span>→</span>
-                        </Link>
-                     </div>
-                  </div>
-
-               </div>
-            </section>
-
-         </div>
-      </div>
-   );
+        </div>
+    );
 }

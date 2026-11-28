@@ -5,6 +5,7 @@ import { BEST_OF_COLLECTIONS } from '../lib/bestof/collections';
 import { fetchPublicManufacturers } from './actions/manufacturers';
 import { INDEXABLE_ARENA_SIDES, pairKey } from '../lib/arena/indexable';
 import { fetchAllFacetPaths } from '../lib/config/facets';
+import { getArticles } from '../lib/articles';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Use the anonymous server client for sitemap generation
@@ -34,6 +35,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     });
   });
+
+  // Articles (guides, news). Drafts never reach the sitemap, even on a preview build.
+  getArticles()
+    .filter((a) => !a.draft)
+    .forEach((a) => {
+      routes.push({
+        url: `${baseUrl}/news/${a.slug}`,
+        lastModified: new Date(a.updated || a.date),
+        changeFrequency: a.category === 'guide' ? 'weekly' : 'monthly',
+        priority: a.category === 'guide' ? 0.8 : 0.6,
+      });
+    });
 
   try {
     // 2. Dynamic Consoles
@@ -94,8 +107,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     });
 
-    // NOTE: /news/{id} and /news/reviews/{id} are intentionally omitted — those routes do not
-    // exist (news and reviews render inline on /news), so emitting them produced 404 URLs.
+    // NOTE: article pages (/news/{slug}) come from content/articles and are added above.
   } catch (error) {
     console.error('Sitemap generation error:', error);
   }
