@@ -3,7 +3,6 @@
 import { type FC, useEffect, useState } from 'react';
 import Link from '../ui/HoverPrefetchLink';
 import { siteConfig } from '../../config/site';
-import { useConsent } from '../privacy/ConsentContext';
 import { retroAuth } from '../../lib/auth';
 
 interface FooterProps {
@@ -12,7 +11,6 @@ interface FooterProps {
 
 const Footer: FC<FooterProps> = ({ version }) => {
   const currentYear = new Date().getFullYear();
-  const { reset } = useConsent();
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -43,12 +41,6 @@ const Footer: FC<FooterProps> = ({ version }) => {
              Some other retailer links may also earn a commission. It never affects what we
              list, how devices rank, or the specs we publish.
            </span>
-           <button
-             onClick={reset}
-             className="text-[10px] uppercase text-zinc-600 hover:text-zinc-400 transition-colors cursor-pointer text-left"
-           >
-             Cookie Settings
-           </button>
         </div>
 
         {/* Center: Navigation */}

@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** March 2026
+**Last updated:** November 2026
 
 We are **The Retro Circuit** ("we", "us", "our"). We operate the website [theretrocircuit.com](https://theretrocircuit.com). This Privacy Policy explains what data we collect, why we collect it, and how we handle it.
 
@@ -83,7 +83,7 @@ If you are a California resident, you have rights under the CCPA, including the 
 
 ## 8. Managing Consent
 
-You can reset your cookie preferences at any time via the cookie settings link in the footer.
+The Site sets no tracking cookies, so there is no cookie banner. Newsletter consent can be withdrawn at any time with the unsubscribe link in any email we send.
 
 ---
 
