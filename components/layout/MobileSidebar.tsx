@@ -1,7 +1,7 @@
 'use client';
 
 import { type FC } from 'react';
-import Link from 'next/link';
+import Link from '../ui/HoverPrefetchLink';
 import { usePathname } from 'next/navigation';
 import { IconSearch, IconClose } from '../ui/Icons';
 

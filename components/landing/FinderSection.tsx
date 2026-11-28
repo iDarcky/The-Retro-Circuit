@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '../ui/HoverPrefetchLink';
 import { ArrowRight } from 'lucide-react';
 import CircuitPattern from './CircuitPattern';
 

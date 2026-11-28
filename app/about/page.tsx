@@ -1,6 +1,6 @@
 import { siteConfig } from '../../config/site';
 import { ArrowRight, Linkedin, Database, Layout, Globe, Monitor, Code } from 'lucide-react';
-import Link from 'next/link';
+import Link from '../../components/ui/HoverPrefetchLink';
 import { getSystemVersion } from '../../app/actions/roadmap';
 import EmailActionCard from '../../components/about/EmailActionCard';
 import { fetchConsoleAndVariantCounts } from '../../app/actions/consoles';

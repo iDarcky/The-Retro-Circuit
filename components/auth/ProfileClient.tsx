@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import Link from '../ui/HoverPrefetchLink';
 import { useRouter } from 'next/navigation';
 import { retroAuth } from '../../lib/auth';
 import SwissButton from '@/components/console/swiss/SwissButton';

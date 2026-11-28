@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import Link from 'next/link';
+import Link from '../ui/HoverPrefetchLink';
 import { IconHome, IconChip, IconDatabase, IconVS } from '../ui/Icons';
 
 const MobileBottomNav = () => {

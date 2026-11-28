@@ -1,7 +1,7 @@
 "use client";
 
 import { Mail, ArrowRight, Check } from "lucide-react";
-import Link from "next/link";
+import Link from '../ui/HoverPrefetchLink';
 import { useState } from "react";
 
 export interface EmailActionCardProps {

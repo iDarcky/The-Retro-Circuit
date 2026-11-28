@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '../../components/ui/HoverPrefetchLink';
 import type { Metadata } from 'next';
 import { BEST_OF_COLLECTIONS } from '../../lib/bestof/collections';
 
