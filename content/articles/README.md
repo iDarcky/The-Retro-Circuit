@@ -1,7 +1,7 @@
 # Writing an article
 
 Every article is one `.md` file in this folder. The file name (without `.md`) is the web
-address: `holiday-2026-best-first-handheld-for-kids.md` → `/news/holiday-2026-best-first-handheld-for-kids`.
+address: `holiday-2026-best-retro-handheld-under-50.md` → `/news/holiday-2026-best-retro-handheld-under-50`.
 Files starting with `_` are ignored, so `_template.md` can be copied.
 
 ## The header
@@ -14,7 +14,7 @@ description: One or two sentences for Google and the card.
 category: guide                                    # guide, news, hands-on or site
 series: holiday-2026                               # optional, groups the holiday guides
 date: 2026-12-01                                   # first published
-updated: 2026-12-10                                # optional, shown as "Updated ..."
+updated: 2026-12-10                                # optional, shown as "Last edited ..."
 color: "#7fb800"                                   # card colour
 featured: true                                     # the big card at the top of the series
 image: https://...                                 # optional cover; otherwise the first console's photo
