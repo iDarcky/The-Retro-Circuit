@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, type ChangeEvent } from 'react';
-import Link from 'next/link';
+import Link from '../ui/HoverPrefetchLink';
 import Image from 'next/image';
 import { ConsoleDetails, Manufacturer, ConsoleFilterState } from '../../lib/types';
 import AdminEditTrigger from '../admin/AdminEditTrigger';

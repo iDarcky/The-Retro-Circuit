@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, type Dispatch, type SetStateAction } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import Link from '../ui/HoverPrefetchLink';
 import Image from 'next/image';
 import { fetchConsoleList, fetchConsoleBySlug } from '../../app/actions';
 import { ConsoleDetails, ConsoleVariant } from '../../lib/types';

@@ -10,15 +10,16 @@ import { parseToken, splitVersus, buildArenaToken } from '../../../lib/arena/res
 import { normalizeVariant, unwrapRelation } from '../../../lib/normalize';
 import ArenaComparisonClient from '../../../components/arena/ArenaComparisonClient';
 
-/* Build the comparison pages instead of waiting for a visitor to ask for one.
+/* Prebuild only the curated comparisons (the sitemap set in lib/arena/indexable.ts).
  *
- * Without this the HTML did not exist until first request, so Google could only find a
- * comparison through an internal link from the finder or the homepage compare box. This
- * is the page type carrying most of the site's non-brand clicks. */
+ * This used to prebuild every pair from pairs.ts, ~750 pages, which made each deployment
+ * around 1 GB and filled the team's 10 GB deployment storage after a handful of preview
+ * builds. The other pairs are unchanged for visitors and search engines: dynamicParams is
+ * on, so the first request renders the page and it is cached from then on. Their
+ * indexability is still decided by isIndexablePair below. */
 export async function generateStaticParams() {
-    const pairs = new Set([...await fetchArenaPairs(), ...INDEXABLE_ARENA_PAIRS]);
-    // The bare hub, then one entry per pair.
-    return [{ versus: [] as string[] }, ...Array.from(pairs, pair => ({ versus: [pair] }))];
+    // The bare hub, then one entry per curated pair.
+    return [{ versus: [] as string[] }, ...Array.from(INDEXABLE_ARENA_PAIRS, pair => ({ versus: [pair] }))];
 }
 
 async function isIndexablePair(key: string): Promise<boolean> {

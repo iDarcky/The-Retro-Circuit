@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '../ui/HoverPrefetchLink';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import { fetchLatestConsoles } from '../../app/actions/latest';

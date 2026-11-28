@@ -1,7 +1,7 @@
 'use client';
 
 import { type FC } from 'react';
-import Link from 'next/link';
+import Link from '../../ui/HoverPrefetchLink';
 import { Share2 } from 'lucide-react';
 import { ConsoleDetails, ConsoleSpecs, ConsoleVariant, EmulationProfile } from '../../../lib/types';
 import { pickBuyTarget } from '../../../lib/affiliate';

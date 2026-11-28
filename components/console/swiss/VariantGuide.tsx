@@ -1,7 +1,7 @@
 'use client';
 
 import { type FC } from 'react';
-import Link from 'next/link';
+import Link from '../../ui/HoverPrefetchLink';
 import { buildArenaToken, buildArenaPath } from '../../../lib/arena/resolve';
 import type { ConsoleVariant } from '../../../lib/types';
 

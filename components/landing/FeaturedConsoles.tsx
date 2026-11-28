@@ -1,7 +1,7 @@
 'use client';
 
 import { type FC } from 'react';
-import Link from 'next/link';
+import Link from '../ui/HoverPrefetchLink';
 import Image from 'next/image';
 import { type ConsoleDetails } from '../../lib/types/domain';
 

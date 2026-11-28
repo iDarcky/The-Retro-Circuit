@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '../ui/HoverPrefetchLink';
 import { usePathname } from 'next/navigation';
 import { useSearch } from '../ui/SearchContext';
 import { Search } from 'lucide-react';
