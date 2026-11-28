@@ -1,7 +1,7 @@
 'use client';
 
 import { FC, useEffect, useState } from 'react';
-import Link from 'next/link';
+import Link from '../ui/HoverPrefetchLink';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import SwissButton from '@/components/console/swiss/SwissButton';

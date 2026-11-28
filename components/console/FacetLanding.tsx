@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
+import Link from '../ui/HoverPrefetchLink';
 import type { Metadata } from 'next';
 
 /**

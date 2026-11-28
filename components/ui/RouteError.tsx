@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import Link from 'next/link';
+import Link from './HoverPrefetchLink';
 
 /**
  * Shared route-level error boundary UI. Each public route's error.tsx renders this so a thrown

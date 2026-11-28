@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, type ChangeEvent } from 'react';
-import Link from 'next/link';
+import Link from '../ui/HoverPrefetchLink';
 import Image from 'next/image';
 import { Manufacturer } from '../../lib/types';
 import SwissButton from '@/components/console/swiss/SwissButton';

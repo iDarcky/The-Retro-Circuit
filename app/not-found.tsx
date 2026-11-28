@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '../components/ui/HoverPrefetchLink';
 import { useState, useEffect } from 'react';
 import SwissButton from '@/components/console/swiss/SwissButton';
 

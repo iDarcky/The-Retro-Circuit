@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import Link from 'next/link';
+import Link from '../ui/HoverPrefetchLink';
 
 interface ArenaRivalsProps {
     currentA?: string;

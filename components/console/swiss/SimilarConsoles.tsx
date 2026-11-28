@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import Link from '../../ui/HoverPrefetchLink';
 import Image from 'next/image';
 import { ConsoleDetails } from '../../../lib/types';
 import { fetchVaultConsoles } from '../../../app/actions';

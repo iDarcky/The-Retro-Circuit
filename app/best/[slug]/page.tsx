@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '../../../components/ui/HoverPrefetchLink';
 import { siteConfig } from '../../../config/site';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';

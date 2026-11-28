@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
+import Link from '../ui/HoverPrefetchLink';
 import { usePathname } from "next/navigation";
 import { useConsent } from "./ConsentContext";
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { type FC, useEffect, useState } from 'react';
-import Link from 'next/link';
+import Link from '../ui/HoverPrefetchLink';
 import { siteConfig } from '../../config/site';
 import { useConsent } from '../privacy/ConsentContext';
 import { retroAuth } from '../../lib/auth';
