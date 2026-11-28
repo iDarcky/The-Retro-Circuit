@@ -35,7 +35,7 @@ export function FeaturedArticle({ article, image }: { article: Article; image?: 
                 <h3 className="m-0 font-sans font-bold text-[26px] md:text-[32px] leading-tight text-white text-balance">{article.title}</h3>
                 <p className="m-0 text-gray-400">{article.description}</p>
                 <span className="font-mono text-xs text-gray-500">
-                    {article.readMinutes} min read · {article.updated ? 'Updated' : 'Published'} {formatArticleDate(article.updated || article.date)}
+                    {article.readMinutes} min read · {article.updated ? 'Last edited' : 'Published'} {formatArticleDate(article.updated || article.date)}
                 </span>
             </div>
         </Link>

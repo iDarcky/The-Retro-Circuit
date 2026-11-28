@@ -152,7 +152,7 @@ export default async function ArticlePage(props: Props) {
                 <div className="flex flex-wrap gap-x-5 gap-y-1 mt-5 font-mono text-[13px] text-gray-500">
                     <span>By {article.author}</span>
                     <span>
-                        {article.updated ? `Updated ${formatArticleDate(article.updated)}` : formatArticleDate(article.date)}
+                        {article.updated ? `Last edited ${formatArticleDate(article.updated)}` : formatArticleDate(article.date)}
                     </span>
                     <span>{article.readMinutes} min read</span>
                 </div>
